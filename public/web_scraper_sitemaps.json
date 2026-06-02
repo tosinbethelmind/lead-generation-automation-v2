@@ -1,0 +1,61 @@
+{
+  "_id": "jiji_leads_scraper",
+  "startUrl": [
+    "https://jiji.ng/ikeja/cars?page=[1-5]"
+  ],
+  "selectors": [
+    {
+      "id": "item_card",
+      "type": "SelectorElement",
+      "parentSelectors": [
+        "_root"
+      ],
+      "selector": "div.b-list-advert__item-wrapper, div.qa-advert-list-item",
+      "multiple": true,
+      "delay": 2000
+    },
+    {
+      "id": "title",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "item_card"
+      ],
+      "selector": ".b-advert-title-inner, .qa-advert-list-item-title, h4",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "price",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "item_card"
+      ],
+      "selector": ".b-list-advert__price, .qa-advert-list-item-price, .b-trending-card__price",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "location_area",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "item_card"
+      ],
+      "selector": ".b-list-advert__region, .qa-advert-list-item-region, .b-trending-card__region",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "profile_url",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "item_card"
+      ],
+      "selector": "a.b-list-advert__link, a.qa-advert-list-item-link, a",
+      "multiple": false,
+      "delay": 0
+    }
+  ]
+}
