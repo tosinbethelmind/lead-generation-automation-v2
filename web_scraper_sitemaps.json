@@ -5,12 +5,12 @@
   ],
   "selectors": [
     {
-      "id": "item_card",
-      "type": "SelectorElement",
+      "id": "listing_link",
+      "type": "SelectorLink",
       "parentSelectors": [
         "_root"
       ],
-      "selector": "div.b-list-advert__item-wrapper, div.qa-advert-list-item",
+      "selector": "a.b-list-advert-base, a.qa-advert-list-item, div.b-list-advert__item-wrapper a",
       "multiple": true,
       "delay": 2000
     },
@@ -18,9 +18,9 @@
       "id": "title",
       "type": "SelectorText",
       "parentSelectors": [
-        "item_card"
+        "listing_link"
       ],
-      "selector": ".b-advert-title-inner, .qa-advert-list-item-title, h4",
+      "selector": ".b-advert-title-inner, .qa-advert-title span, h1.qa-advert-title, h1",
       "multiple": false,
       "regex": "",
       "delay": 0
@@ -29,9 +29,9 @@
       "id": "price",
       "type": "SelectorText",
       "parentSelectors": [
-        "item_card"
+        "listing_link"
       ],
-      "selector": ".b-list-advert__price, .qa-advert-list-item-price, .b-trending-card__price",
+      "selector": ".b-advert-price-val, .qa-advert-price, .qa-advert-item-price, .b-advert-price-container",
       "multiple": false,
       "regex": "",
       "delay": 0
@@ -40,21 +40,58 @@
       "id": "location_area",
       "type": "SelectorText",
       "parentSelectors": [
-        "item_card"
+        "listing_link"
       ],
-      "selector": ".b-list-advert__region, .qa-advert-list-item-region, .b-trending-card__region",
+      "selector": ".b-advert-region, .qa-advert-region, .b-advert-card__head-region",
       "multiple": false,
       "regex": "",
       "delay": 0
     },
     {
-      "id": "profile_url",
-      "type": "SelectorLink",
+      "id": "seller_name",
+      "type": "SelectorText",
       "parentSelectors": [
-        "item_card"
+        "listing_link"
       ],
-      "selector": "a.b-list-advert__link, a.qa-advert-list-item-link, a",
+      "selector": ".b-seller-block__name, .qa-seller-name, [class*=\"seller-name\"]",
       "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "whatsapp_link",
+      "type": "SelectorElementAttribute",
+      "parentSelectors": [
+        "listing_link"
+      ],
+      "selector": "a[href*=\"wa.me\"], a[href*=\"whatsapp.com\"]",
+      "multiple": false,
+      "extractAttribute": "href",
+      "delay": 0
+    },
+    {
+      "id": "show_contact_click",
+      "type": "SelectorElementClick",
+      "parentSelectors": [
+        "listing_link"
+      ],
+      "clickElementSelector": "a.qa-show-contact, .js-show-contact, .b-show-contact",
+      "clickElementUniquenessType": "uniqueText",
+      "clickType": "clickOnce",
+      "delay": 1000,
+      "discardInitialElements": "do-not-discard",
+      "multiple": false,
+      "selector": "body"
+    },
+    {
+      "id": "phone",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "listing_link"
+      ],
+      "selector": "[class*=\"phone-number\"], a[href^=\"tel:\"], .qa-phone-number",
+      "multiple": false,
+      "regex": "",
       "delay": 0
     }
   ]

@@ -9,18 +9,19 @@ import { getRuntimeConfig } from '@/lib/localConfig';
 function generateMockLagosLeads(query: string, limit: number): Partial<Lead>[] {
   const areas = ["Ikeja", "Lekki Phase 1", "Yaba", "Victoria Island", "Surulere", "Ikoyi"];
   
+  // Only businesses WITHOUT a website — the core qualification filter
   const businesses = [
-    { name: "Lagos Executive Motors", phone: "08031234567", website: "https://lagosmotors.com.ng", cat: "Car Dealer", rating: 4.7, reviews: 142 },
-    { name: "Eko Family Dental Clinic", phone: "07062345678", website: "https://ekodental.com", cat: "Dental Clinic", rating: 4.9, reviews: 89 },
-    { name: "Lekki Elite Fashion Hub", phone: "08153456789", website: "https://lekki-elite.ng", cat: "Boutique", rating: 4.3, reviews: 54 },
-    { name: "Yaba Pharmacy & Wellness Center", phone: "09084567890", website: "", cat: "Pharmacy", rating: 4.6, reviews: 213 },
-    { name: "Silicon Lagoon Tech Space", phone: "08095678901", website: "https://siliconlagoon.tech", cat: "Tech Hub", rating: 4.8, reviews: 76 },
-    { name: "Jollof Express Cuisine Lekki", phone: "07026789012", website: "https://jollofexpress.com", cat: "Restaurant", rating: 4.5, reviews: 310 },
-    { name: "Alaba Appliance Hub", phone: "08057890123", website: "", cat: "Appliance Dealer", rating: 4.1, reviews: 45 },
-    { name: "V.I. Spa & Wellness Oasis", phone: "08188901234", website: "https://vi-oasis.com", cat: "Spa", rating: 4.8, reviews: 110 },
-    { name: "Surulere Modern Supermarket", phone: "09019012345", website: "https://suruleremodern.com.ng", cat: "Supermarket", rating: 4.4, reviews: 250 },
-    { name: "Konga Logistics Hub Ikeja", phone: "08020123456", website: "https://konga.com", cat: "Logistics", rating: 4.2, reviews: 67 }
-  ];
+    { name: "Lagos Executive Motors", phone: "08031234567", cat: "Car Dealer", rating: 4.7, reviews: 142 },
+    { name: "Eko Family Dental Clinic", phone: "07062345678", cat: "Dental Clinic", rating: 4.9, reviews: 89 },
+    { name: "Lekki Elite Fashion Hub", phone: "08153456789", cat: "Boutique", rating: 4.3, reviews: 54 },
+    { name: "Yaba Pharmacy & Wellness Center", phone: "09084567890", cat: "Pharmacy", rating: 4.6, reviews: 213 },
+    { name: "Silicon Lagoon Tech Space", phone: "08095678901", cat: "Tech Hub", rating: 4.8, reviews: 76 },
+    { name: "Jollof Express Cuisine Lekki", phone: "07026789012", cat: "Restaurant", rating: 4.5, reviews: 310 },
+    { name: "Alaba Appliance Hub", phone: "08057890123", cat: "Appliance Dealer", rating: 4.1, reviews: 45 },
+    { name: "V.I. Spa & Wellness Oasis", phone: "08188901234", cat: "Spa", rating: 4.8, reviews: 110 },
+    { name: "Surulere Modern Supermarket", phone: "09019012345", cat: "Supermarket", rating: 4.4, reviews: 250 },
+    { name: "Festac Medical Centre", phone: "08020123456", cat: "Hospital", rating: 4.2, reviews: 67 }
+  ].filter(b => b.rating >= 4.0); // enforce rating floor
 
   const results: Partial<Lead>[] = [];
   const numToGen = Math.min(limit || 5, businesses.length);
@@ -41,7 +42,7 @@ function generateMockLagosLeads(query: string, limit: number): Partial<Lead>[] {
       phone_e164: cleanPhone,
       phone_raw: biz.phone,
       email: `${biz.name.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
-      website: biz.website,
+      website: '', // always empty — no website businesses only
       rating: biz.rating,
       reviews_count: biz.reviews,
       verified: Math.random() > 0.3,
@@ -52,8 +53,8 @@ function generateMockLagosLeads(query: string, limit: number): Partial<Lead>[] {
       status: 'NEW',
       last_contacted_at: '',
       duplicate_of_lead_id: '',
-      business_summary: `${biz.name} is a premier ${biz.cat.toLowerCase()} based in the heart of ${area}, Lagos. They enjoy a rating of ${biz.rating} stars with strong local brand visibility.`,
-      notes: 'Imported via Google Places Local Sandbox fallback.'
+      business_summary: `${biz.name} is a highly-rated ${biz.cat.toLowerCase()} in ${area}, Lagos with ${biz.rating} stars and ${biz.reviews} Google reviews — but no website yet.`,
+      notes: 'Imported via Google Places Sandbox. No website detected.'
     });
   }
   return results;
@@ -128,6 +129,16 @@ export async function POST(req: NextRequest) {
         console.error('Failed to load deep details for place_id:', placeId, err);
       }
       
+      // ── CORE FILTER: Only include businesses with no website & rating >= 4.0 ──
+      if (website) {
+        // Business already has a website — skip
+        continue;
+      }
+      if ((record.rating || 0) < 4.0) {
+        // Rating too low — skip
+        continue;
+      }
+
       const normPhone = rawPhone ? normalizePhone(rawPhone, 'NG') : null;
       
       // Parse Lagos area/neighborhood if possible
@@ -148,7 +159,7 @@ export async function POST(req: NextRequest) {
         phone_e164: normPhone || '',
         phone_raw: rawPhone,
         email: '',
-        website,
+        website: '', // confirmed empty — that's why they qualify
         rating: record.rating || 0,
         reviews_count: record.user_ratings_total || 0,
         verified: !!record.opening_hours,
@@ -159,8 +170,8 @@ export async function POST(req: NextRequest) {
         status: 'NEW',
         last_contacted_at: '',
         duplicate_of_lead_id: '',
-        business_summary: `${record.name} is a local business based in ${area}, Lagos. Google Rating: ${record.rating || 'N/A'} stars with ${record.user_ratings_total || 0} customer reviews.`,
-        notes: `Imported via Google Places API.`
+        business_summary: `${record.name} is a local business in ${area}, Lagos with a strong Google rating of ${record.rating || 'N/A'} stars (${record.user_ratings_total || 0} reviews) — but no website yet.`,
+        notes: `Imported via Google Places API. No website detected on place details.`
       });
     }
     

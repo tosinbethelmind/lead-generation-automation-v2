@@ -10,7 +10,7 @@ import { getSupabaseClient } from './supabaseClient';
 // ============================================================================
 
 export type LeadStatus = 'NEW' | 'CONTACTED' | 'DO_NOT_CONTACT' | 'ERROR';
-export type LeadSource = 'GOOGLE' | 'JIJI';
+export type LeadSource = 'GOOGLE' | 'JIJI' | 'MAPS_FREE' | 'DUCKDUCKGO' | 'OSM' | 'INSTAGRAM' | 'FACEBOOK' | 'TIKTOK' | 'LINKEDIN';
 
 export interface Lead {
   lead_id: string;
@@ -639,6 +639,8 @@ class LocalJsonLogRepository implements ILogRepository {
 // ----------------------------------------------------------------------------
 
 class SupabaseLeadRepository implements ILeadRepository {
+  private fallback = new LocalJsonLeadRepository();
+
   async getLeads(): Promise<Lead[]> {
     try {
       const supabase = getSupabaseClient();
@@ -649,8 +651,8 @@ class SupabaseLeadRepository implements ILeadRepository {
       if (error) throw error;
       return (data || []) as Lead[];
     } catch (e: any) {
-      console.error('Supabase getLeads error:', e.message);
-      return [];
+      console.warn('Supabase getLeads error, falling back to local JSON:', e.message);
+      return this.fallback.getLeads();
     }
   }
 
@@ -665,8 +667,8 @@ class SupabaseLeadRepository implements ILeadRepository {
       if (error) throw error;
       return data as Lead;
     } catch (e: any) {
-      console.error('Supabase getLeadById error:', e.message);
-      return null;
+      console.warn('Supabase getLeadById error, falling back to local JSON:', e.message);
+      return this.fallback.getLeadById(leadId);
     }
   }
 
@@ -733,8 +735,8 @@ class SupabaseLeadRepository implements ILeadRepository {
       }
       return { added: toInsert.length, skipped };
     } catch (e: any) {
-      console.error('Supabase saveLeads error:', e.message);
-      return { added: 0, skipped: newLeads.length };
+      console.warn('Supabase saveLeads error, falling back to local JSON:', e.message);
+      return this.fallback.saveLeads(newLeads);
     }
   }
 
@@ -752,13 +754,15 @@ class SupabaseLeadRepository implements ILeadRepository {
       if (error) throw error;
       return true;
     } catch (e: any) {
-      console.error('Supabase updateLeadStatus error:', e.message);
-      return false;
+      console.warn('Supabase updateLeadStatus error, falling back to local JSON:', e.message);
+      return this.fallback.updateLeadStatus(leadId, status, notes, lastContactedAt);
     }
   }
 }
 
 class SupabaseDncRepository implements IDncRepository {
+  private fallback = new LocalJsonDncRepository();
+
   async getDncList(): Promise<string[]> {
     try {
       const supabase = getSupabaseClient();
@@ -768,8 +772,8 @@ class SupabaseDncRepository implements IDncRepository {
       if (error) throw error;
       return (data || []).map((row: any) => row.phone_e164);
     } catch (e: any) {
-      console.error('Supabase getDncList error:', e.message);
-      return [];
+      console.warn('Supabase getDncList error, falling back to local JSON:', e.message);
+      return this.fallback.getDncList();
     }
   }
 
@@ -788,13 +792,15 @@ class SupabaseDncRepository implements IDncRepository {
       if (error) throw error;
       return true;
     } catch (e: any) {
-      console.error('Supabase addToDnc error:', e.message);
-      return false;
+      console.warn('Supabase addToDnc error, falling back to local JSON:', e.message);
+      return this.fallback.addToDnc(phone);
     }
   }
 }
 
 class SupabaseLogRepository implements ILogRepository {
+  private fallback = new LocalJsonLogRepository();
+
   async getLogs(): Promise<any[]> {
     try {
       const supabase = getSupabaseClient();
@@ -813,8 +819,8 @@ class SupabaseLogRepository implements ILogRepository {
         row.message
       ]);
     } catch (e: any) {
-      console.error('Supabase getLogs error:', e.message);
-      return [];
+      console.warn('Supabase getLogs error, falling back to local JSON:', e.message);
+      return this.fallback.getLogs();
     }
   }
 
@@ -832,7 +838,8 @@ class SupabaseLogRepository implements ILogRepository {
         });
       if (error) throw error;
     } catch (e: any) {
-      console.error('Supabase appendLog error:', e.message);
+      console.warn('Supabase appendLog error, falling back to local JSON:', e.message);
+      return this.fallback.appendLog(step, status, msg, runId);
     }
   }
 }
@@ -843,6 +850,9 @@ class SupabaseLogRepository implements ILogRepository {
 
 export function getActiveLeadRepository(): ILeadRepository {
   const config = getRuntimeConfig();
+  if (config.storageMode === 'local') {
+    return new LocalJsonLeadRepository();
+  }
   if (config.storageMode === 'supabase' || (config.supabaseUrl && config.supabaseKey)) {
     return new SupabaseLeadRepository();
   }
@@ -854,6 +864,9 @@ export function getActiveLeadRepository(): ILeadRepository {
 
 export function getActiveDncRepository(): IDncRepository {
   const config = getRuntimeConfig();
+  if (config.storageMode === 'local') {
+    return new LocalJsonDncRepository();
+  }
   if (config.storageMode === 'supabase' || (config.supabaseUrl && config.supabaseKey)) {
     return new SupabaseDncRepository();
   }
@@ -865,6 +878,9 @@ export function getActiveDncRepository(): IDncRepository {
 
 export function getActiveLogRepository(): ILogRepository {
   const config = getRuntimeConfig();
+  if (config.storageMode === 'local') {
+    return new LocalJsonLogRepository();
+  }
   if (config.storageMode === 'supabase' || (config.supabaseUrl && config.supabaseKey)) {
     return new SupabaseLogRepository();
   }
@@ -918,6 +934,13 @@ export async function getSyncStats() {
     errorLeads: leads.filter(l => l.status === 'ERROR').length,
     googleLeads: leads.filter(l => l.source === 'GOOGLE').length,
     jijiLeads: leads.filter(l => l.source === 'JIJI').length,
+    mapsFreeLeads: leads.filter(l => l.source === 'MAPS_FREE').length,
+    duckduckgoLeads: leads.filter(l => l.source === 'DUCKDUCKGO').length,
+    osmLeads: leads.filter(l => l.source === 'OSM').length,
+    instagramLeads: leads.filter(l => l.source === 'INSTAGRAM').length,
+    facebookLeads: leads.filter(l => l.source === 'FACEBOOK').length,
+    tiktokLeads: leads.filter(l => l.source === 'TIKTOK').length,
+    linkedinLeads: leads.filter(l => l.source === 'LINKEDIN').length,
     highRatingLeads: leads.filter(l => l.rating >= 4.5).length,
     noReviewLeads: leads.filter(l => l.reviews_count === 0).length,
   };

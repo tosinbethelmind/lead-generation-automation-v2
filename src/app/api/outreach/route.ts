@@ -1,35 +1,76 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getLeads, addLog, updateLeadStatus, isPhoneOnDnc } from '@/lib/googleSheets';
-import { getRuntimeConfig, RuntimeConfig } from '@/lib/localConfig';
+import { getLeads, addLog, updateLeadStatus } from '@/lib/googleSheets';
+import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
 
 // ============================================================================
-// Outreach Service Layer
+// Google OAuth Token Refresher
 // ============================================================================
+
+async function getValidAccessToken(): Promise<string> {
+  const config = getRuntimeConfig();
+  const now = Date.now();
+  const bufferMs = 5 * 60 * 1000; // 5 minute buffer
+
+  if (config.googleAccessToken && config.googleTokenExpiry && config.googleTokenExpiry - bufferMs > now) {
+    return config.googleAccessToken;
+  }
+
+  if (!config.googleRefreshToken || !config.googleClientId || !config.googleClientSecret) {
+    throw new Error('Google identity expired. Please Sign In again in the console.');
+  }
+
+  const resp = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: config.googleClientId,
+      client_secret: config.googleClientSecret,
+      refresh_token: config.googleRefreshToken,
+      grant_type: 'refresh_token',
+    }),
+  });
+
+  const data = await resp.json();
+  if (!resp.ok || !data.access_token) {
+    throw new Error('Google refresh token validation failed. Please Sign In again.');
+  }
+
+  saveLocalConfig({
+    googleAccessToken: data.access_token,
+    googleTokenExpiry: Date.now() + (data.expires_in || 3600) * 1000,
+  });
+
+  return data.access_token;
+}
+
+// ============================================================================
+// Unified Outreach Service
+// ============================================================================
+
+function formatMessageTemplate(template: string, lead: any, previewUrl: string, businessSignature: string): string {
+  return template
+    .replace(/{{\s*lead\.name\s*}}/g, lead.name || '')
+    .replace(/{{\s*lead\.rating\s*}}/g, String(lead.rating || '4.0'))
+    .replace(/{{\s*lead\.reviews_count\s*}}/g, String(lead.reviews_count || '0'))
+    .replace(/{{\s*lead\.area\s*}}/g, lead.area || '')
+    .replace(/{{\s*lead\.company\s*}}/g, lead.company || '')
+    .replace(/{{\s*lead\.email\s*}}/g, lead.email || '')
+    .replace(/{{\s*lead\.phone\s*}}/g, lead.phone_e164 || lead.phone_raw || '')
+    .replace(/{{\s*previewUrl\s*}}/g, previewUrl)
+    .replace(/{{\s*signature\s*}}/g, businessSignature)
+    .replace(/{{\s*businessSignature\s*}}/g, businessSignature);
+}
 
 class OutreachService {
-  /**
-   * Orchestrates the campaign launch for a list of leads, managing DNC compliance,
-   * daily message caps, and Meta API routing.
-   */
-  async launchCampaign(leadIds: string[], dryRunOverride?: boolean) {
+  async launchCampaign(leadIds: string[], origin: string, dryRunOverride?: boolean, customMessage?: string, customSubject?: string) {
     const config = getRuntimeConfig();
     const isDryRun = dryRunOverride !== undefined ? dryRunOverride : config.dryRun;
+    const provider = config.emailProvider || 'gmail';
     
-    await addLog('WhatsApp Outreach', 'START', `Starting outreach campaign for ${leadIds.length} target leads. (Dry Run Mode: ${isDryRun})`);
+    await addLog('Email Outreach', 'START', `Starting outreach campaign for ${leadIds.length} target leads via ${provider.toUpperCase()}. (Dry Run: ${isDryRun})`);
     
-    // 1. Load active leads in sheet/local database
     const leads = await getLeads();
     const leadMap = new Map(leads.map(l => [l.lead_id, l]));
-    
-    // 2. Perform daily cap calculations
-    const todayStr = new Date().toISOString().substring(0, 10);
-    const contactedToday = leads.filter(l => l.last_contacted_at && l.last_contacted_at.startsWith(todayStr)).length;
-    
-    if (contactedToday >= config.whatsappDailyCap) {
-      const capWarn = `WhatsApp campaign aborted: Daily limit of ${config.whatsappDailyCap} reached. (${contactedToday} contacted today)`;
-      await addLog('WhatsApp Outreach', 'WARN', capWarn);
-      throw new Error(capWarn);
-    }
     
     let sentCount = 0;
     const results = [];
@@ -38,118 +79,165 @@ class OutreachService {
       const lead = leadMap.get(leadId);
       if (!lead) continue;
       
-      // Verify cap dynamically on each loop cycle
-      if (contactedToday + sentCount >= config.whatsappDailyCap) {
-        const limitReached = `Campaign pipeline paused mid-run: Hit daily cap threshold of ${config.whatsappDailyCap} leads.`;
-        await addLog('WhatsApp Outreach', 'WARN', limitReached);
-        results.push({ leadId, status: 'ERROR', details: 'Skipped: Daily message cap hit' });
+      const email = lead.email;
+      if (!email || !email.includes('@')) {
+        await updateLeadStatus(leadId, 'ERROR', 'Skipped: Missing or invalid business email address');
+        results.push({ leadId, status: 'ERROR', details: 'Invalid email address' });
         continue;
       }
       
-      const phone = lead.phone_e164;
-      if (!phone || phone === '+' || phone.length < 10) {
-        await updateLeadStatus(leadId, 'ERROR', 'Skipped: Invalid E164 phone number pattern');
-        results.push({ leadId, status: 'ERROR', details: 'Invalid phone structure' });
-        continue;
-      }
-      
-      // Watertight Compliance check: verify DNC list
-      const onDnc = await isPhoneOnDnc(phone);
-      if (onDnc) {
-        await updateLeadStatus(leadId, 'DO_NOT_CONTACT', 'Skipped: On Do-Not-Contact compliance opt-out list');
-        results.push({ leadId, status: 'DO_NOT_CONTACT', details: 'DNC Compliance Opt-out' });
-        continue;
-      }
-      
+      const previewUrl = `${origin}/preview/${leadId}`;
+      const defaultSubject = `Custom Web Design Proposal for ${lead.name}`;
+      const defaultBody = `Hi Team,\n\nWe saw you have an outstanding rating of ${lead.rating} stars with ${lead.reviews_count} reviews on Google Maps, but your business does not have a web address connected yet.\n\nTo help you grow, we've custom-designed a landing page for you to review:\n${previewUrl}\n\nThis page was auto-generated by ApexReach based on your top-rated local presence in ${lead.area}. If you like the design, you can claim it and connect it to your own custom domain.\n\nBest regards,\n${config.businessSignature}`;
+
+      const subject = customSubject 
+        ? formatMessageTemplate(customSubject, lead, previewUrl, config.businessSignature || '')
+        : defaultSubject;
+
+      const body = customMessage
+        ? formatMessageTemplate(customMessage, lead, previewUrl, config.businessSignature || '')
+        : defaultBody;
+
       if (isDryRun) {
         const timestamp = new Date().toISOString();
-        await updateLeadStatus(leadId, 'CONTACTED', '[DRY RUN] Simulated message sent successfully', timestamp);
-        results.push({ leadId, status: 'CONTACTED', details: '[DRY RUN] Simulated successfully' });
+        await updateLeadStatus(leadId, 'CONTACTED', `[DRY RUN] Simulated ${provider.toUpperCase()} sent to: ${email}. Subject: ${subject}. Body: ${body.substring(0, 100)}...`, timestamp);
+        results.push({ leadId, status: 'CONTACTED', details: `[DRY RUN] Simulated to: ${email}` });
         sentCount++;
       } else {
         try {
-          const msgId = await this.sendWhatsAppMessage(lead, config);
+          if (provider === 'gmail') {
+            const accessToken = await getValidAccessToken();
+            await this.sendGmailMessage(email, subject, body, accessToken);
+          } else if (provider === 'resend') {
+            await this.sendResendMessage(email, subject, body, config);
+          } else if (provider === 'brevo') {
+            await this.sendBrevoMessage(email, subject, body, config);
+          } else {
+            throw new Error(`Unsupported email provider: ${provider}`);
+          }
+          
           const timestamp = new Date().toISOString();
-          await updateLeadStatus(leadId, 'CONTACTED', `Sent WhatsApp msg ID: ${msgId}`, timestamp);
-          results.push({ leadId, status: 'CONTACTED', details: `Sent msg: ${msgId}` });
+          await updateLeadStatus(leadId, 'CONTACTED', `Sent email via ${provider.toUpperCase()} API`, timestamp);
+          results.push({ leadId, status: 'CONTACTED', details: `Emailed successfully to ${email} via ${provider}` });
           sentCount++;
           
-          // Polite Meta API dispatch delay
+          // Polite rate limit delay
           await new Promise(resolve => setTimeout(resolve, 800));
         } catch (err: any) {
-          await updateLeadStatus(leadId, 'ERROR', `Meta Graph API Failure: ${err.message}`);
+          console.error(`${provider.toUpperCase()} outreach failure for ${email}:`, err);
+          await updateLeadStatus(leadId, 'ERROR', `${provider.toUpperCase()} API Failure: ${err.message}`);
           results.push({ leadId, status: 'ERROR', details: err.message });
         }
       }
     }
     
-    await addLog('WhatsApp Outreach', 'SUCCESS', `Finished outreach run. Contacted: ${sentCount}, Total targeted: ${leadIds.length}`);
+    await addLog('Email Outreach', 'SUCCESS', `Finished ${provider.toUpperCase()} outreach campaign. Total successfully sent: ${sentCount}`);
     return results;
   }
 
-  private async sendWhatsAppMessage(lead: any, config: RuntimeConfig): Promise<string> {
-    const url = `https://graph.facebook.com/v19.0/${config.whatsappPhoneNumberId}/messages`;
-    const token = config.whatsappAccessToken;
-    
-    if (!token) throw new Error("Missing WhatsApp Access Token. Set it in Settings.");
-    if (!config.whatsappPhoneNumberId) throw new Error("Missing WhatsApp Phone Number ID.");
-    
-    const payload = {
-      messaging_product: "whatsapp",
-      to: lead.phone_e164,
-      type: "template",
-      template: {
-        name: config.whatsappTemplateName,
-        language: { code: config.whatsappTemplateLanguageCode },
-        components: [
-          {
-            type: "body",
-            parameters: [
-              { type: "text", text: lead.name || "Business Owner" },
-              { type: "text", text: lead.category || "Business" },
-              { type: "text", text: lead.area || "Lagos" },
-              { type: "text", text: lead.business_summary || "" },
-              { type: "text", text: config.businessSignature }
-            ]
-          }
-        ]
-      }
-    };
-    
+  private async sendGmailMessage(to: string, subject: string, body: string, accessToken: string) {
+    const rawMessage = [
+      `To: ${to}`,
+      `Subject: ${subject}`,
+      'Content-Type: text/plain; charset="UTF-8"',
+      'MIME-Version: 1.0',
+      '',
+      body
+    ].join('\r\n');
+
+    // Base64Url encode the raw email payload
+    const encodedMail = Buffer.from(rawMessage)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    const url = 'https://gmail.googleapis.com/gmail/v1/users/me/messages/send';
     const resp = await fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ raw: encodedMail }),
     });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error?.message || resp.statusText);
+    }
+  }
+
+  private async sendResendMessage(to: string, subject: string, body: string, config: any) {
+    if (!config.resendApiKey) {
+      throw new Error('Resend API Key is not configured.');
+    }
+    const from = config.resendFromEmail || 'onboarding@resend.dev';
     
-    const content = await resp.json();
-    if (resp.status === 200 && content.messages && content.messages[0]) {
-      return content.messages[0].id;
-    } else {
-      throw new Error(content.error?.message || JSON.stringify(content));
+    const resp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${config.resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        subject,
+        text: body,
+      }),
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(data.message || resp.statusText);
+    }
+  }
+
+  private async sendBrevoMessage(to: string, subject: string, body: string, config: any) {
+    if (!config.brevoApiKey) {
+      throw new Error('Brevo API Key is not configured.');
+    }
+    const senderName = config.brevoSenderName || 'ApexReach';
+    const senderEmail = config.brevoSenderEmail;
+    if (!senderEmail) {
+      throw new Error('Brevo Sender Email is not configured.');
+    }
+
+    const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': config.brevoApiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { name: senderName, email: senderEmail },
+        to: [{ email: to }],
+        subject,
+        textContent: body,
+      }),
+    });
+
+    if (!resp.ok) {
+      const data = await resp.json();
+      throw new Error(data.message || resp.statusText);
     }
   }
 }
 
 export const outreachService = new OutreachService();
 
-// ============================================================================
-// Next.js Route Orchestration Layer
-// ============================================================================
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { leadIds, dryRunOverride } = body;
+    const { leadIds, dryRunOverride, customMessage, customSubject } = body;
+    const origin = new URL(req.url).origin;
     
     if (!leadIds || !Array.isArray(leadIds) || leadIds.length === 0) {
       return NextResponse.json({ error: "Missing or empty leadIds parameter." }, { status: 400 });
     }
     
-    const results = await outreachService.launchCampaign(leadIds, dryRunOverride);
+    const results = await outreachService.launchCampaign(leadIds, origin, dryRunOverride, customMessage, customSubject);
     return NextResponse.json({ success: true, results });
     
   } catch (e: any) {

@@ -6,19 +6,26 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "setup": "node setup.js",
+    "auto-setup": "node scripts/auto_setup.js",
+    "demo": "npx playwright test tests/e2e/demo_recorder.spec.ts --headed"
   },
   "dependencies": {
+    "@google/genai": "^2.8.0",
     "@supabase/supabase-js": "^2.106.2",
     "canvas-confetti": "^1.9.4",
+    "cheerio": "^1.2.0",
     "googleapis": "^173.0.0",
     "lucide-react": "^1.17.0",
     "next": "16.2.7",
     "playwright": "^1.60.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "twilio": "^4.22.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/react": "^19",

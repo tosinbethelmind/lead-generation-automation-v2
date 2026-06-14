@@ -1,0 +1,166 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
+import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
+
+// ============================================================================
+// Google OAuth Token Refresher
+// ============================================================================
+
+async function getValidAccessToken(): Promise<string> {
+  const config = getRuntimeConfig();
+  const now = Date.now();
+  const bufferMs = 5 * 60 * 1000; // 5 minute buffer
+
+  if (config.googleAccessToken && config.googleTokenExpiry && config.googleTokenExpiry - bufferMs > now) {
+    return config.googleAccessToken;
+  }
+
+  if (!config.googleRefreshToken || !config.googleClientId || !config.googleClientSecret) {
+    throw new Error('Google session expired. Please sign in again in the console.');
+  }
+
+  const resp = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: config.googleClientId,
+      client_secret: config.googleClientSecret,
+      refresh_token: config.googleRefreshToken,
+      grant_type: 'refresh_token',
+    }),
+  });
+
+  const data = await resp.json();
+  if (!resp.ok || !data.access_token) {
+    throw new Error('Google refresh token validation failed. Please sign in again.');
+  }
+
+  saveLocalConfig({
+    googleAccessToken: data.access_token,
+    googleTokenExpiry: Date.now() + (data.expires_in || 3600) * 1000,
+  });
+
+  return data.access_token;
+}
+
+// ============================================================================
+// Send Gmail Message
+// ============================================================================
+
+async function sendGmailNotification(to: string, subject: string, body: string, accessToken: string) {
+  const rawMessage = [
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    'Content-Type: text/plain; charset="UTF-8"',
+    'MIME-Version: 1.0',
+    '',
+    body
+  ].join('\r\n');
+
+  const encodedMail = Buffer.from(rawMessage)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+  const url = 'https://gmail.googleapis.com/gmail/v1/users/me/messages/send';
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ raw: encodedMail }),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json();
+    throw new Error(err.error?.message || resp.statusText);
+  }
+}
+
+// ============================================================================
+// Next.js Route Handler
+// ============================================================================
+
+export async function POST(req: NextRequest) {
+  try {
+    console.log('[DEBUG] POST /api/preview/test-lead handler started execution');
+    const body = await req.json();
+    const { leadId, name, email, phone, date, message } = body;
+
+    if (!leadId || !name || !email) {
+      return NextResponse.json({ error: 'Missing required parameters: leadId, name, or email' }, { status: 400 });
+    }
+
+    // Load lead from CRM Database
+    const repo = getActiveLeadRepository();
+    const lead = await repo.getLeadById(leadId);
+
+    if (!lead) {
+      return NextResponse.json({ error: `Lead with ID ${leadId} not found` }, { status: 404 });
+    }
+
+    const config = getRuntimeConfig();
+    const isDryRun = config.dryRun;
+
+    const emailSubject = `[Demo Alert] New Customer Booking for ${lead.name}`;
+    const emailBody = `Hi ${lead.name} Team,
+
+This is a live demonstration of your website's automated customer booking notification workflow.
+
+A visitor just submitted a new booking request on your site:
+
+--------------------------------------------------
+Customer Details:
+- Name: ${name}
+- Email: ${email}
+- Phone: ${phone || 'Not provided'}
+- Booking Date: ${date || 'Not specified'}
+- Message: ${message || 'No additional message.'}
+--------------------------------------------------
+
+This alert was triggered instantly and sent to your inbox. Claim your website today to activate this workflow live!
+
+Best regards,
+ApexReach Automation Suite`;
+
+    // Log the test trigger event
+    await addLog(
+      'Lead Automation Demo',
+      'INFO',
+      `Test lead submitted by ${name} (${email}) for business "${lead.name}"`
+    );
+
+    if (isDryRun) {
+      return NextResponse.json({
+        success: true,
+        dryRun: true,
+        message: 'Simulation successful! Lead logged in database log and dry-run alerts triggered.',
+      });
+    }
+
+    try {
+      const accessToken = await getValidAccessToken();
+      
+      // Email the person who submitted the form (acting as the business owner or checking the alert)
+      await sendGmailNotification(email, emailSubject, emailBody, accessToken);
+      
+      return NextResponse.json({
+        success: true,
+        dryRun: false,
+        message: `Alert notification email successfully dispatched to ${email}!`,
+      });
+    } catch (authErr: any) {
+      console.warn('OAuth token unavailable or expired during test alert:', authErr.message);
+      return NextResponse.json({
+        success: true,
+        dryRun: true,
+        message: 'Lead simulated successfully (Active Google Identity session not connected for live dispatch).',
+      });
+    }
+
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
+import { chromium } from 'playwright';
 
 // ============================================================================
 // Sandbox Lagos Jiji Listing Generator
@@ -45,7 +46,7 @@ function generateMockJijiLeads(seedUrl: string, limit: number): Partial<Lead>[] 
       status: 'NEW',
       last_contacted_at: '',
       duplicate_of_lead_id: '',
-      business_summary: `Jiji listing vendor for ${list.title} in ${list.area}. Price: ${list.price}. Description: ${list.desc}`,
+      business_summary: `Jiji vendor listing for ${list.title} in ${list.area}. Price: ${list.price}. Description: ${list.desc}`,
       notes: 'Imported via Playwright Jiji Local Sandbox.'
     });
   }
@@ -87,12 +88,182 @@ export async function POST(req: NextRequest) {
     // Live Playwright crawling (requires Chromium and headless browser environment)
     await addLog('Jiji Scraper', 'START', `Launching Playwright browser crawl for: "${url}"`);
     
-    let chromium;
+    let browser;
+    let newLeads: Partial<Lead>[] = [];
     try {
-      chromium = require('playwright').chromium;
-    } catch (e) {
-      // Playwright not compiled or missing drivers on host, trigger sandbox automatic fallback safely
-      await addLog('Jiji Scraper', 'WARN', `Playwright package or drivers missing. Auto-falling back to sandbox listings.`);
+      browser = await chromium.launch({ headless: true });
+      const context = await browser.newContext({
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      });
+      const page = await context.newPage();
+      
+      await page.goto(url, { waitUntil: 'commit', timeout: 30000 });
+      await page.waitForTimeout(5000);
+      
+      // Extract listing items
+      const items = await page.$$eval('.b-list-advert-base', (els: any[]) => {
+        return els.slice(0, 10).map(el => {
+          const titleEl = el.querySelector('.b-advert-title-inner, .qa-advert-list-item-title, .qa-advert-title span');
+          const priceEl = el.querySelector('.b-list-advert__price, .qa-advert-list-item-price, .b-list-advert-base__item-price');
+          const areaEl = el.querySelector('.b-list-advert__region, .qa-advert-list-item-region, .b-list-advert-base__region');
+          const href = el.getAttribute('href') || el.querySelector('a')?.getAttribute('href') || '';
+          
+          // Resolve absolute URL if relative
+          let absoluteUrl = href;
+          if (href && !href.startsWith('http')) {
+            absoluteUrl = 'https://jiji.ng' + (href.startsWith('/') ? '' : '/') + href;
+          }
+          
+          return {
+            title: titleEl ? titleEl.textContent.trim() : '',
+            price: priceEl ? priceEl.textContent.trim() : '',
+            area: areaEl ? areaEl.textContent.trim().split(',')[0] : 'Lagos',
+            url: absoluteUrl
+          };
+        });
+      });
+      
+      const leadLimit = Math.min(limit, items.length);
+      
+      for (let i = 0; i < leadLimit; i++) {
+        const item = items[i];
+        if (!item.url) continue;
+        
+        try {
+          const detailPage = await context.newPage();
+          await detailPage.goto(item.url, { waitUntil: 'commit', timeout: 30000 });
+          await detailPage.waitForTimeout(5000);
+          
+          // Advanced evaluator to extract details from Nuxt State / WhatsApp Links
+          const extracted = await detailPage.evaluate(() => {
+            let phone = '';
+            let sellerName = '';
+
+            // 1. Scan script tags for NUXT state containing phone or wa.me links
+            const scripts = Array.from(document.querySelectorAll('script'));
+            for (const s of scripts) {
+              const content = s.textContent || '';
+              const id = s.id || '';
+              const type = s.getAttribute('type') || '';
+              if (
+                id === '__NUXT_DATA__' ||
+                type === 'application/json' ||
+                content.includes('__NUXT__') ||
+                content.includes('whatsapp_url') ||
+                content.includes('wa.me/') ||
+                content.includes('phone')
+              ) {
+                // Extract from wa.me
+                const waMatch = content.match(/wa\.me\/(\d+)/) || content.match(/wa\.me%2F(\d+)/);
+                if (waMatch && waMatch[1]) {
+                  phone = waMatch[1];
+                  break;
+                }
+                // Extract from "phone":"..."
+                const phoneMatch = content.match(/"phone"\s*:\s*"(\+?\d+)"/);
+                if (phoneMatch && phoneMatch[1]) {
+                  phone = phoneMatch[1];
+                  break;
+                }
+                // Extract from "whatsapp_url":"..."
+                const waUrlMatch = content.match(/"whatsapp_url"\s*:\s*"([^"]+)"/);
+                if (waUrlMatch && waUrlMatch[1]) {
+                  const decoded = decodeURIComponent(waUrlMatch[1]);
+                  const waMatch2 = decoded.match(/wa\.me\/(\d+)/);
+                  if (waMatch2 && waMatch2[1]) {
+                    phone = waMatch2[1];
+                    break;
+                  }
+                }
+              }
+            }
+
+            // 2. Fallback to WhatsApp DOM element link
+            if (!phone) {
+              const waEl = document.querySelector('a[href*="wa.me"], a[href*="whatsapp.com"]');
+              if (waEl) {
+                const href = waEl.getAttribute('href') || '';
+                const match = href.match(/phone=(\d+)|wa\.me\/(\d+)/);
+                if (match) {
+                  phone = match[1] || match[2];
+                }
+              }
+            }
+
+            // 3. Fallback to tel: link
+            if (!phone) {
+              const telEl = document.querySelector('a[href^="tel:"]');
+              if (telEl) {
+                phone = telEl.getAttribute('href')?.replace('tel:', '') || '';
+              }
+            }
+
+            // 4. Seller name extraction
+            const sellerEl = document.querySelector('.b-seller-block__name, .qa-seller-name, [class*="seller-name"]');
+            if (sellerEl) {
+              sellerName = sellerEl.textContent.trim();
+            }
+
+            return { phone, sellerName };
+          });
+
+          let phone = extracted.phone || '';
+          let vendorName = extracted.sellerName || 'Jiji Vendor';
+
+          // 5. Interactive Button Reveal Fallback (only if phone is still empty)
+          if (!phone) {
+            try {
+              const revealButton = await detailPage.$('.qa-show-contact, [class*="phone"], [class*="show-contact"]');
+              if (revealButton) {
+                await revealButton.click({ force: true, timeout: 5000 });
+                await detailPage.waitForTimeout(1000);
+                phone = await detailPage.$eval('[class*="phone-number"], [href^="tel:"], .qa-phone-number', (el: any) => el.textContent.trim()).catch(() => '');
+              }
+            } catch (clickErr) {
+              console.log(`[Jiji Crawler] Interactive reveal click failed: ${clickErr instanceof Error ? clickErr.message : String(clickErr)}`);
+            }
+          }
+
+          const normPhone = phone ? normalizePhone(phone, 'NG') : null;
+          
+          newLeads.push({
+            lead_id: `jiji_${item.url.split('/').pop()?.split('.')[0] || Date.now()}_${i}`,
+            source: 'JIJI',
+            name: vendorName,
+            category: 'Retail Vendor',
+            address: `${item.area}, Lagos, Nigeria`,
+            area: item.area,
+            city: 'Lagos',
+            phone_e164: normPhone || '',
+            phone_raw: phone,
+            email: '',
+            website: '',
+            rating: 4.5,
+            reviews_count: 5,
+            verified: true,
+            listings_count: 3,
+            profile_url: item.url,
+            source_query_or_seed: url,
+            collected_at: new Date().toISOString(),
+            status: 'NEW',
+            last_contacted_at: '',
+            duplicate_of_lead_id: '',
+            business_summary: `Jiji vendor listing: ${item.title}. Price: ${item.price}.`,
+            notes: 'Imported via Playwright Chromium crawler.'
+          });
+          
+          await detailPage.close();
+        } catch (err) {
+          console.error('Failed to parse Jiji listing details for URL:', item.url, err);
+        }
+      }
+      
+      await browser.close();
+    } catch (e: any) {
+      if (browser) {
+        try { await browser.close(); } catch (cbErr) {}
+      }
+      await addLog('Jiji Scraper', 'WARN', `Playwright crawl failed (${e.message}). Falling back to sandbox generator.`);
       const mockLeads = generateMockJijiLeads(url, limit);
       const dbResult = await saveLeads(mockLeads);
       
@@ -105,89 +276,6 @@ export async function POST(req: NextRequest) {
         leads: mockLeads
       });
     }
-    
-    const browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage();
-    
-    // Set custom user agent to bypass simple scraping blockers
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    
-    // Extract listing items
-    const items = await page.$$eval('.b-list-advert-base', (els: any[]) => {
-      return els.slice(0, 10).map(el => {
-        const titleEl = el.querySelector('.qa-advert-title span');
-        const priceEl = el.querySelector('.b-list-advert-base__item-price');
-        const areaEl = el.querySelector('.b-list-advert-base__region');
-        const linkEl = el.querySelector('a');
-        
-        return {
-          title: titleEl ? titleEl.textContent.trim() : '',
-          price: priceEl ? priceEl.textContent.trim() : '',
-          area: areaEl ? areaEl.textContent.trim().split(',')[0] : 'Lagos',
-          url: linkEl ? linkEl.href : ''
-        };
-      });
-    });
-    
-    const newLeads: Partial<Lead>[] = [];
-    const leadLimit = Math.min(limit, items.length);
-    
-    for (let i = 0; i < leadLimit; i++) {
-      const item = items[i];
-      if (!item.url) continue;
-      
-      try {
-        const detailPage = await browser.newPage();
-        await detailPage.goto(item.url, { waitUntil: 'domcontentloaded', timeout: 15000 });
-        
-        // Find and click the contact details reveal button
-        const revealButton = await detailPage.$('.qa-show-contact, [class*="phone"], [class*="show-contact"]');
-        if (revealButton) {
-          await revealButton.click();
-          await detailPage.waitForTimeout(1000);
-        }
-        
-        // Extract exposed phone number and vendor info
-        const phone = await detailPage.$eval('[class*="phone-number"], [href^="tel:"], .qa-phone-number', (el: any) => el.textContent.trim()).catch(() => '');
-        const vendorName = await detailPage.$eval('.b-seller-block__name, .qa-seller-name', (el: any) => el.textContent.trim()).catch(() => 'Jiji Vendor');
-        
-        const normPhone = phone ? normalizePhone(phone, 'NG') : null;
-        
-        newLeads.push({
-          lead_id: `jiji_${item.url.split('/').pop()?.split('.')[0] || Date.now()}_${i}`,
-          source: 'JIJI',
-          name: vendorName,
-          category: 'Retail Vendor',
-          address: `${item.area}, Lagos, Nigeria`,
-          area: item.area,
-          city: 'Lagos',
-          phone_e164: normPhone || '',
-          phone_raw: phone,
-          email: '',
-          website: '',
-          rating: 4.5,
-          reviews_count: 5,
-          verified: true,
-          listings_count: 3,
-          profile_url: item.url,
-          source_query_or_seed: url,
-          collected_at: new Date().toISOString(),
-          status: 'NEW',
-          last_contacted_at: '',
-          duplicate_of_lead_id: '',
-          business_summary: `Jiji vendor listing: ${item.title}. Price: ${item.price}.`,
-          notes: 'Imported via Playwright Chromium crawler.'
-        });
-        
-        await detailPage.close();
-      } catch (err) {
-        console.error('Failed to parse Jiji listing details for URL:', item.url, err);
-      }
-    }
-    
-    await browser.close();
     
     const dbResult = await saveLeads(newLeads);
     await addLog('Jiji Scraper', 'SUCCESS', `Crawl complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
