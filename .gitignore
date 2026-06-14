@@ -48,3 +48,7 @@ next-env.d.ts
 .env.production
 .env.development
 
+# testing & temporary recordings
+/test-results/
+*.wav
+*.mp3
