@@ -52,3 +52,5 @@ next-env.d.ts
 /test-results/
 *.wav
 *.mp3
+
+.vercel

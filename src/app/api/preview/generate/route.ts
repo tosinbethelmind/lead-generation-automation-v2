@@ -50,7 +50,7 @@ async function getValidAccessToken(): Promise<string> {
 // Category → Design Theme Mapper
 // ============================================================================
 
-interface DesignTheme {
+export interface DesignTheme {
   primary: string;
   accent: string;
   bg: string;
@@ -60,7 +60,7 @@ interface DesignTheme {
   gradient: string;
 }
 
-function getDesignTheme(category: string): DesignTheme {
+export function getDesignTheme(category: string): DesignTheme {
   const cat = category.toLowerCase();
 
   if (/dental|medical|clinic|hospital|doctor|health|pharma|wellness/.test(cat)) {
@@ -123,7 +123,7 @@ function getDesignTheme(category: string): DesignTheme {
 // Vertex AI Gemini Copywriter
 // ============================================================================
 
-interface GeneratedCopy {
+export interface GeneratedCopy {
   heroTitle: string;
   heroSubtitle: string;
   services: { title: string; description: string; icon: string }[];
@@ -201,7 +201,7 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
 }
 
 // Deterministic fallback when Gemini is unavailable (no project ID configured yet)
-function buildFallbackCopy(lead: any): GeneratedCopy {
+export function buildFallbackCopy(lead: any): GeneratedCopy {
   return {
     heroTitle: `${lead.name} — Trusted in ${lead.area}`,
     heroSubtitle: `Proudly serving ${lead.city} with excellence and dedication. Rated ${lead.rating} stars by ${lead.reviews_count} happy customers.`,
