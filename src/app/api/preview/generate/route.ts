@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
+import { getPitchDetails } from '@/lib/pitchHelper';
 
 // ============================================================================
 // Google Cloud Vertex AI Token Refresher
 // ============================================================================
 
-async function getValidAccessToken(): Promise<string> {
+export async function getValidAccessToken(): Promise<string> {
   const config = getRuntimeConfig();
   const now = Date.now();
   const bufferMs = 5 * 60 * 1000; // 5 minute buffer before expiry
@@ -219,13 +220,12 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
   };
 }
 
-// ============================================================================
-// Next.js Route Handler
-// ============================================================================
+import fs from 'fs';
+import path from 'path';
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
+    const { searchParams, origin } = new URL(req.url);
     const leadId = searchParams.get('leadId');
 
     if (!leadId) {
@@ -241,7 +241,7 @@ export async function GET(req: NextRequest) {
     }
 
     const config = getRuntimeConfig();
-    const theme = getDesignTheme(lead.category);
+    let theme = getDesignTheme(lead.category);
 
     // Attempt Vertex AI generation if project ID is set
     let copy: GeneratedCopy;
@@ -258,10 +258,31 @@ export async function GET(req: NextRequest) {
       copy = buildFallbackCopy(lead);
     }
 
+    // Merge overrides
+    const overridesPath = path.join(process.cwd(), 'src', 'data', 'overrides', `${leadId}.json`);
+    let overrides: any = {};
+    if (fs.existsSync(overridesPath)) {
+      try {
+        overrides = JSON.parse(fs.readFileSync(overridesPath, 'utf8'));
+        if (overrides.theme) {
+          theme = { ...theme, ...overrides.theme };
+        }
+        if (overrides.copy) {
+          copy = { ...copy, ...overrides.copy };
+        }
+      } catch (err) {
+        console.warn('Failed to merge overrides in generator:', err);
+      }
+    }
+
+    const pitch = getPitchDetails(lead, origin, config.businessSignature || 'ApexReach');
+
     return NextResponse.json({
       lead,
       theme,
       copy,
+      pitch,
+      overrides,
       generatedAt: new Date().toISOString(),
     });
   } catch (err: any) {

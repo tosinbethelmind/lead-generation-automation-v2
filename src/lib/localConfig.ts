@@ -38,6 +38,16 @@ export interface LocalConfig {
   linkedinMessageTemplate?: string;
   // Optional URL to a TwiML document; if not provided we generate inline TwiML via API.
   twilioTwimlUrl?: string;
+
+  // ── SMS Outreach Configuration ──────────────────────────
+  smsProvider?: 'twilio' | 'termii' | 'africastalking' | 'gateway';
+  smsMessageTemplate?: string;
+  smsGatewayUrl?: string;
+  termiiApiKey?: string;
+  termiiSenderId?: string;
+  africastalkingUsername?: string;
+  africastalkingApiKey?: string;
+  africastalkingSenderId?: string;
   
   // ── Alternative Outreach Channels ───────────────────────
   emailProvider?: 'gmail' | 'resend' | 'brevo';
@@ -64,6 +74,7 @@ export interface LocalConfig {
   supabaseUrl?: string;
   supabaseKey?: string;
   geminiApiKey?: string;
+  n8nWebhookUrl?: string;
 }
 
 export interface RuntimeConfig extends LocalConfig {
@@ -115,6 +126,16 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   evolutionInstanceName: '',
   whapiToken: '',
 
+  // SMS Outreach Defaults
+  smsProvider: 'gateway',
+  smsMessageTemplate: '',
+  smsGatewayUrl: '',
+  termiiApiKey: '',
+  termiiSenderId: '',
+  africastalkingUsername: '',
+  africastalkingApiKey: '',
+  africastalkingSenderId: '',
+
   // Legacy
   apifyToken: '',
   apifyDatasetId: '',
@@ -127,6 +148,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   supabaseUrl: '',
   supabaseKey: '',
   geminiApiKey: '',
+  n8nWebhookUrl: '',
   storageMode: 'hybrid',
 };
 
@@ -174,6 +196,16 @@ export function getRuntimeConfig(): RuntimeConfig {
     evolutionInstanceName: process.env.EVOLUTION_INSTANCE_NAME || fileConfig.evolutionInstanceName || DEFAULT_CONFIG.evolutionInstanceName,
     whapiToken: process.env.WHAPI_TOKEN || fileConfig.whapiToken || DEFAULT_CONFIG.whapiToken,
 
+    // SMS Outreach Configuration
+    smsProvider: (process.env.SMS_PROVIDER as any) || fileConfig.smsProvider || DEFAULT_CONFIG.smsProvider,
+    smsMessageTemplate: process.env.SMS_MESSAGE_TEMPLATE || fileConfig.smsMessageTemplate || DEFAULT_CONFIG.smsMessageTemplate,
+    smsGatewayUrl: process.env.SMS_GATEWAY_URL || fileConfig.smsGatewayUrl || DEFAULT_CONFIG.smsGatewayUrl,
+    termiiApiKey: process.env.TERMII_API_KEY || fileConfig.termiiApiKey || DEFAULT_CONFIG.termiiApiKey,
+    termiiSenderId: process.env.TERMII_SENDER_ID || fileConfig.termiiSenderId || DEFAULT_CONFIG.termiiSenderId,
+    africastalkingUsername: process.env.AFRICASTALKING_USERNAME || fileConfig.africastalkingUsername || DEFAULT_CONFIG.africastalkingUsername,
+    africastalkingApiKey: process.env.AFRICASTALKING_API_KEY || fileConfig.africastalkingApiKey || DEFAULT_CONFIG.africastalkingApiKey,
+    africastalkingSenderId: process.env.AFRICASTALKING_SENDER_ID || fileConfig.africastalkingSenderId || DEFAULT_CONFIG.africastalkingSenderId,
+
     // Legacy
     apifyToken: process.env.APIFY_TOKEN || fileConfig.apifyToken || DEFAULT_CONFIG.apifyToken,
     apifyDatasetId: process.env.APIFY_DATASET_ID || fileConfig.apifyDatasetId || DEFAULT_CONFIG.apifyDatasetId,
@@ -201,6 +233,7 @@ export function getRuntimeConfig(): RuntimeConfig {
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || fileConfig.supabaseUrl || DEFAULT_CONFIG.supabaseUrl,
     supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || fileConfig.supabaseKey || DEFAULT_CONFIG.supabaseKey,
     geminiApiKey: process.env.GEMINI_API_KEY || fileConfig.geminiApiKey || DEFAULT_CONFIG.geminiApiKey,
+    n8nWebhookUrl: process.env.N8N_WEBHOOK_URL || fileConfig.n8nWebhookUrl || DEFAULT_CONFIG.n8nWebhookUrl,
     storageMode: (process.env.STORAGE_MODE as StorageMode) || fileConfig.storageMode || DEFAULT_CONFIG.storageMode,
   };
 
@@ -247,6 +280,16 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       evolutionInstanceName: updated.evolutionInstanceName,
       whapiToken: updated.whapiToken,
 
+      // SMS Outreach Configuration
+      smsProvider: updated.smsProvider,
+      smsMessageTemplate: updated.smsMessageTemplate,
+      smsGatewayUrl: updated.smsGatewayUrl,
+      termiiApiKey: updated.termiiApiKey,
+      termiiSenderId: updated.termiiSenderId,
+      africastalkingUsername: updated.africastalkingUsername,
+      africastalkingApiKey: updated.africastalkingApiKey,
+      africastalkingSenderId: updated.africastalkingSenderId,
+
       // Legacy
       apifyToken: updated.apifyToken,
       apifyDatasetId: updated.apifyDatasetId,
@@ -266,6 +309,7 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       supabaseUrl: updated.supabaseUrl,
       supabaseKey: updated.supabaseKey,
       geminiApiKey: updated.geminiApiKey,
+      n8nWebhookUrl: updated.n8nWebhookUrl,
       storageMode: updated.storageMode,
     };
     

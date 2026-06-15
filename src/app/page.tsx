@@ -21,7 +21,13 @@ import {
   UserCheck,
   LogOut,
   Mail,
-  Eye
+  Eye,
+  Palette,
+  Sliders,
+  Terminal,
+  Share2,
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { RuntimeConfig } from '@/lib/localConfig';
@@ -74,7 +80,15 @@ export default function Home() {
     instagramMessageTemplate: '',
     facebookMessageTemplate: '',
     tiktokMessageTemplate: '',
-    linkedinMessageTemplate: ''
+    linkedinMessageTemplate: '',
+    smsProvider: 'gateway',
+    smsMessageTemplate: '',
+    smsGatewayUrl: '',
+    termiiApiKey: '',
+    termiiSenderId: '',
+    africastalkingUsername: '',
+    africastalkingApiKey: '',
+    africastalkingSenderId: ''
   });
   
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -130,12 +144,265 @@ export default function Home() {
   // Video Demo states
   const [videoPlaying, setVideoPlaying] = useState(false);
 
+  // CRM preview sidebar tabs
+  const [crmPreviewTab, setCrmPreviewTab] = useState<'outreach' | 'customizer' | 'tasks' | 'handover'>('outreach');
+
+  // Customizer visual overrides states
+  const [overridePrimary, setOverridePrimary] = useState('');
+  const [overrideAccent, setOverrideAccent] = useState('');
+  const [overrideBg, setOverrideBg] = useState('');
+  const [overrideText, setOverrideText] = useState('');
+  const [overrideFont, setOverrideFont] = useState('');
+  const [overrideHeroTitle, setOverrideHeroTitle] = useState('');
+  const [overrideHeroSubtitle, setOverrideHeroSubtitle] = useState('');
+  const [overrideCtaText, setOverrideCtaText] = useState('');
+  const [overrideAboutText, setOverrideAboutText] = useState('');
+  const [overrideShowServices, setOverrideShowServices] = useState(true);
+  const [overrideShowTestimonials, setOverrideShowTestimonials] = useState(true);
+  const [overrideShowEstimator, setOverrideShowEstimator] = useState(true);
+  const [overrideShowAbout, setOverrideShowAbout] = useState(true);
+  
+  // AI Redesign states
+  const [aiRedesignPrompt, setAiRedesignPrompt] = useState('');
+  const [aiRedesignLoading, setAiRedesignLoading] = useState(false);
+
+  // Antigravity tasks states
+  const [taskQueuePrompt, setTaskQueuePrompt] = useState('');
+  const [taskQueuePriority, setTaskQueuePriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [taskQueueLoading, setTaskQueueLoading] = useState(false);
+
+  // Turnout state
+  const [turnoutMode, setTurnoutMode] = useState<'dynamic' | 'n8n' | 'git'>('dynamic');
+
   useEffect(() => {
     fetchConfig();
     fetchStats();
     fetchLeads();
     fetchLogs();
   }, []);
+
+  // Fetch overrides and turnout settings on Lead select
+  useEffect(() => {
+    if (!previewLead) return;
+
+    // Reset customization inputs first to prevent bleed from previous lead
+    setOverridePrimary('');
+    setOverrideAccent('');
+    setOverrideBg('');
+    setOverrideText('');
+    setOverrideFont('');
+    setOverrideHeroTitle('');
+    setOverrideHeroSubtitle('');
+    setOverrideCtaText('');
+    setOverrideAboutText('');
+    setOverrideShowServices(true);
+    setOverrideShowTestimonials(true);
+    setOverrideShowEstimator(true);
+    setOverrideShowAbout(true);
+    
+    // Parse turnout mode from lead's notes using scalingHelper syntax
+    let mode: 'dynamic' | 'n8n' | 'git' = 'dynamic';
+    if (previewLead.notes) {
+      if (previewLead.notes.includes('[scaling: n8n]')) {
+        mode = 'n8n';
+      } else if (previewLead.notes.includes('[scaling: git]')) {
+        mode = 'git';
+      }
+    }
+    setTurnoutMode(mode);
+
+    // Fetch existing overrides
+    fetch(`/api/preview/override?leadId=${encodeURIComponent(previewLead.lead_id)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && !data.error) {
+          if (data.theme) {
+            setOverridePrimary(data.theme.primary || '');
+            setOverrideAccent(data.theme.accent || '');
+            setOverrideBg(data.theme.bg || '');
+            setOverrideText(data.theme.text || '');
+            setOverrideFont(data.theme.font || '');
+          }
+          if (data.copy) {
+            setOverrideHeroTitle(data.copy.heroTitle || '');
+            setOverrideHeroSubtitle(data.copy.heroSubtitle || '');
+            setOverrideCtaText(data.copy.ctaText || '');
+            setOverrideAboutText(data.copy.aboutText || '');
+          }
+          if (data.visibility) {
+            setOverrideShowServices(data.visibility.showServices !== false);
+            setOverrideShowTestimonials(data.visibility.showTestimonials !== false);
+            setOverrideShowEstimator(data.visibility.showEstimator !== false);
+            setOverrideShowAbout(data.visibility.showAbout !== false);
+          }
+        }
+      })
+      .catch(err => console.error('Error fetching overrides:', err));
+  }, [previewLead]);
+
+  const saveOverrides = async () => {
+    if (!previewLead) return;
+    try {
+      setStatusMessage('Saving custom website overrides...');
+      const response = await fetch('/api/preview/override', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: previewLead.lead_id,
+          overrides: {
+            theme: {
+              primary: overridePrimary,
+              accent: overrideAccent,
+              bg: overrideBg,
+              text: overrideText,
+              font: overrideFont,
+            },
+            copy: {
+              heroTitle: overrideHeroTitle,
+              heroSubtitle: overrideHeroSubtitle,
+              ctaText: overrideCtaText,
+              aboutText: overrideAboutText,
+            },
+            visibility: {
+              showServices: overrideShowServices,
+              showTestimonials: overrideShowTestimonials,
+              showEstimator: overrideShowEstimator,
+              showAbout: overrideShowAbout,
+            }
+          }
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setStatusMessage('Website overrides saved successfully!');
+        confetti({ particleCount: 30, spread: 50 });
+      } else {
+        setStatusMessage(`Error: ${data.error || 'Failed to save'}`);
+      }
+    } catch (e: any) {
+      setStatusMessage(`Error: ${e.message}`);
+    }
+  };
+
+  const handleAiRedesign = async () => {
+    if (!previewLead || !aiRedesignPrompt) return;
+    try {
+      setAiRedesignLoading(true);
+      setStatusMessage('Calling Gemini Vertex AI to compile redesign...');
+      const response = await fetch('/api/preview/ai-redesign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: previewLead.lead_id,
+          prompt: aiRedesignPrompt
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setStatusMessage('AI redesign completed! Reloading overrides...');
+        setAiRedesignPrompt('');
+        
+        // Reload overrides
+        const res = await fetch(`/api/preview/override?leadId=${encodeURIComponent(previewLead.lead_id)}`);
+        const ov = await res.json();
+        if (ov && !ov.error) {
+          if (ov.theme) {
+            setOverridePrimary(ov.theme.primary || '');
+            setOverrideAccent(ov.theme.accent || '');
+            setOverrideBg(ov.theme.bg || '');
+            setOverrideText(ov.theme.text || '');
+            setOverrideFont(ov.theme.font || '');
+          }
+          if (ov.copy) {
+            setOverrideHeroTitle(ov.copy.heroTitle || '');
+            setOverrideHeroSubtitle(ov.copy.heroSubtitle || '');
+            setOverrideCtaText(ov.copy.ctaText || '');
+            setOverrideAboutText(ov.copy.aboutText || '');
+          }
+          if (ov.visibility) {
+            setOverrideShowServices(ov.visibility.showServices !== false);
+            setOverrideShowTestimonials(ov.visibility.showTestimonials !== false);
+            setOverrideShowEstimator(ov.visibility.showEstimator !== false);
+            setOverrideShowAbout(ov.visibility.showAbout !== false);
+          }
+        }
+        confetti({ particleCount: 40, spread: 60 });
+      } else {
+        setStatusMessage(`AI Error: ${data.error || 'Failed to execute redesign'}`);
+      }
+    } catch (e: any) {
+      setStatusMessage(`Error: ${e.message}`);
+    } finally {
+      setAiRedesignLoading(false);
+    }
+  };
+
+  const queueTask = async () => {
+    if (!previewLead || !taskQueuePrompt) return;
+    try {
+      setTaskQueueLoading(true);
+      setStatusMessage('Logging autonomous coding task to Antigravity queue...');
+      const response = await fetch('/api/preview/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: previewLead.lead_id,
+          task: taskQueuePrompt,
+          priority: taskQueuePriority
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setStatusMessage('Task successfully queued for Antigravity autonomous developer!');
+        setTaskQueuePrompt('');
+        confetti({ particleCount: 30, spread: 40 });
+      } else {
+        setStatusMessage(`Error: ${data.error || 'Failed to queue task'}`);
+      }
+    } catch (e: any) {
+      setStatusMessage(`Error: ${e.message}`);
+    } finally {
+      setTaskQueueLoading(false);
+    }
+  };
+
+  const updateTurnoutMode = async (mode: 'dynamic' | 'n8n' | 'git') => {
+    if (!previewLead) return;
+    try {
+      setStatusMessage('Updating turnout mode configuration...');
+      setTurnoutMode(mode);
+      
+      let newNotes = previewLead.notes || '';
+      const scalingRegex = /\[scaling:\s*[^\]]+\]/;
+      if (scalingRegex.test(newNotes)) {
+        newNotes = newNotes.replace(scalingRegex, `[scaling: ${mode}]`);
+      } else {
+        newNotes = newNotes ? `${newNotes} [scaling: ${mode}]` : `[scaling: ${mode}]`;
+      }
+
+      const response = await fetch('/api/leads', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lead_id: previewLead.lead_id,
+          notes: newNotes
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setStatusMessage(`Turnout mode updated to ${mode.toUpperCase()}!`);
+        setPreviewLead({
+          ...previewLead,
+          notes: newNotes
+        });
+        fetchLeads();
+      } else {
+        setStatusMessage('Failed to update turnout mode.');
+      }
+    } catch (e: any) {
+      setStatusMessage(`Error: ${e.message}`);
+    }
+  };
 
   const fetchConfig = async () => {
     try {
@@ -306,6 +573,9 @@ export default function Home() {
     if (channel === 'whatsapp') {
       endpoint = '/api/whatsapp';
       channelName = 'WhatsApp';
+    } else if (channel === 'sms') {
+      endpoint = '/api/sms';
+      channelName = 'SMS';
     } else if (channel === 'coldcall') {
       endpoint = '/api/calls';
       channelName = 'Twilio Cold Call';
@@ -376,6 +646,20 @@ export default function Home() {
         isDisabled = !config.evolutionApiUrl || !config.evolutionApiKey || !config.evolutionInstanceName;
       } else if (whatsappProvider === 'whapi') {
         isDisabled = !config.whapiToken;
+      }
+    } else if (channel === 'sms') {
+      const smsProvider = config.smsProvider || 'gateway';
+      label = `Send SMS Outreach (${smsProvider.toUpperCase()})`;
+      icon = <Send size={14} />;
+      
+      if (smsProvider === 'gateway') {
+        isDisabled = !config.smsGatewayUrl;
+      } else if (smsProvider === 'termii') {
+        isDisabled = !config.termiiApiKey;
+      } else if (smsProvider === 'africastalking') {
+        isDisabled = !config.africastalkingUsername || !config.africastalkingApiKey;
+      } else if (smsProvider === 'twilio') {
+        isDisabled = !config.twilioAccountSid || !config.twilioAuthToken || !config.twilioFromNumber;
       }
     } else if (channel === 'coldcall') {
       label = 'Trigger Twilio Calls';
@@ -477,6 +761,18 @@ export default function Home() {
     if (!lead) return 'Select a lead to see custom outreach message variables';
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://apexreach.net';
     
+    if (config.outreachChannel === 'sms') {
+      const smsTemplate = config.smsMessageTemplate || 
+        "Hello {{lead.name}}, please review the custom landing page designed for your business: {{previewUrl}} - {{signature}}";
+      let msg = smsTemplate;
+      msg = msg.replace(/\{\{lead\.name\}\}/g, lead.name || 'Vendor');
+      msg = msg.replace(/\{\{lead\.rating\}\}/g, String(lead.rating || '4.0'));
+      msg = msg.replace(/\{\{lead\.reviews_count\}\}/g, String(lead.reviews_count || '0'));
+      msg = msg.replace(/\{\{previewUrl\}\}/g, `${origin}/preview/${lead.lead_id}`);
+      msg = msg.replace(/\{\{signature\}\}/g, config.businessSignature || 'ApexReach');
+      return msg;
+    }
+
     if (config.outreachChannel === 'jiji') {
       const jijiTemplate = config.jijiMessageTemplate || 
         "Hello {{lead.name}},\n\nI noticed your listing on Jiji with an impressive {{lead.rating}}★ rating! Since you don't currently have a website, I built a personalized landing page preview for you to check out: {{previewUrl}}\n\nLet me know if you would like to go live with this!\n\nBest regards,\n{{signature}}";
@@ -639,7 +935,7 @@ ${config.businessSignature}`;
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: config.dryRun ? 'var(--warning)' : 'var(--primary)' }}></span>
-            Campaigns: {config.dryRun ? 'Dry Run Sim' : config.outreachChannel === 'whatsapp' ? `WhatsApp (${config.whatsappProvider})` : config.outreachChannel === 'coldcall' ? 'Twilio Call' : `Email (${config.emailProvider})`}
+            Campaigns: {config.dryRun ? 'Dry Run Sim' : config.outreachChannel === 'whatsapp' ? `WhatsApp (${config.whatsappProvider})` : config.outreachChannel === 'sms' ? `SMS (${config.smsProvider})` : config.outreachChannel === 'coldcall' ? 'Twilio Call' : `Email (${config.emailProvider})`}
           </div>
         </div>
       </aside>
@@ -787,6 +1083,8 @@ ${config.businessSignature}`;
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                   {config.outreachChannel === 'whatsapp' 
                     ? `Send personalized WhatsApp messages using your configured ${config.whatsappProvider?.toUpperCase() || 'Meta Cloud'} provider.` 
+                    : config.outreachChannel === 'sms'
+                    ? `Send bulk text messages (SMS) using your configured ${config.smsProvider?.toUpperCase() || 'Android Gateway'} provider.`
                     : config.outreachChannel === 'coldcall' 
                     ? 'Trigger automated Twilio cold-calls with interactive voice text-to-speech to prospective leads.' 
                     : `Send personalized email proposals using your configured ${config.emailProvider?.toUpperCase() || 'Gmail'} provider.`
@@ -817,6 +1115,14 @@ ${config.businessSignature}`;
                       <span>WhatsApp Provider:</span>
                       <span style={{ color: 'var(--text-primary)', fontWeight: 600, textTransform: 'uppercase' }}>
                         {config.whatsappProvider || 'cloud'}
+                      </span>
+                    </div>
+                  )}
+                  {config.outreachChannel === 'sms' && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                      <span>SMS Provider:</span>
+                      <span style={{ color: 'var(--text-primary)', fontWeight: 600, textTransform: 'uppercase' }}>
+                        {config.smsProvider || 'gateway'}
                       </span>
                     </div>
                   )}
@@ -992,92 +1298,498 @@ ${config.businessSignature}`;
 
               {/* Template Preview Panel */}
               <section className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h3 style={{ fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '10px' }}>
-                  <UserCheck size={18} color="var(--primary)" /> Proposal Outreach Preview & Override
+                <h3 style={{ fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '10px', margin: 0 }}>
+                  <UserCheck size={18} color="var(--primary)" /> Client Site Customizer & Outreach
                 </h3>
 
                 {previewLead ? (
                   <>
-                    <div style={{ fontSize: '0.85rem' }}>
-                      <div style={{ marginBottom: '6px' }}><strong style={{ color: 'var(--text-secondary)' }}>Send To:</strong> {previewLead.email || previewLead.phone_raw || previewLead.profile_url || 'N/A'}</div>
-                      <div style={{ marginBottom: '6px' }}><strong style={{ color: 'var(--text-secondary)' }}>Business:</strong> {previewLead.name}</div>
-                      <div style={{ marginBottom: '6px' }}><strong style={{ color: 'var(--text-secondary)' }}>Rating:</strong> {previewLead.rating} Stars</div>
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '4px 0', padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <input 
-                        type="checkbox" 
-                        id="useCustomMessage" 
-                        checked={useCustomMessage} 
-                        onChange={(e) => {
-                          setUseCustomMessage(e.target.checked);
-                          if (e.target.checked && !customMessageText) {
-                            setCustomMessageText(renderTemplatePreview(previewLead));
-                            const channel = config.outreachChannel || 'gmail';
-                            if (['gmail', 'email'].includes(channel)) {
-                              setCustomSubjectText(`Custom Web Design Proposal for ${previewLead.name}`);
-                            }
-                          }
+                    {/* Tab Navigation */}
+                    <div style={{ display: 'flex', background: 'rgba(0,0,0,0.2)', padding: '4px', borderRadius: '8px', gap: '4px' }}>
+                      <button 
+                        type="button"
+                        onClick={() => setCrmPreviewTab('outreach')}
+                        style={{ 
+                          flex: 1, 
+                          padding: '8px 4px', 
+                          background: crmPreviewTab === 'outreach' ? 'rgba(6, 182, 212, 0.15)' : 'transparent', 
+                          border: 'none', 
+                          borderRadius: '6px',
+                          color: crmPreviewTab === 'outreach' ? '#fff' : 'var(--text-secondary)', 
+                          fontWeight: 600, 
+                          cursor: 'pointer', 
+                          fontSize: '0.75rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px'
                         }}
-                        style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--primary)' }}
-                      />
-                      <label htmlFor="useCustomMessage" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary)', cursor: 'pointer', userSelect: 'none' }}>
-                        Send a custom message override instead of template
-                      </label>
+                      >
+                        <Mail size={12} /> Outreach
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => setCrmPreviewTab('customizer')}
+                        style={{ 
+                          flex: 1, 
+                          padding: '8px 4px', 
+                          background: crmPreviewTab === 'customizer' ? 'rgba(6, 182, 212, 0.15)' : 'transparent', 
+                          border: 'none', 
+                          borderRadius: '6px',
+                          color: crmPreviewTab === 'customizer' ? '#fff' : 'var(--text-secondary)', 
+                          fontWeight: 600, 
+                          cursor: 'pointer', 
+                          fontSize: '0.75rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        <Palette size={12} /> Customizer
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => setCrmPreviewTab('tasks')}
+                        style={{ 
+                          flex: 1, 
+                          padding: '8px 4px', 
+                          background: crmPreviewTab === 'tasks' ? 'rgba(6, 182, 212, 0.15)' : 'transparent', 
+                          border: 'none', 
+                          borderRadius: '6px',
+                          color: crmPreviewTab === 'tasks' ? '#fff' : 'var(--text-secondary)', 
+                          fontWeight: 600, 
+                          cursor: 'pointer', 
+                          fontSize: '0.75rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        <Terminal size={12} /> Tasks
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => setCrmPreviewTab('handover')}
+                        style={{ 
+                          flex: 1, 
+                          padding: '8px 4px', 
+                          background: crmPreviewTab === 'handover' ? 'rgba(6, 182, 212, 0.15)' : 'transparent', 
+                          border: 'none', 
+                          borderRadius: '6px',
+                          color: crmPreviewTab === 'handover' ? '#fff' : 'var(--text-secondary)', 
+                          fontWeight: 600, 
+                          cursor: 'pointer', 
+                          fontSize: '0.75rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        <Share2 size={12} /> Handover
+                      </button>
                     </div>
 
-                    {useCustomMessage ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {(config.outreachChannel === 'gmail' || !config.outreachChannel) && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Custom Subject Line</label>
-                            <input 
-                              type="text" 
-                              value={customSubjectText} 
-                              onChange={(e) => setCustomSubjectText(e.target.value)} 
-                              placeholder="e.g. Unique proposal for {{lead.name}}"
-                              style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
-                            />
+                    {/* TAB CONTENT: OUTREACH */}
+                    {crmPreviewTab === 'outreach' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ fontSize: '0.85rem' }}>
+                          <div style={{ marginBottom: '6px' }}><strong style={{ color: 'var(--text-secondary)' }}>Send To:</strong> {previewLead.email || previewLead.phone_raw || previewLead.profile_url || 'N/A'}</div>
+                          <div style={{ marginBottom: '6px' }}><strong style={{ color: 'var(--text-secondary)' }}>Business:</strong> {previewLead.name}</div>
+                          <div style={{ marginBottom: '6px' }}><strong style={{ color: 'var(--text-secondary)' }}>Rating:</strong> {previewLead.rating} Stars</div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '4px 0', padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <input 
+                            type="checkbox" 
+                            id="useCustomMessage" 
+                            checked={useCustomMessage} 
+                            onChange={(e) => {
+                              setUseCustomMessage(e.target.checked);
+                              if (e.target.checked && !customMessageText) {
+                                setCustomMessageText(renderTemplatePreview(previewLead));
+                                const channel = config.outreachChannel || 'gmail';
+                                if (['gmail', 'email'].includes(channel)) {
+                                  setCustomSubjectText(`Custom Web Design Proposal for ${previewLead.name}`);
+                                }
+                              }
+                            }}
+                            style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--primary)' }}
+                          />
+                          <label htmlFor="useCustomMessage" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary)', cursor: 'pointer', userSelect: 'none' }}>
+                            Send a custom message override instead of template
+                          </label>
+                        </div>
+
+                        {useCustomMessage ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            {(config.outreachChannel === 'gmail' || !config.outreachChannel) && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Custom Subject Line</label>
+                                <input 
+                                  type="text" 
+                                  value={customSubjectText} 
+                                  onChange={(e) => setCustomSubjectText(e.target.value)} 
+                                  placeholder="e.g. Unique proposal for {{lead.name}}"
+                                  style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
+                                />
+                              </div>
+                            )}
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Custom Message Body</label>
+                              <textarea 
+                                rows={8}
+                                value={customMessageText} 
+                                onChange={(e) => setCustomMessageText(e.target.value)} 
+                                placeholder="Type your custom outreach message here..."
+                                style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', resize: 'vertical' }}
+                              />
+                            </div>
+
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
+                              <span>Click tags to insert:</span>
+                              <button type="button" style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '3px 6px', borderRadius: '4px', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.7rem' }} onClick={() => setCustomMessageText(prev => prev + ' {{lead.name}}')}>{"{{lead.name}}"}</button>
+                              <button type="button" style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '3px 6px', borderRadius: '4px', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.7rem' }} onClick={() => setCustomMessageText(prev => prev + ' {{previewUrl}}')}>{"{{previewUrl}}"}</button>
+                              <button type="button" style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '3px 6px', borderRadius: '4px', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.7rem' }} onClick={() => setCustomMessageText(prev => prev + ' {{lead.rating}}')}>{"{{lead.rating}}"}</button>
+                              <button type="button" style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '3px 6px', borderRadius: '4px', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.7rem' }} onClick={() => setCustomMessageText(prev => prev + ' {{signature}}')}>{"{{signature}}"}</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', padding: '14px', fontSize: '0.8rem', whiteSpace: 'pre-wrap', fontFamily: 'monospace', color: 'var(--text-secondary)', lineHeight: '1.5', minHeight: '220px' }}>
+                            {renderTemplatePreview(previewLead)}
                           </div>
                         )}
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Custom Message Body</label>
-                          <textarea 
-                            rows={8}
-                            value={customMessageText} 
-                            onChange={(e) => setCustomMessageText(e.target.value)} 
-                            placeholder="Type your custom outreach message here..."
-                            style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', resize: 'vertical' }}
-                          />
+                        
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Info size={12} />
+                          {(!config.outreachChannel || config.outreachChannel === 'gmail') && "Make sure the business has an email saved in Google Sheets before clicking Outreach Send."}
+                          {config.outreachChannel === 'whatsapp' && "Make sure the business has a valid phone number before clicking Outreach Send."}
+                          {config.outreachChannel === 'sms' && "Make sure the business has a valid phone number before clicking Outreach Send."}
+                          {config.outreachChannel === 'coldcall' && "Twilio will call the business phone number using synthetic AI voice speech."}
+                          {config.outreachChannel === 'jiji' && "Jiji automated dispatcher will open the Jiji profile link and submit the chat."}
+                          {['instagram', 'facebook', 'tiktok', 'linkedin'].includes(config.outreachChannel || '') && "Social outreach will flag lead status contacted and redirect you to the direct chat page."}
                         </div>
-
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
-                          <span>Click tags to insert:</span>
-                          <button type="button" style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '3px 6px', borderRadius: '4px', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.7rem' }} onClick={() => setCustomMessageText(prev => prev + ' {{lead.name}}')}>{"{{lead.name}}"}</button>
-                          <button type="button" style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '3px 6px', borderRadius: '4px', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.7rem' }} onClick={() => setCustomMessageText(prev => prev + ' {{previewUrl}}')}>{"{{previewUrl}}"}</button>
-                          <button type="button" style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '3px 6px', borderRadius: '4px', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.7rem' }} onClick={() => setCustomMessageText(prev => prev + ' {{lead.rating}}')}>{"{{lead.rating}}"}</button>
-                          <button type="button" style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '3px 6px', borderRadius: '4px', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.7rem' }} onClick={() => setCustomMessageText(prev => prev + ' {{signature}}')}>{"{{signature}}"}</button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', padding: '14px', fontSize: '0.8rem', whiteSpace: 'pre-wrap', fontFamily: 'monospace', color: 'var(--text-secondary)', lineHeight: '1.5', minHeight: '220px' }}>
-                        {renderTemplatePreview(previewLead)}
                       </div>
                     )}
-                    
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Info size={12} />
-                      {(!config.outreachChannel || config.outreachChannel === 'gmail') && "Make sure the business has an email saved in Google Sheets before clicking Outreach Send."}
-                      {config.outreachChannel === 'whatsapp' && "Make sure the business has a valid phone number before clicking Outreach Send."}
-                      {config.outreachChannel === 'coldcall' && "Twilio will call the business phone number using synthetic AI voice speech."}
-                      {config.outreachChannel === 'jiji' && "Jiji automated dispatcher will open the Jiji profile link and submit the chat."}
-                      {['instagram', 'facebook', 'tiktok', 'linkedin'].includes(config.outreachChannel || '') && "Social outreach will flag lead status contacted and redirect you to the direct chat page."}
-                    </div>
+
+                    {/* TAB CONTENT: CUSTOMIZER */}
+                    {crmPreviewTab === 'customizer' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {/* Gemini AI Redesign Prompt */}
+                        <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '16px' }}>
+                          <h4 style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', margin: 0 }}>
+                            <Sparkles size={14} /> AI Web Redesign Prompt (Gemini Vertex)
+                          </h4>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                            <input 
+                              type="text" 
+                              value={aiRedesignPrompt} 
+                              onChange={(e) => setAiRedesignPrompt(e.target.value)} 
+                              placeholder="e.g. elegant dark theme with gold accents"
+                              style={{ flex: 1, padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
+                            />
+                            <button 
+                              type="button" 
+                              onClick={handleAiRedesign}
+                              disabled={aiRedesignLoading || !aiRedesignPrompt}
+                              className="btn-primary"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', padding: '10px 14px' }}
+                            >
+                              {aiRedesignLoading ? <Loader2 className="spin-anim" size={14} /> : <Sparkles size={14} />} Redesign
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Manual Customization Fields */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                          <h4 style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600, margin: 0 }}>
+                            Manual Styles & Content Overrides
+                          </h4>
+
+                          {/* Theme Colors Grid */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                            <div>
+                              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Primary Color</label>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <input 
+                                  type="color" 
+                                  value={overridePrimary || '#1e3a8a'} 
+                                  onChange={(e) => setOverridePrimary(e.target.value)} 
+                                  style={{ width: '32px', height: '32px', border: 'none', borderRadius: '4px', background: 'none', cursor: 'pointer' }}
+                                />
+                                <input 
+                                  type="text" 
+                                  value={overridePrimary} 
+                                  onChange={(e) => setOverridePrimary(e.target.value)} 
+                                  placeholder="#1e3a8a"
+                                  style={{ flex: 1, padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', width: '0' }}
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Accent Color</label>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <input 
+                                  type="color" 
+                                  value={overrideAccent || '#60a5fa'} 
+                                  onChange={(e) => setOverrideAccent(e.target.value)} 
+                                  style={{ width: '32px', height: '32px', border: 'none', borderRadius: '4px', background: 'none', cursor: 'pointer' }}
+                                />
+                                <input 
+                                  type="text" 
+                                  value={overrideAccent} 
+                                  onChange={(e) => setOverrideAccent(e.target.value)} 
+                                  placeholder="#60a5fa"
+                                  style={{ flex: 1, padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', width: '0' }}
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Background Color</label>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <input 
+                                  type="color" 
+                                  value={overrideBg || '#eff6ff'} 
+                                  onChange={(e) => setOverrideBg(e.target.value)} 
+                                  style={{ width: '32px', height: '32px', border: 'none', borderRadius: '4px', background: 'none', cursor: 'pointer' }}
+                                />
+                                <input 
+                                  type="text" 
+                                  value={overrideBg} 
+                                  onChange={(e) => setOverrideBg(e.target.value)} 
+                                  placeholder="#eff6ff"
+                                  style={{ flex: 1, padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', width: '0' }}
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Text Color</label>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <input 
+                                  type="color" 
+                                  value={overrideText || '#1e3a8a'} 
+                                  onChange={(e) => setOverrideText(e.target.value)} 
+                                  style={{ width: '32px', height: '32px', border: 'none', borderRadius: '4px', background: 'none', cursor: 'pointer' }}
+                                />
+                                <input 
+                                  type="text" 
+                                  value={overrideText} 
+                                  onChange={(e) => setOverrideText(e.target.value)} 
+                                  placeholder="#1e3a8a"
+                                  style={{ flex: 1, padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', width: '0' }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Font Selector */}
+                          <div>
+                            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Typography Font</label>
+                            <select 
+                              value={overrideFont} 
+                              onChange={(e) => setOverrideFont(e.target.value)}
+                              style={{ width: '100%', padding: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none' }}
+                            >
+                              <option value="">Default theme font</option>
+                              <option value="Inter">Inter (Modern Clean)</option>
+                              <option value="Space Grotesk">Space Grotesk (Tech Editorial)</option>
+                              <option value="Playfair Display">Playfair Display (Luxury Serif)</option>
+                              <option value="DM Serif Display">DM Serif Display (Classic Bold)</option>
+                              <option value="Outfit">Outfit (Premium Rounded)</option>
+                            </select>
+                          </div>
+
+                          {/* Section Visibility Switches */}
+                          <div>
+                            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Section Visibility</label>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: '#fff' }}>
+                                <input type="checkbox" checked={overrideShowServices} onChange={(e) => setOverrideShowServices(e.target.checked)} /> Show Services
+                              </label>
+                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: '#fff' }}>
+                                <input type="checkbox" checked={overrideShowTestimonials} onChange={(e) => setOverrideShowTestimonials(e.target.checked)} /> Show Testimonials
+                              </label>
+                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: '#fff' }}>
+                                <input type="checkbox" checked={overrideShowEstimator} onChange={(e) => setOverrideShowEstimator(e.target.checked)} /> Show Booking/Estimator
+                              </label>
+                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: '#fff' }}>
+                                <input type="checkbox" checked={overrideShowAbout} onChange={(e) => setOverrideShowAbout(e.target.checked)} /> Show About Us
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Copy Content Overrides */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            <div>
+                              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Hero Title (Tagline)</label>
+                              <input 
+                                type="text" 
+                                value={overrideHeroTitle} 
+                                onChange={(e) => setOverrideHeroTitle(e.target.value)} 
+                                placeholder="Enter custom tagline..."
+                                style={{ width: '100%', padding: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none' }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Hero Subtitle</label>
+                              <textarea 
+                                rows={2}
+                                value={overrideHeroSubtitle} 
+                                onChange={(e) => setOverrideHeroSubtitle(e.target.value)} 
+                                placeholder="Enter custom subtitle value prop..."
+                                style={{ width: '100%', padding: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', resize: 'vertical' }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>About Text</label>
+                              <textarea 
+                                rows={3}
+                                value={overrideAboutText} 
+                                onChange={(e) => setOverrideAboutText(e.target.value)} 
+                                placeholder="Enter custom about section content..."
+                                style={{ width: '100%', padding: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', resize: 'vertical' }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>CTA Button Text</label>
+                              <input 
+                                type="text" 
+                                value={overrideCtaText} 
+                                onChange={(e) => setOverrideCtaText(e.target.value)} 
+                                placeholder="e.g. Book Appointment"
+                                style={{ width: '100%', padding: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none' }}
+                              />
+                            </div>
+                          </div>
+
+                          <button 
+                            type="button" 
+                            onClick={saveOverrides}
+                            className="btn-primary"
+                            style={{ padding: '10px', fontSize: '0.85rem', fontWeight: 600, marginTop: '8px', cursor: 'pointer' }}
+                          >
+                            Save Design Overrides
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* TAB CONTENT: TASKS */}
+                    {crmPreviewTab === 'tasks' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div>
+                          <h4 style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', margin: '0 0 4px 0' }}>
+                            <Terminal size={14} /> Antigravity Developer Task Queue
+                          </h4>
+                          <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', margin: 0 }}>
+                            Submit complex coding modifications (e.g. adding features, page layout changes) for the background CLI agent to execute directly on the codebase.
+                          </p>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                          <div>
+                            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Describe Modification / Feature Prompt</label>
+                            <textarea 
+                              rows={5}
+                              value={taskQueuePrompt} 
+                              onChange={(e) => setTaskQueuePrompt(e.target.value)} 
+                              placeholder="e.g. Add a beautiful Google Maps iframe section and a multi-step booking wizard for this Dentist site."
+                              style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none', resize: 'vertical', fontFamily: 'monospace' }}
+                            />
+                          </div>
+
+                          <div>
+                            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Task Priority</label>
+                            <select 
+                              value={taskQueuePriority} 
+                              onChange={(e) => setTaskQueuePriority(e.target.value as any)}
+                              style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
+                            >
+                              <option value="low">Low Priority</option>
+                              <option value="medium">Medium Priority</option>
+                              <option value="high">High Priority</option>
+                            </select>
+                          </div>
+
+                          <button 
+                            type="button" 
+                            onClick={queueTask}
+                            disabled={taskQueueLoading || !taskQueuePrompt}
+                            className="btn-primary"
+                            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}
+                          >
+                            {taskQueueLoading ? <Loader2 className="spin-anim" size={16} /> : <Send size={16} />} Queue Code Modification
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* TAB CONTENT: HANDOVER */}
+                    {crmPreviewTab === 'handover' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div>
+                          <h4 style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 600, margin: '0 0 4px 0' }}>
+                            Client Hosting & Database Options
+                          </h4>
+                          <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', margin: 0 }}>
+                            Configure where leads should submit bookings and how the client hosting should be managed when claiming this website.
+                          </p>
+                        </div>
+
+                        {/* Turnout Scaling Selector */}
+                        <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', fontWeight: 600 }}>Lead Turnout Mode</label>
+                          <select 
+                            value={turnoutMode} 
+                            onChange={(e) => updateTurnoutMode(e.target.value as any)}
+                            style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.85rem', outline: 'none', fontWeight: 600 }}
+                          >
+                            <option value="dynamic">Central CRM Database Mode</option>
+                            <option value="n8n">Direct n8n automation webhook redirection</option>
+                            <option value="git">Independent HTML / Git export client package</option>
+                          </select>
+
+                          {turnoutMode === 'dynamic' && (
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px', marginBottom: 0 }}>
+                              Form submissions route back directly to this admin console's main CRM pipeline and Google Sheets.
+                            </p>
+                          )}
+                          {turnoutMode === 'n8n' && (
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px', marginBottom: 0 }}>
+                              Form submissions bypass this console and route directly to the webhook URL set in Settings.
+                            </p>
+                          )}
+                          {turnoutMode === 'git' && (
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px', marginBottom: 0 }}>
+                              Claiming the site will export and publish code to GitHub / Netlify. Forms submit to independent client keys (Web3Forms/Supabase).
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Handover Portal Button */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
+                          <a 
+                            href={`/handover/${previewLead.lead_id}`} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="btn-secondary"
+                            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', width: '100%', textAlign: 'center' }}
+                          >
+                            <ExternalLink size={16} /> Open Client Handover Portal
+                          </a>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+                            Send this secure portal link to the client to let them handle hosting setup independently.
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>
-                    Select a lead in the CRM directory to preview email structure.
+                    Select a lead in the CRM directory to preview website overrides and outreach options.
                   </div>
                 )}
               </section>
@@ -1268,6 +1980,7 @@ ${config.businessSignature}`;
                   >
                     <option value="gmail">Email Outreach</option>
                     <option value="whatsapp">WhatsApp Outreach</option>
+                    <option value="sms">SMS Text Outreach</option>
                     <option value="coldcall">Twilio Cold Call</option>
                     <option value="jiji">Jiji Chat Outreach</option>
                     <option value="instagram">Instagram Chat Outreach</option>
@@ -1616,6 +2329,124 @@ ${config.businessSignature}`;
               </div>
             </div>
 
+            {/* Section E: SMS Outreach (Low Cost / Free) */}
+            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff', margin: 0 }}>4.5. Bulk SMS Outreach Settings</h4>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>Choose a free Android Carrier Gateway or low-cost African direct providers.</p>
+                </div>
+                <select 
+                  value={config.smsProvider || 'gateway'} 
+                  onChange={(e) => setConfig({ ...config, smsProvider: e.target.value as any })}
+                  style={{ padding: '8px 12px', background: 'rgba(6, 182, 212, 0.15)', border: '1px solid var(--primary)', borderRadius: '6px', color: '#fff', fontWeight: 600, outline: 'none' }}
+                >
+                  <option value="gateway">Android Gateway (Free ₦0.00)</option>
+                  <option value="termii">Termii SMS (Nigeria ₦2.00 - ₦4.50)</option>
+                  <option value="africastalking">Africa's Talking (Africa ₦2.50 - ₦5.00)</option>
+                  <option value="twilio">Twilio SMS ($0.05 - $0.10)</option>
+                </select>
+              </div>
+
+              {config.smsProvider === 'gateway' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Android SMS Gateway IP / URL</label>
+                    <input 
+                      type="url" 
+                      value={config.smsGatewayUrl || ''} 
+                      onChange={(e) => setConfig({ ...config, smsGatewayUrl: e.target.value })}
+                      placeholder="e.g. http://192.168.1.5:8080/send or https://my-ngrok-tunnel.ngrok-free.app/send"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      Install any free SMS Gateway app on an Android phone, keep it connected to the internet/WiFi, and paste the endpoint URL here.
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {config.smsProvider === 'termii' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Termii API Key</label>
+                    <input 
+                      type="password" 
+                      value={config.termiiApiKey || ''} 
+                      onChange={(e) => setConfig({ ...config, termiiApiKey: e.target.value })}
+                      placeholder="Enter Termii API Key"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender ID / Signature</label>
+                    <input 
+                      type="text" 
+                      value={config.termiiSenderId || ''} 
+                      onChange={(e) => setConfig({ ...config, termiiSenderId: e.target.value })}
+                      placeholder="e.g. Sandbox or registered Sender ID"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {config.smsProvider === 'africastalking' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Username</label>
+                    <input 
+                      type="text" 
+                      value={config.africastalkingUsername || ''} 
+                      onChange={(e) => setConfig({ ...config, africastalkingUsername: e.target.value })}
+                      placeholder="e.g. sandbox or production username"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>API Key</label>
+                    <input 
+                      type="password" 
+                      value={config.africastalkingApiKey || ''} 
+                      onChange={(e) => setConfig({ ...config, africastalkingApiKey: e.target.value })}
+                      placeholder="Enter Africa's Talking API Key"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender ID / Shortcode (Optional)</label>
+                    <input 
+                      type="text" 
+                      value={config.africastalkingSenderId || ''} 
+                      onChange={(e) => setConfig({ ...config, africastalkingSenderId: e.target.value })}
+                      placeholder="e.g. brand name or shortcode"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {config.smsProvider === 'twilio' && (
+                <div style={{ background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Uses credentials from section <strong>4. Twilio Voice Cold Calling</strong> (SID, Auth Token, and From Phone Number) for sending text messages.
+                </div>
+              )}
+
+              <div style={{ marginTop: '16px' }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Default SMS Message Template</label>
+                <textarea 
+                  value={config.smsMessageTemplate || ''} 
+                  onChange={(e) => setConfig({ ...config, smsMessageTemplate: e.target.value })}
+                  placeholder="Hello {{lead.name}}, please review the custom landing page designed for your business: {{previewUrl}} - {{signature}}"
+                  rows={3}
+                  style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontFamily: 'monospace', fontSize: '0.85rem', resize: 'vertical' }}
+                />
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{signature}}`}</code>
+                </div>
+              </div>
+            </div>
+
             {/* Section E: Supabase DB Store (Optional) */}
             {config.storageMode === 'supabase' && (
               <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
@@ -1645,9 +2476,29 @@ ${config.businessSignature}`;
               </div>
             )}
 
-            {/* Section F: Jiji Bulk Messaging Outreach */}
+            {/* Section F: n8n Integration */}
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>5. Jiji Bulk Messaging Outreach</h4>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>5. n8n Automation Webhook</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Global n8n Webhook URL</label>
+                  <input 
+                    type="url" 
+                    value={config.n8nWebhookUrl || ''} 
+                    onChange={(e) => setConfig({ ...config, n8nWebhookUrl: e.target.value })}
+                    placeholder="https://primary-n8n.yourdomain.com/webhook/..."
+                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                  />
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    Websites configured in "Direct n8n automation webhook redirection" turnout mode will post client contact submissions here.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section G: Jiji Bulk Messaging Outreach */}
+            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>6. Jiji Bulk Messaging Outreach</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Jiji Email or Phone</label>

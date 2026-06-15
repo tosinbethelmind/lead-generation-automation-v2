@@ -132,6 +132,45 @@ ApexReach Automation Suite`;
       `Test lead submitted by ${name} (${email}) for business "${lead.name}"`
     );
 
+    // Read Scaling configuration
+    const { parseScalingConfig } = require('@/lib/scalingHelper');
+    const scaling = parseScalingConfig(lead.notes);
+
+    if (scaling.mode === 'n8n') {
+      const n8nWebhook = config.n8nWebhookUrl;
+      if (n8nWebhook) {
+        try {
+          const forwardRes = await fetch(n8nWebhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              leadId,
+              businessName: lead.name,
+              category: lead.category,
+              customerName: name,
+              customerEmail: email,
+              customerPhone: phone,
+              bookingDate: date,
+              message: message,
+              submittedAt: new Date().toISOString()
+            })
+          });
+
+          if (forwardRes.ok) {
+            return NextResponse.json({
+              success: true,
+              forwarded: true,
+              message: 'Lead forwarded directly to n8n automation pipeline!'
+            });
+          } else {
+            console.error('n8n forwarding returned non-ok status:', forwardRes.status);
+          }
+        } catch (err: any) {
+          console.error('n8n forwarding connection error:', err.message);
+        }
+      }
+    }
+
     if (isDryRun) {
       return NextResponse.json({
         success: true,

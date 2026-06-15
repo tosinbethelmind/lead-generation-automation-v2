@@ -284,7 +284,7 @@ export async function POST(req: NextRequest) {
       console.warn('Failed to write claimed site config to local filesystem:', error.message);
     }
 
-    // 5. Commit to GitHub (for Vercel deployment update)
+    // 5. Commit to GitHub (for Vercel deployment update - ONLY if mode is 'git')
     const githubPat = process.env.GITHUB_PAT;
     const githubRepo = process.env.GITHUB_REPO; // Expected format: "username/repo"
     const githubBranch = process.env.GITHUB_BRANCH || 'main';
@@ -292,32 +292,39 @@ export async function POST(req: NextRequest) {
     let githubCommitStatus = 'SKIPPED';
     let githubErrorMsg = '';
 
-    if (githubPat && githubRepo) {
-      try {
-        const parts = githubRepo.split('/');
-        if (parts.length !== 2) {
-          throw new Error('GITHUB_REPO env variable must be in the format "owner/repo"');
+    const { parseScalingConfig } = require('@/lib/scalingHelper');
+    const scaling = parseScalingConfig(lead.notes);
+
+    if (scaling.mode === 'git') {
+      if (githubPat && githubRepo) {
+        try {
+          const parts = githubRepo.split('/');
+          if (parts.length !== 2) {
+            throw new Error('GITHUB_REPO env variable must be in the format "owner/repo"');
+          }
+          const [owner, repoName] = parts;
+          
+          await commitFileToGitHub({
+            owner,
+            repo: repoName,
+            filePath: `src/data/sites/${leadId}.json`,
+            content: siteConfigString,
+            commitMessage: `feat: deploy claimed website for ${lead.name} (${leadId})`,
+            token: githubPat,
+            branch: githubBranch
+          });
+          githubCommitStatus = 'SUCCESS';
+        } catch (ghErr: unknown) {
+          const error = ghErr as Error;
+          console.error('GitHub Commit Failed:', error);
+          githubCommitStatus = 'FAILED';
+          githubErrorMsg = error.message;
         }
-        const [owner, repoName] = parts;
-        
-        await commitFileToGitHub({
-          owner,
-          repo: repoName,
-          filePath: `src/data/sites/${leadId}.json`,
-          content: siteConfigString,
-          commitMessage: `feat: deploy claimed website for ${lead.name} (${leadId})`,
-          token: githubPat,
-          branch: githubBranch
-        });
-        githubCommitStatus = 'SUCCESS';
-      } catch (ghErr: unknown) {
-        const error = ghErr as Error;
-        console.error('GitHub Commit Failed:', error);
-        githubCommitStatus = 'FAILED';
-        githubErrorMsg = error.message;
+      } else {
+        console.log('GitHub integration skipped: GITHUB_PAT or GITHUB_REPO not defined in environment variables.');
       }
     } else {
-      console.log('GitHub integration skipped: GITHUB_PAT or GITHUB_REPO not defined in environment variables.');
+      console.log(`GitHub commit skipped: Turnout mode is '${scaling.mode}' (not 'git').`);
     }
 
     // 6. Send conversion notification to Admin

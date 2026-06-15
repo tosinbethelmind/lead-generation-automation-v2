@@ -29,3 +29,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
+
+import { updateLeadStatus } from '@/lib/googleSheets';
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { lead_id, status, notes, last_contacted_at } = body;
+    
+    if (!lead_id) {
+      return NextResponse.json({ error: 'lead_id is required' }, { status: 400 });
+    }
+    
+    const success = await updateLeadStatus(lead_id, status, notes, last_contacted_at);
+    return NextResponse.json({ success });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 500 });
+  }
+}
+

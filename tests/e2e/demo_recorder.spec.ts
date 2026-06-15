@@ -379,37 +379,85 @@ test.describe('ApexReach Complete Platform Walkthrough Demo', () => {
     await smoothScroll(page, 600);
 
     // Automation demo form
-    await speak(page, 'The Interactive Automation Demo section lets visitors test-drive the booking workflow. Lets fill in a test submission.');
+    await speak(page, 'The Interactive Automation Demo section lets visitors test-drive the booking workflow. Lets try the Price Estimator.');
     await page.waitForTimeout(1000);
+
+    // Click the Price Estimator tab
+    const priceEstTab = page.locator('button', { hasText: 'Price Estimator' });
+    if (await priceEstTab.isVisible()) {
+      await priceEstTab.click();
+      await page.waitForTimeout(1500);
+      await speak(page, 'Switching to the Price Estimator widget to build a customized website quote.');
+    }
+
+    // Toggle some estimator checkboxes
+    const crmCheckbox = page.locator('label', { hasText: 'CRM Customer Sync' }).locator('input[type="checkbox"]');
+    if (await crmCheckbox.isVisible()) {
+      await crmCheckbox.check();
+      await page.waitForTimeout(500);
+    }
+    const payCheckbox = page.locator('label', { hasText: 'Payment Gateway' }).locator('input[type="checkbox"]');
+    if (await payCheckbox.isVisible()) {
+      await payCheckbox.check();
+      await page.waitForTimeout(500);
+    }
 
     const nameInput = page.locator('input[placeholder*="John"]');
     if (await nameInput.isVisible()) {
-      await nameInput.fill('Demo Visitor');
+      await nameInput.fill('Jane Doe');
       await page.waitForTimeout(500);
     }
     const emailInput = page.locator('input[placeholder*="name@example"]');
     if (await emailInput.isVisible()) {
-      await emailInput.fill('demo@apexreach.net');
+      await emailInput.fill('jane@example.com');
       await page.waitForTimeout(500);
     }
     const phoneInput = page.locator('input[placeholder*="+234"]');
     if (await phoneInput.isVisible()) {
-      await phoneInput.fill('+2348012345678');
-      await page.waitForTimeout(500);
-    }
-    const messageInput = page.locator('textarea[placeholder*="Tell us"]');
-    if (await messageInput.isVisible()) {
-      await messageInput.fill('I would like to book a consultation for next week.');
+      await phoneInput.fill('+234 802 987 6543');
       await page.waitForTimeout(500);
     }
 
-    const submitBtn = page.locator('button', { hasText: 'Trigger Automated Test Booking' });
+    // Click Generate proposal
+    const submitBtn = page.locator('button', { hasText: 'Generate Custom Proposal' });
     if (await submitBtn.isVisible()) {
       await submitBtn.click();
       await page.waitForTimeout(3000);
-      await speak(page, 'The automation fires instantly, sending a notification to the business owner with all the booking details.');
+      await speak(page, 'The system immediately logs the lead in the background CRM database, triggers simulated WhatsApp chat alert messages, and builds a printable invoice estimate.');
     }
-    await smoothScroll(page, 600);
+
+    // Verify WhatsApp simulator feed messages
+    const liveFeedHeader = page.locator('strong', { hasText: 'Live Automation Feed' });
+    if (await liveFeedHeader.isVisible()) {
+      await speak(page, 'On the bottom right, the live WhatsApp simulator simulates automated notification streams to the business owner.');
+      await page.waitForTimeout(1500);
+    }
+
+    // View printable invoice
+    const viewInvoiceBtn = page.locator('button', { hasText: 'View Invoice & Receipt' });
+    if (await viewInvoiceBtn.isVisible()) {
+      await viewInvoiceBtn.click();
+      await page.waitForTimeout(2000);
+      await speak(page, 'Opening the automated receipt and invoice proposal. This shows the subtotal, taxes, and graded breakdown items.');
+      await expect(page.locator('h2', { hasText: 'ESTIMATE / INVOICE' }).or(page.locator('span', { hasText: 'ESTIMATE / INVOICE' })).first()).toBeVisible();
+      await page.waitForTimeout(1500);
+
+      // Close the invoice modal
+      const closeInvoiceBtn = page.locator('button').filter({ hasText: 'X' }).first();
+      if (await closeInvoiceBtn.isVisible()) {
+        await closeInvoiceBtn.click();
+        await page.waitForTimeout(1000);
+      }
+    }
+
+    await smoothScroll(page, 400);
+
+    // Verify Walkthrough Video & Pricing Strategy Section
+    const pricingHeader = page.locator('h2', { hasText: 'How ApexReach Scales Your Business' });
+    if (await pricingHeader.isVisible()) {
+      await speak(page, 'We also display a walkthrough video showing how the system deploys landing pages, plus our standard graded pricing packages: Basic presence, Growth Engine, and Automated Powerhouse.');
+      await page.waitForTimeout(2000);
+    }
 
     // Claim section
     await speak(page, 'Finally, the Claim This Website and Domain section is the conversion goal. The business owner enters their name and email to request ownership of the auto-generated site.');
@@ -418,7 +466,7 @@ test.describe('ApexReach Complete Platform Walkthrough Demo', () => {
     // ═══════════════════════════════════════════════════════════════
     // WRAP UP
     // ═══════════════════════════════════════════════════════════════
-    await speak(page, 'That concludes the full ApexReach walkthrough. We covered every feature: dashboard, CRM, all ten scrapers, logs, every settings option, and AI preview pages. Thank you for watching!');
+    await speak(page, 'That concludes the full ApexReach walkthrough. We covered every feature: dashboard, CRM, all ten scrapers, logs, settings options, sector widgets, and live simulation feeds. Thank you for watching!');
     await page.waitForTimeout(2000);
   });
 });
