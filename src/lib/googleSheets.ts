@@ -943,11 +943,15 @@ class SupabaseLeadRepository implements ILeadRepository {
       
       if (lastContactedAt !== undefined) updates.last_contacted_at = lastContactedAt;
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('leads')
         .update(updates)
-        .eq('lead_id', leadId);
+        .eq('lead_id', leadId)
+        .select();
       if (error) throw error;
+      if (!data || data.length === 0) {
+        throw new Error('Lead not found in Supabase');
+      }
       return true;
     } catch (e: any) {
       console.warn('Supabase updateLeadStatus error, falling back to local JSON:', e.message);
