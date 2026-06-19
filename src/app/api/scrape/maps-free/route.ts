@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
-import { chromium } from 'playwright';
 
 // ============================================================================
 // Sandbox Mock Lead Generator
@@ -18,35 +17,37 @@ function generateMockMapsFreeLeads(query: string, limit: number): Partial<Lead>[
   ];
 
   const results: Partial<Lead>[] = [];
-  const count = Math.min(limit || 5, businesses.length);
+  const count = limit || 10;
 
   for (let i = 0; i < count; i++) {
-    const biz = businesses[i];
-    const cleanPhone = normalizePhone(biz.phone, 'NG') || biz.phone;
+    const template = businesses[i % businesses.length];
+    const name = count > businesses.length ? `${template.name} #${Math.floor(i / businesses.length) + 1}` : template.name;
+    const phoneNum = template.phone.substring(0, template.phone.length - 2) + String(i).padStart(2, '0');
+    const cleanPhone = normalizePhone(phoneNum, 'NG') || phoneNum;
 
     results.push({
       lead_id: `mock_mapsfree_${Date.now()}_${i}`,
       source: 'MAPS_FREE',
-      name: biz.name,
-      category: biz.category,
-      address: `${biz.area}, Lagos, Nigeria`,
-      area: biz.area,
+      name: name,
+      category: template.category,
+      address: `${template.area}, Lagos, Nigeria`,
+      area: template.area,
       city: 'Lagos',
       phone_e164: cleanPhone,
-      phone_raw: biz.phone,
+      phone_raw: phoneNum,
       email: '',
       website: '', // Key qualify criteria: no website
       rating: Number((4.2 + Math.random() * 0.7).toFixed(1)),
       reviews_count: Math.floor(Math.random() * 30) + 2,
       verified: Math.random() > 0.5,
       listings_count: 1,
-      profile_url: `https://www.google.com/maps/search/${encodeURIComponent(query)}`,
+      profile_url: `https://www.google.com/maps/search/${encodeURIComponent(query)}&index=${i}`,
       source_query_or_seed: query,
       collected_at: new Date().toISOString(),
       status: 'NEW',
       last_contacted_at: '',
       duplicate_of_lead_id: '',
-      business_summary: `${biz.name} offers premium ${biz.category.toLowerCase()} services in ${biz.area}. Rated highly on Maps.`,
+      business_summary: `${name} offers premium ${template.category.toLowerCase()} services in ${template.area}. Rated highly on Maps.`,
       notes: 'Imported via Playwright Google Maps Free Sandbox.'
     });
   }
@@ -90,6 +91,7 @@ export async function POST(req: NextRequest) {
     let scrapedLeads: Partial<Lead>[] = [];
 
     try {
+      const { chromium } = await import('playwright');
       browser = await chromium.launch({ headless: true });
       const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -264,7 +266,8 @@ async function extractCurrentPlaceDetails(page: any, query: string): Promise<Par
       // Ignore
     }
 
-    const cleanPhone = normalizePhone(phone, 'NG') || phone;
+    const cleanPhone = phone ? normalizePhone(phone, 'NG') : null;
+    if (!cleanPhone) return null;
     const parts = address.split(',');
     const area = parts[1] ? parts[1].trim() : parts[0] || 'Lagos';
 

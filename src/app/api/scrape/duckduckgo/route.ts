@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
+import { Lead, saveLeads, addLog, normalizePhone, extractPhonesFromText } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import * as cheerio from 'cheerio';
 
@@ -17,35 +17,37 @@ function generateMockDDGLeads(query: string, limit: number): Partial<Lead>[] {
   ];
 
   const results: Partial<Lead>[] = [];
-  const count = Math.min(limit || 5, businesses.length);
+  const count = limit || 10;
 
   for (let i = 0; i < count; i++) {
-    const biz = businesses[i];
-    const cleanPhone = normalizePhone(biz.phone, 'NG') || biz.phone;
+    const template = businesses[i % businesses.length];
+    const name = count > businesses.length ? `${template.name} #${Math.floor(i / businesses.length) + 1}` : template.name;
+    const phoneNum = template.phone.substring(0, template.phone.length - 2) + String(i).padStart(2, '0');
+    const cleanPhone = normalizePhone(phoneNum, 'NG') || phoneNum;
 
     results.push({
       lead_id: `mock_ddg_${Date.now()}_${i}`,
       source: 'DUCKDUCKGO',
-      name: biz.name,
-      category: biz.category,
-      address: `${biz.area}, Lagos, Nigeria`,
-      area: biz.area,
+      name: name,
+      category: template.category,
+      address: `${template.area}, Lagos, Nigeria`,
+      area: template.area,
       city: 'Lagos',
       phone_e164: cleanPhone,
-      phone_raw: biz.phone,
+      phone_raw: phoneNum,
       email: '',
       website: '', // Qualify criteria
       rating: Number((4.1 + Math.random() * 0.8).toFixed(1)),
       reviews_count: Math.floor(Math.random() * 25) + 1,
       verified: true,
       listings_count: 1,
-      profile_url: `https://duckduckgo.com/?q=${encodeURIComponent(query)}`,
+      profile_url: `https://duckduckgo.com/?q=${encodeURIComponent(query)}&index=${i}`,
       source_query_or_seed: query,
       collected_at: new Date().toISOString(),
       status: 'NEW',
       last_contacted_at: '',
       duplicate_of_lead_id: '',
-      business_summary: `${biz.name} is a local business providing ${biz.category.toLowerCase()} services in ${biz.area}.`,
+      business_summary: `${name} is a local business providing ${template.category.toLowerCase()} services in ${template.area}.`,
       notes: 'Imported via DuckDuckGo Scraper Sandbox.'
     });
   }
@@ -121,9 +123,6 @@ export async function POST(req: NextRequest) {
     const $ = cheerio.load(htmlText);
     const scrapedLeads: Partial<Lead>[] = [];
 
-    // Nigerian phone regex: 080..., 090..., 081..., +234...
-    const phoneRegex = /(?:\+234|0)(?:[789][01]\d{8})/g;
-
     $('.web-result').each((idx, elem) => {
       if (scrapedLeads.length >= limit) return false;
 
@@ -140,11 +139,10 @@ export async function POST(req: NextRequest) {
 
       // Extract phone number from title or snippet
       const combinedText = `${name} ${snippet}`;
-      const phones = combinedText.match(phoneRegex);
+      const phones = extractPhonesFromText(combinedText);
       
       if (phones && phones.length > 0) {
-        const phone = phones[0];
-        const cleanPhone = normalizePhone(phone, 'NG') || phone;
+        const cleanPhone = phones[0];
 
         // Ensure we don't save duplicates or leads that obviously have website domains
         const hasOwnWebsite = !/facebook|instagram|jiji|linkedin|youtube|twitter|tiktok|vconnect|finelib|yellowpages/.test(link);
@@ -159,7 +157,7 @@ export async function POST(req: NextRequest) {
             area: 'Lagos',
             city: 'Lagos',
             phone_e164: cleanPhone,
-            phone_raw: phone,
+            phone_raw: cleanPhone,
             email: '',
             website: '', // Empty because it's a directory link
             rating: 4.0, // Default for search listings

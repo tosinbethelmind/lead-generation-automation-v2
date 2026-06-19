@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getDNCList, addDNCEntry } from '@/lib/googleSheets';
 

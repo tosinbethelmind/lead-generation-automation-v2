@@ -284,6 +284,13 @@ export async function GET(req: NextRequest) {
       pitch,
       overrides,
       generatedAt: new Date().toISOString(),
+      paymentConfig: {
+        paystackPublicKey: config.paystackPublicKey || '',
+        claimFeeNGN: config.claimFeeNGN || 0,
+        moniepointBankName: config.moniepointBankName || '',
+        moniepointAccountNumber: config.moniepointAccountNumber || '',
+        moniepointAccountName: config.moniepointAccountName || '',
+      }
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

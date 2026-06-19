@@ -34,6 +34,13 @@ interface PreviewData {
     ctaText: string;
   };
   pitch?: any;
+  paymentConfig?: {
+    paystackPublicKey: string;
+    claimFeeNGN: number;
+    moniepointBankName: string;
+    moniepointAccountNumber: string;
+    moniepointAccountName: string;
+  };
 }
 
 interface LandingPageProps {
@@ -43,7 +50,7 @@ interface LandingPageProps {
 }
 
 export default function LandingPage({ data, leadId, isPreview = false }: LandingPageProps) {
-  const { lead, theme, copy } = data;
+  const { lead, theme, copy, paymentConfig } = data;
 
   const pitch = data.pitch || {
     categoryKey: 'general',
@@ -720,6 +727,37 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   const [claimForm, setClaimForm] = useState({ name: '', email: '' });
   const [claimLoading, setClaimLoading] = useState(false);
   const [claimMessage, setClaimMessage] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'paystack' | 'moniepoint'>('paystack');
+
+  // Verify transaction if redirecting back from Paystack
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const paymentStatus = params.get('payment');
+      const ref = params.get('reference');
+      if (paymentStatus === 'verifying' && ref) {
+        verifyOnlinePayment(ref);
+      }
+    }
+  }, []);
+
+  const verifyOnlinePayment = async (reference: string) => {
+    setClaimLoading(true);
+    setClaimMessage('Verifying your online payment with Paystack, please wait...');
+    setClaimed(true);
+    try {
+      const res = await fetch(`/api/paystack/verify?reference=${encodeURIComponent(reference)}`);
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.error || 'Payment verification failed.');
+      }
+      setClaimMessage(result.message || 'Payment verified and website claimed successfully!');
+    } catch (err: any) {
+      setClaimMessage(`Verification Error: ${err.message}. Please contact support.`);
+    } finally {
+      setClaimLoading(false);
+    }
+  };
 
 
   const handleTestSubmit = async (e: React.FormEvent) => {
@@ -752,22 +790,57 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     e.preventDefault();
     setClaimLoading(true);
     try {
+      const hasOnlinePayment = paymentMethod === 'paystack' && paymentConfig?.claimFeeNGN && paymentConfig.claimFeeNGN > 0;
+
+      if (hasOnlinePayment) {
+        const res = await fetch('/api/paystack/initialize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            leadId,
+            email: claimForm.email,
+            name: claimForm.name,
+            theme,
+            copy
+          })
+        });
+        const result = await res.json();
+        if (!res.ok) {
+          throw new Error(result.error || 'Failed to initialize Paystack transaction');
+        }
+        // Redirect client to Paystack payment gateway
+        window.location.href = result.authorization_url;
+        return;
+      }
+
+      // Local bank transfer or free setup fallback
+      const payload: any = {
+        leadId,
+        clientName: claimForm.name,
+        clientEmail: claimForm.email,
+        theme,
+        copy
+      };
+
+      if (paymentMethod === 'moniepoint') {
+        payload.paymentMethod = 'bank_transfer';
+      }
+
       const res = await fetch('/api/preview/claim', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          leadId,
-          clientName: claimForm.name,
-          clientEmail: claimForm.email,
-          theme,
-          copy
-        })
+        body: JSON.stringify(payload)
       });
       const result = await res.json();
       if (!res.ok) {
         throw new Error(result.error || 'Failed to submit claim request');
       }
-      setClaimMessage(result.message || 'Request submitted successfully!');
+
+      let successMsg = result.message || 'Request submitted successfully!';
+      if (paymentMethod === 'moniepoint') {
+        successMsg = `Manual bank transfer request submitted! Please transfer ₦${paymentConfig?.claimFeeNGN?.toLocaleString() || '0'} to the Moniepoint account listed below. Once verified, your website will be deployed and fully setup.`;
+      }
+      setClaimMessage(successMsg);
       setClaimed(true);
     } catch (err: unknown) {
       const error = err as Error;
@@ -1595,6 +1668,112 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                       style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}
                     />
                   </div>
+
+                  {/* Payment Options Selector */}
+                  {paymentConfig && paymentConfig.claimFeeNGN > 0 && (
+                    <div style={{ marginBottom: '8px' }}>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '8px' }}>Select Claim / Setup Package Option</label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('paystack')}
+                          disabled={!paymentConfig.paystackPublicKey}
+                          style={{
+                            padding: '12px',
+                            borderRadius: '8px',
+                            border: paymentMethod === 'paystack' ? `2px solid ${theme.primary}` : '1px solid #cbd5e1',
+                            background: paymentMethod === 'paystack' ? `${theme.primary}10` : '#fff',
+                            color: paymentMethod === 'paystack' ? theme.primary : '#4b5563',
+                            fontWeight: 600,
+                            cursor: !paymentConfig.paystackPublicKey ? 'not-allowed' : 'pointer',
+                            transition: 'all 0.2s',
+                            textAlign: 'center'
+                          }}
+                        >
+                          💳 Pay Online
+                          <span style={{ display: 'block', fontSize: '0.65rem', fontWeight: 400, marginTop: '2px', color: '#64748b' }}>
+                            Instant Automated Setup
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('moniepoint')}
+                          disabled={!paymentConfig.moniepointAccountNumber}
+                          style={{
+                            padding: '12px',
+                            borderRadius: '8px',
+                            border: paymentMethod === 'moniepoint' ? `2px solid ${theme.primary}` : '1px solid #cbd5e1',
+                            background: paymentMethod === 'moniepoint' ? `${theme.primary}10` : '#fff',
+                            color: paymentMethod === 'moniepoint' ? theme.primary : '#4b5563',
+                            fontWeight: 600,
+                            cursor: !paymentConfig.moniepointAccountNumber ? 'not-allowed' : 'pointer',
+                            transition: 'all 0.2s',
+                            textAlign: 'center'
+                          }}
+                        >
+                          🏦 Bank Transfer
+                          <span style={{ display: 'block', fontSize: '0.65rem', fontWeight: 400, marginTop: '2px', color: '#64748b' }}>
+                            Manual Admin Approval
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Payment Details Container */}
+                  {paymentMethod === 'moniepoint' && paymentConfig && (
+                    <div style={{
+                      background: 'rgba(2, 132, 199, 0.03)',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '12px',
+                      padding: '20px',
+                      marginBottom: '8px',
+                      fontSize: '0.9rem'
+                    }}>
+                      <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', fontWeight: 700, color: theme.primary }}>
+                        Moniepoint Transfer Instructions
+                      </h4>
+                      <p style={{ color: '#64748b', fontSize: '0.8rem', margin: '0 0 16px 0', lineHeight: 1.4 }}>
+                        Transfer the setup fee to the account below, then click the Claim button. Our admin will verify and activate your site.
+                      </p>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
+                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Amount Due:</span>
+                          <strong style={{ color: '#1e2937' }}>₦{paymentConfig.claimFeeNGN.toLocaleString()}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
+                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Bank Name:</span>
+                          <strong style={{ color: '#1e2937' }}>{paymentConfig.moniepointBankName || 'Moniepoint MFB'}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
+                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Number:</span>
+                          <strong style={{ color: theme.primary, letterSpacing: '0.05em' }}>{paymentConfig.moniepointAccountNumber}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Name:</span>
+                          <strong style={{ color: '#1e2937', textTransform: 'uppercase' }}>{paymentConfig.moniepointAccountName}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'paystack' && paymentConfig && paymentConfig.claimFeeNGN > 0 && (
+                    <div style={{
+                      background: 'rgba(16, 185, 129, 0.03)',
+                      border: '1px dashed #cbd5e1',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      marginBottom: '8px',
+                      textAlign: 'center',
+                      fontSize: '0.9rem'
+                    }}>
+                      <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>One-time Setup Fee</span>
+                      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#10b981', marginTop: '2px' }}>
+                        ₦{paymentConfig.claimFeeNGN.toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+
                   <button 
                     type="submit" 
                     disabled={claimLoading}
@@ -1613,7 +1792,11 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     onMouseEnter={(e) => !claimLoading && (e.currentTarget.style.filter = 'brightness(1.1)')}
                     onMouseLeave={(e) => !claimLoading && (e.currentTarget.style.filter = 'brightness(1)')}
                   >
-                    {claimLoading ? 'Submitting Request...' : 'Request Ownership & Edit Access'}
+                    {claimLoading 
+                      ? 'Processing...' 
+                      : paymentMethod === 'paystack' && paymentConfig?.claimFeeNGN && paymentConfig.claimFeeNGN > 0
+                        ? `Pay NGN ${paymentConfig.claimFeeNGN.toLocaleString()} & Deploy`
+                        : 'Confirm Claim Request'}
                   </button>
                 </form>
               </>

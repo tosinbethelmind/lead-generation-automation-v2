@@ -24,31 +24,33 @@ function generateMockLagosLeads(query: string, limit: number): Partial<Lead>[] {
   ].filter(b => b.rating >= 4.0); // enforce rating floor
 
   const results: Partial<Lead>[] = [];
-  const numToGen = Math.min(limit || 5, businesses.length);
+  const numToGen = limit || 10;
   
   for (let i = 0; i < numToGen; i++) {
-    const biz = businesses[i];
+    const biz = businesses[i % businesses.length];
+    const name = numToGen > businesses.length ? `${biz.name} #${Math.floor(i / businesses.length) + 1}` : biz.name;
+    const phoneNum = biz.phone.substring(0, biz.phone.length - 2) + String(i).padStart(2, '0');
     const area = areas[i % areas.length];
-    const cleanPhone = normalizePhone(biz.phone, 'NG') || biz.phone;
+    const cleanPhone = normalizePhone(phoneNum, 'NG') || phoneNum;
     const hasWebsite = !!biz.website;
     
     results.push({
       lead_id: `mock_maps_${Date.now()}_${i}`,
       source: 'GOOGLE',
-      name: biz.name,
+      name: name,
       category: biz.cat,
       address: `${Math.floor(Math.random() * 80) + 1} Herbert Macaulay Way, ${area}, Lagos, Nigeria`,
       area: area,
       city: 'Lagos',
       phone_e164: cleanPhone,
-      phone_raw: biz.phone,
-      email: `${biz.name.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+      phone_raw: phoneNum,
+      email: `${biz.name.toLowerCase().replace(/\s+/g, '')}${i}@gmail.com`,
       website: biz.website || '',
       rating: biz.rating,
       reviews_count: biz.reviews,
       verified: Math.random() > 0.3,
       listings_count: 1,
-      profile_url: `https://google.com/maps/place/${biz.name.replace(/\s+/g, '+')}`,
+      profile_url: `https://google.com/maps/place/${name.replace(/\s+/g, '+')}`,
       source_query_or_seed: query,
       collected_at: new Date().toISOString(),
       status: 'NEW',
@@ -141,6 +143,7 @@ export async function POST(req: NextRequest) {
       }
 
       const normPhone = rawPhone ? normalizePhone(rawPhone, 'NG') : null;
+      if (!normPhone) continue;
       const hasWebsite = !!(website && website.trim());
       
       // Parse Lagos area/neighborhood if possible

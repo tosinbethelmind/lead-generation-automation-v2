@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3005",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3005",
     "lint": "eslint",
     "setup": "node setup.js",
     "auto-setup": "node scripts/auto_setup.js",
@@ -22,7 +22,8 @@
     "playwright": "^1.60.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "twilio": "^4.22.0"
+    "twilio": "^4.22.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",

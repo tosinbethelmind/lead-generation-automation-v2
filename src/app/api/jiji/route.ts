@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
-import { chromium } from 'playwright';
 
 // Helper to replace placeholders in message templates
 function formatMessage(template: string, lead: any, previewUrl: string, signature: string): string {
@@ -87,6 +86,7 @@ export async function POST(req: NextRequest) {
     
     let browser;
     try {
+      const { chromium } = await import('playwright');
       browser = await chromium.launch({ headless: true });
       const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',

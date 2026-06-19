@@ -45,33 +45,39 @@ export async function POST(req: NextRequest) {
     if (isSandbox) {
       await addLog('OSM Scraper', 'START', `OSM local sandbox triggered for query: "${query}"`);
       // Return a set of mock leads matching OSM format
-      const mockLeads: Partial<Lead>[] = [
-        {
-          lead_id: `osm_mock_${Date.now()}_1`,
+      const mockLeads: Partial<Lead>[] = [];
+      const prefixes = ["Ikeja", "Lekki", "Yaba", "Surulere", "Victoria Island", "Ikoyi", "Festac", "Gbagada", "Apapa", "Maryland"];
+      const types = ["Dental Clinic", "Car Repair Shop", "Pharmacy", "Restaurant", "Supermarket", "Boutique", "Spa", "Beauty Salon", "Caterer", "Bakery"];
+      for (let i = 0; i < limit; i++) {
+        const area = prefixes[i % prefixes.length];
+        const category = types[i % types.length];
+        const phone = `080355551${String(i).padStart(2, '0')}`;
+        mockLeads.push({
+          lead_id: `osm_mock_${Date.now()}_${i}`,
           source: 'OSM',
-          name: 'Ikeja Dental Clinic (OSM)',
-          category: 'dentist',
-          address: '22 Allen Ave, Ikeja, Lagos',
-          area: 'Ikeja',
+          name: `${area} ${category} (OSM)`,
+          category: category.toLowerCase(),
+          address: `${10 + i} Allen Ave, ${area}, Lagos`,
+          area: area,
           city: 'Lagos',
-          phone_e164: '+2348030000001',
-          phone_raw: '08030000001',
+          phone_e164: `+234${phone.substring(1)}`,
+          phone_raw: phone,
           email: '',
           website: '',
-          rating: 4.5,
-          reviews_count: 8,
+          rating: Number((4.0 + (i % 10) * 0.1).toFixed(1)),
+          reviews_count: 5 + i * 2,
           verified: false,
           listings_count: 1,
-          profile_url: 'https://www.openstreetmap.org/node/1',
+          profile_url: `https://www.openstreetmap.org/node/${1000 + i}`,
           source_query_or_seed: query,
           collected_at: new Date().toISOString(),
           status: 'NEW',
           last_contacted_at: '',
           duplicate_of_lead_id: '',
-          business_summary: 'Dental clinic located in Ikeja, Lagos. Retrieved via OpenStreetMap.',
+          business_summary: `${category} located in ${area}, Lagos. Retrieved via OpenStreetMap.`,
           notes: 'Imported via OSM Local Sandbox.'
-        }
-      ];
+        });
+      }
       const dbResult = await saveLeads(mockLeads);
       return NextResponse.json({
         success: true,
@@ -155,6 +161,7 @@ export async function POST(req: NextRequest) {
       
       const phone = tags.phone || tags['contact:phone'] || tags.mobile || tags['contact:mobile'] || '';
       const normPhone = phone ? normalizePhone(phone, 'NG') : null;
+      if (!normPhone) continue;
       
       const address = parseOSMAddress(tags) || `${areaName}, Lagos, Nigeria`;
       const category = tags.amenity || tags.shop || tags.office || tags.craft || 'Business';

@@ -135,6 +135,8 @@ export default function Home() {
 
   // Dynamic state query param login helper
   const [customLoginProjectId, setCustomLoginProjectId] = useState('');
+  const [customClientId, setCustomClientId] = useState('');
+  const [customClientSecret, setCustomClientSecret] = useState('');
 
   // Custom Outreach Message overrides
   const [useCustomMessage, setUseCustomMessage] = useState(false);
@@ -213,7 +215,13 @@ export default function Home() {
 
     // Fetch existing overrides
     fetch(`/api/preview/override?leadId=${encodeURIComponent(previewLead.lead_id)}`)
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`Failed to fetch config: ${res.status} ${res.statusText} - ${text.substring(0, 100)}`);
+        }
+        return res.json();
+      })
       .then(data => {
         if (data && !data.error) {
           if (data.theme) {
@@ -413,6 +421,12 @@ export default function Home() {
         setConfig(data);
         if (data.googleProjectId) {
           setCustomLoginProjectId(data.googleProjectId);
+        }
+        if (data.googleClientId) {
+          setCustomClientId(data.googleClientId);
+        }
+        if (data.googleClientSecret) {
+          setCustomClientSecret(data.googleClientSecret);
         }
       }
     } catch (e) {
@@ -691,19 +705,40 @@ export default function Home() {
   
   const outreachDetails = getOutreachDetails();
 
-  const handleGoogleSignIn = () => {
-    if (!config.googleClientId) {
-      alert("Please configure your Google Client ID in the Settings tab first.");
-      setActiveTab('settings');
+  const handleGoogleSignIn = async () => {
+    const finalClientId = customClientId || config.googleClientId;
+    const finalClientSecret = customClientSecret || config.googleClientSecret;
+
+    if (!finalClientId) {
+      alert("Please enter your Google Client ID first.");
       return;
     }
-    // Save project ID beforehand so it persists
-    if (customLoginProjectId) {
-      config.googleProjectId = customLoginProjectId;
+
+    try {
+      setStatusMessage('Saving Google API keys and launching OAuth flow...');
+      const resp = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...config,
+          googleClientId: finalClientId,
+          googleClientSecret: finalClientSecret,
+          googleProjectId: customLoginProjectId || config.googleProjectId
+        })
+      });
+      const data = await resp.json();
+      if (data.error) {
+        setStatusMessage(`Error saving configurations: ${data.error}`);
+        return;
+      }
+      
+      setConfig(data);
+      
+      const authUrl = `/api/auth/google?state=${encodeURIComponent(customLoginProjectId || data.googleProjectId || '')}`;
+      window.location.href = authUrl;
+    } catch (e: any) {
+      setStatusMessage(`Sign in failed: ${e.message}`);
     }
-    // Direct OAuth flow initiation carrying the Project ID as state
-    const authUrl = `/api/auth/google?state=${encodeURIComponent(customLoginProjectId || config.googleProjectId || '')}`;
-    window.location.href = authUrl;
   };
 
   const handleSignOut = async () => {
@@ -862,6 +897,28 @@ ${config.businessSignature}`;
                 />
               </div>
 
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Google Client ID</label>
+                <input 
+                  type="text" 
+                  value={customClientId} 
+                  onChange={(e) => setCustomClientId(e.target.value)}
+                  placeholder="Paste Client ID..."
+                  style={{ width: '100%', padding: '6px 8px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', fontSize: '0.75rem', outline: 'none' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Google Client Secret</label>
+                <input 
+                  type="password" 
+                  value={customClientSecret} 
+                  onChange={(e) => setCustomClientSecret(e.target.value)}
+                  placeholder="Paste Client Secret..."
+                  style={{ width: '100%', padding: '6px 8px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', fontSize: '0.75rem', outline: 'none' }}
+                />
+              </div>
+
               <button 
                 onClick={handleGoogleSignIn} 
                 className="btn-primary" 
@@ -967,6 +1024,24 @@ ${config.businessSignature}`;
           </div>
         )}
 
+        <button
+          onClick={async () => {
+            const res = await fetch('/api/export/leads');
+            if (res.ok) {
+              const blob = await res.blob();
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'leads.xlsx';
+              a.click();
+              window.URL.revokeObjectURL(url);
+            }
+          }}
+          className="btn-primary"
+          style={{ marginBottom: '12px', fontSize: '0.8rem' }}
+        >
+          Export Leads (Excel)
+        </button>
         {/* VIDEO DEMO SECTION */}
         {activeTab === 'dashboard' && (
           <section className="glass-panel" style={{ padding: '24px', marginBottom: '0' }}>
@@ -2588,6 +2663,76 @@ ${config.businessSignature}`;
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                     Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{lead.rating}}`}</code>, <code>{`{{lead.reviews_count}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{signature}}`}</code>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section H: Claiming & Payments (Paystack / Moniepoint) */}
+            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>7. Client Claiming & Payments (Paystack / Moniepoint)</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Paystack Public Key</label>
+                  <input 
+                    type="text" 
+                    value={config.paystackPublicKey || ''} 
+                    onChange={(e) => setConfig({ ...config, paystackPublicKey: e.target.value })}
+                    placeholder="pk_test_... or pk_live_..."
+                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Paystack Secret Key</label>
+                  <input 
+                    type="password" 
+                    value={config.paystackSecretKey || ''} 
+                    onChange={(e) => setConfig({ ...config, paystackSecretKey: e.target.value })}
+                    placeholder="sk_test_... or sk_live_..."
+                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Claim Fee (NGN)</label>
+                  <input 
+                    type="number" 
+                    value={config.claimFeeNGN || 0} 
+                    onChange={(e) => setConfig({ ...config, claimFeeNGN: Number(e.target.value) })}
+                    placeholder="e.g. 50000"
+                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                  />
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    Set to 0 or leave empty to disable Paystack online payment.
+                  </div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Moniepoint Bank Name</label>
+                  <input 
+                    type="text" 
+                    value={config.moniepointBankName || ''} 
+                    onChange={(e) => setConfig({ ...config, moniepointBankName: e.target.value })}
+                    placeholder="e.g. Moniepoint Microfinance Bank"
+                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Moniepoint Account Number</label>
+                  <input 
+                    type="text" 
+                    value={config.moniepointAccountNumber || ''} 
+                    onChange={(e) => setConfig({ ...config, moniepointAccountNumber: e.target.value })}
+                    placeholder="e.g. 509... (10 digits)"
+                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Moniepoint Account Name</label>
+                  <input 
+                    type="text" 
+                    value={config.moniepointAccountName || ''} 
+                    onChange={(e) => setConfig({ ...config, moniepointAccountName: e.target.value })}
+                    placeholder="e.g. ApexReach Ventures"
+                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                  />
                 </div>
               </div>
             </div>

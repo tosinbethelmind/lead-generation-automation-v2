@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
+import { Lead, saveLeads, addLog, normalizePhone, extractPhonesFromText } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import * as cheerio from 'cheerio';
 
@@ -34,20 +34,22 @@ function generateMockSocialLeads(platform: 'INSTAGRAM' | 'FACEBOOK' | 'TIKTOK' |
 
   const pool = templates[platform] || templates.INSTAGRAM;
   const results: Partial<Lead>[] = [];
-  const count = Math.min(limit || 5, pool.length);
+  const count = limit || 10;
 
   for (let i = 0; i < count; i++) {
-    const item = pool[i];
+    const item = pool[i % pool.length];
+    const name = count > pool.length ? `${item.name} #${Math.floor(i / pool.length) + 1}` : item.name;
+    const handle = count > pool.length ? `${item.handle}${i}` : item.handle;
     const generatedId = `mock_social_${platform.toLowerCase()}_${Date.now()}_${i}`;
     let profileUrl = '';
     if (platform === 'INSTAGRAM') {
-      profileUrl = `https://www.instagram.com/${item.handle.replace('@', '')}/`;
+      profileUrl = `https://www.instagram.com/${handle.replace('@', '')}/`;
     } else if (platform === 'FACEBOOK') {
-      profileUrl = `https://www.facebook.com/${item.handle.replace('fb/', '')}/`;
+      profileUrl = `https://www.facebook.com/${handle.replace('fb/', '')}/`;
     } else if (platform === 'TIKTOK') {
-      profileUrl = `https://www.tiktok.com/${item.handle}/`;
+      profileUrl = `https://www.tiktok.com/${handle}/`;
     } else {
-      profileUrl = `https://www.linkedin.com/${item.handle.replace('company/', 'company/')}/`;
+      profileUrl = `https://www.linkedin.com/${handle.replace('company/', 'company/')}/`;
     }
 
     const platformSuffix = platform === 'INSTAGRAM' ? '1' : platform === 'FACEBOOK' ? '2' : platform === 'TIKTOK' ? '3' : '4';
@@ -56,14 +58,14 @@ function generateMockSocialLeads(platform: 'INSTAGRAM' | 'FACEBOOK' | 'TIKTOK' |
     results.push({
       lead_id: generatedId,
       source: platform,
-      name: item.name,
+      name: name,
       category: item.category,
       address: `${item.area}, Lagos, Nigeria`,
       area: item.area,
       city: 'Lagos',
       phone_e164: normalizePhone(uniquePhone, 'NG') || '',
       phone_raw: uniquePhone,
-      email: `${item.handle.replace('@', '').replace('fb/', '').replace('company/', '')}@gmail.com`,
+      email: `${handle.replace('@', '').replace('fb/', '').replace('company/', '')}@gmail.com`,
       website: '', // Social sellers rarely have standalone websites, making them prime targets!
       rating: item.rating,
       reviews_count: Math.floor(Math.random() * 200) + 15,
@@ -75,7 +77,7 @@ function generateMockSocialLeads(platform: 'INSTAGRAM' | 'FACEBOOK' | 'TIKTOK' |
       status: 'NEW',
       last_contacted_at: '',
       duplicate_of_lead_id: '',
-      business_summary: `${item.name} is an active e-commerce account on ${platform} with ${item.followers}. Bios: "${item.desc}"`,
+      business_summary: `${name} is an active e-commerce account on ${platform} with ${item.followers}. Bios: "${item.desc}"`,
       notes: `Imported via ${platform} Scraper Sandbox. Target Criteria: High Quality E-Commerce Business.`
     });
   }
@@ -161,7 +163,6 @@ export async function POST(req: NextRequest) {
 
     const $ = cheerio.load(htmlText);
     const scrapedLeads: Partial<Lead>[] = [];
-    const phoneRegex = /(?:\+234|0)(?:[789][01]\d{8})/g;
 
     $('.web-result').each((idx, elem) => {
       if (scrapedLeads.length >= limit) return false;
@@ -197,35 +198,37 @@ export async function POST(req: NextRequest) {
       name = name.replace('| LinkedIn', '').trim();
 
       // Extract phone number from snippet if available
-      const phones = snippet.match(phoneRegex);
-      const phoneRaw = phones && phones.length > 0 ? phones[0] : '';
-      const cleanPhone = phoneRaw ? (normalizePhone(phoneRaw, 'NG') || phoneRaw) : '';
+      const phones = extractPhonesFromText(snippet);
+      
+      if (phones && phones.length > 0) {
+        const cleanPhone = phones[0];
 
-      scrapedLeads.push({
-        lead_id: `social_${platUpper.toLowerCase()}_${Date.now()}_${idx}`,
-        source: platUpper,
-        name: name || `E-commerce ${platUpper}`,
-        category: 'E-Commerce Business',
-        address: 'Lagos, Nigeria',
-        area: 'Lagos',
-        city: 'Lagos',
-        phone_e164: cleanPhone,
-        phone_raw: phoneRaw,
-        email: '',
-        website: '', // Social accounts are our primary targets
-        rating: 4.5,
-        reviews_count: 50,
-        verified: false,
-        listings_count: 1,
-        profile_url: link,
-        source_query_or_seed: query,
-        collected_at: new Date().toISOString(),
-        status: 'NEW',
-        last_contacted_at: '',
-        duplicate_of_lead_id: '',
-        business_summary: snippet.trim() || `${name} profile on ${platUpper}.`,
-        notes: `Scraped e-commerce profile from DDG index. Social profile link: ${link}`
-      });
+        scrapedLeads.push({
+          lead_id: `social_${platUpper.toLowerCase()}_${Date.now()}_${idx}`,
+          source: platUpper,
+          name: name || `E-commerce ${platUpper}`,
+          category: 'E-Commerce Business',
+          address: 'Lagos, Nigeria',
+          area: 'Lagos',
+          city: 'Lagos',
+          phone_e164: cleanPhone,
+          phone_raw: cleanPhone,
+          email: '',
+          website: '', // Social accounts are our primary targets
+          rating: 4.5,
+          reviews_count: 50,
+          verified: false,
+          listings_count: 1,
+          profile_url: link,
+          source_query_or_seed: query,
+          collected_at: new Date().toISOString(),
+          status: 'NEW',
+          last_contacted_at: '',
+          duplicate_of_lead_id: '',
+          business_summary: snippet.trim() || `${name} social commerce seller listing.`,
+          notes: `Social seller page extracted: ${link}`
+        });
+      }
     });
 
     if (scrapedLeads.length > 0) {

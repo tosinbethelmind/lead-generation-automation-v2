@@ -36,6 +36,13 @@ interface PreviewData {
     testimonials: { name: string; text: string; rating: number }[];
     ctaText: string;
   };
+  paymentConfig?: {
+    paystackPublicKey: string;
+    claimFeeNGN: number;
+    moniepointBankName: string;
+    moniepointAccountNumber: string;
+    moniepointAccountName: string;
+  };
 }
 
 export default function PreviewPage() {

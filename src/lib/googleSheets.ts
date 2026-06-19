@@ -75,23 +75,42 @@ class WriteQueue {
 }
 
 const dbQueue = new WriteQueue();
-const LOCAL_DB_DIR = path.join(process.cwd(), 'local_db');
+const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
+const BUNDLE_DB_DIR = path.join(process.cwd(), 'local_db');
+const WRITEABLE_DB_DIR = isServerless ? path.join('/tmp', 'local_db') : BUNDLE_DB_DIR;
 
-// Ensure local db folder exists
-if (!fs.existsSync(LOCAL_DB_DIR)) {
-  fs.mkdirSync(LOCAL_DB_DIR, { recursive: true });
+// Ensure writeable db folder exists
+try {
+  if (!fs.existsSync(WRITEABLE_DB_DIR)) {
+    fs.mkdirSync(WRITEABLE_DB_DIR, { recursive: true });
+  }
+} catch (e) {
+  console.warn('Could not create WRITEABLE_DB_DIR:', e);
 }
 
-const LEADS_FILE = path.join(LOCAL_DB_DIR, 'leads_db.json');
-const DNC_FILE = path.join(LOCAL_DB_DIR, 'dnc_db.json');
-const LOGS_FILE = path.join(LOCAL_DB_DIR, 'logs_db.json');
+const LEADS_FILE = path.join(WRITEABLE_DB_DIR, 'leads_db.json');
+const DNC_FILE = path.join(WRITEABLE_DB_DIR, 'dnc_db.json');
+const LOGS_FILE = path.join(WRITEABLE_DB_DIR, 'logs_db.json');
+
+const BUNDLE_LEADS_FILE = path.join(BUNDLE_DB_DIR, 'leads_db.json');
+const BUNDLE_DNC_FILE = path.join(BUNDLE_DB_DIR, 'dnc_db.json');
+const BUNDLE_LOGS_FILE = path.join(BUNDLE_DB_DIR, 'logs_db.json');
 
 async function readJsonFile<T>(filePath: string, defaultValue: T): Promise<T> {
   try {
-    if (!fs.existsSync(filePath)) {
+    let targetPath = filePath;
+    if (filePath === LEADS_FILE && !fs.existsSync(LEADS_FILE) && fs.existsSync(BUNDLE_LEADS_FILE)) {
+      targetPath = BUNDLE_LEADS_FILE;
+    } else if (filePath === DNC_FILE && !fs.existsSync(DNC_FILE) && fs.existsSync(BUNDLE_DNC_FILE)) {
+      targetPath = BUNDLE_DNC_FILE;
+    } else if (filePath === LOGS_FILE && !fs.existsSync(LOGS_FILE) && fs.existsSync(BUNDLE_LOGS_FILE)) {
+      targetPath = BUNDLE_LOGS_FILE;
+    }
+
+    if (!fs.existsSync(targetPath)) {
       return defaultValue;
     }
-    const data = await fsPromises.readFile(filePath, 'utf-8');
+    const data = await fsPromises.readFile(targetPath, 'utf-8');
     return JSON.parse(data) as T;
   } catch (err) {
     console.error(`Error reading file ${filePath}:`, err);
@@ -162,6 +181,33 @@ export function normalizePhone(
   }
   
   return '+' + digits;
+}
+
+export function extractPhonesFromText(text: string): string[] {
+  if (!text) return [];
+  // Match candidate number blocks: sequences of digits, spaces, hyphens, parentheses, plus sign.
+  // Needs to contain at least 7 digits to avoid matching small numbers.
+  const candidateRegex = /\+?[\d\s\-\(\)]{8,25}/g;
+  const matches = text.match(candidateRegex) || [];
+  const phones: string[] = [];
+  
+  for (const m of matches) {
+    // Strip everything except digits
+    const digits = m.replace(/\D/g, '');
+    
+    // Check if it matches Nigerian phone length and patterns:
+    // It should start with 234 followed by 70, 80, 81, 90, 91 (length 13)
+    // Or start with 0 followed by 70, 80, 81, 90, 91 (length 11)
+    // Or just be 10 digits starting with 70, 80, 81, 90, 91 (without leading 0)
+    if (digits.length === 13 && digits.startsWith('234') && ['7', '8', '9'].includes(digits[3])) {
+      phones.push('+' + digits);
+    } else if (digits.length === 11 && digits.startsWith('0') && ['7', '8', '9'].includes(digits[1])) {
+      phones.push('+234' + digits.substring(1));
+    } else if (digits.length === 10 && ['7', '8', '9'].includes(digits[0])) {
+      phones.push('+234' + digits);
+    }
+  }
+  return Array.from(new Set(phones)); // deduplicate
 }
 
 export function getDncKeyFromPhone(normalizedPhone: string): string {
@@ -317,9 +363,14 @@ class GoogleSheetsLeadRepository implements ILeadRepository {
         if (!lead.lead_id) continue;
         
         const normPhone = lead.phone_e164 ? normalizePhone(lead.phone_e164) : null;
+        if (!normPhone) {
+          skipped++;
+          continue;
+        }
+        
         const isDup = 
           existingIds.has(lead.lead_id) || 
-          (normPhone && existingPhones.has(normPhone)) ||
+          existingPhones.has(normPhone) ||
           (lead.profile_url && existingUrls.has(lead.profile_url));
           
         if (isDup) {
@@ -518,9 +569,14 @@ class LocalJsonLeadRepository implements ILeadRepository {
         if (!partial.lead_id) continue;
         
         const normPhone = partial.phone_e164 ? normalizePhone(partial.phone_e164) : null;
+        if (!normPhone) {
+          skipped++;
+          continue;
+        }
+        
         const isDup = 
           existingIds.has(partial.lead_id) || 
-          (normPhone && existingPhones.has(normPhone)) ||
+          existingPhones.has(normPhone) ||
           (partial.profile_url && existingUrls.has(partial.profile_url));
           
         if (isDup) {
@@ -638,6 +694,43 @@ class LocalJsonLogRepository implements ILogRepository {
 // Supabase Database Drivers
 // ----------------------------------------------------------------------------
 
+function restoreLead(dbLead: any): Lead {
+  if (!dbLead) return dbLead;
+  const notes = dbLead.notes || '';
+  if (notes.startsWith('[source:')) {
+    const endIdx = notes.indexOf(']');
+    if (endIdx !== -1) {
+      const src = notes.substring(8, endIdx);
+      return {
+        ...dbLead,
+        source: src,
+        notes: notes.substring(endIdx + 1)
+      };
+    }
+  }
+  
+  // Fallback deduction based on profile_url or lead_id if no prefix is present:
+  let source = dbLead.source;
+  const profileUrl = (dbLead.profile_url || '').toLowerCase();
+  const leadId = (dbLead.lead_id || '').toLowerCase();
+  
+  if (profileUrl.includes('duckduckgo.com')) source = 'DUCKDUCKGO';
+  else if (profileUrl.includes('openstreetmap.org') || profileUrl.includes('overpass-api')) source = 'OSM';
+  else if (profileUrl.includes('instagram.com')) source = 'INSTAGRAM';
+  else if (profileUrl.includes('facebook.com')) source = 'FACEBOOK';
+  else if (profileUrl.includes('tiktok.com')) source = 'TIKTOK';
+  else if (profileUrl.includes('linkedin.com')) source = 'LINKEDIN';
+  else if (leadId.includes('mapsfree') || leadId.includes('maps_free')) source = 'MAPS_FREE';
+  else if (leadId.includes('osm')) source = 'OSM';
+  else if (leadId.includes('jiji')) source = 'JIJI';
+  else if (leadId.includes('ddg') || leadId.includes('duckduckgo')) source = 'DUCKDUCKGO';
+  
+  return {
+    ...dbLead,
+    source
+  };
+}
+
 class SupabaseLeadRepository implements ILeadRepository {
   private fallback = new LocalJsonLeadRepository();
 
@@ -649,7 +742,7 @@ class SupabaseLeadRepository implements ILeadRepository {
         .select('*')
         .order('collected_at', { ascending: false });
       if (error) throw error;
-      return (data || []) as Lead[];
+      return (data || []).map(restoreLead) as Lead[];
     } catch (e: any) {
       console.warn('Supabase getLeads error, falling back to local JSON:', e.message);
       return this.fallback.getLeads();
@@ -665,7 +758,8 @@ class SupabaseLeadRepository implements ILeadRepository {
         .eq('lead_id', leadId)
         .single();
       if (error) throw error;
-      return data as Lead;
+      if (!data) return null;
+      return restoreLead(data) as Lead;
     } catch (e: any) {
       console.warn('Supabase getLeadById error, falling back to local JSON:', e.message);
       return this.fallback.getLeadById(leadId);
@@ -687,9 +781,14 @@ class SupabaseLeadRepository implements ILeadRepository {
       for (const lead of newLeads) {
         if (!lead.lead_id) continue;
         const normPhone = lead.phone_e164 ? normalizePhone(lead.phone_e164) : null;
+        if (!normPhone) {
+          skipped++;
+          continue;
+        }
+        
         const isDup = 
           existingIds.has(lead.lead_id) || 
-          (normPhone && existingPhones.has(normPhone)) ||
+          existingPhones.has(normPhone) ||
           (lead.profile_url && existingUrls.has(lead.profile_url));
 
         if (isDup) {
@@ -697,9 +796,13 @@ class SupabaseLeadRepository implements ILeadRepository {
         } else {
           lead.phone_e164 = normPhone || lead.phone_e164 || '';
           
+          const originalSource = lead.source || 'GOOGLE';
+          const mappedSource = ['JIJI', 'INSTAGRAM', 'FACEBOOK', 'TIKTOK', 'LINKEDIN'].includes(originalSource) ? 'JIJI' : 'GOOGLE';
+          const prefixedNotes = `[source:${originalSource}]${lead.notes || ''}`;
+
           toInsert.push({
             lead_id: lead.lead_id,
-            source: lead.source || 'GOOGLE',
+            source: mappedSource,
             name: lead.name || 'Business Owner',
             category: lead.category || '',
             address: lead.address || '',
@@ -720,7 +823,7 @@ class SupabaseLeadRepository implements ILeadRepository {
             last_contacted_at: lead.last_contacted_at || null,
             duplicate_of_lead_id: lead.duplicate_of_lead_id || '',
             business_summary: lead.business_summary || '',
-            notes: lead.notes || ''
+            notes: prefixedNotes
           });
 
           existingIds.add(lead.lead_id);
@@ -744,7 +847,29 @@ class SupabaseLeadRepository implements ILeadRepository {
     try {
       const supabase = getSupabaseClient();
       const updates: any = { status };
-      if (notes !== undefined) updates.notes = notes;
+      
+      if (notes !== undefined) {
+        // Fetch current notes to see if there is a [source:...] prefix we need to preserve
+        let prefix = '';
+        const { data: currentLead } = await supabase
+          .from('leads')
+          .select('notes')
+          .eq('lead_id', leadId)
+          .single();
+        if (currentLead && currentLead.notes && currentLead.notes.startsWith('[source:')) {
+          const endIdx = currentLead.notes.indexOf(']');
+          if (endIdx !== -1) {
+            prefix = currentLead.notes.substring(0, endIdx + 1);
+          }
+        }
+        
+        if (prefix && !notes.startsWith(prefix)) {
+          updates.notes = prefix + notes;
+        } else {
+          updates.notes = notes;
+        }
+      }
+      
       if (lastContactedAt !== undefined) updates.last_contacted_at = lastContactedAt;
 
       const { error } = await supabase

@@ -19,7 +19,7 @@ export interface LocalConfig {
   // ── Outreach ───────────────────────────────────────────
   dryRun: boolean;
   businessSignature: string;
-  outreachChannel?: 'gmail' | 'whatsapp' | 'coldcall' | 'jiji' | 'instagram' | 'facebook' | 'tiktok' | 'linkedin';
+  outreachChannel?: 'gmail' | 'whatsapp' | 'coldcall' | 'jiji' | 'instagram' | 'facebook' | 'tiktok' | 'linkedin' | 'sms';
   // WhatsApp template (optional)
   whatsappMessageTemplate?: string;
   // Twilio Cold Call configuration (optional)
@@ -61,6 +61,14 @@ export interface LocalConfig {
   evolutionApiKey?: string;
   evolutionInstanceName?: string;
   whapiToken?: string;
+
+  // ── Claiming / Payments ────────────────────────────────
+  paystackPublicKey?: string;
+  paystackSecretKey?: string;
+  claimFeeNGN?: number;
+  moniepointBankName?: string;
+  moniepointAccountNumber?: string;
+  moniepointAccountName?: string;
 
   // ── Legacy / optional (kept for backward compat) ───────
   apifyToken: string;
@@ -126,6 +134,14 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   evolutionInstanceName: '',
   whapiToken: '',
 
+  // Claiming / Payments Defaults
+  paystackPublicKey: '',
+  paystackSecretKey: '',
+  claimFeeNGN: 0,
+  moniepointBankName: 'Moniepoint Microfinance Bank',
+  moniepointAccountNumber: '',
+  moniepointAccountName: '',
+
   // SMS Outreach Defaults
   smsProvider: 'gateway',
   smsMessageTemplate: '',
@@ -152,13 +168,18 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   storageMode: 'hybrid',
 };
 
-const CONFIG_FILE_PATH = path.join(process.cwd(), 'config.json');
+const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
+const BUNDLE_CONFIG_FILE_PATH = path.join(process.cwd(), 'config.json');
+const WRITEABLE_CONFIG_FILE_PATH = isServerless
+  ? path.join('/tmp', 'config.json')
+  : BUNDLE_CONFIG_FILE_PATH;
 
 export function getRuntimeConfig(): RuntimeConfig {
   let fileConfig: Partial<LocalConfig & { storageMode: StorageMode }> = {};
   try {
-    if (fs.existsSync(CONFIG_FILE_PATH)) {
-      const data = fs.readFileSync(CONFIG_FILE_PATH, 'utf-8');
+    const readPath = fs.existsSync(WRITEABLE_CONFIG_FILE_PATH) ? WRITEABLE_CONFIG_FILE_PATH : BUNDLE_CONFIG_FILE_PATH;
+    if (fs.existsSync(readPath)) {
+      const data = fs.readFileSync(readPath, 'utf-8');
       fileConfig = JSON.parse(data);
     }
   } catch (e) {
@@ -195,6 +216,14 @@ export function getRuntimeConfig(): RuntimeConfig {
     evolutionApiKey: process.env.EVOLUTION_API_KEY || fileConfig.evolutionApiKey || DEFAULT_CONFIG.evolutionApiKey,
     evolutionInstanceName: process.env.EVOLUTION_INSTANCE_NAME || fileConfig.evolutionInstanceName || DEFAULT_CONFIG.evolutionInstanceName,
     whapiToken: process.env.WHAPI_TOKEN || fileConfig.whapiToken || DEFAULT_CONFIG.whapiToken,
+
+    // Claiming / Payments
+    paystackPublicKey: process.env.PAYSTACK_PUBLIC_KEY || fileConfig.paystackPublicKey || DEFAULT_CONFIG.paystackPublicKey,
+    paystackSecretKey: process.env.PAYSTACK_SECRET_KEY || fileConfig.paystackSecretKey || DEFAULT_CONFIG.paystackSecretKey,
+    claimFeeNGN: Number(process.env.CLAIM_FEE_NGN) || (fileConfig.claimFeeNGN !== undefined ? Number(fileConfig.claimFeeNGN) : DEFAULT_CONFIG.claimFeeNGN),
+    moniepointBankName: process.env.MONIEPOINT_BANK_NAME || fileConfig.moniepointBankName || DEFAULT_CONFIG.moniepointBankName,
+    moniepointAccountNumber: process.env.MONIEPOINT_ACCOUNT_NUMBER || fileConfig.moniepointAccountNumber || DEFAULT_CONFIG.moniepointAccountNumber,
+    moniepointAccountName: process.env.MONIEPOINT_ACCOUNT_NAME || fileConfig.moniepointAccountName || DEFAULT_CONFIG.moniepointAccountName,
 
     // SMS Outreach Configuration
     smsProvider: (process.env.SMS_PROVIDER as any) || fileConfig.smsProvider || DEFAULT_CONFIG.smsProvider,
@@ -280,6 +309,14 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       evolutionInstanceName: updated.evolutionInstanceName,
       whapiToken: updated.whapiToken,
 
+      // Claiming / Payments
+      paystackPublicKey: updated.paystackPublicKey,
+      paystackSecretKey: updated.paystackSecretKey,
+      claimFeeNGN: updated.claimFeeNGN,
+      moniepointBankName: updated.moniepointBankName,
+      moniepointAccountNumber: updated.moniepointAccountNumber,
+      moniepointAccountName: updated.moniepointAccountName,
+
       // SMS Outreach Configuration
       smsProvider: updated.smsProvider,
       smsMessageTemplate: updated.smsMessageTemplate,
@@ -313,7 +350,7 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       storageMode: updated.storageMode,
     };
     
-    fs.writeFileSync(CONFIG_FILE_PATH, JSON.stringify(fileData, null, 2), 'utf-8');
+    fs.writeFileSync(WRITEABLE_CONFIG_FILE_PATH, JSON.stringify(fileData, null, 2), 'utf-8');
     return updated;
   } catch (e) {
     console.error('Error writing local config:', e);

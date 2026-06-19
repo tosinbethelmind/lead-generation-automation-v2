@@ -1,0 +1,27 @@
+{
+  "projectName": "Lead Generation Automation",
+  "screens": [
+    {
+      "id": "home",
+      "title": "Dashboard",
+      "description": "Main lead list view",
+      "imagePath": "assets/screens/home_screen_placeholder.png",
+      "width": 1200,
+      "height": 800,
+      "duration": 5,
+      "zoom": true,
+      "cursor": false
+    },
+    {
+      "id": "lead-detail",
+      "title": "Lead Detail",
+      "description": "Zoomed view of a lead card with cursor hover",
+      "imagePath": "assets/screens/lead_detail_zoom.png",
+      "width": 1200,
+      "height": 800,
+      "duration": 6,
+      "zoom": true,
+      "cursor": true
+    }
+  ]
+}

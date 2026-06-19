@@ -257,3 +257,16 @@ h1, h2, h3, h4, h5, h6 {
 .video-play-btn {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* Dropdown Select & Option Styling for Dark Mode */
+select {
+  background-color: #0d121f !important;
+  color: #f8fafc !important;
+}
+
+select option {
+  background-color: #0d121f !important;
+  color: #f8fafc !important;
+  padding: 10px !important;
+}
+

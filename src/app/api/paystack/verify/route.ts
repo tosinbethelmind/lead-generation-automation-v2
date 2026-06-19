@@ -1,3 +1,20 @@
+/**
+ * GET /api/paystack/verify
+ *
+ * Verifies a Paystack transaction reference, updates lead status, writes site config,
+ * optionally commits to GitHub for Vercel deployments, and sends an admin notification.
+ *
+ * Required environment variables:
+ *   - PAYSTACK_SECRET_KEY          – Paystack secret for verification
+ *   - GITHUB_PAT                  – Personal Access Token for GitHub (optional)
+ *   - GITHUB_REPO                 – "owner/repo" string (optional)
+ *   - GITHUB_BRANCH               – Branch name for commit (defaults to 'main')
+ *   - EMAIL_PROVIDER              – 'gmail' | 'resend' | 'brevo' (default: gmail)
+ *   - RESEND_API_KEY, BREVO_API_KEY, etc. – credentials for the chosen provider
+ *
+ * The route validates required env vars, handles errors gracefully, sanitizes the
+ * response to avoid leaking sensitive lead data, and logs all steps.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
 import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
@@ -8,10 +25,9 @@ import path from 'path';
 // Google OAuth Token Refresher
 // ============================================================================
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function getValidAccessToken(config: any): Promise<string> {
   const now = Date.now();
-  const bufferMs = 5 * 60 * 1000; // 5 minute buffer
+  const bufferMs = 5 * 60 * 1000;
 
   if (config.googleAccessToken && config.googleTokenExpiry && config.googleTokenExpiry - bufferMs > now) {
     return config.googleAccessToken;
@@ -81,7 +97,6 @@ async function sendGmailMessage(to: string, subject: string, body: string, acces
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function sendResendMessage(to: string, subject: string, body: string, config: any) {
   if (!config.resendApiKey) {
     throw new Error('Resend API Key is not configured.');
@@ -108,7 +123,6 @@ async function sendResendMessage(to: string, subject: string, body: string, conf
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function sendBrevoMessage(to: string, subject: string, body: string, config: any) {
   if (!config.brevoApiKey) {
     throw new Error('Brevo API Key is not configured.');
@@ -162,7 +176,6 @@ async function commitFileToGitHub({
 }) {
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
   
-  // 1. Try to fetch existing file to get its SHA (required for updating files on Git)
   let sha: string | undefined;
   try {
     const checkResp = await fetch(`${url}?ref=${branch}`, {
@@ -179,9 +192,7 @@ async function commitFileToGitHub({
     console.warn('Checking file existence on GitHub failed or file is new:', err);
   }
 
-  // 2. Commit the file contents
   const base64Content = Buffer.from(content).toString('base64');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const body: any = {
     message: commitMessage,
     content: base64Content,
@@ -210,16 +221,73 @@ async function commitFileToGitHub({
 }
 
 // ============================================================================
-// Next.js Route Handler
+// Next.js Verification Route
 // ============================================================================
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { leadId, clientName, clientEmail, theme, copy, paymentMethod } = body;
+    const { searchParams } = new URL(req.url);
+    const reference = searchParams.get('reference');
 
-    if (!leadId || !clientName || !clientEmail) {
-      return NextResponse.json({ error: 'Missing required parameters: leadId, clientName, or clientEmail' }, { status: 400 });
+    if (!reference) {
+      return NextResponse.json({ error: 'Missing payment reference parameter' }, { status: 400 });
+    }
+
+    const config = getRuntimeConfig();
+
+    // ==============================
+    // Centralised environment validation
+    // ==============================
+    const requiredEnv = ['PAYSTACK_SECRET_KEY'];
+    // GitHub variables needed when scaling mode is 'git'
+    if (process.env.GITHUB_PAT || process.env.GITHUB_REPO) {
+      requiredEnv.push('GITHUB_PAT', 'GITHUB_REPO');
+    }
+    // Email provider credentials
+    const emailProvider = config.emailProvider || 'gmail';
+    if (emailProvider === 'gmail') {
+      requiredEnv.push('GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REFRESH_TOKEN', 'GOOGLE_USER_EMAIL');
+    } else if (emailProvider === 'resend') {
+      requiredEnv.push('RESEND_API_KEY');
+    } else if (emailProvider === 'brevo') {
+      requiredEnv.push('BREVO_API_KEY', 'BREVO_SENDER_EMAIL');
+    }
+    const missingEnv = requiredEnv.filter(e => !process.env[e]);
+    if (missingEnv.length) {
+      console.warn('Missing environment variables:', missingEnv);
+      return NextResponse.json({ error: `Missing required env vars: ${missingEnv.join(', ')}` }, { status: 500 });
+    }
+
+    const secretKey = config.paystackSecretKey;
+    if (!secretKey) {
+      return NextResponse.json({ error: 'Paystack Secret Key is not configured on the server.' }, { status: 500 });
+    }
+
+    // 1. Verify transaction status on Paystack
+    const verifyResp = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
+      headers: {
+        'Authorization': `Bearer ${secretKey}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const verifyData = await verifyResp.json();
+
+    if (!verifyResp.ok || !verifyData.status) {
+      return NextResponse.json({ error: verifyData.message || 'Paystack verification failed' }, { status: verifyResp.status });
+    }
+
+    const transaction = verifyData.data;
+
+    if (transaction.status !== 'success') {
+      return NextResponse.json({ error: `Payment transaction status is: ${transaction.status}` }, { status: 400 });
+    }
+
+    // Extract metadata from the initialized transaction
+    const { leadId, clientName, clientEmail, theme, copy } = transaction.metadata || {};
+
+    if (!leadId || !clientEmail || !clientName) {
+      return NextResponse.json({ error: 'Transaction succeeded, but required metadata was not found.' }, { status: 400 });
     }
 
     const repo = getActiveLeadRepository();
@@ -229,20 +297,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Lead with ID ${leadId} not found` }, { status: 404 });
     }
 
-    // 1. Update lead's status/notes in sheet/Supabase
+    // 2. Process claim event - update status & notes in sheets / Supabase
     const timestamp = new Date().toISOString();
-    const transferPending = paymentMethod === 'bank_transfer' ? ' [MANUAL TRANSFER PENDING]' : '';
-    const newNotes = `${lead.notes || ''}\n[CLAIMED${transferPending}] Client requested ownership on ${timestamp}. Contact: ${clientName} (${clientEmail})`;
+    const newNotes = `${lead.notes || ''}\n[CLAIMED - PAID ONLINE] Client claimed and paid Setup Fee (₦${(transaction.amount / 100).toLocaleString()}) via Paystack. Ref: ${reference}. Contact: ${clientName} (${clientEmail})`;
     await repo.updateLeadStatus(leadId, 'CONTACTED', newNotes, timestamp);
 
-    // 2. Add log entry
+    // 3. Log event
     await addLog(
-      'Lead Claim Event',
+      'Lead Claim & Online Payment',
       'SUCCESS',
-      `Lead "${lead.name}" claimed by ${clientName} (${clientEmail})`
+      `Lead "${lead.name}" claimed & paid NGN ${(transaction.amount / 100).toLocaleString()} by ${clientName} (${clientEmail})`
     );
 
-    // 3. Assemble JSON configuration for the claimed website
+    // 4. Assemble JSON configuration for the claimed website
     const siteConfig = {
       lead,
       theme: theme || {
@@ -264,12 +331,18 @@ export async function POST(req: NextRequest) {
       },
       claimedAt: timestamp,
       clientName,
-      clientEmail
+      clientEmail,
+      payment: {
+        gateway: 'paystack',
+        reference,
+        amount: transaction.amount / 100,
+        paidAt: transaction.paid_at
+      }
     };
 
     const siteConfigString = JSON.stringify(siteConfig, null, 2);
 
-    // 4. Local filesystem write (for local dev mode synchronization)
+    // 5. Local filesystem write
     let localWriteSuccess = false;
     try {
       const dataDir = path.join(process.cwd(), 'src', 'data', 'sites');
@@ -279,22 +352,27 @@ export async function POST(req: NextRequest) {
       const filePath = path.join(dataDir, `${leadId}.json`);
       fs.writeFileSync(filePath, siteConfigString, 'utf-8');
       localWriteSuccess = true;
-      console.log(`Locally wrote claimed site config to ${filePath}`);
-    } catch (fsErr: unknown) {
-      const error = fsErr as Error;
-      console.warn('Failed to write claimed site config to local filesystem:', error.message);
+      console.log(`Locally wrote claimed site config from paid checkout to ${filePath}`);
+    } catch (fsErr: any) {
+      console.warn('Failed to write claimed site config to local filesystem:', fsErr.message);
     }
 
-    // 5. Commit to GitHub (for Vercel deployment update - ONLY if mode is 'git')
+    // 6. Commit to GitHub (for Vercel deployment update - ONLY if mode is 'git')
     const githubPat = process.env.GITHUB_PAT;
-    const githubRepo = process.env.GITHUB_REPO; // Expected format: "username/repo"
+    const githubRepo = process.env.GITHUB_REPO;
     const githubBranch = process.env.GITHUB_BRANCH || 'main';
 
     let githubCommitStatus = 'SKIPPED';
     let githubErrorMsg = '';
 
     const { parseScalingConfig } = require('@/lib/scalingHelper');
-    const scaling = parseScalingConfig(lead.notes);
+    let scaling;
+    try {
+      scaling = parseScalingConfig(lead.notes);
+    } catch (parseErr) {
+      console.warn('Failed to parse scaling config:', parseErr);
+      scaling = { mode: 'none' } as any;
+    }
 
     if (scaling.mode === 'git') {
       if (githubPat && githubRepo) {
@@ -310,29 +388,21 @@ export async function POST(req: NextRequest) {
             repo: repoName,
             filePath: `src/data/sites/${leadId}.json`,
             content: siteConfigString,
-            commitMessage: `feat: deploy claimed website for ${lead.name} (${leadId})`,
+            commitMessage: `feat: deploy claimed paid website for ${lead.name} (${leadId})`,
             token: githubPat,
             branch: githubBranch
           });
           githubCommitStatus = 'SUCCESS';
-        } catch (ghErr: unknown) {
-          const error = ghErr as Error;
-          console.error('GitHub Commit Failed:', error);
+        } catch (ghErr: any) {
+          console.error('GitHub Commit Failed:', ghErr);
           githubCommitStatus = 'FAILED';
-          githubErrorMsg = error.message;
+          githubErrorMsg = ghErr.message;
         }
-      } else {
-        console.log('GitHub integration skipped: GITHUB_PAT or GITHUB_REPO not defined in environment variables.');
       }
-    } else {
-      console.log(`GitHub commit skipped: Turnout mode is '${scaling.mode}' (not 'git').`);
     }
 
-    // 6. Send conversion notification to Admin
-    const config = getRuntimeConfig();
-    const isDryRun = config.dryRun;
+    // 7. Send notification to admin
     const provider = config.emailProvider || 'gmail';
-
     const adminEmail = config.googleUserEmail || config.resendFromEmail || config.brevoSenderEmail;
 
     const gitNotice = githubCommitStatus === 'SUCCESS' 
@@ -341,11 +411,10 @@ export async function POST(req: NextRequest) {
         ? `⚠️ Automatic deployment failed: ${githubErrorMsg}`
         : 'ℹ️ GitHub deployment skipped (keys not configured in .env.local).';
 
-    const transferSubjectSuffix = paymentMethod === 'bank_transfer' ? ' (Manual Bank Transfer Pending)' : '';
-    const adminSubject = `🎉 Lead Claimed: ${lead.name} requested ownership!${transferSubjectSuffix}`;
+    const adminSubject = `🎉 Paid Claim: ${lead.name} claimed with online payment!`;
     const adminBody = `Hi Admin,
 
-Exciting news! A business owner has claimed their landing page preview.
+Great news! A business owner has claimed their landing page preview and successfully paid their Setup Fee online.
 
 Details:
 - Business Name: ${lead.name}
@@ -353,7 +422,8 @@ Details:
 - Contact Person: ${clientName}
 - Contact Email: ${clientEmail}
 - Phone Number: ${lead.phone_raw || 'Not provided'}
-- Payment Method: ${paymentMethod === 'bank_transfer' ? 'Manual Local Bank Transfer (Moniepoint)' : 'Default / None'}
+- Setup Fee Paid: ₦${(transaction.amount / 100).toLocaleString()} (via Paystack)
+- Paystack Ref: ${reference}
 - Status: CLAIMED (Lead Notes updated in CRM)
 
 Deployment Status:
@@ -364,7 +434,7 @@ Please contact them at ${clientEmail} as soon as possible to finalize their webs
 Best regards,
 ApexReach Lead Engine`;
 
-    if (adminEmail && !isDryRun) {
+    if (adminEmail && !config.dryRun) {
       try {
         if (provider === 'gmail') {
           const accessToken = await getValidAccessToken(config);
@@ -374,31 +444,30 @@ ApexReach Lead Engine`;
         } else if (provider === 'brevo') {
           await sendBrevoMessage(adminEmail, adminSubject, adminBody, config);
         }
-      } catch (sendErr: unknown) {
-        const error = sendErr as Error;
-        console.warn('Failed to send claim notification email:', error.message);
+      } catch (sendErr: any) {
+        console.warn('Failed to send paid claim notification email:', sendErr.message);
       }
     }
 
-    let userMessage = 'Website claimed successfully!';
+    let userMessage = 'Payment verified and website claimed successfully!';
     if (githubCommitStatus === 'SUCCESS') {
-      userMessage = 'Website claimed! Live files committed to GitHub. Vercel is deploying the updates.';
-    } else if (githubCommitStatus === 'FAILED') {
-      userMessage = `Website claimed in CRM, but Git deployment failed: ${githubErrorMsg}`;
-    } else {
-      userMessage = 'Website claimed successfully! Admin notification triggered. Git deployment skipped (set up GITHUB_PAT and GITHUB_REPO to enable automatic deploys).';
+      userMessage = 'Payment verified! Live files committed to GitHub. Vercel is deploying the updates.';
     }
 
+    // Sanitize lead data before responding to client
+    const responseLead = { ...lead } as any;
+    delete responseLead.notes; // remove potentially sensitive notes
     return NextResponse.json({
       success: true,
       githubCommitStatus,
+      githubErrorMsg,
       localWriteSuccess,
       message: userMessage,
-      lead
+      lead: responseLead
     });
 
-  } catch (err: unknown) {
-    const error = err as Error;
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (err: any) {
+    console.error('Paystack verification error:', err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

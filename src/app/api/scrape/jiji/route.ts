@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
-import { chromium } from 'playwright';
 
 // ============================================================================
 // Sandbox Lagos Jiji Listing Generator
@@ -9,44 +8,46 @@ import { chromium } from 'playwright';
 
 function generateMockJijiLeads(seedUrl: string, limit: number): Partial<Lead>[] {
   const listings = [
-    { title: "Toyota Camry 2015 Silver", phone: "08123456789", category: "Cars", price: "₦6,500,000", area: "Ikeja", desc: "Super clean Toyota Camry 2015, foreign used, low mileage, buy and drive." },
-    { title: "Serviced 3 Bedroom Apartment Lekki", phone: "09093456789", category: "Real Estate", price: "₦4,500,000/year", area: "Lekki Phase 1", desc: "Luxury 3 bedroom serviced flat in Lekki Phase 1, fully fitted kitchen, 24/7 power." },
-    { title: "HP EliteBook 840 G5 Core i7", phone: "08034567890", category: "Computers", price: "₦380,000", area: "Yaba", desc: "Hp Elitebook 840 G5 Intel Core i7 8GB RAM 256GB SSD, pristine condition." },
-    { title: "Bespoke Italian Leather Shoes", phone: "07065678901", category: "Fashion", price: "₦45,000", area: "Surulere", desc: "Premium quality hand-crafted bespoke Italian leather shoes, all sizes available." },
-    { title: "Commercial Generator 20KVA", phone: "08156789012", category: "Machinery", price: "₦2,800,000", area: "Oshodi", desc: "Soundproof diesel generator 20KVA, perfect working order, serviced regularly." },
-    { title: "Professional Event Catering Services", phone: "08097890123", category: "Services", price: "₦150,000", area: "Maryland", desc: "Get professional catering service for weddings, birthdays, and corporate events." }
+    { title: "Toyota Camry 2015 Silver", phone: "08193456789", category: "Cars", price: "₦6,500,000", area: "Ikeja", desc: "Super clean Toyota Camry 2015, foreign used, low mileage, buy and drive." },
+    { title: "Serviced 3 Bedroom Apartment Lekki", phone: "09099456789", category: "Real Estate", price: "₦4,500,000/year", area: "Lekki Phase 1", desc: "Luxury 3 bedroom serviced flat in Lekki Phase 1, fully fitted kitchen, 24/7 power." },
+    { title: "HP EliteBook 840 G5 Core i7", phone: "08099567890", category: "Computers", price: "₦380,000", area: "Yaba", desc: "Hp Elitebook 840 G5 Intel Core i7 8GB RAM 256GB SSD, pristine condition." },
+    { title: "Bespoke Italian Leather Shoes", phone: "07099678901", category: "Fashion", price: "₦45,000", area: "Surulere", desc: "Premium quality hand-crafted bespoke Italian leather shoes, all sizes available." },
+    { title: "Commercial Generator 20KVA", phone: "08199789012", category: "Machinery", price: "₦2,800,000", area: "Oshodi", desc: "Soundproof diesel generator 20KVA, perfect working order, serviced regularly." },
+    { title: "Professional Event Catering Services", phone: "08099890123", category: "Services", price: "₦150,000", area: "Maryland", desc: "Get professional catering service for weddings, birthdays, and corporate events." }
   ];
 
   const results: Partial<Lead>[] = [];
-  const numToGen = Math.min(limit || 5, listings.length);
+  const numToGen = limit || 10;
   
   for (let i = 0; i < numToGen; i++) {
-    const list = listings[i];
-    const cleanPhone = normalizePhone(list.phone, 'NG') || list.phone;
+    const list = listings[i % listings.length];
+    const title = numToGen > listings.length ? `${list.title} #${Math.floor(i / listings.length) + 1}` : list.title;
+    const phoneNum = list.phone.substring(0, list.phone.length - 2) + String(i).padStart(2, '0');
+    const cleanPhone = normalizePhone(phoneNum, 'NG') || phoneNum;
     
     results.push({
       lead_id: `mock_jiji_${Date.now()}_${i}`,
       source: 'JIJI',
-      name: `Vendor (${list.title.split(' ')[0]})`,
+      name: `Vendor (${title.split(' ')[0]})`,
       category: list.category,
       address: `${list.area}, Lagos, Nigeria`,
       area: list.area,
       city: 'Lagos',
       phone_e164: cleanPhone,
-      phone_raw: list.phone,
+      phone_raw: phoneNum,
       email: '',
       website: '',
       rating: Number((4.0 + Math.random() * 0.9).toFixed(1)),
       reviews_count: Math.floor(Math.random() * 40) + 1,
       verified: Math.random() > 0.4,
       listings_count: Math.floor(Math.random() * 15) + 1,
-      profile_url: seedUrl || 'https://jiji.ng/lagos',
+      profile_url: (seedUrl || 'https://jiji.ng/lagos') + ((seedUrl || 'https://jiji.ng/lagos').includes('?') ? '&' : '?') + `item=${i}`,
       source_query_or_seed: seedUrl || 'https://jiji.ng/lagos',
       collected_at: new Date().toISOString(),
       status: 'NEW',
       last_contacted_at: '',
       duplicate_of_lead_id: '',
-      business_summary: `Jiji vendor listing for ${list.title} in ${list.area}. Price: ${list.price}. Description: ${list.desc}`,
+      business_summary: `Jiji vendor listing for ${title} in ${list.area}. Price: ${list.price}. Description: ${list.desc}`,
       notes: 'Imported via Playwright Jiji Local Sandbox.'
     });
   }
@@ -91,6 +92,7 @@ export async function POST(req: NextRequest) {
     let browser;
     let newLeads: Partial<Lead>[] = [];
     try {
+      const { chromium } = await import('playwright');
       browser = await chromium.launch({ headless: true });
       const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -226,31 +228,33 @@ export async function POST(req: NextRequest) {
 
           const normPhone = phone ? normalizePhone(phone, 'NG') : null;
           
-          newLeads.push({
-            lead_id: `jiji_${item.url.split('/').pop()?.split('.')[0] || Date.now()}_${i}`,
-            source: 'JIJI',
-            name: vendorName,
-            category: 'Retail Vendor',
-            address: `${item.area}, Lagos, Nigeria`,
-            area: item.area,
-            city: 'Lagos',
-            phone_e164: normPhone || '',
-            phone_raw: phone,
-            email: '',
-            website: '',
-            rating: 4.5,
-            reviews_count: 5,
-            verified: true,
-            listings_count: 3,
-            profile_url: item.url,
-            source_query_or_seed: url,
-            collected_at: new Date().toISOString(),
-            status: 'NEW',
-            last_contacted_at: '',
-            duplicate_of_lead_id: '',
-            business_summary: `Jiji vendor listing: ${item.title}. Price: ${item.price}.`,
-            notes: 'Imported via Playwright Chromium crawler.'
-          });
+          if (normPhone) {
+            newLeads.push({
+              lead_id: `jiji_${item.url.split('/').pop()?.split('.')[0] || Date.now()}_${i}`,
+              source: 'JIJI',
+              name: vendorName,
+              category: 'Retail Vendor',
+              address: `${item.area}, Lagos, Nigeria`,
+              area: item.area,
+              city: 'Lagos',
+              phone_e164: normPhone,
+              phone_raw: phone,
+              email: '',
+              website: '',
+              rating: 4.5,
+              reviews_count: 5,
+              verified: true,
+              listings_count: 3,
+              profile_url: item.url,
+              source_query_or_seed: url,
+              collected_at: new Date().toISOString(),
+              status: 'NEW',
+              last_contacted_at: '',
+              duplicate_of_lead_id: '',
+              business_summary: `Jiji vendor listing: ${item.title}. Price: ${item.price}.`,
+              notes: 'Imported via Playwright Chromium crawler.'
+            });
+          }
           
           await detailPage.close();
         } catch (err) {
