@@ -91,8 +91,8 @@ export async function POST(req: NextRequest) {
     let scrapedLeads: Partial<Lead>[] = [];
 
     try {
-      const { chromium } = await import('playwright');
-      browser = await chromium.launch({ headless: true });
+      const { launchBrowser } = await import('@/lib/playwrightLauncher');
+      browser = await launchBrowser();
       const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         viewport: { width: 1280, height: 800 }
@@ -166,18 +166,11 @@ export async function POST(req: NextRequest) {
       }
     } catch (browserErr: any) {
       console.error("Playwright browser error:", browserErr);
-      await addLog('Maps-Free Scraper', 'WARN', `Playwright failed: ${browserErr.message}. Falling back to sandbox simulation.`);
-      
-      // Graceful fallback to sandbox leads to keep execution resilient
-      const mockLeads = generateMockMapsFreeLeads(query, limit);
-      const dbResult = await saveLeads(mockLeads);
+      await addLog('Maps-Free Scraper', 'ERROR', `Playwright failed: ${browserErr.message}`);
       return NextResponse.json({
-        success: true,
-        mode: 'sandbox_fallback',
-        added: dbResult.added,
-        skipped: dbResult.skipped,
-        leads: mockLeads
-      });
+        success: false,
+        error: `Playwright failed: ${browserErr.message}`
+      }, { status: 500 });
     } finally {
       if (browser) await browser.close();
     }

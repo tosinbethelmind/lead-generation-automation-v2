@@ -86,8 +86,8 @@ export async function POST(req: NextRequest) {
     
     let browser;
     try {
-      const { chromium } = await import('playwright');
-      browser = await chromium.launch({ headless: true });
+      const { launchBrowser } = await import('@/lib/playwrightLauncher');
+      browser = await launchBrowser();
       const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         viewport: { width: 1280, height: 800 }
@@ -113,8 +113,8 @@ export async function POST(req: NextRequest) {
         }
       } catch (authErr: any) {
         console.error("Jiji Authentication failed:", authErr);
-        await addLog('Jiji Outreach', 'WARN', `Live login failed: ${authErr.message}. Falling back to sandbox/simulation.`);
-        throw new Error("Jiji Authentication Failed. Anti-bot block or invalid credentials. Falling back to sandbox.");
+        await addLog('Jiji Outreach', 'WARN', `Live login failed: ${authErr.message}.`);
+        throw new Error(`Jiji Authentication Failed: ${authErr.message}`);
       }
 
       // Loop and dispatch messages
@@ -182,24 +182,12 @@ export async function POST(req: NextRequest) {
       }
 
     } catch (browserErr: any) {
-      console.warn("Live outreach failed entirely:", browserErr.message);
-      await addLog('Jiji Outreach', 'WARN', `Live crawl failed: ${browserErr.message}. Executing simulated outreach fallback.`);
-      
-      // Fallback to simulated delivery to guarantee success and no crashes
-      for (const lead of targetLeads) {
-        if (lead.source !== 'JIJI' || !lead.profile_url) continue;
-        const previewUrl = `${origin}/preview/${lead.lead_id}`;
-        const finalMessage = formatMessage(customMessage || jijiTemplate, lead, previewUrl, signature);
-
-        await repo.updateLeadStatus(lead.lead_id, 'CONTACTED', (lead.notes || '') + `\n[${new Date().toISOString()}] Jiji outreach sent via simulation fallback: ${previewUrl}`, new Date().toISOString());
-
-        results.push({
-          leadId: lead.lead_id,
-          name: lead.name,
-          status: 'SUCCESS',
-          messageSent: finalMessage
-        });
-      }
+      console.error("Live Jiji outreach failed:", browserErr.message);
+      await addLog('Jiji Outreach', 'ERROR', `Live outreach failed: ${browserErr.message}`);
+      return NextResponse.json({
+        success: false,
+        error: `Live outreach failed: ${browserErr.message}`
+      }, { status: 500 });
     } finally {
       if (browser) await browser.close();
     }

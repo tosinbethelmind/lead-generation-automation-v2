@@ -92,8 +92,8 @@ export async function POST(req: NextRequest) {
     let browser;
     let newLeads: Partial<Lead>[] = [];
     try {
-      const { chromium } = await import('playwright');
-      browser = await chromium.launch({ headless: true });
+      const { launchBrowser } = await import('@/lib/playwrightLauncher');
+      browser = await launchBrowser();
       const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       });
@@ -173,8 +173,8 @@ export async function POST(req: NextRequest) {
                   const decoded = decodeURIComponent(waUrlMatch[1]);
                   const waMatch2 = decoded.match(/wa\.me\/(\d+)/);
                   if (waMatch2 && waMatch2[1]) {
-                    phone = waMatch2[1];
-                    break;
+                     phone = waMatch2[1];
+                     break;
                   }
                 }
               }
@@ -267,18 +267,11 @@ export async function POST(req: NextRequest) {
       if (browser) {
         try { await browser.close(); } catch (cbErr) {}
       }
-      await addLog('Jiji Scraper', 'WARN', `Playwright crawl failed (${e.message}). Falling back to sandbox generator.`);
-      const mockLeads = generateMockJijiLeads(url, limit);
-      const dbResult = await saveLeads(mockLeads);
-      
-      await addLog('Jiji Scraper', 'SUCCESS', `Crawl complete via sandbox fallback. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+      await addLog('Jiji Scraper', 'ERROR', `Playwright crawl failed: ${e.message}`);
       return NextResponse.json({
-        success: true,
-        mode: 'sandbox-fallback',
-        added: dbResult.added,
-        skipped: dbResult.skipped,
-        leads: mockLeads
-      });
+        success: false,
+        error: `Playwright crawl failed: ${e.message}`
+      }, { status: 500 });
     }
     
     const dbResult = await saveLeads(newLeads);

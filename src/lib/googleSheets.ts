@@ -61,6 +61,32 @@ const COLUMNS = [
 ];
 
 // ============================================================================
+// Lead Name Validation (BUG 3)
+// ============================================================================
+
+const INVALID_LEAD_NAMES = new Set([
+  'instagram', 'facebook', 'tiktok', 'twitter', 'x', 'linkedin',
+  'whatsapp', 'snapchat', 'youtube', 'pinterest', 'reddit',
+  'telegram', 'wechat', 'discord', 'threads', 'tumblr',
+  'test', 'test lead', 'test lead insert', 'sample', 'demo',
+  'n/a', 'na', 'none', 'null', 'undefined', 'unknown',
+]);
+
+export function isValidLeadName(name: string | undefined | null): boolean {
+  if (!name) return false;
+  const trimmed = name.trim();
+  // Reject if under 3 characters
+  if (trimmed.length < 3) return false;
+  // Reject if it matches a social media platform or test string (case-insensitive)
+  if (INVALID_LEAD_NAMES.has(trimmed.toLowerCase())) return false;
+  // Reject if it looks like a URL
+  if (/^https?:\/\//i.test(trimmed) || /^www\./i.test(trimmed)) return false;
+  // Reject if purely numeric
+  if (/^\d+$/.test(trimmed)) return false;
+  return true;
+}
+
+// ============================================================================
 // Asynchronous Dev-Safe JSON File Database & Safe Locks
 // ============================================================================
 
@@ -229,7 +255,52 @@ export async function isPhoneOnDnc(phone: string, country = 'NG'): Promise<boole
 async function getSheetsInstance() {
   const rootDir = process.cwd();
   const credentialsPath = path.join(rootDir, 'credentials.json');
+  const config = getRuntimeConfig();
 
+  // BUG 4: Try OAuth2 user credentials first (from Google Sign-In flow)
+  if (config.googleClientId && config.googleClientSecret && config.googleRefreshToken) {
+    try {
+      const { saveLocalConfig } = await import('./localConfig');
+      const oauth2Client = new google.auth.OAuth2(
+        config.googleClientId,
+        config.googleClientSecret,
+        // redirect_uri is not needed for token refresh
+      );
+
+      oauth2Client.setCredentials({
+        access_token: config.googleAccessToken || undefined,
+        refresh_token: config.googleRefreshToken,
+        expiry_date: config.googleTokenExpiry || undefined,
+      });
+
+      // Check if token is expired or about to expire (within 5 minutes)
+      const now = Date.now();
+      const isExpired = !config.googleAccessToken || !config.googleTokenExpiry || config.googleTokenExpiry < now + 5 * 60 * 1000;
+
+      if (isExpired) {
+        console.log('[getSheetsInstance] OAuth token expired or missing, refreshing...');
+        const { credentials } = await oauth2Client.refreshAccessToken();
+        oauth2Client.setCredentials(credentials);
+
+        // Persist the refreshed tokens
+        try {
+          await saveLocalConfig({
+            googleAccessToken: credentials.access_token || '',
+            googleTokenExpiry: credentials.expiry_date || 0,
+          });
+          console.log('[getSheetsInstance] OAuth tokens refreshed and saved.');
+        } catch (saveErr) {
+          console.warn('[getSheetsInstance] Failed to persist refreshed tokens:', saveErr);
+        }
+      }
+
+      return google.sheets({ version: 'v4', auth: oauth2Client as any });
+    } catch (oauthErr) {
+      console.warn('[getSheetsInstance] OAuth2 user auth failed, falling back to service account:', oauthErr);
+    }
+  }
+
+  // Fallback: Service account credentials
   let auth;
   if (fs.existsSync(credentialsPath)) {
     auth = new google.auth.GoogleAuth({
@@ -240,7 +311,7 @@ async function getSheetsInstance() {
     const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
     const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
     if (!email || !privateKey) {
-      throw new Error("Missing Google Service Account credentials. Run in local sandbox mode or supply credentials.");
+      throw new Error("Missing Google credentials. Configure OAuth sign-in or supply service account credentials.");
     }
     auth = new google.auth.GoogleAuth({
       credentials: {
@@ -1024,7 +1095,13 @@ export async function getLeads(): Promise<Lead[]> {
 }
 
 export async function saveLeads(leads: Partial<Lead>[]): Promise<{ added: number; skipped: number }> {
-  return getActiveLeadRepository().saveLeads(leads);
+  // BUG 3: Filter out leads with invalid business names before saving
+  const validLeads = leads.filter(l => isValidLeadName(l.name));
+  const rejected = leads.length - validLeads.length;
+  if (rejected > 0) {
+    console.log(`[saveLeads] Rejected ${rejected} leads with invalid names`);
+  }
+  return getActiveLeadRepository().saveLeads(validLeads);
 }
 
 export async function updateLeadStatus(leadId: string, status: LeadStatus, notes?: string, lastContactedAt?: string): Promise<boolean> {
