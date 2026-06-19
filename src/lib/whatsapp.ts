@@ -10,6 +10,8 @@ export async function sendWhatsAppMessage(
     lead_id: string;
     name: string;
     phone?: string;
+    phone_e164?: string;
+    phone_raw?: string;
   }, 
   previewUrl: string, 
   origin: string,
@@ -23,12 +25,13 @@ export async function sendWhatsAppMessage(
     throw new Error('WhatsApp outreach is disabled in configuration');
   }
 
-  if (!lead.phone) {
+  const phone = lead.phone || lead.phone_e164 || lead.phone_raw;
+  if (!phone) {
     throw new Error('Lead does not have a phone number');
   }
 
   // Clean the phone number (digits only, e.g. "2348012345678")
-  const cleanPhone = lead.phone.replace(/\D/g, '');
+  const cleanPhone = phone.replace(/\D/g, '');
 
   // Default template – can be overridden via config.whatsappMessageTemplate
   const defaultTemplate = `Hi {{lead.name}},\n\nWe generated a custom landing page for your business. Check it out: {{previewUrl}}\n\nBest, {{businessSignature}}`;
