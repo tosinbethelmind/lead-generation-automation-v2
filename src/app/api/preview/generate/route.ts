@@ -201,6 +201,71 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
   }
 }
 
+export async function generateCopyWithGeminiApiKey(
+  lead: any,
+  apiKey: string
+): Promise<GeneratedCopy> {
+  const prompt = `You are a professional web copywriter. Generate compelling marketing copy for a small business that currently has NO WEBSITE. This copy will be used to create a preview website to show the business owner.
+
+Business Details:
+- Name: ${lead.name}
+- Industry/Category: ${lead.category}
+- Location: ${lead.area}, ${lead.city}, Nigeria
+- Google Rating: ${lead.rating} stars out of 5
+- Number of Google Reviews: ${lead.reviews_count}
+- Brief: ${lead.business_summary}
+
+Generate a JSON object with exactly this structure (respond ONLY with valid JSON, no markdown):
+{
+  "heroTitle": "A powerful 6-10 word tagline for the business",
+  "heroSubtitle": "A compelling 1-2 sentence value proposition that mentions their location and specialty",
+  "services": [
+    {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "🔧"},
+    {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "⭐"},
+    {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "🎯"}
+  ],
+  "aboutText": "3-4 sentence paragraph about the business, mentioning their excellent Google reputation and local presence in ${lead.area}",
+  "testimonials": [
+    {"name": "Customer Name", "text": "A realistic positive review of 2-3 sentences", "rating": 5},
+    {"name": "Customer Name", "text": "A realistic positive review of 2-3 sentences", "rating": 5}
+  ],
+  "ctaText": "A strong 3-6 word call-to-action button text (e.g. 'Book a Free Consultation')"
+}`;
+
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+  const resp = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 1024,
+      },
+    }),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json();
+    throw new Error(`Gemini AI Studio error: ${err.error?.message || resp.statusText}`);
+  }
+
+  const data = await resp.json();
+  const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+  // Parse JSON from response
+  try {
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found in Gemini AI Studio response');
+    return JSON.parse(jsonMatch[0]) as GeneratedCopy;
+  } catch {
+    return buildFallbackCopy(lead);
+  }
+}
+
 // Deterministic fallback when Gemini is unavailable (no project ID configured yet)
 export function buildFallbackCopy(lead: any): GeneratedCopy {
   return {
@@ -243,9 +308,26 @@ export async function GET(req: NextRequest) {
     const config = getRuntimeConfig();
     let theme = getDesignTheme(lead.category);
 
-    // Attempt Vertex AI generation if project ID is set
+    // Attempt Gemini or Vertex AI generation if credentials are set
     let copy: GeneratedCopy;
-    if (config.googleProjectId && config.googleRefreshToken) {
+    if (config.geminiApiKey) {
+      try {
+        copy = await generateCopyWithGeminiApiKey(lead, config.geminiApiKey);
+      } catch (err: any) {
+        console.warn('Gemini AI Studio generation failed, attempting Vertex AI or fallback:', err.message);
+        if (config.googleProjectId && config.googleRefreshToken) {
+          try {
+            const accessToken = await getValidAccessToken();
+            copy = await generateCopyWithVertexAI(lead, accessToken, config.googleProjectId);
+          } catch (vErr: any) {
+            console.warn('Vertex AI generation also failed, using fallback copy:', vErr.message);
+            copy = buildFallbackCopy(lead);
+          }
+        } else {
+          copy = buildFallbackCopy(lead);
+        }
+      }
+    } else if (config.googleProjectId && config.googleRefreshToken) {
       try {
         const accessToken = await getValidAccessToken();
         copy = await generateCopyWithVertexAI(lead, accessToken, config.googleProjectId);
@@ -254,7 +336,7 @@ export async function GET(req: NextRequest) {
         copy = buildFallbackCopy(lead);
       }
     } else {
-      // Graceful degradation — no project ID yet
+      // Graceful degradation — no credentials yet
       copy = buildFallbackCopy(lead);
     }
 

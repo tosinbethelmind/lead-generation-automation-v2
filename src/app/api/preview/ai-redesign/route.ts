@@ -29,8 +29,11 @@ export async function POST(req: NextRequest) {
     }
 
     const config = getRuntimeConfig();
-    if (!config.googleProjectId || !config.googleRefreshToken) {
-      return NextResponse.json({ error: 'Google Vertex AI session is not configured. Please sign in.' }, { status: 400 });
+    const hasGeminiKey = !!config.geminiApiKey;
+    const hasVertex = !!(config.googleProjectId && config.googleRefreshToken);
+
+    if (!hasGeminiKey && !hasVertex) {
+      return NextResponse.json({ error: 'Neither Gemini AI API Key nor Google Vertex AI is configured. Please go to Settings and enter a key.' }, { status: 400 });
     }
 
     // Load current baseline or existing overrides to let AI perform delta updates
@@ -110,27 +113,44 @@ Generate a JSON object containing the modified design overrides. Only modify wha
   ]
 }`;
 
-    const accessToken = await getValidAccessToken();
-    const endpoint = `https://us-central1-aiplatform.googleapis.com/v1/projects/${config.googleProjectId}/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent`;
-
-    const resp = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: aiPrompt }] }],
-        generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 1024,
+    let resp;
+    if (hasGeminiKey) {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.geminiApiKey}`;
+      resp = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      }),
-    });
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: aiPrompt }] }],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 1024,
+          },
+        }),
+      });
+    } else {
+      const accessToken = await getValidAccessToken();
+      const endpoint = `https://us-central1-aiplatform.googleapis.com/v1/projects/${config.googleProjectId}/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent`;
+      resp = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: aiPrompt }] }],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 1024,
+          },
+        }),
+      });
+    }
 
     if (!resp.ok) {
       const err = await resp.json();
-      throw new Error(`Vertex AI error: ${err.error?.message || resp.statusText}`);
+      throw new Error(`Gemini generation error: ${err.error?.message || resp.statusText}`);
     }
 
     const data = await resp.json();
