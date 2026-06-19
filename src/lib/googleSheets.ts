@@ -77,8 +77,12 @@ export function isValidLeadName(name: string | undefined | null): boolean {
   const trimmed = name.trim();
   // Reject if under 3 characters
   if (trimmed.length < 3) return false;
+  // Reject if it contains '@' (social handle format)
+  if (trimmed.includes('@')) return false;
   // Reject if it matches a social media platform or test string (case-insensitive)
   if (INVALID_LEAD_NAMES.has(trimmed.toLowerCase())) return false;
+  // Reject if it contains 'test lead' (case-insensitive)
+  if (trimmed.toLowerCase().includes('test lead')) return false;
   // Reject if it looks like a URL
   if (/^https?:\/\//i.test(trimmed) || /^www\./i.test(trimmed)) return false;
   // Reject if purely numeric
@@ -1095,7 +1099,8 @@ export function getActiveLogRepository(): ILogRepository {
 // ============================================================================
 
 export async function getLeads(): Promise<Lead[]> {
-  return getActiveLeadRepository().getLeads();
+  const leads = await getActiveLeadRepository().getLeads();
+  return leads.filter(l => isValidLeadName(l.name));
 }
 
 export async function saveLeads(leads: Partial<Lead>[]): Promise<{ added: number; skipped: number }> {
