@@ -121,8 +121,6 @@ export function getDesignTheme(category: string): DesignTheme {
 }
 
 // ============================================================================
-// Vertex AI Gemini Copywriter
-// ============================================================================
 
 export interface GeneratedCopy {
   heroTitle: string;
@@ -133,12 +131,24 @@ export interface GeneratedCopy {
   ctaText: string;
 }
 
+export interface GeneratedSiteResponse {
+  copy: GeneratedCopy;
+  theme?: {
+    primary: string;
+    accent: string;
+    bg: string;
+    text: string;
+    font: string;
+    gradient: string;
+  };
+}
+
 async function generateCopyWithVertexAI(
   lead: any,
   accessToken: string,
   projectId: string
-): Promise<GeneratedCopy> {
-  const prompt = `You are a professional web copywriter. Generate compelling marketing copy for a small business that currently has NO WEBSITE. This copy will be used to create a preview website to show the business owner.
+): Promise<GeneratedSiteResponse> {
+  const prompt = `You are a professional web copywriter and UX designer. Generate compelling marketing copy and a highly tailored visual design theme specifically matching this business's name, specialty, location, and description.
 
 Business Details:
 - Name: ${lead.name}
@@ -148,21 +158,34 @@ Business Details:
 - Number of Google Reviews: ${lead.reviews_count}
 - Brief: ${lead.business_summary}
 
+Choose design tokens (primary color, accent color, background, text color, font, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. 
+Font options should be premium pairings: 'Playfair Display' (fashion, luxury serifs), 'Space Grotesk' (tech, modern architectural), 'Outfit' (clean modern), 'DM Serif Display' (warm hospitality), 'Plus Jakarta Sans' or 'Inter'.
+
 Generate a JSON object with exactly this structure (respond ONLY with valid JSON, no markdown):
 {
-  "heroTitle": "A powerful 6-10 word tagline for the business",
-  "heroSubtitle": "A compelling 1-2 sentence value proposition that mentions their location and specialty",
-  "services": [
-    {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "🔧"},
-    {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "⭐"},
-    {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "🎯"}
-  ],
-  "aboutText": "3-4 sentence paragraph about the business, mentioning their excellent Google reputation and local presence in ${lead.area}",
-  "testimonials": [
-    {"name": "Customer Name", "text": "A realistic positive review of 2-3 sentences", "rating": 5},
-    {"name": "Customer Name", "text": "A realistic positive review of 2-3 sentences", "rating": 5}
-  ],
-  "ctaText": "A strong 3-6 word call-to-action button text (e.g. 'Book a Free Consultation')"
+  "copy": {
+    "heroTitle": "A powerful 6-10 word tagline for the business",
+    "heroSubtitle": "A compelling 1-2 sentence value proposition that mentions their location and specialty",
+    "services": [
+      {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "🔧"},
+      {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "⭐"},
+      {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "🎯"}
+    ],
+    "aboutText": "3-4 sentence paragraph about the business, mentioning their excellent Google reputation and local presence in ${lead.area}",
+    "testimonials": [
+      {"name": "Customer Name", "text": "A realistic positive review of 2-3 sentences", "rating": 5},
+      {"name": "Customer Name", "text": "A realistic positive review of 2-3 sentences", "rating": 5}
+    ],
+    "ctaText": "A strong 3-6 word call-to-action button text (e.g. 'Book a Free Consultation')"
+  },
+  "theme": {
+    "primary": "#hex_primary_color",
+    "accent": "#hex_accent_color",
+    "bg": "#hex_page_bg_color (should be soft or dark matching the vibe)",
+    "text": "#hex_body_text_color (must have high contrast with bg)",
+    "font": "Font Name (selected from options)",
+    "gradient": "linear-gradient(135deg, primary_color 0%, accent_color 100%)"
+  }
 }`;
 
   const endpoint = `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent`;
@@ -194,18 +217,17 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
   try {
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON found in Vertex AI response');
-    return JSON.parse(jsonMatch[0]) as GeneratedCopy;
+    return JSON.parse(jsonMatch[0]) as GeneratedSiteResponse;
   } catch {
-    // Fallback copy if parsing fails
-    return buildFallbackCopy(lead);
+    return { copy: buildFallbackCopy(lead) };
   }
 }
 
 export async function generateCopyWithGeminiApiKey(
   lead: any,
   apiKey: string
-): Promise<GeneratedCopy> {
-  const prompt = `You are a professional web copywriter. Generate compelling marketing copy for a small business that currently has NO WEBSITE. This copy will be used to create a preview website to show the business owner.
+): Promise<GeneratedSiteResponse> {
+  const prompt = `You are a professional web copywriter and UX designer. Generate compelling marketing copy and a highly tailored visual design theme specifically matching this business's name, specialty, location, and description.
 
 Business Details:
 - Name: ${lead.name}
@@ -215,21 +237,34 @@ Business Details:
 - Number of Google Reviews: ${lead.reviews_count}
 - Brief: ${lead.business_summary}
 
+Choose design tokens (primary color, accent color, background, text color, font, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. 
+Font options should be premium pairings: 'Playfair Display' (fashion, luxury serifs), 'Space Grotesk' (tech, modern architectural), 'Outfit' (clean modern), 'DM Serif Display' (warm hospitality), 'Plus Jakarta Sans' or 'Inter'.
+
 Generate a JSON object with exactly this structure (respond ONLY with valid JSON, no markdown):
 {
-  "heroTitle": "A powerful 6-10 word tagline for the business",
-  "heroSubtitle": "A compelling 1-2 sentence value proposition that mentions their location and specialty",
-  "services": [
-    {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "🔧"},
-    {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "⭐"},
-    {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "🎯"}
-  ],
-  "aboutText": "3-4 sentence paragraph about the business, mentioning their excellent Google reputation and local presence in ${lead.area}",
-  "testimonials": [
-    {"name": "Customer Name", "text": "A realistic positive review of 2-3 sentences", "rating": 5},
-    {"name": "Customer Name", "text": "A realistic positive review of 2-3 sentences", "rating": 5}
-  ],
-  "ctaText": "A strong 3-6 word call-to-action button text (e.g. 'Book a Free Consultation')"
+  "copy": {
+    "heroTitle": "A powerful 6-10 word tagline for the business",
+    "heroSubtitle": "A compelling 1-2 sentence value proposition that mentions their location and specialty",
+    "services": [
+      {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "🔧"},
+      {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "⭐"},
+      {"title": "Service Name", "description": "2-3 sentence description of this service", "icon": "🎯"}
+    ],
+    "aboutText": "3-4 sentence paragraph about the business, mentioning their excellent Google reputation and local presence in ${lead.area}",
+    "testimonials": [
+      {"name": "Customer Name", "text": "A realistic positive review of 2-3 sentences", "rating": 5},
+      {"name": "Customer Name", "text": "A realistic positive review of 2-3 sentences", "rating": 5}
+    ],
+    "ctaText": "A strong 3-6 word call-to-action button text (e.g. 'Book a Free Consultation')"
+  },
+  "theme": {
+    "primary": "#hex_primary_color",
+    "accent": "#hex_accent_color",
+    "bg": "#hex_page_bg_color (should be soft or dark matching the vibe)",
+    "text": "#hex_body_text_color (must have high contrast with bg)",
+    "font": "Font Name (selected from options)",
+    "gradient": "linear-gradient(135deg, primary_color 0%, accent_color 100%)"
+  }
 }`;
 
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
@@ -260,9 +295,9 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
   try {
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON found in Gemini AI Studio response');
-    return JSON.parse(jsonMatch[0]) as GeneratedCopy;
+    return JSON.parse(jsonMatch[0]) as GeneratedSiteResponse;
   } catch {
-    return buildFallbackCopy(lead);
+    return { copy: buildFallbackCopy(lead) };
   }
 }
 
@@ -310,33 +345,44 @@ export async function GET(req: NextRequest) {
 
     // Attempt Gemini or Vertex AI generation if credentials are set
     let copy: GeneratedCopy;
+    let generatedResponse: GeneratedSiteResponse | null = null;
     if (config.geminiApiKey) {
       try {
-        copy = await generateCopyWithGeminiApiKey(lead, config.geminiApiKey);
+        generatedResponse = await generateCopyWithGeminiApiKey(lead, config.geminiApiKey);
       } catch (err: any) {
         console.warn('Gemini AI Studio generation failed, attempting Vertex AI or fallback:', err.message);
         if (config.googleProjectId && config.googleRefreshToken) {
           try {
             const accessToken = await getValidAccessToken();
-            copy = await generateCopyWithVertexAI(lead, accessToken, config.googleProjectId);
+            generatedResponse = await generateCopyWithVertexAI(lead, accessToken, config.googleProjectId);
           } catch (vErr: any) {
             console.warn('Vertex AI generation also failed, using fallback copy:', vErr.message);
-            copy = buildFallbackCopy(lead);
           }
-        } else {
-          copy = buildFallbackCopy(lead);
         }
       }
     } else if (config.googleProjectId && config.googleRefreshToken) {
       try {
         const accessToken = await getValidAccessToken();
-        copy = await generateCopyWithVertexAI(lead, accessToken, config.googleProjectId);
+        generatedResponse = await generateCopyWithVertexAI(lead, accessToken, config.googleProjectId);
       } catch (err: any) {
         console.warn('Vertex AI generation failed, using fallback copy:', err.message);
-        copy = buildFallbackCopy(lead);
+      }
+    }
+
+    if (generatedResponse) {
+      copy = generatedResponse.copy;
+      if (generatedResponse.theme) {
+        theme = {
+          ...theme,
+          primary: generatedResponse.theme.primary || theme.primary,
+          accent: generatedResponse.theme.accent || theme.accent,
+          bg: generatedResponse.theme.bg || theme.bg,
+          text: generatedResponse.theme.text || theme.text,
+          font: generatedResponse.theme.font || theme.font,
+          gradient: generatedResponse.theme.gradient || theme.gradient
+        };
       }
     } else {
-      // Graceful degradation — no credentials yet
       copy = buildFallbackCopy(lead);
     }
 
