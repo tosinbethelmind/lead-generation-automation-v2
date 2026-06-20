@@ -29,7 +29,9 @@ function generateMockLagosLeads(query: string, limit: number): Partial<Lead>[] {
   for (let i = 0; i < numToGen; i++) {
     const biz = businesses[i % businesses.length];
     const name = numToGen > businesses.length ? `${biz.name} #${Math.floor(i / businesses.length) + 1}` : biz.name;
-    const phoneNum = biz.phone.substring(0, biz.phone.length - 2) + String(i).padStart(2, '0');
+    const tsStr = String(Date.now());
+    const randPart = tsStr.substring(tsStr.length - 5);
+    const phoneNum = biz.phone.substring(0, 5) + randPart + String(i % 10);
     const area = areas[i % areas.length];
     const cleanPhone = normalizePhone(phoneNum, 'NG') || phoneNum;
     const hasWebsite = !!biz.website;
@@ -50,7 +52,7 @@ function generateMockLagosLeads(query: string, limit: number): Partial<Lead>[] {
       reviews_count: biz.reviews,
       verified: Math.random() > 0.3,
       listings_count: 1,
-      profile_url: `https://google.com/maps/place/${name.replace(/\s+/g, '+')}`,
+      profile_url: `https://google.com/maps/place/${name.replace(/\s+/g, '+')}?ts=${Date.now()}_${i}`,
       source_query_or_seed: query,
       collected_at: new Date().toISOString(),
       status: 'NEW',

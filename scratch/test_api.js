@@ -1,14 +1,14 @@
-const http = require('http');
+const https = require('https');
 
 const data = JSON.stringify({
-  url: 'https://jiji.ng/lagos/cars',
+  query: 'restaurants in Ikeja',
   limit: 2
 });
 
 const options = {
-  hostname: 'localhost',
-  port: 3001,
-  path: '/api/scrape/jiji',
+  hostname: 'lead-generation-automation-ecru.vercel.app',
+  port: 443,
+  path: '/api/scrape/maps-free',
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -16,12 +16,11 @@ const options = {
   }
 };
 
-console.log('Sending request to Jiji Scraper API endpoint...');
+console.log('Sending request to Maps-Free Scraper on Vercel...');
 
-const req = http.request(options, (res) => {
+const req = https.request(options, (res) => {
   let body = '';
   console.log(`STATUS: ${res.statusCode}`);
-  console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
   
   res.setEncoding('utf8');
   res.on('data', (chunk) => {
@@ -29,7 +28,7 @@ const req = http.request(options, (res) => {
   });
   
   res.on('end', () => {
-    console.log('Response body:');
+    console.log('Response finished.');
     try {
       const parsed = JSON.parse(body);
       console.log(JSON.stringify(parsed, null, 2));
@@ -40,7 +39,7 @@ const req = http.request(options, (res) => {
 });
 
 req.on('error', (e) => {
-  console.error(`Problem with request: ${e.message}`);
+  console.error('Problem with request:', e);
 });
 
 req.write(data);

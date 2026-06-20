@@ -22,7 +22,9 @@ function generateMockJijiLeads(seedUrl: string, limit: number): Partial<Lead>[] 
   for (let i = 0; i < numToGen; i++) {
     const list = listings[i % listings.length];
     const title = numToGen > listings.length ? `${list.title} #${Math.floor(i / listings.length) + 1}` : list.title;
-    const phoneNum = list.phone.substring(0, list.phone.length - 2) + String(i).padStart(2, '0');
+    const tsStr = String(Date.now());
+    const randPart = tsStr.substring(tsStr.length - 5);
+    const phoneNum = list.phone.substring(0, 5) + randPart + String(i % 10);
     const cleanPhone = normalizePhone(phoneNum, 'NG') || phoneNum;
     
     results.push({
@@ -41,7 +43,7 @@ function generateMockJijiLeads(seedUrl: string, limit: number): Partial<Lead>[] 
       reviews_count: Math.floor(Math.random() * 40) + 1,
       verified: Math.random() > 0.4,
       listings_count: Math.floor(Math.random() * 15) + 1,
-      profile_url: (seedUrl || 'https://jiji.ng/lagos') + ((seedUrl || 'https://jiji.ng/lagos').includes('?') ? '&' : '?') + `item=${i}`,
+      profile_url: (seedUrl || 'https://jiji.ng/lagos') + ((seedUrl || 'https://jiji.ng/lagos').includes('?') ? '&' : '?') + `item=${i}_${Date.now()}`,
       source_query_or_seed: seedUrl || 'https://jiji.ng/lagos',
       collected_at: new Date().toISOString(),
       status: 'NEW',

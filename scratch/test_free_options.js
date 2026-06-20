@@ -88,7 +88,7 @@ async function main() {
     console.log('Waiting for server to start responding...');
     const start = Date.now();
     let isUp = false;
-    while (Date.now() - start < 40000) {
+    while (Date.now() - start < 90000) {
       isUp = await probeServer(`${BASE_URL}/`);
       if (isUp) break;
       await wait(1000);

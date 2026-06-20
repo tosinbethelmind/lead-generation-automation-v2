@@ -53,7 +53,9 @@ function generateMockSocialLeads(platform: 'INSTAGRAM' | 'FACEBOOK' | 'TIKTOK' |
     }
 
     const platformSuffix = platform === 'INSTAGRAM' ? '1' : platform === 'FACEBOOK' ? '2' : platform === 'TIKTOK' ? '3' : '4';
-    const uniquePhone = `080123456${platformSuffix}${i}`;
+    const tsStr = String(Date.now());
+    const randPart = tsStr.substring(tsStr.length - 4);
+    const uniquePhone = `0801234${platformSuffix}${randPart}`;
 
     results.push({
       lead_id: generatedId,
@@ -71,7 +73,7 @@ function generateMockSocialLeads(platform: 'INSTAGRAM' | 'FACEBOOK' | 'TIKTOK' |
       reviews_count: Math.floor(Math.random() * 200) + 15,
       verified: true,
       listings_count: 1,
-      profile_url: profileUrl,
+      profile_url: profileUrl + `?ts=${Date.now()}_${i}`,
       source_query_or_seed: query,
       collected_at: new Date().toISOString(),
       status: 'NEW',

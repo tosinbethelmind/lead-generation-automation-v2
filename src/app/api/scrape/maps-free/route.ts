@@ -22,7 +22,9 @@ function generateMockMapsFreeLeads(query: string, limit: number): Partial<Lead>[
   for (let i = 0; i < count; i++) {
     const template = businesses[i % businesses.length];
     const name = count > businesses.length ? `${template.name} #${Math.floor(i / businesses.length) + 1}` : template.name;
-    const phoneNum = template.phone.substring(0, template.phone.length - 2) + String(i).padStart(2, '0');
+    const tsStr = String(Date.now());
+    const randPart = tsStr.substring(tsStr.length - 5);
+    const phoneNum = template.phone.substring(0, 5) + randPart + String(i % 10);
     const cleanPhone = normalizePhone(phoneNum, 'NG') || phoneNum;
 
     results.push({
@@ -41,7 +43,7 @@ function generateMockMapsFreeLeads(query: string, limit: number): Partial<Lead>[
       reviews_count: Math.floor(Math.random() * 30) + 2,
       verified: Math.random() > 0.5,
       listings_count: 1,
-      profile_url: `https://www.google.com/maps/search/${encodeURIComponent(query)}&index=${i}`,
+      profile_url: `https://www.google.com/maps/search/${encodeURIComponent(query)}?index=${i}&ts=${Date.now()}`,
       source_query_or_seed: query,
       collected_at: new Date().toISOString(),
       status: 'NEW',
