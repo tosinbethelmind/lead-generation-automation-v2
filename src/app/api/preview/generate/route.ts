@@ -57,6 +57,8 @@ export interface DesignTheme {
   bg: string;
   text: string;
   font: string;
+  headingFont?: string;
+  bodyFont?: string;
   heroImage: string;
   gradient: string;
 }
@@ -71,6 +73,8 @@ export function getDesignTheme(category: string): DesignTheme {
       bg: '#f0f9ff',
       text: '#0c4a6e',
       font: 'Inter',
+      headingFont: 'Outfit',
+      bodyFont: 'Inter',
       heroImage: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1400&q=80',
       gradient: 'linear-gradient(135deg, #0284c7 0%, #14b8a6 100%)',
     };
@@ -82,6 +86,8 @@ export function getDesignTheme(category: string): DesignTheme {
       bg: '#111827',
       text: '#f9fafb',
       font: 'Space Grotesk',
+      headingFont: 'Space Grotesk',
+      bodyFont: 'Inter',
       heroImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1400&q=80',
       gradient: 'linear-gradient(135deg, #1f2937 0%, #f59e0b 100%)',
     };
@@ -93,6 +99,8 @@ export function getDesignTheme(category: string): DesignTheme {
       bg: '#fff1f2',
       text: '#881337',
       font: 'Playfair Display',
+      headingFont: 'Playfair Display',
+      bodyFont: 'Plus Jakarta Sans',
       heroImage: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1400&q=80',
       gradient: 'linear-gradient(135deg, #db2777 0%, #f9a8d4 100%)',
     };
@@ -104,6 +112,8 @@ export function getDesignTheme(category: string): DesignTheme {
       bg: '#fff7ed',
       text: '#7c2d12',
       font: 'DM Serif Display',
+      headingFont: 'DM Serif Display',
+      bodyFont: 'Cabin',
       heroImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1400&q=80',
       gradient: 'linear-gradient(135deg, #c2410c 0%, #f59e0b 100%)',
     };
@@ -115,6 +125,8 @@ export function getDesignTheme(category: string): DesignTheme {
     bg: '#eff6ff',
     text: '#1e3a8a',
     font: 'Outfit',
+    headingFont: 'Outfit',
+    bodyFont: 'Inter',
     heroImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80',
     gradient: 'linear-gradient(135deg, #1e3a8a 0%, #60a5fa 100%)',
   };
@@ -139,6 +151,8 @@ export interface GeneratedSiteResponse {
     bg: string;
     text: string;
     font: string;
+    headingFont?: string;
+    bodyFont?: string;
     gradient: string;
   };
 }
@@ -158,8 +172,12 @@ Business Details:
 - Number of Google Reviews: ${lead.reviews_count}
 - Brief: ${lead.business_summary}
 
-Choose design tokens (primary color, accent color, background, text color, font, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. 
-Font options should be premium pairings: 'Playfair Display' (fashion, luxury serifs), 'Space Grotesk' (tech, modern architectural), 'Outfit' (clean modern), 'DM Serif Display' (warm hospitality), 'Plus Jakarta Sans' or 'Inter'.
+Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. 
+Font options should be premium pairings:
+- Elegant/Luxury: headingFont='Playfair Display' + bodyFont='Plus Jakarta Sans' (or Inter)
+- Technical/Modern: headingFont='Space Grotesk' + bodyFont='Inter'
+- Warm Hospitality: headingFont='DM Serif Display' + bodyFont='Cabin' (or Inter)
+- Wellness/Corporate: headingFont='Outfit' + bodyFont='Inter'
 
 Generate a JSON object with exactly this structure (respond ONLY with valid JSON, no markdown):
 {
@@ -183,7 +201,9 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
     "accent": "#hex_accent_color",
     "bg": "#hex_page_bg_color (should be soft or dark matching the vibe)",
     "text": "#hex_body_text_color (must have high contrast with bg)",
-    "font": "Font Name (selected from options)",
+    "font": "Font Name (main/default font)",
+    "headingFont": "Heading Font Name (selected from options above)",
+    "bodyFont": "Body Font Name (selected from options above)",
     "gradient": "linear-gradient(135deg, primary_color 0%, accent_color 100%)"
   }
 }`;
@@ -237,8 +257,12 @@ Business Details:
 - Number of Google Reviews: ${lead.reviews_count}
 - Brief: ${lead.business_summary}
 
-Choose design tokens (primary color, accent color, background, text color, font, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. 
-Font options should be premium pairings: 'Playfair Display' (fashion, luxury serifs), 'Space Grotesk' (tech, modern architectural), 'Outfit' (clean modern), 'DM Serif Display' (warm hospitality), 'Plus Jakarta Sans' or 'Inter'.
+Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. 
+Font options should be premium pairings:
+- Elegant/Luxury: headingFont='Playfair Display' + bodyFont='Plus Jakarta Sans' (or Inter)
+- Technical/Modern: headingFont='Space Grotesk' + bodyFont='Inter'
+- Warm Hospitality: headingFont='DM Serif Display' + bodyFont='Cabin' (or Inter)
+- Wellness/Corporate: headingFont='Outfit' + bodyFont='Inter'
 
 Generate a JSON object with exactly this structure (respond ONLY with valid JSON, no markdown):
 {
@@ -262,7 +286,9 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
     "accent": "#hex_accent_color",
     "bg": "#hex_page_bg_color (should be soft or dark matching the vibe)",
     "text": "#hex_body_text_color (must have high contrast with bg)",
-    "font": "Font Name (selected from options)",
+    "font": "Font Name (main/default font)",
+    "headingFont": "Heading Font Name (selected from options above)",
+    "bodyFont": "Body Font Name (selected from options above)",
     "gradient": "linear-gradient(135deg, primary_color 0%, accent_color 100%)"
   }
 }`;
@@ -379,6 +405,8 @@ export async function GET(req: NextRequest) {
           bg: generatedResponse.theme.bg || theme.bg,
           text: generatedResponse.theme.text || theme.text,
           font: generatedResponse.theme.font || theme.font,
+          headingFont: generatedResponse.theme.headingFont || theme.headingFont || generatedResponse.theme.font,
+          bodyFont: generatedResponse.theme.bodyFont || theme.bodyFont || generatedResponse.theme.font,
           gradient: generatedResponse.theme.gradient || theme.gradient
         };
       }

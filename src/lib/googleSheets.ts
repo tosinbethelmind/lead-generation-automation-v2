@@ -9,7 +9,7 @@ import { getSupabaseClient } from './supabaseClient';
 // TypeScript Interfaces & Types
 // ============================================================================
 
-export type LeadStatus = 'NEW' | 'CONTACTED' | 'DO_NOT_CONTACT' | 'ERROR';
+export type LeadStatus = 'NEW' | 'CONTACTED' | 'DO_NOT_CONTACT' | 'ERROR' | 'CLAIMED' | 'MANUAL_REVISION';
 export type LeadSource = 'GOOGLE' | 'JIJI' | 'MAPS_FREE' | 'DUCKDUCKGO' | 'OSM' | 'INSTAGRAM' | 'FACEBOOK' | 'TIKTOK' | 'LINKEDIN';
 
 export interface Lead {
@@ -381,6 +381,7 @@ export interface ILeadRepository {
   getLeadById(leadId: string): Promise<Lead | null>;
   saveLeads(leads: Partial<Lead>[]): Promise<{ added: number; skipped: number }>;
   updateLeadStatus(leadId: string, status: LeadStatus, notes?: string, lastContactedAt?: string): Promise<boolean>;
+  getTopReviewedLeads(limit?: number): Promise<Lead[]>;
 }
 
 export interface IDncRepository {
@@ -398,6 +399,19 @@ export interface ILogRepository {
 // ----------------------------------------------------------------------------
 
 class GoogleSheetsLeadRepository implements ILeadRepository {
+  /**
+   * Get top reviewed leads sorted by rating then reviews count.
+   * @param limit Number of leads to return (default 20)
+   */
+  async getTopReviewedLeads(limit: number = 20): Promise<Lead[]> {
+    const leads = await this.getLeads();
+    return leads
+      .sort((a, b) => {
+        if (b.rating !== a.rating) return b.rating - a.rating;
+        return b.reviews_count - a.reviews_count;
+      })
+      .slice(0, limit);
+  }
   async getLeads(): Promise<Lead[]> {
     try {
       const sheets = await getSheetsInstance();
@@ -437,15 +451,11 @@ class GoogleSheetsLeadRepository implements ILeadRepository {
       for (const lead of newLeads) {
         if (!lead.lead_id) continue;
         
-        const normPhone = lead.phone_e164 ? normalizePhone(lead.phone_e164) : null;
-        if (!normPhone) {
-          skipped++;
-          continue;
-        }
+        const normPhone = lead.phone_e164 ? (normalizePhone(lead.phone_e164) || '') : '';
         
         const isDup = 
           existingIds.has(lead.lead_id) || 
-          existingPhones.has(normPhone) ||
+          (normPhone && existingPhones.has(normPhone)) ||
           (lead.profile_url && existingUrls.has(lead.profile_url));
           
         if (isDup) {
@@ -621,6 +631,18 @@ class GoogleSheetsLogRepository implements ILogRepository {
 // ----------------------------------------------------------------------------
 
 class LocalJsonLeadRepository implements ILeadRepository {
+  /**
+   * Get top reviewed leads from local JSON store.
+   */
+  async getTopReviewedLeads(limit: number = 20): Promise<Lead[]> {
+    const leads = await this.getLeads();
+    return leads
+      .sort((a, b) => {
+        if (b.rating !== a.rating) return b.rating - a.rating;
+        return b.reviews_count - a.reviews_count;
+      })
+      .slice(0, limit);
+  }
   async getLeads(): Promise<Lead[]> {
     return readJsonFile<Lead[]>(LEADS_FILE, []);
   }
@@ -643,15 +665,11 @@ class LocalJsonLeadRepository implements ILeadRepository {
       for (const partial of newLeads) {
         if (!partial.lead_id) continue;
         
-        const normPhone = partial.phone_e164 ? normalizePhone(partial.phone_e164) : null;
-        if (!normPhone) {
-          skipped++;
-          continue;
-        }
+        const normPhone = partial.phone_e164 ? (normalizePhone(partial.phone_e164) || '') : '';
         
         const isDup = 
           existingIds.has(partial.lead_id) || 
-          existingPhones.has(normPhone) ||
+          (normPhone && existingPhones.has(normPhone)) ||
           (partial.profile_url && existingUrls.has(partial.profile_url));
           
         if (isDup) {
@@ -809,6 +827,23 @@ function restoreLead(dbLead: any): Lead {
 class SupabaseLeadRepository implements ILeadRepository {
   private fallback = new LocalJsonLeadRepository();
 
+  async getTopReviewedLeads(limit: number = 20): Promise<Lead[]> {
+    try {
+      const supabase = getSupabaseClient();
+      const { data, error } = await supabase
+        .from('leads')
+        .select('*')
+        .order('rating', { ascending: false })
+        .order('reviews_count', { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      return (data || []).map(restoreLead) as Lead[];
+    } catch (e: any) {
+      console.warn('Supabase getTopReviewedLeads error, falling back to local JSON:', e.message);
+      return this.fallback.getTopReviewedLeads(limit);
+    }
+  }
+
   async getLeads(): Promise<Lead[]> {
     try {
       const supabase = getSupabaseClient();
@@ -855,15 +890,11 @@ class SupabaseLeadRepository implements ILeadRepository {
 
       for (const lead of newLeads) {
         if (!lead.lead_id) continue;
-        const normPhone = lead.phone_e164 ? normalizePhone(lead.phone_e164) : null;
-        if (!normPhone) {
-          skipped++;
-          continue;
-        }
+        const normPhone = lead.phone_e164 ? (normalizePhone(lead.phone_e164) || '') : '';
         
         const isDup = 
           existingIds.has(lead.lead_id) || 
-          existingPhones.has(normPhone) ||
+          (normPhone && existingPhones.has(normPhone)) ||
           (lead.profile_url && existingUrls.has(lead.profile_url));
 
         if (isDup) {

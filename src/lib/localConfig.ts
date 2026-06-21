@@ -4,6 +4,9 @@ import path from 'path';
 export type StorageMode = 'cloud' | 'local' | 'hybrid' | 'supabase';
 
 export interface LocalConfig {
+  // ── Marketing Email Config ────────────────────────────
+  marketingSubject?: string;
+  marketingBody?: string;
   // ── Google identity / auth ──────────────────────────────
   googleClientId?: string;
   googleClientSecret?: string;
@@ -98,6 +101,9 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   googleTokenExpiry: 0,
   googleUserEmail: '',
   googleProjectId: '',
+    // Marketing Email defaults
+    marketingSubject: '',
+    marketingBody: '',
   // Google data tools
   googleSpreadsheetId: '',
   googlePlacesApiKey: '',
@@ -196,6 +202,9 @@ export function getRuntimeConfig(): RuntimeConfig {
     googleTokenExpiry: Number(process.env.GOOGLE_TOKEN_EXPIRY) || Number(fileConfig.googleTokenExpiry) || DEFAULT_CONFIG.googleTokenExpiry,
     googleUserEmail: process.env.GOOGLE_USER_EMAIL || fileConfig.googleUserEmail || DEFAULT_CONFIG.googleUserEmail,
     googleProjectId: process.env.GOOGLE_PROJECT_ID || fileConfig.googleProjectId || DEFAULT_CONFIG.googleProjectId,
+    // Marketing Email
+    marketingSubject: process.env.MARKETING_SUBJECT || fileConfig.marketingSubject || DEFAULT_CONFIG.marketingSubject,
+    marketingBody: process.env.MARKETING_BODY || fileConfig.marketingBody || DEFAULT_CONFIG.marketingBody,
     // Google data tools
     googleSpreadsheetId: process.env.GOOGLE_SPREADSHEET_ID || fileConfig.googleSpreadsheetId || DEFAULT_CONFIG.googleSpreadsheetId,
     googlePlacesApiKey: process.env.GOOGLE_PLACES_API_KEY || fileConfig.googlePlacesApiKey || DEFAULT_CONFIG.googlePlacesApiKey,

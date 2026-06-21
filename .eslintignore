@@ -1,0 +1,4 @@
+// .eslintignore
+# Ignore generated scripts and temporary scratch files
+scripts/
+scratch/

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X } from 'lucide-react';
 
 interface PreviewData {
@@ -22,6 +22,8 @@ interface PreviewData {
     bg: string;
     text: string;
     font: string;
+    headingFont?: string;
+    bodyFont?: string;
     heroImage: string;
     gradient: string;
   };
@@ -40,6 +42,10 @@ interface PreviewData {
     moniepointBankName: string;
     moniepointAccountNumber: string;
     moniepointAccountName: string;
+  };
+  customInject?: {
+    headHtml?: string;
+    bodyHtml?: string;
   };
 }
 
@@ -79,6 +85,62 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   };
 
   const [claimed, setClaimed] = useState(false);
+
+  // Dynamically load Google Fonts for headings and body
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const fontsToLoad = [];
+    if (theme.headingFont) fontsToLoad.push(theme.headingFont);
+    if (theme.bodyFont) fontsToLoad.push(theme.bodyFont);
+    else if (theme.font) fontsToLoad.push(theme.font);
+
+    if (fontsToLoad.length > 0) {
+      const linkId = 'google-fonts-loader';
+      let linkElement = document.getElementById(linkId) as HTMLLinkElement;
+      if (!linkElement) {
+        linkElement = document.createElement('link');
+        linkElement.id = linkId;
+        linkElement.rel = 'stylesheet';
+        document.head.appendChild(linkElement);
+      }
+      const uniqueFonts = Array.from(new Set(fontsToLoad));
+      const fontQuery = uniqueFonts.map(f => `family=${f.replace(/ /g, '+')}:wght@300;400;500;600;700;800`).join('&');
+      linkElement.href = `https://fonts.googleapis.com/css2?${fontQuery}&display=swap`;
+    }
+  }, [theme.headingFont, theme.bodyFont, theme.font]);
+
+  // Dynamic Head and Body HTML script injection
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // 1. Inject Head HTML if provided
+    if (data.customInject?.headHtml) {
+      const container = document.createElement('div');
+      container.innerHTML = data.customInject.headHtml.trim();
+      const elements: Element[] = Array.from(container.children);
+      
+      elements.forEach((el) => {
+        const tag = document.createElement(el.tagName.toLowerCase());
+        Array.from(el.attributes).forEach(attr => tag.setAttribute(attr.name, attr.value));
+        tag.innerHTML = el.innerHTML;
+        document.head.appendChild(tag);
+      });
+    }
+
+    // 2. Inject Body HTML if provided
+    if (data.customInject?.bodyHtml) {
+      const container = document.createElement('div');
+      container.innerHTML = data.customInject.bodyHtml.trim();
+      const elements: Element[] = Array.from(container.children);
+      
+      elements.forEach((el) => {
+        const tag = document.createElement(el.tagName.toLowerCase());
+        Array.from(el.attributes).forEach(attr => tag.setAttribute(attr.name, attr.value));
+        tag.innerHTML = el.innerHTML;
+        document.body.appendChild(tag);
+      });
+    }
+  }, [data.customInject]);
 
   // Demo Automation States
   const [demoForm, setDemoForm] = useState({ name: '', email: '', phone: '', date: '', message: '' });
@@ -728,6 +790,78 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   const [claimLoading, setClaimLoading] = useState(false);
   const [claimMessage, setClaimMessage] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<'paystack' | 'moniepoint'>('paystack');
+  const [loadingOverlay, setLoadingOverlay] = useState(true);
+
+  // Preloader Overlay timeout
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoadingOverlay(false);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // IntersectionObserver for Reveal Animations
+  React.useEffect(() => {
+    const elements = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  // Custom HTML Injection Effect
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (data.customInject?.headHtml) {
+        const temp = document.createElement('div');
+        temp.innerHTML = data.customInject.headHtml;
+        Array.from(temp.childNodes).forEach((node) => {
+          document.head.appendChild(node.cloneNode(true));
+        });
+      }
+      if (data.customInject?.bodyHtml) {
+        const temp = document.createElement('div');
+        temp.innerHTML = data.customInject.bodyHtml;
+        Array.from(temp.childNodes).forEach((node) => {
+          document.body.appendChild(node.cloneNode(true));
+        });
+      }
+    }
+  }, [data.customInject]);
+
+  // Escalation Handler
+  const handleEscalate = async () => {
+    const reason = prompt("What custom layout or integrations do you need? (e.g. custom booking forms, multi-page site, CRM sync)");
+    if (reason === null) return;
+    try {
+      const res = await fetch('/api/leads/escalate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          leadId, 
+          clientName: claimForm.name,
+          clientEmail: claimForm.email,
+          reason: reason || 'Requested custom developer layout/integration.' 
+        })
+      });
+      if (res.ok) {
+        alert("Thank you! A developer has been notified. We will review your request and reach out to you shortly.");
+      } else {
+        alert("Failed to submit request. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error submitting request.");
+    }
+  };
 
   // Verify transaction if redirecting back from Paystack
   React.useEffect(() => {
@@ -852,18 +986,27 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   };
 
   return (
-    <div style={{ 
+    <div className="font-body premium-mesh-bg" style={{ 
       background: theme.bg, 
       color: '#1e293b', 
-      fontFamily: `${theme.font}, system-ui, sans-serif`,
       minHeight: '100vh',
       position: 'relative',
       paddingTop: isPreview ? '64px' : '0px',
       overflowX: 'hidden'
     }}>
+      {/* Preloader Overlay */}
+      {loadingOverlay && (
+        <div className="preloader-overlay">
+          <div className="preloader-spinner"></div>
+          <div className="preloader-logo font-heading">{lead.name}</div>
+        </div>
+      )}
+
       {/* Dynamic Font Import */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link 
-        href={`https://fonts.googleapis.com/css2?family=${theme.font.replace(/\s+/g, '+')}:wght@400;500;600;700&display=swap`} 
+        href={`https://fonts.googleapis.com/css2?family=${(theme.headingFont || theme.font || 'Outfit').replace(/\s+/g, '+')}:wght@400;500;600;700;800&family=${(theme.bodyFont || theme.font || 'Inter').replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`} 
         rel="stylesheet" 
       />
 
@@ -901,6 +1044,25 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+              type="button"
+              onClick={handleEscalate}
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#fff',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                padding: '8px 14px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+            >
+              Need Custom Layout? Talk to Developer
+            </button>
             <a href="#claim" style={{
               background: 'linear-gradient(135deg, #0284c7 0%, #14b8a6 100%)',
               color: '#fff',
@@ -1040,25 +1202,22 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       </section>
 
       {/* Services Grid */}
-      <section style={{ padding: '80px 24px' }}>
+      <section className="reveal" style={{ padding: '80px 24px' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <h2 style={{ fontSize: '2rem', fontWeight: 700, color: theme.primary, marginBottom: '12px' }}>Our Specialties & Services</h2>
+            <h2 className="font-heading" style={{ fontSize: '2rem', fontWeight: 700, color: theme.primary, marginBottom: '12px' }}>Our Specialties & Services</h2>
             <p style={{ color: '#64748b', maxWidth: '600px', margin: '0 auto' }}>We specialize in delivering high-quality, professional solutions designed to meet your needs in {lead.area}.</p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
             {copy.services.map((service, idx) => (
               <div key={idx} style={{ 
-                background: '#ffffff', 
                 padding: '36px', 
                 borderRadius: '12px', 
-                boxShadow: '0 4px 6px rgba(0,0,0,0.02), 0 10px 15px rgba(0,0,0,0.03)',
-                border: '1px solid #e2e8f0',
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 cursor: 'default'
               }}
-              className="service-card"
+              className="service-card frosted-glass"
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-5px)';
                 e.currentTarget.style.boxShadow = '0 20px 25px rgba(0,0,0,0.05)';
@@ -1069,7 +1228,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               }}
               >
                 <div style={{ fontSize: '2.5rem', marginBottom: '20px' }}>{service.icon}</div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: theme.primary, marginBottom: '12px' }}>{service.title}</h3>
+                <h3 className="font-heading" style={{ fontSize: '1.25rem', fontWeight: 600, color: theme.primary, marginBottom: '12px' }}>{service.title}</h3>
                 <p style={{ color: '#64748b', lineHeight: 1.6, fontSize: '0.95rem', margin: 0 }}>{service.description}</p>
               </div>
             ))}
@@ -1078,13 +1237,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       </section>
 
       {/* About Us Section */}
-      <section style={{ background: '#ffffff', padding: '80px 24px', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+      <section className="reveal" style={{ background: '#ffffff', padding: '80px 24px', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '50px', alignItems: 'center' }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: theme.primary, fontWeight: 600, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
               <Award size={18} /> Award-Winning Reputation
             </div>
-            <h2 style={{ fontSize: '2.2rem', fontWeight: 700, color: '#1f2937', marginBottom: '20px', lineHeight: 1.2 }}>About {lead.name}</h2>
+            <h2 className="font-heading" style={{ fontSize: '2.2rem', fontWeight: 700, color: '#1f2937', marginBottom: '20px', lineHeight: 1.2 }}>About {lead.name}</h2>
             <p style={{ color: '#4b5563', lineHeight: 1.7, fontSize: '1.05rem', marginBottom: '24px' }}>{copy.aboutText}</p>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -1107,23 +1266,20 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               alt="Workspace" 
               style={{ width: '100%', height: 'auto', display: 'block' }}
             />
-            <div style={{ 
+            <div className="frosted-glass" style={{ 
               position: 'absolute', 
               bottom: '20px', 
               left: '20px', 
               right: '20px', 
-              background: 'rgba(255, 255, 255, 0.9)', 
-              backdropFilter: 'blur(10px)',
               padding: '20px', 
               borderRadius: '8px',
-              border: '1px solid rgba(255,255,255,0.2)',
               display: 'flex',
               alignItems: 'center',
               gap: '12px'
             }}>
               <Star style={{ color: '#fbbf24', fill: '#fbbf24' }} size={24} />
               <div>
-                <p style={{ margin: 0, fontWeight: 700, color: '#1f2937', fontSize: '0.95rem' }}>Local Verified Reputation</p>
+                <p className="font-heading" style={{ margin: 0, fontWeight: 700, color: '#1f2937', fontSize: '0.95rem' }}>Local Verified Reputation</p>
                 <p style={{ margin: 0, color: '#64748b', fontSize: '0.85rem' }}>Top rating confirmed on Google Maps APIs.</p>
               </div>
             </div>
@@ -1132,21 +1288,18 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       </section>
 
       {/* Customer Testimonials */}
-      <section style={{ padding: '80px 24px' }}>
+      <section className="reveal" style={{ padding: '80px 24px' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <h2 style={{ fontSize: '2rem', fontWeight: 700, color: theme.primary, marginBottom: '12px' }}>What Our Customers Say</h2>
+            <h2 className="font-heading" style={{ fontSize: '2rem', fontWeight: 700, color: theme.primary, marginBottom: '12px' }}>What Our Customers Say</h2>
             <p style={{ color: '#64748b' }}>Here is what actual clients think of our work in {lead.area}.</p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '30px' }}>
             {copy.testimonials.map((test, idx) => (
-              <div key={idx} style={{ 
-                background: '#ffffff', 
+              <div key={idx} className="frosted-glass" style={{ 
                 padding: '30px', 
-                borderRadius: '12px', 
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.01)'
+                borderRadius: '12px'
               }}>
                 <div style={{ display: 'flex', gap: '4px', marginBottom: '16px' }}>
                   {[...Array(test.rating)].map((_, i) => (
@@ -1154,7 +1307,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   ))}
                 </div>
                 <p style={{ color: '#4b5563', fontStyle: 'italic', lineHeight: 1.6, marginBottom: '20px', fontSize: '0.95rem' }}>&ldquo;{test.text}&rdquo;</p>
-                <p style={{ margin: 0, fontWeight: 600, color: theme.primary, fontSize: '0.9rem' }}>— {test.name}</p>
+                <p className="font-heading" style={{ margin: 0, fontWeight: 600, color: theme.primary, fontSize: '0.9rem' }}>— {test.name}</p>
               </div>
             ))}
           </div>
@@ -1162,7 +1315,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       </section>
 
       {/* Booking Form (Interactive Automation Demo) */}
-      <section id="booking" style={{
+      <section id="booking" className="reveal" style={{
         background: '#f8fafc',
         borderTop: '1px solid #e2e8f0',
         padding: '80px 24px',
@@ -1181,7 +1334,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               textTransform: 'uppercase',
               letterSpacing: '0.05em'
             }}>{isPreview ? "Interactive Automation Demo" : "Schedule Our Services"}</span>
-            <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#1f2937', marginTop: '16px', marginBottom: '12px' }}>
+            <h2 className="font-heading" style={{ fontSize: '2rem', fontWeight: 700, color: '#1f2937', marginTop: '16px', marginBottom: '12px' }}>
               {pitch.widgetTitle || "Test-Drive Booking Automation"}
             </h2>
             <p style={{ color: '#64748b', maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', lineHeight: 1.5 }}>
@@ -1189,12 +1342,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             </p>
           </div>
 
-          <div style={{
-            background: '#ffffff',
+          <div className="frosted-glass" style={{
             padding: '30px',
-            borderRadius: '16px',
-            border: '1px solid #cbd5e1',
-            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)'
+            borderRadius: '16px'
           }}>
             {renderActiveWidget()}
           </div>
@@ -1798,6 +1948,25 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                         ? `Pay NGN ${paymentConfig.claimFeeNGN.toLocaleString()} & Deploy`
                         : 'Confirm Claim Request'}
                   </button>
+
+                  <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Or need custom layout/integrations?</span>
+                    <button 
+                      type="button" 
+                      onClick={handleEscalate} 
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: theme.primary,
+                        fontSize: '0.9rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                      }}
+                    >
+                      Talk to a developer for custom requirements
+                    </button>
+                  </div>
                 </form>
               </>
             ) : (
@@ -1819,12 +1988,99 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         </section>
       )}
 
-      {/* Styled utilities for mobile responsive behaviors */}
+      {/* Styled utilities for mobile responsive behaviors & custom design settings */}
       <style jsx>{`
         @media (max-width: 768px) {
           .hide-mobile {
             display: none !important;
           }
+        }
+
+        .font-heading {
+          font-family: '${theme.headingFont || theme.font || 'Outfit'}', serif !important;
+        }
+        
+        .font-body {
+          font-family: '${theme.bodyFont || theme.font || 'Inter'}', sans-serif !important;
+        }
+
+        .preloader-overlay {
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: #090d16;
+          z-index: 99999;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 20px;
+          animation: fadeOut 0.4s ease-out 1.0s forwards;
+        }
+
+        .preloader-spinner {
+          width: 50px;
+          height: 50px;
+          border: 3px solid rgba(255, 255, 255, 0.1);
+          border-top-color: ${theme.primary};
+          border-radius: 50%;
+          animation: spin 1s infinite linear;
+        }
+
+        .preloader-logo {
+          color: #ffffff;
+          font-size: 1.8rem;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          opacity: 0;
+          animation: fadeIn 0.6s ease-out 0.2s forwards;
+        }
+
+        .premium-mesh-bg {
+          background-color: ${theme.bg};
+          background-image: 
+            radial-gradient(at 10% 20%, ${theme.primary}12 0px, transparent 50%),
+            radial-gradient(at 90% 10%, ${theme.accent}12 0px, transparent 50%),
+            radial-gradient(at 50% 80%, ${theme.primary}08 0px, transparent 50%);
+          background-attachment: fixed;
+        }
+
+        .frosted-glass {
+          background: rgba(255, 255, 255, 0.7) !important;
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.4) !important;
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .frosted-glass-dark {
+          background: rgba(15, 23, 42, 0.65) !important;
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.07) !important;
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35) !important;
+        }
+
+        .reveal {
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeOut {
+          to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes fadeIn {
+          to { opacity: 1; }
         }
       `}</style>
     </div>

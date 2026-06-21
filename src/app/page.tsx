@@ -32,6 +32,9 @@ import {
 import confetti from 'canvas-confetti';
 import { RuntimeConfig } from '@/lib/localConfig';
 import { Lead } from '@/lib/googleSheets';
+import TopReviewedLeads from '@/components/TopReviewedLeads';
+import ScraperCard from '@/app/dashboard/components/ScraperCard';
+import ScrapeControls from '@/app/dashboard/components/ScrapeControls';
 
 type Tab = 'dashboard' | 'crm' | 'scrapers' | 'settings' | 'logs';
 
@@ -1239,6 +1242,7 @@ ${config.businessSignature}`;
                 </div>
               </section>
             </div>
+            <TopReviewedLeads />
           </>
         )}
 
@@ -1885,97 +1889,67 @@ ${config.businessSignature}`;
                 Select a lead scraper provider. All providers automatically filter out businesses that already have websites and insert new qualified leads directly into your database.
               </p>
               
-              <div style={{ marginBottom: '8px' }}>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Scraper Provider</label>
-                <select 
-                  value={selectedScraper} 
-                  onChange={(e) => setSelectedScraper(e.target.value as any)}
-                  style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
-                >
-                  <option value="google">Google Places API (Has Free Tier / High Quality)</option>
-                  <option value="maps-free">Google Maps Free Web Scraper (Playwright / Free)</option>
-                  <option value="duckduckgo">DuckDuckGo Search Scraper (HTML Crawler / Free)</option>
-                  <option value="osm">OpenStreetMap Overpass API (100% Free / No API Key)</option>
-                  <option value="jiji">Jiji.ng Crawler (100% Free Playwright Headless Browser)</option>
-                  <option value="apify">Apify Google Maps Actor (High Scale / Paid API)</option>
-                  <option value="instagram">Instagram Scraper (100% Free Web Scraper)</option>
-                  <option value="facebook">Facebook Scraper (100% Free Web Scraper)</option>
-                  <option value="tiktok">TikTok Scraper (100% Free Web Scraper)</option>
-                  <option value="linkedin">LinkedIn Scraper (100% Free Web Scraper)</option>
-                </select>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '8px' }}>
+                <ScraperCard
+                  id="google"
+                  name="Google Places API"
+                  description="Official Places endpoint. High data fidelity."
+                  status="api-required"
+                  isConfigured={!!config.googlePlacesApiKey}
+                  isSelected={selectedScraper === 'google'}
+                  onSelect={() => setSelectedScraper('google')}
+                />
+                <ScraperCard
+                  id="maps-free"
+                  name="Google Maps (Free)"
+                  description="Playwright-powered scraper. No API keys."
+                  status="free"
+                  isConfigured={true}
+                  isSelected={selectedScraper === 'maps-free'}
+                  onSelect={() => setSelectedScraper('maps-free')}
+                />
+                <ScraperCard
+                  id="duckduckgo"
+                  name="DuckDuckGo Search"
+                  description="Crawls public business search pages."
+                  status="free"
+                  isConfigured={true}
+                  isSelected={selectedScraper === 'duckduckgo'}
+                  onSelect={() => setSelectedScraper('duckduckgo')}
+                />
+                <ScraperCard
+                  id="osm"
+                  name="OpenStreetMap"
+                  description="Free register of shops, offices, amenities."
+                  status="free"
+                  isConfigured={true}
+                  isSelected={selectedScraper === 'osm'}
+                  onSelect={() => setSelectedScraper('osm')}
+                />
+                <ScraperCard
+                  id="jiji"
+                  name="Jiji Crawler"
+                  description="Crawls Jiji.ng classified listings."
+                  status="free"
+                  isConfigured={true}
+                  isSelected={selectedScraper === 'jiji'}
+                  onSelect={() => setSelectedScraper('jiji')}
+                />
               </div>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px' }}>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
-                    {selectedScraper === 'jiji' ? 'Jiji Category, Keyword or URL' : 'Industry / Keyword Search Query'}
-                  </label>
-                  <input 
-                    type="text" 
-                    value={gMapsQuery} 
-                    onChange={(e) => setGMapsQuery(e.target.value)}
-                    placeholder={
-                      selectedScraper === 'jiji' 
-                        ? 'e.g. cars or https://jiji.ng/cars' 
-                        : selectedScraper === 'osm'
-                        ? 'e.g. Dentists Ikeja'
-                        : 'e.g. Dentists Ikeja'
-                    }
-                    style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Max Results</label>
-                  <input 
-                    type="number" 
-                    value={gMapsLimit} 
-                    onChange={(e) => setGMapsLimit(Number(e.target.value))}
-                    style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
-                  />
-                </div>
-              </div>
-              
-              <button 
-                onClick={runScraper} 
-                disabled={
-                  scraping || 
-                  (selectedScraper === 'google' && !config.googlePlacesApiKey && config.storageMode !== 'local') ||
-                  (selectedScraper === 'apify' && !config.apifyToken)
-                } 
-                className="btn-primary" 
-                style={{ marginTop: '12px', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              >
-                <Search size={16} /> Execute {
-                  selectedScraper === 'google' ? 'Google Places' 
-                  : selectedScraper === 'maps-free' ? 'Google Maps Free' 
-                  : selectedScraper === 'duckduckgo' ? 'DuckDuckGo' 
-                  : selectedScraper === 'jiji' ? 'Jiji' 
-                  : selectedScraper === 'osm' ? 'OSM' 
-                  : selectedScraper === 'apify' ? 'Apify'
-                  : selectedScraper.charAt(0).toUpperCase() + selectedScraper.slice(1)
-                } Scrape
-              </button>
 
-              {selectedScraper === 'google' && !config.googlePlacesApiKey && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--warning)', marginTop: '8px' }}>
-                  ⚠️ No Google Places API Key configured. Google scraper will run in local sandbox mode with simulated leads.
-                </div>
-              )}
-              {selectedScraper === 'apify' && !config.apifyToken && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--warning)', marginTop: '8px' }}>
-                  ⚠️ No Apify Token configured. Apify scraper is disabled. Please configure your token in settings.
-                </div>
-              )}
-              {selectedScraper === 'osm' && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--success)', marginTop: '8px' }}>
-                  ✨ OpenStreetMap requires no API Keys and is 100% free to search local business registers.
-                </div>
-              )}
-              {selectedScraper === 'jiji' && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--success)', marginTop: '8px' }}>
-                  ✨ Jiji scraper crawls live listings using a local Playwright headless browser for free.
-                </div>
-              )}
+              <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.04)', margin: '8px 0' }} />
+
+              <ScrapeControls
+                selectedScraper={selectedScraper}
+                query={gMapsQuery}
+                setQuery={setGMapsQuery}
+                limit={gMapsLimit}
+                setLimit={setGMapsLimit}
+                scraping={scraping}
+                onExecute={runScraper}
+                isConfigured={selectedScraper === 'google' ? !!config.googlePlacesApiKey : true}
+                requiresKey={selectedScraper === 'google'}
+              />
             </div>
 
             <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
