@@ -8,7 +8,7 @@ export async function launchBrowser() {
       return await playwright.launch({
         args: chromium.args,
         executablePath: await chromium.executablePath(),
-        headless: chromium.headless as boolean,
+        headless: true,
       });
     } catch (e: any) {
       console.error('Failed to launch Playwright with @sparticuz/chromium:', e.message);

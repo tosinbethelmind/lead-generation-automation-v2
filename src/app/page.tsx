@@ -35,11 +35,128 @@ import { Lead } from '@/lib/googleSheets';
 import TopReviewedLeads from '@/components/TopReviewedLeads';
 import ScraperCard from '@/app/dashboard/components/ScraperCard';
 import ScrapeControls from '@/app/dashboard/components/ScrapeControls';
+import { ProviderCard } from '@/app/components/ProviderCard';
 
 type Tab = 'dashboard' | 'crm' | 'scrapers' | 'settings' | 'logs';
 
+function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
+  const [status, setStatus] = useState<string>('disconnected');
+  const [qrUrl, setQrUrl] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStatus = async () => {
+    try {
+      const res = await fetch(`${baseUrl.replace(/\/+$/, '')}/status`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setStatus(data.status);
+      setQrUrl(data.qrCodeUrl || '');
+      setError(null);
+    } catch (err: any) {
+      setError(`Cannot connect to WhatsApp service at ${baseUrl}. Ensure the service is running (npm run whatsapp-service).`);
+      setStatus('disconnected');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 3000);
+    return () => clearInterval(interval);
+  }, [baseUrl]);
+
+  const handleLogout = async () => {
+    if (!confirm("Are you sure you want to disconnect WhatsApp and delete the session?")) return;
+    setLoading(true);
+    try {
+      await fetch(`${baseUrl.replace(/\/+$/, '')}/logout`, { method: 'POST' });
+      fetchStatus();
+    } catch (err: any) {
+      alert("Failed to logout: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '8px', border: '1px dashed rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', width: '100%', marginTop: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: status === 'connected' ? '#10B981' : status === 'qr' ? '#F59E0B' : '#EF4444' }} />
+          <span style={{ fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#fff' }}>
+            Local Baileys: {status}
+          </span>
+        </div>
+        {status === 'connected' && (
+          <button 
+            type="button"
+            onClick={handleLogout}
+            style={{ padding: '4px 8px', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #EF4444', color: '#EF4444', borderRadius: '4px', fontSize: '0.75rem', cursor: 'pointer' }}
+          >
+            Disconnect Phone
+          </button>
+        )}
+      </div>
+
+      {error && (
+        <div style={{ color: '#EF4444', fontSize: '0.8rem', textAlign: 'center', padding: '10px', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '6px', border: '1px solid rgba(239, 68, 68, 0.1)' }}>
+          {error}
+        </div>
+      )}
+
+      {loading && status === 'disconnected' && !error && (
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Loading WhatsApp connection state...</div>
+      )}
+
+      {status === 'connecting' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#F59E0B' }}>
+          <span style={{ fontSize: '0.8rem' }}>Establishing web session connection...</span>
+        </div>
+      )}
+
+      {status === 'qr' && qrUrl && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+          <div style={{ background: '#fff', padding: '12px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
+            <img src={qrUrl} alt="WhatsApp QR Code" style={{ width: '180px', height: '180px', display: 'block' }} />
+          </div>
+          <span style={{ fontSize: '0.8rem', color: '#F59E0B', textAlign: 'center' }}>
+            Open WhatsApp on your phone → Linked Devices → Link a Device, then scan this QR code.
+          </span>
+          <button
+            onClick={fetchStatus}
+            style={{
+              marginTop: '8px',
+              padding: '6px 12px',
+              background: 'linear-gradient(90deg, hsl(140,70%,40%), hsl(140,70%,60%))',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+            }}
+            title="Refresh QR code"
+          >
+            Refresh QR
+          </button>
+        </div>
+      )}
+
+      {status === 'connected' && (
+        <div style={{ color: '#10B981', fontSize: '0.85rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(16, 185, 129, 0.1)', padding: '8px 16px', borderRadius: '20px' }}>
+          <span>✓ WhatsApp Web Session is Linked & Ready</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const [expandedProvider, setExpandedProvider] = useState<string | null>(null);
+
+  const [isGmailConnecting, setIsGmailConnecting] = useState<boolean>(false);
   const [config, setConfig] = useState<RuntimeConfig>({
     googleSpreadsheetId: '',
     googlePlacesApiKey: '',
@@ -71,11 +188,22 @@ export default function Home() {
     brevoApiKey: '',
     brevoSenderName: 'ApexReach',
     brevoSenderEmail: '',
+    smtpHost: '',
+    smtpPort: 587,
+    smtpSecure: false,
+    smtpUser: '',
+    smtpPass: '',
+    smtpFrom: '',
+    smtpSenderName: 'ApexReach',
+    sendgridApiKey: '',
+    sendgridFromEmail: '',
+    sendgridSenderName: 'ApexReach',
     whatsappProvider: 'cloud',
     evolutionApiUrl: '',
     evolutionApiKey: '',
     evolutionInstanceName: '',
     whapiToken: '',
+    whatsappBaileysUrl: 'http://localhost:3006',
     whatsappMessageTemplate: '',
     jijiEmail: '',
     jijiPassword: '',
@@ -123,6 +251,7 @@ export default function Home() {
   // Filter & Search states
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [queryFilter, setQueryFilter] = useState('ALL');
   
   // Loading states
   const [loadingConfig, setLoadingConfig] = useState(true);
@@ -786,13 +915,17 @@ export default function Home() {
     }
   };
 
+  // Get unique search queries from loaded leads
+  const uniqueQueries = Array.from(new Set(leads.map(l => l.source_query_or_seed).filter(Boolean)));
+
   // Lead filter
   const filteredLeads = leads.filter(l => {
     const matchesSearch = l.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           l.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          l.phone_e164.includes(searchTerm);
+                          (l.phone_e164 && l.phone_e164.includes(searchTerm));
     const matchesStatus = statusFilter === 'ALL' || l.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesQuery = queryFilter === 'ALL' || l.source_query_or_seed === queryFilter;
+    return matchesSearch && matchesStatus && matchesQuery;
   });
 
   const renderTemplatePreview = (lead: Lead | null) => {
@@ -1271,6 +1404,19 @@ ${config.businessSignature}`;
                   <option value="NEW">NEW (Uncontacted)</option>
                   <option value="CONTACTED">CONTACTED (Emailed)</option>
                   <option value="ERROR">ERROR</option>
+                </select>
+              </div>
+
+              <div>
+                <select 
+                  value={queryFilter} 
+                  onChange={(e) => setQueryFilter(e.target.value)}
+                  style={{ background: 'rgba(0,0,0,0.3)', color: '#fff', border: '1px solid var(--panel-border)', borderRadius: '8px', padding: '8px 12px', outline: 'none', maxWidth: '240px' }}
+                >
+                  <option value="ALL">All Search Queries</option>
+                  {uniqueQueries.map((q, idx) => (
+                    <option key={idx} value={q}>{q}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -1935,6 +2081,42 @@ ${config.businessSignature}`;
                   isSelected={selectedScraper === 'jiji'}
                   onSelect={() => setSelectedScraper('jiji')}
                 />
+                <ScraperCard
+                  id="instagram"
+                  name="Instagram Scraper"
+                  description="Crawls Instagram business profiles."
+                  status="free"
+                  isConfigured={true}
+                  isSelected={selectedScraper === 'instagram'}
+                  onSelect={() => setSelectedScraper('instagram')}
+                />
+                <ScraperCard
+                  id="facebook"
+                  name="Facebook Scraper"
+                  description="Crawls Facebook pages & listings."
+                  status="free"
+                  isConfigured={true}
+                  isSelected={selectedScraper === 'facebook'}
+                  onSelect={() => setSelectedScraper('facebook')}
+                />
+                <ScraperCard
+                  id="tiktok"
+                  name="TikTok Scraper"
+                  description="Crawls TikTok merchant bios & links."
+                  status="free"
+                  isConfigured={true}
+                  isSelected={selectedScraper === 'tiktok'}
+                  onSelect={() => setSelectedScraper('tiktok')}
+                />
+                <ScraperCard
+                  id="linkedin"
+                  name="LinkedIn Scraper"
+                  description="Crawls LinkedIn company pages."
+                  status="free"
+                  isConfigured={true}
+                  isSelected={selectedScraper === 'linkedin'}
+                  onSelect={() => setSelectedScraper('linkedin')}
+                />
               </div>
 
               <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.04)', margin: '8px 0' }} />
@@ -2085,73 +2267,117 @@ ${config.businessSignature}`;
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff' }}>2. Email Outreach Provider</h4>
-                <select 
-                  value={config.emailProvider || 'gmail'} 
-                  onChange={(e) => setConfig({ ...config, emailProvider: e.target.value as any })}
-                  style={{ padding: '8px 12px', background: 'rgba(6, 182, 212, 0.15)', border: '1px solid var(--primary)', borderRadius: '6px', color: '#fff', fontWeight: 600, outline: 'none' }}
-                >
-                  <option value="gmail">Google Workspace (Gmail OAuth)</option>
-                  <option value="resend">Resend.com API</option>
-                  <option value="brevo">Brevo.com API (SMTP)</option>
-                </select>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
+                  <ProviderCard
+                    id="gmail"
+                    name="Google Workspace"
+                    description="Gmail OAuth (Google Workspace)"
+                    selected={config.emailProvider === 'gmail'}
+                    onSelect={() => setConfig({ ...config, emailProvider: 'gmail' })}
+                  />
+                  <ProviderCard
+                    id="resend"
+                    name="Resend.com"
+                    description="Resend.com API"
+                    selected={config.emailProvider === 'resend'}
+                    onSelect={() => setConfig({ ...config, emailProvider: 'resend' })}
+                  />
+                  <ProviderCard
+                    id="brevo"
+                    name="Brevo.com"
+                    description="Brevo.com SMTP API"
+                    selected={config.emailProvider === 'brevo'}
+                    onSelect={() => setConfig({ ...config, emailProvider: 'brevo' })}
+                  />
+                  <ProviderCard
+                    id="smtp"
+                    name="Custom SMTP"
+                    description="Custom SMTP Server (Free/Generic)"
+                    selected={config.emailProvider === 'smtp'}
+                    onSelect={() => setConfig({ ...config, emailProvider: 'smtp' })}
+                  />
+                  <ProviderCard
+                    id="sendgrid"
+                    name="SendGrid"
+                    description="SendGrid API (Free Tier)"
+                    selected={config.emailProvider === 'sendgrid'}
+                    onSelect={() => setConfig({ ...config, emailProvider: 'sendgrid' })}
+                  />
+                </div>
               </div>
 
               {config.emailProvider === 'gmail' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Google OAuth Client ID</label>
-                    <input 
-                      type="text" 
-                      value={config.googleClientId || ''} 
-                      onChange={(e) => setConfig({ ...config, googleClientId: e.target.value })}
-                      placeholder="Enter Google Client ID"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
-                    />
+                <>
+                  <div style={{ display: 'grid', gap: '12px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                    <button
+                      onClick={() => {
+                        setIsGmailConnecting(true);
+                        window.location.href = '/api/auth/google';
+                      }}
+                      disabled={isGmailConnecting}
+                      style={{
+                        width: '100%',
+                        padding: '10px 16px',
+                        background: isGmailConnecting ? 'rgba(100,100,100,0.5)' : 'linear-gradient(90deg, hsl(210,70%,50%), hsl(210,70%,70%))',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: isGmailConnecting ? 'default' : 'pointer',
+                        fontSize: '0.9rem',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {isGmailConnecting ? 'Connecting…' : 'Connect Gmail'}
+                    </button>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                      Authorize the app via Google OAuth. Credentials are saved automatically.
+                    </span>
                   </div>
-                  <div>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Google OAuth Client Secret</label>
-                    <input 
-                      type="password" 
-                      value={config.googleClientSecret || ''} 
-                      onChange={(e) => setConfig({ ...config, googleClientSecret: e.target.value })}
-                      placeholder="Enter Google Client Secret"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
-                    />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Google OAuth Client ID</label>
+                      <input 
+                        type="text" 
+                        value={config.googleClientId || ''} 
+                        onChange={(e) => setConfig({ ...config, googleClientId: e.target.value })}
+                        placeholder="Enter Google Client ID"
+                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Google OAuth Client Secret</label>
+                      <input 
+                        type="password" 
+                        value={config.googleClientSecret || ''} 
+                        onChange={(e) => setConfig({ ...config, googleClientSecret: e.target.value })}
+                        placeholder="Enter Google Client Secret"
+                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Google Cloud Project ID</label>
+                      <input 
+                        type="text" 
+                        value={config.googleProjectId || ''} 
+                        onChange={(e) => setConfig({ ...config, googleProjectId: e.target.value })}
+                        placeholder="e.g. leadgen-console"
+                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Google Cloud Project ID</label>
-                    <input 
-                      type="text" 
-                      value={config.googleProjectId || ''} 
-                      onChange={(e) => setConfig({ ...config, googleProjectId: e.target.value })}
-                      placeholder="e.g. leadgen-console"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
-                    />
-                  </div>
-                </div>
+                </>
               )}
 
               {config.emailProvider === 'resend' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Resend API Key</label>
-                    <input 
-                      type="password" 
-                      value={config.resendApiKey || ''} 
-                      onChange={(e) => setConfig({ ...config, resendApiKey: e.target.value })}
-                      placeholder="re_..."
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
-                    />
+                    <input type="password" value={config.resendApiKey || ''} onChange={(e) => setConfig({ ...config, resendApiKey: e.target.value })} placeholder="re_..." style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }} />
+                    <a href="https://resend.com/dashboard/api-keys" target="_blank" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Get free API key →</a>
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>From Email Address (Verified Domain)</label>
-                    <input 
-                      type="text" 
-                      value={config.resendFromEmail || ''} 
-                      onChange={(e) => setConfig({ ...config, resendFromEmail: e.target.value })}
-                      placeholder="onboarding@resend.dev or hello@yourdomain.com"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
-                    />
+                    <input type="text" value={config.resendFromEmail || ''} onChange={(e) => setConfig({ ...config, resendFromEmail: e.target.value })} placeholder="onboarding@resend.dev or hello@yourdomain.com" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }} />
                   </div>
                 </div>
               )}
@@ -2160,11 +2386,69 @@ ${config.businessSignature}`;
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Brevo API Key (V3)</label>
+                    <input type="password" value={config.brevoApiKey || ''} onChange={(e) => setConfig({ ...config, brevoApiKey: e.target.value })} placeholder="xkeysib-..." style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }} />
+                    <a href="https://app.brevo.com/settings/keys" target="_blank" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Get free API key →</a>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender Display Name</label>
+                    <input type="text" value={config.brevoSenderName || ''} onChange={(e) => setConfig({ ...config, brevoSenderName: e.target.value })} placeholder="e.g. ApexReach Support" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender Verified Email</label>
+                    <input type="text" value={config.brevoSenderEmail || ''} onChange={(e) => setConfig({ ...config, brevoSenderEmail: e.target.value })} placeholder="hello@yourdomain.com" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }} />
+                  </div>
+                </div>
+              )}
+
+              {config.emailProvider === 'smtp' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>SMTP Host</label>
+                    <input 
+                      type="text" 
+                      value={config.smtpHost || ''} 
+                      onChange={(e) => setConfig({ ...config, smtpHost: e.target.value })}
+                      placeholder="e.g. smtp.mailtrap.io or smtp.gmail.com"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>SMTP Port</label>
+                    <input 
+                      type="number" 
+                      value={config.smtpPort || 587} 
+                      onChange={(e) => setConfig({ ...config, smtpPort: Number(e.target.value) })}
+                      placeholder="e.g. 587 or 465"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>SMTP Username / Email</label>
+                    <input 
+                      type="text" 
+                      value={config.smtpUser || ''} 
+                      onChange={(e) => setConfig({ ...config, smtpUser: e.target.value })}
+                      placeholder="user@domain.com"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>SMTP Password</label>
                     <input 
                       type="password" 
-                      value={config.brevoApiKey || ''} 
-                      onChange={(e) => setConfig({ ...config, brevoApiKey: e.target.value })}
-                      placeholder="xkeysib-..."
+                      value={config.smtpPass || ''} 
+                      onChange={(e) => setConfig({ ...config, smtpPass: e.target.value })}
+                      placeholder="SMTP Password"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>From Email Address</label>
+                    <input 
+                      type="text" 
+                      value={config.smtpFrom || ''} 
+                      onChange={(e) => setConfig({ ...config, smtpFrom: e.target.value })}
+                      placeholder="sender@domain.com"
                       style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
@@ -2172,21 +2456,40 @@ ${config.businessSignature}`;
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender Display Name</label>
                     <input 
                       type="text" 
-                      value={config.brevoSenderName || ''} 
-                      onChange={(e) => setConfig({ ...config, brevoSenderName: e.target.value })}
-                      placeholder="e.g. ApexReach Support"
+                      value={config.smtpSenderName || ''} 
+                      onChange={(e) => setConfig({ ...config, smtpSenderName: e.target.value })}
+                      placeholder="e.g. ApexReach Marketing"
                       style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', color: '#fff' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={config.smtpSecure || false} 
+                        onChange={(e) => setConfig({ ...config, smtpSecure: e.target.checked })}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span>Use Secure SSL/TLS (Check if using port 465)</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {config.emailProvider === 'sendgrid' && (
+                <div style={{ background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                  <div style={{ marginBottom: '8px' }}>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>SendGrid API Key</label>
+                    <input type="password" value={config.sendgridApiKey || ''} onChange={(e) => setConfig({ ...config, sendgridApiKey: e.target.value })} placeholder="SG.xxxxx" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff' }} />
+                    <a href="https://app.sendgrid.com/settings/api_keys" target="_blank" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Get free API key →</a>
+                  </div>
+                  <div style={{ marginBottom: '8px' }}>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>From Email (Verified)</label>
+                    <input type="text" value={config.sendgridFromEmail || ''} onChange={(e) => setConfig({ ...config, sendgridFromEmail: e.target.value })} placeholder="verified@yourdomain.com" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff' }} />
+                  </div>
                   <div>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender Verified Email</label>
-                    <input 
-                      type="text" 
-                      value={config.brevoSenderEmail || ''} 
-                      onChange={(e) => setConfig({ ...config, brevoSenderEmail: e.target.value })}
-                      placeholder="hello@yourdomain.com"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
-                    />
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>Sender Display Name</label>
+                    <input type="text" value={config.sendgridSenderName || ''} onChange={(e) => setConfig({ ...config, sendgridSenderName: e.target.value })} placeholder="e.g. ApexReach Outreach" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff' }} />
                   </div>
                 </div>
               )}
@@ -2215,6 +2518,7 @@ ${config.businessSignature}`;
                   <option value="cloud">Meta Business WhatsApp API</option>
                   <option value="evolution">Evolution API (QR Code / Baileys)</option>
                   <option value="whapi">Whapi.cloud API (QR Code / Web)</option>
+                  <option value="baileys">Custom Baileys Service (Free / QR Code)</option>
                 </select>
               </div>
 
@@ -2313,8 +2617,25 @@ ${config.businessSignature}`;
                 </div>
               )}
 
-              {/* Text Message Template input for Evolution/Whapi */}
-              {(config.whatsappProvider === 'evolution' || config.whatsappProvider === 'whapi') && (
+              {config.whatsappProvider === 'baileys' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Baileys Local API URL</label>
+                    <input 
+                      type="text" 
+                      value={config.whatsappBaileysUrl || ''} 
+                      onChange={(e) => setConfig({ ...config, whatsappBaileysUrl: e.target.value })}
+                      placeholder="http://localhost:3006"
+                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  
+                  <BaileysPairingPanel baseUrl={config.whatsappBaileysUrl || 'http://localhost:3006'} />
+                </div>
+              )}
+
+              {/* Text Message Template input for Evolution/Whapi/Baileys */}
+              {(config.whatsappProvider === 'evolution' || config.whatsappProvider === 'whapi' || config.whatsappProvider === 'baileys') && (
                 <div style={{ marginTop: '16px' }}>
                   <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Custom Text Message Template</label>
                   <textarea 

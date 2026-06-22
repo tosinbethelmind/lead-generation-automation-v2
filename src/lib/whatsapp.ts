@@ -131,6 +131,28 @@ export async function sendWhatsAppMessage(
       const txt = await resp.text();
       throw new Error(`Whapi.cloud error (${resp.status}): ${txt}`);
     }
+  } else if (provider === 'baileys') {
+    // ── Local/Custom Baileys API Wrapper ──
+    const baseUrl = config.whatsappBaileysUrl || 'http://localhost:3006';
+    const url = `${baseUrl.replace(/\/+$/, '')}/send`;
+
+    const payload = {
+      phone: cleanPhone,
+      message: message
+    };
+
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!resp.ok) {
+      const txt = await resp.text();
+      throw new Error(`Local Baileys service error (${resp.status}): ${txt}`);
+    }
   } else {
     throw new Error(`Unknown WhatsApp Provider: ${provider}`);
   }

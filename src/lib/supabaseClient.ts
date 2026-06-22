@@ -22,12 +22,14 @@ export function getSupabaseClient() {
 }
 
 // ============================================================================
-// Scrape Jobs CRUD Helpers
+// Scrape Jobs CRUD Helpers with Local Fallback
 // ============================================================================
 
 import { randomUUID } from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
-export type ScrapeJobType = 'jiji' | 'google';
+export type ScrapeJobType = 'jiji' | 'google' | 'instagram' | 'facebook' | 'tiktok' | 'linkedin' | 'maps-free' | 'duckduckgo' | 'osm' | 'apify' | string;
 export type ScrapeJobStatus = 'queued' | 'running' | 'completed' | 'failed';
 
 export interface ScrapeJob {
@@ -42,35 +44,142 @@ export interface ScrapeJob {
   updated_at: string;
 }
 
+// Fallback JSON database file paths
+const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
+const FALLBACK_JOBS_FILE = isServerless 
+  ? path.join('/tmp', 'scrape_jobs.json')
+  : path.join(process.cwd(), 'local_db', 'scrape_jobs.json');
+
+const fallbackJobsInMemory: Record<string, ScrapeJob> = {};
+
+function readFallbackJobs(): Record<string, ScrapeJob> {
+  try {
+    const dir = path.dirname(FALLBACK_JOBS_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    if (fs.existsSync(FALLBACK_JOBS_FILE)) {
+      const content = fs.readFileSync(FALLBACK_JOBS_FILE, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (e) {
+    console.error('Error reading fallback jobs:', e);
+  }
+  return {};
+}
+
+function writeFallbackJobs(jobs: Record<string, ScrapeJob>) {
+  try {
+    const dir = path.dirname(FALLBACK_JOBS_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(FALLBACK_JOBS_FILE, JSON.stringify(jobs, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Error writing fallback jobs:', e);
+  }
+}
+
+function saveFallbackJob(job: ScrapeJob) {
+  fallbackJobsInMemory[job.id] = job;
+  const jobs = readFallbackJobs();
+  jobs[job.id] = job;
+  writeFallbackJobs(jobs);
+}
+
+function getFallbackJob(id: string): ScrapeJob | null {
+  if (fallbackJobsInMemory[id]) return fallbackJobsInMemory[id];
+  const jobs = readFallbackJobs();
+  if (jobs[id]) {
+    fallbackJobsInMemory[id] = jobs[id];
+    return jobs[id];
+  }
+  return null;
+}
+
+function removeFallbackJob(id: string) {
+  delete fallbackJobsInMemory[id];
+  const jobs = readFallbackJobs();
+  if (jobs[id]) {
+    delete jobs[id];
+    writeFallbackJobs(jobs);
+  }
+}
+
+function isTableMissingError(error: any): boolean {
+  if (!error) return false;
+  const msg = String(error.message || '').toLowerCase();
+  const code = String(error.code || '');
+  return code === '42P01' || msg.includes('schema cache') || msg.includes('does not exist');
+}
+
 /** Create a new scraper job */
 export async function createScrapeJob(
   type: ScrapeJobType,
   payload: any,
   userId?: string
 ): Promise<ScrapeJob> {
-  const { data, error } = await supabase.from('scrape_jobs').insert([
-    {
-      id: randomUUID(),
-      type,
-      status: 'queued',
-      payload,
-      user_id: userId || null,
-    },
-  ]).select().single();
+  const jobId = randomUUID();
+  const newJob: ScrapeJob = {
+    id: jobId,
+    type,
+    status: 'queued',
+    payload,
+    user_id: userId || undefined,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
 
-  if (error) throw error;
-  return data as ScrapeJob;
+  try {
+    const { data, error } = await supabase.from('scrape_jobs').insert([
+      {
+        id: jobId,
+        type,
+        status: 'queued',
+        payload,
+        user_id: userId || null,
+      },
+    ]).select().single();
+
+    if (error) {
+      if (isTableMissingError(error)) {
+        console.warn('Supabase table "scrape_jobs" not found. Falling back to local file/memory storage.');
+        saveFallbackJob(newJob);
+        return newJob;
+      }
+      throw error;
+    }
+    return data as ScrapeJob;
+  } catch (err: any) {
+    if (isTableMissingError(err)) {
+      saveFallbackJob(newJob);
+      return newJob;
+    }
+    throw err;
+  }
 }
 
 /** Retrieve a job by its ID */
 export async function getScrapeJob(id: string): Promise<ScrapeJob | null> {
-  const { data, error } = await supabase
-    .from('scrape_jobs')
-    .select('*')
-    .eq('id', id)
-    .single();
-  if (error && error.code !== 'PGRST116') throw error; // row not found is ok
-  return data as ScrapeJob | null;
+  try {
+    const { data, error } = await supabase
+      .from('scrape_jobs')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) {
+      if (isTableMissingError(error)) {
+        return getFallbackJob(id);
+      }
+      if (error.code !== 'PGRST116') throw error; // row not found is ok
+    }
+    return data as ScrapeJob | null;
+  } catch (err: any) {
+    if (isTableMissingError(err)) {
+      return getFallbackJob(id);
+    }
+    throw err;
+  }
 }
 
 /** Update status (and optional result/error) */
@@ -79,20 +188,54 @@ export async function updateScrapeJobStatus(
   status: ScrapeJobStatus,
   updates?: Partial<Pick<ScrapeJob, 'result' | 'error_message'>>
 ): Promise<ScrapeJob> {
-  const updatePayload = { status, ...updates };
-  const { data, error } = await supabase
-    .from('scrape_jobs')
-    .update(updatePayload)
-    .eq('id', id)
-    .select()
-    .single();
-  if (error) throw error;
-  return data as ScrapeJob;
+  const updatePayload = { status, ...updates, updated_at: new Date().toISOString() };
+  try {
+    const { data, error } = await supabase
+      .from('scrape_jobs')
+      .update(updatePayload)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) {
+      if (isTableMissingError(error)) {
+        const job = getFallbackJob(id);
+        if (!job) throw new Error(`Job not found: ${id}`);
+        const updatedJob = { ...job, ...updatePayload };
+        saveFallbackJob(updatedJob);
+        return updatedJob;
+      }
+      throw error;
+    }
+    return data as ScrapeJob;
+  } catch (err: any) {
+    if (isTableMissingError(err)) {
+      const job = getFallbackJob(id);
+      if (!job) throw new Error(`Job not found: ${id}`);
+      const updatedJob = { ...job, ...updatePayload };
+      saveFallbackJob(updatedJob);
+      return updatedJob;
+    }
+    throw err;
+  }
 }
 
 /** Delete a job (admin only) */
 export async function deleteScrapeJob(id: string): Promise<void> {
-  const { error } = await supabase.from('scrape_jobs').delete().eq('id', id);
-  if (error) throw error;
+  try {
+    const { error } = await supabase.from('scrape_jobs').delete().eq('id', id);
+    if (error) {
+      if (isTableMissingError(error)) {
+        removeFallbackJob(id);
+        return;
+      }
+      throw error;
+    }
+  } catch (err: any) {
+    if (isTableMissingError(err)) {
+      removeFallbackJob(id);
+      return;
+    }
+    throw err;
+  }
 }
 

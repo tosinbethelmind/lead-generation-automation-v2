@@ -1,13 +1,16 @@
-// src/app/api/scrape/jobs/[id]/route.ts
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 
 /**
  * GET /api/scrape/jobs/:id
  * Retrieves the status and result of a scrape job.
  */
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id: jobId } = await params;
+export async function GET(request: NextRequest, context: any) {
+  const resolvedParams = typeof context?.params?.then === 'function'
+    ? await context.params
+    : context?.params;
+  const jobId = resolvedParams?.id;
+
   if (!jobId) {
     return NextResponse.json({ error: 'Job ID missing' }, { status: 400 });
   }

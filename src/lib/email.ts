@@ -1,5 +1,6 @@
 import { getRuntimeConfig, saveLocalConfig, RuntimeConfig } from './localConfig';
 import { getValidAccessToken } from './googleAuth';
+import nodemailer from 'nodemailer';
 
 // ============================================================================
 // Email Sender Helpers
@@ -93,6 +94,62 @@ export async function sendBrevoMessage(to: string, subject: string, body: string
   }
 }
 
+export async function sendSmtpMessage(to: string, subject: string, body: string, config: RuntimeConfig) {
+  if (!config.smtpHost || !config.smtpUser || !config.smtpPass) {
+    throw new Error('SMTP Host, User, and Password must be configured.');
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: config.smtpHost,
+    port: config.smtpPort || 587,
+    secure: config.smtpSecure || false,
+    auth: {
+      user: config.smtpUser,
+      pass: config.smtpPass,
+    },
+  });
+
+  const senderName = config.smtpSenderName || 'ApexReach';
+  const fromEmail = config.smtpFrom || config.smtpUser;
+
+  await transporter.sendMail({
+    from: `"${senderName}" <${fromEmail}>`,
+    to,
+    subject,
+    text: body,
+  });
+}
+
+export async function sendSendGridMessage(to: string, subject: string, body: string, config: RuntimeConfig) {
+  if (!config.sendgridApiKey) {
+    throw new Error('SendGrid API Key is not configured.');
+  }
+  const fromEmail = config.sendgridFromEmail;
+  if (!fromEmail) {
+    throw new Error('SendGrid From Email is not configured.');
+  }
+  const senderName = config.sendgridSenderName || 'ApexReach';
+
+  const resp = await fetch('https://api.sendgrid.com/v3/mail/send', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${config.sendgridApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      personalizations: [{ to: [{ email: to }] }],
+      from: { email: fromEmail, name: senderName },
+      subject,
+      content: [{ type: 'text/plain', value: body }],
+    }),
+  });
+
+  if (!resp.ok) {
+    const txt = await resp.text();
+    throw new Error(`SendGrid API error (${resp.status}): ${txt}`);
+  }
+}
+
 export async function sendNotificationEmail(to: string, subject: string, body: string): Promise<boolean> {
   const config = getRuntimeConfig();
   if (config.dryRun) {
@@ -110,6 +167,10 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
       await sendResendMessage(to, subject, body, config);
     } else if (provider === 'brevo') {
       await sendBrevoMessage(to, subject, body, config);
+    } else if (provider === 'smtp') {
+      await sendSmtpMessage(to, subject, body, config);
+    } else if (provider === 'sendgrid') {
+      await sendSendGridMessage(to, subject, body, config);
     } else {
       console.warn(`[sendNotificationEmail] Unknown email provider: ${provider}`);
       return false;

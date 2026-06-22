@@ -59,3 +59,20 @@ CREATE TABLE IF NOT EXISTS logs (
 -- Indexing for logs streams
 CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp DESC);
 CREATE INDEX IF NOT EXISTS idx_logs_run_id ON logs(run_id);
+
+-- 4. Create SCRAPE JOBS table for tracking background scraping tasks
+CREATE TABLE IF NOT EXISTS scrape_jobs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    type TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'running', 'completed', 'failed')),
+    payload JSONB NOT NULL,
+    result JSONB,
+    error_message TEXT,
+    user_id TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Indexing for fast status lookups and job history query performance
+CREATE INDEX IF NOT EXISTS idx_scrape_jobs_status ON scrape_jobs(status);
+CREATE INDEX IF NOT EXISTS idx_scrape_jobs_created_at ON scrape_jobs(created_at DESC);

@@ -4,6 +4,8 @@ import path from 'path';
 export type StorageMode = 'cloud' | 'local' | 'hybrid' | 'supabase';
 
 export interface LocalConfig {
+  // ── SMTP Preset ───────────────────────────────────────
+  smtpPreset?: string;
   // ── Marketing Email Config ────────────────────────────
   marketingSubject?: string;
   marketingBody?: string;
@@ -53,8 +55,8 @@ export interface LocalConfig {
   africastalkingSenderId?: string;
   
   // ── Alternative Outreach Channels ───────────────────────
-  emailProvider?: 'gmail' | 'resend' | 'brevo';
-  whatsappProvider?: 'cloud' | 'evolution' | 'whapi';
+  emailProvider?: 'gmail' | 'resend' | 'brevo' | 'smtp' | 'sendgrid';
+  whatsappProvider?: 'cloud' | 'evolution' | 'whapi' | 'baileys';
   resendApiKey?: string;
   resendFromEmail?: string;
   brevoApiKey?: string;
@@ -64,6 +66,23 @@ export interface LocalConfig {
   evolutionApiKey?: string;
   evolutionInstanceName?: string;
   whapiToken?: string;
+
+  // ── SMTP Outreach Configuration ─────────────────────────
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpSecure?: boolean;
+  smtpUser?: string;
+  smtpPass?: string;
+  smtpFrom?: string;
+  smtpSenderName?: string;
+
+  // ── SendGrid Outreach Configuration ─────────────────────
+  sendgridApiKey?: string;
+  sendgridFromEmail?: string;
+  sendgridSenderName?: string;
+
+  // ── Local Baileys WhatsApp Service ──────────────────────
+  whatsappBaileysUrl?: string;
 
   // ── Claiming / Payments ────────────────────────────────
   paystackPublicKey?: string;
@@ -140,6 +159,25 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   evolutionInstanceName: '',
   whapiToken: '',
 
+  // SMTP Settings
+  smtpHost: '',
+  smtpPort: 587,
+  smtpSecure: false,
+  smtpUser: '',
+  smtpPass: '',
+  smtpFrom: '',
+  smtpSenderName: 'ApexReach',
+  // ── SMTP Preset Default ─────────────────────────────────────
+  smtpPreset: 'custom',
+
+  // SendGrid Settings
+  sendgridApiKey: '',
+  sendgridFromEmail: '',
+  sendgridSenderName: 'ApexReach',
+
+  // Baileys Settings
+  whatsappBaileysUrl: 'http://localhost:3006',
+
   // Claiming / Payments Defaults
   paystackPublicKey: '',
   paystackSecretKey: '',
@@ -215,6 +253,7 @@ export function getRuntimeConfig(): RuntimeConfig {
     
     // Alternative Outreach
     emailProvider: (process.env.EMAIL_PROVIDER as any) || fileConfig.emailProvider || DEFAULT_CONFIG.emailProvider,
+    smtpPreset: process.env.SMTP_PRESET || fileConfig.smtpPreset || DEFAULT_CONFIG.smtpPreset,
     whatsappProvider: (process.env.WHATSAPP_PROVIDER as any) || fileConfig.whatsappProvider || DEFAULT_CONFIG.whatsappProvider,
     resendApiKey: process.env.RESEND_API_KEY || fileConfig.resendApiKey || DEFAULT_CONFIG.resendApiKey,
     resendFromEmail: process.env.RESEND_FROM_EMAIL || fileConfig.resendFromEmail || DEFAULT_CONFIG.resendFromEmail,
@@ -225,6 +264,23 @@ export function getRuntimeConfig(): RuntimeConfig {
     evolutionApiKey: process.env.EVOLUTION_API_KEY || fileConfig.evolutionApiKey || DEFAULT_CONFIG.evolutionApiKey,
     evolutionInstanceName: process.env.EVOLUTION_INSTANCE_NAME || fileConfig.evolutionInstanceName || DEFAULT_CONFIG.evolutionInstanceName,
     whapiToken: process.env.WHAPI_TOKEN || fileConfig.whapiToken || DEFAULT_CONFIG.whapiToken,
+
+    // SMTP Settings
+    smtpHost: process.env.SMTP_HOST || fileConfig.smtpHost || DEFAULT_CONFIG.smtpHost,
+    smtpPort: Number(process.env.SMTP_PORT) || Number(fileConfig.smtpPort) || DEFAULT_CONFIG.smtpPort,
+    smtpSecure: process.env.SMTP_SECURE === 'true' || fileConfig.smtpSecure || DEFAULT_CONFIG.smtpSecure,
+    smtpUser: process.env.SMTP_USER || fileConfig.smtpUser || DEFAULT_CONFIG.smtpUser,
+    smtpPass: process.env.SMTP_PASS || fileConfig.smtpPass || DEFAULT_CONFIG.smtpPass,
+    smtpFrom: process.env.SMTP_FROM || fileConfig.smtpFrom || DEFAULT_CONFIG.smtpFrom,
+    smtpSenderName: process.env.SMTP_SENDER_NAME || fileConfig.smtpSenderName || DEFAULT_CONFIG.smtpSenderName,
+
+    // SendGrid Settings
+    sendgridApiKey: process.env.SENDGRID_API_KEY || fileConfig.sendgridApiKey || DEFAULT_CONFIG.sendgridApiKey,
+    sendgridFromEmail: process.env.SENDGRID_FROM_EMAIL || fileConfig.sendgridFromEmail || DEFAULT_CONFIG.sendgridFromEmail,
+    sendgridSenderName: process.env.SENDGRID_SENDER_NAME || fileConfig.sendgridSenderName || DEFAULT_CONFIG.sendgridSenderName,
+
+    // Baileys Settings
+    whatsappBaileysUrl: process.env.WHATSAPP_BAILEYS_URL || fileConfig.whatsappBaileysUrl || DEFAULT_CONFIG.whatsappBaileysUrl,
 
     // Claiming / Payments
     paystackPublicKey: process.env.PAYSTACK_PUBLIC_KEY || fileConfig.paystackPublicKey || DEFAULT_CONFIG.paystackPublicKey,
@@ -317,6 +373,25 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       evolutionApiKey: updated.evolutionApiKey,
       evolutionInstanceName: updated.evolutionInstanceName,
       whapiToken: updated.whapiToken,
+
+      // SMTP Settings
+      smtpHost: updated.smtpHost,
+      smtpPort: updated.smtpPort,
+      smtpSecure: updated.smtpSecure,
+      smtpUser: updated.smtpUser,
+      smtpPass: updated.smtpPass,
+      smtpFrom: updated.smtpFrom,
+      smtpSenderName: updated.smtpSenderName,
+      // SMTP Preset
+      smtpPreset: updated.smtpPreset,
+
+      // SendGrid Settings
+      sendgridApiKey: updated.sendgridApiKey,
+      sendgridFromEmail: updated.sendgridFromEmail,
+      sendgridSenderName: updated.sendgridSenderName,
+
+      // Baileys Settings
+      whatsappBaileysUrl: updated.whatsappBaileysUrl,
 
       // Claiming / Payments
       paystackPublicKey: updated.paystackPublicKey,
