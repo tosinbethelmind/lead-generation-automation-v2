@@ -27,7 +27,10 @@ import {
   Terminal,
   Share2,
   Sparkles,
-  Loader2
+  Loader2,
+  X,
+  AlertTriangle,
+  AlertCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { RuntimeConfig } from '@/lib/localConfig';
@@ -275,6 +278,49 @@ export default function Home() {
   const [customMessageText, setCustomMessageText] = useState('');
   const [customSubjectText, setCustomSubjectText] = useState('');
 
+  // Sheets Sync & Outreach Progress states
+  const [sheetsSyncStatus, setSheetsSyncStatus] = useState<'red' | 'yellow' | 'green'>('red');
+  const [sheetsSyncMessage, setSheetsSyncMessage] = useState<string>('Setup Required');
+  const [outreachProgress, setOutreachProgress] = useState({
+    active: false,
+    current: 0,
+    total: 0,
+    successes: 0,
+    failures: 0,
+    statusText: ''
+  });
+
+  const [supabaseStatus, setSupabaseStatus] = useState<{
+    configured: boolean;
+    connected: boolean;
+    success: boolean;
+    error: string | null;
+  } | null>(null);
+
+  const checkSupabaseStatus = async () => {
+    try {
+      const resp = await fetch('/api/config/test-supabase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await resp.json();
+      setSupabaseStatus(data);
+    } catch (e: any) {
+      setSupabaseStatus({
+        configured: false,
+        connected: false,
+        success: false,
+        error: e.message || 'Failed to verify Supabase connection'
+      });
+    }
+  };
+
+  const resetFilters = () => {
+    setSearchTerm('');
+    setQueryFilter('ALL');
+    setStatusFilter('ALL');
+  };
+
   // Video Demo states
   const [videoPlaying, setVideoPlaying] = useState(false);
 
@@ -313,6 +359,7 @@ export default function Home() {
     fetchStats();
     fetchLeads();
     fetchLogs();
+    checkSheetsStatus();
   }, []);
 
   // Fetch overrides and turnout settings on Lead select
@@ -560,6 +607,11 @@ export default function Home() {
         if (data.googleClientSecret) {
           setCustomClientSecret(data.googleClientSecret);
         }
+        if (data.storageMode === 'supabase') {
+          checkSupabaseStatus();
+        } else {
+          setSupabaseStatus(null);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -582,6 +634,11 @@ export default function Home() {
         setConfig(data);
         setStatusMessage('Settings updated successfully!');
         confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+        if (data.storageMode === 'supabase') {
+          checkSupabaseStatus();
+        } else {
+          setSupabaseStatus(null);
+        }
       } else {
         setStatusMessage(`Error: ${data.error}`);
       }
@@ -637,10 +694,38 @@ export default function Home() {
     }
   };
 
+  const checkSheetsStatus = async (init = false) => {
+    try {
+      const resp = await fetch('/api/config/test-sheets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ initialize: init })
+      });
+      const data = await resp.json();
+      if (data.status) {
+        setSheetsSyncStatus(data.status);
+        if (data.status === 'green') {
+          setSheetsSyncMessage("Fully Synced");
+        } else if (data.status === 'yellow') {
+          setSheetsSyncMessage("Connected (Missing Tabs)");
+        } else {
+          setSheetsSyncMessage(data.error || "Setup Required");
+        }
+      } else {
+        setSheetsSyncStatus('red');
+        setSheetsSyncMessage(data.error || "Disconnected");
+      }
+    } catch (e: any) {
+      setSheetsSyncStatus('red');
+      setSheetsSyncMessage(e.message || "Connection Error");
+    }
+  };
+
   const handleRefreshAll = () => {
     fetchStats();
     fetchLeads();
     fetchLogs();
+    checkSheetsStatus();
   };
 
   // Run selected Lead Scraper
@@ -734,43 +819,94 @@ export default function Home() {
     } else {
       channelName = `Email (${emailProvider.toUpperCase()})`;
     }
+
+    const leadIdsArray = Array.from(selectedLeads);
+    const totalLeads = leadIdsArray.length;
     
-    try {
-      setSendingOutreach(true);
-      setStatusMessage(`Launching personalized ${channelName} outreach to ${selectedLeads.size} leads...`);
-      
-      const payload: any = {
-        leadIds: Array.from(selectedLeads)
-      };
+    setSendingOutreach(true);
+    setOutreachProgress({
+      active: true,
+      current: 0,
+      total: totalLeads,
+      successes: 0,
+      failures: 0,
+      statusText: `Initializing ${channelName} queue...`
+    });
 
-      if (useCustomMessage) {
-        payload.customMessage = customMessageText;
-        if (channel === 'gmail' || channelName.toLowerCase().includes('email')) {
-          payload.customSubject = customSubjectText;
+    let localSuccesses = 0;
+    let localFailures = 0;
+
+    for (let i = 0; i < totalLeads; i++) {
+      const leadId = leadIdsArray[i];
+      const leadObj = leads.find(l => l.lead_id === leadId);
+      const leadName = leadObj ? leadObj.name : 'Unknown';
+
+      setOutreachProgress(prev => ({
+        ...prev,
+        current: i + 1,
+        statusText: `Sending message ${i + 1} of ${totalLeads} to ${leadName}...`
+      }));
+
+      try {
+        const payload: any = {
+          leadIds: [leadId],
+          dryRunOverride: config.dryRun,
+          dryRun: config.dryRun
+        };
+
+        if (useCustomMessage) {
+          payload.customMessage = customMessageText;
+          if (channel === 'gmail' || channelName.toLowerCase().includes('email')) {
+            payload.customSubject = customSubjectText;
+          }
         }
+
+        const resp = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const data = await resp.json();
+        if (data.error) {
+          console.error(`Failed for ${leadName}:`, data.error);
+          localFailures++;
+        } else {
+          const failed = data.results && data.results.some((r: any) => r.status === 'ERROR');
+          if (failed) {
+            localFailures++;
+          } else {
+            localSuccesses++;
+          }
+        }
+      } catch (e: any) {
+        console.error(`Error sending to ${leadName}:`, e);
+        localFailures++;
       }
 
-      const resp = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      
-      const data = await resp.json();
-      if (data.error) {
-        setStatusMessage(`${channelName} Outreach failed: ${data.error}`);
-      } else {
-        const sentCount = data.results ? data.results.filter((r: any) => r.status === 'SUCCESS' || r.status === 'CONTACTED').length : 0;
-        setStatusMessage(`${channelName} outreach campaign completed! Successful dispatches: ${sentCount}`);
-        confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
-        setSelectedLeads(new Set());
-        handleRefreshAll();
+      setOutreachProgress(prev => ({
+        ...prev,
+        successes: localSuccesses,
+        failures: localFailures
+      }));
+
+      if (i < totalLeads - 1) {
+        await new Promise(resolve => setTimeout(resolve, 600));
       }
-    } catch (e: any) {
-      setStatusMessage(`Error: ${e.message}`);
-    } finally {
-      setSendingOutreach(false);
     }
+
+    setStatusMessage(`${channelName} outreach campaign completed! Successes: ${localSuccesses}, Failures: ${localFailures}`);
+    if (localSuccesses > 0) {
+      confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+    }
+    
+    setSelectedLeads(new Set());
+    setSendingOutreach(false);
+    handleRefreshAll();
+
+    setTimeout(() => {
+      setOutreachProgress(prev => ({ ...prev, active: false }));
+    }, 4000);
   };
 
   const getOutreachDetails = () => {
@@ -919,14 +1055,25 @@ export default function Home() {
   const uniqueQueries = Array.from(new Set(leads.map(l => l.source_query_or_seed).filter(Boolean)));
 
   // Lead filter
-  const filteredLeads = leads.filter(l => {
+  let filteredLeads = leads.filter(l => {
     const matchesSearch = l.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           l.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (l.area && l.area.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                          (l.source_query_or_seed && l.source_query_or_seed.toLowerCase().includes(searchTerm.toLowerCase())) ||
                           (l.phone_e164 && l.phone_e164.includes(searchTerm));
     const matchesStatus = statusFilter === 'ALL' || l.status === statusFilter;
     const matchesQuery = queryFilter === 'ALL' || l.source_query_or_seed === queryFilter;
     return matchesSearch && matchesStatus && matchesQuery;
   });
+
+  // Fallback: If search term is present but yielded 0 results, fall back to showing all leads for selected query/status
+  if (filteredLeads.length === 0 && searchTerm) {
+    filteredLeads = leads.filter(l => {
+      const matchesStatus = statusFilter === 'ALL' || l.status === statusFilter;
+      const matchesQuery = queryFilter === 'ALL' || l.source_query_or_seed === queryFilter;
+      return matchesStatus && matchesQuery;
+    });
+  }
 
   const renderTemplatePreview = (lead: Lead | null) => {
     if (!lead) return 'Select a lead to see custom outreach message variables';
@@ -1119,8 +1266,13 @@ ${config.businessSignature}`;
         {/* Connection status */}
         <div style={{ padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(0,0,0,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: config.googleSpreadsheetId ? 'var(--success)' : 'var(--error)' }}></span>
-            Sheets DB: {config.googleSpreadsheetId ? 'Connected' : 'Setup Required'}
+            <span style={{ 
+              width: '8px', 
+              height: '8px', 
+              borderRadius: '50%', 
+              backgroundColor: sheetsSyncStatus === 'green' ? 'var(--success)' : sheetsSyncStatus === 'yellow' ? 'var(--warning)' : 'var(--error)' 
+            }}></span>
+            Sheets DB: {sheetsSyncMessage}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: config.googleProjectId ? 'var(--success)' : 'var(--warning)' }}></span>
@@ -1135,10 +1287,91 @@ ${config.businessSignature}`;
       
       {/* Main Panel */}
       <main style={{ flexGrow: 1, padding: '30px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        {config.dryRun && (
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%)', 
+            border: '1px solid rgba(245, 158, 11, 0.25)', 
+            borderRadius: '12px', 
+            padding: '12px 20px', 
+            marginBottom: '-8px',
+            boxShadow: '0 4px 20px rgba(245, 158, 11, 0.05)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <AlertTriangle size={18} color="#f59e0b" />
+              <div style={{ textAlign: 'left' }}>
+                <strong style={{ color: '#fbbf24', fontSize: '0.9rem' }}>Simulation Mode Active (Dry Run)</strong>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '2px 0 0 0' }}>
+                  All outreach channels are simulated. No real messages will be sent. You can disable this in Settings.
+                </p>
+              </div>
+            </div>
+            <button 
+              type="button"
+              onClick={() => setActiveTab('settings')}
+              className="btn-secondary"
+              style={{ fontSize: '0.75rem', padding: '6px 12px', borderColor: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24', background: 'rgba(245, 158, 11, 0.05)' }}
+            >
+              Configure Live Mode
+            </button>
+          </div>
+        )}
+        {config.storageMode === 'supabase' && supabaseStatus && !supabaseStatus.success && (
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)', 
+            border: '1px solid rgba(239, 68, 68, 0.25)', 
+            borderRadius: '12px', 
+            padding: '12px 20px', 
+            marginBottom: '-8px',
+            boxShadow: '0 4px 20px rgba(239, 68, 68, 0.05)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <AlertTriangle size={18} color="#ef4444" />
+              <div style={{ textAlign: 'left' }}>
+                <strong style={{ color: '#f87171', fontSize: '0.9rem' }}>Supabase Schema/Connection Check Failed</strong>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '2px 0 0 0' }}>
+                  {supabaseStatus.error || "Some required tables (leads, dnc, logs, scrape_jobs) are missing from your database."} Please verify your Supabase credentials or DB schema.
+                </p>
+              </div>
+            </div>
+            <button 
+              type="button"
+              onClick={() => setActiveTab('settings')}
+              className="btn-secondary"
+              style={{ fontSize: '0.75rem', padding: '6px 12px', borderColor: 'rgba(239, 68, 68, 0.2)', color: '#f87171', background: 'rgba(239, 68, 68, 0.05)' }}
+            >
+              Verify DB Settings
+            </button>
+          </div>
+        )}
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-title)', fontWeight: 800 }}>
+            <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-title)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               Lead Generation & Website Builder Console
+              <span style={{ 
+                fontSize: '0.7rem', 
+                padding: '4px 12px', 
+                borderRadius: '999px', 
+                fontWeight: 600, 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.05em',
+                background: config.storageMode === 'supabase' ? 'rgba(62, 207, 142, 0.15)' : config.storageMode === 'local' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(236, 72, 153, 0.15)',
+                color: config.storageMode === 'supabase' ? '#3ecf8e' : config.storageMode === 'local' ? '#60a5fa' : '#f472b6',
+                border: `1px solid ${config.storageMode === 'supabase' ? 'rgba(62, 207, 142, 0.3)' : config.storageMode === 'local' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(236, 72, 153, 0.3)'}`,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: config.storageMode === 'supabase' ? '#3ecf8e' : config.storageMode === 'local' ? '#60a5fa' : '#f472b6' }}></span>
+                {config.storageMode === 'supabase' ? 'Supabase DB' : 
+                 config.storageMode === 'local' ? 'Local DB' : 
+                 config.storageMode === 'cloud' ? 'Google Sheets DB' : 'Hybrid DB'}
+              </span>
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
               B2B website proposal pipeline powered exclusively by <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Google Cloud Workspace APIs</span>
@@ -1419,6 +1652,33 @@ ${config.businessSignature}`;
                   ))}
                 </select>
               </div>
+
+              {(searchTerm || queryFilter !== 'ALL' || statusFilter !== 'ALL') && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="btn-secondary"
+                  style={{
+                    padding: '8px 16px',
+                    fontSize: '0.85rem',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    borderColor: 'rgba(239, 68, 68, 0.2)',
+                    color: '#f87171'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+                  }}
+                >
+                  <X size={14} /> Clear Filters
+                </button>
+              )}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', alignItems: 'start' }}>
@@ -1467,8 +1727,20 @@ ${config.businessSignature}`;
                     )}
                     {!loadingLeads && filteredLeads.length === 0 && (
                       <tr>
-                        <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                          No leads match the selected criteria.
+                        <td colSpan={8} style={{ textAlign: 'center', padding: '60px 40px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                            <span style={{ fontSize: '1.5rem' }}>🔍</span>
+                            <div style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '1rem' }}>No results for this filter</div>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No leads match your current criteria. Try resetting your search or filter values.</div>
+                            <button 
+                              type="button"
+                              onClick={resetFilters} 
+                              className="btn-secondary"
+                              style={{ marginTop: '8px', padding: '6px 16px', fontSize: '0.8rem', borderRadius: '20px' }}
+                            >
+                              Reset Filters
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     )}
@@ -2230,18 +2502,121 @@ ${config.businessSignature}`;
                     style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Section A-2: Google Sheets Integration */}
+            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '8px', fontWeight: 600, color: '#fff' }}>2. Google Sheets Integration</h4>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '0 0 16px 0' }}>
+                ApexReach stores leads, logs, and stats in Google Sheets worksheets. You can test your connection or initialize missing worksheets below.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', alignItems: 'end' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Google Spreadsheet ID</label>
                   <input 
                     type="text" 
-                    value={config.googleSpreadsheetId} 
+                    value={config.googleSpreadsheetId || ''} 
                     onChange={(e) => setConfig({ ...config, googleSpreadsheetId: e.target.value })}
-                    placeholder="Paste Spreadsheet ID"
+                    placeholder="e.g. 1a2b3c4d5e6f7g8h9i0j..."
                     style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
                   />
                 </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!config.googleSpreadsheetId) {
+                        alert("Please enter a Google Spreadsheet ID first.");
+                        return;
+                      }
+                      try {
+                        const res = await fetch('/api/config/test-sheets', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ initialize: false })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                          alert("Connection Success: " + data.message);
+                          checkSheetsStatus();
+                        } else {
+                          if (data.status === 'yellow') {
+                            if (confirm(`${data.error}\n\nWould you like to initialize the missing tabs now?`)) {
+                              const res2 = await fetch('/api/config/test-sheets', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ initialize: true })
+                              });
+                              const data2 = await res2.json();
+                              if (data2.success) {
+                                alert("Success: " + data2.message);
+                                checkSheetsStatus();
+                              } else {
+                                alert("Initialization failed: " + data2.error);
+                              }
+                            }
+                          } else {
+                            alert("Connection Failed: " + data.error);
+                          }
+                        }
+                      } catch (err: any) {
+                        alert("Error: " + err.message);
+                      }
+                    }}
+                    className="btn-primary"
+                    style={{ flexGrow: 1, padding: '12px', fontSize: '0.85rem', justifyContent: 'center' }}
+                  >
+                    Test & Sync Sheets
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Section A-3: Scraper & AI Credentials */}
+            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>3. Scraper & AI Credentials</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Google Places API Key (Scraper)</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+                      Google Places API Key (Scraper)
+                      <span 
+                        title="Required for live lead scraping. Ensure the 'Places API' is enabled in your Google Cloud Console." 
+                        style={{ cursor: 'help', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '14px', height: '14px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', fontSize: '0.65rem', color: 'var(--text-secondary)' }}
+                      >
+                        ?
+                      </span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!config.googlePlacesApiKey) {
+                          alert("Please enter a Google Places API key first.");
+                          return;
+                        }
+                        try {
+                          const res = await fetch('/api/config/test-places', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ apiKey: config.googlePlacesApiKey })
+                          });
+                          const data = await res.json();
+                          if (data.success) {
+                            alert("Connection Success: " + data.message);
+                          } else {
+                            alert("Connection Failed: " + data.error);
+                          }
+                        } catch (err: any) {
+                          alert("Error testing connection: " + err.message);
+                        }
+                      }}
+                      className="btn-secondary"
+                      style={{ fontSize: '0.7rem', padding: '3px 8px', borderRadius: '4px' }}
+                    >
+                      Test Connection
+                    </button>
+                  </div>
                   <input 
                     type="password" 
                     value={config.googlePlacesApiKey} 
@@ -3052,6 +3427,145 @@ ${config.businessSignature}`;
         )}
 
       </main>
+
+      {/* Floating Action Bar */}
+      {selectedLeads.size > 0 && !outreachProgress.active && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'rgba(15, 23, 42, 0.85)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(6, 182, 212, 0.3)',
+          borderRadius: '16px',
+          padding: '12px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          boxShadow: '0 10px 40px rgba(6, 182, 212, 0.15)',
+          zIndex: 1000
+        }}>
+          <div style={{ color: '#fff', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', boxShadow: '0 0 10px var(--primary)' }}></span>
+            <strong>{selectedLeads.size}</strong> leads selected
+          </div>
+          
+          <div style={{ height: '20px', width: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+          
+          <button
+            onClick={runOutreach}
+            disabled={sendingOutreach}
+            className="btn-primary"
+            style={{
+              padding: '8px 18px',
+              fontSize: '0.85rem',
+              borderRadius: '8px',
+              fontWeight: 600,
+              boxShadow: '0 4px 12px rgba(6, 182, 212, 0.25)'
+            }}
+          >
+            {sendingOutreach ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Loader2 className="spin-anim" size={14} /> Processing...
+              </span>
+            ) : (
+              `Send Proposal`
+            )}
+          </button>
+
+          <button
+            onClick={() => setSelectedLeads(new Set())}
+            className="btn-secondary"
+            style={{
+              padding: '8px 14px',
+              fontSize: '0.85rem',
+              borderRadius: '8px',
+              color: 'var(--text-secondary)',
+              borderColor: 'rgba(255,255,255,0.1)'
+            }}
+          >
+            Deselect All
+          </button>
+        </div>
+      )}
+
+      {/* Outreach Progress Modal */}
+      {outreachProgress.active && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.7)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div className="glass-panel" style={{
+            width: '450px',
+            padding: '30px',
+            borderRadius: '16px',
+            background: 'var(--panel-bg)',
+            border: '1px solid var(--panel-border)',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff', margin: 0 }}>
+              Outreach Progress
+            </h3>
+            
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+              {outreachProgress.statusText}
+            </div>
+
+            {/* Progress bar container */}
+            <div style={{
+              width: '100%',
+              height: '8px',
+              background: 'rgba(255,255,255,0.05)',
+              borderRadius: '999px',
+              overflow: 'hidden',
+              position: 'relative'
+            }}>
+              <div style={{
+                width: `${(outreachProgress.current / outreachProgress.total) * 100}%`,
+                height: '100%',
+                background: 'linear-gradient(90deg, var(--primary) 0%, #a855f7 100%)',
+                borderRadius: '999px',
+                transition: 'width 0.3s ease-in-out'
+              }} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '8px' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Progress</div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff' }}>
+                  {outreachProgress.current} / {outreachProgress.total}
+                </div>
+              </div>
+              <div style={{ background: 'rgba(16, 185, 129, 0.05)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--success)' }}>Successes</div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--success)' }}>
+                  {outreachProgress.successes}
+                </div>
+              </div>
+              <div style={{ background: 'rgba(239, 68, 68, 0.05)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.1)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--error)' }}>Failures</div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--error)' }}>
+                  {outreachProgress.failures}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

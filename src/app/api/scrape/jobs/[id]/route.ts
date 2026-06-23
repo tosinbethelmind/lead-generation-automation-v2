@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { getScrapeJob } from '@/lib/supabaseClient';
 
 /**
  * GET /api/scrape/jobs/:id
@@ -15,24 +15,19 @@ export async function GET(request: NextRequest, context: any) {
     return NextResponse.json({ error: 'Job ID missing' }, { status: 400 });
   }
 
-  const { data: job, error } = await supabase
-    .from('scrape_jobs')
-    .select('*')
-    .eq('id', jobId)
-    .single();
+  const job = await getScrapeJob(jobId);
 
-  if (error) {
-    console.error('Failed to fetch job', error);
+  if (!job) {
     return NextResponse.json({ error: 'Job not found' }, { status: 404 });
   }
 
   return NextResponse.json({
     id: job.id,
-    source: job.source,
+    source: job.type || (job as any).source || 'unknown',
     status: job.status,
     created_at: job.created_at,
-    started_at: job.started_at ?? null,
-    completed_at: job.completed_at ?? null,
+    started_at: (job as any).started_at || job.created_at,
+    completed_at: (job as any).completed_at || job.updated_at,
     result: job.result ?? null,
   });
 }

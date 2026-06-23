@@ -6,18 +6,17 @@ const config = getRuntimeConfig();
 const supabaseUrl = config.supabaseUrl;
 const supabaseKey = config.supabaseKey;
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Supabase storage mode requires both supabaseUrl and supabaseKey parameters. Please configure them in your settings or environment.');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseKey, {
+export const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: false,
   },
-});
+}) : null;
 
 // Backwards‑compatible helper (in case other modules still call it)
 export function getSupabaseClient() {
+  if (!supabase) {
+    throw new Error('Supabase storage mode requires both supabaseUrl and supabaseKey parameters. Please configure them in your settings or environment.');
+  }
   return supabase;
 }
 
@@ -130,6 +129,11 @@ export async function createScrapeJob(
     updated_at: new Date().toISOString()
   };
 
+  if (!supabase) {
+    saveFallbackJob(newJob);
+    return newJob;
+  }
+
   try {
     const { data, error } = await supabase.from('scrape_jobs').insert([
       {
@@ -161,6 +165,10 @@ export async function createScrapeJob(
 
 /** Retrieve a job by its ID */
 export async function getScrapeJob(id: string): Promise<ScrapeJob | null> {
+  if (!supabase) {
+    return getFallbackJob(id);
+  }
+
   try {
     const { data, error } = await supabase
       .from('scrape_jobs')
@@ -189,6 +197,15 @@ export async function updateScrapeJobStatus(
   updates?: Partial<Pick<ScrapeJob, 'result' | 'error_message'>>
 ): Promise<ScrapeJob> {
   const updatePayload = { status, ...updates, updated_at: new Date().toISOString() };
+
+  if (!supabase) {
+    const job = getFallbackJob(id);
+    if (!job) throw new Error(`Job not found: ${id}`);
+    const updatedJob = { ...job, ...updatePayload };
+    saveFallbackJob(updatedJob);
+    return updatedJob;
+  }
+
   try {
     const { data, error } = await supabase
       .from('scrape_jobs')
@@ -221,6 +238,11 @@ export async function updateScrapeJobStatus(
 
 /** Delete a job (admin only) */
 export async function deleteScrapeJob(id: string): Promise<void> {
+  if (!supabase) {
+    removeFallbackJob(id);
+    return;
+  }
+
   try {
     const { error } = await supabase.from('scrape_jobs').delete().eq('id', id);
     if (error) {

@@ -256,7 +256,7 @@ export async function isPhoneOnDnc(phone: string, country = 'NG'): Promise<boole
 // Google Sheets Client Helpers
 // ============================================================================
 
-async function getSheetsInstance() {
+export async function getSheetsInstance() {
   const rootDir = process.cwd();
   const credentialsPath = path.join(rootDir, 'credentials.json');
   const config = getRuntimeConfig();
@@ -1167,24 +1167,62 @@ export async function addLog(step: string, status: string, msg: string, runId?: 
 export async function getSyncStats() {
   const leads = await getLeads();
   const dnc = await getDNCList();
+
+  const uniqueLeadsMap = new Map<string, Lead>();
+  const phoneDncSet = new Set(dnc.map(p => p.replace(/\D/g, '')));
+
+  for (const lead of leads) {
+    if (lead.duplicate_of_lead_id) {
+      continue;
+    }
+
+    const normPhone = lead.phone_e164 ? lead.phone_e164.replace(/\D/g, '') : '';
+    const normName = lead.name.toLowerCase().trim();
+
+    let key = lead.lead_id;
+    if (normPhone) {
+      key = `phone:${normPhone}`;
+    } else {
+      key = `name:${normName}`;
+    }
+
+    if (uniqueLeadsMap.has(key)) {
+      const existing = uniqueLeadsMap.get(key)!;
+      if (lead.status !== 'NEW' && existing.status === 'NEW') {
+        uniqueLeadsMap.set(key, lead);
+      }
+    } else {
+      uniqueLeadsMap.set(key, lead);
+    }
+  }
+
+  const deduplicatedLeads = Array.from(uniqueLeadsMap.values());
+
+  const finalLeads = deduplicatedLeads.map(lead => {
+    const normPhone = lead.phone_e164 ? lead.phone_e164.replace(/\D/g, '') : '';
+    if (normPhone && phoneDncSet.has(normPhone)) {
+      return { ...lead, status: 'DO_NOT_CONTACT' as LeadStatus };
+    }
+    return lead;
+  });
   
   const stats = {
-    totalLeads: leads.length,
-    newLeads: leads.filter(l => l.status === 'NEW').length,
-    contactedLeads: leads.filter(l => l.status === 'CONTACTED').length,
-    dncLeads: leads.filter(l => l.status === 'DO_NOT_CONTACT').length + dnc.length,
-    errorLeads: leads.filter(l => l.status === 'ERROR').length,
-    googleLeads: leads.filter(l => l.source === 'GOOGLE').length,
-    jijiLeads: leads.filter(l => l.source === 'JIJI').length,
-    mapsFreeLeads: leads.filter(l => l.source === 'MAPS_FREE').length,
-    duckduckgoLeads: leads.filter(l => l.source === 'DUCKDUCKGO').length,
-    osmLeads: leads.filter(l => l.source === 'OSM').length,
-    instagramLeads: leads.filter(l => l.source === 'INSTAGRAM').length,
-    facebookLeads: leads.filter(l => l.source === 'FACEBOOK').length,
-    tiktokLeads: leads.filter(l => l.source === 'TIKTOK').length,
-    linkedinLeads: leads.filter(l => l.source === 'LINKEDIN').length,
-    highRatingLeads: leads.filter(l => l.rating >= 4.5).length,
-    noReviewLeads: leads.filter(l => l.reviews_count === 0).length,
+    totalLeads: finalLeads.length,
+    newLeads: finalLeads.filter(l => l.status === 'NEW').length,
+    contactedLeads: finalLeads.filter(l => l.status === 'CONTACTED').length,
+    dncLeads: finalLeads.filter(l => l.status === 'DO_NOT_CONTACT').length,
+    errorLeads: finalLeads.filter(l => l.status === 'ERROR').length,
+    googleLeads: finalLeads.filter(l => l.source === 'GOOGLE').length,
+    jijiLeads: finalLeads.filter(l => l.source === 'JIJI').length,
+    mapsFreeLeads: finalLeads.filter(l => l.source === 'MAPS_FREE').length,
+    duckduckgoLeads: finalLeads.filter(l => l.source === 'DUCKDUCKGO').length,
+    osmLeads: finalLeads.filter(l => l.source === 'OSM').length,
+    instagramLeads: finalLeads.filter(l => l.source === 'INSTAGRAM').length,
+    facebookLeads: finalLeads.filter(l => l.source === 'FACEBOOK').length,
+    tiktokLeads: finalLeads.filter(l => l.source === 'TIKTOK').length,
+    linkedinLeads: finalLeads.filter(l => l.source === 'LINKEDIN').length,
+    highRatingLeads: finalLeads.filter(l => l.rating >= 4.5).length,
+    noReviewLeads: finalLeads.filter(l => l.reviews_count === 0).length,
   };
   
   return stats;

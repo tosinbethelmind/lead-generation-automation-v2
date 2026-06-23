@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
     const apiKey = config.googlePlacesApiKey;
     
     // Check if we should override with local sandbox
-    const isSandbox = !apiKey || apiKey === '' || apiKey === 'local-sandbox' || config.storageMode === 'local';
+    const isSandbox = !apiKey || apiKey === '' || apiKey === 'local-sandbox';
     
     if (isSandbox) {
       await addLog('Google Maps Scraper', 'START', `Launching Google Maps local sandbox for query: "${query}" (limit: ${limit})`);
