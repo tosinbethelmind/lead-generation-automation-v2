@@ -127,22 +127,22 @@ test.describe('ApexReach Complete Platform Walkthrough Demo', () => {
     // Select all checkbox
     const selectAll = page.locator('thead input[type="checkbox"]');
     if (await selectAll.isVisible()) {
-      await selectAll.check();
+      await selectAll.click({ force: true });
       await page.waitForTimeout(1000);
       await speak(page, 'We can select all leads using the header checkbox. The outreach send button appears with the count of selected leads.');
       await page.waitForTimeout(1500);
-      await selectAll.uncheck();
+      await selectAll.click({ force: true });
       await page.waitForTimeout(500);
     }
 
     // Custom message override
     const customCheckbox = page.locator('#useCustomMessage');
     if (await customCheckbox.isVisible()) {
-      await customCheckbox.check();
+      await customCheckbox.click({ force: true });
       await page.waitForTimeout(1500);
       await speak(page, 'The custom message override lets you write a completely personalized outreach message instead of using the default template. You can insert dynamic tags like lead name, preview URL, rating, and signature.');
       await page.waitForTimeout(1500);
-      await customCheckbox.uncheck();
+      await customCheckbox.click({ force: true });
       await page.waitForTimeout(500);
     }
 
@@ -161,8 +161,6 @@ test.describe('ApexReach Complete Platform Walkthrough Demo', () => {
     await page.waitForTimeout(2000);
     await speak(page, 'The Maps Scraper tab is the lead acquisition engine. ApexReach supports ten different scraper providers.');
 
-    const scraperSelect = page.locator('select').filter({ hasText: 'Google Places API' });
-
     // Cycle through ALL 10 scraper providers
     const scrapers = [
       { value: 'google', name: 'Google Places API with free tier and high quality data' },
@@ -178,13 +176,19 @@ test.describe('ApexReach Complete Platform Walkthrough Demo', () => {
     ];
 
     for (const s of scrapers) {
-      await scraperSelect.selectOption(s.value);
+      const card = page.locator(`#scraper-card-${s.value}`);
+      if (await card.isVisible()) {
+        await card.click();
+      }
       await page.waitForTimeout(1200);
       await speak(page, s.name, 1500);
     }
 
     // Set back to Google and fill form
-    await scraperSelect.selectOption('google');
+    const googleCard = page.locator('#scraper-card-google');
+    if (await googleCard.isVisible()) {
+      await googleCard.click();
+    }
     await page.waitForTimeout(500);
     const queryInput = page.locator('input[placeholder*="Dentists"]').or(page.locator('input[placeholder*="cars"]')).first();
     if (await queryInput.isVisible()) {
@@ -231,7 +235,7 @@ test.describe('ApexReach Complete Platform Walkthrough Demo', () => {
     // ═══════════════════════════════════════════════════════════════
     // PHASE 5 — SETTINGS (EVERY SINGLE OPTION)
     // ═══════════════════════════════════════════════════════════════
-    const settingsBtn = page.locator('button', { hasText: 'Settings' });
+    const settingsBtn = page.locator('[data-testid="settings-tab"]');
     await settingsBtn.click();
     await page.waitForTimeout(2000);
     await speak(page, 'The Settings tab contains the complete system configuration. Lets walk through every section.');

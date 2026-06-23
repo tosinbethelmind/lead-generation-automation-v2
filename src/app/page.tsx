@@ -1254,7 +1254,7 @@ ${config.businessSignature}`;
             <FileText size={18} color={activeTab === 'logs' ? 'var(--primary)' : 'var(--text-secondary)'} /> Sync Logs
           </button>
           
-          <button 
+          <button data-testid="settings-tab" 
             onClick={() => setActiveTab('settings')} 
             className={`btn-secondary ${activeTab === 'settings' ? 'active' : ''}`}
             style={{ justifyContent: 'flex-start', background: activeTab === 'settings' ? 'var(--primary-glow)' : 'transparent', borderColor: activeTab === 'settings' ? 'var(--primary)' : 'transparent', width: '100%' }}

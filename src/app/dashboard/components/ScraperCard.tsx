@@ -23,6 +23,8 @@ export default function ScraperCard({
 }: ScraperCardProps) {
   return (
     <div
+      id={`scraper-card-${id}`}
+      data-testid={`scraper-card-${id}`}
       onClick={onSelect}
       style={{
         background: isSelected
