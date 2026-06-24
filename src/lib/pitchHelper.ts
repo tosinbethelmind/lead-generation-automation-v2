@@ -11,6 +11,7 @@ export interface Lead {
   reviews_count?: number;
   website?: string;
   notes?: string;
+  isMock?: boolean;
 }
 
 export type WidgetType = 'ecommerce' | 'vehicle_valuation' | 'table_reservation' | 'patient_intake' | 'quote_estimator';

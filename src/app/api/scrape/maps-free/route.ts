@@ -50,7 +50,7 @@ function generateMockMapsFreeLeads(query: string, limit: number): Partial<Lead>[
       last_contacted_at: '',
       duplicate_of_lead_id: '',
       business_summary: `${name} offers premium ${template.category.toLowerCase()} services in ${template.area}. Rated highly on Maps.`,
-      notes: 'Imported via Playwright Google Maps Free Sandbox.'
+      notes: 'REAL SCRAPER FAILED - Showing Mock Data (Sandbox fallback)'
     });
   }
 
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    await addLog('Maps-Free Scraper', 'START', `Starting Google Maps Free Playwright crawl for query: "${query}"`);
+    await addLog('Maps-Free Scraper', 'START', `Starting Google Maps Free Puppeteer crawl for query: "${query}"`);
 
     let browser;
     let scrapedLeads: Partial<Lead>[] = [];
@@ -95,21 +95,32 @@ export async function POST(req: NextRequest) {
     try {
       const { launchBrowser } = await import('@/lib/playwrightLauncher');
       browser = await launchBrowser();
-      const context = await browser.newContext({
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        viewport: { width: 1280, height: 800 }
-      });
-      const page = await context.newPage();
+      const page = await browser.newPage();
+      
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+      await page.setViewport({ width: 1280, height: 800 });
 
       // Navigate directly to Google Maps search URL
       const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
       await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-      // Click on Reject All or Accept All if GDPR banner pops up
+      // Click on Reject All if GDPR banner pops up
       try {
-        const rejectBtn = page.locator('button[aria-label*="Reject all"], button[aria-label*="reject"], button:has-text("Reject")').first();
-        if (await rejectBtn.isVisible({ timeout: 2000 })) {
-          await rejectBtn.click();
+        const clickedReject = await page.evaluate(() => {
+          const btns = Array.from(document.querySelectorAll('button'));
+          const rejectBtn = btns.find(btn => {
+            const label = btn.getAttribute('aria-label')?.toLowerCase() || '';
+            const text = btn.textContent?.toLowerCase() || '';
+            return label.includes('reject all') || label.includes('reject') || text.includes('reject all') || text.includes('reject');
+          });
+          if (rejectBtn) {
+            rejectBtn.click();
+            return true;
+          }
+          return false;
+        });
+        if (clickedReject) {
+          await new Promise(r => setTimeout(r, 1000));
         }
       } catch (e) {
         // No GDPR overlay, ignore
@@ -131,20 +142,20 @@ export async function POST(req: NextRequest) {
         if (lead) scrapedLeads.push(lead);
       } else {
         // We are on a results list feed. Scroll to load items.
-        const feed = page.locator(feedSelector);
-        if (await feed.count() > 0) {
+        const feedEl = await page.$(feedSelector);
+        if (feedEl) {
           // Scroll the feed container down several times
           for (let i = 0; i < 5; i++) {
-            await page.mouse.wheel(0, 1500);
-            await feed.evaluate(el => el.scrollBy(0, 1200));
-            await page.waitForTimeout(1000);
+            await page.evaluate((el) => el.scrollBy(0, 1200), feedEl);
+            await new Promise(r => setTimeout(r, 1000));
           }
         }
 
         // Get place anchor links
-        const links = await page.$$eval('a[href*="/maps/place/"]', anchors => 
-          anchors.map(a => (a as HTMLAnchorElement).href)
-        );
+        const links = await page.evaluate(() => {
+          const anchors = Array.from(document.querySelectorAll('a[href*="/maps/place/"]'));
+          return anchors.map(a => (a as HTMLAnchorElement).href);
+        });
 
         // Deduplicate URLs
         const uniqueLinks = Array.from(new Set(links)).slice(0, Math.min(limit * 2, 12));
@@ -153,7 +164,7 @@ export async function POST(req: NextRequest) {
           if (scrapedLeads.length >= limit) break;
           try {
             await page.goto(link, { waitUntil: 'domcontentloaded', timeout: 20000 });
-            await page.waitForTimeout(800);
+            await new Promise(r => setTimeout(r, 1000));
             const lead = await extractCurrentPlaceDetails(page, query);
             if (lead) {
               // We only want leads without a website
@@ -167,19 +178,23 @@ export async function POST(req: NextRequest) {
         }
       }
     } catch (browserErr: any) {
-      console.error("Playwright browser error:", browserErr);
-      await addLog('Maps-Free Scraper', 'WARN', `Playwright failed: ${browserErr.message}. Executing sandbox simulation fallback.`);
+      console.error("[Maps-Free] Real scrape failed:", browserErr.message);
+      await addLog('Maps-Free Scraper', 'ERROR', `Puppeteer failed: ${browserErr.message}`);
       
-      const mockLeads = generateMockMapsFreeLeads(query, limit);
-      const dbResult = await saveLeads(mockLeads);
-      await addLog('Maps-Free Scraper', 'SUCCESS', `Sandbox simulation fallback complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
-      return NextResponse.json({
-        success: true,
-        mode: 'sandbox_fallback',
-        added: dbResult.added,
-        skipped: dbResult.skipped,
-        leads: mockLeads
-      });
+      if (isSandbox) {
+        const mockLeads = generateMockMapsFreeLeads(query, limit);
+        const dbResult = await saveLeads(mockLeads);
+        await addLog('Maps-Free Scraper', 'SUCCESS', `Sandbox simulation fallback complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+        return NextResponse.json({
+          success: true,
+          mode: 'sandbox_fallback',
+          added: dbResult.added,
+          skipped: dbResult.skipped,
+          leads: mockLeads
+        });
+      }
+      
+      return NextResponse.json({ success: false, error: 'browser_launch_failed', fallback: true }, { status: 500 });
     } finally {
       if (browser) {
         try {
@@ -219,80 +234,63 @@ export async function POST(req: NextRequest) {
 // Helper: Extract business details from Google Maps detail panel
 async function extractCurrentPlaceDetails(page: any, query: string): Promise<Partial<Lead> | null> {
   try {
-    // 1. Name
-    const nameElem = page.locator('h1');
-    const name = await nameElem.innerText() || 'Unknown Business';
+    const details = await page.evaluate(() => {
+      const h1 = document.querySelector('h1');
+      const name = h1 ? h1.textContent?.trim() || 'Unknown Business' : 'Unknown Business';
 
-    // 2. Rating & Reviews count
-    let rating = 0;
-    let reviewsCount = 0;
-    try {
-      // Look for rating value (e.g. "4.7")
-      const ratingText = await page.locator('div.F7nice span[aria-hidden="true"]').first().innerText();
-      if (ratingText) rating = parseFloat(ratingText.trim());
+      let rating = 0;
+      let reviewsCount = 0;
       
-      // Look for reviews count text (e.g. "(35)")
-      const reviewsText = await page.locator('div.F7nice span[aria-label*="reviews"]').first().innerText();
-      if (reviewsText) {
-        const cleaned = reviewsText.replace(/\D/g, '');
+      const ratingEl = document.querySelector('div.F7nice span[aria-hidden="true"]');
+      if (ratingEl) {
+        const val = parseFloat(ratingEl.textContent?.trim() || '0');
+        if (!isNaN(val)) rating = val;
+      }
+      
+      const reviewsEl = document.querySelector('div.F7nice span[aria-label*="reviews"]');
+      if (reviewsEl) {
+        const cleaned = reviewsEl.textContent?.replace(/\D/g, '') || '';
         if (cleaned) reviewsCount = parseInt(cleaned, 10);
       }
-    } catch (e) {
-      // Keep defaults
-    }
 
-    // 3. Address
-    let address = '';
-    try {
-      const addressBtn = page.locator('button[data-item-id="address"]');
-      if (await addressBtn.count() > 0) {
-        address = await addressBtn.innerText();
-      }
-    } catch (e) {
-      // Fallback selector
-    }
+      const addressBtn = document.querySelector('button[data-item-id="address"]');
+      const address = addressBtn ? addressBtn.textContent?.trim() || '' : '';
 
-    // 4. Phone
-    let phone = '';
-    try {
-      const phoneBtn = page.locator('button[data-item-id^="phone:tel:"]');
-      if (await phoneBtn.count() > 0) {
-        phone = await phoneBtn.innerText();
-      }
-    } catch (e) {
-      // Ignore
-    }
+      const phoneBtn = document.querySelector('button[data-item-id^="phone:tel:"]');
+      const phone = phoneBtn ? phoneBtn.textContent?.trim() || '' : '';
 
-    // 5. Website
-    let website = '';
-    try {
-      const webBtn = page.locator('a[data-item-id="authority"]');
-      if (await webBtn.count() > 0) {
-        website = await webBtn.getAttribute('href') || '';
-      }
-    } catch (e) {
-      // Ignore
-    }
+      const webBtn = document.querySelector('a[data-item-id="authority"]');
+      const website = webBtn ? webBtn.getAttribute('href')?.trim() || '' : '';
 
-    const cleanPhone = phone ? normalizePhone(phone, 'NG') : null;
+      return {
+        name,
+        rating,
+        reviewsCount,
+        address,
+        phone,
+        website
+      };
+    });
+
+    const cleanPhone = details.phone ? normalizePhone(details.phone, 'NG') : null;
     if (!cleanPhone) return null;
-    const parts = address.split(',');
+    const parts = details.address.split(',');
     const area = parts[1] ? parts[1].trim() : parts[0] || 'Lagos';
 
     return {
       lead_id: `mapsfree_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       source: 'MAPS_FREE',
-      name: name.trim(),
+      name: details.name,
       category: query.split('in')[0]?.trim() || 'Business',
-      address: address.trim(),
+      address: details.address,
       area: area,
       city: 'Lagos',
       phone_e164: cleanPhone,
-      phone_raw: phone.trim(),
+      phone_raw: details.phone,
       email: '',
-      website: website.trim(),
-      rating: rating,
-      reviews_count: reviewsCount,
+      website: details.website,
+      rating: details.rating,
+      reviews_count: details.reviewsCount,
       verified: true,
       listings_count: 1,
       profile_url: page.url(),
@@ -301,8 +299,8 @@ async function extractCurrentPlaceDetails(page: any, query: string): Promise<Par
       status: 'NEW',
       last_contacted_at: '',
       duplicate_of_lead_id: '',
-      business_summary: `${name.trim()} is a top-rated local business in ${area}. Maps rating: ${rating} stars with ${reviewsCount} reviews. Phone: ${phone}`,
-      notes: 'Scraped using Playwright Google Maps Free crawler.'
+      business_summary: `${details.name} is a top-rated local business in ${area}. Maps rating: ${details.rating} stars with ${details.reviewsCount} reviews. Phone: ${details.phone}`,
+      notes: 'Scraped using Puppeteer Google Maps Free crawler.'
     };
   } catch (err) {
     console.error("Error extracting details:", err);

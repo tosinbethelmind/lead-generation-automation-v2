@@ -36,6 +36,78 @@ export interface Lead {
   duplicate_of_lead_id: string;
   business_summary: string;
   notes: string;
+  isMock?: boolean;
+}
+
+export function isMockLead(lead: Partial<Lead>): boolean {
+  if (!lead.lead_id) return false;
+  const id = lead.lead_id.toLowerCase();
+  const notes = (lead.notes || '').toLowerCase();
+  return (
+    id.startsWith('mock_') ||
+    id.startsWith('osm_mock_') ||
+    id.startsWith('apify_mock_') ||
+    notes.includes('sandbox') ||
+    notes.includes('mock') ||
+    notes.includes('real scraper failed')
+  );
+}
+
+export function deduplicateLeads<T extends Partial<Lead>>(leads: T[]): T[] {
+  if (!leads || leads.length === 0) return [];
+
+  // Sort a copy by rating desc, then reviews_count desc to find the "best" version
+  const sorted = [...leads].sort((a, b) => {
+    const rA = a.rating || 0;
+    const rB = b.rating || 0;
+    if (rB !== rA) return rB - rA;
+    const revA = a.reviews_count || 0;
+    const revB = b.reviews_count || 0;
+    return revB - revA;
+  });
+
+  const keptIds = new Set<string>();
+  const addedEmailKeys = new Set<string>();
+  const addedPhoneKeys = new Set<string>();
+
+  for (const lead of sorted) {
+    const leadId = lead.lead_id || '';
+    if (!leadId) continue;
+    if (keptIds.has(leadId)) continue;
+
+    const nameNorm = (lead.name || '').trim().toLowerCase();
+    const emailNorm = (lead.email || '').trim().toLowerCase();
+    
+    const phoneRaw = lead.phone_e164 || lead.phone_raw || '';
+    const phoneNorm = phoneRaw.replace(/\D/g, '');
+
+    const emailKey = emailNorm ? `${nameNorm}|${emailNorm}` : '';
+    const phoneKey = phoneNorm ? `${nameNorm}|${phoneNorm}` : '';
+
+    let isDuplicate = false;
+    if (emailKey && addedEmailKeys.has(emailKey)) {
+      isDuplicate = true;
+    }
+    if (phoneKey && addedPhoneKeys.has(phoneKey)) {
+      isDuplicate = true;
+    }
+
+    if (!isDuplicate) {
+      keptIds.add(leadId);
+      if (emailKey) addedEmailKeys.add(emailKey);
+      if (phoneKey) addedPhoneKeys.add(phoneKey);
+    }
+  }
+
+  const seenIds = new Set<string>();
+  return leads.filter(l => {
+    const id = l.lead_id || '';
+    if (id && keptIds.has(id) && !seenIds.has(id)) {
+      seenIds.add(id);
+      return true;
+    }
+    return false;
+  });
 }
 
 export interface DncEntry {
@@ -350,6 +422,7 @@ function rowToLead(row: any[]): Lead {
       lead[col] = String(val);
     }
   });
+  lead.isMock = isMockLead(lead);
   return lead as Lead;
 }
 
@@ -405,7 +478,8 @@ class GoogleSheetsLeadRepository implements ILeadRepository {
    */
   async getTopReviewedLeads(limit: number = 20): Promise<Lead[]> {
     const leads = await this.getLeads();
-    return leads
+    const uniqueLeads = deduplicateLeads(leads);
+    return uniqueLeads
       .sort((a, b) => {
         if (b.rating !== a.rating) return b.rating - a.rating;
         return b.reviews_count - a.reviews_count;
@@ -636,7 +710,8 @@ class LocalJsonLeadRepository implements ILeadRepository {
    */
   async getTopReviewedLeads(limit: number = 20): Promise<Lead[]> {
     const leads = await this.getLeads();
-    return leads
+    const uniqueLeads = deduplicateLeads(leads);
+    return uniqueLeads
       .sort((a, b) => {
         if (b.rating !== a.rating) return b.rating - a.rating;
         return b.reviews_count - a.reviews_count;
@@ -644,7 +719,8 @@ class LocalJsonLeadRepository implements ILeadRepository {
       .slice(0, limit);
   }
   async getLeads(): Promise<Lead[]> {
-    return readJsonFile<Lead[]>(LEADS_FILE, []);
+    const leads = await readJsonFile<Lead[]>(LEADS_FILE, []);
+    return leads.map(l => ({ ...l, isMock: isMockLead(l) }));
   }
 
   async getLeadById(leadId: string): Promise<Lead | null> {
@@ -789,39 +865,37 @@ class LocalJsonLogRepository implements ILogRepository {
 
 function restoreLead(dbLead: any): Lead {
   if (!dbLead) return dbLead;
+  const restored = { ...dbLead };
   const notes = dbLead.notes || '';
   if (notes.startsWith('[source:')) {
     const endIdx = notes.indexOf(']');
     if (endIdx !== -1) {
       const src = notes.substring(8, endIdx);
-      return {
-        ...dbLead,
-        source: src,
-        notes: notes.substring(endIdx + 1)
-      };
+      restored.source = src;
+      restored.notes = notes.substring(endIdx + 1);
     }
+  } else {
+    // Fallback deduction based on profile_url or lead_id if no prefix is present:
+    let source = dbLead.source;
+    const profileUrl = (dbLead.profile_url || '').toLowerCase();
+    const leadId = (dbLead.lead_id || '').toLowerCase();
+    
+    if (profileUrl.includes('duckduckgo.com')) source = 'DUCKDUCKGO';
+    else if (profileUrl.includes('openstreetmap.org') || profileUrl.includes('overpass-api')) source = 'OSM';
+    else if (profileUrl.includes('instagram.com')) source = 'INSTAGRAM';
+    else if (profileUrl.includes('facebook.com')) source = 'FACEBOOK';
+    else if (profileUrl.includes('tiktok.com')) source = 'TIKTOK';
+    else if (profileUrl.includes('linkedin.com')) source = 'LINKEDIN';
+    else if (leadId.includes('mapsfree') || leadId.includes('maps_free')) source = 'MAPS_FREE';
+    else if (leadId.includes('osm')) source = 'OSM';
+    else if (leadId.includes('jiji')) source = 'JIJI';
+    else if (leadId.includes('ddg') || leadId.includes('duckduckgo')) source = 'DUCKDUCKGO';
+    
+    restored.source = source;
   }
   
-  // Fallback deduction based on profile_url or lead_id if no prefix is present:
-  let source = dbLead.source;
-  const profileUrl = (dbLead.profile_url || '').toLowerCase();
-  const leadId = (dbLead.lead_id || '').toLowerCase();
-  
-  if (profileUrl.includes('duckduckgo.com')) source = 'DUCKDUCKGO';
-  else if (profileUrl.includes('openstreetmap.org') || profileUrl.includes('overpass-api')) source = 'OSM';
-  else if (profileUrl.includes('instagram.com')) source = 'INSTAGRAM';
-  else if (profileUrl.includes('facebook.com')) source = 'FACEBOOK';
-  else if (profileUrl.includes('tiktok.com')) source = 'TIKTOK';
-  else if (profileUrl.includes('linkedin.com')) source = 'LINKEDIN';
-  else if (leadId.includes('mapsfree') || leadId.includes('maps_free')) source = 'MAPS_FREE';
-  else if (leadId.includes('osm')) source = 'OSM';
-  else if (leadId.includes('jiji')) source = 'JIJI';
-  else if (leadId.includes('ddg') || leadId.includes('duckduckgo')) source = 'DUCKDUCKGO';
-  
-  return {
-    ...dbLead,
-    source
-  };
+  restored.isMock = isMockLead(restored);
+  return restored as Lead;
 }
 
 class SupabaseLeadRepository implements ILeadRepository {
@@ -832,12 +906,16 @@ class SupabaseLeadRepository implements ILeadRepository {
       const supabase = getSupabaseClient();
       const { data, error } = await supabase
         .from('leads')
-        .select('*')
-        .order('rating', { ascending: false })
-        .order('reviews_count', { ascending: false })
-        .limit(limit);
+        .select('*');
       if (error) throw error;
-      return (data || []).map(restoreLead) as Lead[];
+      const leads = (data || []).map(restoreLead) as Lead[];
+      const uniqueLeads = deduplicateLeads(leads);
+      return uniqueLeads
+        .sort((a, b) => {
+          if (b.rating !== a.rating) return b.rating - a.rating;
+          return b.reviews_count - a.reviews_count;
+        })
+        .slice(0, limit);
     } catch (e: any) {
       console.warn('Supabase getTopReviewedLeads error, falling back to local JSON:', e.message);
       return this.fallback.getTopReviewedLeads(limit);
@@ -1131,7 +1209,8 @@ export function getActiveLogRepository(): ILogRepository {
 
 export async function getLeads(): Promise<Lead[]> {
   const leads = await getActiveLeadRepository().getLeads();
-  return leads.filter(l => isValidLeadName(l.name));
+  const valid = leads.filter(l => isValidLeadName(l.name));
+  return deduplicateLeads(valid);
 }
 
 export async function saveLeads(leads: Partial<Lead>[]): Promise<{ added: number; skipped: number }> {
@@ -1141,7 +1220,8 @@ export async function saveLeads(leads: Partial<Lead>[]): Promise<{ added: number
   if (rejected > 0) {
     console.log(`[saveLeads] Rejected ${rejected} leads with invalid names`);
   }
-  return getActiveLeadRepository().saveLeads(validLeads);
+  const deduplicated = deduplicateLeads(validLeads);
+  return getActiveLeadRepository().saveLeads(deduplicated);
 }
 
 export async function updateLeadStatus(leadId: string, status: LeadStatus, notes?: string, lastContactedAt?: string): Promise<boolean> {

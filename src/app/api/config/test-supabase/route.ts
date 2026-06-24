@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const tablesToCheck = ['leads', 'dnc', 'logs', 'scrape_jobs'];
+    const tablesToCheck = ['leads', 'dnc', 'logs', 'scrape_jobs', 'sync_logs', 'outreach_campaigns'];
     const tableStatus: Record<string, boolean> = {};
     let firstError = '';
 

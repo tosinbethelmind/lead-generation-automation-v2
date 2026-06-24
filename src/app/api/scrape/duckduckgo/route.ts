@@ -61,6 +61,16 @@ function generateMockDDGLeads(query: string, limit: number): Partial<Lead>[] {
 // Next.js Route Handler
 // ============================================================================
 
+const USER_AGENTS = [
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3 Safari/605.1.15',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+];
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -89,36 +99,51 @@ export async function POST(req: NextRequest) {
 
     await addLog('DuckDuckGo Scraper', 'START', `Starting DuckDuckGo search crawl for query: "${query}"`);
 
+    // Add a 2-3 second delay to avoid rate limiting
+    await sleep(2000 + Math.random() * 1000);
+
     // Fetch the html version of DuckDuckGo results directly (no JavaScript required!)
     const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
     
     let htmlText = '';
     try {
+      const userAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
       const resp = await fetch(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept-Language': 'en-US,en;q=0.9'
+          'User-Agent': userAgent,
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9,en-GB;q=0.8',
+          'Referer': 'https://duckduckgo.com/',
+          'Cache-Control': 'max-age=0'
         }
       });
 
       if (!resp.ok) {
+        if (resp.status === 403 || resp.status === 429) {
+          throw new Error("⚠️ This provider is currently blocked by the platform. Try again later or use an alternative.");
+        }
         throw new Error(`HTTP Error: ${resp.status} - ${resp.statusText}`);
       }
 
       htmlText = await resp.text();
     } catch (fetchErr: any) {
       console.error("DDG fetch error:", fetchErr);
-      await addLog('DuckDuckGo Scraper', 'WARN', `Fetch failed: ${fetchErr.message}. Falling back to sandbox.`);
+      await addLog('DuckDuckGo Scraper', 'ERROR', `Fetch failed: ${fetchErr.message}`);
       
-      const mockLeads = generateMockDDGLeads(query, limit);
-      const dbResult = await saveLeads(mockLeads);
-      return NextResponse.json({
-        success: true,
-        mode: 'sandbox_fallback',
-        added: dbResult.added,
-        skipped: dbResult.skipped,
-        leads: mockLeads
-      });
+      if (isSandbox) {
+        await addLog('DuckDuckGo Scraper', 'WARN', `Falling back to sandbox.`);
+        const mockLeads = generateMockDDGLeads(query, limit);
+        const dbResult = await saveLeads(mockLeads);
+        return NextResponse.json({
+          success: true,
+          mode: 'sandbox_fallback',
+          added: dbResult.added,
+          skipped: dbResult.skipped,
+          leads: mockLeads
+        });
+      }
+      
+      return NextResponse.json({ error: fetchErr.message }, { status: 500 });
     }
 
     // Parse DDG HTML output

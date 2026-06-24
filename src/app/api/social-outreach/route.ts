@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     }
 
     const origin = req.nextUrl.origin;
-    const signature = config.businessSignature || 'Bethelmind Analytics';
+    const signature = config.businessSignature;
     const isSimulation = config.dryRun || dryRun;
 
     const results: any[] = [];

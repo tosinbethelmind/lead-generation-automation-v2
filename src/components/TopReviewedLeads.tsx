@@ -184,8 +184,29 @@ export default function TopReviewedLeads() {
                       : '0 8px 32px 0 rgba(0, 0, 0, 0.3)';
                   }}
                 >
+                  {lead.isMock && (
+                    <span style={{
+                      position: 'absolute',
+                      top: '16px',
+                      right: '16px',
+                      background: 'rgba(249, 115, 22, 0.2)',
+                      color: '#F97316',
+                      border: '1px solid rgba(249, 115, 22, 0.4)',
+                      fontSize: '0.65rem',
+                      fontWeight: 800,
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      letterSpacing: '0.05em',
+                      textTransform: 'uppercase',
+                      boxShadow: '0 0 8px rgba(249, 115, 22, 0.1)',
+                      zIndex: 3
+                    }}>
+                      SIMULATED
+                    </span>
+                  )}
+
                   {/* Lead index & Premium Badge */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingRight: lead.isMock ? '90px' : '0px' }}>
                     <span style={{
                       fontSize: '0.7rem',
                       fontWeight: 700,
@@ -197,7 +218,7 @@ export default function TopReviewedLeads() {
                       RANK #{idx + 1}
                     </span>
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                      {isPremiumTier && (
+                      {isPremiumTier ? (
                         <span style={{
                           background: 'rgba(245, 158, 11, 0.15)',
                           color: 'var(--warning)',
@@ -210,7 +231,7 @@ export default function TopReviewedLeads() {
                         }}>
                           ELITE PARTNER
                         </span>
-                      )}
+                      ) : null}
                       <span style={{
                         background: 'rgba(255, 255, 255, 0.05)',
                         color: 'var(--text-secondary)',
@@ -229,7 +250,7 @@ export default function TopReviewedLeads() {
                     <h4 style={{
                       fontSize: '1.05rem',
                       fontWeight: 700,
-                      color: '#fff',
+                      color: 'var(--text-primary)',
                       lineHeight: '1.3',
                       marginBottom: '6px',
                       display: '-webkit-box',
@@ -316,9 +337,9 @@ export default function TopReviewedLeads() {
                         justifyContent: 'center',
                         textDecoration: 'none',
                         boxShadow: 'none',
-                        background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        color: '#fff'
+                        background: 'var(--btn-secondary-bg, linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%))',
+                        border: '1px solid var(--panel-border)',
+                        color: 'var(--text-primary)'
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background = 'var(--primary-glow)';

@@ -49,7 +49,7 @@ function generateMockSocialLeads(platform: 'INSTAGRAM' | 'FACEBOOK' | 'TIKTOK' |
     } else if (platform === 'TIKTOK') {
       profileUrl = `https://www.tiktok.com/${handle}/`;
     } else {
-      profileUrl = `https://www.linkedin.com/${handle.replace('company/', 'company/')}/`;
+      profileUrl = `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(name)}`;
     }
 
     const platformSuffix = platform === 'INSTAGRAM' ? '1' : platform === 'FACEBOOK' ? '2' : platform === 'TIKTOK' ? '3' : '4';
@@ -90,6 +90,16 @@ function generateMockSocialLeads(platform: 'INSTAGRAM' | 'FACEBOOK' | 'TIKTOK' |
 // ============================================================================
 // Next.js Route Handler
 // ============================================================================
+
+const USER_AGENTS = [
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3 Safari/605.1.15',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+];
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function POST(req: NextRequest) {
   try {
@@ -132,35 +142,51 @@ export async function POST(req: NextRequest) {
     else siteDomain = 'linkedin.com/company';
 
     const searchQuery = `site:${siteDomain} ${query} (ecommerce OR shop OR boutique OR store OR brand OR wholesale OR supplier OR trading)`;
+    
+    // Add a 2-3 second delay to avoid rate limiting
+    await sleep(2000 + Math.random() * 1000);
+    
     const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(searchQuery)}`;
 
     let htmlText = '';
     try {
+      const userAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
       const resp = await fetch(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept-Language': 'en-US,en;q=0.9'
+          'User-Agent': userAgent,
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9,en-GB;q=0.8',
+          'Referer': 'https://duckduckgo.com/',
+          'Cache-Control': 'max-age=0'
         }
       });
 
       if (!resp.ok) {
+        if (resp.status === 403 || resp.status === 429) {
+          throw new Error("⚠️ This provider is currently blocked by the platform. Try again later or use an alternative.");
+        }
         throw new Error(`HTTP Error: ${resp.status} - ${resp.statusText}`);
       }
 
       htmlText = await resp.text();
     } catch (fetchErr: any) {
       console.error(`${platUpper} fetch error:`, fetchErr);
-      await addLog('Social Scraper', 'WARN', `Fetch failed: ${fetchErr.message}. Falling back to sandbox.`);
+      await addLog('Social Scraper', 'ERROR', `Fetch failed: ${fetchErr.message}`);
       
-      const mockLeads = generateMockSocialLeads(platUpper, query, limit);
-      const dbResult = await saveLeads(mockLeads);
-      return NextResponse.json({
-        success: true,
-        mode: 'sandbox_fallback',
-        added: dbResult.added,
-        skipped: dbResult.skipped,
-        leads: mockLeads
-      });
+      if (isSandbox) {
+        await addLog('Social Scraper', 'WARN', `Falling back to sandbox.`);
+        const mockLeads = generateMockSocialLeads(platUpper, query, limit);
+        const dbResult = await saveLeads(mockLeads);
+        return NextResponse.json({
+          success: true,
+          mode: 'sandbox_fallback',
+          added: dbResult.added,
+          skipped: dbResult.skipped,
+          leads: mockLeads
+        });
+      }
+      
+      return NextResponse.json({ error: fetchErr.message }, { status: 500 });
     }
 
     const $ = cheerio.load(htmlText);
@@ -221,7 +247,7 @@ export async function POST(req: NextRequest) {
           reviews_count: 50,
           verified: false,
           listings_count: 1,
-          profile_url: link,
+          profile_url: platUpper === 'LINKEDIN' ? `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(name)}` : link,
           source_query_or_seed: query,
           collected_at: new Date().toISOString(),
           status: 'NEW',
@@ -244,16 +270,27 @@ export async function POST(req: NextRequest) {
         leads: scrapedLeads
       });
     } else {
-      // Fallback to sandbox if no matches found
-      await addLog('Social Scraper', 'INFO', `Scraped 0 leads from live index. Loading sandbox fallback.`);
-      const mockLeads = generateMockSocialLeads(platUpper, query, limit);
-      const dbResult = await saveLeads(mockLeads);
+      if (isSandbox) {
+        // Fallback to sandbox if no matches found
+        await addLog('Social Scraper', 'INFO', `Scraped 0 leads from live index. Loading sandbox fallback.`);
+        const mockLeads = generateMockSocialLeads(platUpper, query, limit);
+        const dbResult = await saveLeads(mockLeads);
+        return NextResponse.json({
+          success: true,
+          mode: 'sandbox_fallback',
+          added: dbResult.added,
+          skipped: dbResult.skipped,
+          leads: mockLeads
+        });
+      }
+      
+      await addLog('Social Scraper', 'INFO', `Search completed but found 0 leads matching criteria.`);
       return NextResponse.json({
         success: true,
-        mode: 'sandbox_fallback',
-        added: dbResult.added,
-        skipped: dbResult.skipped,
-        leads: mockLeads
+        mode: 'live',
+        added: 0,
+        skipped: 0,
+        leads: []
       });
     }
   } catch (e: any) {

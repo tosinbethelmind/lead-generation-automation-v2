@@ -81,36 +81,50 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Live Playwright Outreach Mode
-    await addLog('Jiji Outreach', 'START', `Starting live Jiji Playwright outreach campaign for ${targetLeads.length} leads.`);
+    // Live Puppeteer Outreach Mode
+    await addLog('Jiji Outreach', 'START', `Starting live Jiji Puppeteer outreach campaign for ${targetLeads.length} leads.`);
     
     let browser;
     try {
       const { launchBrowser } = await import('@/lib/playwrightLauncher');
       browser = await launchBrowser();
-      const context = await browser.newContext({
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        viewport: { width: 1280, height: 800 }
-      });
-      const page = await context.newPage();
+      const page = await browser.newPage();
+      
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+      await page.setViewport({ width: 1280, height: 800 });
 
       // Go to Jiji sign in
       await page.goto('https://jiji.ng/login.html', { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await page.waitForTimeout(1000);
+      await new Promise(r => setTimeout(r, 2000));
 
       // Automated Authentication
       try {
-        // Locate login form fields
-        const emailInput = page.locator('input[type="email"], input[name="email"], input[placeholder*="email"]').first();
-        const passInput = page.locator('input[type="password"], input[name="password"]').first();
-        const submitBtn = page.locator('button[type="submit"], button:has-text("Log in"), button:has-text("Sign in")').first();
+        await page.waitForSelector('input[type="email"], input[name="email"], input[placeholder*="email"]', { timeout: 5000 });
+        
+        await page.evaluate((email, pass) => {
+          const emailInput = document.querySelector('input[type="email"], input[name="email"], input[placeholder*="email"]') as HTMLInputElement;
+          const passInput = document.querySelector('input[type="password"], input[name="password"]') as HTMLInputElement;
+          if (emailInput && passInput) {
+            emailInput.value = email;
+            passInput.value = pass;
+            
+            emailInput.dispatchEvent(new Event('input', { bubbles: true }));
+            passInput.dispatchEvent(new Event('input', { bubbles: true }));
+            
+            const submitBtn = document.querySelector('button[type="submit"]') || 
+                              Array.from(document.querySelectorAll('button')).find(btn => {
+                                const t = btn.textContent?.toLowerCase() || '';
+                                return t.includes('log in') || t.includes('sign in');
+                              });
+            if (submitBtn) {
+              (submitBtn as HTMLElement).click();
+            }
+          } else {
+            throw new Error('Email or password input fields not found');
+          }
+        }, config.jijiEmail || '', config.jijiPassword || '');
 
-        if (await emailInput.isVisible({ timeout: 5000 })) {
-          await emailInput.fill(config.jijiEmail || '');
-          await passInput.fill(config.jijiPassword || '');
-          await submitBtn.click();
-          await page.waitForNavigation({ waitUntil: 'networkidle', timeout: 15000 });
-        }
+        await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
       } catch (authErr: any) {
         console.error("Jiji Authentication failed:", authErr);
         await addLog('Jiji Outreach', 'WARN', `Live login failed: ${authErr.message}.`);
@@ -135,23 +149,60 @@ export async function POST(req: NextRequest) {
         try {
           // Navigate to Jiji listing page
           await page.goto(lead.profile_url, { waitUntil: 'domcontentloaded', timeout: 25000 });
-          await page.waitForTimeout(1500);
+          await new Promise(r => setTimeout(r, 2000));
 
-          // Find Chat/Message buttons
-          const chatBtn = page.locator('button:has-text("Chat"), button:has-text("Start chat"), a:has-text("Chat")').first();
-          if (await chatBtn.count() > 0) {
-            await chatBtn.click();
-            await page.waitForTimeout(1500);
+          // Click Chat button
+          const chatBtnClicked = await page.evaluate(() => {
+            const btn = Array.from(document.querySelectorAll('button, a')).find(el => {
+              const text = el.textContent?.toLowerCase() || '';
+              return text.includes('chat') || text.includes('start chat') || text.includes('message');
+            });
+            if (btn) {
+              (btn as HTMLElement).click();
+              return true;
+            }
+            return false;
+          });
 
-            // Locate chat text area
-            const textarea = page.locator('textarea, textarea[placeholder*="message"]').first();
-            await textarea.fill(finalMessage);
-            await page.waitForTimeout(500);
+          if (chatBtnClicked) {
+            await new Promise(r => setTimeout(r, 2000));
 
-            // Locate send button
-            const sendBtn = page.locator('button[type="submit"], button:has-text("Send"), svg[class*="send"]').first();
-            await sendBtn.click();
-            await page.waitForTimeout(2000); // Wait for dispatch
+            // Enter chat text
+            const textEntered = await page.evaluate((msg) => {
+              const textarea = document.querySelector('textarea, textarea[placeholder*="message"]') as HTMLTextAreaElement;
+              if (textarea) {
+                textarea.value = msg;
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                return true;
+              }
+              return false;
+            }, finalMessage);
+
+            if (!textEntered) {
+              throw new Error("Chat message input textarea not found.");
+            }
+
+            await new Promise(r => setTimeout(r, 1000));
+
+            // Send message
+            const sendBtnClicked = await page.evaluate(() => {
+              const btn = document.querySelector('button[type="submit"], svg[class*="send"]') || 
+                          Array.from(document.querySelectorAll('button')).find(b => {
+                            const t = b.textContent?.toLowerCase() || '';
+                            return t.includes('send');
+                          });
+              if (btn) {
+                (btn as HTMLElement).click();
+                return true;
+              }
+              return false;
+            });
+
+            if (!sendBtnClicked) {
+              throw new Error("Send button not found.");
+            }
+
+            await new Promise(r => setTimeout(r, 2000)); // Wait for dispatch
 
             // Update DB status
             await repo.updateLeadStatus(lead.lead_id, 'CONTACTED', (lead.notes || '') + `\n[${new Date().toISOString()}] Outreach Jiji live link sent: ${previewUrl}`, new Date().toISOString());
@@ -178,7 +229,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Delay between listings to bypass anti-spam rate limiting
-        await page.waitForTimeout(3000);
+        await new Promise(r => setTimeout(r, 3000));
       }
 
     } catch (browserErr: any) {
@@ -189,7 +240,13 @@ export async function POST(req: NextRequest) {
         error: `Live outreach failed: ${browserErr.message}`
       }, { status: 500 });
     } finally {
-      if (browser) await browser.close();
+      if (browser) {
+        try {
+          await browser.close();
+        } catch (e) {
+          console.error("Error closing browser:", e);
+        }
+      }
     }
 
     return NextResponse.json({

@@ -22,6 +22,7 @@ import {
   LogOut,
   Mail,
   Eye,
+  EyeOff,
   Palette,
   Sliders,
   Terminal,
@@ -39,6 +40,7 @@ import TopReviewedLeads from '@/components/TopReviewedLeads';
 import ScraperCard from '@/app/dashboard/components/ScraperCard';
 import ScrapeControls from '@/app/dashboard/components/ScrapeControls';
 import { ProviderCard } from '@/app/components/ProviderCard';
+import { useTheme } from './ThemeContext';
 
 type Tab = 'dashboard' | 'crm' | 'scrapers' | 'settings' | 'logs';
 
@@ -88,7 +90,7 @@ function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: status === 'connected' ? '#10B981' : status === 'qr' ? '#F59E0B' : '#EF4444' }} />
-          <span style={{ fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#fff' }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
             Local Baileys: {status}
           </span>
         </div>
@@ -133,7 +135,7 @@ function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
               marginTop: '8px',
               padding: '6px 12px',
               background: 'linear-gradient(90deg, hsl(140,70%,40%), hsl(140,70%,60%))',
-              color: '#fff',
+              color: 'var(--text-primary)',
               border: 'none',
               borderRadius: '4px',
               cursor: 'pointer',
@@ -156,6 +158,7 @@ function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
 }
 
 export default function Home() {
+  const { theme, toggleTheme, mounted } = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [expandedProvider, setExpandedProvider] = useState<string | null>(null);
 
@@ -272,6 +275,7 @@ export default function Home() {
   const [customLoginProjectId, setCustomLoginProjectId] = useState('');
   const [customClientId, setCustomClientId] = useState('');
   const [customClientSecret, setCustomClientSecret] = useState('');
+  const [showClientSecret, setShowClientSecret] = useState(false);
 
   // Custom Outreach Message overrides
   const [useCustomMessage, setUseCustomMessage] = useState(false);
@@ -296,6 +300,90 @@ export default function Home() {
     success: boolean;
     error: string | null;
   } | null>(null);
+
+  // New UI/UX states
+  const mainRef = React.useRef<HTMLElement>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(1);
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'info' }[]>([]);
+  const [crmTableWidth, setCrmTableWidth] = useState(800);
+  const [isExporting, setIsExporting] = useState(false);
+  const [testingSheets, setTestingSheets] = useState(false);
+  const [savingConfigState, setSavingConfigState] = useState(false);
+
+  const addToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4500);
+  };
+
+  const navigateToSettingsSection = (sectionId: string) => {
+    setActiveTab('settings');
+    setTimeout(() => {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150);
+  };
+
+  const renderStatusChip = (label: string, value: string, status: 'green' | 'yellow' | 'red', targetSection: string) => {
+    const baseColor = status === 'green' ? '16, 185, 129' : status === 'yellow' ? '245, 158, 11' : '239, 68, 68';
+    return (
+      <div 
+        onClick={() => navigateToSettingsSection(targetSection)}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = `rgba(${baseColor}, 0.15)`;
+          e.currentTarget.style.borderColor = `rgba(${baseColor}, 0.35)`;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = `rgba(${baseColor}, 0.06)`;
+          e.currentTarget.style.borderColor = `rgba(${baseColor}, 0.15)`;
+        }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '2px',
+          padding: '8px 12px',
+          borderRadius: '8px',
+          border: `1px solid rgba(${baseColor}, 0.15)`,
+          background: `rgba(${baseColor}, 0.06)`,
+          color: `rgb(${baseColor})`,
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          userSelect: 'none'
+        }}
+      >
+        <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8, fontWeight: 600 }}>{label}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <span style={{ 
+            width: '6px', 
+            height: '6px', 
+            borderRadius: '50%', 
+            backgroundColor: `rgb(${baseColor})`,
+            boxShadow: `0 0 8px rgb(${baseColor})`
+          }}></span>
+          <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-primary)' }}>{value}</span>
+        </div>
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    const onboardingComplete = localStorage.getItem("onboarding_complete");
+    if (!onboardingComplete) {
+      setShowOnboarding(true);
+    }
+  }, []);
+
 
   const checkSupabaseStatus = async () => {
     try {
@@ -360,6 +448,11 @@ export default function Home() {
     fetchLeads();
     fetchLogs();
     checkSheetsStatus();
+
+    const isCompleted = localStorage.getItem("onboarding_complete");
+    if (isCompleted !== "true") {
+      setShowOnboarding(true);
+    }
   }, []);
 
   // Fetch overrides and turnout settings on Lead select
@@ -622,6 +715,7 @@ export default function Home() {
 
   const saveConfig = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    setSavingConfigState(true);
     try {
       setStatusMessage('Saving configurations...');
       const resp = await fetch('/api/config', {
@@ -633,6 +727,7 @@ export default function Home() {
       if (data && !data.error) {
         setConfig(data);
         setStatusMessage('Settings updated successfully!');
+        addToast('Settings updated successfully!', 'success');
         confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
         if (data.storageMode === 'supabase') {
           checkSupabaseStatus();
@@ -641,9 +736,13 @@ export default function Home() {
         }
       } else {
         setStatusMessage(`Error: ${data.error}`);
+        addToast(`Error: ${data.error}`, 'error');
       }
     } catch (e: any) {
       setStatusMessage(`Error: ${e.message}`);
+      addToast(`Error: ${e.message}`, 'error');
+    } finally {
+      setSavingConfigState(false);
     }
   };
 
@@ -721,11 +820,19 @@ export default function Home() {
     }
   };
 
-  const handleRefreshAll = () => {
-    fetchStats();
-    fetchLeads();
-    fetchLogs();
-    checkSheetsStatus();
+  const handleRefreshAll = async () => {
+    try {
+      addToast('Syncing pipeline data...', 'info');
+      await Promise.all([
+        fetchStats(),
+        fetchLeads(),
+        fetchLogs(),
+        checkSheetsStatus()
+      ]);
+      addToast('Pipeline synced successfully!', 'success');
+    } catch (e: any) {
+      addToast(`Sync failed: ${e.message}`, 'error');
+    }
   };
 
   // Run selected Lead Scraper
@@ -775,14 +882,20 @@ export default function Home() {
       });
       const data = await resp.json();
       if (data.error) {
-        setStatusMessage(`Error: ${data.error}`);
+        const errMsg = data.error.includes("blocked by the platform") ? data.error : `Error: ${data.error}`;
+        setStatusMessage(errMsg);
+        addToast(data.error, 'error');
       } else {
-        setStatusMessage(`${scraperName} completed! Added ${data.added} new leads, skipped ${data.skipped} duplicates.`);
+        const successMsg = `${scraperName} completed! Added ${data.added} new leads, skipped ${data.skipped} duplicates.`;
+        setStatusMessage(successMsg);
+        addToast(successMsg, 'success');
         confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
         handleRefreshAll();
       }
     } catch (e: any) {
-      setStatusMessage(`Error: ${e.message}`);
+      const errMsg = e.message.includes("blocked by the platform") ? e.message : `Error: ${e.message}`;
+      setStatusMessage(errMsg);
+      addToast(e.message, 'error');
     } finally {
       setScraping(false);
     }
@@ -895,10 +1008,12 @@ export default function Home() {
       }
     }
 
-    setStatusMessage(`${channelName} outreach campaign completed! Successes: ${localSuccesses}, Failures: ${localFailures}`);
+    const campaignResultMsg = `${channelName} outreach campaign completed! Success: ${localSuccesses}, Failure: ${localFailures}`;
+    setStatusMessage(campaignResultMsg);
     if (localSuccesses > 0) {
       confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
     }
+    addToast(campaignResultMsg, localFailures === 0 ? 'success' : localSuccesses > 0 ? 'info' : 'error');
     
     setSelectedLeads(new Set());
     setSendingOutreach(false);
@@ -1142,7 +1257,7 @@ ${config.businessSignature}`;
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       {/* Sidebar Navigation */}
-      <aside style={{ width: '280px', borderRight: '1px solid var(--panel-border)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px' }} className="glass-panel">
+      <aside style={{ width: '280px', borderRight: '1px solid var(--panel-border)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', maxHeight: '100vh' }} className="glass-panel">
         <div>
           <h2 style={{ fontFamily: 'var(--font-title)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)' }}>
             <Database size={24} /> ApexReach
@@ -1158,7 +1273,7 @@ ${config.businessSignature}`;
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--success)' }}></span>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Google Identity Linked</span>
               </div>
-              <div style={{ fontSize: '0.85rem', color: '#fff', wordBreak: 'break-all', fontFamily: 'monospace' }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', wordBreak: 'break-all', fontFamily: 'monospace' }}>
                 {config.googleUserEmail}
               </div>
               <button onClick={handleSignOut} className="btn-secondary" style={{ width: '100%', fontSize: '0.75rem', padding: '6px', justifyContent: 'center', gap: '4px', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#ef4444' }}>
@@ -1176,7 +1291,7 @@ ${config.businessSignature}`;
                   value={customLoginProjectId} 
                   onChange={(e) => setCustomLoginProjectId(e.target.value)}
                   placeholder="e.g. vertex-ai-leadgen"
-                  style={{ width: '100%', padding: '6px 8px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', fontSize: '0.75rem', outline: 'none' }}
+                  style={{ width: '100%', padding: '6px 8px', background: 'var(--input-bg-darker)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.75rem', outline: 'none' }}
                 />
               </div>
 
@@ -1187,19 +1302,42 @@ ${config.businessSignature}`;
                   value={customClientId} 
                   onChange={(e) => setCustomClientId(e.target.value)}
                   placeholder="Paste Client ID..."
-                  style={{ width: '100%', padding: '6px 8px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', fontSize: '0.75rem', outline: 'none' }}
+                  style={{ width: '100%', padding: '6px 8px', background: 'var(--input-bg-darker)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.75rem', outline: 'none' }}
                 />
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <label style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Google Client Secret</label>
-                <input 
-                  type="password" 
-                  value={customClientSecret} 
-                  onChange={(e) => setCustomClientSecret(e.target.value)}
-                  placeholder="Paste Client Secret..."
-                  style={{ width: '100%', padding: '6px 8px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', fontSize: '0.75rem', outline: 'none' }}
-                />
+                <div style={{ position: 'relative', width: '100%' }}>
+                  <input 
+                    type={showClientSecret ? "text" : "password"} 
+                    value={customClientSecret} 
+                    onChange={(e) => setCustomClientSecret(e.target.value)}
+                    placeholder="Paste Client Secret..."
+                    style={{ width: '100%', padding: '6px 30px 6px 8px', background: 'var(--input-bg-darker)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.75rem', outline: 'none' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowClientSecret(!showClientSecret)}
+                    style={{
+                      position: 'absolute',
+                      right: '8px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: 'var(--text-secondary)',
+                      padding: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    title={showClientSecret ? "Hide Client Secret" : "Show Client Secret"}
+                  >
+                    {showClientSecret ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
               </div>
 
               <button 
@@ -1263,30 +1401,99 @@ ${config.businessSignature}`;
           </button>
         </nav>
         
+        {/* Theme Toggle Button */}
+        <div style={{ padding: '0 4px', marginBottom: '8px' }}>
+          <button
+            id="theme-toggle"
+            onClick={toggleTheme}
+            className="btn-secondary"
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '8px 12px',
+              fontSize: '0.8rem',
+              borderRadius: '8px',
+              border: '1px solid var(--panel-border)',
+              background: 'var(--toggle-bg)',
+              color: 'var(--toggle-color)',
+              boxShadow: 'var(--toggle-shadow)',
+              cursor: 'pointer',
+              transition: 'var(--transition-smooth)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Palette size={16} color="var(--primary)" />
+              <span>{!mounted ? 'Dark Mode' : theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
+            </div>
+            <div style={{
+              width: '32px',
+              height: '18px',
+              borderRadius: '10px',
+              background: mounted && theme === 'dark' ? 'var(--primary)' : 'var(--text-muted)',
+              position: 'relative',
+              transition: 'background 0.3s'
+            }}>
+              <div style={{
+                width: '14px',
+                height: '14px',
+                borderRadius: '50%',
+                background: '#ffffff',
+                position: 'absolute',
+                top: '2px',
+                left: mounted && theme === 'dark' ? '16px' : '2px',
+                transition: 'left 0.3s'
+              }} />
+            </div>
+          </button>
+        </div>
+        
         {/* Connection status */}
-        <div style={{ padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(0,0,0,0.2)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            <span style={{ 
-              width: '8px', 
-              height: '8px', 
-              borderRadius: '50%', 
-              backgroundColor: sheetsSyncStatus === 'green' ? 'var(--success)' : sheetsSyncStatus === 'yellow' ? 'var(--warning)' : 'var(--error)' 
-            }}></span>
-            Sheets DB: {sheetsSyncMessage}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: config.googleProjectId ? 'var(--success)' : 'var(--warning)' }}></span>
-            Vertex AI: {config.googleProjectId ? 'Configured' : 'Fallback Active'}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: config.dryRun ? 'var(--warning)' : 'var(--primary)' }}></span>
-            Campaigns: {config.dryRun ? 'Dry Run Sim' : config.outreachChannel === 'whatsapp' ? `WhatsApp (${config.whatsappProvider})` : config.outreachChannel === 'sms' ? `SMS (${config.smsProvider})` : config.outreachChannel === 'coldcall' ? 'Twilio Call' : `Email (${config.emailProvider})`}
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
+          {renderStatusChip(
+            config.storageMode === 'supabase' ? 'Supabase DB' : 'Sheets DB',
+            config.storageMode === 'supabase' ? (supabaseStatus?.success ? 'Connected' : 'Disconnected') : (sheetsSyncStatus === 'green' ? 'Connected' : sheetsSyncStatus === 'yellow' ? 'Warning' : 'Error'),
+            config.storageMode === 'supabase' ? (supabaseStatus?.success ? 'green' : 'red') : ((sheetsSyncStatus || 'yellow') as 'green' | 'yellow' | 'red'),
+            config.storageMode === 'supabase' ? 'db-settings' : 'sheets-settings'
+          )}
+
+          {renderStatusChip(
+            'Vertex AI',
+            config.googleProjectId ? 'Configured' : 'Fallback Active',
+            config.googleProjectId ? 'green' : 'yellow',
+            'ai-credentials'
+          )}
+
+          {(() => {
+            const isOutreachConfigured = () => {
+              if (config.dryRun) return 'yellow';
+              if (config.outreachChannel === 'whatsapp') {
+                if (config.whatsappProvider === 'cloud' && (!config.whatsappPhoneNumberId || !config.whatsappAccessToken)) return 'red';
+                if (config.whatsappProvider === 'evolution' && (!config.evolutionApiUrl || !config.evolutionApiKey || !config.evolutionInstanceName)) return 'red';
+                if (config.whatsappProvider === 'whapi' && !config.whapiToken) return 'red';
+              } else {
+                if (config.emailProvider === 'resend' && !config.resendApiKey) return 'red';
+                if (config.emailProvider === 'brevo' && !config.brevoApiKey) return 'red';
+                if (config.emailProvider === 'smtp' && (!config.smtpHost || !config.smtpUser || !config.smtpPass)) return 'red';
+                if (config.emailProvider === 'sendgrid' && !config.sendgridApiKey) return 'red';
+              }
+              return 'green';
+            };
+            const status = isOutreachConfigured();
+            const value = status === 'green' ? 'Live Campaigns' : status === 'yellow' ? 'Dry Run Sim' : 'Not Configured';
+            return renderStatusChip(
+              'Campaigns',
+              value,
+              status,
+              config.outreachChannel === 'whatsapp' ? 'whatsapp-settings' : 'email-settings'
+            );
+          })()}
         </div>
       </aside>
       
       {/* Main Panel */}
-      <main style={{ flexGrow: 1, padding: '30px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <main ref={mainRef} style={{ flexGrow: 1, padding: '30px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {config.dryRun && (
           <div style={{ 
             display: 'flex', 
@@ -1393,24 +1600,49 @@ ${config.businessSignature}`;
           </div>
         )}
 
-        <button
-          onClick={async () => {
-            const res = await fetch('/api/export/leads');
-            if (res.ok) {
-              const blob = await res.blob();
-              const url = window.URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = 'leads.xlsx';
-              a.click();
-              window.URL.revokeObjectURL(url);
-            }
-          }}
-          className="btn-primary"
-          style={{ marginBottom: '12px', fontSize: '0.8rem' }}
+        <div 
+          style={{ display: 'inline-block', marginBottom: '12px' }}
+          title={config.dryRun ? "Disable Dry Run mode in Settings to export real leads." : ""}
         >
-          Export Leads (Excel)
-        </button>
+          <button
+            onClick={async () => {
+              if (config.dryRun || isExporting) return;
+              try {
+                setIsExporting(true);
+                const res = await fetch('/api/export/leads');
+                if (res.ok) {
+                  const blob = await res.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'leads.xlsx';
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                  addToast('Leads exported to Excel successfully!', 'success');
+                } else {
+                  addToast('Failed to export leads. Server returned an error.', 'error');
+                }
+              } catch (e: any) {
+                addToast(`Export failed: ${e.message}`, 'error');
+              } finally {
+                setIsExporting(false);
+              }
+            }}
+            disabled={config.dryRun || isExporting}
+            className="btn-primary"
+            style={{ 
+              fontSize: '0.8rem', 
+              opacity: (config.dryRun || isExporting) ? 0.5 : 1, 
+              cursor: (config.dryRun || isExporting) ? 'not-allowed' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            {isExporting ? <Loader2 size={14} className="spin-anim" /> : null}
+            {isExporting ? 'Exporting...' : 'Export Leads (Excel)'}
+          </button>
+        </div>
         {/* VIDEO DEMO SECTION */}
         {activeTab === 'dashboard' && (
           <section className="glass-panel" style={{ padding: '24px', marginBottom: '0' }}>
@@ -1535,7 +1767,7 @@ ${config.businessSignature}`;
                   }
                 </p>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--input-bg)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                     <span>Pending B2B website proposals:</span>
                     <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{stats.newLeads} leads</span>
@@ -1593,7 +1825,7 @@ ${config.businessSignature}`;
 
               <section className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <h3 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={20} color="var(--success)" /> Pipeline Execution Log</h3>
-                <div style={{ height: '220px', overflowY: 'auto', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                <div style={{ height: '220px', overflowY: 'auto', background: 'var(--input-bg-darker)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', fontFamily: 'monospace', fontSize: '0.8rem' }}>
                   {loadingLogs && <div style={{ color: 'var(--text-secondary)' }}>Retrieving sync logs...</div>}
                   {!loadingLogs && logs.length === 0 && <div style={{ color: 'var(--text-muted)' }}>No logs logged in Google Sheets.</div>}
                   {logs.slice(0, 10).map((log, idx) => (
@@ -1616,14 +1848,14 @@ ${config.businessSignature}`;
         {activeTab === 'crm' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div className="glass-panel" style={{ padding: '16px', display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexGrow: 1, background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', padding: '6px 12px', alignItems: 'center', gap: '8px' }}>
+              <div style={{ display: 'flex', flexGrow: 1, background: 'var(--input-bg)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', padding: '6px 12px', alignItems: 'center', gap: '8px' }}>
                 <Search size={16} color="var(--text-secondary)" />
                 <input 
                   type="text" 
                   value={searchTerm} 
                   onChange={(e) => setSearchTerm(e.target.value)} 
                   placeholder="Search leads by name, category, area..."
-                  style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: '0.9rem', width: '100%' }}
+                  style={{ background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-primary)', fontSize: '0.9rem', width: '100%' }}
                 />
               </div>
 
@@ -1631,7 +1863,7 @@ ${config.businessSignature}`;
                 <select 
                   value={statusFilter} 
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  style={{ background: 'rgba(0,0,0,0.3)', color: '#fff', border: '1px solid var(--panel-border)', borderRadius: '8px', padding: '8px 12px', outline: 'none' }}
+                  style={{ background: 'var(--input-bg-darker)', color: 'var(--text-primary)', border: '1px solid var(--panel-border)', borderRadius: '8px', padding: '8px 12px', outline: 'none' }}
                 >
                   <option value="ALL">All Lifecycle Stages</option>
                   <option value="NEW">NEW (Uncontacted)</option>
@@ -1644,7 +1876,7 @@ ${config.businessSignature}`;
                 <select 
                   value={queryFilter} 
                   onChange={(e) => setQueryFilter(e.target.value)}
-                  style={{ background: 'rgba(0,0,0,0.3)', color: '#fff', border: '1px solid var(--panel-border)', borderRadius: '8px', padding: '8px 12px', outline: 'none', maxWidth: '240px' }}
+                  style={{ background: 'var(--input-bg-darker)', color: 'var(--text-primary)', border: '1px solid var(--panel-border)', borderRadius: '8px', padding: '8px 12px', outline: 'none', maxWidth: '240px' }}
                 >
                   <option value="ALL">All Search Queries</option>
                   {uniqueQueries.map((q, idx) => (
@@ -1681,18 +1913,27 @@ ${config.businessSignature}`;
               )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', alignItems: 'start' }}>
-              <div className="glass-panel" style={{ overflowX: 'auto', minHeight: '400px' }}>
+            <div style={{ display: 'flex', gap: '0', alignItems: 'start', width: '100%' }}>
+              <div className="glass-panel" style={{ overflowX: 'auto', minHeight: '400px', width: `${crmTableWidth}px`, flexShrink: 0 }}>
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h3 style={{ fontSize: '1.1rem' }}>Leads Directory ({filteredLeads.length} matching)</h3>
                   {selectedLeads.size > 0 && (
                     <button 
                       onClick={runOutreach} 
-                      disabled={outreachDetails.isDisabled} 
+                      disabled={outreachDetails.isDisabled || sendingOutreach} 
                       className="btn-primary" 
-                      style={{ fontSize: '0.85rem', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      style={{ 
+                        fontSize: '0.85rem', 
+                        padding: '8px 16px', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '6px',
+                        opacity: (outreachDetails.isDisabled || sendingOutreach) ? 0.6 : 1,
+                        cursor: (outreachDetails.isDisabled || sendingOutreach) ? 'not-allowed' : 'pointer'
+                      }}
                     >
-                      {outreachDetails.icon} {outreachDetails.label} ({selectedLeads.size})
+                      {sendingOutreach ? <Loader2 size={14} className="spin-anim" /> : outreachDetails.icon} 
+                      {sendingOutreach ? 'Sending...' : outreachDetails.label} ({selectedLeads.size})
                     </button>
                   )}
                 </div>
@@ -1763,7 +2004,28 @@ ${config.businessSignature}`;
                             style={{ cursor: 'pointer' }}
                           />
                         </td>
-                        <td style={{ padding: '14px 20px', fontWeight: 600 }}>{lead.name}</td>
+                        <td style={{ padding: '14px 20px', fontWeight: 600, maxWidth: '220px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }} title={lead.name}>
+                            <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{lead.name}</span>
+                            {(lead.isMock || lead.lead_id.startsWith('mock_') || lead.notes?.toLowerCase().includes('sandbox') || lead.notes?.toLowerCase().includes('mock') || lead.notes?.toLowerCase().includes('real scraper failed')) && (
+                              <span style={{
+                                background: 'rgba(249, 115, 22, 0.15)',
+                                color: '#F97316',
+                                border: '1px solid rgba(249, 115, 22, 0.3)',
+                                fontSize: '0.65rem',
+                                fontWeight: 800,
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                width: 'fit-content',
+                                letterSpacing: '0.02em',
+                                display: 'inline-block',
+                                textTransform: 'uppercase'
+                              }}>
+                                SIMULATED
+                              </span>
+                            )}
+                          </div>
+                        </td>
                         <td style={{ padding: '14px', color: 'var(--text-secondary)' }}>{lead.category}</td>
                         <td style={{ padding: '14px' }}>
                           <span style={{ color: 'var(--warning)', fontWeight: 600 }}>★ {lead.rating ? lead.rating.toFixed(1) : 'N/A'}</span>
@@ -1793,8 +2055,67 @@ ${config.businessSignature}`;
                 </table>
               </div>
 
+              {/* Resize Handle Drag Divider */}
+              <div
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  const startX = e.clientX;
+                  const startWidth = crmTableWidth;
+                  
+                  const onMouseMove = (moveEvent: MouseEvent) => {
+                    const newWidth = startWidth + (moveEvent.clientX - startX);
+                    setCrmTableWidth(Math.max(400, Math.min(1200, newWidth)));
+                  };
+                  
+                  const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                  };
+                  
+                  document.addEventListener('mousemove', onMouseMove);
+                  document.addEventListener('mouseup', onMouseUp);
+                }}
+                onMouseEnter={(e) => {
+                  const bar = e.currentTarget.querySelector('.resize-bar-handle') as HTMLElement;
+                  if (bar) {
+                    bar.style.backgroundColor = 'var(--primary)';
+                    bar.style.height = '100px';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  const bar = e.currentTarget.querySelector('.resize-bar-handle') as HTMLElement;
+                  if (bar) {
+                    bar.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    bar.style.height = '60px';
+                  }
+                }}
+                style={{
+                  width: '16px',
+                  alignSelf: 'stretch',
+                  cursor: 'col-resize',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  zIndex: 10,
+                  margin: '0 4px',
+                  userSelect: 'none'
+                }}
+              >
+                <div 
+                  className="resize-bar-handle"
+                  style={{
+                    width: '2px',
+                    height: '60px',
+                    borderRadius: '1px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    transition: 'all 0.2s ease',
+                  }} 
+                />
+              </div>
+
               {/* Template Preview Panel */}
-              <section className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <section className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', flexGrow: 1, minWidth: '320px' }}>
                 <h3 style={{ fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '10px', margin: 0 }}>
                   <UserCheck size={18} color="var(--primary)" /> Client Site Customizer & Outreach
                 </h3>
@@ -1802,7 +2123,7 @@ ${config.businessSignature}`;
                 {previewLead ? (
                   <>
                     {/* Tab Navigation */}
-                    <div style={{ display: 'flex', background: 'rgba(0,0,0,0.2)', padding: '4px', borderRadius: '8px', gap: '4px' }}>
+                    <div style={{ display: 'flex', background: 'var(--input-bg)', padding: '4px', borderRadius: '8px', gap: '4px' }}>
                       <button 
                         type="button"
                         onClick={() => setCrmPreviewTab('outreach')}
@@ -1895,6 +2216,24 @@ ${config.businessSignature}`;
                         <div style={{ fontSize: '0.85rem' }}>
                           <div style={{ marginBottom: '6px' }}><strong style={{ color: 'var(--text-secondary)' }}>Send To:</strong> {previewLead.email || previewLead.phone_raw || previewLead.profile_url || 'N/A'}</div>
                           <div style={{ marginBottom: '6px' }}><strong style={{ color: 'var(--text-secondary)' }}>Business:</strong> {previewLead.name}</div>
+                          {(previewLead.isMock || previewLead.lead_id.startsWith('mock_') || previewLead.notes?.toLowerCase().includes('sandbox') || previewLead.notes?.toLowerCase().includes('mock') || previewLead.notes?.toLowerCase().includes('real scraper failed')) && (
+                            <div style={{ marginBottom: '8px' }}>
+                              <span style={{
+                                background: 'rgba(249, 115, 22, 0.2)',
+                                color: '#F97316',
+                                border: '1px solid rgba(249, 115, 22, 0.4)',
+                                fontSize: '0.7rem',
+                                fontWeight: 800,
+                                padding: '3px 8px',
+                                borderRadius: '4px',
+                                letterSpacing: '0.02em',
+                                display: 'inline-block',
+                                textTransform: 'uppercase'
+                              }}>
+                                SIMULATED
+                              </span>
+                            </div>
+                          )}
                           <div style={{ marginBottom: '6px' }}><strong style={{ color: 'var(--text-secondary)' }}>Rating:</strong> {previewLead.rating} Stars</div>
                         </div>
 
@@ -1930,7 +2269,7 @@ ${config.businessSignature}`;
                                   value={customSubjectText} 
                                   onChange={(e) => setCustomSubjectText(e.target.value)} 
                                   placeholder="e.g. Unique proposal for {{lead.name}}"
-                                  style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
+                                  style={{ width: '100%', padding: '10px', background: 'var(--input-bg-darker)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--text-primary)', fontSize: '0.85rem', outline: 'none' }}
                                 />
                               </div>
                             )}
@@ -1942,7 +2281,7 @@ ${config.businessSignature}`;
                                 value={customMessageText} 
                                 onChange={(e) => setCustomMessageText(e.target.value)} 
                                 placeholder="Type your custom outreach message here..."
-                                style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', resize: 'vertical' }}
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg-darker)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--text-primary)', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', resize: 'vertical' }}
                               />
                             </div>
 
@@ -1955,7 +2294,7 @@ ${config.businessSignature}`;
                             </div>
                           </div>
                         ) : (
-                          <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', padding: '14px', fontSize: '0.8rem', whiteSpace: 'pre-wrap', fontFamily: 'monospace', color: 'var(--text-secondary)', lineHeight: '1.5', minHeight: '220px' }}>
+                          <div style={{ background: 'var(--input-bg-darker)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', padding: '14px', fontSize: '0.8rem', whiteSpace: 'pre-wrap', fontFamily: 'monospace', color: 'var(--text-secondary)', lineHeight: '1.5', minHeight: '220px' }}>
                             {renderTemplatePreview(previewLead)}
                           </div>
                         )}
@@ -1986,7 +2325,7 @@ ${config.businessSignature}`;
                               value={aiRedesignPrompt} 
                               onChange={(e) => setAiRedesignPrompt(e.target.value)} 
                               placeholder="e.g. elegant dark theme with gold accents"
-                              style={{ flex: 1, padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
+                              style={{ flex: 1, padding: '10px', background: 'var(--input-bg-darker)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--text-primary)', fontSize: '0.85rem', outline: 'none' }}
                             />
                             <button 
                               type="button" 
@@ -2022,7 +2361,7 @@ ${config.businessSignature}`;
                                   value={overridePrimary} 
                                   onChange={(e) => setOverridePrimary(e.target.value)} 
                                   placeholder="#1e3a8a"
-                                  style={{ flex: 1, padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', width: '0' }}
+                                  style={{ flex: 1, padding: '6px 8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none', width: '0' }}
                                 />
                               </div>
                             </div>
@@ -2040,7 +2379,7 @@ ${config.businessSignature}`;
                                   value={overrideAccent} 
                                   onChange={(e) => setOverrideAccent(e.target.value)} 
                                   placeholder="#60a5fa"
-                                  style={{ flex: 1, padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', width: '0' }}
+                                  style={{ flex: 1, padding: '6px 8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none', width: '0' }}
                                 />
                               </div>
                             </div>
@@ -2058,7 +2397,7 @@ ${config.businessSignature}`;
                                   value={overrideBg} 
                                   onChange={(e) => setOverrideBg(e.target.value)} 
                                   placeholder="#eff6ff"
-                                  style={{ flex: 1, padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', width: '0' }}
+                                  style={{ flex: 1, padding: '6px 8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none', width: '0' }}
                                 />
                               </div>
                             </div>
@@ -2076,7 +2415,7 @@ ${config.businessSignature}`;
                                   value={overrideText} 
                                   onChange={(e) => setOverrideText(e.target.value)} 
                                   placeholder="#1e3a8a"
-                                  style={{ flex: 1, padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', width: '0' }}
+                                  style={{ flex: 1, padding: '6px 8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none', width: '0' }}
                                 />
                               </div>
                             </div>
@@ -2088,7 +2427,7 @@ ${config.businessSignature}`;
                             <select 
                               value={overrideFont} 
                               onChange={(e) => setOverrideFont(e.target.value)}
-                              style={{ width: '100%', padding: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none' }}
+                              style={{ width: '100%', padding: '8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none' }}
                             >
                               <option value="">Default theme font</option>
                               <option value="Inter">Inter (Modern Clean)</option>
@@ -2103,16 +2442,16 @@ ${config.businessSignature}`;
                           <div>
                             <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Section Visibility</label>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: '#fff' }}>
+                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--text-primary)' }}>
                                 <input type="checkbox" checked={overrideShowServices} onChange={(e) => setOverrideShowServices(e.target.checked)} /> Show Services
                               </label>
-                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: '#fff' }}>
+                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--text-primary)' }}>
                                 <input type="checkbox" checked={overrideShowTestimonials} onChange={(e) => setOverrideShowTestimonials(e.target.checked)} /> Show Testimonials
                               </label>
-                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: '#fff' }}>
+                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--text-primary)' }}>
                                 <input type="checkbox" checked={overrideShowEstimator} onChange={(e) => setOverrideShowEstimator(e.target.checked)} /> Show Booking/Estimator
                               </label>
-                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: '#fff' }}>
+                              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--text-primary)' }}>
                                 <input type="checkbox" checked={overrideShowAbout} onChange={(e) => setOverrideShowAbout(e.target.checked)} /> Show About Us
                               </label>
                             </div>
@@ -2127,7 +2466,7 @@ ${config.businessSignature}`;
                                 value={overrideHeroTitle} 
                                 onChange={(e) => setOverrideHeroTitle(e.target.value)} 
                                 placeholder="Enter custom tagline..."
-                                style={{ width: '100%', padding: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none' }}
+                                style={{ width: '100%', padding: '8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none' }}
                               />
                             </div>
                             <div>
@@ -2137,7 +2476,7 @@ ${config.businessSignature}`;
                                 value={overrideHeroSubtitle} 
                                 onChange={(e) => setOverrideHeroSubtitle(e.target.value)} 
                                 placeholder="Enter custom subtitle value prop..."
-                                style={{ width: '100%', padding: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', resize: 'vertical' }}
+                                style={{ width: '100%', padding: '8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none', resize: 'vertical' }}
                               />
                             </div>
                             <div>
@@ -2147,7 +2486,7 @@ ${config.businessSignature}`;
                                 value={overrideAboutText} 
                                 onChange={(e) => setOverrideAboutText(e.target.value)} 
                                 placeholder="Enter custom about section content..."
-                                style={{ width: '100%', padding: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none', resize: 'vertical' }}
+                                style={{ width: '100%', padding: '8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none', resize: 'vertical' }}
                               />
                             </div>
                             <div>
@@ -2157,7 +2496,7 @@ ${config.businessSignature}`;
                                 value={overrideCtaText} 
                                 onChange={(e) => setOverrideCtaText(e.target.value)} 
                                 placeholder="e.g. Book Appointment"
-                                style={{ width: '100%', padding: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem', outline: 'none' }}
+                                style={{ width: '100%', padding: '8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none' }}
                               />
                             </div>
                           </div>
@@ -2194,7 +2533,7 @@ ${config.businessSignature}`;
                               value={taskQueuePrompt} 
                               onChange={(e) => setTaskQueuePrompt(e.target.value)} 
                               placeholder="e.g. Add a beautiful Google Maps iframe section and a multi-step booking wizard for this Dentist site."
-                              style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none', resize: 'vertical', fontFamily: 'monospace' }}
+                              style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--text-primary)', fontSize: '0.85rem', outline: 'none', resize: 'vertical', fontFamily: 'monospace' }}
                             />
                           </div>
 
@@ -2203,7 +2542,7 @@ ${config.businessSignature}`;
                             <select 
                               value={taskQueuePriority} 
                               onChange={(e) => setTaskQueuePriority(e.target.value as any)}
-                              style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '0.85rem', outline: 'none' }}
+                              style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--text-primary)', fontSize: '0.85rem', outline: 'none' }}
                             >
                               <option value="low">Low Priority</option>
                               <option value="medium">Medium Priority</option>
@@ -2242,7 +2581,7 @@ ${config.businessSignature}`;
                           <select 
                             value={turnoutMode} 
                             onChange={(e) => updateTurnoutMode(e.target.value as any)}
-                            style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.85rem', outline: 'none', fontWeight: 600 }}
+                            style={{ width: '100%', padding: '10px', background: 'var(--input-bg-darker)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.85rem', outline: 'none', fontWeight: 600 }}
                           >
                             <option value="dynamic">Central CRM Database Mode</option>
                             <option value="n8n">Direct n8n automation webhook redirection</option>
@@ -2458,15 +2797,15 @@ ${config.businessSignature}`;
             </div>
 
             {/* Section A: Global & Data Store */}
-            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>1. Global Configuration</h4>
+            <div id="db-settings" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>1. Global Configuration</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Storage Backend Mode</label>
                   <select 
                     value={config.storageMode || 'hybrid'} 
                     onChange={(e) => setConfig({ ...config, storageMode: e.target.value as any })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   >
                     <option value="hybrid">Hybrid Mode (Google Sheets + fallback)</option>
                     <option value="local">Local Mode (JSON file DB)</option>
@@ -2479,7 +2818,7 @@ ${config.businessSignature}`;
                   <select 
                     value={config.outreachChannel || 'gmail'} 
                     onChange={(e) => setConfig({ ...config, outreachChannel: e.target.value as any })}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   >
                     <option value="gmail">Email Outreach</option>
                     <option value="whatsapp">WhatsApp Outreach</option>
@@ -2499,15 +2838,15 @@ ${config.businessSignature}`;
                     value={config.businessSignature} 
                     onChange={(e) => setConfig({ ...config, businessSignature: e.target.value })}
                     placeholder="e.g. ApexReach Team"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
               </div>
             </div>
 
             {/* Section A-2: Google Sheets Integration */}
-            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '8px', fontWeight: 600, color: '#fff' }}>2. Google Sheets Integration</h4>
+            <div id="sheets-settings" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '8px', fontWeight: 600, color: 'var(--text-primary)' }}>2. Google Sheets Integration</h4>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '0 0 16px 0' }}>
                 ApexReach stores leads, logs, and stats in Google Sheets worksheets. You can test your connection or initialize missing worksheets below.
               </p>
@@ -2519,7 +2858,7 @@ ${config.businessSignature}`;
                     value={config.googleSpreadsheetId || ''} 
                     onChange={(e) => setConfig({ ...config, googleSpreadsheetId: e.target.value })}
                     placeholder="e.g. 1a2b3c4d5e6f7g8h9i0j..."
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div style={{ display: 'flex', gap: '10px' }}>
@@ -2527,9 +2866,11 @@ ${config.businessSignature}`;
                     type="button"
                     onClick={async () => {
                       if (!config.googleSpreadsheetId) {
-                        alert("Please enter a Google Spreadsheet ID first.");
+                        addToast("Please enter a Google Spreadsheet ID first.", "error");
                         return;
                       }
+                      setTestingSheets(true);
+                      addToast("Testing Sheets connection...", "info");
                       try {
                         const res = await fetch('/api/config/test-sheets', {
                           method: 'POST',
@@ -2538,11 +2879,12 @@ ${config.businessSignature}`;
                         });
                         const data = await res.json();
                         if (data.success) {
-                          alert("Connection Success: " + data.message);
+                          addToast("Connection Success: " + data.message, "success");
                           checkSheetsStatus();
                         } else {
                           if (data.status === 'yellow') {
                             if (confirm(`${data.error}\n\nWould you like to initialize the missing tabs now?`)) {
+                              addToast("Initializing missing worksheets...", "info");
                               const res2 = await fetch('/api/config/test-sheets', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -2550,32 +2892,52 @@ ${config.businessSignature}`;
                               });
                               const data2 = await res2.json();
                               if (data2.success) {
-                                alert("Success: " + data2.message);
+                                addToast("Worksheets initialized: " + data2.message, "success");
                                 checkSheetsStatus();
                               } else {
-                                alert("Initialization failed: " + data2.error);
+                                addToast("Initialization failed: " + data2.error, "error");
                               }
                             }
                           } else {
-                            alert("Connection Failed: " + data.error);
+                            addToast("Connection Failed: " + data.error, "error");
                           }
                         }
                       } catch (err: any) {
-                        alert("Error: " + err.message);
+                        addToast("Error: " + err.message, "error");
+                      } finally {
+                        setTestingSheets(false);
                       }
                     }}
+                    disabled={testingSheets}
                     className="btn-primary"
-                    style={{ flexGrow: 1, padding: '12px', fontSize: '0.85rem', justifyContent: 'center' }}
+                    style={{ 
+                      flexGrow: 1, 
+                      padding: '12px', 
+                      fontSize: '0.85rem', 
+                      justifyContent: 'center', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px',
+                      opacity: testingSheets ? 0.6 : 1,
+                      cursor: testingSheets ? 'not-allowed' : 'pointer'
+                    }}
                   >
-                    Test & Sync Sheets
+                    {testingSheets ? (
+                      <>
+                        <Loader2 size={16} className="spin-anim" />
+                        Testing Connection...
+                      </>
+                    ) : (
+                      'Test & Sync Sheets'
+                    )}
                   </button>
                 </div>
               </div>
             </div>
 
             {/* Section A-3: Scraper & AI Credentials */}
-            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>3. Scraper & AI Credentials</h4>
+            <div id="ai-credentials" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>3. Scraper & AI Credentials</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -2622,7 +2984,7 @@ ${config.businessSignature}`;
                     value={config.googlePlacesApiKey} 
                     onChange={(e) => setConfig({ ...config, googlePlacesApiKey: e.target.value })}
                     placeholder="Paste Google Cloud API key"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
@@ -2632,16 +2994,16 @@ ${config.businessSignature}`;
                     value={config.geminiApiKey} 
                     onChange={(e) => setConfig({ ...config, geminiApiKey: e.target.value })}
                     placeholder="Paste Gemini API Key"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
               </div>
             </div>
 
             {/* Section B: Email Provider */}
-            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
+            <div id="email-settings" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff' }}>2. Email Outreach Provider</h4>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)' }}>2. Email Outreach Provider</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
                   <ProviderCard
                     id="gmail"
@@ -2683,7 +3045,7 @@ ${config.businessSignature}`;
 
               {config.emailProvider === 'gmail' && (
                 <>
-                  <div style={{ display: 'grid', gap: '12px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                  <div style={{ display: 'grid', gap: '12px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
                     <button
                       onClick={() => {
                         setIsGmailConnecting(true);
@@ -2694,7 +3056,7 @@ ${config.businessSignature}`;
                         width: '100%',
                         padding: '10px 16px',
                         background: isGmailConnecting ? 'rgba(100,100,100,0.5)' : 'linear-gradient(90deg, hsl(210,70%,50%), hsl(210,70%,70%))',
-                        color: '#fff',
+                        color: 'var(--text-primary)',
                         border: 'none',
                         borderRadius: '6px',
                         cursor: isGmailConnecting ? 'default' : 'pointer',
@@ -2708,7 +3070,7 @@ ${config.businessSignature}`;
                       Authorize the app via Google OAuth. Credentials are saved automatically.
                     </span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
                     <div>
                       <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Google OAuth Client ID</label>
                       <input 
@@ -2716,7 +3078,7 @@ ${config.businessSignature}`;
                         value={config.googleClientId || ''} 
                         onChange={(e) => setConfig({ ...config, googleClientId: e.target.value })}
                         placeholder="Enter Google Client ID"
-                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                       />
                     </div>
                     <div>
@@ -2726,7 +3088,7 @@ ${config.businessSignature}`;
                         value={config.googleClientSecret || ''} 
                         onChange={(e) => setConfig({ ...config, googleClientSecret: e.target.value })}
                         placeholder="Enter Google Client Secret"
-                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                       />
                     </div>
                     <div>
@@ -2736,7 +3098,7 @@ ${config.businessSignature}`;
                         value={config.googleProjectId || ''} 
                         onChange={(e) => setConfig({ ...config, googleProjectId: e.target.value })}
                         placeholder="e.g. leadgen-console"
-                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                       />
                     </div>
                   </div>
@@ -2744,39 +3106,39 @@ ${config.businessSignature}`;
               )}
 
               {config.emailProvider === 'resend' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Resend API Key</label>
-                    <input type="password" value={config.resendApiKey || ''} onChange={(e) => setConfig({ ...config, resendApiKey: e.target.value })} placeholder="re_..." style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }} />
+                    <input type="password" value={config.resendApiKey || ''} onChange={(e) => setConfig({ ...config, resendApiKey: e.target.value })} placeholder="re_..." style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }} />
                     <a href="https://resend.com/dashboard/api-keys" target="_blank" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Get free API key →</a>
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>From Email Address (Verified Domain)</label>
-                    <input type="text" value={config.resendFromEmail || ''} onChange={(e) => setConfig({ ...config, resendFromEmail: e.target.value })} placeholder="onboarding@resend.dev or hello@yourdomain.com" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }} />
+                    <input type="text" value={config.resendFromEmail || ''} onChange={(e) => setConfig({ ...config, resendFromEmail: e.target.value })} placeholder="onboarding@resend.dev or hello@yourdomain.com" style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }} />
                   </div>
                 </div>
               )}
 
               {config.emailProvider === 'brevo' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Brevo API Key (V3)</label>
-                    <input type="password" value={config.brevoApiKey || ''} onChange={(e) => setConfig({ ...config, brevoApiKey: e.target.value })} placeholder="xkeysib-..." style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }} />
+                    <input type="password" value={config.brevoApiKey || ''} onChange={(e) => setConfig({ ...config, brevoApiKey: e.target.value })} placeholder="xkeysib-..." style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }} />
                     <a href="https://app.brevo.com/settings/keys" target="_blank" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Get free API key →</a>
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender Display Name</label>
-                    <input type="text" value={config.brevoSenderName || ''} onChange={(e) => setConfig({ ...config, brevoSenderName: e.target.value })} placeholder="e.g. ApexReach Support" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }} />
+                    <input type="text" value={config.brevoSenderName || ''} onChange={(e) => setConfig({ ...config, brevoSenderName: e.target.value })} placeholder="e.g. ApexReach Support" style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }} />
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender Verified Email</label>
-                    <input type="text" value={config.brevoSenderEmail || ''} onChange={(e) => setConfig({ ...config, brevoSenderEmail: e.target.value })} placeholder="hello@yourdomain.com" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }} />
+                    <input type="text" value={config.brevoSenderEmail || ''} onChange={(e) => setConfig({ ...config, brevoSenderEmail: e.target.value })} placeholder="hello@yourdomain.com" style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }} />
                   </div>
                 </div>
               )}
 
               {config.emailProvider === 'smtp' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>SMTP Host</label>
                     <input 
@@ -2784,7 +3146,7 @@ ${config.businessSignature}`;
                       value={config.smtpHost || ''} 
                       onChange={(e) => setConfig({ ...config, smtpHost: e.target.value })}
                       placeholder="e.g. smtp.mailtrap.io or smtp.gmail.com"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -2794,7 +3156,7 @@ ${config.businessSignature}`;
                       value={config.smtpPort || 587} 
                       onChange={(e) => setConfig({ ...config, smtpPort: Number(e.target.value) })}
                       placeholder="e.g. 587 or 465"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -2804,7 +3166,7 @@ ${config.businessSignature}`;
                       value={config.smtpUser || ''} 
                       onChange={(e) => setConfig({ ...config, smtpUser: e.target.value })}
                       placeholder="user@domain.com"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -2814,7 +3176,7 @@ ${config.businessSignature}`;
                       value={config.smtpPass || ''} 
                       onChange={(e) => setConfig({ ...config, smtpPass: e.target.value })}
                       placeholder="SMTP Password"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -2824,7 +3186,7 @@ ${config.businessSignature}`;
                       value={config.smtpFrom || ''} 
                       onChange={(e) => setConfig({ ...config, smtpFrom: e.target.value })}
                       placeholder="sender@domain.com"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -2834,11 +3196,11 @@ ${config.businessSignature}`;
                       value={config.smtpSenderName || ''} 
                       onChange={(e) => setConfig({ ...config, smtpSenderName: e.target.value })}
                       placeholder="e.g. ApexReach Marketing"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div style={{ gridColumn: 'span 2' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', color: '#fff' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-primary)' }}>
                       <input 
                         type="checkbox" 
                         checked={config.smtpSecure || false} 
@@ -2852,29 +3214,29 @@ ${config.businessSignature}`;
               )}
 
               {config.emailProvider === 'sendgrid' && (
-                <div style={{ background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
                   <div style={{ marginBottom: '8px' }}>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>SendGrid API Key</label>
-                    <input type="password" value={config.sendgridApiKey || ''} onChange={(e) => setConfig({ ...config, sendgridApiKey: e.target.value })} placeholder="SG.xxxxx" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff' }} />
+                    <input type="password" value={config.sendgridApiKey || ''} onChange={(e) => setConfig({ ...config, sendgridApiKey: e.target.value })} placeholder="SG.xxxxx" style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)' }} />
                     <a href="https://app.sendgrid.com/settings/api_keys" target="_blank" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Get free API key →</a>
                   </div>
                   <div style={{ marginBottom: '8px' }}>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>From Email (Verified)</label>
-                    <input type="text" value={config.sendgridFromEmail || ''} onChange={(e) => setConfig({ ...config, sendgridFromEmail: e.target.value })} placeholder="verified@yourdomain.com" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff' }} />
+                    <input type="text" value={config.sendgridFromEmail || ''} onChange={(e) => setConfig({ ...config, sendgridFromEmail: e.target.value })} placeholder="verified@yourdomain.com" style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)' }} />
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>Sender Display Name</label>
-                    <input type="text" value={config.sendgridSenderName || ''} onChange={(e) => setConfig({ ...config, sendgridSenderName: e.target.value })} placeholder="e.g. ApexReach Outreach" style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff' }} />
+                    <input type="text" value={config.sendgridSenderName || ''} onChange={(e) => setConfig({ ...config, sendgridSenderName: e.target.value })} placeholder="e.g. ApexReach Outreach" style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)' }} />
                   </div>
                 </div>
               )}
             </div>
 
             {/* Section C: WhatsApp Provider */}
-            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
+            <div id="whatsapp-settings" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff', margin: 0 }}>3. WhatsApp Outreach Provider</h4>
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>3. WhatsApp Outreach Provider</h4>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginTop: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                     <input 
                       type="checkbox" 
@@ -2888,7 +3250,7 @@ ${config.businessSignature}`;
                 <select 
                   value={config.whatsappProvider || 'cloud'} 
                   onChange={(e) => setConfig({ ...config, whatsappProvider: e.target.value as any })}
-                  style={{ padding: '8px 12px', background: 'rgba(6, 182, 212, 0.15)', border: '1px solid var(--primary)', borderRadius: '6px', color: '#fff', fontWeight: 600, outline: 'none' }}
+                  style={{ padding: '8px 12px', background: 'rgba(6, 182, 212, 0.15)', border: '1px solid var(--primary)', borderRadius: '6px', color: 'var(--text-primary)', fontWeight: 600, outline: 'none' }}
                 >
                   <option value="cloud">Meta Business WhatsApp API</option>
                   <option value="evolution">Evolution API (QR Code / Baileys)</option>
@@ -2898,7 +3260,7 @@ ${config.businessSignature}`;
               </div>
 
               {config.whatsappProvider === 'cloud' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Phone Number ID</label>
                     <input 
@@ -2906,7 +3268,7 @@ ${config.businessSignature}`;
                       value={config.whatsappPhoneNumberId || ''} 
                       onChange={(e) => setConfig({ ...config, whatsappPhoneNumberId: e.target.value })}
                       placeholder="Enter Phone Number ID"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -2916,7 +3278,7 @@ ${config.businessSignature}`;
                       value={config.whatsappAccessToken || ''} 
                       onChange={(e) => setConfig({ ...config, whatsappAccessToken: e.target.value })}
                       placeholder="EAAB..."
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -2926,7 +3288,7 @@ ${config.businessSignature}`;
                       value={config.whatsappTemplateName || ''} 
                       onChange={(e) => setConfig({ ...config, whatsappTemplateName: e.target.value })}
                       placeholder="e.g. lead_outreach_1"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -2936,14 +3298,14 @@ ${config.businessSignature}`;
                       value={config.whatsappTemplateLanguageCode || ''} 
                       onChange={(e) => setConfig({ ...config, whatsappTemplateLanguageCode: e.target.value })}
                       placeholder="e.g. en_US"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                 </div>
               )}
 
               {config.whatsappProvider === 'evolution' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Evolution API Base URL</label>
                     <input 
@@ -2951,7 +3313,7 @@ ${config.businessSignature}`;
                       value={config.evolutionApiUrl || ''} 
                       onChange={(e) => setConfig({ ...config, evolutionApiUrl: e.target.value })}
                       placeholder="https://api.myserver.com"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -2961,7 +3323,7 @@ ${config.businessSignature}`;
                       value={config.evolutionApiKey || ''} 
                       onChange={(e) => setConfig({ ...config, evolutionApiKey: e.target.value })}
                       placeholder="apikey token"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -2971,14 +3333,14 @@ ${config.businessSignature}`;
                       value={config.evolutionInstanceName || ''} 
                       onChange={(e) => setConfig({ ...config, evolutionInstanceName: e.target.value })}
                       placeholder="e.g. MyPersonalPhone"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                 </div>
               )}
 
               {config.whatsappProvider === 'whapi' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Whapi Token</label>
                     <input 
@@ -2986,14 +3348,14 @@ ${config.businessSignature}`;
                       value={config.whapiToken || ''} 
                       onChange={(e) => setConfig({ ...config, whapiToken: e.target.value })}
                       placeholder="Whapi.cloud bearer token"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                 </div>
               )}
 
               {config.whatsappProvider === 'baileys' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Baileys Local API URL</label>
                     <input 
@@ -3001,7 +3363,7 @@ ${config.businessSignature}`;
                       value={config.whatsappBaileysUrl || ''} 
                       onChange={(e) => setConfig({ ...config, whatsappBaileysUrl: e.target.value })}
                       placeholder="http://localhost:3006"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   
@@ -3018,7 +3380,7 @@ ${config.businessSignature}`;
                     onChange={(e) => setConfig({ ...config, whatsappMessageTemplate: e.target.value })}
                     placeholder={`Hi {{lead.name}},\n\nWe generated a custom landing page for your business. Check it out: {{previewUrl}}\n\nBest, {{businessSignature}}`}
                     rows={4}
-                    style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontFamily: 'monospace', fontSize: '0.85rem', resize: 'vertical' }}
+                    style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.85rem', resize: 'vertical' }}
                   />
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                     Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{businessSignature}}`}</code>
@@ -3029,7 +3391,7 @@ ${config.businessSignature}`;
 
             {/* Section D: Twilio Calls (Optional) */}
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>4. Twilio Voice Cold Calling (Optional)</h4>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>4. Twilio Voice Cold Calling (Optional)</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Twilio Account SID</label>
@@ -3038,7 +3400,7 @@ ${config.businessSignature}`;
                     value={config.twilioAccountSid || ''} 
                     onChange={(e) => setConfig({ ...config, twilioAccountSid: e.target.value })}
                     placeholder="AC..."
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
@@ -3048,7 +3410,7 @@ ${config.businessSignature}`;
                     value={config.twilioAuthToken || ''} 
                     onChange={(e) => setConfig({ ...config, twilioAuthToken: e.target.value })}
                     placeholder="Auth Token"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
@@ -3058,7 +3420,7 @@ ${config.businessSignature}`;
                     value={config.twilioFromNumber || ''} 
                     onChange={(e) => setConfig({ ...config, twilioFromNumber: e.target.value })}
                     placeholder="+1234567890"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
@@ -3068,7 +3430,7 @@ ${config.businessSignature}`;
                     onChange={(e) => setConfig({ ...config, twilioCallMessageTemplate: e.target.value })}
                     placeholder="Hello, this is a call from ApexReach to let you know we custom designed a web page for your business..."
                     rows={3}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
                   />
                 </div>
               </div>
@@ -3078,13 +3440,13 @@ ${config.businessSignature}`;
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff', margin: 0 }}>4.5. Bulk SMS Outreach Settings</h4>
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>4.5. Bulk SMS Outreach Settings</h4>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>Choose a free Android Carrier Gateway or low-cost African direct providers.</p>
                 </div>
                 <select 
                   value={config.smsProvider || 'gateway'} 
                   onChange={(e) => setConfig({ ...config, smsProvider: e.target.value as any })}
-                  style={{ padding: '8px 12px', background: 'rgba(6, 182, 212, 0.15)', border: '1px solid var(--primary)', borderRadius: '6px', color: '#fff', fontWeight: 600, outline: 'none' }}
+                  style={{ padding: '8px 12px', background: 'rgba(6, 182, 212, 0.15)', border: '1px solid var(--primary)', borderRadius: '6px', color: 'var(--text-primary)', fontWeight: 600, outline: 'none' }}
                 >
                   <option value="gateway">Android Gateway (Free ₦0.00)</option>
                   <option value="termii">Termii SMS (Nigeria ₦2.00 - ₦4.50)</option>
@@ -3094,7 +3456,7 @@ ${config.businessSignature}`;
               </div>
 
               {config.smsProvider === 'gateway' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Android SMS Gateway IP / URL</label>
                     <input 
@@ -3102,7 +3464,7 @@ ${config.businessSignature}`;
                       value={config.smsGatewayUrl || ''} 
                       onChange={(e) => setConfig({ ...config, smsGatewayUrl: e.target.value })}
                       placeholder="e.g. http://192.168.1.5:8080/send or https://my-ngrok-tunnel.ngrok-free.app/send"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                       Install any free SMS Gateway app on an Android phone, keep it connected to the internet/WiFi, and paste the endpoint URL here.
@@ -3112,7 +3474,7 @@ ${config.businessSignature}`;
               )}
 
               {config.smsProvider === 'termii' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Termii API Key</label>
                     <input 
@@ -3120,7 +3482,7 @@ ${config.businessSignature}`;
                       value={config.termiiApiKey || ''} 
                       onChange={(e) => setConfig({ ...config, termiiApiKey: e.target.value })}
                       placeholder="Enter Termii API Key"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -3130,14 +3492,14 @@ ${config.businessSignature}`;
                       value={config.termiiSenderId || ''} 
                       onChange={(e) => setConfig({ ...config, termiiSenderId: e.target.value })}
                       placeholder="e.g. Sandbox or registered Sender ID"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                 </div>
               )}
 
               {config.smsProvider === 'africastalking' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Username</label>
                     <input 
@@ -3145,7 +3507,7 @@ ${config.businessSignature}`;
                       value={config.africastalkingUsername || ''} 
                       onChange={(e) => setConfig({ ...config, africastalkingUsername: e.target.value })}
                       placeholder="e.g. sandbox or production username"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -3155,7 +3517,7 @@ ${config.businessSignature}`;
                       value={config.africastalkingApiKey || ''} 
                       onChange={(e) => setConfig({ ...config, africastalkingApiKey: e.target.value })}
                       placeholder="Enter Africa's Talking API Key"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   <div>
@@ -3165,14 +3527,14 @@ ${config.businessSignature}`;
                       value={config.africastalkingSenderId || ''} 
                       onChange={(e) => setConfig({ ...config, africastalkingSenderId: e.target.value })}
                       placeholder="e.g. brand name or shortcode"
-                      style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                 </div>
               )}
 
               {config.smsProvider === 'twilio' && (
-                <div style={{ background: 'rgba(0,0,0,0.1)', padding: '16px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                <div style={{ background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                   Uses credentials from section <strong>4. Twilio Voice Cold Calling</strong> (SID, Auth Token, and From Phone Number) for sending text messages.
                 </div>
               )}
@@ -3184,7 +3546,7 @@ ${config.businessSignature}`;
                   onChange={(e) => setConfig({ ...config, smsMessageTemplate: e.target.value })}
                   placeholder="Hello {{lead.name}}, please review the custom landing page designed for your business: {{previewUrl}} - {{signature}}"
                   rows={3}
-                  style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: '#fff', outline: 'none', fontFamily: 'monospace', fontSize: '0.85rem', resize: 'vertical' }}
+                  style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.85rem', resize: 'vertical' }}
                 />
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                   Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{signature}}`}</code>
@@ -3195,7 +3557,7 @@ ${config.businessSignature}`;
             {/* Section E: Supabase DB Store (Optional) */}
             {config.storageMode === 'supabase' && (
               <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-                <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>5. Supabase Configuration</h4>
+                <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>5. Supabase Configuration</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                   <div>
                     <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Supabase URL</label>
@@ -3204,7 +3566,7 @@ ${config.businessSignature}`;
                       value={config.supabaseUrl || ''} 
                       onChange={(e) => setConfig({ ...config, supabaseUrl: e.target.value })}
                       placeholder="https://yourproject.supabase.co"
-                      style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                      style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                     />
                   </div>
                   <div>
@@ -3214,7 +3576,7 @@ ${config.businessSignature}`;
                       value={config.supabaseKey || ''} 
                       onChange={(e) => setConfig({ ...config, supabaseKey: e.target.value })}
                       placeholder="Service role key for server bypass"
-                      style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                      style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                     />
                   </div>
                 </div>
@@ -3223,7 +3585,7 @@ ${config.businessSignature}`;
 
             {/* Section F: n8n Integration */}
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>5. n8n Automation Webhook</h4>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>5. n8n Automation Webhook</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Global n8n Webhook URL</label>
@@ -3232,7 +3594,7 @@ ${config.businessSignature}`;
                     value={config.n8nWebhookUrl || ''} 
                     onChange={(e) => setConfig({ ...config, n8nWebhookUrl: e.target.value })}
                     placeholder="https://primary-n8n.yourdomain.com/webhook/..."
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                     Websites configured in "Direct n8n automation webhook redirection" turnout mode will post client contact submissions here.
@@ -3243,7 +3605,7 @@ ${config.businessSignature}`;
 
             {/* Section G: Jiji Bulk Messaging Outreach */}
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>6. Jiji Bulk Messaging Outreach</h4>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>6. Jiji Bulk Messaging Outreach</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Jiji Email or Phone</label>
@@ -3252,7 +3614,7 @@ ${config.businessSignature}`;
                     value={config.jijiEmail || ''} 
                     onChange={(e) => setConfig({ ...config, jijiEmail: e.target.value })}
                     placeholder="e.g. jijiuser@email.com"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
@@ -3262,8 +3624,11 @@ ${config.businessSignature}`;
                     value={config.jijiPassword || ''} 
                     onChange={(e) => setConfig({ ...config, jijiPassword: e.target.value })}
                     placeholder="Jiji Password"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
+                </div>
+                <div style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: '6px', color: '#f59e0b', fontSize: '0.8rem', background: 'rgba(245, 158, 11, 0.05)', padding: '10px 14px', borderRadius: '6px', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
+                  <span>⚠️ Credentials are stored in your database. Use a dedicated account, not your personal login.</span>
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Jiji Message Template</label>
@@ -3272,7 +3637,7 @@ ${config.businessSignature}`;
                     onChange={(e) => setConfig({ ...config, jijiMessageTemplate: e.target.value })}
                     placeholder="Hello {{lead.name}}, I saw your Jiji listing and built a preview site for you: {{previewUrl}}"
                     rows={3}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
                   />
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', marginBottom: '16px' }}>
                     Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{lead.rating}}`}</code>, <code>{`{{lead.reviews_count}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{signature}}`}</code>
@@ -3286,7 +3651,7 @@ ${config.businessSignature}`;
                     onChange={(e) => setConfig({ ...config, instagramMessageTemplate: e.target.value })}
                     placeholder="Hi {{lead.name}}, I found your e-commerce store on Instagram and built a preview website: {{previewUrl}}"
                     rows={3}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
                   />
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', marginBottom: '16px' }}>
                     Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{lead.rating}}`}</code>, <code>{`{{lead.reviews_count}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{signature}}`}</code>
@@ -3300,7 +3665,7 @@ ${config.businessSignature}`;
                     onChange={(e) => setConfig({ ...config, facebookMessageTemplate: e.target.value })}
                     placeholder="Hello {{lead.name}}, I saw your shop page on Facebook and made a personalized web storefront preview: {{previewUrl}}"
                     rows={3}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
                   />
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', marginBottom: '16px' }}>
                     Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{lead.rating}}`}</code>, <code>{`{{lead.reviews_count}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{signature}}`}</code>
@@ -3314,7 +3679,7 @@ ${config.businessSignature}`;
                     onChange={(e) => setConfig({ ...config, tiktokMessageTemplate: e.target.value })}
                     placeholder="Hey {{lead.name}}, I checked out your shop videos on TikTok and created a custom web store preview: {{previewUrl}}"
                     rows={3}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
                   />
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', marginBottom: '16px' }}>
                     Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{lead.rating}}`}</code>, <code>{`{{lead.reviews_count}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{signature}}`}</code>
@@ -3328,7 +3693,7 @@ ${config.businessSignature}`;
                     onChange={(e) => setConfig({ ...config, linkedinMessageTemplate: e.target.value })}
                     placeholder="Hi {{lead.name}}, I noticed your professional profile on LinkedIn and created a custom web store preview: {{previewUrl}}"
                     rows={3}
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
                   />
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                     Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{lead.rating}}`}</code>, <code>{`{{lead.reviews_count}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{signature}}`}</code>
@@ -3339,7 +3704,7 @@ ${config.businessSignature}`;
 
             {/* Section H: Claiming & Payments (Paystack / Moniepoint) */}
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: '#fff' }}>7. Client Claiming & Payments (Paystack / Moniepoint)</h4>
+              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>7. Client Claiming & Payments (Paystack / Moniepoint)</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Paystack Public Key</label>
@@ -3348,7 +3713,7 @@ ${config.businessSignature}`;
                     value={config.paystackPublicKey || ''} 
                     onChange={(e) => setConfig({ ...config, paystackPublicKey: e.target.value })}
                     placeholder="pk_test_... or pk_live_..."
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
@@ -3358,7 +3723,7 @@ ${config.businessSignature}`;
                     value={config.paystackSecretKey || ''} 
                     onChange={(e) => setConfig({ ...config, paystackSecretKey: e.target.value })}
                     placeholder="sk_test_... or sk_live_..."
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
@@ -3368,7 +3733,7 @@ ${config.businessSignature}`;
                     value={config.claimFeeNGN || 0} 
                     onChange={(e) => setConfig({ ...config, claimFeeNGN: Number(e.target.value) })}
                     placeholder="e.g. 50000"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                     Set to 0 or leave empty to disable Paystack online payment.
@@ -3381,7 +3746,7 @@ ${config.businessSignature}`;
                     value={config.moniepointBankName || ''} 
                     onChange={(e) => setConfig({ ...config, moniepointBankName: e.target.value })}
                     placeholder="e.g. Moniepoint Microfinance Bank"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
@@ -3391,7 +3756,7 @@ ${config.businessSignature}`;
                     value={config.moniepointAccountNumber || ''} 
                     onChange={(e) => setConfig({ ...config, moniepointAccountNumber: e.target.value })}
                     placeholder="e.g. 509... (10 digits)"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
@@ -3401,7 +3766,7 @@ ${config.businessSignature}`;
                     value={config.moniepointAccountName || ''} 
                     onChange={(e) => setConfig({ ...config, moniepointAccountName: e.target.value })}
                     placeholder="e.g. ApexReach Ventures"
-                    style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
               </div>
@@ -3419,8 +3784,28 @@ ${config.businessSignature}`;
                 <span style={{ fontWeight: 500 }}>Enable Dry Run Simulation Mode (Do not send real APIs)</span>
               </label>
 
-              <button type="submit" className="btn-primary" style={{ padding: '12px 24px', fontWeight: 600 }}>
-                Save Configuration Settings
+              <button 
+                type="submit" 
+                disabled={savingConfigState}
+                className="btn-primary" 
+                style={{ 
+                  padding: '12px 24px', 
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  opacity: savingConfigState ? 0.6 : 1,
+                  cursor: savingConfigState ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {savingConfigState ? (
+                  <>
+                    <Loader2 size={16} className="spin-anim" />
+                    Saving Settings...
+                  </>
+                ) : (
+                  'Save Configuration Settings'
+                )}
               </button>
             </div>
           </form>
@@ -3446,7 +3831,7 @@ ${config.businessSignature}`;
           boxShadow: '0 10px 40px rgba(6, 182, 212, 0.15)',
           zIndex: 1000
         }}>
-          <div style={{ color: '#fff', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ color: 'var(--text-primary)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', boxShadow: '0 0 10px var(--primary)' }}></span>
             <strong>{selectedLeads.size}</strong> leads selected
           </div>
@@ -3517,7 +3902,7 @@ ${config.businessSignature}`;
             gap: '20px',
             textAlign: 'center'
           }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff', margin: 0 }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
               Outreach Progress
             </h3>
             
@@ -3546,7 +3931,7 @@ ${config.businessSignature}`;
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
               <div style={{ background: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '8px' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Progress</div>
-                <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff' }}>
+                <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   {outreachProgress.current} / {outreachProgress.total}
                 </div>
               </div>
@@ -3566,6 +3951,522 @@ ${config.businessSignature}`;
           </div>
         </div>
       )}
+
+      {/* Onboarding Wizard Modal */}
+      {showOnboarding && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999,
+          background: 'rgba(0, 0, 0, 0.75)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px'
+        }}>
+          <div className="glass-panel" style={{
+            width: '100%',
+            maxWidth: '600px',
+            padding: '30px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+            maxHeight: '95vh',
+            overflowY: 'auto'
+          }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0, color: 'var(--primary)' }}>
+                ApexReach Quick Setup Wizard
+              </h3>
+              <button 
+                onClick={() => {
+                  localStorage.setItem("onboarding_complete", "true");
+                  setShowOnboarding(false);
+                  addToast('Onboarding skipped. You can configure settings later.', 'info');
+                }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '1.5rem', lineHeight: 1 }}
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Progress Bar */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                <span style={{ fontWeight: 600 }}>Step {onboardingStep} of 5</span>
+                <span>{Math.round((onboardingStep) * 20)}% Complete</span>
+              </div>
+              <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+                <div style={{ width: `${(onboardingStep) * 20}%`, height: '100%', background: 'var(--primary)', borderRadius: '3px', transition: 'width 0.3s' }} />
+              </div>
+            </div>
+
+              {/* Steps Content */}
+              <div style={{ minHeight: '260px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                {onboardingStep === 1 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Step 1: Connect Supabase Database</h4>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                      ApexReach uses Supabase to securely save scraped leads, cache outreach history, and track campaign pipeline logs.
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Supabase URL</label>
+                      <input 
+                        type="text" 
+                        value={config.supabaseUrl || ''} 
+                        onChange={(e) => setConfig({ ...config, supabaseUrl: e.target.value })}
+                        placeholder="https://your-project-ref.supabase.co"
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Supabase Service Key</label>
+                      <input 
+                        type="password" 
+                        value={config.supabaseKey || ''} 
+                        onChange={(e) => setConfig({ ...config, supabaseKey: e.target.value })}
+                        placeholder="eyJhbGciOi..."
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {onboardingStep === 2 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Step 2: Add Google Places API Key</h4>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                      To pull fresh businesses from Google Maps in real-time, you need a Google Places API key. If left blank, the app runs in sandbox simulation mode.
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Google Places API Key</label>
+                      <input 
+                        type="password" 
+                        value={config.googlePlacesApiKey || ''} 
+                        onChange={(e) => setConfig({ ...config, googlePlacesApiKey: e.target.value })}
+                        placeholder="AIzaSy..."
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {onboardingStep === 3 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Step 3: Choose Outreach Channel</h4>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                      Select which channel you would like to use by default to contact B2B leads.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '10px' }}>
+                      <button 
+                        type="button"
+                        onClick={() => setConfig({ ...config, outreachChannel: 'gmail' })}
+                        style={{
+                          padding: '20px',
+                          background: config.outreachChannel !== 'whatsapp' ? 'rgba(6, 182, 212, 0.15)' : 'rgba(255,255,255,0.02)',
+                          border: config.outreachChannel !== 'whatsapp' ? '2px solid var(--primary)' : '1px solid var(--panel-border)',
+                          borderRadius: '12px',
+                          cursor: 'pointer',
+                          color: '#fff',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '8px',
+                          outline: 'none'
+                        }}
+                      >
+                        <span style={{ fontSize: '2rem' }}>✉️</span>
+                        <span style={{ fontWeight: 600 }}>Email Outreach</span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textAlign: 'center' }}>Automated cold proposal emails to prospects</span>
+                      </button>
+
+                      <button 
+                        type="button"
+                        onClick={() => setConfig({ ...config, outreachChannel: 'whatsapp' })}
+                        style={{
+                          padding: '20px',
+                          background: config.outreachChannel === 'whatsapp' ? 'rgba(6, 182, 212, 0.15)' : 'rgba(255,255,255,0.02)',
+                          border: config.outreachChannel === 'whatsapp' ? '2px solid var(--primary)' : '1px solid var(--panel-border)',
+                          borderRadius: '12px',
+                          cursor: 'pointer',
+                          color: '#fff',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '8px',
+                          outline: 'none'
+                        }}
+                      >
+                        <span style={{ fontSize: '2rem' }}>💬</span>
+                        <span style={{ fontWeight: 600 }}>WhatsApp Outreach</span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textAlign: 'center' }}>Send personalized proposals via WhatsApp API</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {onboardingStep === 4 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Step 4: Configure Outreach Provider</h4>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                      Setup the credentials for your chosen outreach channel.
+                    </p>
+
+                    {config.outreachChannel === 'whatsapp' ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>WhatsApp Provider</label>
+                          <select 
+                            value={config.whatsappProvider || 'cloud'} 
+                            onChange={(e) => setConfig({ ...config, whatsappProvider: e.target.value as any })}
+                            style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                          >
+                            <option value="cloud">Official Cloud API</option>
+                            <option value="evolution">Evolution API (Baileys)</option>
+                            <option value="whapi">Whapi.cloud</option>
+                          </select>
+                        </div>
+                        {config.whatsappProvider === 'cloud' && (
+                          <>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Phone Number ID</label>
+                              <input 
+                                type="text" 
+                                value={config.whatsappPhoneNumberId || ''} 
+                                onChange={(e) => setConfig({ ...config, whatsappPhoneNumberId: e.target.value })}
+                                placeholder="Phone number ID"
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Access Token</label>
+                              <input 
+                                type="password" 
+                                value={config.whatsappAccessToken || ''} 
+                                onChange={(e) => setConfig({ ...config, whatsappAccessToken: e.target.value })}
+                                placeholder="Access token"
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                          </>
+                        )}
+                        {config.whatsappProvider === 'evolution' && (
+                          <>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Evolution API URL</label>
+                              <input 
+                                type="text" 
+                                value={config.evolutionApiUrl || ''} 
+                                onChange={(e) => setConfig({ ...config, evolutionApiUrl: e.target.value })}
+                                placeholder="https://api.domain.com"
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>API Key</label>
+                              <input 
+                                type="password" 
+                                value={config.evolutionApiKey || ''} 
+                                onChange={(e) => setConfig({ ...config, evolutionApiKey: e.target.value })}
+                                placeholder="Evolution API Key"
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                          </>
+                        )}
+                        {config.whatsappProvider === 'whapi' && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Whapi Token</label>
+                            <input 
+                              type="password" 
+                              value={config.whapiToken || ''} 
+                              onChange={(e) => setConfig({ ...config, whapiToken: e.target.value })}
+                              placeholder="Whapi Token"
+                              style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Email Provider</label>
+                          <select 
+                            value={config.emailProvider || 'gmail'} 
+                            onChange={(e) => setConfig({ ...config, emailProvider: e.target.value as any })}
+                            style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                          >
+                            <option value="gmail">Gmail OAuth</option>
+                            <option value="resend">Resend.com API</option>
+                            <option value="brevo">Brevo.com SMTP API</option>
+                            <option value="smtp">Custom SMTP Server</option>
+                            <option value="sendgrid">SendGrid API</option>
+                          </select>
+                        </div>
+                        {config.emailProvider === 'resend' && (
+                          <>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Resend API Key</label>
+                              <input 
+                                type="password" 
+                                value={config.resendApiKey || ''} 
+                                onChange={(e) => setConfig({ ...config, resendApiKey: e.target.value })}
+                                placeholder="re_..."
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>From Email Address</label>
+                              <input 
+                                type="text" 
+                                value={config.resendFromEmail || ''} 
+                                onChange={(e) => setConfig({ ...config, resendFromEmail: e.target.value })}
+                                placeholder="hello@yourdomain.com"
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                          </>
+                        )}
+                        {config.emailProvider === 'brevo' && (
+                          <>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Brevo API Key</label>
+                              <input 
+                                type="password" 
+                                value={config.brevoApiKey || ''} 
+                                onChange={(e) => setConfig({ ...config, brevoApiKey: e.target.value })}
+                                placeholder="xkeysib-..."
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Sender Email</label>
+                              <input 
+                                type="text" 
+                                value={config.brevoSenderEmail || ''} 
+                                onChange={(e) => setConfig({ ...config, brevoSenderEmail: e.target.value })}
+                                placeholder="hello@yourdomain.com"
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                          </>
+                        )}
+                        {config.emailProvider === 'smtp' && (
+                          <>
+                            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '10px' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SMTP Host</label>
+                                <input 
+                                  type="text" 
+                                  value={config.smtpHost || ''} 
+                                  onChange={(e) => setConfig({ ...config, smtpHost: e.target.value })}
+                                  placeholder="smtp.gmail.com"
+                                  style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                                />
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SMTP Port</label>
+                                <input 
+                                  type="number" 
+                                  value={config.smtpPort || ''} 
+                                  onChange={(e) => setConfig({ ...config, smtpPort: Number(e.target.value) })}
+                                  placeholder="587"
+                                  style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                                />
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SMTP Username</label>
+                              <input 
+                                type="text" 
+                                value={config.smtpUser || ''} 
+                                onChange={(e) => setConfig({ ...config, smtpUser: e.target.value })}
+                                placeholder="user@domain.com"
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SMTP Password</label>
+                              <input 
+                                type="password" 
+                                value={config.smtpPass || ''} 
+                                onChange={(e) => setConfig({ ...config, smtpPass: e.target.value })}
+                                placeholder="SMTP Password"
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                          </>
+                        )}
+                        {config.emailProvider === 'sendgrid' && (
+                          <>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>SendGrid API Key</label>
+                              <input 
+                                type="password" 
+                                value={config.sendgridApiKey || ''} 
+                                onChange={(e) => setConfig({ ...config, sendgridApiKey: e.target.value })}
+                                placeholder="SG.xxx"
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>From Email Address</label>
+                              <input 
+                                type="text" 
+                                value={config.sendgridFromEmail || ''} 
+                                onChange={(e) => setConfig({ ...config, sendgridFromEmail: e.target.value })}
+                                placeholder="hello@yourdomain.com"
+                                style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                              />
+                            </div>
+                          </>
+                        )}
+                        {config.emailProvider === 'gmail' && (
+                          <div style={{ padding: '12px', background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--panel-border)', borderRadius: '6px', fontSize: '0.8rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                            Gmail OAuth connection can be completed in the Settings panel after onboarding.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {onboardingStep === 5 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Step 5: Run First Lead Scrape</h4>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                      Launch your first search query to scrape leads. This uses Google Maps (Free/API) based on step 2 settings.
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Search Query (Industry + Location)</label>
+                      <input 
+                        type="text" 
+                        value={gMapsQuery || ''} 
+                        onChange={(e) => setGMapsQuery(e.target.value)}
+                        placeholder="e.g. Dentists in Houston"
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Max Results Limit</label>
+                      <input 
+                        type="number" 
+                        value={gMapsLimit || 10} 
+                        onChange={(e) => setGMapsLimit(Number(e.target.value))}
+                        placeholder="10"
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!gMapsQuery) {
+                          alert("Please specify a search query first.");
+                          return;
+                        }
+                        try {
+                          const scraperToUse = config.googlePlacesApiKey ? 'google' : 'maps-free';
+                          setSelectedScraper(scraperToUse);
+                          // save config before run
+                          await saveConfig();
+                          addToast('Launching onboarding scraper...', 'info');
+                          // start scraping
+                          await runScraper();
+                          localStorage.setItem("onboarding_complete", "true");
+                          setShowOnboarding(false);
+                          addToast('Onboarding complete! Scrape in progress.', 'success');
+                        } catch (err: any) {
+                          addToast(err.message || 'Scraper failed to start', 'error');
+                        }
+                      }}
+                      disabled={scraping}
+                      className="btn-primary"
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', width: '100%', marginTop: '10px', cursor: scraping ? 'not-allowed' : 'pointer' }}
+                    >
+                      {scraping ? (
+                        <>
+                          <Loader2 className="spin-anim" size={16} /> Running Scraper...
+                        </>
+                      ) : (
+                        'Launch Scraper & Finish'
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer Navigation */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '15px', marginTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.setItem("onboarding_complete", "true");
+                    setShowOnboarding(false);
+                    addToast('Onboarding skipped. You can configure settings later.', 'info');
+                  }}
+                  className="btn-secondary"
+                  style={{ padding: '8px 16px', fontSize: '0.85rem', cursor: 'pointer' }}
+                >
+                  Skip for now
+                </button>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {onboardingStep > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setOnboardingStep(prev => prev - 1)}
+                      className="btn-secondary"
+                      style={{ padding: '8px 16px', fontSize: '0.85rem', cursor: 'pointer' }}
+                    >
+                      Back
+                    </button>
+                  )}
+                  {onboardingStep < 5 ? (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          await saveConfig();
+                          if (onboardingStep === 2) {
+                            setSelectedScraper(config.googlePlacesApiKey ? 'google' : 'maps-free');
+                          }
+                          setOnboardingStep(prev => prev + 1);
+                        } catch (err) {
+                          addToast('Error saving step config', 'error');
+                        }
+                      }}
+                      className="btn-primary"
+                      style={{ padding: '8px 20px', fontSize: '0.85rem', cursor: 'pointer' }}
+                    >
+                      Next
+                    </button>
+                  ) : (
+                    onboardingStep === 5 && !scraping && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          localStorage.setItem("onboarding_complete", "true");
+                          setShowOnboarding(false);
+                          addToast('Quick setup complete! Welcome to ApexReach.', 'success');
+                        }}
+                        className="btn-primary"
+                        style={{ padding: '8px 20px', fontSize: '0.85rem', cursor: 'pointer' }}
+                      >
+                        Finish Setup
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 }

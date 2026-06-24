@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import DbHealthCheck from "@/components/DbHealthCheck";
+import { ThemeProvider } from "./ThemeContext";
 
 export const metadata: Metadata = {
   title: "ApexReach B2B | Lead Automation Console",
@@ -12,9 +14,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
+        <ThemeProvider>
+          <DbHealthCheck />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

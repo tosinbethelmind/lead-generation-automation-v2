@@ -334,7 +334,7 @@ export function getRuntimeConfig(): RuntimeConfig {
   return merged;
 }
 
-export function getLocalConfig(): LocalConfig {
+export function getLocalConfig(): RuntimeConfig {
   return getRuntimeConfig();
 }
 

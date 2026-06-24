@@ -84,11 +84,9 @@ export async function POST(req: NextRequest) {
     
     const config = getRuntimeConfig();
     const apiKey = config.googlePlacesApiKey;
+    const isSandboxMode = config.storageMode === 'local' || query.includes('sandbox') || query.includes('mock') || apiKey === 'local-sandbox';
     
-    // Check if we should override with local sandbox
-    const isSandbox = !apiKey || apiKey === '' || apiKey === 'local-sandbox';
-    
-    if (isSandbox) {
+    if (isSandboxMode) {
       await addLog('Google Maps Scraper', 'START', `Launching Google Maps local sandbox for query: "${query}" (limit: ${limit})`);
       
       const mockLeads = generateMockLagosLeads(query, limit);
@@ -102,6 +100,10 @@ export async function POST(req: NextRequest) {
         skipped: dbResult.skipped,
         leads: mockLeads
       });
+    }
+
+    if (!apiKey || apiKey.trim() === '') {
+      return NextResponse.json({ error: "Google Places API key is missing. Please configure it in Settings." }, { status: 400 });
     }
     
     // Cloud Execution

@@ -52,6 +52,7 @@ function updateEnvLocal(updates: Record<string, string>) {
     let content = fs.readFileSync(envPath, 'utf-8');
     let updated = false;
 
+    // Map configuration keys to environment variable names if different
     const keyMap: Record<string, string> = {
       supabaseKey: 'SUPABASE_SERVICE_ROLE_KEY',
       resendApiKey: 'RESEND_API_KEY',
