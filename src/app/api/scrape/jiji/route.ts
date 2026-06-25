@@ -1,13 +1,11 @@
 /**
  * Jiji.ng Crawler API Route
  * 
- * VERCEL DEPLOYMENT LIMITATION NOTE:
- * Vercel serverless environments have severe size and dependency restrictions. They do not
- * support full, heavyweight Playwright/Puppeteer browser binaries due to storage limits and
- * missing shared libraries. To run scrapers successfully in serverless functions on Vercel or
- * AWS Lambda, we use a lightweight Chromium binary via `@sparticuz/chromium` paired with
- * `puppeteer-core`. This adapter dynamically loads chromium in serverless mode, and searches
- * for local Google Chrome or Microsoft Edge installations during local development.
+ * VERCEL DEPLOYMENT LIMITATION RESOLUTION:
+ * Heavy browser binaries like Puppeteer/Chromium fail on Vercel serverless environments.
+ * We use a lightweight, high-performance HTTP fetch + Cheerio parser that extracts listing cards
+ * and scrapes details directly from Jiji's SSR HTML and Nuxt state scripts. This runs in
+ * milliseconds, fits within Vercel's size limits, and avoids cold-start timeouts.
  */
 
 import { NextResponse } from 'next/server';
@@ -15,69 +13,7 @@ import type { NextRequest } from 'next/server';
 import { createScrapeJob, updateScrapeJobStatus } from '@/app/api/scrape/queue';
 import { saveLeads, addLog, normalizePhone, Lead } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
-import puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
-import os from 'os';
-import fs from 'fs';
-
-function getLocalChromePath(): string {
-  const platform = os.platform();
-  if (platform === 'win32') {
-    const paths = [
-      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-      `${process.env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`,
-      'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe'
-    ];
-    for (const p of paths) {
-      if (fs.existsSync(p)) return p;
-    }
-  } else if (platform === 'darwin') {
-    const paths = [
-      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-      '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge'
-    ];
-    for (const p of paths) {
-      if (fs.existsSync(p)) return p;
-    }
-  } else {
-    const paths = [
-      '/usr/bin/google-chrome',
-      '/usr/bin/chromium',
-      '/usr/bin/chromium-browser'
-    ];
-    for (const p of paths) {
-      if (fs.existsSync(p)) return p;
-    }
-  }
-  return '';
-}
-
-async function getBrowser() {
-  const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
-  if (isServerless) {
-    const executablePath = await chromium.executablePath();
-    return await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: executablePath,
-      headless: chromium.headless === 'shell' ? 'shell' : chromium.headless,
-    });
-  } else {
-    const localPath = getLocalChromePath();
-    if (localPath) {
-      return await puppeteer.launch({
-        executablePath: localPath,
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      });
-    }
-    return await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-  }
-}
+import * as cheerio from 'cheerio';
 
 // ============================================================================
 // Sandbox Mock Jiji Lead Generator
@@ -138,7 +74,6 @@ function generateMockJijiLeads(url: string, limit: number): Partial<Lead>[] {
  * Body: { url: string, options?: any, userId?: string }
  */
 export async function POST(req: NextRequest) {
-  let browser: any = null;
   let job: any = null;
   
   try {
@@ -168,68 +103,70 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ jobId: job.id, status: 'completed', added: dbResult.added, skipped: dbResult.skipped, leads: mockLeads }, { status: 200 });
     }
 
-    // Live scraping using Puppeteer
+    // Live scraping using HTTP Fetch + Cheerio
     await updateScrapeJobStatus(job.id, 'running');
-    await addLog('Jiji Scraper', 'START', `Launching Jiji Puppeteer crawl for URL: "${url}"`);
+    await addLog('Jiji Scraper', 'START', `Launching Jiji high-performance Cheerio crawl for URL: "${url}"`);
 
-    // 1. Launch Browser
-    try {
-      browser = await getBrowser();
-    } catch (launchErr: any) {
-      console.error('Failed to launch Puppeteer:', launchErr);
-      await addLog('Jiji Scraper', 'ERROR', `Browser launch failed: ${launchErr.message}`);
-      
-      await updateScrapeJobStatus(job.id, 'failed', { error_message: 'browser_launch_failed' });
-      return NextResponse.json({ success: false, error: 'browser_launch_failed', fallback: true }, { status: 500 });
-    }
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+      'Referer': 'https://jiji.ng/'
+    };
 
-    const page = await browser.newPage();
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    await page.setViewport({ width: 1280, height: 800 });
-
-    // 2. Navigate to search / category URL
-    let targetUrl = url;
+    // 1. Resolve URL format
+    let targetUrl = url.trim();
     if (!targetUrl.startsWith('http')) {
-      const searchSlug = targetUrl.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      targetUrl = `https://jiji.ng/lagos/${searchSlug}`;
+      targetUrl = `https://jiji.ng/lagos/search?query=${encodeURIComponent(targetUrl)}`;
     }
 
-    await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    // Wait a brief moment to bypass loaders / CF check
-    await new Promise(r => setTimeout(r, 5000));
-
-    const title = await page.title();
-    if (title.includes('Cloudflare') || title.includes('Attention Required')) {
-      throw new Error('Blocked by Cloudflare protection page.');
-    }
-
-    // Scroll to trigger lazy loading
-    for (let i = 0; i < 3; i++) {
-      await page.evaluate(() => window.scrollBy(0, 800));
-      await new Promise(r => setTimeout(r, 1000));
-    }
-
-    // 3. Extract listing cards
-    const cardData = await page.evaluate(() => {
-      const els = Array.from(document.querySelectorAll('.b-list-advert-base'));
-      return els.map(el => {
-        const titleEl = el.querySelector('.b-advert-title-inner, .qa-advert-list-item-title, .qa-advert-title span');
-        const priceEl = el.querySelector('.b-list-advert__price, .qa-advert-list-item-price, .b-list-advert-base__item-price');
-        const areaEl = el.querySelector('.b-list-advert__region, .qa-advert-list-item-region, .b-list-advert-base__region');
-        const href = el.getAttribute('href') || el.querySelector('a')?.getAttribute('href') || '';
-        
-        let absoluteUrl = href;
-        if (href && !href.startsWith('http')) {
-          absoluteUrl = 'https://jiji.ng' + (href.startsWith('/') ? '' : '/') + href;
+    let responseHtml = '';
+    try {
+      await addLog('Jiji Scraper', 'INFO', `Fetching search page: ${targetUrl}`);
+      const res = await fetch(targetUrl, { headers });
+      
+      // If we get a 404, try search query fallback
+      if (res.status === 404 && !targetUrl.includes('/search')) {
+        await addLog('Jiji Scraper', 'WARNING', `Category page returned 404. Falling back to search query...`);
+        const slug = url.split('/').pop() || '';
+        const fallbackUrl = `https://jiji.ng/lagos/search?query=${encodeURIComponent(slug.replace(/-/g, ' '))}`;
+        const fbRes = await fetch(fallbackUrl, { headers });
+        if (fbRes.ok) {
+          responseHtml = await fbRes.text();
+        } else {
+          throw new Error(`Fallback search page returned status ${fbRes.status}`);
         }
-        
-        return {
-          title: titleEl ? titleEl.textContent?.trim() || '' : '',
-          price: priceEl ? priceEl.textContent?.trim() || '' : '',
-          area: areaEl ? areaEl.textContent?.trim().split(',')[0] || '' : '',
-          url: absoluteUrl
-        };
-      }).filter(item => item.title && item.url);
+      } else if (res.ok) {
+        responseHtml = await res.text();
+      } else {
+        throw new Error(`Jiji page returned status ${res.status}`);
+      }
+    } catch (fetchErr: any) {
+      console.error('Fetch error:', fetchErr);
+      await addLog('Jiji Scraper', 'ERROR', `HTTP fetch failed: ${fetchErr.message}`);
+      await updateScrapeJobStatus(job.id, 'failed', { error_message: `HTTP fetch failed: ${fetchErr.message}` });
+      return NextResponse.json({ success: false, error: fetchErr.message }, { status: 500 });
+    }
+
+    const $ = cheerio.load(responseHtml);
+    const cardData: any[] = [];
+    
+    $('.b-list-advert-base').each((i, el) => {
+      const href = $(el).attr('href') || $(el).find('a').attr('href') || '';
+      const cardTitle = $(el).find('.b-advert-title-inner, .qa-advert-list-item-title, .qa-advert-title span').text().trim();
+      const price = $(el).find('.b-list-advert__price, .qa-advert-list-item-price, .b-list-advert-base__item-price').text().trim();
+      const area = $(el).find('.b-list-advert__region, .qa-advert-list-item-region, .b-list-advert-base__region').text().trim().split(',')[0] || '';
+      
+      let absoluteUrl = href;
+      if (href && !href.startsWith('http')) {
+        absoluteUrl = 'https://jiji.ng' + (href.startsWith('/') ? '' : '/') + href;
+      }
+      
+      if (cardTitle && absoluteUrl) {
+        cardData.push({ title: cardTitle, price, area, url: absoluteUrl });
+      }
     });
 
     const limit = Number(options.limit) || 5;
@@ -238,78 +175,104 @@ export async function POST(req: NextRequest) {
 
     await addLog('Jiji Scraper', 'INFO', `Found ${cardData.length} items. Scraping details for top ${targets.length} listings...`);
 
-    // 4. Scrape details page for phone number
+    // 2. Scrape details page for phone number and seller info
     for (const target of targets) {
       try {
-        await page.goto(target.url, { waitUntil: 'domcontentloaded', timeout: 25000 });
-        await new Promise(r => setTimeout(r, 3000));
-
-        // Click "Show contact" or "Show phone" button
-        const clicked = await page.evaluate(async () => {
-          const btn = Array.from(document.querySelectorAll('button, a, div, span')).find(el => {
-            const text = el.textContent?.toLowerCase() || '';
-            return text.includes('show contact') || text.includes('show phone') || text.includes('reveal contact');
-          });
-          if (btn) {
-            (btn as HTMLElement).click();
-            return true;
-          }
-          return false;
-        });
-
-        if (clicked) {
-          await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000)); // Be polite
+        const detailRes = await fetch(target.url, { headers });
+        if (!detailRes.ok) {
+          await addLog('Jiji Scraper', 'WARNING', `Failed to fetch detail page ${target.url}: status ${detailRes.status}`);
+          continue;
         }
-
-        // Extract phone number, description, and review info
-        const details = await page.evaluate(() => {
-          const telLink = document.querySelector('a[href^="tel:"]');
-          let phoneVal = '';
-          if (telLink) {
-            phoneVal = telLink.getAttribute('href')?.replace('tel:', '').trim() || '';
-          } else {
-            // RegEx search in elements
-            const allElements = Array.from(document.querySelectorAll('span, div, p, button, a'));
-            for (const el of allElements) {
-              const text = el.textContent?.trim() || '';
-              if (/^[+]?[0-9\s-]{7,15}$/.test(text) && (text.includes('080') || text.includes('081') || text.includes('090') || text.includes('070'))) {
-                phoneVal = text;
-                break;
-              }
+        
+        const detailHtml = await detailRes.text();
+        const $detail = cheerio.load(detailHtml);
+        
+        // Extract description
+        const description = $detail('.qa-description-text, .qa-advert-description-text, .b-advert-description-text').text().trim();
+        
+        // Extract seller name
+        let sellerName = $detail('.b-seller-block__name').text().trim();
+        if (!sellerName) {
+          const pageTitle = $detail('title').text();
+          if (pageTitle.includes(' - ')) {
+            const rightPart = pageTitle.split(' - ')[1] || '';
+            if (rightPart.includes(' ▷ Price:')) {
+              sellerName = rightPart.split(' ▷ Price:')[0]?.trim() || '';
+            } else if (rightPart.includes(' on Jiji.ng')) {
+              sellerName = rightPart.split(' on Jiji.ng')[0]?.trim() || '';
             }
           }
+        }
+        if (!sellerName) {
+          sellerName = 'Jiji Seller';
+        }
 
-          const descEl = document.querySelector('.qa-advert-description-text, .b-advert-description-text');
-          const desc = descEl ? descEl.textContent?.trim() || '' : '';
+        // Extract phone number from different sources
+        let phoneVal = '';
+        
+        // Method A: Check for tel links
+        const telLink = $detail('a[href^="tel:"]').attr('href');
+        if (telLink) {
+          phoneVal = telLink.replace('tel:', '').trim();
+        }
+        
+        // Method B: Match wa.me URL
+        if (!phoneVal) {
+          const waMatches = detailHtml.match(/wa\.me\/(\d+)/);
+          if (waMatches && waMatches[1]) {
+            phoneVal = waMatches[1];
+          }
+        }
+        
+        // Method C: Regex scan on script tags and HTML body
+        if (!phoneVal) {
+          const phoneRegex = /(?:234\d{10}|0[789]\d{9})/g;
+          
+          // Scan scripts
+          $detail('script').each((i, el) => {
+            const scriptText = $detail(el).text();
+            if (scriptText.includes('phone') || scriptText.includes('advert')) {
+              const matches = scriptText.match(phoneRegex);
+              if (matches && matches[0]) {
+                phoneVal = matches[0];
+                return false; // break loop
+              }
+            }
+          });
+          
+          // Scan entire body if still not found
+          if (!phoneVal) {
+            const matches = detailHtml.match(phoneRegex);
+            if (matches && matches[0]) {
+              phoneVal = matches[0];
+            }
+          }
+        }
 
-          return {
-            phone: phoneVal,
-            description: desc
-          };
-        });
-
-        const cleanPhone = details.phone ? (normalizePhone(details.phone, 'NG') || details.phone) : '';
+        const cleanPhone = phoneVal ? (normalizePhone(phoneVal, 'NG') || phoneVal) : '';
         
         // Skip leads with no phone number
         if (!cleanPhone) {
+          await addLog('Jiji Scraper', 'INFO', `Skipped listing "${target.title}" - no phone number found.`);
           continue;
         }
 
-        const category = target.url.split('/')[4]?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Seller';
+        const category = target.url.split('/')[4]?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Solar Seller';
 
         scrapedLeads.push({
           lead_id: `jiji_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
           source: 'JIJI',
-          name: target.title,
+          name: sellerName,
           category: category,
           address: target.area ? `${target.area}, Lagos, Nigeria` : 'Lagos, Nigeria',
           area: target.area || 'Lagos',
           city: 'Lagos',
           phone_e164: cleanPhone,
-          phone_raw: details.phone,
+          phone_raw: phoneVal,
           email: '',
-          website: '', // Jiji listings don't have websites
-          rating: 4.0, // Default rating representation
+          website: '', 
+          rating: 4.0, 
           reviews_count: 1,
           verified: true,
           listings_count: 1,
@@ -319,8 +282,8 @@ export async function POST(req: NextRequest) {
           status: 'NEW',
           last_contacted_at: '',
           duplicate_of_lead_id: '',
-          business_summary: details.description || `${target.title} listed on Jiji in ${target.area}.`,
-          notes: 'Scraped using Puppeteer Jiji crawler.'
+          business_summary: description || `${target.title} listed on Jiji in ${target.area}.`,
+          notes: 'Scraped using high-performance Cheerio crawler.'
         });
 
       } catch (itemErr: any) {
@@ -328,7 +291,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 5. Save leads to database
+    // 3. Save leads to database
     if (scrapedLeads.length > 0) {
       const dbResult = await saveLeads(scrapedLeads);
       await updateScrapeJobStatus(job.id, 'completed', { result: { leads: scrapedLeads, added: dbResult.added, skipped: dbResult.skipped } });
@@ -346,13 +309,5 @@ export async function POST(req: NextRequest) {
       await updateScrapeJobStatus(job.id, 'failed', { error_message: err.message || 'Internal error' });
     }
     return NextResponse.json({ error: err.message || 'Internal error' }, { status: 500 });
-  } finally {
-    if (browser) {
-      try {
-        await browser.close();
-      } catch (e) {
-        console.error('Error closing browser:', e);
-      }
-    }
   }
 }

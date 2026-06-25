@@ -1537,8 +1537,12 @@ ${config.businessSignature}`;
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
           {renderStatusChip(
             config.storageMode === 'supabase' ? 'Supabase DB' : 'Sheets DB',
-            config.storageMode === 'supabase' ? (supabaseStatus?.success ? 'Connected' : 'Disconnected') : (sheetsSyncStatus === 'green' ? 'Connected' : sheetsSyncStatus === 'yellow' ? 'Warning' : 'Error'),
-            config.storageMode === 'supabase' ? (supabaseStatus?.success ? 'green' : 'red') : ((sheetsSyncStatus || 'yellow') as 'green' | 'yellow' | 'red'),
+            config.storageMode === 'supabase'
+              ? (supabaseStatus?.connected ? (supabaseStatus.success ? 'Connected' : 'Connected (Missing Tables)') : 'Disconnected')
+              : (sheetsSyncStatus === 'green' ? 'Connected' : sheetsSyncStatus === 'yellow' ? 'Warning' : 'Error'),
+            config.storageMode === 'supabase'
+              ? (supabaseStatus?.connected ? (supabaseStatus.success ? 'green' : 'yellow') : 'red')
+              : ((sheetsSyncStatus || 'yellow') as 'green' | 'yellow' | 'red'),
             config.storageMode === 'supabase' ? 'db-settings' : 'sheets-settings'
           )}
 
@@ -1686,11 +1690,11 @@ ${config.businessSignature}`;
 
         <div 
           style={{ display: 'inline-block', marginBottom: '12px' }}
-          title={config.dryRun ? "Disable Dry Run mode in Settings to export real leads." : ""}
+          title={isExporting ? "Export in progress..." : ""}
         >
           <button
             onClick={async () => {
-              if (config.dryRun || isExporting) return;
+              if (isExporting) return;
               try {
                 setIsExporting(true);
                 const res = await fetch('/api/export/leads');
@@ -1712,12 +1716,12 @@ ${config.businessSignature}`;
                 setIsExporting(false);
               }
             }}
-            disabled={config.dryRun || isExporting}
+            disabled={isExporting}
             className="btn-primary"
             style={{ 
               fontSize: '0.8rem', 
-              opacity: (config.dryRun || isExporting) ? 0.5 : 1, 
-              cursor: (config.dryRun || isExporting) ? 'not-allowed' : 'pointer',
+              opacity: isExporting ? 0.5 : 1, 
+              cursor: isExporting ? 'not-allowed' : 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px'
