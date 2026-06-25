@@ -96,33 +96,33 @@ export default function DbHealthCheck() {
   if (!visible || !health) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-md bg-black/75 transition-all duration-300">
-      <div className="relative w-full max-w-2xl my-8 overflow-hidden transition-all transform border bg-slate-950 border-slate-800 rounded-2xl shadow-2xl">
+    <div className="db-health-overlay">
+      <div className="db-health-card">
         
         {/* Glow Header */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-500 via-amber-500 to-red-500 animate-pulse" />
+        <div className="db-health-glow-bar" />
         
         {/* Close Button */}
         <button
           onClick={handleBypass}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white hover:bg-slate-900 p-1.5 rounded-lg transition-all z-10"
+          className="db-health-close-btn"
           aria-label="Close"
         >
-          <X className="w-5 h-5" />
+          <X size={20} />
         </button>
         
-        <div className="p-6 md:p-8">
+        <div className="db-health-content">
           
           {/* Header */}
-          <div className="flex items-start gap-4 mb-6">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 shrink-0">
-              <Database className="w-6 h-6 animate-bounce" />
+          <div className="db-health-header">
+            <div className="db-health-icon-wrapper">
+              <Database size={24} className="spin-anim" />
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
+              <h2 className="db-health-title">
                 Supabase Schema Setup Required
               </h2>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="db-health-subtitle">
                 {health.connected 
                   ? "The database connection is active, but required tables are missing from the schema cache." 
                   : "The Supabase client could not be initialized. Please configure your Supabase URL and Key in settings or environment."}
@@ -132,39 +132,35 @@ export default function DbHealthCheck() {
 
           {/* Error Message */}
           {health.error && (
-            <div className="flex gap-2 p-3.5 mb-6 text-sm text-red-400 bg-red-950/20 border border-red-950 rounded-lg">
-              <AlertTriangle className="w-5 h-5 shrink-0" />
+            <div className="db-health-error-alert">
+              <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
               <span>{health.error}</span>
             </div>
           )}
 
           {/* Checklist of Tables */}
           {health.connected && (
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Required Table Schema Status</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div style={{ marginBottom: '24px' }}>
+              <h3 className="db-health-section-title">Required Table Schema Status</h3>
+              <div className="db-health-table-grid">
                 {Object.entries(health.tables).map(([tableName, exists]) => (
                   <div 
                     key={tableName} 
-                    className={`flex items-center justify-between p-3 rounded-lg border text-sm transition-colors ${
-                      exists 
-                        ? 'bg-emerald-950/15 border-emerald-500/20 text-emerald-300' 
-                        : 'bg-red-950/15 border-red-500/20 text-red-300'
-                    }`}
+                    className={`db-health-table-item ${exists ? 'ready' : 'missing'}`}
                   >
-                    <div className="flex items-center gap-2">
-                      <Database className={`w-4 h-4 ${exists ? 'text-emerald-400' : 'text-red-400'}`} />
-                      <span className="font-mono font-medium">{tableName}</span>
+                    <div className="db-health-table-info">
+                      <Database size={16} />
+                      <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{tableName}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 font-semibold text-xs uppercase tracking-wider">
+                    <div className="db-health-table-status">
                       {exists ? (
                         <>
-                          <CheckCircle className="w-4 h-4 text-emerald-400" />
+                          <CheckCircle size={16} />
                           <span>Ready</span>
                         </>
                       ) : (
                         <>
-                          <XCircle className="w-4 h-4 text-red-400" />
+                          <XCircle size={16} />
                           <span>Missing</span>
                         </>
                       )}
@@ -176,60 +172,60 @@ export default function DbHealthCheck() {
           )}
 
           {/* Setup Instructions */}
-          <div className="space-y-4 mb-6">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">How to resolve this</h3>
-            <ol className="text-sm text-slate-300 space-y-3 list-decimal list-inside pl-1 bg-slate-900/50 p-4 border border-slate-900 rounded-lg">
+          <div style={{ marginBottom: '24px' }}>
+            <h3 className="db-health-section-title">How to resolve this</h3>
+            <ol className="db-health-instructions-list">
               <li>
-                Open the <a href="https://supabase.com/dashboard" target="_blank" rel="noreferrer" className="text-amber-400 hover:underline font-medium inline-flex items-center gap-1">Supabase Dashboard <ExternalLink className="w-3 h-3" /></a> and navigate to your project.
+                Open the <a href="https://supabase.com/dashboard" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'underline' }}>Supabase Dashboard</a> and navigate to your project.
               </li>
               <li>
-                Click on the <span className="text-amber-400 font-medium">SQL Editor</span> in the left sidebar.
+                Click on the <span style={{ color: 'var(--warning)', fontWeight: 600 }}>SQL Editor</span> in the left sidebar.
               </li>
               <li>
-                Create a <span className="text-amber-400 font-medium">New Query</span> and paste the SQL script below.
+                Create a <span style={{ color: 'var(--warning)', fontWeight: 600 }}>New Query</span> and paste the SQL script below.
               </li>
               <li>
-                Click <span className="text-emerald-400 font-medium">Run</span> to execute the migrations.
+                Click <span style={{ color: 'var(--success)', fontWeight: 600 }}>Run</span> to execute the migrations.
               </li>
             </ol>
           </div>
 
           {/* Copyable SQL Editor */}
-          <div className="border border-slate-800 rounded-xl bg-slate-950 overflow-hidden mb-6">
-            <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-slate-900/50">
-              <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-                <Terminal className="w-3.5 h-3.5 text-amber-500" />
+          <div className="db-health-code-panel">
+            <div className="db-health-code-header">
+              <div className="db-health-code-title">
+                <Terminal size={14} style={{ color: 'var(--warning)' }} />
                 <span>001_init.sql</span>
               </div>
               <button 
                 onClick={handleCopySql}
-                className="flex items-center gap-1 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded transition-colors"
+                className="db-health-copy-btn"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? <Check size={14} style={{ color: 'var(--success)' }} /> : <Copy size={14} />}
                 <span>{copied ? 'Copied!' : 'Copy SQL'}</span>
               </button>
             </div>
-            <div className="p-4 max-h-[160px] overflow-y-auto font-mono text-xs text-slate-400 select-all whitespace-pre">
+            <div className="db-health-code-body">
               {MIGRATION_SQL}
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-900">
+          <div className="db-health-footer">
             <a 
               href="https://supabase.com/dashboard" 
               target="_blank" 
               rel="noreferrer" 
-              className="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition-colors"
+              className="db-health-dashboard-link"
             >
               <span>Go to Supabase Dashboard</span>
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink size={12} />
             </a>
             
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+            <div className="db-health-actions">
               <button
                 onClick={handleBypass}
-                className="flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded-lg font-medium text-sm transition-all"
+                className="db-health-btn-bypass"
               >
                 Dismiss & Bypass (Use Fallbacks)
               </button>
@@ -237,21 +233,20 @@ export default function DbHealthCheck() {
               <button 
                 onClick={checkHealth}
                 disabled={checking}
-                className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white rounded-lg font-medium text-sm transition-all shadow-lg hover:shadow-amber-900/20 disabled:opacity-50"
+                className="db-health-btn-recheck"
               >
                 {checking ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 size={16} className="spin-anim" />
                     <span>Checking...</span>
                   </>
                 ) : (
                   <>
-                    <RefreshCw className="w-4 h-4" />
+                    <RefreshCw size={16} />
                     <span>Re-check Connection</span>
                   </>
                 )}
               </button>
-            </div>
           </div>
 
         </div>
