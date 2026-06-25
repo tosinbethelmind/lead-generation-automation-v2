@@ -31,7 +31,8 @@ import {
   Loader2,
   X,
   AlertTriangle,
-  AlertCircle
+  AlertCircle,
+  Menu
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { RuntimeConfig } from '@/lib/localConfig';
@@ -310,6 +311,8 @@ export default function Home() {
   const [isExporting, setIsExporting] = useState(false);
   const [testingSheets, setTestingSheets] = useState(false);
   const [savingConfigState, setSavingConfigState] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showSyncConfirm, setShowSyncConfirm] = useState(false);
 
   const addToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -1256,8 +1259,89 @@ ${config.businessSignature}`;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
+      {/* Mobile Hamburger Button */}
+      <button
+        className="mobile-hamburger"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Toggle sidebar"
+        style={{
+          position: 'fixed',
+          top: '16px',
+          left: '16px',
+          zIndex: 1001,
+          background: 'var(--panel-bg)',
+          border: '1px solid var(--panel-border)',
+          borderRadius: '10px',
+          padding: '8px',
+          cursor: 'pointer',
+          color: 'var(--text-primary)',
+          display: 'none',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+        }}
+      >
+        {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="mobile-overlay"
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            zIndex: 999,
+            display: 'none'
+          }}
+        />
+      )}
+
+      {/* Sync Pipeline Confirmation Modal */}
+      {showSyncConfirm && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100
+        }}>
+          <div className="glass-panel" style={{
+            padding: '28px', maxWidth: '420px', width: '90%', borderRadius: '16px',
+            border: '1px solid var(--panel-border)', boxShadow: '0 25px 60px rgba(0,0,0,0.4)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <RefreshCw size={22} color="var(--primary)" />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>Sync Pipeline Data?</h3>
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.5, margin: '0 0 20px 0' }}>
+              This will refresh all leads, stats, logs, and database connection status from your configured storage backend. It may take a few seconds.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowSyncConfirm(false)}
+                className="btn-secondary"
+                style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowSyncConfirm(false);
+                  handleRefreshAll();
+                }}
+                className="btn-primary"
+                style={{ padding: '8px 20px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <RefreshCw size={14} /> Confirm Sync
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar Navigation */}
-      <aside style={{ width: '280px', borderRight: '1px solid var(--panel-border)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', maxHeight: '100vh' }} className="glass-panel">
+      <aside
+        className={`app-sidebar glass-panel ${sidebarOpen ? 'sidebar-open' : ''}`}
+        style={{ width: '280px', borderRight: '1px solid var(--panel-border)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', maxHeight: '100vh' }}
+      >
         <div>
           <h2 style={{ fontFamily: 'var(--font-title)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)' }}>
             <Database size={24} /> ApexReach
@@ -1586,8 +1670,8 @@ ${config.businessSignature}`;
           </div>
           
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button onClick={handleRefreshAll} disabled={loadingLeads} className="btn-secondary">
-              <RefreshCw size={16} className={loadingLeads ? 'spin-anim' : ''} /> Sync Pipeline
+            <button onClick={() => setShowSyncConfirm(true)} disabled={loadingLeads} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {loadingLeads ? <Loader2 size={16} className="spin-anim" /> : <RefreshCw size={16} />} {loadingLeads ? 'Syncing...' : 'Sync Pipeline'}
             </button>
           </div>
         </header>
@@ -2723,8 +2807,8 @@ ${config.businessSignature}`;
                   id="linkedin"
                   name="LinkedIn Scraper"
                   description="Crawls LinkedIn company pages."
-                  status="free"
-                  isConfigured={true}
+                  status="api-required"
+                  isConfigured={false}
                   isSelected={selectedScraper === 'linkedin'}
                   onSelect={() => setSelectedScraper('linkedin')}
                 />

@@ -13,7 +13,7 @@ function generateMockApifyLeads(query: string, limit: number): Partial<Lead>[] {
     { name: "Apify Lagos Logistics", phone: "08039876543", cat: "Logistics", website: "https://apifylogistics.com.ng" },
     { name: "Apify Tech Hub", phone: "07068765432", cat: "Coworking Space", website: "https://apifytech.ng" },
     { name: "Apex Dental Clinic Ikeja", phone: "08157654321", cat: "Dental Clinic", website: "" },
-    { name: `${config.businessSignature} Services`, phone: "09086543210", cat: "Consulting", website: "https://bethelmind.com" },
+    { name: `${config.businessSignature} Services`, phone: "09086543210", cat: "Consulting", website: "https://apexreach-consulting.com" },
     { name: "Eko Jollof Diner VI", phone: "08095432109", cat: "Restaurant", website: "" }
   ];
 

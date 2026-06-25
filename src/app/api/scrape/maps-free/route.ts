@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     let scrapedLeads: Partial<Lead>[] = [];
 
     try {
-      const { launchBrowser } = await import('@/lib/playwrightLauncher');
+      const { launchBrowser } = await import('@/lib/browserLauncher');
       browser = await launchBrowser();
       const page = await browser.newPage();
       

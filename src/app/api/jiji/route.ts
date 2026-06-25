@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
     
     let browser;
     try {
-      const { launchBrowser } = await import('@/lib/playwrightLauncher');
+      const { launchBrowser } = await import('@/lib/browserLauncher');
       browser = await launchBrowser();
       const page = await browser.newPage();
       

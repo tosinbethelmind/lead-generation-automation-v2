@@ -528,4 +528,92 @@ select option {
   gap: 10px;
 }
 
+/* ── Mobile Responsive ────────────────────── */
+@media (max-width: 768px) {
+  .mobile-hamburger {
+    display: flex !important;
+  }
 
+  .mobile-overlay {
+    display: block !important;
+  }
+
+  .app-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: -300px !important;
+    width: 280px !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    z-index: 1000 !important;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-radius: 0 !important;
+    border-right: 1px solid var(--panel-border) !important;
+    background: var(--bg-dark) !important;
+  }
+
+  .app-sidebar.sidebar-open {
+    left: 0 !important;
+  }
+
+  /* Main panel fills full width on mobile */
+  main {
+    padding: 20px 12px !important;
+    margin-left: 0 !important;
+  }
+
+  /* Header adjustments */
+  header {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding-top: 48px !important;
+  }
+
+  header h1 {
+    font-size: 1.3rem !important;
+  }
+
+  /* CRM table scrollable on mobile */
+  .glass-panel table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Toast positioning */
+  .toast-container {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 12px !important;
+  }
+
+  .toast-item {
+    max-width: 100% !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Onboarding modal full-width */
+  .onboarding-modal {
+    width: 95vw !important;
+    max-height: 90vh !important;
+  }
+
+  .onboarding-header,
+  .onboarding-body,
+  .onboarding-footer {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+/* Tablet breakpoint */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-sidebar {
+    width: 220px !important;
+  }
+
+  .app-sidebar h2 {
+    font-size: 1.1rem !important;
+  }
+}

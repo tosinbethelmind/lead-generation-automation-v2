@@ -132,6 +132,16 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // LinkedIn requires a dedicated API (RapidAPI, Proxycurl, etc.) — DuckDuckGo scraping returns 403
+    if (platUpper === 'LINKEDIN') {
+      await addLog('Social Scraper', 'WARN', `LinkedIn scraping requires a dedicated API integration. DuckDuckGo proxy returns 403.`);
+      return NextResponse.json({
+        error: '⚠️ LinkedIn requires a dedicated API integration (e.g. Proxycurl, RapidAPI). Browser scraping is blocked by LinkedIn. Configure an API key in Settings → Integrations to enable LinkedIn lead scraping.',
+        requiresApi: true,
+        platform: 'linkedin'
+      }, { status: 422 });
+    }
+
     await addLog('Social Scraper', 'START', `Searching ${platUpper} business profiles for query: "${query}"`);
 
     // Build platform site query targeting e-commerce sellers
@@ -247,7 +257,7 @@ export async function POST(req: NextRequest) {
           reviews_count: 50,
           verified: false,
           listings_count: 1,
-          profile_url: platUpper === 'LINKEDIN' ? `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(name)}` : link,
+          profile_url: (platUpper as string) === 'LINKEDIN' ? `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(name)}` : link,
           source_query_or_seed: query,
           collected_at: new Date().toISOString(),
           status: 'NEW',

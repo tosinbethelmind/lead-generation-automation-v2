@@ -518,6 +518,11 @@ class GoogleSheetsLeadRepository implements ILeadRepository {
       const existingIds = new Set(existingLeads.map(l => l.lead_id));
       const existingPhones = new Set(existingLeads.map(l => l.phone_e164).filter(Boolean));
       const existingUrls = new Set(existingLeads.map(l => l.profile_url).filter(Boolean));
+      const existingNameEmails = new Set(
+        existingLeads
+          .filter(l => l.email)
+          .map(l => `${(l.name || '').trim().toLowerCase()}|${(l.email || '').trim().toLowerCase()}`)
+      );
       
       const toAppend: any[][] = [];
       let skipped = 0;
@@ -526,11 +531,13 @@ class GoogleSheetsLeadRepository implements ILeadRepository {
         if (!lead.lead_id) continue;
         
         const normPhone = lead.phone_e164 ? (normalizePhone(lead.phone_e164) || '') : '';
+        const nameEmailKey = lead.email ? `${(lead.name || '').trim().toLowerCase()}|${(lead.email || '').trim().toLowerCase()}` : '';
         
         const isDup = 
           existingIds.has(lead.lead_id) || 
           (normPhone && existingPhones.has(normPhone)) ||
-          (lead.profile_url && existingUrls.has(lead.profile_url));
+          (lead.profile_url && existingUrls.has(lead.profile_url)) ||
+          (nameEmailKey && existingNameEmails.has(nameEmailKey));
           
         if (isDup) {
           skipped++;
@@ -540,6 +547,7 @@ class GoogleSheetsLeadRepository implements ILeadRepository {
           existingIds.add(lead.lead_id);
           if (normPhone) existingPhones.add(normPhone);
           if (lead.profile_url) existingUrls.add(lead.profile_url);
+          if (nameEmailKey) existingNameEmails.add(nameEmailKey);
         }
       }
       
@@ -734,6 +742,11 @@ class LocalJsonLeadRepository implements ILeadRepository {
       const existingIds = new Set(leads.map(l => l.lead_id));
       const existingPhones = new Set(leads.map(l => l.phone_e164).filter(Boolean));
       const existingUrls = new Set(leads.map(l => l.profile_url).filter(Boolean));
+      const existingNameEmails = new Set(
+        leads
+          .filter(l => l.email)
+          .map(l => `${(l.name || '').trim().toLowerCase()}|${(l.email || '').trim().toLowerCase()}`)
+      );
       
       const addedLeads: Lead[] = [];
       let skipped = 0;
@@ -742,11 +755,13 @@ class LocalJsonLeadRepository implements ILeadRepository {
         if (!partial.lead_id) continue;
         
         const normPhone = partial.phone_e164 ? (normalizePhone(partial.phone_e164) || '') : '';
+        const nameEmailKey = partial.email ? `${(partial.name || '').trim().toLowerCase()}|${(partial.email || '').trim().toLowerCase()}` : '';
         
         const isDup = 
           existingIds.has(partial.lead_id) || 
           (normPhone && existingPhones.has(normPhone)) ||
-          (partial.profile_url && existingUrls.has(partial.profile_url));
+          (partial.profile_url && existingUrls.has(partial.profile_url)) ||
+          (nameEmailKey && existingNameEmails.has(nameEmailKey));
           
         if (isDup) {
           skipped++;
@@ -781,6 +796,7 @@ class LocalJsonLeadRepository implements ILeadRepository {
           existingIds.add(completeLead.lead_id);
           if (normPhone) existingPhones.add(normPhone);
           if (completeLead.profile_url) existingUrls.add(completeLead.profile_url);
+          if (nameEmailKey) existingNameEmails.add(nameEmailKey);
         }
       }
       

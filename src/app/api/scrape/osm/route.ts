@@ -120,14 +120,12 @@ function parseOSMElementsToLeads(elements: OSMElement[], areaName: string, query
     if (!name) continue;
     
     const website = tags.website || tags['contact:website'] || tags['url'] || '';
-    if (website) continue;
-    
     const phone = tags.phone || tags['contact:phone'] || tags.mobile || tags['contact:mobile'] || '';
     const normPhone = phone ? normalizePhone(phone, 'NG') : null;
-    if (!normPhone) continue;
+    const email = tags.email || tags['contact:email'] || '';
     
     const address = parseOSMAddress(tags) || `${areaName}, Lagos, Nigeria`;
-    const category = tags.amenity || tags.shop || tags.office || tags.craft || 'Business';
+    const category = tags.amenity || tags.shop || tags.office || tags.craft || tags.healthcare || tags.tourism || 'Business';
     
     leads.push({
       lead_id: `osm_${el.type}_${el.id}`,
@@ -139,8 +137,8 @@ function parseOSMElementsToLeads(elements: OSMElement[], areaName: string, query
       city: tags['addr:city'] || 'Lagos',
       phone_e164: normPhone || '',
       phone_raw: phone,
-      email: tags.email || tags['contact:email'] || '',
-      website: '',
+      email,
+      website: website || '',
       rating: 4.3,
       reviews_count: 3,
       verified: false,
@@ -166,11 +164,9 @@ function parseNominatimItemsToLeads(items: NominatimItem[], areaName: string, qu
     if (!name) continue;
     
     const website = tags.website || tags['contact:website'] || tags.url || '';
-    if (website) continue;
-    
     const phone = tags.phone || tags['contact:phone'] || tags.mobile || tags['contact:mobile'] || item.address?.phone || '';
     const normPhone = phone ? normalizePhone(phone, 'NG') : null;
-    if (!normPhone) continue;
+    const email = tags.email || tags['contact:email'] || '';
     
     const address = parseNominatimAddress(item);
     const category = item.address?.amenity || item.address?.shop || item.address?.office || item.address?.craft || item.class || 'Business';
@@ -185,8 +181,8 @@ function parseNominatimItemsToLeads(items: NominatimItem[], areaName: string, qu
       city: item.address?.city || item.address?.town || item.address?.village || 'Lagos',
       phone_e164: normPhone || '',
       phone_raw: phone,
-      email: tags.email || tags['contact:email'] || '',
-      website: '',
+      email,
+      website: website || '',
       rating: 4.3,
       reviews_count: 3,
       verified: false,
