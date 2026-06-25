@@ -11,7 +11,8 @@ import {
   AlertTriangle, 
   RefreshCw, 
   Terminal,
-  ExternalLink
+  ExternalLink,
+  X
 } from 'lucide-react';
 
 interface DbHealthResponse {
@@ -30,6 +31,12 @@ export default function DbHealthCheck() {
   const [visible, setVisible] = useState(false);
 
   const checkHealth = async () => {
+    const hasBypass = typeof window !== 'undefined' && sessionStorage.getItem('bypass-db-check') === 'true';
+    if (hasBypass) {
+      setVisible(false);
+      setChecking(false);
+      return;
+    }
     setChecking(true);
     try {
       const res = await fetch('/api/db-health');
@@ -37,11 +44,13 @@ export default function DbHealthCheck() {
         const data: DbHealthResponse = await res.json();
         setHealth(data);
         // Only show setup modal if storageMode is 'supabase' and db check failed
-        setVisible(data.storageMode === 'supabase' && !data.success);
+        const isBypassed = typeof window !== 'undefined' && sessionStorage.getItem('bypass-db-check') === 'true';
+        setVisible(data.storageMode === 'supabase' && !data.success && !isBypassed);
       } else {
         const data: DbHealthResponse = await res.json();
         setHealth(data);
-        setVisible(data.storageMode === 'supabase');
+        const isBypassed = typeof window !== 'undefined' && sessionStorage.getItem('bypass-db-check') === 'true';
+        setVisible(data.storageMode === 'supabase' && !isBypassed);
       }
     } catch (e: any) {
       setHealth({
@@ -60,10 +69,18 @@ export default function DbHealthCheck() {
         error: e.message || 'Failed to fetch database health endpoint.'
       });
       // We assume supabase mode might be desired if fetch failed completely, but keep modal hidden unless verified
-      setVisible(true);
+      const isBypassed = typeof window !== 'undefined' && sessionStorage.getItem('bypass-db-check') === 'true';
+      setVisible(!isBypassed);
     } finally {
       setChecking(false);
     }
+  };
+
+  const handleBypass = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('bypass-db-check', 'true');
+    }
+    setVisible(false);
   };
 
   useEffect(() => {
@@ -84,6 +101,15 @@ export default function DbHealthCheck() {
         
         {/* Glow Header */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-500 via-amber-500 to-red-500 animate-pulse" />
+        
+        {/* Close Button */}
+        <button
+          onClick={handleBypass}
+          className="absolute top-4 right-4 text-slate-400 hover:text-white hover:bg-slate-900 p-1.5 rounded-lg transition-all z-10"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </button>
         
         <div className="p-6 md:p-8">
           
@@ -200,23 +226,32 @@ export default function DbHealthCheck() {
               <ExternalLink className="w-3 h-3" />
             </a>
             
-            <button 
-              onClick={checkHealth}
-              disabled={checking}
-              className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white rounded-lg font-medium text-sm transition-all shadow-lg hover:shadow-amber-900/20 disabled:opacity-50"
-            >
-              {checking ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Checking...</span>
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="w-4 h-4" />
-                  <span>Re-check Connection</span>
-                </>
-              )}
-            </button>
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+              <button
+                onClick={handleBypass}
+                className="flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded-lg font-medium text-sm transition-all"
+              >
+                Dismiss & Bypass (Use Fallbacks)
+              </button>
+
+              <button 
+                onClick={checkHealth}
+                disabled={checking}
+                className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white rounded-lg font-medium text-sm transition-all shadow-lg hover:shadow-amber-900/20 disabled:opacity-50"
+              >
+                {checking ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Checking...</span>
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4" />
+                    <span>Re-check Connection</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
         </div>
