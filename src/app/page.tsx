@@ -1342,7 +1342,7 @@ ${config.businessSignature}`;
       {/* Sidebar Navigation */}
       <aside
         className={`app-sidebar glass-panel ${sidebarOpen ? 'sidebar-open' : ''}`}
-        style={{ width: '280px', borderRight: '1px solid var(--panel-border)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', maxHeight: '100vh' }}
+        style={{ width: '280px', flexShrink: 0, borderRight: '1px solid var(--panel-border)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', maxHeight: '100vh' }}
       >
         <div>
           <h2 style={{ fontFamily: 'var(--font-title)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)' }}>
@@ -1583,7 +1583,7 @@ ${config.businessSignature}`;
       </aside>
       
       {/* Main Panel */}
-      <main ref={mainRef} style={{ flexGrow: 1, padding: '30px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <main ref={mainRef} style={{ flexGrow: 1, minWidth: 0, padding: '30px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {config.dryRun && (
           <div style={{ 
             display: 'flex', 
