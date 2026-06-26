@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3005",
+        "dev": "next dev -p 3005",
     "build": "next build",
     "start": "next start -p 3005",
     "lint": "eslint",
+    "redeploy": "npx vercel --prod --yes",
+    "typecheck": "tsc --noEmit",
     "setup": "node setup.js",
     "auto-setup": "node scripts/auto_setup.js",
     "demo": "npx playwright test tests/e2e/demo_recorder.spec.ts --headed",

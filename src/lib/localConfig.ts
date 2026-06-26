@@ -104,6 +104,19 @@ export interface LocalConfig {
   supabaseUrl?: string;
   supabaseKey?: string;
   geminiApiKey?: string;
+  geminiApiKeys?: string[];
+  claudeApiKey?: string;
+  openaiApiKey?: string;
+  anthropicApiKey?: string;
+  cohereApiKey?: string;
+  mistralApiKey?: string;
+  // Antigravity model credentials
+  antigravityApiKey?: string;
+  antigravityModels?: string[]; // e.g., ['gemini_flash_high','gemini_pro_low','gpt_oss','claude','sonneta','opus']
+  // ── On‑ground mode flag ────────────────────────────────────
+  onGroundMode?: boolean;
+  // ── On‑ground mode flag ────────────────────────────────────
+
   n8nWebhookUrl?: string;
 }
 
@@ -207,9 +220,13 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   whatsappEnabled: false,
   supabaseUrl: '',
   supabaseKey: '',
+  antigravityApiKey: '',
+  antigravityModels: [],
+  onGroundMode: false,
   geminiApiKey: '',
   n8nWebhookUrl: '',
   storageMode: 'hybrid',
+  // ... (rest unchanged)
 };
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);

@@ -157,7 +157,7 @@ export interface GeneratedSiteResponse {
   };
 }
 
-async function generateCopyWithVertexAI(
+export async function generateCopyWithVertexAI(
   lead: any,
   accessToken: string,
   projectId: string
@@ -360,10 +360,31 @@ export async function GET(req: NextRequest) {
 
     // Load lead from database
     const repo = getActiveLeadRepository();
-    const lead = await repo.getLeadById(leadId);
+    const lead = (await repo.getLeadById(leadId)) as any;
 
     if (!lead) {
       return NextResponse.json({ error: `Lead ${leadId} not found` }, { status: 404 });
+    }
+
+    // If lead has a website, fetch analysis data to enrich AI prompt
+    let websiteInfo = null;
+    if (lead.website) {
+      try {
+        const analysisResp = await fetch(`${origin}/api/analysis/website`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: lead.website }),
+        });
+        if (analysisResp.ok) {
+          websiteInfo = await analysisResp.json();
+          // Attach to lead for prompt usage
+          lead.websiteTitle = websiteInfo.title;
+          lead.websiteMeta = websiteInfo.metaDescription;
+          lead.websiteColor = websiteInfo.dominantColor;
+        }
+      } catch (e) {
+        console.warn('Website analysis failed:', e);
+      }
     }
 
     const config = getRuntimeConfig();

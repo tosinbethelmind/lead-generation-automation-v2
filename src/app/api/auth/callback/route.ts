@@ -53,11 +53,17 @@ export async function GET(req: NextRequest) {
 
     // Persist OAuth tokens to config.json
     const projectId = searchParams.get('state') || ''; // state param can carry project ID
+    
+    // Exchange Google token for Antigravity API key
+    const { exchangeGoogleForAntigravityToken } = await import('@/lib/antigravity');
+    const antigravityKey = await exchangeGoogleForAntigravityToken(tokenData.access_token);
+    // Persist Antigravity key alongside Google tokens
     saveLocalConfig({
       googleAccessToken: tokenData.access_token,
       googleRefreshToken: tokenData.refresh_token || config.googleRefreshToken,
       googleTokenExpiry: tokenData.expires_in ? Date.now() + tokenData.expires_in * 1000 : 0,
       googleUserEmail: userData.email || '',
+      antigravityApiKey: antigravityKey,
       ...(projectId ? { googleProjectId: projectId } : {}),
     });
 
