@@ -247,6 +247,7 @@ export default function DbHealthCheck() {
                   </>
                 )}
               </button>
+            </div>
           </div>
 
         </div>
