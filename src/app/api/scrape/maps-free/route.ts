@@ -167,10 +167,10 @@ export async function POST(req: NextRequest) {
             await new Promise(r => setTimeout(r, 1000));
             const lead = await extractCurrentPlaceDetails(page, query);
             if (lead) {
-              // We only want leads without a website
-              if (!lead.website) {
-                scrapedLeads.push(lead);
-              }
+              // Include ALL leads — with or without a website.
+              // Leads with websites receive upgrade/automation pitches;
+              // leads without receive new-site design pitches.
+              scrapedLeads.push(lead);
             }
           } catch (err) {
             console.error(`Error loading place details for ${link}:`, err);

@@ -1846,7 +1846,7 @@ ${config.businessSignature}`;
                 <h3 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Flame size={20} color="var(--primary)" /> Launch Outreach Campaign
                 </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', wordBreak: 'break-word' }}>
                   {config.outreachChannel === 'whatsapp' 
                     ? `Send personalized WhatsApp messages using your configured ${config.whatsappProvider?.toUpperCase() || 'Meta Cloud'} provider.` 
                     : config.outreachChannel === 'sms'
@@ -2732,11 +2732,11 @@ ${config.businessSignature}`;
                 <span className="badge badge-new" style={{ fontSize: '0.7rem' }}>Multiple Providers</span>
               </div>
               
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                Select a lead scraper provider. All providers automatically filter out businesses that already have websites and insert new qualified leads directly into your database.
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', wordBreak: 'break-word' }}>
+                Select a lead scraper provider. All providers include businesses regardless of website status and insert new qualified leads directly into your database.
               </p>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px', marginBottom: '8px' }}>
                 <ScraperCard
                   id="google"
                   name="Google Places API"
@@ -2838,7 +2838,7 @@ ${config.businessSignature}`;
             <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <h4 style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--primary)' }}>Verification Rules</h4>
               <ul style={{ paddingLeft: '20px', margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <li><strong>Website Check:</strong> Skips businesses with an existing web domain list to target low online presence.</li>
+                <li><strong>Website Check:</strong> Includes all businesses. Leads with a website receive upgrade/automation pitches; leads without a website receive new-site design proposals.</li>
                 <li><strong>Outreach Sync:</strong> Automatically normalizes phone numbers and syncs target lists to Google Sheets in real-time.</li>
                 <li><strong>Rating Floor:</strong> Defaults to high ratings or checks Maps rating thresholds.</li>
               </ul>

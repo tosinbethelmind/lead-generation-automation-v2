@@ -171,37 +171,39 @@ export async function POST(req: NextRequest) {
       if (phones && phones.length > 0) {
         const cleanPhone = phones[0];
 
-        // Ensure we don't save duplicates or leads that obviously have website domains
-        const hasOwnWebsite = !/facebook|instagram|jiji|linkedin|youtube|twitter|tiktok|vconnect|finelib|yellowpages/.test(link);
+        // Detect whether this is a direct business site or a directory/social listing
+        const isDirectorySite = /facebook|instagram|jiji|linkedin|youtube|twitter|tiktok|vconnect|finelib|yellowpages/.test(link);
+        const extractedWebsite = !isDirectorySite ? link : '';
 
-        if (!hasOwnWebsite) {
-          scrapedLeads.push({
-            lead_id: `ddg_${Date.now()}_${idx}_${Math.floor(Math.random() * 100)}`,
-            source: 'DUCKDUCKGO',
-            name: name,
-            category: query.split('in')[0]?.trim() || 'Business',
-            address: 'Lagos, Nigeria',
-            area: 'Lagos',
-            city: 'Lagos',
-            phone_e164: cleanPhone,
-            phone_raw: cleanPhone,
-            email: '',
-            website: '', // Empty because it's a directory link
-            rating: 4.0, // Default for search listings
-            reviews_count: 1,
-            verified: false,
-            listings_count: 1,
-            profile_url: link,
-            source_query_or_seed: query,
-            collected_at: new Date().toISOString(),
-            status: 'NEW',
-            last_contacted_at: '',
-            duplicate_of_lead_id: '',
-            business_summary: snippet.trim() || `${name} details extracted from DuckDuckGo results.`,
-            notes: `Extracted from search result pointing to listing/social directory: ${link}`
-          });
-        }
-      }
+        // Save ALL leads — direct business sites AND directory listings.
+        // Pitch engine will use extracted website to suggest upgrades/automations.
+        scrapedLeads.push({
+          lead_id: `ddg_${Date.now()}_${idx}_${Math.floor(Math.random() * 100)}`,
+          source: 'DUCKDUCKGO',
+          name: name,
+          category: query.split('in')[0]?.trim() || 'Business',
+          address: 'Lagos, Nigeria',
+          area: 'Lagos',
+          city: 'Lagos',
+          phone_e164: cleanPhone,
+          phone_raw: cleanPhone,
+          email: '',
+          website: extractedWebsite,
+          rating: 4.0,
+          reviews_count: 1,
+          verified: false,
+          listings_count: 1,
+          profile_url: link,
+          source_query_or_seed: query,
+          collected_at: new Date().toISOString(),
+          status: 'NEW',
+          last_contacted_at: '',
+          duplicate_of_lead_id: '',
+          business_summary: snippet.trim() || `${name} details extracted from DuckDuckGo results.`,
+          notes: isDirectorySite
+            ? `Extracted from directory/social listing: ${link}`
+            : `Extracted from business website result: ${link}`
+        });
     });
 
     if (scrapedLeads.length > 0) {
