@@ -3,63 +3,8 @@ import { Lead, saveLeads, addLog, normalizePhone, extractPhonesFromText } from '
 import { getRuntimeConfig } from '@/lib/localConfig';
 import * as cheerio from 'cheerio';
 
-// ============================================================================
-// Sandbox Mock Lead Generator
-// ============================================================================
-
-function generateMockDDGLeads(query: string, limit: number): Partial<Lead>[] {
-  const businesses = [
-    { name: "Surulere Dental Hub", phone: "08055667788", category: "Dental Clinic", area: "Surulere", desc: "Premium dental implants, whitening, and cleaning services in Surulere." },
-    { name: "Lekki Autotech Solutions", phone: "09011223344", category: "Car Repair", area: "Lekki", desc: "Computer diagnostics, wheel alignment, and engine overhaul." },
-    { name: "Ikeja Beauty Palace", phone: "08122334455", category: "Salon", area: "Ikeja", desc: "Expert hair styling, nails, pedicure, and bridal makeup." },
-    { name: "Yaba Gourmet Bakery", phone: "07088990011", category: "Bakery", area: "Yaba", desc: "Fresh bread, customized birthday cakes, and pastries." },
-    { name: "Victoria Island Fashion House", phone: "09155667788", category: "Boutique", area: "Victoria Island", desc: "African prints, ready-to-wear dresses, and bespoke men's suits." }
-  ];
-
-  const results: Partial<Lead>[] = [];
-  const count = limit || 10;
-
-  for (let i = 0; i < count; i++) {
-    const template = businesses[i % businesses.length];
-    const name = count > businesses.length ? `${template.name} #${Math.floor(i / businesses.length) + 1}` : template.name;
-    const tsStr = String(Date.now());
-    const randPart = tsStr.substring(tsStr.length - 5);
-    const phoneNum = template.phone.substring(0, 5) + randPart + String(i % 10);
-    const cleanPhone = normalizePhone(phoneNum, 'NG') || phoneNum;
-
-    results.push({
-      lead_id: `mock_ddg_${Date.now()}_${i}`,
-      source: 'DUCKDUCKGO',
-      name: name,
-      category: template.category,
-      address: `${template.area}, Lagos, Nigeria`,
-      area: template.area,
-      city: 'Lagos',
-      phone_e164: cleanPhone,
-      phone_raw: phoneNum,
-      email: '',
-      website: '', // Qualify criteria
-      rating: Number((4.1 + Math.random() * 0.8).toFixed(1)),
-      reviews_count: Math.floor(Math.random() * 25) + 1,
-      verified: true,
-      listings_count: 1,
-      profile_url: `https://duckduckgo.com/?q=${encodeURIComponent(query)}&index=${i}&ts=${Date.now()}`,
-      source_query_or_seed: query,
-      collected_at: new Date().toISOString(),
-      status: 'NEW',
-      last_contacted_at: '',
-      duplicate_of_lead_id: '',
-      business_summary: `${name} is a local business providing ${template.category.toLowerCase()} services in ${template.area}.`,
-      notes: 'Imported via DuckDuckGo Scraper Sandbox.'
-    });
-  }
-
-  return results;
-}
-
-// ============================================================================
-// Next.js Route Handler
-// ============================================================================
+// Configure execution timeout for Vercel serverless execution
+export const maxDuration = 60;
 
 const USER_AGENTS = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
@@ -78,23 +23,6 @@ export async function POST(req: NextRequest) {
 
     if (!query) {
       return NextResponse.json({ error: "Missing required query parameter." }, { status: 400 });
-    }
-
-    const config = getRuntimeConfig();
-    const isSandbox = config.storageMode === 'local' || query.includes('sandbox') || query.includes('mock');
-
-    if (isSandbox) {
-      await addLog('DuckDuckGo Scraper', 'START', `Launching DuckDuckGo Sandbox for query: "${query}" (limit: ${limit})`);
-      const mockLeads = generateMockDDGLeads(query, limit);
-      const dbResult = await saveLeads(mockLeads);
-      await addLog('DuckDuckGo Scraper', 'SUCCESS', `Sandbox simulation complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
-      return NextResponse.json({
-        success: true,
-        mode: 'sandbox',
-        added: dbResult.added,
-        skipped: dbResult.skipped,
-        leads: mockLeads
-      });
     }
 
     await addLog('DuckDuckGo Scraper', 'START', `Starting DuckDuckGo search crawl for query: "${query}"`);
@@ -129,20 +57,6 @@ export async function POST(req: NextRequest) {
     } catch (fetchErr: any) {
       console.error("DDG fetch error:", fetchErr);
       await addLog('DuckDuckGo Scraper', 'ERROR', `Fetch failed: ${fetchErr.message}`);
-      
-      if (isSandbox) {
-        await addLog('DuckDuckGo Scraper', 'WARN', `Falling back to sandbox.`);
-        const mockLeads = generateMockDDGLeads(query, limit);
-        const dbResult = await saveLeads(mockLeads);
-        return NextResponse.json({
-          success: true,
-          mode: 'sandbox_fallback',
-          added: dbResult.added,
-          skipped: dbResult.skipped,
-          leads: mockLeads
-        });
-      }
-      
       return NextResponse.json({ error: fetchErr.message }, { status: 500 });
     }
 
@@ -204,6 +118,7 @@ export async function POST(req: NextRequest) {
             ? `Extracted from directory/social listing: ${link}`
             : `Extracted from business website result: ${link}`
         });
+      }
     });
 
     if (scrapedLeads.length > 0) {

@@ -39,7 +39,13 @@ export async function launchBrowser() {
   const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
   if (isServerless) {
     try {
-      const chromium = (await import('@sparticuz/chromium')).default;
+      const chromium = (await import('@sparticuz/chromium')).default as any;
+      
+      // Disable graphics mode under serverless environment to save memory and prevent crashes
+      if (typeof chromium.setGraphicsMode === 'function') {
+        chromium.setGraphicsMode(false);
+      }
+      
       return await puppeteer.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
@@ -59,6 +65,7 @@ export async function launchBrowser() {
         args: ['--no-sandbox', '--disable-setuid-sandbox']
       });
     }
+    // Let puppeteer-core try to launch automatically if default location works
     return await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox']

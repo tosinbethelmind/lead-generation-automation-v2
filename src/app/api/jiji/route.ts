@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 
+export const maxDuration = 60;
+
+
 // Helper to replace placeholders in message templates
 function formatMessage(template: string, lead: any, previewUrl: string, signature: string): string {
   let msg = template || "Hi {{lead.name}}, I checked your Jiji profile rated {{lead.rating}} stars and generated a custom preview website for your business. View it here: {{previewUrl}}";

@@ -2,65 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 
-// ============================================================================
-// Sandbox Mock Lead Generator
-// ============================================================================
+// Configure execution timeout for Vercel serverless execution
+export const maxDuration = 60;
 
-function generateMockMapsFreeLeads(query: string, limit: number): Partial<Lead>[] {
-  const businesses = [
-    { name: "Ikeja Auto Care", phone: "08012345678", category: "Car Repair", area: "Ikeja", desc: "Professional automobile servicing and repairs in Ikeja." },
-    { name: "Lekki Dental Clinic", phone: "09098765432", category: "Dental Clinic", area: "Lekki Phase 2", desc: "Family-friendly dental hygiene and surgery clinic in Lekki." },
-    { name: "Yaba Tech Cafe", phone: "08034567890", category: "Cafe", area: "Yaba", desc: "Co-working space and cafe for freelancers and engineers in Yaba." },
-    { name: "Surulere Fashion Studio", phone: "07065678901", category: "Boutique", area: "Surulere", desc: "Tailoring and ready-to-wear boutique in the heart of Surulere." },
-    { name: "Maryland Event Caterers", phone: "08156789012", category: "Catering Services", area: "Maryland", desc: "Corporate event and party catering services." },
-    { name: "Victoria Island Spa", phone: "08022334455", category: "Spa", area: "Victoria Island", desc: "Luxury massage, facial, and wellness treatments." }
-  ];
-
-  const results: Partial<Lead>[] = [];
-  const count = limit || 10;
-
-  for (let i = 0; i < count; i++) {
-    const template = businesses[i % businesses.length];
-    const name = count > businesses.length ? `${template.name} #${Math.floor(i / businesses.length) + 1}` : template.name;
-    const tsStr = String(Date.now());
-    const randPart = tsStr.substring(tsStr.length - 5);
-    const phoneNum = template.phone.substring(0, 5) + randPart + String(i % 10);
-    const cleanPhone = normalizePhone(phoneNum, 'NG') || phoneNum;
-
-    results.push({
-      lead_id: `mock_mapsfree_${Date.now()}_${i}`,
-      source: 'MAPS_FREE',
-      name: name,
-      category: template.category,
-      address: `${template.area}, Lagos, Nigeria`,
-      area: template.area,
-      city: 'Lagos',
-      phone_e164: cleanPhone,
-      phone_raw: phoneNum,
-      email: '',
-      website: '', // Key qualify criteria: no website
-      rating: Number((4.2 + Math.random() * 0.7).toFixed(1)),
-      reviews_count: Math.floor(Math.random() * 30) + 2,
-      verified: Math.random() > 0.5,
-      listings_count: 1,
-      profile_url: `https://www.google.com/maps/search/${encodeURIComponent(query)}?index=${i}&ts=${Date.now()}`,
-      source_query_or_seed: query,
-      collected_at: new Date().toISOString(),
-      status: 'NEW',
-      last_contacted_at: '',
-      duplicate_of_lead_id: '',
-      business_summary: `${name} offers premium ${template.category.toLowerCase()} services in ${template.area}. Rated highly on Maps.`,
-      notes: 'REAL SCRAPER FAILED - Showing Mock Data (Sandbox fallback)'
-    });
-  }
-
-  return results;
-}
-
-// ============================================================================
-// Next.js Route Handler
-// ============================================================================
-
+/**
+ * POST /api/scrape/maps-free
+ * Body: { query: string, limit?: number }
+ */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -68,23 +16,6 @@ export async function POST(req: NextRequest) {
 
     if (!query) {
       return NextResponse.json({ error: "Missing required query parameter." }, { status: 400 });
-    }
-
-    const config = getRuntimeConfig();
-    const isSandbox = config.storageMode === 'local' || query.includes('sandbox') || query.includes('mock');
-
-    if (isSandbox) {
-      await addLog('Maps-Free Scraper', 'START', `Launching Google Maps Free Sandbox for query: "${query}" (limit: ${limit})`);
-      const mockLeads = generateMockMapsFreeLeads(query, limit);
-      const dbResult = await saveLeads(mockLeads);
-      await addLog('Maps-Free Scraper', 'SUCCESS', `Sandbox simulation complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
-      return NextResponse.json({
-        success: true,
-        mode: 'sandbox',
-        added: dbResult.added,
-        skipped: dbResult.skipped,
-        leads: mockLeads
-      });
     }
 
     await addLog('Maps-Free Scraper', 'START', `Starting Google Maps Free Puppeteer crawl for query: "${query}"`);
@@ -167,9 +98,6 @@ export async function POST(req: NextRequest) {
             await new Promise(r => setTimeout(r, 1000));
             const lead = await extractCurrentPlaceDetails(page, query);
             if (lead) {
-              // Include ALL leads — with or without a website.
-              // Leads with websites receive upgrade/automation pitches;
-              // leads without receive new-site design pitches.
               scrapedLeads.push(lead);
             }
           } catch (err) {
@@ -180,21 +108,7 @@ export async function POST(req: NextRequest) {
     } catch (browserErr: any) {
       console.error("[Maps-Free] Real scrape failed:", browserErr.message);
       await addLog('Maps-Free Scraper', 'ERROR', `Puppeteer failed: ${browserErr.message}`);
-      
-      if (isSandbox) {
-        const mockLeads = generateMockMapsFreeLeads(query, limit);
-        const dbResult = await saveLeads(mockLeads);
-        await addLog('Maps-Free Scraper', 'SUCCESS', `Sandbox simulation fallback complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
-        return NextResponse.json({
-          success: true,
-          mode: 'sandbox_fallback',
-          added: dbResult.added,
-          skipped: dbResult.skipped,
-          leads: mockLeads
-        });
-      }
-      
-      return NextResponse.json({ success: false, error: 'browser_launch_failed', fallback: true }, { status: 500 });
+      return NextResponse.json({ success: false, error: 'browser_launch_failed', message: browserErr.message }, { status: 500 });
     } finally {
       if (browser) {
         try {
@@ -217,7 +131,7 @@ export async function POST(req: NextRequest) {
         leads: scrapedLeads
       });
     } else {
-      await addLog('Maps-Free Scraper', 'INFO', `Search returned 0 valid qualified leads (without websites).`);
+      await addLog('Maps-Free Scraper', 'INFO', `Search returned 0 valid leads.`);
       return NextResponse.json({
         success: true,
         mode: 'live',

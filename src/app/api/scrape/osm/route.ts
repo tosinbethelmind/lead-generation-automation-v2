@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 
-// ============================================================================
-// OSM Overpass & Nominatim Scraper Endpoint
-// ============================================================================
+// Configure execution timeout for Vercel serverless execution
+export const maxDuration = 60;
 
 interface OSMElement {
   type: 'node' | 'way' | 'relation';
@@ -232,53 +231,6 @@ export async function POST(req: NextRequest) {
     }
     
     const config = getRuntimeConfig();
-    const isSandbox = config.storageMode === 'local' || query.includes('sandbox') || query.includes('mock');
-    
-    if (isSandbox) {
-      await addLog('OSM Scraper', 'START', `OSM local sandbox triggered for query: "${query}"`);
-      // Return a set of mock leads matching OSM format
-      const mockLeads: Partial<Lead>[] = [];
-      const prefixes = ["Ikeja", "Lekki", "Yaba", "Surulere", "Victoria Island", "Ikoyi", "Festac", "Gbagada", "Apapa", "Maryland"];
-      const types = ["Dental Clinic", "Car Repair Shop", "Pharmacy", "Restaurant", "Supermarket", "Boutique", "Spa", "Beauty Salon", "Caterer", "Bakery"];
-      for (let i = 0; i < limit; i++) {
-        const area = prefixes[i % prefixes.length];
-        const category = types[i % types.length];
-        const phone = `080355551${String(i).padStart(2, '0')}`;
-        mockLeads.push({
-          lead_id: `osm_mock_${Date.now()}_${i}`,
-          source: 'OSM',
-          name: `${area} ${category} (OSM)`,
-          category: category.toLowerCase(),
-          address: `${10 + i} Allen Ave, ${area}, Lagos`,
-          area: area,
-          city: 'Lagos',
-          phone_e164: `+234${phone.substring(1)}`,
-          phone_raw: phone,
-          email: '',
-          website: '',
-          rating: Number((4.0 + (i % 10) * 0.1).toFixed(1)),
-          reviews_count: 5 + i * 2,
-          verified: false,
-          listings_count: 1,
-          profile_url: `https://www.openstreetmap.org/node/${1000 + i}`,
-          source_query_or_seed: query,
-          collected_at: new Date().toISOString(),
-          status: 'NEW',
-          last_contacted_at: '',
-          duplicate_of_lead_id: '',
-          business_summary: `${category} located in ${area}, Lagos. Retrieved via OpenStreetMap.`,
-          notes: 'Imported via OSM Local Sandbox.'
-        });
-      }
-      const dbResult = await saveLeads(mockLeads);
-      return NextResponse.json({
-        success: true,
-        mode: 'sandbox',
-        added: dbResult.added,
-        skipped: dbResult.skipped,
-        leads: mockLeads
-      });
-    }
 
     await addLog('OSM Scraper', 'START', `Executing OSM lead generation pipeline for: "${query}"`);
 
