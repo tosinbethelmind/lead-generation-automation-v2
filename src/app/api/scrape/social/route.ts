@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone, extractPhonesFromText } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
+import { extractEmailsFromText, enrichFromWebsite } from '@/lib/leadEnricher';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 
@@ -140,38 +141,58 @@ export async function POST(req: NextRequest) {
 
       // Extract phone number from snippet if available
       const phones = extractPhonesFromText(snippet);
-      
-      if (phones && phones.length > 0) {
-        const cleanPhone = phones[0];
+      const emails = extractEmailsFromText(snippet);
 
-        const hash = crypto.createHash('sha256').update(link).digest('hex').substring(0, 16);
-        scrapedLeads.push({
-          lead_id: `social_${platUpper.toLowerCase()}_${hash}`,
-          source: platUpper,
-          name: name || `E-commerce ${platUpper}`,
-          category: 'E-Commerce Business',
-          address: 'Lagos, Nigeria',
-          area: 'Lagos',
-          city: 'Lagos',
-          phone_e164: cleanPhone,
-          phone_raw: cleanPhone,
-          email: '',
-          website: '', 
-          rating: 4.5,
-          reviews_count: 50,
-          verified: false,
-          listings_count: 1,
-          profile_url: (platUpper as string) === 'LINKEDIN' ? `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(name)}` : link,
-          source_query_or_seed: query,
-          collected_at: new Date().toISOString(),
-          status: 'NEW',
-          last_contacted_at: '',
-          duplicate_of_lead_id: '',
-          business_summary: snippet.trim() || `${name} social commerce seller listing.`,
-          notes: `Social seller page extracted: ${link}`
-        });
-      }
+      // Accept leads with phone OR email (don't require both)
+      const hasPhone = phones && phones.length > 0;
+      const hasEmail = emails.length > 0;
+      if (!hasPhone && !hasEmail) return;
+
+      const cleanPhone = hasPhone ? phones[0] : null;
+      const email = hasEmail ? emails[0] : '';
+
+      const hash = crypto.createHash('sha256').update(link).digest('hex').substring(0, 16);
+      scrapedLeads.push({
+        lead_id: `social_${platUpper.toLowerCase()}_${hash}`,
+        source: platUpper,
+        name: name || `E-commerce ${platUpper}`,
+        category: 'E-Commerce Business',
+        address: 'Lagos, Nigeria',
+        area: 'Lagos',
+        city: 'Lagos',
+        phone_e164: cleanPhone || '',
+        phone_raw: cleanPhone || '',
+        email,
+        website: '',
+        rating: 4.5,
+        reviews_count: 50,
+        verified: false,
+        listings_count: 1,
+        profile_url: (platUpper as string) === 'LINKEDIN' ? `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(name)}` : link,
+        source_query_or_seed: query,
+        collected_at: new Date().toISOString(),
+        status: 'NEW',
+        last_contacted_at: '',
+        duplicate_of_lead_id: '',
+        business_summary: snippet.trim() || `${name} social commerce seller listing.`,
+        notes: `Social ${platUpper} page: ${link}. Email: ${email || 'none'}.`
+      });
     });
+
+    // ── Website enrichment: if any lead has a website, fetch for more contacts
+    const toEnrich = scrapedLeads.filter(l => l.website && (!l.email || !l.phone_e164));
+    if (toEnrich.length > 0) {
+      await Promise.allSettled(
+        toEnrich.map(async (lead) => {
+          const enriched = await enrichFromWebsite(lead.website || '');
+          if (!lead.email && enriched.email) lead.email = enriched.email;
+          if (!lead.phone_e164 && enriched.phone) {
+            lead.phone_e164 = enriched.phone;
+            lead.phone_raw = enriched.phone;
+          }
+        })
+      );
+    }
 
     if (scrapedLeads.length > 0) {
       const dbResult = await saveLeads(scrapedLeads);

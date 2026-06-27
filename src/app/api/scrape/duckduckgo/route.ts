@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone, extractPhonesFromText } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
+import { extractEmailsFromText, enrichFromWebsite } from '@/lib/leadEnricher';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 
@@ -97,49 +98,76 @@ export async function POST(req: NextRequest) {
       let name = title.split(' - ')[0]?.trim() || title;
       name = name.split(' | ')[0]?.trim() || name;
 
-      // Extract phone number from title or snippet
+      // Extract phone from title+snippet text
       const combinedText = `${name} ${snippet}`;
       const phones = extractPhonesFromText(combinedText);
-      
-      if (phones && phones.length > 0) {
-        const cleanPhone = phones[0];
 
-        // Detect whether this is a direct business site or a directory/social listing
-        const isDirectorySite = /facebook|instagram|jiji|linkedin|youtube|twitter|tiktok|vconnect|finelib|yellowpages/.test(link);
-        const extractedWebsite = !isDirectorySite ? link : '';
+      // Extract email from the snippet text
+      const emails = extractEmailsFromText(combinedText);
 
-        // Save ALL leads — direct business sites AND directory listings.
-        // Pitch engine will use extracted website to suggest upgrades/automations.
-        const hash = crypto.createHash('sha256').update(link).digest('hex').substring(0, 16);
-        scrapedLeads.push({
-          lead_id: `ddg_${hash}`,
-          source: 'DUCKDUCKGO',
-          name: name,
-          category: query.split('in')[0]?.trim() || 'Business',
-          address: 'Lagos, Nigeria',
-          area: 'Lagos',
-          city: 'Lagos',
-          phone_e164: cleanPhone,
-          phone_raw: cleanPhone,
-          email: '',
-          website: extractedWebsite,
-          rating: 4.0,
-          reviews_count: 1,
-          verified: false,
-          listings_count: 1,
-          profile_url: link,
-          source_query_or_seed: query,
-          collected_at: new Date().toISOString(),
-          status: 'NEW',
-          last_contacted_at: '',
-          duplicate_of_lead_id: '',
-          business_summary: snippet.trim() || `${name} details extracted from DuckDuckGo results.`,
-          notes: isDirectorySite
-            ? `Extracted from directory/social listing: ${link}`
-            : `Extracted from business website result: ${link}`
-        });
-      }
+      // Determine if this result is a directory/social site
+      const isDirectorySite = /facebook|instagram|jiji|linkedin|youtube|twitter|tiktok|vconnect|finelib|yellowpages/.test(link);
+      const extractedWebsite = !isDirectorySite ? link : '';
+
+      // We want leads with a phone OR an email — not empty contacts
+      const hasPhone = phones.length > 0;
+      const hasEmail = emails.length > 0;
+      if (!hasPhone && !hasEmail) return; // skip results with no contact info
+
+      let cleanPhone = hasPhone ? phones[0] : null;
+      let email = hasEmail ? emails[0] : '';
+
+      // If a direct business website found and we're still missing contacts,
+      // fetch the website to try to get email/phone from it.
+      // (async inside .each is not awaitable, so we collect and enrich after)
+      const hash = crypto.createHash('sha256').update(link).digest('hex').substring(0, 16);
+      scrapedLeads.push({
+        lead_id: `ddg_${hash}`,
+        source: 'DUCKDUCKGO',
+        name,
+        category: query.split('in')[0]?.trim() || 'Business',
+        address: 'Lagos, Nigeria',
+        area: 'Lagos',
+        city: 'Lagos',
+        phone_e164: cleanPhone || '',
+        phone_raw: cleanPhone || '',
+        email,
+        website: extractedWebsite,
+        rating: 4.0,
+        reviews_count: 1,
+        verified: false,
+        listings_count: 1,
+        profile_url: link,
+        source_query_or_seed: query,
+        collected_at: new Date().toISOString(),
+        status: 'NEW',
+        last_contacted_at: '',
+        duplicate_of_lead_id: '',
+        business_summary: snippet.trim() || `${name} details extracted from DuckDuckGo results.`,
+        notes: isDirectorySite
+          ? `Directory/social listing: ${link}. Email: ${email || 'none'}.`
+          : `Business website result: ${link}. Email: ${email || 'none'}.`
+      });
     });
+
+    // ── Website enrichment: fetch direct business websites missing contacts ─
+    // Run in parallel (up to 5 concurrent) to keep within Vercel timeout
+    const toEnrich = scrapedLeads.filter(l => l.website && (!l.email || !l.phone_e164));
+    if (toEnrich.length > 0) {
+      await Promise.allSettled(
+        toEnrich.map(async (lead) => {
+          const enriched = await enrichFromWebsite(lead.website || '');
+          if (!lead.email && enriched.email) lead.email = enriched.email;
+          if (!lead.phone_e164 && enriched.phone) {
+            lead.phone_e164 = enriched.phone;
+            lead.phone_raw = enriched.phone;
+          }
+          if (enriched.email || enriched.phone) {
+            lead.notes = (lead.notes || '') + ` | Website enriched: phone=${enriched.phone || 'none'}, email=${enriched.email || 'none'}`;
+          }
+        })
+      );
+    }
 
     if (scrapedLeads.length > 0) {
       const dbResult = await saveLeads(scrapedLeads);

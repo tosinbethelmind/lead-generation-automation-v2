@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
+import { enrichFromWebsite } from '@/lib/leadEnricher';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -325,6 +326,25 @@ export async function POST(req: NextRequest) {
         await addLog('OSM Scraper', 'ERROR', `Nominatim direct search failed: ${nomErr.message}`);
         throw nomErr;
       }
+    }
+
+    // ── Website enrichment: fetch contact info from OSM-listed websites ────
+    const toEnrich = leadsToSave.filter(l => l.website && (!l.email || !l.phone_e164));
+    if (toEnrich.length > 0) {
+      await addLog('OSM Scraper', 'INFO', `Enriching ${toEnrich.length} leads from their websites...`);
+      await Promise.allSettled(
+        toEnrich.map(async (lead) => {
+          const enriched = await enrichFromWebsite(lead.website || '');
+          if (!lead.email && enriched.email) lead.email = enriched.email;
+          if (!lead.phone_e164 && enriched.phone) {
+            lead.phone_e164 = enriched.phone;
+            lead.phone_raw = enriched.phone;
+          }
+          if (enriched.email || enriched.phone) {
+            lead.notes = (lead.notes || '') + ` | Website enriched: phone=${enriched.phone || 'none'}, email=${enriched.email || 'none'}`;
+          }
+        })
+      );
     }
 
     // Slice to target limit and save

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
+import { extractMapsLeadData } from '@/lib/leadEnricher';
 import crypto from 'crypto';
 
 // Configure execution timeout for Vercel serverless execution
@@ -94,9 +95,12 @@ export async function POST(req: NextRequest) {
         try {
           await page.waitForSelector('h1', { timeout: 8000 });
         } catch (e) {}
-        // Extract single lead directly
-        const lead = await extractCurrentPlaceDetails(page, query);
-        if (lead) scrapedLeads.push(lead);
+        // Extract single lead using shared enricher (3-strategy phone + email + website)
+        const data = await extractMapsLeadData(page, query);
+        if (data) {
+          const lead = buildLead(data, page.url(), query);
+          if (lead) scrapedLeads.push(lead);
+        }
       } else {
         // We are on a results list feed. Scroll to load items.
         const feedSelector = '[role="feed"]';
@@ -125,9 +129,10 @@ export async function POST(req: NextRequest) {
               console.log(`Detail page.goto timed out or was interrupted for ${link}, checking for h1 anyway...`);
             });
             await page.waitForSelector('h1', { timeout: 8000 });
-            const lead = await extractCurrentPlaceDetails(page, query);
-            if (lead) {
-              scrapedLeads.push(lead);
+            const data = await extractMapsLeadData(page, query);
+            if (data) {
+              const lead = buildLead(data, page.url(), query);
+              if (lead) scrapedLeads.push(lead);
             }
           } catch (err: any) {
             console.error(`Error loading place details for ${link}:`, err.message);
@@ -175,9 +180,46 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Helper: Extract business details from Google Maps detail panel
-// Uses 3 phone extraction strategies in order of reliability.
-async function extractCurrentPlaceDetails(page: any, query: string): Promise<Partial<Lead> | null> {
+// ── Build a Lead record from enriched data ─────────────────────────────────
+function buildLead(
+  data: Awaited<ReturnType<typeof extractMapsLeadData>> & {},
+  profileUrl: string,
+  query: string
+): Partial<Lead> | null {
+  if (!data || !data.name) return null;
+  const cleanPhone = data.rawPhone ? normalizePhone(data.rawPhone, 'NG') : null;
+  const parts = data.address.split(',');
+  const area = parts[1] ? parts[1].trim() : parts[0] || 'Lagos';
+  const hash = crypto.createHash('sha256').update(profileUrl).digest('hex').substring(0, 16);
+  return {
+    lead_id: `mapsfree_${hash}`,
+    source: 'MAPS_FREE',
+    name: data.name,
+    category: data.category || query.split('in')[0]?.trim() || 'Business',
+    address: data.address,
+    area,
+    city: 'Lagos',
+    phone_e164: cleanPhone || '',
+    phone_raw: data.rawPhone || '',
+    email: data.email || '',
+    website: data.website,
+    rating: data.rating,
+    reviews_count: data.reviewsCount,
+    verified: !!cleanPhone,
+    listings_count: 1,
+    profile_url: profileUrl,
+    source_query_or_seed: query,
+    collected_at: new Date().toISOString(),
+    status: 'NEW',
+    last_contacted_at: '',
+    duplicate_of_lead_id: '',
+    business_summary: `${data.name} is a local business in ${area}. Maps rating: ${data.rating} stars with ${data.reviewsCount} reviews.${cleanPhone ? ` Phone: ${data.rawPhone}` : ''}${data.email ? ` Email: ${data.email}` : ''}`,
+    notes: `Scraped via Puppeteer Google Maps Free. Phone: ${data.phoneStrategy}. Email: ${data.email ? 'found' : 'none'}.`
+  };
+}
+
+// Kept for sandbox mock data
+async function _unused(page: any, query: string): Promise<Partial<Lead> | null> {
   try {
     // ── PHONE STRATEGY 1: Read from data-item-id attribute ──────────────────
     // Google always encodes the number in the attribute even before clicking,
@@ -282,8 +324,8 @@ async function extractCurrentPlaceDetails(page: any, query: string): Promise<Par
       address: details.address,
       area,
       city: 'Lagos',
-      phone_e164: cleanPhone || null,
-      phone_raw: rawPhone || null,
+      phone_e164: cleanPhone || '',
+      phone_raw: rawPhone || '',
       email: '',
       website: details.website,
       rating: details.rating,
