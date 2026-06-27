@@ -176,67 +176,114 @@ export async function POST(req: NextRequest) {
 }
 
 // Helper: Extract business details from Google Maps detail panel
+// Uses 3 phone extraction strategies in order of reliability.
 async function extractCurrentPlaceDetails(page: any, query: string): Promise<Partial<Lead> | null> {
   try {
+    // ── PHONE STRATEGY 1: Read from data-item-id attribute ──────────────────
+    // Google always encodes the number in the attribute even before clicking,
+    // e.g. data-item-id="phone:tel:+2348012345678"
+    const phoneFromAttr: string = await page.evaluate(() => {
+      const btn = document.querySelector('button[data-item-id^="phone:tel:"]');
+      if (!btn) return '';
+      const itemId = (btn as HTMLElement).getAttribute('data-item-id') || '';
+      return itemId.replace('phone:tel:', '').trim();
+    });
+
+    // ── PHONE STRATEGY 2: Click the phone button to reveal hidden number ─────
+    let phoneFromClick = '';
+    let phoneStrategy = 'none';
+    try {
+      const phoneBtn = await page.$('button[data-item-id^="phone:tel:"]');
+      if (phoneBtn) {
+        await phoneBtn.click();
+        await new Promise(r => setTimeout(r, 1200)); // wait for reveal animation
+        phoneFromClick = await page.evaluate(() => {
+          const btn = document.querySelector('button[data-item-id^="phone:tel:"]');
+          if (!btn) return '';
+          // Check sibling spans — Google sometimes injects revealed number nearby
+          const parent = btn.closest('[data-section-id]') || btn.parentElement;
+          if (parent) {
+            const spans = Array.from((parent as HTMLElement).querySelectorAll('span'));
+            for (const s of spans) {
+              const t = (s as HTMLElement).textContent?.trim() || '';
+              if (/^[\+0][\d\s\-\.]{6,}/.test(t)) return t;
+            }
+          }
+          return (btn as HTMLElement).textContent?.trim() || '';
+        });
+      }
+    } catch (_) {
+      // Click silently failed — strategy 3 will handle
+    }
+
+    // ── PHONE STRATEGY 3: Plain textContent fallback ─────────────────────────
+    const phoneFromText: string = await page.evaluate(() => {
+      const btn = document.querySelector('button[data-item-id^="phone:tel:"]');
+      return btn ? (btn as HTMLElement).textContent?.trim() || '' : '';
+    });
+
+    // Pick best available value
+    let rawPhone = '';
+    if (phoneFromAttr) { rawPhone = phoneFromAttr; phoneStrategy = 'attr'; }
+    else if (phoneFromClick) { rawPhone = phoneFromClick; phoneStrategy = 'click'; }
+    else if (phoneFromText) { rawPhone = phoneFromText; phoneStrategy = 'text'; }
+
+    console.log(`[Maps-Free] Phone — attr:"${phoneFromAttr}" click:"${phoneFromClick}" text:"${phoneFromText}" → "${rawPhone}" (${phoneStrategy})`);
+
+    // ── Extract all other fields ─────────────────────────────────────────────
     const details = await page.evaluate(() => {
       const h1 = document.querySelector('h1');
-      const name = h1 ? h1.textContent?.trim() || 'Unknown Business' : 'Unknown Business';
+      const name = h1 ? (h1 as HTMLElement).textContent?.trim() || '' : '';
 
       let rating = 0;
       let reviewsCount = 0;
-      
+
       const ratingEl = document.querySelector('div.F7nice span[aria-hidden="true"]');
       if (ratingEl) {
-        const val = parseFloat(ratingEl.textContent?.trim() || '0');
+        const val = parseFloat((ratingEl as HTMLElement).textContent?.trim() || '0');
         if (!isNaN(val)) rating = val;
       }
-      
+
       const reviewsEl = document.querySelector('div.F7nice span[aria-label*="reviews"]');
       if (reviewsEl) {
-        const cleaned = reviewsEl.textContent?.replace(/\D/g, '') || '';
+        const cleaned = (reviewsEl as HTMLElement).textContent?.replace(/\D/g, '') || '';
         if (cleaned) reviewsCount = parseInt(cleaned, 10);
       }
 
       const addressBtn = document.querySelector('button[data-item-id="address"]');
-      const address = addressBtn ? addressBtn.textContent?.trim() || '' : '';
-
-      const phoneBtn = document.querySelector('button[data-item-id^="phone:tel:"]');
-      const phone = phoneBtn ? phoneBtn.textContent?.trim() || '' : '';
+      const address = addressBtn ? (addressBtn as HTMLElement).textContent?.trim() || '' : '';
 
       const webBtn = document.querySelector('a[data-item-id="authority"]');
-      const website = webBtn ? webBtn.getAttribute('href')?.trim() || '' : '';
+      const website = webBtn ? (webBtn as HTMLElement).getAttribute('href')?.trim() || '' : '';
 
-      return {
-        name,
-        rating,
-        reviewsCount,
-        address,
-        phone,
-        website
-      };
+      // Business category (displayed under the name on the panel)
+      const catEl = document.querySelector('button[jsaction*="category"]') ||
+                    document.querySelector('span.DkEaL');
+      const category = catEl ? (catEl as HTMLElement).textContent?.trim() || '' : '';
+
+      return { name, rating, reviewsCount, address, website, category };
     });
 
-    // Phone is optional — save lead even if no valid phone is found
-    const cleanPhone = details.phone ? normalizePhone(details.phone, 'NG') : null;
+    // Drop only truly empty pages
+    if (!details.name) return null;
 
-    // Drop only if we have no name at all (truly empty page)
-    if (!details.name || details.name === 'Unknown Business') return null;
-
+    const cleanPhone = rawPhone ? normalizePhone(rawPhone, 'NG') : null;
     const parts = details.address.split(',');
     const area = parts[1] ? parts[1].trim() : parts[0] || 'Lagos';
 
     const profileUrl = page.url();
     const hash = crypto.createHash('sha256').update(profileUrl).digest('hex').substring(0, 16);
+
     return {
       lead_id: `mapsfree_${hash}`,
       source: 'MAPS_FREE',
       name: details.name,
-      category: query.split('in')[0]?.trim() || 'Business',
+      category: details.category || query.split('in')[0]?.trim() || 'Business',
       address: details.address,
-      area: area,
+      area,
       city: 'Lagos',
       phone_e164: cleanPhone || null,
-      phone_raw: details.phone || null,
+      phone_raw: rawPhone || null,
       email: '',
       website: details.website,
       rating: details.rating,
@@ -249,11 +296,11 @@ async function extractCurrentPlaceDetails(page: any, query: string): Promise<Par
       status: 'NEW',
       last_contacted_at: '',
       duplicate_of_lead_id: '',
-      business_summary: `${details.name} is a local business in ${area}. Maps rating: ${details.rating} stars with ${details.reviewsCount} reviews.${cleanPhone ? ` Phone: ${details.phone}` : ''}`,
-      notes: 'Scraped using Puppeteer Google Maps Free crawler.'
+      business_summary: `${details.name} is a local business in ${area}. Maps rating: ${details.rating} stars with ${details.reviewsCount} reviews.${cleanPhone ? ` Phone: ${rawPhone}` : ''}`,
+      notes: `Scraped via Puppeteer Google Maps Free. Phone extraction: ${phoneStrategy}.`
     };
   } catch (err) {
-    console.error("Error extracting details:", err);
+    console.error('[Maps-Free] Error extracting details:', err);
     return null;
   }
 }
