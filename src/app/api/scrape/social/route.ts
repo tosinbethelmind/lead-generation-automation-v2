@@ -113,7 +113,8 @@ export async function POST(req: NextRequest) {
       const snippetNode = $(elem).find('.result__snippet');
 
       const title = titleNode.text() || '';
-      const link = titleNode.attr('href') || '';
+      const rawLink = titleNode.attr('href') || '';
+      const link = cleanDdgUrl(rawLink);
       const snippet = snippetNode.text() || '';
 
       // Skip non-profile links
@@ -294,3 +295,26 @@ function getMockSocialLeads(platform: string, query: string): Partial<Lead>[] {
     }
   ];
 }
+
+function cleanDdgUrl(urlStr: string): string {
+  if (!urlStr) return '';
+  if (urlStr.includes('uddg=')) {
+    try {
+      const parts = urlStr.split('uddg=');
+      if (parts[1]) {
+        const encodedUrl = parts[1].split('&')[0];
+        const decoded = decodeURIComponent(encodedUrl);
+        if (decoded.startsWith('http')) {
+          return decoded;
+        }
+      }
+    } catch (e) {
+      console.error('Error cleaning DDG URL:', e);
+    }
+  }
+  if (urlStr.startsWith('//')) {
+    return 'https:' + urlStr;
+  }
+  return urlStr;
+}
+
