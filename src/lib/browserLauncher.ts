@@ -76,6 +76,14 @@ export async function launchBrowser() {
       });
     } catch (e: any) {
       console.error('Failed to launch Puppeteer with @sparticuz/chromium:', e.message);
+      if (e.message.includes('Failed to launch the browser process') || e.message.includes('libnss3.so') || e.message.includes('Code: 127')) {
+        throw new Error(
+          'Failed to launch Puppeteer on Vercel/Serverless: Missing OS-level libraries (libnss3.so). ' +
+          'To run Puppeteer scrapers in production on Vercel, you must configure a remote browser connection. ' +
+          'Please set the environment variable "REMOTE_BROWSER_WS" (or "BROWSERLESS_WS") in your Vercel Dashboard ' +
+          'to point to a remote browser endpoint (e.g., from Browserless.io or a self-hosted chromium instance).'
+        );
+      }
       throw e;
     }
   } else {
