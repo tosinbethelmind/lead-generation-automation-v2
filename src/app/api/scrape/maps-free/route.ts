@@ -163,14 +163,12 @@ export async function POST(req: NextRequest) {
         leads: scrapedLeads
       });
     } else {
-      await addLog('Maps-Free Scraper', 'INFO', `Search returned 0 valid leads.`);
+      // Fail-fast: 0 scraped leads on a live run is a scraping failure
+      await addLog('Maps-Free Scraper', 'ERROR', `Live scrape returned 0 valid leads for query: "${query}". Google Maps may have blocked the request or the selectors need updating.`);
       return NextResponse.json({
-        success: true,
-        mode: 'live',
-        added: 0,
-        skipped: 0,
-        leads: []
-      });
+        success: false,
+        error: 'Live scrape returned 0 leads. Google Maps may have blocked access, updated its DOM, or no businesses matched the query. Check logs.'
+      }, { status: 500 });
     }
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
@@ -218,8 +216,12 @@ async function extractCurrentPlaceDetails(page: any, query: string): Promise<Par
       };
     });
 
+    // Phone is optional — save lead even if no valid phone is found
     const cleanPhone = details.phone ? normalizePhone(details.phone, 'NG') : null;
-    if (!cleanPhone) return null;
+
+    // Drop only if we have no name at all (truly empty page)
+    if (!details.name || details.name === 'Unknown Business') return null;
+
     const parts = details.address.split(',');
     const area = parts[1] ? parts[1].trim() : parts[0] || 'Lagos';
 
@@ -233,13 +235,13 @@ async function extractCurrentPlaceDetails(page: any, query: string): Promise<Par
       address: details.address,
       area: area,
       city: 'Lagos',
-      phone_e164: cleanPhone,
-      phone_raw: details.phone,
+      phone_e164: cleanPhone || null,
+      phone_raw: details.phone || null,
       email: '',
       website: details.website,
       rating: details.rating,
       reviews_count: details.reviewsCount,
-      verified: true,
+      verified: !!cleanPhone,
       listings_count: 1,
       profile_url: profileUrl,
       source_query_or_seed: query,
@@ -247,7 +249,7 @@ async function extractCurrentPlaceDetails(page: any, query: string): Promise<Par
       status: 'NEW',
       last_contacted_at: '',
       duplicate_of_lead_id: '',
-      business_summary: `${details.name} is a top-rated local business in ${area}. Maps rating: ${details.rating} stars with ${details.reviewsCount} reviews. Phone: ${details.phone}`,
+      business_summary: `${details.name} is a local business in ${area}. Maps rating: ${details.rating} stars with ${details.reviewsCount} reviews.${cleanPhone ? ` Phone: ${details.phone}` : ''}`,
       notes: 'Scraped using Puppeteer Google Maps Free crawler.'
     };
   } catch (err) {
