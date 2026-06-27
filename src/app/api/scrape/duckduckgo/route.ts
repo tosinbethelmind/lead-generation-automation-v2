@@ -109,10 +109,10 @@ export async function POST(req: NextRequest) {
       const isDirectorySite = /facebook|instagram|jiji|linkedin|youtube|twitter|tiktok|vconnect|finelib|yellowpages/.test(link);
       const extractedWebsite = !isDirectorySite ? link : '';
 
-      // We want leads with a phone OR an email — not empty contacts
+      // We want leads with a phone OR an email OR a website — not empty contacts
       const hasPhone = phones.length > 0;
       const hasEmail = emails.length > 0;
-      if (!hasPhone && !hasEmail) return; // skip results with no contact info
+      if (!hasPhone && !hasEmail && !extractedWebsite) return; // skip results with no contact info and no website
 
       let cleanPhone = hasPhone ? phones[0] : null;
       let email = hasEmail ? emails[0] : '';
