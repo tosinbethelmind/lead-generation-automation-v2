@@ -36,6 +36,20 @@ function getLocalChromePath(): string {
 }
 
 export async function launchBrowser() {
+  // Support connecting to a remote browser endpoint (like Browserless.io)
+  // to completely bypass Vercel serverless container library limitations (e.g., libnss3.so)
+  const remoteWs = process.env.REMOTE_BROWSER_WS || process.env.BROWSERLESS_WS;
+  if (remoteWs) {
+    try {
+      console.log('[browserLauncher] Connecting to remote Chrome browser:', remoteWs);
+      return await puppeteer.connect({
+        browserWSEndpoint: remoteWs
+      });
+    } catch (err: any) {
+      console.error('[browserLauncher] Failed to connect to remote browser, falling back:', err.message);
+    }
+  }
+
   const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
   if (isServerless) {
     try {

@@ -48,11 +48,14 @@ Add these variables to **Vercel Project Settings > Environment Variables**:
 | **`WHATSAPP_DAILY_CAP`** | Daily safety budget ceiling limit | `50` |
 | **`WHATSAPP_ENABLED`** | Turn outreach sequencer ON/OFF | `false` (change to `true` to active) |
 | **`BUSINESS_SIGNATURE`** | Custom signature for dynamic templates | `Bethelmind Analytics` |
+| **`REMOTE_BROWSER_WS`** | Remote Chrome browser WebSocket URL (e.g. Browserless.io) | `wss://chrome.browserless.io?token=YOUR_API_KEY` (Required for serverless Puppeteer scraping) |
 
 ---
 
-## 3. Playwright Chromium Serverless Behavior
+## 3. Playwright & Puppeteer Serverless Behavior
 
-Standard Vercel ephemeral serverless function runtime restricts local Chrome binary executions due to package limits (50MB). 
-*   **Sandbox Fallback:** When running Playwright crawler on Jiji endpoints in a serverless environment, the engine automatically catches execution limits and triggers the **robust sandboxed mockup lead provider engine** without throwing server errors.
+Standard Vercel ephemeral serverless function runtime restricts local Chrome binary executions due to package limits (50MB) and missing system dependencies (like `libnss3.so`).
+*   **Remote Browser Support**: To run live Puppeteer/Chromium scrapers (like `Maps-Free`) in production on Vercel, set the **`REMOTE_BROWSER_WS`** environment variable to a remote browser endpoint (e.g., Browserless.io). The launcher will automatically connect via WebSockets, bypassing all local library dependencies and CPU/memory constraints.
+*   **Sandbox Fallback:** If `REMOTE_BROWSER_WS` is not configured, running local chromium in the serverless environment may fail due to runtime limitations. In these cases, the engine logs the limitation and triggers the sandboxed mockup lead provider engine or fails cleanly depending on the execution policy.
 *   **Unrestricted APIs:** The Google Places Ingest pipeline, Apify B2B Platform Scraping, and WhatsApp dispatch sequences run at 100% capacity in serverless functions because they are pure web request API operations.
+
