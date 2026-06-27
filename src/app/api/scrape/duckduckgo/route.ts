@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone, extractPhonesFromText } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import * as cheerio from 'cheerio';
+import crypto from 'crypto';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -23,6 +24,21 @@ export async function POST(req: NextRequest) {
 
     if (!query) {
       return NextResponse.json({ error: "Missing required query parameter." }, { status: 400 });
+    }
+
+    const isSandbox = query.toLowerCase().includes('sandbox') || query.toLowerCase().includes('mock');
+    if (isSandbox) {
+      await addLog('DuckDuckGo Scraper', 'START', `Starting DuckDuckGo sandbox run for query: "${query}"`);
+      const mockLeads = getMockDuckDuckGoLeads(query);
+      const dbResult = await saveLeads(mockLeads);
+      await addLog('DuckDuckGo Scraper', 'SUCCESS', `Sandbox complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+      return NextResponse.json({
+        success: true,
+        mode: 'sandbox',
+        added: dbResult.added,
+        skipped: dbResult.skipped,
+        leads: mockLeads
+      });
     }
 
     await addLog('DuckDuckGo Scraper', 'START', `Starting DuckDuckGo search crawl for query: "${query}"`);
@@ -57,7 +73,10 @@ export async function POST(req: NextRequest) {
     } catch (fetchErr: any) {
       console.error("DDG fetch error:", fetchErr);
       await addLog('DuckDuckGo Scraper', 'ERROR', `Fetch failed: ${fetchErr.message}`);
-      return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+      return NextResponse.json({
+        success: false,
+        error: fetchErr.message || 'Fetch failed during live DuckDuckGo scraping'
+      }, { status: 500 });
     }
 
     // Parse DDG HTML output
@@ -91,8 +110,9 @@ export async function POST(req: NextRequest) {
 
         // Save ALL leads — direct business sites AND directory listings.
         // Pitch engine will use extracted website to suggest upgrades/automations.
+        const hash = crypto.createHash('sha256').update(link).digest('hex').substring(0, 16);
         scrapedLeads.push({
-          lead_id: `ddg_${Date.now()}_${idx}_${Math.floor(Math.random() * 100)}`,
+          lead_id: `ddg_${hash}`,
           source: 'DUCKDUCKGO',
           name: name,
           category: query.split('in')[0]?.trim() || 'Business',
@@ -142,6 +162,66 @@ export async function POST(req: NextRequest) {
       });
     }
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error("DDG general error:", e);
+    await addLog('DuckDuckGo Scraper', 'ERROR', `Scraper error: ${e.message}`);
+    return NextResponse.json({
+      success: false,
+      error: e.message || 'Internal error during live DuckDuckGo scraping'
+    }, { status: 500 });
   }
+}
+
+function getMockDuckDuckGoLeads(query: string): Partial<Lead>[] {
+  return [
+    {
+      lead_id: `mock_ddg_1`,
+      source: 'DUCKDUCKGO',
+      name: 'Lagos Medical Center',
+      category: 'dentist',
+      address: 'Lagos, Nigeria',
+      area: 'Lagos',
+      city: 'Lagos',
+      phone_e164: '+2348033344455',
+      phone_raw: '08033344455',
+      email: '',
+      website: 'https://lagosmedicalcenter.com',
+      rating: 4.0,
+      reviews_count: 1,
+      verified: false,
+      listings_count: 1,
+      profile_url: 'https://lagosmedicalcenter.com',
+      source_query_or_seed: query,
+      collected_at: new Date().toISOString(),
+      status: 'NEW',
+      last_contacted_at: '',
+      duplicate_of_lead_id: '',
+      business_summary: 'Lagos Medical Center provides quality healthcare services in Lagos. Contact them at 08033344455.',
+      notes: 'Sandbox mode lead.'
+    },
+    {
+      lead_id: `mock_ddg_2`,
+      source: 'DUCKDUCKGO',
+      name: 'Ikeja Dental Clinic',
+      category: 'dentist',
+      address: 'Lagos, Nigeria',
+      area: 'Lagos',
+      city: 'Lagos',
+      phone_e164: '+2348044455566',
+      phone_raw: '08044455566',
+      email: '',
+      website: '',
+      rating: 4.0,
+      reviews_count: 1,
+      verified: false,
+      listings_count: 1,
+      profile_url: 'https://www.facebook.com/ikejadentalclinic',
+      source_query_or_seed: query,
+      collected_at: new Date().toISOString(),
+      status: 'NEW',
+      last_contacted_at: '',
+      duplicate_of_lead_id: '',
+      business_summary: 'Ikeja Dental Clinic is on Facebook. Reach out to them on Facebook.',
+      notes: 'Sandbox mode lead.'
+    }
+  ];
 }

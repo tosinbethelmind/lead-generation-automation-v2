@@ -21,8 +21,72 @@ export async function POST(req: NextRequest) {
     const config = getRuntimeConfig();
     const apiKey = config.googlePlacesApiKey;
     
-    if (!apiKey || apiKey.trim() === '') {
-      return NextResponse.json({ error: "Google Places API key is missing. Please configure it in Settings." }, { status: 400 });
+    const isSandbox = query.toLowerCase().includes('sandbox') || query.toLowerCase().includes('mock') || !apiKey || apiKey.trim() === '';
+    
+    if (isSandbox) {
+      await addLog('Google Maps Scraper', 'START', `Running in sandbox mode for query: "${query}"`);
+      const mockLeads: Partial<Lead>[] = [
+        {
+          lead_id: `mock_places_1`,
+          source: 'GOOGLE',
+          name: 'Lagos Dental Clinic',
+          category: 'dentist',
+          address: '12 Toyin Street, Ikeja, Lagos',
+          area: 'Ikeja',
+          city: 'Lagos',
+          phone_e164: '+2348012345678',
+          phone_raw: '08012345678',
+          email: '',
+          website: 'https://lagosdentalclinic.com',
+          rating: 4.5,
+          reviews_count: 85,
+          verified: true,
+          listings_count: 1,
+          profile_url: 'https://www.google.com/maps/place/?q=place_id:mock_places_1',
+          source_query_or_seed: query,
+          collected_at: new Date().toISOString(),
+          status: 'NEW',
+          last_contacted_at: '',
+          duplicate_of_lead_id: '',
+          business_summary: 'Lagos Dental Clinic is a local business in Ikeja, Lagos. They have a basic website: https://lagosdentalclinic.com but lack online booking or payment gateway automation.',
+          notes: 'Sandbox mode lead.'
+        },
+        {
+          lead_id: `mock_places_2`,
+          source: 'GOOGLE',
+          name: 'Ikeja Dental Care',
+          category: 'dentist',
+          address: '45 Allen Avenue, Ikeja, Lagos',
+          area: 'Ikeja',
+          city: 'Lagos',
+          phone_e164: '+2348023456789',
+          phone_raw: '08023456789',
+          email: '',
+          website: '',
+          rating: 4.2,
+          reviews_count: 31,
+          verified: false,
+          listings_count: 1,
+          profile_url: 'https://www.google.com/maps/place/?q=place_id:mock_places_2',
+          source_query_or_seed: query,
+          collected_at: new Date().toISOString(),
+          status: 'NEW',
+          last_contacted_at: '',
+          duplicate_of_lead_id: '',
+          business_summary: 'Ikeja Dental Care is a local business in Ikeja, Lagos with a strong Google rating of 4.2 stars (31 reviews) — but no website yet.',
+          notes: 'Sandbox mode lead.'
+        }
+      ];
+      
+      const dbResult = await saveLeads(mockLeads);
+      await addLog('Google Maps Scraper', 'SUCCESS', `Places sandbox scraping complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+      return NextResponse.json({
+        success: true,
+        mode: 'sandbox',
+        added: dbResult.added,
+        skipped: dbResult.skipped,
+        leads: mockLeads
+      });
     }
     
     // Cloud Execution

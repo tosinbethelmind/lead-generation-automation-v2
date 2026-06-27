@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
+import crypto from 'crypto';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -18,6 +19,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required query parameter." }, { status: 400 });
     }
 
+    const isSandbox = query.toLowerCase().includes('sandbox') || query.toLowerCase().includes('mock');
+    if (isSandbox) {
+      await addLog('Maps-Free Scraper', 'START', `Starting Google Maps Free sandbox run for query: "${query}"`);
+      const mockLeads = getMockMapsFreeLeads(query);
+      const dbResult = await saveLeads(mockLeads);
+      await addLog('Maps-Free Scraper', 'SUCCESS', `Sandbox complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+      return NextResponse.json({
+        success: true,
+        mode: 'sandbox',
+        added: dbResult.added,
+        skipped: dbResult.skipped,
+        leads: mockLeads
+      });
+    }
+
     await addLog('Maps-Free Scraper', 'START', `Starting Google Maps Free Puppeteer crawl for query: "${query}"`);
 
     let browser;
@@ -33,7 +49,10 @@ export async function POST(req: NextRequest) {
 
       // Navigate directly to Google Maps search URL
       const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
-      await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(e => {
+        console.log(`Main search page.goto promise timed out/interrupted: ${e.message}, proceeding...`);
+      });
+      await new Promise(r => setTimeout(r, 4000));
 
       // Click on Reject All if GDPR banner pops up
       try {
@@ -51,28 +70,36 @@ export async function POST(req: NextRequest) {
           return false;
         });
         if (clickedReject) {
-          await new Promise(r => setTimeout(r, 1000));
+          await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 8000 }).catch(() => {});
+          await new Promise(r => setTimeout(r, 2000));
         }
       } catch (e) {
         // No GDPR overlay, ignore
       }
 
-      // Wait for listing feed container to appear
-      const feedSelector = '[role="feed"]';
+      // Wait for either results feed or a direct single place detail page to load
       try {
-        await page.waitForSelector(feedSelector, { timeout: 8000 });
+        await page.waitForFunction(() => {
+          return !!(document.querySelector('[role="feed"]') || document.querySelector('h1') || window.location.href.includes('/maps/place/'));
+        }, { timeout: 15000 });
       } catch (e) {
-        // If not found, search might have resolved to a single business page directly!
+        console.log("Timeout waiting for feed or detail page elements");
       }
 
       // Check if we ended up directly on a business detail page
       const currentUrl = page.url();
-      if (currentUrl.includes('/maps/place/')) {
+      const isSinglePlace = currentUrl.includes('/maps/place/') || (await page.$('h1') && !(await page.$('[role="feed"]')));
+
+      if (isSinglePlace) {
+        try {
+          await page.waitForSelector('h1', { timeout: 8000 });
+        } catch (e) {}
         // Extract single lead directly
         const lead = await extractCurrentPlaceDetails(page, query);
         if (lead) scrapedLeads.push(lead);
       } else {
         // We are on a results list feed. Scroll to load items.
+        const feedSelector = '[role="feed"]';
         const feedEl = await page.$(feedSelector);
         if (feedEl) {
           // Scroll the feed container down several times
@@ -94,21 +121,26 @@ export async function POST(req: NextRequest) {
         for (const link of uniqueLinks) {
           if (scrapedLeads.length >= limit) break;
           try {
-            await page.goto(link, { waitUntil: 'domcontentloaded', timeout: 20000 });
-            await new Promise(r => setTimeout(r, 1000));
+            await page.goto(link, { waitUntil: 'domcontentloaded', timeout: 8000 }).catch(err => {
+              console.log(`Detail page.goto timed out or was interrupted for ${link}, checking for h1 anyway...`);
+            });
+            await page.waitForSelector('h1', { timeout: 8000 });
             const lead = await extractCurrentPlaceDetails(page, query);
             if (lead) {
               scrapedLeads.push(lead);
             }
-          } catch (err) {
-            console.error(`Error loading place details for ${link}:`, err);
+          } catch (err: any) {
+            console.error(`Error loading place details for ${link}:`, err.message);
           }
         }
       }
     } catch (browserErr: any) {
       console.error("[Maps-Free] Real scrape failed:", browserErr.message);
       await addLog('Maps-Free Scraper', 'ERROR', `Puppeteer failed: ${browserErr.message}`);
-      return NextResponse.json({ success: false, error: 'browser_launch_failed', message: browserErr.message }, { status: 500 });
+      return NextResponse.json({
+        success: false,
+        error: browserErr.message || 'Browser execution failed during live Google Maps Free scraping'
+      }, { status: 500 });
     } finally {
       if (browser) {
         try {
@@ -191,8 +223,10 @@ async function extractCurrentPlaceDetails(page: any, query: string): Promise<Par
     const parts = details.address.split(',');
     const area = parts[1] ? parts[1].trim() : parts[0] || 'Lagos';
 
+    const profileUrl = page.url();
+    const hash = crypto.createHash('sha256').update(profileUrl).digest('hex').substring(0, 16);
     return {
-      lead_id: `mapsfree_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+      lead_id: `mapsfree_${hash}`,
       source: 'MAPS_FREE',
       name: details.name,
       category: query.split('in')[0]?.trim() || 'Business',
@@ -207,7 +241,7 @@ async function extractCurrentPlaceDetails(page: any, query: string): Promise<Par
       reviews_count: details.reviewsCount,
       verified: true,
       listings_count: 1,
-      profile_url: page.url(),
+      profile_url: profileUrl,
       source_query_or_seed: query,
       collected_at: new Date().toISOString(),
       status: 'NEW',
@@ -220,4 +254,59 @@ async function extractCurrentPlaceDetails(page: any, query: string): Promise<Par
     console.error("Error extracting details:", err);
     return null;
   }
+}
+
+function getMockMapsFreeLeads(query: string): Partial<Lead>[] {
+  return [
+    {
+      lead_id: `mock_mapsfree_1`,
+      source: 'MAPS_FREE',
+      name: 'Lagos Island Dental Care',
+      category: 'dentist',
+      address: '22 Marina Road, Lagos Island, Lagos',
+      area: 'Lagos Island',
+      city: 'Lagos',
+      phone_e164: '+2348055566677',
+      phone_raw: '08055566677',
+      email: '',
+      website: 'https://lagosislanddental.com',
+      rating: 4.8,
+      reviews_count: 120,
+      verified: true,
+      listings_count: 1,
+      profile_url: 'https://www.google.com/maps/place/mock_mapsfree_1',
+      source_query_or_seed: query,
+      collected_at: new Date().toISOString(),
+      status: 'NEW',
+      last_contacted_at: '',
+      duplicate_of_lead_id: '',
+      business_summary: 'Lagos Island Dental Care is a top-rated local business in Lagos Island. Maps rating: 4.8 stars with 120 reviews.',
+      notes: 'Sandbox mode lead.'
+    },
+    {
+      lead_id: `mock_mapsfree_2`,
+      source: 'MAPS_FREE',
+      name: 'Victoria Island Dental Suite',
+      category: 'dentist',
+      address: '88 Adeola Odeku Street, Victoria Island, Lagos',
+      area: 'Victoria Island',
+      city: 'Lagos',
+      phone_e164: '+2348099988877',
+      phone_raw: '08099988877',
+      email: '',
+      website: '',
+      rating: 4.3,
+      reviews_count: 45,
+      verified: true,
+      listings_count: 1,
+      profile_url: 'https://www.google.com/maps/place/mock_mapsfree_2',
+      source_query_or_seed: query,
+      collected_at: new Date().toISOString(),
+      status: 'NEW',
+      last_contacted_at: '',
+      duplicate_of_lead_id: '',
+      business_summary: 'Victoria Island Dental Suite is a top-rated local business in Victoria Island. Maps rating: 4.3 stars with 45 reviews.',
+      notes: 'Sandbox mode lead.'
+    }
+  ];
 }

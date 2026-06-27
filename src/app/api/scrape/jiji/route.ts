@@ -4,6 +4,7 @@ import { createScrapeJob, updateScrapeJobStatus } from '@/app/api/scrape/queue';
 import { saveLeads, addLog, normalizePhone, Lead } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import * as cheerio from 'cheerio';
+import crypto from 'crypto';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -16,12 +17,62 @@ export async function POST(req: NextRequest) {
   let job: any = null;
   
   try {
-    const { url, options = {}, userId } = await req.json();
+    const body = await req.json();
+    const { url, options = {}, userId } = body;
     if (!url) {
       return NextResponse.json({ error: 'Missing url' }, { status: 400 });
     }
 
     const config = getRuntimeConfig();
+
+    const isSandbox = (url && (url.toLowerCase().includes('sandbox') || url.toLowerCase().includes('mock'))) || 
+                      (body.query && (body.query.toLowerCase().includes('sandbox') || body.query.toLowerCase().includes('mock'))) ||
+                      (options.query && (options.query.toLowerCase().includes('sandbox') || options.query.toLowerCase().includes('mock')));
+
+    if (isSandbox) {
+      await addLog('Jiji Scraper', 'START', `Launching Jiji sandbox crawl for URL/Query: "${url}"`);
+      const mockLeads = getMockJijiLeads(url);
+      
+      let jobId = 'mock_job';
+      try {
+        job = await createScrapeJob('jiji', { url, options }, userId);
+        if (job) {
+          jobId = job.id;
+          await updateScrapeJobStatus(job.id, 'running');
+        }
+      } catch (err) {
+        console.warn('Queue job creation failed in sandbox mode:', err);
+      }
+
+      let added = 0;
+      let skipped = 0;
+      try {
+        const dbResult = await saveLeads(mockLeads);
+        added = dbResult.added;
+        skipped = dbResult.skipped;
+      } catch (saveErr) {
+        console.warn('Failed to save mock leads to database:', saveErr);
+      }
+      
+      if (job) {
+        try {
+          await updateScrapeJobStatus(job.id, 'completed', { result: { leads: mockLeads, added, skipped } });
+        } catch (err) {
+          console.warn('Queue job update failed in sandbox mode:', err);
+        }
+      }
+      
+      await addLog('Jiji Scraper', 'SUCCESS', `Sandbox complete. Added: ${added}, Skipped: ${skipped}`);
+      return NextResponse.json({
+        success: true,
+        mode: 'sandbox',
+        jobId,
+        status: 'completed',
+        added,
+        skipped,
+        leads: mockLeads
+      }, { status: 200 });
+    }
 
     // Create a job entry in database
     job = await createScrapeJob('jiji', { url, options }, userId);
@@ -52,7 +103,7 @@ export async function POST(req: NextRequest) {
       
       // If we get a 404, try search query fallback
       if (res.status === 404 && !targetUrl.includes('/search')) {
-        await addLog('Jiji Scraper', 'WARNING', `Category page returned 404. Falling back to search query...`);
+        await addLog('Jiji Scraper', 'WARN', `Category page returned 404. Falling back to search query...`);
         const slug = url.split('/').pop() || '';
         const fallbackUrl = `https://jiji.ng/lagos/search?query=${encodeURIComponent(slug.replace(/-/g, ' '))}`;
         const fbRes = await fetch(fallbackUrl, { headers });
@@ -68,9 +119,7 @@ export async function POST(req: NextRequest) {
       }
     } catch (fetchErr: any) {
       console.error('Fetch error:', fetchErr);
-      await addLog('Jiji Scraper', 'ERROR', `HTTP fetch failed: ${fetchErr.message}`);
-      await updateScrapeJobStatus(job.id, 'failed', { error_message: `HTTP fetch failed: ${fetchErr.message}` });
-      return NextResponse.json({ success: false, error: fetchErr.message }, { status: 500 });
+      throw fetchErr;
     }
 
     const $ = cheerio.load(responseHtml);
@@ -104,7 +153,7 @@ export async function POST(req: NextRequest) {
         await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000)); // Be polite
         const detailRes = await fetch(target.url, { headers });
         if (!detailRes.ok) {
-          await addLog('Jiji Scraper', 'WARNING', `Failed to fetch detail page ${target.url}: status ${detailRes.status}`);
+          await addLog('Jiji Scraper', 'WARN', `Failed to fetch detail page ${target.url}: status ${detailRes.status}`);
           continue;
         }
         
@@ -182,9 +231,10 @@ export async function POST(req: NextRequest) {
         }
 
         const category = target.url.split('/')[4]?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Solar Seller';
+        const hash = crypto.createHash('sha256').update(target.url).digest('hex').substring(0, 16);
 
         scrapedLeads.push({
-          lead_id: `jiji_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+          lead_id: `jiji_${hash}`,
           source: 'JIJI',
           name: sellerName,
           category: category,
@@ -219,18 +269,84 @@ export async function POST(req: NextRequest) {
       const dbResult = await saveLeads(scrapedLeads);
       await updateScrapeJobStatus(job.id, 'completed', { result: { leads: scrapedLeads, added: dbResult.added, skipped: dbResult.skipped } });
       await addLog('Jiji Scraper', 'SUCCESS', `Crawl complete. Scraped: ${scrapedLeads.length}, Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
-      return NextResponse.json({ jobId: job.id, status: 'completed', added: dbResult.added, skipped: dbResult.skipped, leads: scrapedLeads }, { status: 200 });
+      return NextResponse.json({ success: true, mode: 'live', jobId: job.id, status: 'completed', added: dbResult.added, skipped: dbResult.skipped, leads: scrapedLeads }, { status: 200 });
     } else {
       await updateScrapeJobStatus(job.id, 'completed', { result: { leads: [], added: 0, skipped: 0 } });
       await addLog('Jiji Scraper', 'INFO', `Crawl completed but found 0 valid qualified leads (without phone numbers).`);
-      return NextResponse.json({ jobId: job.id, status: 'completed', added: 0, skipped: 0, leads: [] }, { status: 200 });
+      return NextResponse.json({ success: true, mode: 'live', jobId: job.id, status: 'completed', added: 0, skipped: 0, leads: [] }, { status: 200 });
     }
 
   } catch (err: any) {
     console.error('Jiji scrape error:', err);
+    try {
+      await addLog('Jiji Scraper', 'ERROR', `Scraper error: ${err.message}`);
+    } catch (logErr) {}
+    
     if (job) {
-      await updateScrapeJobStatus(job.id, 'failed', { error_message: err.message || 'Internal error' });
+      try {
+        await updateScrapeJobStatus(job.id, 'failed', { error_message: err.message || 'Internal error' });
+      } catch (jobErr) {}
     }
-    return NextResponse.json({ error: err.message || 'Internal error' }, { status: 500 });
+
+    return NextResponse.json({
+      success: false,
+      error: err.message || 'Internal error during live Jiji scraping',
+      jobId: job ? job.id : 'unknown'
+    }, { status: 500 });
   }
+}
+
+function getMockJijiLeads(urlOrQuery: string): Partial<Lead>[] {
+  return [
+    {
+      lead_id: `mock_jiji_1`,
+      source: 'JIJI',
+      name: 'Chinedu Dental Supplies',
+      category: 'dentist',
+      address: 'Ikeja, Lagos, Nigeria',
+      area: 'Ikeja',
+      city: 'Lagos',
+      phone_e164: '+2348100223344',
+      phone_raw: '08100223344',
+      email: '',
+      website: '',
+      rating: 4.0,
+      reviews_count: 1,
+      verified: true,
+      listings_count: 1,
+      profile_url: 'https://jiji.ng/lagos/mock_jiji_1',
+      source_query_or_seed: urlOrQuery,
+      collected_at: new Date().toISOString(),
+      status: 'NEW',
+      last_contacted_at: '',
+      duplicate_of_lead_id: '',
+      business_summary: 'Chinedu Dental Supplies listed on Jiji. Quality equipment.',
+      notes: 'Sandbox mode lead.'
+    },
+    {
+      lead_id: `mock_jiji_2`,
+      source: 'JIJI',
+      name: 'Amina Dental Practice',
+      category: 'dentist',
+      address: 'Surulere, Lagos, Nigeria',
+      area: 'Surulere',
+      city: 'Lagos',
+      phone_e164: '+2348111222333',
+      phone_raw: '08111222333',
+      email: '',
+      website: '',
+      rating: 4.0,
+      reviews_count: 1,
+      verified: true,
+      listings_count: 1,
+      profile_url: 'https://jiji.ng/lagos/mock_jiji_2',
+      source_query_or_seed: urlOrQuery,
+      collected_at: new Date().toISOString(),
+      status: 'NEW',
+      last_contacted_at: '',
+      duplicate_of_lead_id: '',
+      business_summary: 'Amina Dental Practice listed on Jiji. Expert services.',
+      notes: 'Sandbox mode lead.'
+    }
+  ];
 }

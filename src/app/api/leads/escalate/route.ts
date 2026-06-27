@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     // 2. Add audit log
     await addLog(
       'Lead Escalation',
-      'WARNING',
+      'WARN',
       `Lead "${lead.name}" escalated to MANUAL_REVISION by ${clientName || 'client'}. Reason: ${reason || 'none'}`
     );
 

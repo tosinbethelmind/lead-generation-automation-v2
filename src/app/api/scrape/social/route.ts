@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone, extractPhonesFromText } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import * as cheerio from 'cheerio';
+import crypto from 'crypto';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -28,6 +29,21 @@ export async function POST(req: NextRequest) {
 
     if (!query) {
       return NextResponse.json({ error: "Missing required query parameter." }, { status: 400 });
+    }
+
+    const isSandbox = query.toLowerCase().includes('sandbox') || query.toLowerCase().includes('mock');
+    if (isSandbox) {
+      await addLog('Social Scraper', 'START', `Searching ${platUpper} sandbox profiles for query: "${query}"`);
+      const mockLeads = getMockSocialLeads(platUpper, query);
+      const dbResult = await saveLeads(mockLeads);
+      await addLog('Social Scraper', 'SUCCESS', `Scraped ${mockLeads.length} sandbox ${platUpper} accounts. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+      return NextResponse.json({
+        success: true,
+        mode: 'sandbox',
+        added: dbResult.added,
+        skipped: dbResult.skipped,
+        leads: mockLeads
+      });
     }
 
     // LinkedIn requires a dedicated API (RapidAPI, Proxycurl, etc.) — DuckDuckGo scraping returns 403
@@ -80,7 +96,10 @@ export async function POST(req: NextRequest) {
     } catch (fetchErr: any) {
       console.error(`${platUpper} fetch error:`, fetchErr);
       await addLog('Social Scraper', 'ERROR', `Fetch failed: ${fetchErr.message}`);
-      return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+      return NextResponse.json({
+        success: false,
+        error: fetchErr.message || `Fetch failed during live ${platUpper} scraping`
+      }, { status: 500 });
     }
 
     const $ = cheerio.load(htmlText);
@@ -125,8 +144,9 @@ export async function POST(req: NextRequest) {
       if (phones && phones.length > 0) {
         const cleanPhone = phones[0];
 
+        const hash = crypto.createHash('sha256').update(link).digest('hex').substring(0, 16);
         scrapedLeads.push({
-          lead_id: `social_${platUpper.toLowerCase()}_${Date.now()}_${idx}`,
+          lead_id: `social_${platUpper.toLowerCase()}_${hash}`,
           source: platUpper,
           name: name || `E-commerce ${platUpper}`,
           category: 'E-Commerce Business',
@@ -174,6 +194,67 @@ export async function POST(req: NextRequest) {
       });
     }
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error("Social general error:", e);
+    await addLog('Social Scraper', 'ERROR', `Scraper error: ${e.message}`);
+    return NextResponse.json({
+      success: false,
+      error: e.message || 'Internal error during live social scraping'
+    }, { status: 500 });
   }
+}
+
+function getMockSocialLeads(platform: string, query: string): Partial<Lead>[] {
+  const platUpper = platform.toUpperCase();
+  return [
+    {
+      lead_id: `mock_social_${platUpper.toLowerCase()}_1`,
+      source: platUpper as any,
+      name: `Lagos ${platUpper} Merchant`,
+      category: 'E-Commerce Business',
+      address: 'Lagos, Nigeria',
+      area: 'Lagos',
+      city: 'Lagos',
+      phone_e164: '+2348055566677',
+      phone_raw: '08055566677',
+      email: `contact@lagos${platUpper.toLowerCase()}merchant.com`,
+      website: `https://lagos${platUpper.toLowerCase()}merchant.com`,
+      rating: 4.5,
+      reviews_count: 50,
+      verified: false,
+      listings_count: 1,
+      profile_url: `https://www.${platUpper.toLowerCase()}.com/lagos_merchant`,
+      source_query_or_seed: query,
+      collected_at: new Date().toISOString(),
+      status: 'NEW',
+      last_contacted_at: '',
+      duplicate_of_lead_id: '',
+      business_summary: `Lagos ${platUpper} Merchant specializes in e-commerce products. Reach out to them.`,
+      notes: 'Sandbox mode lead.'
+    },
+    {
+      lead_id: `mock_social_${platUpper.toLowerCase()}_2`,
+      source: platUpper as any,
+      name: `Ikeja ${platUpper} Brand`,
+      category: 'E-Commerce Business',
+      address: 'Ikeja, Lagos, Nigeria',
+      area: 'Ikeja',
+      city: 'Lagos',
+      phone_e164: '+2348066677788',
+      phone_raw: '08066677788',
+      email: '',
+      website: '',
+      rating: 4.5,
+      reviews_count: 50,
+      verified: false,
+      listings_count: 1,
+      profile_url: `https://www.${platUpper.toLowerCase()}.com/ikeja_brand`,
+      source_query_or_seed: query,
+      collected_at: new Date().toISOString(),
+      status: 'NEW',
+      last_contacted_at: '',
+      duplicate_of_lead_id: '',
+      business_summary: `Ikeja ${platUpper} Brand offers premium wholesale products.`,
+      notes: 'Sandbox mode lead.'
+    }
+  ];
 }

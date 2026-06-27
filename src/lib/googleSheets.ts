@@ -124,6 +124,16 @@ export interface LogEntry {
   message: string;
 }
 
+export function normalizeLogStatus(status: string): 'START' | 'INFO' | 'WARN' | 'SUCCESS' | 'ERROR' {
+  let clean = (status || '').toUpperCase().trim();
+  if (clean === 'WARNING') return 'WARN';
+  if (['START', 'INFO', 'WARN', 'SUCCESS', 'ERROR'].includes(clean)) {
+    return clean as any;
+  }
+  return 'INFO';
+}
+
+
 const COLUMNS = [
   'lead_id', 'source', 'name', 'category', 'address', 'area', 'city', 
   'phone_e164', 'phone_raw', 'email', 'website', 'rating', 'reviews_count', 
@@ -699,7 +709,7 @@ class GoogleSheetsLogRepository implements ILogRepository {
         range: 'Logs!A2',
         valueInputOption: 'USER_ENTERED',
         requestBody: {
-          values: [[runId, new Date().toISOString(), step, '', status, msg]],
+          values: [[runId, new Date().toISOString(), step, '', normalizeLogStatus(status), msg]],
         },
       });
     } catch (e) {
@@ -867,7 +877,7 @@ class LocalJsonLogRepository implements ILogRepository {
         run_id: runId,
         timestamp: new Date().toISOString(),
         step,
-        status: status as any,
+        status: normalizeLogStatus(status),
         message: msg
       };
       await writeJsonFile<LogEntry[]>(LOGS_FILE, [...logs, newEntry]);
@@ -1162,7 +1172,7 @@ class SupabaseLogRepository implements ILogRepository {
           run_id: runId,
           timestamp: new Date().toISOString(),
           step,
-          status,
+          status: normalizeLogStatus(status),
           message: msg
         });
       if (error) throw error;

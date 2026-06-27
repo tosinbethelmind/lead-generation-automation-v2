@@ -232,6 +232,21 @@ export async function POST(req: NextRequest) {
     
     const config = getRuntimeConfig();
 
+    const isSandbox = query.toLowerCase().includes('sandbox') || query.toLowerCase().includes('mock');
+    if (isSandbox) {
+      await addLog('OSM Scraper', 'START', `Executing OSM sandbox run for: "${query}"`);
+      const mockLeads = getMockOsmLeads(query);
+      const dbResult = await saveLeads(mockLeads);
+      await addLog('OSM Scraper', 'SUCCESS', `OSM sandbox scraping complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+      return NextResponse.json({
+        success: true,
+        mode: 'sandbox',
+        added: dbResult.added,
+        skipped: dbResult.skipped,
+        leads: mockLeads
+      });
+    }
+
     await addLog('OSM Scraper', 'START', `Executing OSM lead generation pipeline for: "${query}"`);
 
     // Parse area and keywords
@@ -297,6 +312,7 @@ export async function POST(req: NextRequest) {
           leadsToSave = parseNominatimItemsToLeads(nominatimItems, areaName, query);
         } catch (nomErr: any) {
           await addLog('OSM Scraper', 'ERROR', `Nominatim fallback search failed: ${nomErr.message}`);
+          throw new Error(`OSM Scraper failed. Overpass: ${err.message}. Nominatim: ${nomErr.message}`);
         }
       }
     } else {
@@ -307,6 +323,7 @@ export async function POST(req: NextRequest) {
         leadsToSave = parseNominatimItemsToLeads(nominatimItems, areaName, query);
       } catch (nomErr: any) {
         await addLog('OSM Scraper', 'ERROR', `Nominatim direct search failed: ${nomErr.message}`);
+        throw nomErr;
       }
     }
 
@@ -326,7 +343,66 @@ export async function POST(req: NextRequest) {
     });
     
   } catch (e: any) {
+    console.error("OSM general error:", e);
     await addLog('OSM Scraper', 'ERROR', `OSM scraping failed: ${e.message}`);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({
+      success: false,
+      error: e.message || 'Internal error during live OSM scraping'
+    }, { status: 500 });
   }
+}
+
+function getMockOsmLeads(query: string): Partial<Lead>[] {
+  return [
+    {
+      lead_id: `mock_osm_node_1`,
+      source: 'OSM',
+      name: 'Yaba Dental Suite',
+      category: 'dentist',
+      address: '23 Herbert Macaulay Way, Yaba, Lagos',
+      area: 'Yaba',
+      city: 'Lagos',
+      phone_e164: '+2348077788899',
+      phone_raw: '08077788899',
+      email: 'contact@yabadental.com',
+      website: 'https://yabadental.com',
+      rating: 4.3,
+      reviews_count: 3,
+      verified: false,
+      listings_count: 1,
+      profile_url: 'https://www.openstreetmap.org/node/mock_1',
+      source_query_or_seed: query,
+      collected_at: new Date().toISOString(),
+      status: 'NEW',
+      last_contacted_at: '',
+      duplicate_of_lead_id: '',
+      business_summary: 'Yaba Dental Suite is a dentist located in Yaba. Retrieved via OpenStreetMap tags.',
+      notes: 'Sandbox mode lead.'
+    },
+    {
+      lead_id: `mock_osm_way_2`,
+      source: 'OSM',
+      name: 'Lekki Dental Clinic',
+      category: 'dentist',
+      address: '15 Admiralty Way, Lekki, Lagos',
+      area: 'Lekki',
+      city: 'Lagos',
+      phone_e164: '+2348088899900',
+      phone_raw: '08088899900',
+      email: '',
+      website: '',
+      rating: 4.3,
+      reviews_count: 3,
+      verified: false,
+      listings_count: 1,
+      profile_url: 'https://www.openstreetmap.org/way/mock_2',
+      source_query_or_seed: query,
+      collected_at: new Date().toISOString(),
+      status: 'NEW',
+      last_contacted_at: '',
+      duplicate_of_lead_id: '',
+      business_summary: 'Lekki Dental Clinic is a dentist located in Lekki. Retrieved via Nominatim search.',
+      notes: 'Sandbox mode lead.'
+    }
+  ];
 }
