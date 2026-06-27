@@ -143,10 +143,25 @@ export async function POST(req: NextRequest) {
       const phones = extractPhonesFromText(snippet);
       const emails = extractEmailsFromText(snippet);
 
-      // Accept leads with phone OR email (don't require both)
+      // Extract website from snippet if available
+      const websiteRegex = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9\-]+\.[a-zA-Z]{2,6})(?:\/[^\s]*)?/i;
+      const webMatch = snippet.match(websiteRegex);
+      let website = '';
+      if (webMatch) {
+        const matchedDomain = webMatch[1].toLowerCase();
+        const isSocialDomain = /instagram|facebook|tiktok|twitter|t\.co|youtube|lnky|linktr|bit\.ly|wa\.me/.test(matchedDomain);
+        if (!isSocialDomain) {
+          website = webMatch[0];
+          if (!website.startsWith('http')) {
+            website = 'http://' + website;
+          }
+        }
+      }
+
+      // Accept leads with phone OR email OR website (we can enrich website later)
       const hasPhone = phones && phones.length > 0;
       const hasEmail = emails.length > 0;
-      if (!hasPhone && !hasEmail) return;
+      if (!hasPhone && !hasEmail && !website) return;
 
       const cleanPhone = hasPhone ? phones[0] : null;
       const email = hasEmail ? emails[0] : '';
@@ -163,7 +178,7 @@ export async function POST(req: NextRequest) {
         phone_e164: cleanPhone || '',
         phone_raw: cleanPhone || '',
         email,
-        website: '',
+        website: website || '',
         rating: 4.5,
         reviews_count: 50,
         verified: false,
@@ -175,7 +190,7 @@ export async function POST(req: NextRequest) {
         last_contacted_at: '',
         duplicate_of_lead_id: '',
         business_summary: snippet.trim() || `${name} social commerce seller listing.`,
-        notes: `Social ${platUpper} page: ${link}. Email: ${email || 'none'}.`
+        notes: `Social ${platUpper} page: ${link}. Email: ${email || 'none'}. Website: ${website || 'none'}.`
       });
     });
 

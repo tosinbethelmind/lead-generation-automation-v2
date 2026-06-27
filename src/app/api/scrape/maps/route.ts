@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
+import { enrichFromWebsite } from '@/lib/leadEnricher';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -129,17 +130,31 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      const normPhone = rawPhone ? normalizePhone(rawPhone, 'NG') : null;
-      if (!normPhone) continue;
+      let normPhone = rawPhone ? normalizePhone(rawPhone, 'NG') : null;
+      let email = '';
+      let websiteEnrichedPhone: string | null = null;
       const hasWebsite = !!(website && website.trim());
-      
+
+      if (hasWebsite) {
+        try {
+          const enriched = await enrichFromWebsite(website);
+          if (enriched.email) email = enriched.email;
+          if (enriched.phone) websiteEnrichedPhone = enriched.phone;
+        } catch (enrichErr) {
+          console.error(`Failed to enrich website ${website}:`, enrichErr);
+        }
+      }
+
+      const finalPhone = normPhone || websiteEnrichedPhone;
+      if (!finalPhone) continue;
+
       // Parse Lagos area/neighborhood if possible
       let area = 'Lagos';
       const areaMatches = address.match(/(Ikeja|Lekki|Yaba|Victoria Island|VI|Surulere|Ikoyi|Apapa|Maryland|Festac|Ebute Metta|Gbagada)/i);
       if (areaMatches) {
         area = areaMatches[0];
       }
-      
+
       newLeads.push({
         lead_id: `places_${placeId}`,
         source: 'GOOGLE',
@@ -148,9 +163,9 @@ export async function POST(req: NextRequest) {
         address,
         area,
         city: 'Lagos',
-        phone_e164: normPhone || '',
-        phone_raw: rawPhone,
-        email: '',
+        phone_e164: finalPhone,
+        phone_raw: rawPhone || websiteEnrichedPhone || '',
+        email: email || '',
         website: website || '',
         rating: record.rating || 0,
         reviews_count: record.user_ratings_total || 0,
@@ -166,7 +181,7 @@ export async function POST(req: NextRequest) {
           ? `${record.name} is a local business in ${area}, Lagos. They have a basic website: ${website} but lack online booking or payment gateway automation.`
           : `${record.name} is a local business in ${area}, Lagos with a strong Google rating of ${record.rating || 'N/A'} stars (${record.user_ratings_total || 0} reviews) — but no website yet.`,
         notes: hasWebsite
-          ? `Imported via Google Places API. Has basic website: ${website}. Pitch: Automation & Premium Feature Upgrade.`
+          ? `Imported via Google Places API. Has basic website: ${website}. Email: ${email || 'none'}. Pitch: Automation & Premium Feature Upgrade.`
           : `Imported via Google Places API. No website detected on place details.`
       });
     }

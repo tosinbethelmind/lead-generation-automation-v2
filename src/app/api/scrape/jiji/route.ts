@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { createScrapeJob, updateScrapeJobStatus } from '@/app/api/scrape/queue';
 import { saveLeads, addLog, normalizePhone, Lead } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
+import { extractEmailsFromText, enrichFromWebsite } from '@/lib/leadEnricher';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 
@@ -222,10 +223,39 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        const cleanPhone = phoneVal ? (normalizePhone(phoneVal, 'NG') || phoneVal) : '';
+        let finalPhone = phoneVal ? (normalizePhone(phoneVal, 'NG') || phoneVal) : '';
         
+        const emails = extractEmailsFromText(description);
+        let email = emails[0] || '';
+
+        const websiteRegex = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9\-]+\.[a-zA-Z]{2,6})(?:\/[^\s]*)?/i;
+        const webMatch = description.match(websiteRegex);
+        let website = '';
+        if (webMatch) {
+          const matchedDomain = webMatch[1].toLowerCase();
+          if (!matchedDomain.includes('jiji')) {
+            website = webMatch[0];
+            if (!website.startsWith('http')) {
+              website = 'http://' + website;
+            }
+          }
+        }
+
+        if (website && (!email || !finalPhone)) {
+          try {
+            const enriched = await enrichFromWebsite(website);
+            if (!email && enriched.email) email = enriched.email;
+            if (!finalPhone && enriched.phone) {
+              finalPhone = enriched.phone;
+              phoneVal = enriched.phone;
+            }
+          } catch (enrichErr) {
+            console.warn(`Failed to enrich Jiji lead website ${website}:`, enrichErr);
+          }
+        }
+
         // Skip leads with no phone number
-        if (!cleanPhone) {
+        if (!finalPhone) {
           await addLog('Jiji Scraper', 'INFO', `Skipped listing "${target.title}" - no phone number found.`);
           continue;
         }
@@ -241,10 +271,10 @@ export async function POST(req: NextRequest) {
           address: target.area ? `${target.area}, Lagos, Nigeria` : 'Lagos, Nigeria',
           area: target.area || 'Lagos',
           city: 'Lagos',
-          phone_e164: cleanPhone,
+          phone_e164: finalPhone,
           phone_raw: phoneVal,
-          email: '',
-          website: '', 
+          email: email || '',
+          website: website || '', 
           rating: 4.0, 
           reviews_count: 1,
           verified: true,
