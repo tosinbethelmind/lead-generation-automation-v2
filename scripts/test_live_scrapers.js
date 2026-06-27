@@ -12,7 +12,7 @@
  */
 
 let BASE_URL = 'https://lead-generation-automation-ecru.vercel.app';
-const TIMEOUT_MS = 65000; // slightly above Vercel maxDuration=60s
+const TIMEOUT_MS = 90000; // allow up to 90s for comprehensive Puppeteer runs
 
 // ANSI colour helpers
 const GREEN  = (s) => `\x1b[32m${s}\x1b[0m`;

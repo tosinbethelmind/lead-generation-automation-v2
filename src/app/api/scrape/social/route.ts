@@ -74,32 +74,49 @@ export async function POST(req: NextRequest) {
     const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(searchQuery)}`;
 
     let htmlText = '';
-    try {
-      const userAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
-      const resp = await fetch(url, {
-        headers: {
-          'User-Agent': userAgent,
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.9,en-GB;q=0.8',
-          'Referer': 'https://duckduckgo.com/',
-          'Cache-Control': 'max-age=0'
-        }
-      });
+    let lastError: any = null;
+    const maxRetries = 3;
 
-      if (!resp.ok) {
-        if (resp.status === 403 || resp.status === 429) {
-          throw new Error("⚠️ This provider is currently blocked by the platform. Try again later or use an alternative.");
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const userAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+        const resp = await fetch(url, {
+          headers: {
+            'User-Agent': userAgent,
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9,en-GB;q=0.8',
+            'Referer': 'https://duckduckgo.com/',
+            'Cache-Control': 'max-age=0'
+          }
+        });
+
+        if (!resp.ok) {
+          if (resp.status === 403 || resp.status === 429) {
+            throw new Error("⚠️ DuckDuckGo has blocked/rate-limited this request. Try again later.");
+          }
+          throw new Error(`HTTP Error: ${resp.status} - ${resp.statusText}`);
         }
-        throw new Error(`HTTP Error: ${resp.status} - ${resp.statusText}`);
+
+        htmlText = await resp.text();
+        lastError = null;
+        break; // Success!
+      } catch (err: any) {
+        lastError = err;
+        console.warn(`[Social Scraper] ${platUpper} search attempt ${attempt} failed: ${err.message}`);
+        if (attempt < maxRetries) {
+          const delay = 3000 + attempt * 2000;
+          console.log(`[Social Scraper] Sleeping ${delay}ms before retry...`);
+          await sleep(delay);
+        }
       }
+    }
 
-      htmlText = await resp.text();
-    } catch (fetchErr: any) {
-      console.error(`${platUpper} fetch error:`, fetchErr);
-      await addLog('Social Scraper', 'ERROR', `Fetch failed: ${fetchErr.message}`);
+    if (lastError) {
+      console.error(`${platUpper} fetch error after ${maxRetries} attempts:`, lastError);
+      await addLog('Social Scraper', 'ERROR', `Fetch failed after ${maxRetries} retries: ${lastError.message}`);
       return NextResponse.json({
         success: false,
-        error: fetchErr.message || `Fetch failed during live ${platUpper} scraping`
+        error: lastError.message || `Fetch failed during live ${platUpper} scraping`
       }, { status: 500 });
     }
 

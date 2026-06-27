@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     await addLog('Maps-Free Scraper', 'START', `Starting Google Maps Free Puppeteer crawl for query: "${query}"`);
 
-    let browser;
+    let browser: any;
     let scrapedLeads: Partial<Lead>[] = [];
 
     try {
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
       // Navigate directly to Google Maps search URL
       const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
-      await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(e => {
+      await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch((e: any) => {
         console.log(`Main search page.goto promise timed out/interrupted: ${e.message}, proceeding...`);
       });
       await new Promise(r => setTimeout(r, 4000));
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
         if (feedEl) {
           // Scroll the feed container down several times
           for (let i = 0; i < 5; i++) {
-            await page.evaluate((el) => el.scrollBy(0, 1200), feedEl);
+            await page.evaluate((el: any) => el.scrollBy(0, 1200), feedEl);
             await new Promise(r => setTimeout(r, 1000));
           }
         }
@@ -119,24 +119,36 @@ export async function POST(req: NextRequest) {
           return anchors.map(a => (a as HTMLAnchorElement).href);
         });
 
-        // Deduplicate URLs
-        const uniqueLinks = Array.from(new Set(links)).slice(0, Math.min(limit * 2, 12));
+        // Deduplicate URLs and slice to limit to keep crawl time fast
+        const uniqueLinks = Array.from(new Set(links)).slice(0, Math.min(limit, 10));
 
-        for (const link of uniqueLinks) {
-          if (scrapedLeads.length >= limit) break;
+        const pagePromises = uniqueLinks.map(async (link) => {
+          let detailPage;
           try {
-            await page.goto(link, { waitUntil: 'domcontentloaded', timeout: 8000 }).catch(err => {
+            detailPage = await browser.newPage();
+            await detailPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+            await detailPage.setViewport({ width: 1280, height: 800 });
+            await detailPage.goto(link, { waitUntil: 'domcontentloaded', timeout: 8000 }).catch((err: any) => {
               console.log(`Detail page.goto timed out or was interrupted for ${link}, checking for h1 anyway...`);
             });
-            await page.waitForSelector('h1', { timeout: 8000 });
-            const data = await extractMapsLeadData(page, query);
+            await detailPage.waitForSelector('h1', { timeout: 8000 }).catch(() => {});
+            const data = await extractMapsLeadData(detailPage, query);
             if (data) {
-              const lead = buildLead(data, page.url(), query);
-              if (lead) scrapedLeads.push(lead);
+              return buildLead(data, detailPage.url(), query);
             }
           } catch (err: any) {
             console.error(`Error loading place details for ${link}:`, err.message);
+          } finally {
+            if (detailPage) {
+              await detailPage.close().catch(() => {});
+            }
           }
+          return null;
+        });
+
+        const results = await Promise.all(pagePromises);
+        for (const lead of results) {
+          if (lead) scrapedLeads.push(lead);
         }
       }
     } catch (browserErr: any) {
