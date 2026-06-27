@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer-core';
 import os from 'os';
 import fs from 'fs';
+import { getRuntimeConfig } from '@/lib/localConfig';
 
 function getLocalChromePath(): string {
   const platform = os.platform();
@@ -37,8 +38,15 @@ function getLocalChromePath(): string {
 
 export async function launchBrowser() {
   // Support connecting to a remote browser endpoint (like Browserless.io)
-  // to completely bypass Vercel serverless container library limitations (e.g., libnss3.so)
-  const remoteWs = process.env.REMOTE_BROWSER_WS || process.env.BROWSERLESS_WS;
+  // to completely bypass Vercel serverless container library limitations (e.g., libnss3.so).
+  // Priority: env var > UI-saved config value
+  const savedConfig = getRuntimeConfig();
+  const remoteWs =
+    process.env.REMOTE_BROWSER_WS ||
+    process.env.BROWSERLESS_WS ||
+    savedConfig.remoteBrowserWs ||
+    '';
+
   if (remoteWs) {
     try {
       console.log('[browserLauncher] Connecting to remote Chrome browser:', remoteWs);

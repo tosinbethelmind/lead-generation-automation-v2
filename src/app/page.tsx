@@ -228,7 +228,8 @@ export default function Home() {
     termiiSenderId: '',
     africastalkingUsername: '',
     africastalkingApiKey: '',
-    africastalkingSenderId: ''
+    africastalkingSenderId: '',
+    remoteBrowserWs: ''
   });
   
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -3088,6 +3089,69 @@ ${config.businessSignature}`;
                   />
                 </div>
               </div>
+
+              {/* Remote Browser Endpoint - fixes libnss3.so error on Vercel */}
+              <div style={{ marginTop: '20px', padding: '16px', background: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>⚡</span> Remote Browser WebSocket URL
+                    </label>
+                    <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                      Required to fix <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>libnss3.so</code> errors on Vercel. Connect to a hosted Chromium service like Browserless.io instead of launching a local browser.
+                    </p>
+                  </div>
+                  <a 
+                    href="https://browserless.io" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    style={{ fontSize: '0.72rem', color: '#0af', whiteSpace: 'nowrap', marginLeft: '12px', marginTop: '2px' }}
+                  >
+                    Get free token →
+                  </a>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input 
+                    type="url" 
+                    value={(config as any).remoteBrowserWs || ''} 
+                    onChange={(e) => setConfig({ ...config, remoteBrowserWs: e.target.value } as any)}
+                    placeholder="wss://chrome.browserless.io?token=YOUR_TOKEN"
+                    style={{ flex: 1, padding: '11px 12px', background: 'var(--input-bg)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const ws = (config as any).remoteBrowserWs;
+                      if (!ws) { addToast('Enter a WebSocket URL first.', 'error'); return; }
+                      addToast('Testing remote browser connection...', 'info');
+                      try {
+                        const res = await fetch('/api/config/test-browser', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ wsUrl: ws })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                          addToast('✅ Remote browser connected successfully!', 'success');
+                        } else {
+                          addToast('❌ Connection failed: ' + data.error, 'error');
+                        }
+                      } catch (err: any) {
+                        addToast('Error: ' + err.message, 'error');
+                      }
+                    }}
+                    className="btn-secondary"
+                    style={{ padding: '11px 16px', fontSize: '0.8rem', borderRadius: '8px', whiteSpace: 'nowrap' }}
+                  >
+                    Test Connection
+                  </button>
+                </div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.5 }}>
+                  <strong style={{ color: 'var(--text-secondary)' }}>Free option:</strong> Sign up at <a href="https://browserless.io" target="_blank" style={{ color: '#0af' }}>Browserless.io</a> → copy the WebSocket URL from your dashboard.
+                  Format: <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>wss://chrome.browserless.io?token=YOUR_TOKEN</code>
+                </div>
+              </div>
+
             </div>
 
             {/* Section B: Email Provider */}

@@ -115,7 +115,12 @@ export interface LocalConfig {
   antigravityModels?: string[]; // e.g., ['gemini_flash_high','gemini_pro_low','gpt_oss','claude','sonneta','opus']
   // ── On‑ground mode flag ────────────────────────────────────
   onGroundMode?: boolean;
-  // ── On‑ground mode flag ────────────────────────────────────
+
+  // ── Remote Browser WebSocket (Browserless.io / proxy browser) ────
+  // When set, all Puppeteer scrapers connect to this remote endpoint
+  // instead of launching a local Chromium. Required on Vercel (AL2023)
+  // which is missing system-level Chromium shared libraries (libnss3.so).
+  remoteBrowserWs?: string;
 
   n8nWebhookUrl?: string;
 }
@@ -224,6 +229,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   antigravityModels: [],
   onGroundMode: false,
   geminiApiKey: '',
+  remoteBrowserWs: '',
   n8nWebhookUrl: '',
   storageMode: 'hybrid',
   // ... (rest unchanged)
@@ -344,6 +350,7 @@ export function getRuntimeConfig(): RuntimeConfig {
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || fileConfig.supabaseUrl || DEFAULT_CONFIG.supabaseUrl,
     supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || fileConfig.supabaseKey || DEFAULT_CONFIG.supabaseKey,
     geminiApiKey: process.env.GEMINI_API_KEY || fileConfig.geminiApiKey || DEFAULT_CONFIG.geminiApiKey,
+    remoteBrowserWs: process.env.REMOTE_BROWSER_WS || process.env.BROWSERLESS_WS || fileConfig.remoteBrowserWs || DEFAULT_CONFIG.remoteBrowserWs,
     n8nWebhookUrl: process.env.N8N_WEBHOOK_URL || fileConfig.n8nWebhookUrl || DEFAULT_CONFIG.n8nWebhookUrl,
     storageMode: (process.env.STORAGE_MODE as StorageMode) || fileConfig.storageMode || DEFAULT_CONFIG.storageMode,
   };
@@ -447,6 +454,7 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       supabaseUrl: updated.supabaseUrl,
       supabaseKey: updated.supabaseKey,
       geminiApiKey: updated.geminiApiKey,
+      remoteBrowserWs: updated.remoteBrowserWs,
       n8nWebhookUrl: updated.n8nWebhookUrl,
       storageMode: updated.storageMode,
     };
