@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import { enrichFromWebsite } from '@/lib/leadEnricher';
+import { handleQueueDelegation } from '@/app/api/scrape/queue';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -226,6 +227,9 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { query, limit = 10 } = body;
+
+    const queueResp = await handleQueueDelegation(req, 'osm', body);
+    if (queueResp) return queueResp;
     
     if (!query) {
       return NextResponse.json({ error: "Missing required query parameter." }, { status: 400 });

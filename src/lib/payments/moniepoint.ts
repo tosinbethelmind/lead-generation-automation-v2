@@ -1,43 +1,25 @@
-// src/lib/payments/moniepoint.ts
-/**
- * Moniepoint payment integration placeholder.
- * Provides functions to initialize Moniepoint (if needed) and verify a transaction.
- */
-
-export interface MoniepointInitParams {
-  publicKey: string; // Moniepoint public key (if applicable)
-  amountNgn: number;
-  email: string;
-  txRef: string; // transaction reference
-}
+// Moniepoint payment integration (placeholder implementation)
+import { getRuntimeConfig, getRotatedTwilioKeys } from '@/lib/localConfig'; // reuse rotation helper if needed
 
 /**
- * Initiates a Moniepoint payment (placeholder).
- * In a real implementation this would load Moniepoint's SDK or redirect to checkout.
+ * Initiates a payment via Moniepoint.
+ * In production replace this mock with actual Moniepoint SDK calls.
  */
-export const initiateMoniepoint = async (params: MoniepointInitParams): Promise<{ reference: string }> => {
-  const reference = `MP-${Math.floor(100000 + Math.random() * 900000)}`;
-  console.log('Moniepoint payment initiated', { ...params, reference });
-  // Simulate async delay
-  await new Promise((res) => setTimeout(res, 500));
-  return { reference };
-};
+export async function initiateMoniepointPayment(amountNgn: number, email: string, secretKey?: string) {
+  const config = getRuntimeConfig();
+  // Example of rotating keys – assume moniepointSecretKey is a comma-separated list
+  const activeSecretKey = secretKey || (config.moniepointSecretKey ? config.moniepointSecretKey.split(',')[0].trim() : '');
 
-/**
- * Verifies a Moniepoint transaction on the server side.
- */
-export const verifyMoniepoint = async (reference: string, secretKey: string): Promise<any> => {
-  const url = `https://sandbox.moniepoint.com/api/v1/transactions/verify/${encodeURIComponent(reference)}`;
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${secretKey}`,
-      'Content-Type': 'application/json',
-    },
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message ?? 'Moniepoint verification failed');
+  if (!activeSecretKey) {
+    throw new Error('Moniepoint credentials are not configured');
   }
-  return response.json();
-};
+
+  // Mock response – replace with real API call
+  return {
+    provider: 'moniepoint',
+    transactionId: `MONIEPOINT-${Date.now()}`,
+    status: 'succeeded',
+    amountNgn,
+    email,
+  };
+}

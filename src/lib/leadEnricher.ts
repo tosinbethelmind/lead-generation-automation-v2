@@ -18,25 +18,47 @@ import { normalizePhone, extractPhonesFromText } from './googleSheets';
 /** Nigerian email regex — matches common patterns in snippets */
 const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
+export function verifyEmailAddress(email: string): boolean {
+  if (!email) return false;
+  const clean = email.trim().toLowerCase();
+  
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) return false;
+
+  const DISPOSABLE_DOMAINS = new Set([
+    'mailinator.com', 'tempmail.com', '10minutemail.com', 'yopmail.com', 'sharklasers.com',
+    'guerrillamail.com', 'dispostable.com', 'getairmail.com', 'burnermail.io', 'burnermail.net',
+    'temp-mail.org', 'tempmailo.com', '10minutemail.co.za', 'throwawaymail.com', 'maildrop.cc'
+  ]);
+  
+  const domain = clean.split('@')[1] || '';
+  if (DISPOSABLE_DOMAINS.has(domain)) return false;
+
+  const localPart = clean.split('@')[0] || '';
+  if (['test', 'na', 'none', 'unknown', 'info', 'example', 'noreply', 'no-reply'].includes(localPart) && 
+      ['example.com', 'test.com', 'none.com', 'domain.com'].includes(domain)) {
+    return false;
+  }
+  
+  if (domain === 'example.com' || domain === 'test.com' || domain === 'none.com' || domain === 'yoursite.com' || domain === 'wixpress.com' || domain === 'squarespace.com' || domain === 'emailprotected') {
+    return false;
+  }
+
+  return true;
+}
+
 /**
  * Extract all emails found in a raw text string.
- * Filters out obvious false-positives like example.com, sentry.io, etc.
+ * Filters out obvious false-positives and unverified emails.
  */
 export function extractEmailsFromText(text: string): string[] {
   if (!text) return [];
-  const IGNORE_DOMAINS = new Set([
-    'example.com', 'example.org', 'test.com', 'sentry.io',
-    'wixpress.com', 'squarespace.com', 'emailprotected',
-    'yoursite.com', 'domain.com',
-  ]);
   const matches = text.match(EMAIL_REGEX) || [];
   const seen = new Set<string>();
   return matches
     .map(e => e.toLowerCase().trim())
     .filter(e => {
       if (seen.has(e)) return false;
-      const domain = e.split('@')[1] || '';
-      if (IGNORE_DOMAINS.has(domain)) return false;
+      if (!verifyEmailAddress(e)) return false;
       seen.add(e);
       return true;
     });
@@ -66,14 +88,79 @@ const WEB_USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
 /**
- * Fetch a business website and extract phone numbers and email addresses
- * from the page HTML. Enforces a 6-second timeout and returns nulls on failure.
+ * Extract social media links from HTML content using Cheerio.
+ */
+function extractSocialLinksFromHtml(html: string): Record<string, string> {
+  try {
+    const $ = cheerio.load(html);
+    const socials: Record<string, string> = {};
+    $('a[href]').each((_, el) => {
+      const href = $(el).attr('href')?.trim() || '';
+      if (!href) return;
+      const hrefLower = href.toLowerCase();
+      if (hrefLower.includes('facebook.com/') && !socials.facebook) {
+        socials.facebook = href;
+      } else if (hrefLower.includes('instagram.com/') && !socials.instagram) {
+        socials.instagram = href;
+      } else if ((hrefLower.includes('linkedin.com/in/') || hrefLower.includes('linkedin.com/company/')) && !socials.linkedin) {
+        socials.linkedin = href;
+      } else if (hrefLower.includes('tiktok.com/') && !socials.tiktok) {
+        socials.tiktok = href;
+      } else if ((hrefLower.includes('twitter.com/') || hrefLower.includes('x.com/')) && !socials.twitter) {
+        socials.twitter = href;
+      } else if (hrefLower.includes('youtube.com/') && !socials.youtube) {
+        socials.youtube = href;
+      }
+    });
+    return socials;
+  } catch (_) {
+    return {};
+  }
+}
+
+/**
+ * Extract email and phone contacts from raw HTML content.
+ */
+function extractContactsFromHtml(html: string): { phone: string | null; email: string | null } {
+  const $ = cheerio.load(html);
+  $('script, style, noscript').remove();
+  const bodyText = $('body').text();
+
+  let telPhone: string | null = null;
+  let mailtoEmail: string | null = null;
+
+  $('a[href^="tel:"]').each((_, el) => {
+    if (!telPhone) {
+      const raw = $(el).attr('href')?.replace('tel:', '').trim() || '';
+      telPhone = normalizePhone(raw, 'NG');
+    }
+  });
+
+  $('a[href^="mailto:"]').each((_, el) => {
+    if (!mailtoEmail) {
+      const raw = $(el).attr('href')?.replace('mailto:', '').split('?')[0].trim() || '';
+      if (raw.includes('@')) mailtoEmail = raw.toLowerCase();
+    }
+  });
+
+  const { phone: textPhone, email: textEmail } = extractContactsFromText(bodyText);
+
+  return {
+    phone: telPhone || textPhone || null,
+    email: mailtoEmail || textEmail || null,
+  };
+}
+
+/**
+ * Fetch a business website and extract phone numbers, email addresses, and social links
+ * from both the homepage and up to 2 contact/about subpages concurrently.
  */
 export async function enrichFromWebsite(url: string): Promise<{
   phone: string | null;
   email: string | null;
+  socials?: Record<string, string>;
 }> {
-  if (!url || !url.startsWith('http')) return { phone: null, email: null };
+  if (!url || !url.startsWith('http')) return { phone: null, email: null, socials: {} };
 
   try {
     const controller = new AbortController();
@@ -88,42 +175,148 @@ export async function enrichFromWebsite(url: string): Promise<{
     });
     clearTimeout(timeout);
 
-    if (!resp.ok) return { phone: null, email: null };
+    if (!resp.ok) return { phone: null, email: null, socials: {} };
 
     const html = await resp.text();
-    const $ = cheerio.load(html);
+    const homepageContacts = extractContactsFromHtml(html);
+    const socials = extractSocialLinksFromHtml(html);
 
-    // Strip scripts and styles — they inflate false-positive matches
-    $('script, style, noscript').remove();
-    const bodyText = $('body').text();
+    let phone = homepageContacts.phone;
+    let email = homepageContacts.email;
 
-    // Also scan href="tel:..." and href="mailto:..." links — most reliable
-    let telPhone: string | null = null;
-    let mailtoEmail: string | null = null;
+    // If still missing phone or email, scan for contact/about subpages on the same domain
+    if (!phone || !email) {
+      try {
+        const $ = cheerio.load(html);
+        const baseUrl = new URL(url);
+        const subpageLinks: string[] = [];
 
-    $('a[href^="tel:"]').each((_, el) => {
-      if (!telPhone) {
-        const raw = $(el).attr('href')?.replace('tel:', '').trim() || '';
-        telPhone = normalizePhone(raw, 'NG');
+        $('a[href]').each((_, el) => {
+          const href = $(el).attr('href')?.trim() || '';
+          if (!href) return;
+
+          try {
+            const absoluteUrl = new URL(href, url);
+            if (absoluteUrl.hostname === baseUrl.hostname) {
+              const pathLower = absoluteUrl.pathname.toLowerCase();
+              if (
+                pathLower.includes('contact') ||
+                pathLower.includes('about') ||
+                pathLower.includes('info')
+              ) {
+                if (!subpageLinks.includes(absoluteUrl.href)) {
+                  subpageLinks.push(absoluteUrl.href);
+                }
+              }
+            }
+          } catch (_) {}
+        });
+
+        // Crawl up to 2 unique contact subpages in parallel
+        const targetSubpages = subpageLinks.slice(0, 2);
+        if (targetSubpages.length > 0) {
+          const subpagePromises = targetSubpages.map(async (subUrl) => {
+            try {
+              const subController = new AbortController();
+              const subTimeout = setTimeout(() => subController.abort(), 4000);
+
+              const subResp = await fetch(subUrl, {
+                headers: {
+                  'User-Agent': WEB_USER_AGENT,
+                  Accept: 'text/html',
+                },
+                signal: subController.signal,
+              });
+              clearTimeout(subTimeout);
+
+              if (subResp.ok) {
+                const subHtml = await subResp.text();
+                return extractContactsFromHtml(subHtml);
+              }
+            } catch (_) {}
+            return { phone: null, email: null };
+          });
+
+          const subResults = await Promise.all(subpagePromises);
+          for (const res of subResults) {
+            if (!phone && res.phone) phone = res.phone;
+            if (!email && res.email) email = res.email;
+          }
+        }
+      } catch (err) {
+        console.error('[leadEnricher] subpage crawler error:', err);
       }
-    });
+    }
 
-    $('a[href^="mailto:"]').each((_, el) => {
-      if (!mailtoEmail) {
-        const raw = $(el).attr('href')?.replace('mailto:', '').split('?')[0].trim() || '';
-        if (raw.includes('@')) mailtoEmail = raw.toLowerCase();
-      }
-    });
-
-    const { phone: textPhone, email: textEmail } = extractContactsFromText(bodyText);
-
-    return {
-      phone: telPhone || textPhone || null,
-      email: mailtoEmail || textEmail || null,
-    };
+    return { phone, email, socials };
   } catch (_) {
-    return { phone: null, email: null };
+    return { phone: null, email: null, socials: {} };
   }
+}
+
+/**
+ * Uses Gemini API to validate and score a scraped lead's relevance.
+ * Returns score, reason, and isRelevant status.
+ */
+export async function validateLeadWithAI(lead: any, apiKey: string): Promise<{
+  score: number;
+  reason: string;
+  isRelevant: boolean;
+}> {
+  try {
+    const prompt = `You are an expert sales growth assistant. Evaluate the following business lead scraped from Google Maps / Jiji to see if it is a high-quality candidate for web design or marketing outreach.
+
+Lead Details:
+- Name: ${lead.name}
+- Category/Industry: ${lead.category}
+- Address/Location: ${lead.address || ''}
+- Website: ${lead.website || 'None'}
+- Google Rating: ${lead.rating || 0} (${lead.reviewsCount || 0} reviews)
+
+Evaluate:
+1. Relevance: Is this an active commercial entity or business that benefits from sales/marketing or has budget? (Score 0-5)
+2. Website Need: If they have no website, or a poor/non-functional one, they need a website. If they already have a highly functional modern website, the need is lower. (Score 0-5)
+
+Output ONLY a JSON response in the following format:
+{
+  "score": [Total score out of 10],
+  "reason": "[1 sentence explaining the score]"
+}`;
+
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    const resp = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 200,
+        },
+      }),
+    });
+
+    if (!resp.ok) {
+      throw new Error(`Gemini validation call failed: ${resp.statusText}`);
+    }
+
+    const data = await resp.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const match = text.match(/\{[\s\S]*\}/);
+    if (match) {
+      const parsed = JSON.parse(match[0]);
+      const score = Number(parsed.score) || 0;
+      return {
+        score,
+        reason: parsed.reason || '',
+        isRelevant: score >= 5
+      };
+    }
+  } catch (err: any) {
+    console.error('AI validation check error:', err.message);
+  }
+  return { score: 10, reason: 'AI validation check bypassed or failed', isRelevant: true };
 }
 
 // ---------------------------------------------------------------------------
@@ -207,6 +400,11 @@ export async function extractMapsLeadData(page: any, query: string): Promise<{
   rating: number;
   reviewsCount: number;
   category: string;
+  business_hours?: string;
+  reviews_data?: string;
+  photos_data?: string;
+  social_links?: string;
+  services_data?: string;
 } | null> {
   try {
     // Get phone via 3-strategy method
@@ -248,7 +446,67 @@ export async function extractMapsLeadData(page: any, query: string): Promise<{
         : '';
       const emailFromText = emailBtn ? (emailBtn as HTMLElement).textContent?.trim() || '' : '';
 
-      return { name, address, website, category, rating, reviewsCount, emailFromAttr, emailFromText };
+      // Scrape business hours
+      let businessHours = '';
+      const hoursEl = document.querySelector('div[data-item-id="oh"]') || document.querySelector('[aria-label*="Hours"]');
+      if (hoursEl) {
+        const rows = Array.from(hoursEl.querySelectorAll('table tr, div.y07Omb'));
+        if (rows.length > 0) {
+          businessHours = JSON.stringify(rows.map(r => r.textContent?.trim() || ''));
+        } else {
+          businessHours = JSON.stringify([hoursEl.textContent?.trim() || '']);
+        }
+      }
+
+      // Scrape reviews
+      let reviewsData = '';
+      const reviewEls = Array.from(document.querySelectorAll('div.jftiCc, div.DUwDvf, [aria-label*="Review by"]'));
+      if (reviewEls.length > 0) {
+        const reviews = reviewEls.slice(0, 5).map(el => {
+          const authorEl = el.querySelector('.X5nM1, .d1z7Ge, .fontTitleSmall');
+          const textEl = el.querySelector('.wiw7ub, .My5gCc, .fontBodyMedium');
+          const ratingEl = el.querySelector('span.kvZ3te');
+          return {
+            author_name: authorEl ? authorEl.textContent?.trim() || 'Anonymous' : 'Anonymous',
+            rating: ratingEl ? parseFloat(ratingEl.textContent || '5') : 5,
+            text: textEl ? textEl.textContent?.trim() || '' : ''
+          };
+        }).filter(r => r.text);
+        reviewsData = JSON.stringify(reviews);
+      }
+
+      // Scrape photos
+      let photosData = '';
+      const photoImages = Array.from(document.querySelectorAll('img'))
+        .map(img => img.getAttribute('src') || '')
+        .filter(src => src.includes('googleusercontent.com/p/'))
+        .slice(0, 5);
+      if (photoImages.length > 0) {
+        photosData = JSON.stringify(photoImages);
+      }
+
+      // Scrape services / types
+      let servicesData = '';
+      const typeEls = Array.from(document.querySelectorAll('.DkEaL, button[jsaction*="category"]'));
+      if (typeEls.length > 0) {
+        const services = typeEls.map(el => el.textContent?.trim() || '').filter(Boolean);
+        servicesData = JSON.stringify(services);
+      }
+
+      return {
+        name,
+        address,
+        website,
+        category,
+        rating,
+        reviewsCount,
+        emailFromAttr,
+        emailFromText,
+        businessHours,
+        reviewsData,
+        photosData,
+        servicesData
+      };
     });
 
     if (!fields.name) return null;
@@ -260,10 +518,14 @@ export async function extractMapsLeadData(page: any, query: string): Promise<{
 
     // If no email yet and website found, fetch website for email + better phone
     let websiteEnrichedPhone: string | null = null;
-    if (fields.website && (!email || !rawPhone)) {
+    let socialLinks = '';
+    if (fields.website) {
       const enriched = await enrichFromWebsite(fields.website);
       if (!email && enriched.email) email = enriched.email;
       if (!rawPhone && enriched.phone) websiteEnrichedPhone = enriched.phone;
+      if (enriched.socials) {
+        socialLinks = JSON.stringify(enriched.socials);
+      }
     }
 
     return {
@@ -276,6 +538,11 @@ export async function extractMapsLeadData(page: any, query: string): Promise<{
       rating: fields.rating,
       reviewsCount: fields.reviewsCount,
       category: fields.category,
+      business_hours: fields.businessHours,
+      reviews_data: fields.reviewsData,
+      photos_data: fields.photosData,
+      services_data: fields.servicesData,
+      social_links: socialLinks
     };
   } catch (err) {
     console.error('[leadEnricher] extractMapsLeadData error:', err);

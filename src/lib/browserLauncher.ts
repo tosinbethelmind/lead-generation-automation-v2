@@ -49,13 +49,33 @@ export async function launchBrowser() {
 
   if (remoteWs) {
     try {
-      console.log('[browserLauncher] Connecting to remote Chrome browser:', remoteWs);
+      let finalWs = remoteWs;
+      if (remoteWs.includes(',')) {
+        const urls = remoteWs.split(',').map(u => u.trim()).filter(Boolean);
+        if (urls.length > 0) {
+          finalWs = urls[Math.floor(Math.random() * urls.length)];
+        }
+      }
+
+      if (savedConfig.scraperProxy) {
+        // Parse and append proxy server to the websocket URL if it is a browserless-style URL
+        const separator = finalWs.includes('?') ? '&' : '?';
+        finalWs = `${finalWs}${separator}--proxy-server=${encodeURIComponent(savedConfig.scraperProxy)}`;
+        console.log('[browserLauncher] Appending proxy server parameter to remote browser connection string:', savedConfig.scraperProxy);
+      }
+      console.log('[browserLauncher] Connecting to remote Chrome browser:', finalWs);
       return await puppeteer.connect({
-        browserWSEndpoint: remoteWs
+        browserWSEndpoint: finalWs
       });
     } catch (err: any) {
       console.error('[browserLauncher] Failed to connect to remote browser, falling back:', err.message);
     }
+  }
+
+  const args = ['--no-sandbox', '--disable-setuid-sandbox'];
+  if (savedConfig.scraperProxy) {
+    args.push(`--proxy-server=${savedConfig.scraperProxy}`);
+    console.log('[browserLauncher] Using proxy rotation server:', savedConfig.scraperProxy);
   }
 
   const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
@@ -68,8 +88,13 @@ export async function launchBrowser() {
         chromium.setGraphicsMode(false);
       }
       
+      const launchArgs = [...chromium.args];
+      if (savedConfig.scraperProxy) {
+        launchArgs.push(`--proxy-server=${savedConfig.scraperProxy}`);
+      }
+      
       return await puppeteer.launch({
-        args: chromium.args,
+        args: launchArgs,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(),
         headless: chromium.headless === 'shell' ? 'shell' : chromium.headless,
@@ -92,13 +117,13 @@ export async function launchBrowser() {
       return await puppeteer.launch({
         executablePath: localPath,
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args
       });
     }
     // Let puppeteer-core try to launch automatically if default location works
     return await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args
     });
   }
 }

@@ -1,4 +1,4 @@
-import { getRuntimeConfig, saveLocalConfig, RuntimeConfig } from './localConfig';
+import { getRuntimeConfig, saveLocalConfig, RuntimeConfig, rotateKey } from './localConfig';
 import { getValidAccessToken } from './googleAuth';
 import nodemailer from 'nodemailer';
 
@@ -39,7 +39,8 @@ export async function sendGmailMessage(to: string, subject: string, body: string
 }
 
 export async function sendResendMessage(to: string, subject: string, body: string, config: RuntimeConfig) {
-  if (!config.resendApiKey) {
+  const activeKey = rotateKey(config.resendApiKey);
+  if (!activeKey) {
     throw new Error('Resend API Key is not configured.');
   }
   const from = config.resendFromEmail || 'onboarding@resend.dev';
@@ -47,7 +48,7 @@ export async function sendResendMessage(to: string, subject: string, body: strin
   const resp = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${config.resendApiKey}`,
+      'Authorization': `Bearer ${activeKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -65,7 +66,8 @@ export async function sendResendMessage(to: string, subject: string, body: strin
 }
 
 export async function sendBrevoMessage(to: string, subject: string, body: string, config: RuntimeConfig) {
-  if (!config.brevoApiKey) {
+  const activeKey = rotateKey(config.brevoApiKey);
+  if (!activeKey) {
     throw new Error('Brevo API Key is not configured.');
   }
   const senderName = config.brevoSenderName || 'ApexReach';
@@ -77,7 +79,7 @@ export async function sendBrevoMessage(to: string, subject: string, body: string
   const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: {
-      'api-key': config.brevoApiKey,
+      'api-key': activeKey,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -121,7 +123,8 @@ export async function sendSmtpMessage(to: string, subject: string, body: string,
 }
 
 export async function sendSendGridMessage(to: string, subject: string, body: string, config: RuntimeConfig) {
-  if (!config.sendgridApiKey) {
+  const activeKey = rotateKey(config.sendgridApiKey);
+  if (!activeKey) {
     throw new Error('SendGrid API Key is not configured.');
   }
   const fromEmail = config.sendgridFromEmail;
@@ -133,7 +136,7 @@ export async function sendSendGridMessage(to: string, subject: string, body: str
   const resp = await fetch('https://api.sendgrid.com/v3/mail/send', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${config.sendgridApiKey}`,
+      'Authorization': `Bearer ${activeKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({

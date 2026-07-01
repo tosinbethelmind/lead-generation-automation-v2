@@ -61,9 +61,16 @@ function generateMockApifyLeads(query: string, limit: number): Partial<Lead>[] {
 async function performApifyImport(query: string, limit: number) {
   const config = getRuntimeConfig();
   const apifyToken = config.apifyToken;
+  let activeToken = apifyToken;
+  if (apifyToken && apifyToken.includes(',')) {
+    const tokens = apifyToken.split(',').map(t => t.trim()).filter(Boolean);
+    if (tokens.length > 0) {
+      activeToken = tokens[Math.floor(Math.random() * tokens.length)];
+    }
+  }
   const datasetId = config.apifyDatasetId;
   
-  const isSandbox = !apifyToken || apifyToken === '' || apifyToken === 'local-sandbox' || config.storageMode === 'local';
+  const isSandbox = !activeToken || activeToken === '' || activeToken === 'local-sandbox' || config.storageMode === 'local';
   
   if (isSandbox) {
     await addLog('Apify Importer', 'START', `Triggering Apify sandbox import for query: "${query}" (limit: ${limit})`);
@@ -84,7 +91,7 @@ async function performApifyImport(query: string, limit: number) {
   // Fetch live dataset from Apify Platform API
   await addLog('Apify Importer', 'START', `Triggering live Apify dataset import (ID: ${datasetId})`);
   
-  const url = `https://api.apify.com/v2/datasets/${datasetId}/items?token=${apifyToken}`;
+  const url = `https://api.apify.com/v2/datasets/${datasetId}/items?token=${activeToken}`;
   const resp = await fetch(url);
   if (!resp.ok) {
     throw new Error(`Apify REST API returned error status: ${resp.status}`);

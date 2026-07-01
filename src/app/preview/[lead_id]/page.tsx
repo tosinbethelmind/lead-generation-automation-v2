@@ -18,6 +18,11 @@ interface PreviewData {
     rating: number;
     reviews_count: number;
     business_summary: string;
+    business_hours?: string;
+    reviews_data?: string;
+    photos_data?: string;
+    social_links?: string;
+    services_data?: string;
   };
   theme: {
     primary: string;
@@ -42,6 +47,9 @@ interface PreviewData {
     moniepointBankName: string;
     moniepointAccountNumber: string;
     moniepointAccountName: string;
+    opayBankName?: string;
+    opayAccountNumber?: string;
+    opayAccountName?: string;
   };
 }
 

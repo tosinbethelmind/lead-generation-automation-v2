@@ -12,7 +12,9 @@
     "setup": "node setup.js",
     "auto-setup": "node scripts/auto_setup.js",
     "demo": "npx playwright test tests/e2e/demo_recorder.spec.ts --headed",
-    "whatsapp-service": "node scripts/whatsapp_baileys.js"
+    "whatsapp-service": "node scripts/whatsapp_baileys.js",
+    "local-runner": "node scripts/keep_alive_runner.js",
+    "test-queue": "ts-node scripts/test_hybrid_queue.ts"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",

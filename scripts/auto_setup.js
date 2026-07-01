@@ -78,7 +78,7 @@ async function runAutoSetup() {
   // --- Step 2: Database Schema Automation ---
   console.log(colors.cyan + '\n--- Step 2: Automatic Database Setup ---' + colors.reset);
   console.log(colors.gray + 'You can find the connection string in Supabase Dashboard -> Project Settings -> Database -> Connection String -> URI' + colors.reset);
-  console.log(colors.gray + 'Format: postgresql://postgres:[password]@db.[project-id].supabase.co:5432/postgres' + colors.reset);
+  console.log(colors.gray + 'Format: postgresql://postgres:[password]@db.[project-id].supabase.co:6543/postgres?pgbouncer=true (recommended for pooling) or port 5432' + colors.reset);
   
   const dbConnectionString = (await question('\nEnter Supabase Database Connection URI (press Enter to skip manual SQL setup): ')).trim();
 

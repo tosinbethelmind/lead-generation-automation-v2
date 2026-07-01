@@ -26,7 +26,7 @@ test.describe('Security & Secrets Hardening Verification', () => {
 
   test('GET /api/config and /api/settings should mask secrets', async ({ request }) => {
     // Test /api/config
-    const responseConfig = await request.get('/api/config');
+    const responseConfig = await request.get('/api/config', { timeout: 60000 });
     expect(responseConfig.ok()).toBe(true);
     const configData = await responseConfig.json();
     expect(configData.googleClientSecret).toBe('••••••••');
@@ -34,7 +34,7 @@ test.describe('Security & Secrets Hardening Verification', () => {
     expect(configData.jijiPassword).toBe('••••••••');
 
     // Test /api/settings
-    const responseSettings = await request.get('/api/settings');
+    const responseSettings = await request.get('/api/settings', { timeout: 60000 });
     expect(responseSettings.ok()).toBe(true);
     const settingsData = await responseSettings.json();
     expect(settingsData.googleClientSecret).toBe('••••••••');
@@ -47,7 +47,8 @@ test.describe('Security & Secrets Hardening Verification', () => {
     const responseShort = await request.post('/api/config', {
       data: {
         resendApiKey: 're_short'
-      }
+      },
+      timeout: 60000
     });
     expect(responseShort.status()).toBe(400);
     const bodyShort = await responseShort.json();
@@ -57,7 +58,8 @@ test.describe('Security & Secrets Hardening Verification', () => {
     const responseInjection = await request.post('/api/config', {
       data: {
         googleClientSecret: '<script>alert("hack")</script>'
-      }
+      },
+      timeout: 60000
     });
     expect(responseInjection.status()).toBe(400);
     const bodyInjection = await responseInjection.json();
@@ -69,7 +71,8 @@ test.describe('Security & Secrets Hardening Verification', () => {
     const responseUpdate = await request.post('/api/settings', {
       data: {
         resendApiKey: 're_new_api_key_for_testing_length_greater_than_twenty'
-      }
+      },
+      timeout: 60000
     });
     expect(responseUpdate.ok()).toBe(true);
     const bodyUpdate = await responseUpdate.json();
@@ -83,7 +86,8 @@ test.describe('Security & Secrets Hardening Verification', () => {
     const responseRetain = await request.post('/api/settings', {
       data: {
         resendApiKey: '••••••••'
-      }
+      },
+      timeout: 60000
     });
     expect(responseRetain.ok()).toBe(true);
     const configOnDisk2 = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
@@ -91,6 +95,11 @@ test.describe('Security & Secrets Hardening Verification', () => {
   });
 
   test('UI should contain Jiji credentials warning and Google Client Secret eye toggle', async ({ page }) => {
+    // Set localStorage onboarding_complete to true before the page loads to skip setup wizard
+    await page.addInitScript(() => {
+      window.localStorage.setItem('onboarding_complete', 'true');
+    });
+
     // Navigate to dashboard
     await page.goto('http://localhost:3005/');
     

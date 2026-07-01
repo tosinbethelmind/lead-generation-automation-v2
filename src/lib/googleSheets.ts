@@ -37,6 +37,15 @@ export interface Lead {
   business_summary: string;
   notes: string;
   isMock?: boolean;
+  business_hours?: string;
+  reviews_data?: string;
+  photos_data?: string;
+  social_links?: string;
+  services_data?: string;
+  generated_copy?: any;
+  design_theme?: any;
+  overrides?: any;
+  email_verified?: boolean;
 }
 
 export function isMockLead(lead: Partial<Lead>): boolean {
@@ -139,7 +148,8 @@ const COLUMNS = [
   'phone_e164', 'phone_raw', 'email', 'website', 'rating', 'reviews_count', 
   'verified', 'listings_count', 'profile_url', 'source_query_or_seed', 
   'collected_at', 'status', 'last_contacted_at', 'duplicate_of_lead_id', 
-  'business_summary', 'notes'
+  'business_summary', 'notes',
+  'business_hours', 'reviews_data', 'photos_data', 'social_links', 'services_data'
 ];
 
 // ============================================================================
@@ -464,6 +474,7 @@ export interface ILeadRepository {
   getLeadById(leadId: string): Promise<Lead | null>;
   saveLeads(leads: Partial<Lead>[]): Promise<{ added: number; skipped: number }>;
   updateLeadStatus(leadId: string, status: LeadStatus, notes?: string, lastContactedAt?: string): Promise<boolean>;
+  updateLeadFields(leadId: string, fields: Partial<Lead>): Promise<boolean>;
   getTopReviewedLeads(limit?: number): Promise<Lead[]>;
 }
 
@@ -639,6 +650,11 @@ class GoogleSheetsLeadRepository implements ILeadRepository {
       return false;
     }
   }
+
+  async updateLeadFields(leadId: string, fields: Partial<Lead>): Promise<boolean> {
+    // Google Sheets doesn't support complex JSON fields, return false or no-op
+    return false;
+  }
 }
 
 class GoogleSheetsDncRepository implements IDncRepository {
@@ -799,7 +815,12 @@ class LocalJsonLeadRepository implements ILeadRepository {
             last_contacted_at: partial.last_contacted_at || '',
             duplicate_of_lead_id: partial.duplicate_of_lead_id || '',
             business_summary: partial.business_summary || '',
-            notes: partial.notes || ''
+            notes: partial.notes || '',
+            business_hours: partial.business_hours || '',
+            reviews_data: partial.reviews_data || '',
+            photos_data: partial.photos_data || '',
+            social_links: partial.social_links || '',
+            services_data: partial.services_data || ''
           };
           
           addedLeads.push(completeLead);
@@ -831,6 +852,22 @@ class LocalJsonLeadRepository implements ILeadRepository {
       if (lastContactedAt !== undefined) {
         leads[index].last_contacted_at = lastContactedAt;
       }
+      
+      await writeJsonFile<Lead[]>(LEADS_FILE, leads);
+      return true;
+    });
+  }
+
+  async updateLeadFields(leadId: string, fields: Partial<Lead>): Promise<boolean> {
+    return dbQueue.enqueue(async () => {
+      const leads = await this.getLeads();
+      const index = leads.findIndex(l => l.lead_id === leadId);
+      if (index === -1) return false;
+      
+      leads[index] = {
+        ...leads[index],
+        ...fields
+      };
       
       await writeJsonFile<Lead[]>(LEADS_FILE, leads);
       return true;
@@ -892,6 +929,12 @@ class LocalJsonLogRepository implements ILogRepository {
 function restoreLead(dbLead: any): Lead {
   if (!dbLead) return dbLead;
   const restored = { ...dbLead };
+  
+  restored.generated_copy = dbLead.generated_copy;
+  restored.design_theme = dbLead.design_theme;
+  restored.overrides = dbLead.overrides;
+  restored.email_verified = dbLead.email_verified;
+
   const notes = dbLead.notes || '';
   if (notes.startsWith('[source:')) {
     const endIdx = notes.indexOf(']');
@@ -1033,7 +1076,16 @@ class SupabaseLeadRepository implements ILeadRepository {
             last_contacted_at: lead.last_contacted_at || null,
             duplicate_of_lead_id: lead.duplicate_of_lead_id || '',
             business_summary: lead.business_summary || '',
-            notes: prefixedNotes
+            notes: prefixedNotes,
+            business_hours: lead.business_hours || '',
+            reviews_data: lead.reviews_data || '',
+            photos_data: lead.photos_data || '',
+            social_links: lead.social_links || '',
+            services_data: lead.services_data || '',
+            generated_copy: lead.generated_copy || null,
+            design_theme: lead.design_theme || null,
+            overrides: lead.overrides || null,
+            email_verified: !!lead.email_verified
           });
 
           existingIds.add(lead.lead_id);
@@ -1095,6 +1147,36 @@ class SupabaseLeadRepository implements ILeadRepository {
     } catch (e: any) {
       console.warn('Supabase updateLeadStatus error, falling back to local JSON:', e.message);
       return this.fallback.updateLeadStatus(leadId, status, notes, lastContactedAt);
+    }
+  }
+
+  async updateLeadFields(leadId: string, fields: Partial<Lead>): Promise<boolean> {
+    try {
+      const supabase = getSupabaseClient();
+      const updates: any = {};
+      
+      if (fields.name !== undefined) updates.name = fields.name;
+      if (fields.status !== undefined) updates.status = fields.status;
+      if (fields.notes !== undefined) updates.notes = fields.notes;
+      if (fields.email !== undefined) updates.email = fields.email;
+      if (fields.phone_e164 !== undefined) updates.phone_e164 = fields.phone_e164;
+      if (fields.website !== undefined) updates.website = fields.website;
+      if (fields.generated_copy !== undefined) updates.generated_copy = fields.generated_copy;
+      if (fields.design_theme !== undefined) updates.design_theme = fields.design_theme;
+      if (fields.overrides !== undefined) updates.overrides = fields.overrides;
+      if (fields.email_verified !== undefined) updates.email_verified = fields.email_verified;
+      if (fields.last_contacted_at !== undefined) updates.last_contacted_at = fields.last_contacted_at;
+
+      const { data, error } = await supabase
+        .from('leads')
+        .update(updates)
+        .eq('lead_id', leadId)
+        .select();
+      if (error) throw error;
+      return true;
+    } catch (e: any) {
+      console.warn('Supabase updateLeadFields error, falling back to local JSON:', e.message);
+      return this.fallback.updateLeadFields(leadId, fields);
     }
   }
 }

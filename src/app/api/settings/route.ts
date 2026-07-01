@@ -2,44 +2,9 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getLocalConfig, saveLocalConfig, RuntimeConfig } from '@/lib/localConfig';
-import { validateSecret } from '@/lib/validation';
+import { validateSecret, SECRET_KEYS, MASK_VALUE, maskConfig } from '@/lib/validation';
 import fs from 'fs';
 import path from 'path';
-
-// Define the secret keys that should be masked/encrypted
-const SECRET_KEYS = [
-  'googleClientSecret',
-  'supabaseKey',
-  'resendApiKey',
-  'googlePlacesApiKey',
-  'jijiPassword',
-  'whatsappAccessToken',
-  'evolutionApiKey',
-  'whapiToken',
-  'brevoApiKey',
-  'smtpPass',
-  'sendgridApiKey',
-  'termiiApiKey',
-  'africastalkingApiKey',
-  'paystackSecretKey',
-  'geminiApiKey',
-  'twilioAuthToken'
-];
-
-const MASK_VALUE = '••••••••';
-
-/**
- * Mask secret values in config
- */
-function maskConfig(config: RuntimeConfig): any {
-  const masked = { ...config } as any;
-  for (const key of SECRET_KEYS) {
-    if (masked[key]) {
-      masked[key] = MASK_VALUE;
-    }
-  }
-  return masked;
-}
 
 /**
  * Update the .env.local file on server if it exists
@@ -66,7 +31,9 @@ function updateEnvLocal(updates: Record<string, string>) {
       twilioAuthToken: 'TWILIO_AUTH_TOKEN',
       termiiApiKey: 'TERMII_API_KEY',
       africastalkingApiKey: 'AFRICASTALKING_API_KEY',
-      geminiApiKey: 'GEMINI_API_KEY'
+      geminiApiKey: 'GEMINI_API_KEY',
+      moniepointSecretKey: 'MONIEPOINT_SECRET_KEY',
+      opaySecretKey: 'OPAY_SECRET_KEY'
     };
 
     for (const [key, value] of Object.entries(updates)) {

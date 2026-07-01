@@ -28,7 +28,10 @@ export default defineConfig({
   projects: [
     {
       name: 'apexreach-demo',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        executablePath: 'C:\\Users\\HomePC\\AppData\\Local\\Perplexity\\Comet\\Application\\comet.exe'
+      },
     },
   ],
 });

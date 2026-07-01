@@ -45,6 +45,193 @@ import ScrapeControls from '@/app/dashboard/components/ScrapeControls';
 import { ProviderCard } from '@/app/components/ProviderCard';
 import { useTheme } from './ThemeContext';
 
+const WEBSITE_STYLE_PRESETS = [
+  {
+    id: 'medical',
+    name: '🏥 Medical & Health Clinic',
+    categoryKeywords: ['medical', 'doctor', 'clinic', 'hospital', 'health', 'physio', 'chiropractor'],
+    theme: {
+      primary: '#0891b2', // Cyan 600
+      accent: '#0d9488', // Teal 600
+      bg: '#f0fdfa', // Light Teal/Minty fresh clean
+      text: '#0f172a',
+      font: 'Outfit'
+    },
+    copy: {
+      heroTitle: 'Compassionate Care, Advanced Medical Expertise',
+      heroSubtitle: 'Providing state-of-the-art medical treatments and personalized wellness services in a warm, welcoming environment.',
+      ctaText: 'Schedule a Consultation',
+      aboutText: 'Our clinic is dedicated to offering premium clinical care for you and your family. With a team of board-certified professionals and advanced diagnostics, we prioritize your long-term health and peace of mind.'
+    },
+    widget: {
+      type: 'patient_intake',
+      title: 'Quick Patient Registration & Appointment Scheduling',
+      description: 'Fill in your details below to request a secure clinical appointment or start your virtual registration.'
+    }
+  },
+  {
+    id: 'dental',
+    name: '🦷 Dental Practice',
+    categoryKeywords: ['dental', 'dentist', 'orthodontist', 'teeth', 'smile'],
+    theme: {
+      primary: '#2563eb', // Blue 600
+      accent: '#38bdf8', // Sky 400
+      bg: '#f0f9ff', // Light Sky Blue
+      text: '#0f172a',
+      font: 'Outfit'
+    },
+    copy: {
+      heroTitle: 'Your Journey to a Bright, Confident Smile Starts Here',
+      heroSubtitle: 'State-of-the-art general, cosmetic, and restorative dentistry tailored to your unique comfort.',
+      ctaText: 'Book a Dental Visit',
+      aboutText: 'We believe a beautiful smile is a healthy smile. Our modern dental suite is fully equipped to provide gentle cleanings, advanced implants, orthodontic alignment, and pain-free treatments for all ages.'
+    },
+    widget: {
+      type: 'patient_intake',
+      title: 'Schedule a Consultation & Smile Assessment',
+      description: 'Choose your desired date and request your oral hygiene or dental checkup session with our specialists.'
+    }
+  },
+  {
+    id: 'auto',
+    name: '🚗 Auto Repair & Service',
+    categoryKeywords: ['auto', 'mechanic', 'car', 'repair', 'garage', 'dealer', 'tire', 'vehicle'],
+    theme: {
+      primary: '#dc2626', // Red 600
+      accent: '#1e293b', // Slate 800
+      bg: '#f8fafc', // Light Slate
+      text: '#0f172a',
+      font: 'Chivo'
+    },
+    copy: {
+      heroTitle: 'Professional Auto Repair, Diagnostics & Maintenance',
+      heroSubtitle: 'Getting you back on the road safely and quickly with honest mechanics and guaranteed workmanship.',
+      ctaText: 'Book Repair Service',
+      aboutText: 'From oil changes and brake repairs to complex engine diagnostics, our certified technicians use industry-leading tools to keep your vehicle running at peak performance.'
+    },
+    widget: {
+      type: 'vehicle_valuation',
+      title: 'Instant Vehicle Trade-In & Booking Estimate',
+      description: 'Enter your vehicle details to get a smart market valuation or schedule an active service diagnostic.'
+    }
+  },
+  {
+    id: 'beauty',
+    name: '💇 Beauty Salon & Spa',
+    categoryKeywords: ['salon', 'hair', 'beauty', 'spa', 'massage', 'nails', 'skin', 'wellness'],
+    theme: {
+      primary: '#db2777', // Pink 600
+      accent: '#fda4af', // Rose 300
+      bg: '#fff1f2', // Light Rose
+      text: '#1e293b',
+      font: 'Playfair Display'
+    },
+    copy: {
+      heroTitle: 'Indulge in Premium Hair, Beauty & Wellness Treatments',
+      heroSubtitle: 'A luxurious sanctuary designed to rejuvenate your style, restore your energy, and pamper your senses.',
+      ctaText: 'Reserve Your Treatment',
+      aboutText: 'Our expert stylists and therapists customize every service—from trendy hair highlights to soothing facial treatments—ensuring you leave feeling radiant, relaxed, and fully confident.'
+    },
+    widget: {
+      type: 'table_reservation',
+      title: 'Online Reservation & Appointment Booker',
+      description: 'Select your preferred service and beauty professional to lock in your luxury appointment slot.'
+    }
+  },
+  {
+    id: 'restaurant',
+    name: '🍕 Restaurant & Cafe',
+    categoryKeywords: ['restaurant', 'cafe', 'food', 'dining', 'bakery', 'pizza', 'kitchen', 'bar', 'sushi'],
+    theme: {
+      primary: '#ea580c', // Orange 600
+      accent: '#ca8a04', // Yellow 600
+      bg: '#fefcf8', // Warm Paper
+      text: '#1e293b',
+      font: 'Playfair Display'
+    },
+    copy: {
+      heroTitle: 'Crafted Culinary Experiences & Seasonal Flavors',
+      heroSubtitle: 'Savor delicious, locally sourced dishes served with passion in a vibrant, friendly atmosphere.',
+      ctaText: 'Reserve a Table',
+      aboutText: 'We take pride in building a menu that celebrates classic recipes with a modern twist. Whether it is a cozy family dinner or a festive celebration, we make every meal an occasion.'
+    },
+    widget: {
+      type: 'table_reservation',
+      title: 'Instant Table & Seat Reservation System',
+      description: 'Book your dining table online in real-time. Simply choose your guests count, date, and preferred time.'
+    }
+  },
+  {
+    id: 'repairs',
+    name: '🔧 Plumbing & Local Repairs',
+    categoryKeywords: ['plumber', 'repair', 'handyman', 'electrician', 'roof', 'contractor', 'hvac', 'ac', 'cleaning'],
+    theme: {
+      primary: '#0d9488', // Teal 600
+      accent: '#2563eb', // Blue 600
+      bg: '#f8fafc',
+      text: '#0f172a',
+      font: 'Outfit'
+    },
+    copy: {
+      heroTitle: '24/7 Professional Home Repair & Handyman Services',
+      heroSubtitle: 'Reliable, licensed, and friendly technicians ready to fix any emergency repair with guaranteed quality.',
+      ctaText: 'Request Repair Dispatch',
+      aboutText: 'We specialize in prompt plumbing, electrical, and HVAC repairs. No job is too small or too complex. We stand by our work with upfront pricing and lifetime satisfaction guarantees.'
+    },
+    widget: {
+      type: 'quote_estimator',
+      title: 'Instant Service Estimate & Invoice Generator',
+      description: 'Select the repairs you need to view a smart quote estimate and lock in a dispatch booking.'
+    }
+  },
+  {
+    id: 'fitness',
+    name: '🏋️ Fitness & Gym Club',
+    categoryKeywords: ['gym', 'fitness', 'workout', 'trainer', 'training', 'crossfit', 'yoga'],
+    theme: {
+      primary: '#2563eb',
+      accent: '#1e293b',
+      bg: '#ffffff',
+      text: '#0f172a',
+      font: 'Chivo'
+    },
+    copy: {
+      heroTitle: 'Unleash Your Strength & Reach Your Peak Fitness',
+      heroSubtitle: 'Access premium workout equipment, certified personal trainers, and high-energy group fitness classes.',
+      ctaText: 'Claim Free Day Pass',
+      aboutText: 'Our community-focused gym is built to support your unique fitness journey. With dynamic training programs, clean facilities, and modern recovery zones, we help you hit your goals.'
+    },
+    widget: {
+      type: 'quote_estimator',
+      title: 'Calculate Membership Plans & Start Registration',
+      description: 'Select your goals and premium options to calculate your plan cost and book your initial assessment.'
+    }
+  },
+  {
+    id: 'business',
+    name: '💼 Legal & Business Consulting',
+    categoryKeywords: ['consulting', 'lawyer', 'legal', 'finance', 'agency', 'accountant', 'advisor'],
+    theme: {
+      primary: '#1e293b', // Slate 800
+      accent: '#475569', // Slate 600
+      bg: '#fafafa', // Soft Off-White
+      text: '#0f172a',
+      font: 'Outfit'
+    },
+    copy: {
+      heroTitle: 'Strategic Guidance & Professional Advice You Can Trust',
+      heroSubtitle: 'Empowering business growth, managing compliance risks, and securing your legal/financial interests.',
+      ctaText: 'Request Strategy Session',
+      aboutText: 'Our experienced advisors partner with companies and individuals to navigate complex financial, legal, and operational landscapes, providing clear blueprints to scale safely.'
+    },
+    widget: {
+      type: 'quote_estimator',
+      title: 'Schedule a Business Discovery Consultation',
+      description: 'Select your practice area or project scope to estimate consultancy terms and reserve a strategic session.'
+    }
+  }
+];
+
 type Tab = 'dashboard' | 'crm' | 'scrapers' | 'settings' | 'logs';
 
 function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
@@ -229,7 +416,16 @@ export default function Home() {
     africastalkingUsername: '',
     africastalkingApiKey: '',
     africastalkingSenderId: '',
-    remoteBrowserWs: ''
+    remoteBrowserWs: '',
+    paystackPublicKey: '',
+    paystackSecretKey: '',
+    claimFeeNGN: 0,
+    moniepointBankName: 'Moniepoint Microfinance Bank',
+    moniepointAccountNumber: '',
+    moniepointAccountName: '',
+    opayBankName: 'OPay Digital Services (Merchant)',
+    opayAccountNumber: '',
+    opayAccountName: ''
   });
   
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -435,6 +631,9 @@ export default function Home() {
   const [overrideShowTestimonials, setOverrideShowTestimonials] = useState(true);
   const [overrideShowEstimator, setOverrideShowEstimator] = useState(true);
   const [overrideShowAbout, setOverrideShowAbout] = useState(true);
+  const [overrideWidgetType, setOverrideWidgetType] = useState('');
+  const [overrideWidgetTitle, setOverrideWidgetTitle] = useState('');
+  const [overrideWidgetDescription, setOverrideWidgetDescription] = useState('');
   
   // AI Redesign states
   const [aiRedesignPrompt, setAiRedesignPrompt] = useState('');
@@ -479,6 +678,9 @@ export default function Home() {
     setOverrideShowTestimonials(true);
     setOverrideShowEstimator(true);
     setOverrideShowAbout(true);
+    setOverrideWidgetType('');
+    setOverrideWidgetTitle('');
+    setOverrideWidgetDescription('');
     
     // Parse turnout mode from lead's notes using scalingHelper syntax
     let mode: 'dynamic' | 'n8n' | 'git' = 'dynamic';
@@ -521,6 +723,11 @@ export default function Home() {
             setOverrideShowEstimator(data.visibility.showEstimator !== false);
             setOverrideShowAbout(data.visibility.showAbout !== false);
           }
+          if (data.pitch) {
+            setOverrideWidgetType(data.pitch.widgetType || '');
+            setOverrideWidgetTitle(data.pitch.widgetTitle || '');
+            setOverrideWidgetDescription(data.pitch.widgetDescription || '');
+          }
         }
       })
       .catch(err => console.error('Error fetching overrides:', err));
@@ -554,6 +761,11 @@ export default function Home() {
               showTestimonials: overrideShowTestimonials,
               showEstimator: overrideShowEstimator,
               showAbout: overrideShowAbout,
+            },
+            pitch: {
+              widgetType: overrideWidgetType,
+              widgetTitle: overrideWidgetTitle,
+              widgetDescription: overrideWidgetDescription,
             }
           }
         })
@@ -568,6 +780,54 @@ export default function Home() {
     } catch (e: any) {
       setStatusMessage(`Error: ${e.message}`);
     }
+  };
+
+  const applyPreset = (preset: typeof WEBSITE_STYLE_PRESETS[0]) => {
+    if (!preset) return;
+    setOverridePrimary(preset.theme.primary);
+    setOverrideAccent(preset.theme.accent);
+    setOverrideBg(preset.theme.bg);
+    setOverrideText(preset.theme.text);
+    setOverrideFont(preset.theme.font);
+    
+    // Add business name if we have a previewLead
+    const businessName = previewLead?.name || 'our business';
+    
+    // Format copy nicely with business name context
+    setOverrideHeroTitle(preset.copy.heroTitle);
+    setOverrideHeroSubtitle(preset.copy.heroSubtitle);
+    setOverrideCtaText(preset.copy.ctaText);
+    
+    // Customize about text if lead name is available
+    const customAbout = preset.copy.aboutText
+      .replace(/Our clinic/g, `Our team at ${businessName}`)
+      .replace(/Our modern dental suite/g, `${businessName}`)
+      .replace(/Our experienced advisors/g, `Our team at ${businessName}`);
+    setOverrideAboutText(customAbout);
+
+    // Apply recommended widget
+    setOverrideWidgetType(preset.widget.type);
+    
+    // Customize widget title and description
+    setOverrideWidgetTitle(preset.widget.title);
+    setOverrideWidgetDescription(preset.widget.description);
+    
+    setStatusMessage(`Applied ${preset.name} preset!`);
+  };
+
+  const autoDetectPreset = () => {
+    if (!previewLead) return;
+    const category = (previewLead.category || '').toLowerCase();
+    const name = (previewLead.name || '').toLowerCase();
+    const combined = `${category} ${name}`;
+    
+    // Find matching preset by keywords
+    const match = WEBSITE_STYLE_PRESETS.find(preset => 
+      preset.categoryKeywords.some(keyword => combined.includes(keyword))
+    ) || WEBSITE_STYLE_PRESETS[WEBSITE_STYLE_PRESETS.length - 1]; // Default to general business
+    
+    applyPreset(match);
+    setStatusMessage(`Auto-detected: Applied ${match.name} based on category "${previewLead.category || 'General'}"!`);
   };
 
   const handleAiRedesign = async () => {
@@ -891,6 +1151,49 @@ export default function Home() {
         const errMsg = data.error.includes("blocked by the platform") ? data.error : `Error: ${data.error}`;
         setStatusMessage(errMsg);
         addToast(data.error, 'error');
+      } else if (data.status === 'queued' && data.jobId) {
+        setStatusMessage(`Job queued. Waiting for local background worker (Job ID: ${data.jobId})...`);
+        addToast('Job queued for local processing.', 'info');
+
+        let jobCompleted = false;
+        let attempts = 0;
+        const maxAttempts = 200; // ~10 minutes max polling
+
+        while (!jobCompleted && attempts < maxAttempts) {
+          attempts++;
+          await new Promise(resolve => setTimeout(resolve, 3000));
+
+          try {
+            const jobResp = await fetch(`/api/scrape/jobs/${data.jobId}`);
+            if (!jobResp.ok) continue;
+
+            const jobStatus = await jobResp.json();
+            if (jobStatus.status === 'completed') {
+              jobCompleted = true;
+              const added = jobStatus.result?.added ?? 0;
+              const skipped = jobStatus.result?.skipped ?? 0;
+              const successMsg = `${scraperName} completed! Added ${added} new leads, skipped ${skipped} duplicates.`;
+              setStatusMessage(successMsg);
+              addToast(successMsg, 'success');
+              confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+              handleRefreshAll();
+            } else if (jobStatus.status === 'failed') {
+              jobCompleted = true;
+              const errMsg = jobStatus.error_message || 'Local scraper execution failed.';
+              setStatusMessage(`Error: ${errMsg}`);
+              addToast(errMsg, 'error');
+            } else {
+              setStatusMessage(`Waiting for local scraper... Status: ${jobStatus.status} (Attempt ${attempts})`);
+            }
+          } catch (pollErr: any) {
+            console.error('Error polling job status:', pollErr);
+          }
+        }
+
+        if (!jobCompleted) {
+          setStatusMessage('Scrape job timed out. The local runner might not be active.');
+          addToast('Job timed out. Ensure your local background worker is running.', 'error');
+        }
       } else {
         const successMsg = `${scraperName} completed! Added ${data.added} new leads, skipped ${data.skipped} duplicates.`;
         setStatusMessage(successMsg);
@@ -932,6 +1235,9 @@ export default function Home() {
     } else if (channel === 'jiji') {
       endpoint = '/api/jiji';
       channelName = 'Jiji Auto-Message';
+    } else if (channel === 'multichannel') {
+      endpoint = '/api/outreach/multichannel';
+      channelName = 'Multichannel (Email+WhatsApp+SMS)';
     } else if (['instagram', 'facebook', 'tiktok', 'linkedin'].includes(channel)) {
       endpoint = '/api/social-outreach';
       channelName = channel.charAt(0).toUpperCase() + channel.slice(1) + ' Auto-Message';
@@ -1072,6 +1378,48 @@ export default function Home() {
       label = 'Send Jiji Inbox Messages';
       icon = <Send size={14} />;
       isDisabled = false;
+    } else if (channel === 'multichannel') {
+      label = 'Send Multichannel Blast (Email + WhatsApp + SMS)';
+      icon = <Send size={14} />;
+      
+      const whatsappProvider = config.whatsappProvider || 'cloud';
+      let isWhatsappDisabled = false;
+      if (whatsappProvider === 'cloud') {
+        isWhatsappDisabled = !config.whatsappAccessToken || !config.whatsappPhoneNumberId;
+      } else if (whatsappProvider === 'evolution') {
+        isWhatsappDisabled = !config.evolutionApiUrl || !config.evolutionApiKey || !config.evolutionInstanceName;
+      } else if (whatsappProvider === 'whapi') {
+        isWhatsappDisabled = !config.whapiToken;
+      } else if (whatsappProvider === 'baileys') {
+        isWhatsappDisabled = !config.whatsappBaileysUrl;
+      }
+
+      const smsProvider = config.smsProvider || 'gateway';
+      let isSmsDisabled = false;
+      if (smsProvider === 'gateway') {
+        isSmsDisabled = !config.smsGatewayUrl;
+      } else if (smsProvider === 'termii') {
+        isSmsDisabled = !config.termiiApiKey;
+      } else if (smsProvider === 'africastalking') {
+        isSmsDisabled = !config.africastalkingUsername || !config.africastalkingApiKey;
+      } else if (smsProvider === 'twilio') {
+        isSmsDisabled = !config.twilioAccountSid || !config.twilioAuthToken || !config.twilioFromNumber;
+      }
+
+      let isEmailDisabled = false;
+      if (emailProvider === 'gmail') {
+        isEmailDisabled = !config.googleUserEmail;
+      } else if (emailProvider === 'resend') {
+        isEmailDisabled = !config.resendApiKey;
+      } else if (emailProvider === 'brevo') {
+        isEmailDisabled = !config.brevoApiKey || !config.brevoSenderEmail;
+      } else if (emailProvider === 'smtp') {
+        isEmailDisabled = !config.smtpHost || !config.smtpUser || !config.smtpPass;
+      } else if (emailProvider === 'sendgrid') {
+        isEmailDisabled = !config.sendgridApiKey || !config.sendgridFromEmail;
+      }
+
+      isDisabled = isEmailDisabled && isWhatsappDisabled && isSmsDisabled;
     } else if (['instagram', 'facebook', 'tiktok', 'linkedin'].includes(channel)) {
       label = `Send ${channel.charAt(0).toUpperCase() + channel.slice(1)} Message`;
       icon = <Send size={14} />;
@@ -2397,6 +2745,7 @@ ${config.businessSignature}`;
                           {config.outreachChannel === 'sms' && "Make sure the business has a valid phone number before clicking Outreach Send."}
                           {config.outreachChannel === 'coldcall' && "Twilio will call the business phone number using synthetic AI voice speech."}
                           {config.outreachChannel === 'jiji' && "Jiji automated dispatcher will open the Jiji profile link and submit the chat."}
+                          {config.outreachChannel === 'multichannel' && "Sends Email + WhatsApp + SMS simultaneously. For Jiji leads, it automatically bypasses Email and SMS, sending only WhatsApp and Jiji chat."}
                           {['instagram', 'facebook', 'tiktok', 'linkedin'].includes(config.outreachChannel || '') && "Social outreach will flag lead status contacted and redirect you to the direct chat page."}
                         </div>
                       </div>
@@ -2427,6 +2776,126 @@ ${config.businessSignature}`;
                             >
                               {aiRedesignLoading ? <Loader2 className="spin-anim" size={14} /> : <Sparkles size={14} />} Redesign
                             </button>
+                          </div>
+                        </div>
+
+                        {/* Quick Presets & Features */}
+                        <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                          <h4 style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+                            <Palette size={14} /> Quick Niche Presets & Style Matcher
+                          </h4>
+                          
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <select
+                                onChange={(e) => {
+                                  const pr = WEBSITE_STYLE_PRESETS.find(p => p.id === e.target.value);
+                                  if (pr) applyPreset(pr);
+                                }}
+                                style={{ flex: 1, padding: '10px', background: 'var(--input-bg-darker)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--text-primary)', fontSize: '0.85rem', outline: 'none' }}
+                                defaultValue=""
+                              >
+                                <option value="" disabled>-- Select a Niche Design Preset --</option>
+                                {WEBSITE_STYLE_PRESETS.map((preset) => {
+                                  const category = (previewLead?.category || '').toLowerCase();
+                                  const isRecommended = preset.categoryKeywords.some(kw => category.includes(kw));
+                                  return (
+                                    <option key={preset.id} value={preset.id}>
+                                      {preset.name} {isRecommended ? '★ (Recommended Match)' : ''}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+
+                              <button
+                                type="button"
+                                onClick={autoDetectPreset}
+                                className="btn-secondary"
+                                style={{ fontSize: '0.8rem', padding: '10px 12px', display: 'inline-flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}
+                                title="Auto-detect industry and apply colors, font, copy, and matching widget"
+                              >
+                                <RefreshCw size={12} /> Auto-Detect
+                              </button>
+                            </div>
+
+                            <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                              Applying a preset configures professional, conversion-optimized colors, fonts, hero layouts, and the most relevant business widget with one click.
+                            </p>
+                          </div>
+
+                          {/* Custom Interactive Automation Widget */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
+                            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                              ⚡ Active Business Feature & Automation Demo
+                            </label>
+                            
+                            <select
+                              value={overrideWidgetType}
+                              onChange={(e) => {
+                                const newType = e.target.value;
+                                setOverrideWidgetType(newType);
+                                // Autofill default values matching this type if empty
+                                const defaults: Record<string, {title: string, desc: string}> = {
+                                  ecommerce: {
+                                    title: 'Secure Product Order & Paystack Checkout',
+                                    desc: 'Select items from our inventory below and complete your order using Paystack secure payments.'
+                                  },
+                                  patient_intake: {
+                                    title: 'New Patient Registration & Scheduling',
+                                    desc: 'Provide your basic details to book an intake consultation or register digitally.'
+                                  },
+                                  vehicle_valuation: {
+                                    title: 'Smart Vehicle Valuation Calculator',
+                                    desc: 'Input your vehicle details to calculate our trade-in estimate instantly.'
+                                  },
+                                  table_reservation: {
+                                    title: 'Instant Table & Seat Reservation System',
+                                    desc: 'Book your table online in real-time. Pick date, guest count, and dining area.'
+                                  },
+                                  quote_estimator: {
+                                    title: 'Interactive Project Quote Estimator',
+                                    desc: 'Select repair services to build a real-time price estimate and generate an invoice proposal.'
+                                  }
+                                };
+                                if (defaults[newType]) {
+                                  setOverrideWidgetTitle(defaults[newType].title);
+                                  setOverrideWidgetDescription(defaults[newType].desc);
+                                }
+                              }}
+                              style={{ padding: '10px', background: 'var(--input-bg-darker)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'var(--text-primary)', fontSize: '0.85rem', outline: 'none' }}
+                            >
+                              <option value="">No Active Demo Widget</option>
+                              <option value="ecommerce">🛒 Paystack Secure Checkout Shopping Cart</option>
+                              <option value="patient_intake">🗓️ Patient Booking & Intake Portal</option>
+                              <option value="vehicle_valuation">🚗 Smart Vehicle Trade-In Valuation Calculator</option>
+                              <option value="table_reservation">🍽️ Table Reservation & Dining Booker</option>
+                              <option value="quote_estimator">📊 Project Quote Estimator & Invoice Generator</option>
+                            </select>
+
+                            {overrideWidgetType && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', marginTop: '4px' }}>
+                                <div>
+                                  <label style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '2px' }}>Widget Header Title</label>
+                                  <input
+                                    type="text"
+                                    value={overrideWidgetTitle}
+                                    onChange={(e) => setOverrideWidgetTitle(e.target.value)}
+                                    placeholder="Widget title"
+                                    style={{ width: '100%', padding: '6px 8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none' }}
+                                  />
+                                </div>
+                                <div>
+                                  <label style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '2px' }}>Widget Instructions/Description</label>
+                                  <textarea
+                                    value={overrideWidgetDescription}
+                                    onChange={(e) => setOverrideWidgetDescription(e.target.value)}
+                                    placeholder="Describe how the widget works..."
+                                    rows={2}
+                                    style={{ width: '100%', padding: '6px 8px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none', resize: 'vertical' }}
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -2914,6 +3383,7 @@ ${config.businessSignature}`;
                     <option value="gmail">Email Outreach</option>
                     <option value="whatsapp">WhatsApp Outreach</option>
                     <option value="sms">SMS Text Outreach</option>
+                    <option value="multichannel">Multichannel Blast (Email + WhatsApp + SMS)</option>
                     <option value="coldcall">Twilio Cold Call</option>
                     <option value="jiji">Jiji Chat Outreach</option>
                     <option value="instagram">Instagram Chat Outreach</option>
@@ -2937,7 +3407,12 @@ ${config.businessSignature}`;
 
             {/* Section A-2: Google Sheets Integration */}
             <div id="sheets-settings" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '8px', fontWeight: 600, color: 'var(--text-primary)' }}>2. Google Sheets Integration</h4>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>2. Google Sheets Integration</h4>
+                <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af' }}>
+                  Google Cloud Console →
+                </a>
+              </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '0 0 16px 0' }}>
                 ApexReach stores leads, logs, and stats in Google Sheets worksheets. You can test your connection or initialize missing worksheets below.
               </p>
@@ -3028,12 +3503,22 @@ ${config.businessSignature}`;
 
             {/* Section A-3: Scraper & AI Credentials */}
             <div id="ai-credentials" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>3. Scraper & AI Credentials</h4>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>3. Scraper & AI Credentials</h4>
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  <a href="https://console.cloud.google.com/google/maps-apis/credentials" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af' }}>
+                    Get Places API Key →
+                  </a>
+                  <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af' }}>
+                    Get Gemini API Key →
+                  </a>
+                </div>
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
-                      Google Places API Key (Scraper)
+                      Google Places API Key (Scraper) <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
                       <span 
                         title="Required for live lead scraping. Ensure the 'Places API' is enabled in your Google Cloud Console." 
                         style={{ cursor: 'help', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '14px', height: '14px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', fontSize: '0.65rem', color: 'var(--text-secondary)' }}
@@ -3074,17 +3559,19 @@ ${config.businessSignature}`;
                     type="password" 
                     value={config.googlePlacesApiKey} 
                     onChange={(e) => setConfig({ ...config, googlePlacesApiKey: e.target.value })}
-                    placeholder="Paste Google Cloud API key"
+                    placeholder="Paste Google Cloud API key(s) separated by commas"
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Gemini AI API Key (Copywriting)</label>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+                    Gemini AI API Key (Copywriting) <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                  </label>
                   <input 
                     type="password" 
                     value={config.geminiApiKey} 
                     onChange={(e) => setConfig({ ...config, geminiApiKey: e.target.value })}
-                    placeholder="Paste Gemini API Key"
+                    placeholder="Paste Gemini API Key(s) separated by commas"
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
@@ -3112,7 +3599,7 @@ ${config.businessSignature}`;
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <input 
-                    type="url" 
+                    type="text" 
                     value={(config as any).remoteBrowserWs || ''} 
                     onChange={(e) => setConfig({ ...config, remoteBrowserWs: e.target.value } as any)}
                     placeholder="wss://chrome.browserless.io?token=YOUR_TOKEN"
@@ -3424,6 +3911,7 @@ ${config.businessSignature}`;
                       placeholder="Enter Phone Number ID"
                       style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
+                    <a href="https://developers.facebook.com" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Get Meta Developer Credentials →</a>
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>System Access Token</label>
@@ -3469,6 +3957,7 @@ ${config.businessSignature}`;
                       placeholder="https://api.myserver.com"
                       style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
+                    <a href="https://evolution-api.com" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Setup Evolution API →</a>
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Instance apikey</label>
@@ -3504,6 +3993,7 @@ ${config.businessSignature}`;
                       placeholder="Whapi.cloud bearer token"
                       style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
+                    <a href="https://whapi.cloud" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Get Whapi.cloud Token →</a>
                   </div>
                 </div>
               )}
@@ -3545,35 +4035,46 @@ ${config.businessSignature}`;
 
             {/* Section D: Twilio Calls (Optional) */}
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>4. Twilio Voice Cold Calling (Optional)</h4>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>4. Twilio Voice Cold Calling (Optional)</h4>
+                <a href="https://twilio.com/console" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af' }}>
+                  Twilio Console →
+                </a>
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Twilio Account SID</label>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+                    Twilio Account SID <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                  </label>
                   <input 
                     type="text" 
                     value={config.twilioAccountSid || ''} 
                     onChange={(e) => setConfig({ ...config, twilioAccountSid: e.target.value })}
-                    placeholder="AC..."
+                    placeholder="AC..., AC..."
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Twilio Auth Token</label>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+                    Twilio Auth Token <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                  </label>
                   <input 
                     type="password" 
                     value={config.twilioAuthToken || ''} 
                     onChange={(e) => setConfig({ ...config, twilioAuthToken: e.target.value })}
-                    placeholder="Auth Token"
+                    placeholder="Auth Token(s) separated by commas"
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Twilio From Phone Number</label>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+                    Twilio From Phone Number <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                  </label>
                   <input 
                     type="text" 
                     value={config.twilioFromNumber || ''} 
                     onChange={(e) => setConfig({ ...config, twilioFromNumber: e.target.value })}
-                    placeholder="+1234567890"
+                    placeholder="+1234567890, +1987654321"
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
@@ -3630,7 +4131,9 @@ ${config.businessSignature}`;
               {config.smsProvider === 'termii' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
                   <div>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Termii API Key</label>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
+                      Termii API Key <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                    </label>
                     <input 
                       type="password" 
                       value={config.termiiApiKey || ''} 
@@ -3638,6 +4141,7 @@ ${config.businessSignature}`;
                       placeholder="Enter Termii API Key"
                       style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
+                    <a href="https://termii.com" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Sign up on Termii →</a>
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender ID / Signature</label>
@@ -3665,7 +4169,9 @@ ${config.businessSignature}`;
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>API Key</label>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
+                      API Key <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                    </label>
                     <input 
                       type="password" 
                       value={config.africastalkingApiKey || ''} 
@@ -3673,6 +4179,7 @@ ${config.businessSignature}`;
                       placeholder="Enter Africa's Talking API Key"
                       style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
+                    <a href="https://africastalking.com" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af', marginTop: '4px', display: 'inline-block' }}>Sign up on Africa's Talking →</a>
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender ID / Shortcode (Optional)</label>
@@ -3739,7 +4246,12 @@ ${config.businessSignature}`;
 
             {/* Section F: n8n Integration */}
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>5. n8n Automation Webhook</h4>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>5. n8n Automation Webhook</h4>
+                <a href="https://n8n.io" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af' }}>
+                  n8n Cloud Console →
+                </a>
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Global n8n Webhook URL</label>
@@ -3759,7 +4271,12 @@ ${config.businessSignature}`;
 
             {/* Section G: Jiji Bulk Messaging Outreach */}
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>6. Jiji Bulk Messaging Outreach</h4>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>6. Jiji Bulk Messaging Outreach</h4>
+                <a href="https://jiji.ng" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af' }}>
+                  Jiji Nigeria →
+                </a>
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Jiji Email or Phone</label>
@@ -3858,10 +4375,25 @@ ${config.businessSignature}`;
 
             {/* Section H: Claiming & Payments (Paystack / Moniepoint) */}
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>7. Client Claiming & Payments (Paystack / Moniepoint)</h4>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>7. Client Claiming & Payments (Paystack / Moniepoint / OPay)</h4>
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  <a href="https://paystack.com" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af' }}>
+                    Paystack Dashboard →
+                  </a>
+                  <a href="https://moniepoint.com" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af' }}>
+                    Moniepoint Dashboard →
+                  </a>
+                  <a href="https://opayweb.com" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af' }}>
+                    OPay Business →
+                  </a>
+                </div>
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Paystack Public Key</label>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+                    Paystack Public Key <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                  </label>
                   <input 
                     type="text" 
                     value={config.paystackPublicKey || ''} 
@@ -3871,7 +4403,9 @@ ${config.businessSignature}`;
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Paystack Secret Key</label>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+                    Paystack Secret Key <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                  </label>
                   <input 
                     type="password" 
                     value={config.paystackSecretKey || ''} 
@@ -3890,9 +4424,13 @@ ${config.businessSignature}`;
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    Set to 0 or leave empty to disable Paystack online payment.
+                    Set to 0 or leave empty to disable online payment.
                   </div>
                 </div>
+                
+                {/* Moniepoint Settings */}
+                <div style={{ gridColumn: 'span 2', height: '1px', background: 'rgba(255,255,255,0.05)', margin: '10px 0' }}></div>
+                
                 <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Moniepoint Bank Name</label>
                   <input 
@@ -3913,13 +4451,81 @@ ${config.businessSignature}`;
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
-                <div>
+                <div style={{ gridColumn: 'span 2' }}>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Moniepoint Account Name</label>
                   <input 
                     type="text" 
                     value={config.moniepointAccountName || ''} 
                     onChange={(e) => setConfig({ ...config, moniepointAccountName: e.target.value })}
                     placeholder="e.g. ApexReach Ventures"
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
+                  />
+                </div>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
+                      Moniepoint Secret Key <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                    </label>
+                    <a href="https://moniepoint.com" target="_blank" rel="noreferrer" style={{ fontSize: '0.72rem', color: '#0af' }}>
+                      Get Moniepoint API Keys →
+                    </a>
+                  </div>
+                  <input 
+                    type="password" 
+                    value={(config as any).moniepointSecretKey || ''} 
+                    onChange={(e) => setConfig({ ...config, moniepointSecretKey: e.target.value } as any)}
+                    placeholder="Paste Moniepoint Secret Key(s) separated by commas"
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
+                  />
+                </div>
+
+                {/* OPay Settings */}
+                <div style={{ gridColumn: 'span 2', height: '1px', background: 'rgba(255,255,255,0.05)', margin: '10px 0' }}></div>
+                
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>OPay Bank Name</label>
+                  <input 
+                    type="text" 
+                    value={config.opayBankName || ''} 
+                    onChange={(e) => setConfig({ ...config, opayBankName: e.target.value })}
+                    placeholder="e.g. OPay Digital Services (Merchant)"
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>OPay Account Number</label>
+                  <input 
+                    type="text" 
+                    value={config.opayAccountNumber || ''} 
+                    onChange={(e) => setConfig({ ...config, opayAccountNumber: e.target.value })}
+                    placeholder="e.g. 706... (10 digits)"
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
+                  />
+                </div>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>OPay Account Name</label>
+                  <input 
+                    type="text" 
+                    value={config.opayAccountName || ''} 
+                    onChange={(e) => setConfig({ ...config, opayAccountName: e.target.value })}
+                    placeholder="e.g. ApexReach Ventures (OPay)"
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
+                  />
+                </div>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
+                      OPay Secret Key <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                    </label>
+                    <a href="https://opayweb.com" target="_blank" rel="noreferrer" style={{ fontSize: '0.72rem', color: '#0af' }}>
+                      Get OPay Secret Keys →
+                    </a>
+                  </div>
+                  <input 
+                    type="password" 
+                    value={(config as any).opaySecretKey || ''} 
+                    onChange={(e) => setConfig({ ...config, opaySecretKey: e.target.value } as any)}
+                    placeholder="Paste OPay Secret Key(s) separated by commas"
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>

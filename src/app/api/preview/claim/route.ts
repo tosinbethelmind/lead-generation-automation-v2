@@ -13,7 +13,7 @@ import path from 'path';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { leadId, clientName, clientEmail, theme, copy, paymentMethod } = body;
+    const { leadId, clientName, clientEmail, theme, copy, paymentMethod, selectedFeatures, customInstructions } = body;
 
     if (!leadId || !clientName || !clientEmail) {
       return NextResponse.json({ error: 'Missing required parameters: leadId, clientName, or clientEmail' }, { status: 400 });
@@ -28,8 +28,10 @@ export async function POST(req: NextRequest) {
 
     // 1. Update lead's status/notes in sheet/Supabase
     const timestamp = new Date().toISOString();
-    const transferPending = paymentMethod === 'bank_transfer' ? ' [MANUAL TRANSFER PENDING]' : '';
-    const newNotes = `${lead.notes || ''}\n[CLAIMED${transferPending}] Client requested ownership on ${timestamp}. Contact: ${clientName} (${clientEmail})`;
+    const transferPending = (paymentMethod === 'bank_transfer_moniepoint' || paymentMethod === 'bank_transfer_opay' || paymentMethod === 'bank_transfer') ? ' [MANUAL TRANSFER PENDING]' : '';
+    const featuresNote = selectedFeatures && selectedFeatures.length > 0 ? ` Activated Features: ${selectedFeatures.join(', ')}.` : '';
+    const instNote = customInstructions ? ` Custom Instructions: "${customInstructions}"` : '';
+    const newNotes = `${lead.notes || ''}\n[CLAIMED${transferPending}] Client requested ownership on ${timestamp}. Contact: ${clientName} (${clientEmail}).${featuresNote}${instNote}`;
     await repo.updateLeadStatus(leadId, 'CONTACTED', newNotes, timestamp);
 
     // 2. Add log entry
@@ -59,6 +61,8 @@ export async function POST(req: NextRequest) {
         testimonials: [],
         ctaText: 'Book an Appointment',
       },
+      selectedFeatures: selectedFeatures || [],
+      customInstructions: customInstructions || '',
       claimedAt: timestamp,
       clientName,
       clientEmail
@@ -135,7 +139,8 @@ export async function POST(req: NextRequest) {
         ? `⚠️ Automatic deployment failed: ${githubErrorMsg}`
         : 'ℹ️ GitHub deployment skipped (keys not configured in .env.local).';
 
-    const transferSubjectSuffix = paymentMethod === 'bank_transfer' ? ' (Manual Bank Transfer Pending)' : '';
+    const isManualTransfer = paymentMethod === 'bank_transfer' || paymentMethod === 'bank_transfer_moniepoint' || paymentMethod === 'bank_transfer_opay';
+    const transferSubjectSuffix = isManualTransfer ? ' (Manual Bank Transfer Pending)' : '';
     const adminSubject = `🎉 Lead Claimed: ${lead.name} requested ownership!${transferSubjectSuffix}`;
     const adminBody = `Hi Admin,
 
@@ -147,8 +152,16 @@ Details:
 - Contact Person: ${clientName}
 - Contact Email: ${clientEmail}
 - Phone Number: ${lead.phone_raw || 'Not provided'}
-- Payment Method: ${paymentMethod === 'bank_transfer' ? 'Manual Local Bank Transfer (Moniepoint)' : 'Default / None'}
+- Payment Method: ${
+      paymentMethod === 'bank_transfer_moniepoint' ? 'Manual Local Bank Transfer (Moniepoint)' :
+      paymentMethod === 'bank_transfer_opay' ? 'Manual Local Bank Transfer (OPay)' :
+      paymentMethod === 'bank_transfer' ? 'Manual Local Bank Transfer (Generic)' : 'Default / None'
+    }
 - Status: CLAIMED (Lead Notes updated in CRM)
+
+Customizations:
+- Selected Automations: ${selectedFeatures && selectedFeatures.length > 0 ? selectedFeatures.join(', ') : 'None'}
+- Natural Language Instructions: ${customInstructions || 'None'}
 
 Deployment Status:
 ${gitNotice}

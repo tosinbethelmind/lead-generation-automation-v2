@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X } from 'lucide-react';
+import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X, Clock } from 'lucide-react';
 
 interface PreviewData {
   lead: {
@@ -15,6 +15,11 @@ interface PreviewData {
     rating: number;
     reviews_count: number;
     business_summary: string;
+    business_hours?: string;
+    reviews_data?: string;
+    photos_data?: string;
+    social_links?: string;
+    services_data?: string;
   };
   theme: {
     primary: string;
@@ -42,7 +47,12 @@ interface PreviewData {
     moniepointBankName: string;
     moniepointAccountNumber: string;
     moniepointAccountName: string;
+    opayBankName?: string;
+    opayAccountNumber?: string;
+    opayAccountName?: string;
   };
+  selectedFeatures?: string[];
+  customInstructions?: string;
   customInject?: {
     headHtml?: string;
     bodyHtml?: string;
@@ -146,6 +156,31 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   const [demoForm, setDemoForm] = useState({ name: '', email: '', phone: '', date: '', message: '' });
   const [demoLoading, setDemoLoading] = useState(false);
   const [demoStatus, setDemoStatus] = useState<string | null>(null);
+
+  // Business features selection states
+  const [activeWidget, setActiveWidget] = useState<string>(
+    data.selectedFeatures && data.selectedFeatures.length > 0 
+      ? data.selectedFeatures[0] 
+      : pitch.widgetType || 'quote_estimator'
+  );
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(
+    data.selectedFeatures && data.selectedFeatures.length > 0 
+      ? data.selectedFeatures 
+      : pitch.widgetType 
+        ? [pitch.widgetType] 
+        : ['quote_estimator']
+  );
+  const [customInstructions, setCustomInstructions] = useState<string>('');
+
+  const toggleFeature = (type: string) => {
+    if (selectedFeatures.includes(type)) {
+      if (selectedFeatures.length > 1) {
+        setSelectedFeatures(selectedFeatures.filter(f => f !== type));
+      }
+    } else {
+      setSelectedFeatures([...selectedFeatures, type]);
+    }
+  };
 
   // New Interactive Widget States
   const [activeModalInvoice, setActiveModalInvoice] = useState<any | null>(null);
@@ -749,7 +784,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   };
 
   const renderActiveWidget = () => {
-    if (demoStatus && pitch.widgetType !== 'ecommerce') {
+    if (demoStatus && activeWidget !== 'ecommerce') {
       return (
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
           <CheckCircle size={56} style={{ color: '#10b981', margin: '0 auto 20px' }} />
@@ -770,7 +805,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       );
     }
 
-    switch (pitch.widgetType) {
+    switch (activeWidget) {
       case 'patient_intake':
         return renderPatientIntake();
       case 'vehicle_valuation':
@@ -789,7 +824,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   const [claimForm, setClaimForm] = useState({ name: '', email: '' });
   const [claimLoading, setClaimLoading] = useState(false);
   const [claimMessage, setClaimMessage] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'paystack' | 'moniepoint'>('paystack');
+  const [paymentMethod, setPaymentMethod] = useState<'paystack' | 'moniepoint' | 'opay'>('paystack');
   const [loadingOverlay, setLoadingOverlay] = useState(true);
 
   // Preloader Overlay timeout
@@ -935,7 +970,10 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             email: claimForm.email,
             name: claimForm.name,
             theme,
-            copy
+            copy,
+            selectedFeatures,
+            customInstructions,
+            publicKey: paymentConfig?.paystackPublicKey
           })
         });
         const result = await res.json();
@@ -953,11 +991,15 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         clientName: claimForm.name,
         clientEmail: claimForm.email,
         theme,
-        copy
+        copy,
+        selectedFeatures,
+        customInstructions
       };
 
       if (paymentMethod === 'moniepoint') {
-        payload.paymentMethod = 'bank_transfer';
+        payload.paymentMethod = 'bank_transfer_moniepoint';
+      } else if (paymentMethod === 'opay') {
+        payload.paymentMethod = 'bank_transfer_opay';
       }
 
       const res = await fetch('/api/preview/claim', {
@@ -973,6 +1015,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       let successMsg = result.message || 'Request submitted successfully!';
       if (paymentMethod === 'moniepoint') {
         successMsg = `Manual bank transfer request submitted! Please transfer ₦${paymentConfig?.claimFeeNGN?.toLocaleString() || '0'} to the Moniepoint account listed below. Once verified, your website will be deployed and fully setup.`;
+      } else if (paymentMethod === 'opay') {
+        successMsg = `Manual bank transfer request submitted! Please transfer ₦${paymentConfig?.claimFeeNGN?.toLocaleString() || '0'} to the OPay account listed below. Once verified, your website will be deployed and fully setup.`;
       }
       setClaimMessage(successMsg);
       setClaimed(true);
@@ -1089,7 +1133,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         minHeight: '75vh', 
         display: 'flex', 
         alignItems: 'center',
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url(${theme.heroImage})`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80'})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: '#fff',
@@ -1257,14 +1301,60 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   <span style={{ fontWeight: 500, color: '#4b5563' }}>{lead.phone_raw}</span>
                 </div>
               )}
+              {lead.business_hours && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px', background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#1f2937', fontSize: '0.9rem', marginBottom: '4px' }}>
+                    <Clock style={{ color: theme.primary }} size={18} />
+                    <span>Business Hours</span>
+                  </div>
+                  {(() => {
+                    try {
+                      const hours = typeof lead.business_hours === 'string' ? JSON.parse(lead.business_hours) : lead.business_hours;
+                      if (Array.isArray(hours)) {
+                        return hours.map((h: string, i: number) => {
+                          const separatorIndex = h.indexOf(':');
+                          if (separatorIndex === -1) {
+                            return (
+                              <div key={i} style={{ fontSize: '0.85rem', color: '#4b5563' }}>
+                                {h}
+                              </div>
+                            );
+                          }
+                          const day = h.substring(0, separatorIndex);
+                          const time = h.substring(separatorIndex + 1);
+                          return (
+                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#4b5563', gap: '20px' }}>
+                              <span style={{ fontWeight: 500 }}>{day}</span>
+                              <span style={{ color: '#64748b' }}>{time.trim()}</span>
+                            </div>
+                          );
+                        });
+                      }
+                    } catch (e) {
+                      // Fallback
+                    }
+                    return <span style={{ fontSize: '0.85rem', color: '#4b5563' }}>{lead.business_hours}</span>;
+                  })()}
+                </div>
+              )}
             </div>
           </div>
 
           <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 20px 25px rgba(0,0,0,0.1)' }}>
             <img 
-              src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80" 
-              alt="Workspace" 
-              style={{ width: '100%', height: 'auto', display: 'block' }}
+              src={(() => {
+                if (lead.photos_data) {
+                  try {
+                    const photos = typeof lead.photos_data === 'string' ? JSON.parse(lead.photos_data) : lead.photos_data;
+                    if (Array.isArray(photos) && photos.length > 0) {
+                      return photos[0];
+                    }
+                  } catch (_) {}
+                }
+                return "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80";
+              })()} 
+              alt={lead.name} 
+              style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '420px', objectFit: 'cover' }}
             />
             <div className="frosted-glass" style={{ 
               position: 'absolute', 
@@ -1286,6 +1376,35 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           </div>
         </div>
       </section>
+
+      {/* Photo Gallery Section */}
+      {(() => {
+        if (lead.photos_data) {
+          try {
+            const photos = typeof lead.photos_data === 'string' ? JSON.parse(lead.photos_data) : lead.photos_data;
+            if (Array.isArray(photos) && photos.length > 1) {
+              return (
+                <section className="reveal" style={{ padding: '60px 24px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', borderTop: '1px solid #e2e8f0' }}>
+                  <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                      <h2 className="font-heading" style={{ fontSize: '2rem', fontWeight: 700, color: theme.primary, marginBottom: '12px' }}>Gallery & Inside View</h2>
+                      <p style={{ color: '#64748b' }}>Take a look inside {lead.name} and explore our facilities.</p>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                      {photos.slice(0, 4).map((url: string, index: number) => (
+                        <div key={index} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', height: '220px' }}>
+                          <img src={url} alt={`Gallery ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              );
+            }
+          } catch (_) {}
+        }
+        return null;
+      })()}
 
       {/* Customer Testimonials */}
       <section className="reveal" style={{ padding: '80px 24px' }}>
@@ -1322,32 +1441,280 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         display: 'flex',
         justifyContent: 'center'
       }}>
-        <div style={{ maxWidth: '800px', width: '100%' }}>
-          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <span style={{
-              background: 'rgba(2, 132, 199, 0.1)',
-              color: theme.primary,
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              padding: '6px 12px',
-              borderRadius: '99px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em'
-            }}>{isPreview ? "Interactive Automation Demo" : "Schedule Our Services"}</span>
-            <h2 className="font-heading" style={{ fontSize: '2rem', fontWeight: 700, color: '#1f2937', marginTop: '16px', marginBottom: '12px' }}>
-              {pitch.widgetTitle || "Test-Drive Booking Automation"}
-            </h2>
-            <p style={{ color: '#64748b', maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem', lineHeight: 1.5 }}>
-              {pitch.widgetDescription || "Try this interactive demo to see how we automate custom database entries, instant alerts, and printable invoice receipts."}
-            </p>
-          </div>
+        <div style={{ maxWidth: '900px', width: '100%' }}>
+          
+          {isPreview ? (
+            // Customizer / Preview mode options
+            <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+              <span style={{
+                background: 'rgba(2, 132, 199, 0.1)',
+                color: theme.primary,
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                padding: '6px 12px',
+                borderRadius: '99px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>Step 1: Choose Website Automations</span>
+              <h2 className="font-heading" style={{ fontSize: '2.2rem', fontWeight: 700, color: '#1f2937', marginTop: '16px', marginBottom: '12px' }}>
+                Select Interactive Features for Your Site
+              </h2>
+              <p style={{ color: '#64748b', maxWidth: '600px', margin: '0 auto 30px', fontSize: '0.95rem', lineHeight: 1.5 }}>
+                Activate the tools you want included on your live business website. Click <strong>Test Demo</strong> to preview how each automation works instantly.
+              </p>
 
+              {/* Grid of feature cards */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                gap: '20px',
+                marginBottom: '40px',
+                textAlign: 'left'
+              }}>
+                {[
+                  {
+                    id: 'quote_estimator',
+                    icon: '📊',
+                    title: 'Project Estimator & Invoicing',
+                    desc: 'Let clients calculate service price quotes in real-time and generate branded invoices.'
+                  },
+                  {
+                    id: 'patient_intake',
+                    icon: '🗓️',
+                    title: 'Appointment Booking & Intake',
+                    desc: 'Let clients self-schedule appointments and fill out digital intake forms.'
+                  },
+                  {
+                    id: 'ecommerce',
+                    icon: '🛒',
+                    title: 'Paystack Store Checkout',
+                    desc: 'Sell products online with shopping cart checkout and secure credit card payments.'
+                  },
+                  {
+                    id: 'vehicle_valuation',
+                    icon: '🚗',
+                    title: 'Smart Valuation Calculator',
+                    desc: 'Offer prospective clients instant asset appraisals to capture high-value sales leads.'
+                  },
+                  {
+                    id: 'table_reservation',
+                    icon: '🍽️',
+                    title: 'Table & Seat Reservation',
+                    desc: 'Allow guests to reserve dining tables, pick time slots, and pre-order food.'
+                  }
+                ].map((feat) => {
+                  const isSelected = selectedFeatures.includes(feat.id);
+                  const isActiveDemo = activeWidget === feat.id;
+
+                  return (
+                    <div
+                      key={feat.id}
+                      style={{
+                        background: '#ffffff',
+                        border: isSelected ? `2px solid ${theme.primary}` : '1px solid #e2e8f0',
+                        borderRadius: '16px',
+                        padding: '24px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        gap: '16px',
+                        boxShadow: isSelected ? '0 10px 25px -5px rgba(0, 0, 0, 0.05)' : '0 4px 6px -1px rgba(0, 0, 0, 0.02)',
+                        transition: 'all 0.2s ease',
+                        position: 'relative'
+                      }}
+                    >
+                      {isSelected && (
+                        <span style={{
+                          position: 'absolute',
+                          top: '12px',
+                          right: '12px',
+                          background: theme.primary,
+                          color: '#ffffff',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          padding: '3px 8px',
+                          borderRadius: '12px'
+                        }}>
+                          ✓ Active
+                        </span>
+                      )}
+                      <div>
+                        <div style={{ fontSize: '2rem', marginBottom: '12px' }}>{feat.icon}</div>
+                        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1f2937', marginBottom: '8px', marginTop: 0 }}>
+                          {feat.title}
+                        </h3>
+                        <p style={{ fontSize: '0.82rem', color: '#64748b', margin: 0, lineHeight: 1.4 }}>
+                          {feat.desc}
+                        </p>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                        <button
+                          type="button"
+                          onClick={() => toggleFeature(feat.id)}
+                          style={{
+                            flex: 1,
+                            padding: '8px 12px',
+                            borderRadius: '8px',
+                            border: isSelected ? `1px solid ${theme.primary}` : '1px solid #cbd5e1',
+                            background: isSelected ? 'transparent' : '#ffffff',
+                            color: isSelected ? theme.primary : '#4b5563',
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            textAlign: 'center'
+                          }}
+                        >
+                          {isSelected ? 'Disable' : 'Add to Site'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setActiveWidget(feat.id); setDemoStatus(null); }}
+                          style={{
+                            padding: '8px 12px',
+                            borderRadius: '8px',
+                            border: 'none',
+                            background: isActiveDemo ? 'rgba(2, 132, 199, 0.1)' : '#f1f5f9',
+                            color: isActiveDemo ? theme.primary : '#4b5563',
+                            fontSize: '0.8rem',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          ⚡ Test Demo
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Demo Section Header */}
+              <div style={{ margin: '40px 0 20px', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: theme.primary }}>
+                  🎮 Live Demo Sandbox
+                </span>
+                <h3 className="font-heading" style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1f2937', marginTop: '6px', marginBottom: '6px' }}>
+                  Test-Driving: {
+                    activeWidget === 'quote_estimator' ? 'Project Quote Estimator' :
+                    activeWidget === 'patient_intake' ? 'Booking & Health Intake Portal' :
+                    activeWidget === 'ecommerce' ? 'Paystack Checkout Shopping Cart' :
+                    activeWidget === 'vehicle_valuation' ? 'Trade-In Valuation Calculator' :
+                    'Table & Seat Reservation System'
+                  }
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
+                  Try submitting the form below to see how this automation logs records, computes prices, and triggers client alerts.
+                </p>
+              </div>
+            </div>
+          ) : (
+            // Live Site mode (no selector, just standard headers or active tabs)
+            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+              <span style={{
+                background: 'rgba(2, 132, 199, 0.1)',
+                color: theme.primary,
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                padding: '6px 12px',
+                borderRadius: '99px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>Schedule Services & Bookings</span>
+              <h2 className="font-heading" style={{ fontSize: '2rem', fontWeight: 700, color: '#1f2937', marginTop: '16px', marginBottom: '12px' }}>
+                {pitch.widgetTitle || "Interactive Booking Automation"}
+              </h2>
+              <p style={{ color: '#64748b', maxWidth: '600px', margin: '0 auto 30px', fontSize: '0.95rem', lineHeight: 1.5 }}>
+                {pitch.widgetDescription || "Choose one of our dynamic self-service portals below to book appointments, calculate trade-ins, or order products."}
+              </p>
+
+              {/* Dynamic feature tabs on live site if multiple features are enabled */}
+              {selectedFeatures.length > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '30px' }}>
+                  {selectedFeatures.map((featId) => {
+                    const titles: Record<string, string> = {
+                      quote_estimator: '📊 Quote Estimator',
+                      patient_intake: '🗓️ Book Appointment',
+                      ecommerce: '🛒 Product Store',
+                      vehicle_valuation: '🚗 Trade-In Value',
+                      table_reservation: '🍽️ Table Booking'
+                    };
+                    const isActive = activeWidget === featId;
+                    return (
+                      <button
+                        key={featId}
+                        type="button"
+                        onClick={() => { setActiveWidget(featId); setDemoStatus(null); }}
+                        style={{
+                          padding: '10px 18px',
+                          borderRadius: '30px',
+                          border: isActive ? `2px solid ${theme.primary}` : '1px solid #e2e8f0',
+                          background: isActive ? theme.primary : '#ffffff',
+                          color: isActive ? '#ffffff' : '#4b5563',
+                          fontWeight: 600,
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.05)' : 'none'
+                        }}
+                      >
+                        {titles[featId] || featId}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Render Active Widget Box */}
           <div className="frosted-glass" style={{
             padding: '30px',
-            borderRadius: '16px'
+            borderRadius: '16px',
+            boxShadow: '0 4px 20px -2px rgba(0,0,0,0.04)',
+            background: '#ffffff',
+            border: '1px solid #cbd5e1'
           }}>
             {renderActiveWidget()}
           </div>
+
+          {/* Plain Text Requirements Box (Only in preview/customizer mode) */}
+          {isPreview && (
+            <div className="frosted-glass" style={{
+              marginTop: '30px',
+              padding: '24px',
+              borderRadius: '16px',
+              border: '1px solid rgba(0,0,0,0.08)',
+              background: 'rgba(255,255,255,0.6)',
+              textAlign: 'left'
+            }}>
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1f2937', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                ✍️ Custom Requirements & Design Instructions (Optional)
+              </h4>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '0 0 12px 0', lineHeight: 1.4 }}>
+                Prefer a different layout, custom color schemes, distinct typography, or special software sync (e.g. accounting, local CRM)? Describe how you want this website customized in your own words below.
+              </p>
+              <textarea
+                value={customInstructions}
+                onChange={(e) => setCustomInstructions(e.target.value)}
+                placeholder="e.g. Make the theme a dark navy blue with orange buttons. Replace the shoe store products with solar panels, and add a contact form that emails me directly whenever someone asks for a quote."
+                rows={4}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '8px',
+                  outline: 'none',
+                  background: '#ffffff',
+                  fontSize: '0.85rem',
+                  lineHeight: 1.4,
+                  resize: 'vertical',
+                  color: '#1f2937'
+                }}
+              />
+            </div>
+          )}
+          
         </div>
       </section>
 
@@ -1823,13 +2190,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   {paymentConfig && paymentConfig.claimFeeNGN > 0 && (
                     <div style={{ marginBottom: '8px' }}>
                       <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '8px' }}>Select Claim / Setup Package Option</label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
                         <button
                           type="button"
                           onClick={() => setPaymentMethod('paystack')}
                           disabled={!paymentConfig.paystackPublicKey}
                           style={{
-                            padding: '12px',
+                            padding: '10px 4px',
                             borderRadius: '8px',
                             border: paymentMethod === 'paystack' ? `2px solid ${theme.primary}` : '1px solid #cbd5e1',
                             background: paymentMethod === 'paystack' ? `${theme.primary}10` : '#fff',
@@ -1837,12 +2204,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                             fontWeight: 600,
                             cursor: !paymentConfig.paystackPublicKey ? 'not-allowed' : 'pointer',
                             transition: 'all 0.2s',
-                            textAlign: 'center'
+                            textAlign: 'center',
+                            fontSize: '0.75rem'
                           }}
                         >
                           💳 Pay Online
-                          <span style={{ display: 'block', fontSize: '0.65rem', fontWeight: 400, marginTop: '2px', color: '#64748b' }}>
-                            Instant Automated Setup
+                          <span style={{ display: 'block', fontSize: '0.6rem', fontWeight: 400, marginTop: '2px', color: '#64748b' }}>
+                            Instant Setup
                           </span>
                         </button>
                         <button
@@ -1850,7 +2218,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                           onClick={() => setPaymentMethod('moniepoint')}
                           disabled={!paymentConfig.moniepointAccountNumber}
                           style={{
-                            padding: '12px',
+                            padding: '10px 4px',
                             borderRadius: '8px',
                             border: paymentMethod === 'moniepoint' ? `2px solid ${theme.primary}` : '1px solid #cbd5e1',
                             background: paymentMethod === 'moniepoint' ? `${theme.primary}10` : '#fff',
@@ -1858,19 +2226,42 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                             fontWeight: 600,
                             cursor: !paymentConfig.moniepointAccountNumber ? 'not-allowed' : 'pointer',
                             transition: 'all 0.2s',
-                            textAlign: 'center'
+                            textAlign: 'center',
+                            fontSize: '0.75rem'
                           }}
                         >
-                          🏦 Bank Transfer
-                          <span style={{ display: 'block', fontSize: '0.65rem', fontWeight: 400, marginTop: '2px', color: '#64748b' }}>
-                            Manual Admin Approval
+                          🏦 Moniepoint
+                          <span style={{ display: 'block', fontSize: '0.6rem', fontWeight: 400, marginTop: '2px', color: '#64748b' }}>
+                            Manual Approval
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('opay')}
+                          disabled={!paymentConfig.opayAccountNumber}
+                          style={{
+                            padding: '10px 4px',
+                            borderRadius: '8px',
+                            border: paymentMethod === 'opay' ? `2px solid ${theme.primary}` : '1px solid #cbd5e1',
+                            background: paymentMethod === 'opay' ? `${theme.primary}10` : '#fff',
+                            color: paymentMethod === 'opay' ? theme.primary : '#4b5563',
+                            fontWeight: 600,
+                            cursor: !paymentConfig.opayAccountNumber ? 'not-allowed' : 'pointer',
+                            transition: 'all 0.2s',
+                            textAlign: 'center',
+                            fontSize: '0.75rem'
+                          }}
+                        >
+                          🏦 OPay
+                          <span style={{ display: 'block', fontSize: '0.6rem', fontWeight: 400, marginTop: '2px', color: '#64748b' }}>
+                            Manual Approval
                           </span>
                         </button>
                       </div>
                     </div>
                   )}
 
-                  {/* Payment Details Container */}
+                  {/* Payment Details Container - Moniepoint */}
                   {paymentMethod === 'moniepoint' && paymentConfig && (
                     <div style={{
                       background: 'rgba(2, 132, 199, 0.03)',
@@ -1902,6 +2293,43 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                           <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Name:</span>
                           <strong style={{ color: '#1e2937', textTransform: 'uppercase' }}>{paymentConfig.moniepointAccountName}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Payment Details Container - OPay */}
+                  {paymentMethod === 'opay' && paymentConfig && (
+                    <div style={{
+                      background: 'rgba(2, 132, 199, 0.03)',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '12px',
+                      padding: '20px',
+                      marginBottom: '8px',
+                      fontSize: '0.9rem'
+                    }}>
+                      <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', fontWeight: 700, color: theme.primary }}>
+                        OPay Transfer Instructions
+                      </h4>
+                      <p style={{ color: '#64748b', fontSize: '0.8rem', margin: '0 0 16px 0', lineHeight: 1.4 }}>
+                        Transfer the setup fee to the OPay account below, then click the Claim button. Our admin will verify and activate your site.
+                      </p>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
+                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Amount Due:</span>
+                          <strong style={{ color: '#1e2937' }}>₦{paymentConfig.claimFeeNGN.toLocaleString()}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
+                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Bank Name:</span>
+                          <strong style={{ color: '#1e2937' }}>{paymentConfig.opayBankName || 'OPay / Paycom'}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
+                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Number:</span>
+                          <strong style={{ color: theme.primary, letterSpacing: '0.05em' }}>{paymentConfig.opayAccountNumber}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Name:</span>
+                          <strong style={{ color: '#1e2937', textTransform: 'uppercase' }}>{paymentConfig.opayAccountName}</strong>
                         </div>
                       </div>
                     </div>
@@ -1987,6 +2415,77 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           </div>
         </section>
       )}
+
+      {/* Sleek Footer */}
+      <footer style={{
+        background: '#0f172a',
+        color: '#94a3b8',
+        padding: '50px 24px',
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        textAlign: 'center'
+      }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
+          <div className="font-heading" style={{ fontSize: '1.4rem', fontWeight: 700, color: '#ffffff' }}>
+            {lead.name}
+          </div>
+          
+          {/* Social Media Links */}
+          {(() => {
+            if (lead.social_links) {
+              try {
+                const socials = typeof lead.social_links === 'string' ? JSON.parse(lead.social_links) : lead.social_links;
+                if (socials && typeof socials === 'object' && Object.keys(socials).length > 0) {
+                  return (
+                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '10px', marginBottom: '10px' }}>
+                      {Object.entries(socials).map(([platform, url]) => {
+                        if (!url || typeof url !== 'string') return null;
+                        const label = platform.toUpperCase();
+                        return (
+                          <a 
+                            key={platform}
+                            href={url.startsWith('http') ? url : `https://${url}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ 
+                              background: 'rgba(255, 255, 255, 0.08)',
+                              border: '1px solid rgba(255, 255, 255, 0.15)',
+                              color: '#fff',
+                              textDecoration: 'none',
+                              fontSize: '0.8rem',
+                              fontWeight: 600,
+                              padding: '8px 16px',
+                              borderRadius: '20px',
+                              transition: 'all 0.2s',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = theme.primary;
+                              e.currentTarget.style.borderColor = theme.primary;
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                            }}
+                          >
+                            <span>{label}</span>
+                          </a>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+              } catch (_) {}
+            }
+            return null;
+          })()}
+          
+          <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '10px' }}>
+            &copy; {new Date().getFullYear()} {lead.name}. All rights reserved. Deployed via ApexReach Reputation Automations.
+          </div>
+        </div>
+      </footer>
 
       {/* Styled utilities for mobile responsive behaviors & custom design settings */}
       <style jsx>{`

@@ -1,3 +1,5 @@
+import { type RuntimeConfig } from './localConfig';
+
 /**
  * Input validation and sanitization utility for API keys and settings secrets.
  */
@@ -51,11 +53,42 @@ export function validateSecret(field: string, value: string): string | null {
         return 'Supabase Service Role Key must be at least 40 characters long.';
       }
       break;
-    case 'resendApiKey':
-      if (trimmed.length < 20) {
-        return 'Resend API Key must be at least 20 characters long.';
+    case 'resendApiKey': {
+      const keys = trimmed.split(',').map(k => k.trim()).filter(Boolean);
+      for (const k of keys) {
+        if (k.length < 20) {
+          return 'Each Resend API Key must be at least 20 characters long.';
+        }
       }
       break;
+    }
+    case 'brevoApiKey': {
+      const keys = trimmed.split(',').map(k => k.trim()).filter(Boolean);
+      for (const k of keys) {
+        if (k.length < 20) {
+          return 'Each Brevo API Key must be at least 20 characters long.';
+        }
+      }
+      break;
+    }
+    case 'sendgridApiKey': {
+      const keys = trimmed.split(',').map(k => k.trim()).filter(Boolean);
+      for (const k of keys) {
+        if (k.length < 20) {
+          return 'Each SendGrid API Key must be at least 20 characters long.';
+        }
+      }
+      break;
+    }
+    case 'geminiApiKey': {
+      const keys = trimmed.split(',').map(k => k.trim()).filter(Boolean);
+      for (const k of keys) {
+        if (k.length < 20) {
+          return 'Each Gemini API Key must be at least 20 characters long.';
+        }
+      }
+      break;
+    }
     case 'googlePlacesApiKey':
       if (trimmed.length < 20) {
         return 'Google Places API Key must be at least 20 characters long.';
@@ -96,4 +129,47 @@ export function validateSecret(field: string, value: string): string | null {
   }
 
   return null;
+}
+
+// Define the secret keys that should be masked/encrypted
+export const SECRET_KEYS = [
+  'googleClientSecret',
+  'supabaseKey',
+  'resendApiKey',
+  'googlePlacesApiKey',
+  'jijiPassword',
+  'whatsappAccessToken',
+  'evolutionApiKey',
+  'whapiToken',
+  'brevoApiKey',
+  'smtpPass',
+  'sendgridApiKey',
+  'termiiApiKey',
+  'africastalkingApiKey',
+  'paystackSecretKey',
+  'geminiApiKey',
+  'twilioAuthToken',
+  'geminiApiKeys',
+  'claudeApiKey',
+  'openaiApiKey',
+  'antigravityApiKey',
+  'interswitchAccount',
+  'interswitchApiKey',
+  'moniepointSecretKey',
+  'opaySecretKey'
+];
+
+export const MASK_VALUE = '••••••••';
+
+/**
+ * Mask secret values in config
+ */
+export function maskConfig(config: RuntimeConfig): any {
+  const masked = { ...config } as any;
+  for (const key of SECRET_KEYS) {
+    if (masked[key]) {
+      masked[key] = MASK_VALUE;
+    }
+  }
+  return masked;
 }

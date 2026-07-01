@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getRuntimeConfig } from '@/lib/localConfig';
+import { getRuntimeConfig, rotateKey } from '@/lib/localConfig';
 import { commitFileToGitHub } from '@/lib/github';
 import { sendNotificationEmail } from '@/lib/email';
 import fs from 'fs';
@@ -90,7 +90,8 @@ Example response:
 
     let resp;
     if (hasGeminiKey) {
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.geminiApiKey}`;
+      const activeKey = rotateKey(config.geminiApiKey);
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`;
       resp = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -1,5 +1,5 @@
 import twilio from 'twilio';
-import { getRuntimeConfig } from '@/lib/localConfig';
+import { getRuntimeConfig, getRotatedTwilioKeys } from '@/lib/localConfig';
 
 /**
  * Replace placeholders in the template string.
@@ -22,13 +22,18 @@ function replacePlaceholders(template: string, lead: any, previewUrl: string, or
  */
 export async function initiateColdCall(lead: any, previewUrl: string, origin: string, customMessage?: string): Promise<void> {
   const config = getRuntimeConfig();
-  const { twilioAccountSid, twilioAuthToken, twilioFromNumber, twilioCallMessageTemplate, twilioTwimlUrl } = config;
+  const { accountSid, authToken, fromNumber } = getRotatedTwilioKeys(
+    config.twilioAccountSid,
+    config.twilioAuthToken,
+    config.twilioFromNumber
+  );
+  const { twilioCallMessageTemplate, twilioTwimlUrl } = config;
 
-  if (!twilioAccountSid || !twilioAuthToken || !twilioFromNumber) {
+  if (!accountSid || !authToken || !fromNumber) {
     throw new Error('Twilio configuration is incomplete. Please set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_FROM_NUMBER.');
   }
 
-  const client = twilio(twilioAccountSid, twilioAuthToken);
+  const client = twilio(accountSid, authToken);
   const toNumber = lead.phone_e164 || lead.phone_raw;
   if (!toNumber) {
     throw new Error('Lead does not contain a phone number.');
@@ -47,7 +52,7 @@ export async function initiateColdCall(lead: any, previewUrl: string, origin: st
     url: twilioTwimlUrl || undefined,
     twiml,
     to: toNumber,
-    from: twilioFromNumber,
+    from: fromNumber,
   };
 
   // Twilio client expects either `url` (remote TwiML) or `twiml` (inline XML).

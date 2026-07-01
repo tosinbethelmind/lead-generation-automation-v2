@@ -29,5 +29,6 @@ export async function GET(request: NextRequest, context: any) {
     started_at: (job as any).started_at || job.created_at,
     completed_at: (job as any).completed_at || job.updated_at,
     result: job.result ?? null,
+    error_message: job.error_message ?? null,
   });
 }

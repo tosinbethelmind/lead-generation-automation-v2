@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getRuntimeConfig } from '@/lib/localConfig';
+import { getRuntimeConfig, rotateKey } from '@/lib/localConfig';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
 import { getValidAccessToken, getDesignTheme, buildFallbackCopy } from '../generate/route';
 import fs from 'fs';
 import path from 'path';
+import { getOverridesDir } from '@/lib/overrides';
 
-const OVERRIDES_DIR = path.join(process.cwd(), 'src', 'data', 'overrides');
-
-// Ensure directory exists
-if (!fs.existsSync(OVERRIDES_DIR)) {
-  fs.mkdirSync(OVERRIDES_DIR, { recursive: true });
-}
+const OVERRIDES_DIR = getOverridesDir();
 
 export async function POST(req: NextRequest) {
   try {
@@ -115,7 +111,8 @@ Generate a JSON object containing the modified design overrides. Only modify wha
 
     let resp;
     if (hasGeminiKey) {
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.geminiApiKey}`;
+      const activeKey = rotateKey(config.geminiApiKey);
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`;
       resp = await fetch(endpoint, {
         method: 'POST',
         headers: {

@@ -24,7 +24,7 @@ export interface LocalConfig {
   // ── Outreach ───────────────────────────────────────────
   dryRun: boolean;
   businessSignature: string;
-  outreachChannel?: 'gmail' | 'whatsapp' | 'coldcall' | 'jiji' | 'instagram' | 'facebook' | 'tiktok' | 'linkedin' | 'sms';
+  outreachChannel?: 'gmail' | 'whatsapp' | 'coldcall' | 'jiji' | 'instagram' | 'facebook' | 'tiktok' | 'linkedin' | 'sms' | 'multichannel';
   // WhatsApp template (optional)
   whatsappMessageTemplate?: string;
   // Twilio Cold Call configuration (optional)
@@ -91,6 +91,11 @@ export interface LocalConfig {
   moniepointBankName?: string;
   moniepointAccountNumber?: string;
   moniepointAccountName?: string;
+  moniepointSecretKey?: string;
+  opayBankName?: string;
+  opayAccountNumber?: string;
+  opayAccountName?: string;
+  opaySecretKey?: string;
 
   // ── Legacy / optional (kept for backward compat) ───────
   apifyToken: string;
@@ -121,8 +126,11 @@ export interface LocalConfig {
   // instead of launching a local Chromium. Required on Vercel (AL2023)
   // which is missing system-level Chromium shared libraries (libnss3.so).
   remoteBrowserWs?: string;
+  scraperProxy?: string;
 
   n8nWebhookUrl?: string;
+  minReviews?: number;
+  minRating?: number;
 }
 
 export interface RuntimeConfig extends LocalConfig {
@@ -203,6 +211,11 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   moniepointBankName: 'Moniepoint Microfinance Bank',
   moniepointAccountNumber: '',
   moniepointAccountName: '',
+  moniepointSecretKey: '',
+  opayBankName: 'OPay Digital Services (Merchant)',
+  opayAccountNumber: '',
+  opayAccountName: '',
+  opaySecretKey: '',
 
   // SMS Outreach Defaults
   smsProvider: 'gateway',
@@ -230,9 +243,11 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   onGroundMode: false,
   geminiApiKey: '',
   remoteBrowserWs: '',
+  scraperProxy: '',
   n8nWebhookUrl: '',
+  minReviews: 1,
+  minRating: 3.0,
   storageMode: 'hybrid',
-  // ... (rest unchanged)
 };
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
@@ -312,6 +327,11 @@ export function getRuntimeConfig(): RuntimeConfig {
     moniepointBankName: process.env.MONIEPOINT_BANK_NAME || fileConfig.moniepointBankName || DEFAULT_CONFIG.moniepointBankName,
     moniepointAccountNumber: process.env.MONIEPOINT_ACCOUNT_NUMBER || fileConfig.moniepointAccountNumber || DEFAULT_CONFIG.moniepointAccountNumber,
     moniepointAccountName: process.env.MONIEPOINT_ACCOUNT_NAME || fileConfig.moniepointAccountName || DEFAULT_CONFIG.moniepointAccountName,
+    moniepointSecretKey: process.env.MONIEPOINT_SECRET_KEY || fileConfig.moniepointSecretKey || DEFAULT_CONFIG.moniepointSecretKey,
+    opayBankName: process.env.OPAY_BANK_NAME || fileConfig.opayBankName || DEFAULT_CONFIG.opayBankName,
+    opayAccountNumber: process.env.OPAY_ACCOUNT_NUMBER || fileConfig.opayAccountNumber || DEFAULT_CONFIG.opayAccountNumber,
+    opayAccountName: process.env.OPAY_ACCOUNT_NAME || fileConfig.opayAccountName || DEFAULT_CONFIG.opayAccountName,
+    opaySecretKey: process.env.OPAY_SECRET_KEY || fileConfig.opaySecretKey || DEFAULT_CONFIG.opaySecretKey,
 
     // SMS Outreach Configuration
     smsProvider: (process.env.SMS_PROVIDER as any) || fileConfig.smsProvider || DEFAULT_CONFIG.smsProvider,
@@ -349,9 +369,12 @@ export function getRuntimeConfig(): RuntimeConfig {
     linkedinMessageTemplate: process.env.LINKEDIN_MESSAGE_TEMPLATE || fileConfig.linkedinMessageTemplate || DEFAULT_CONFIG.linkedinMessageTemplate,
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || fileConfig.supabaseUrl || DEFAULT_CONFIG.supabaseUrl,
     supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || fileConfig.supabaseKey || DEFAULT_CONFIG.supabaseKey,
-    geminiApiKey: process.env.GEMINI_API_KEY || fileConfig.geminiApiKey || DEFAULT_CONFIG.geminiApiKey,
+    geminiApiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || fileConfig.geminiApiKey || DEFAULT_CONFIG.geminiApiKey,
     remoteBrowserWs: process.env.REMOTE_BROWSER_WS || process.env.BROWSERLESS_WS || fileConfig.remoteBrowserWs || DEFAULT_CONFIG.remoteBrowserWs,
+    scraperProxy: process.env.SCRAPER_PROXY || fileConfig.scraperProxy || DEFAULT_CONFIG.scraperProxy,
     n8nWebhookUrl: process.env.N8N_WEBHOOK_URL || fileConfig.n8nWebhookUrl || DEFAULT_CONFIG.n8nWebhookUrl,
+    minReviews: process.env.MIN_REVIEWS !== undefined ? Number(process.env.MIN_REVIEWS) : (fileConfig.minReviews !== undefined ? Number(fileConfig.minReviews) : DEFAULT_CONFIG.minReviews),
+    minRating: process.env.MIN_RATING !== undefined ? Number(process.env.MIN_RATING) : (fileConfig.minRating !== undefined ? Number(fileConfig.minRating) : DEFAULT_CONFIG.minRating),
     storageMode: (process.env.STORAGE_MODE as StorageMode) || fileConfig.storageMode || DEFAULT_CONFIG.storageMode,
   };
 
@@ -424,6 +447,11 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       moniepointBankName: updated.moniepointBankName,
       moniepointAccountNumber: updated.moniepointAccountNumber,
       moniepointAccountName: updated.moniepointAccountName,
+      moniepointSecretKey: updated.moniepointSecretKey,
+      opayBankName: updated.opayBankName,
+      opayAccountNumber: updated.opayAccountNumber,
+      opayAccountName: updated.opayAccountName,
+      opaySecretKey: updated.opaySecretKey,
 
       // SMS Outreach Configuration
       smsProvider: updated.smsProvider,
@@ -455,7 +483,10 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       supabaseKey: updated.supabaseKey,
       geminiApiKey: updated.geminiApiKey,
       remoteBrowserWs: updated.remoteBrowserWs,
+      scraperProxy: updated.scraperProxy,
       n8nWebhookUrl: updated.n8nWebhookUrl,
+      minReviews: updated.minReviews,
+      minRating: updated.minRating,
       storageMode: updated.storageMode,
     };
     
@@ -466,3 +497,80 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
     throw e;
   }
 }
+
+/**
+ * Resolves a comma-separated key string to a single key, randomly rotated.
+ */
+export function rotateKey(value: string | undefined): string {
+  if (!value) return '';
+  if (value.includes(',')) {
+    const keys = value.split(',').map(k => k.trim()).filter(Boolean);
+    if (keys.length > 0) {
+      return keys[Math.floor(Math.random() * keys.length)];
+    }
+  }
+  return value.trim();
+}
+
+/**
+ * Resolves corresponding public and secret keys from rotated comma-separated lists.
+ * It uses a consistent index or random index but selected once per request/outreach transaction.
+ */
+export function getRotatedPaystackKeys(publicKeysStr: string | undefined, secretKeysStr: string | undefined): { publicKey: string, secretKey: string } {
+  if (!publicKeysStr) return { publicKey: '', secretKey: '' };
+  
+  const pubList = publicKeysStr.split(',').map(k => k.trim()).filter(Boolean);
+  const secList = (secretKeysStr || '').split(',').map(k => k.trim()).filter(Boolean);
+  
+  if (pubList.length === 0) return { publicKey: '', secretKey: '' };
+  
+  // Pick a random index
+  const index = Math.floor(Math.random() * pubList.length);
+  const publicKey = pubList[index];
+  // Match with secret key at same index, or fall back to the first secret key or empty
+  const secretKey = secList[index] || secList[0] || '';
+  
+  return { publicKey, secretKey };
+}
+
+/**
+ * Resolves the matching secret key from the rotated list for a given public key.
+ */
+export function getMatchingSecretKey(publicKey: string | undefined): string {
+  const config = getRuntimeConfig();
+  const pubList = (config.paystackPublicKey || '').split(',').map(k => k.trim()).filter(Boolean);
+  const secList = (config.paystackSecretKey || '').split(',').map(k => k.trim()).filter(Boolean);
+  
+  if (!publicKey) return secList[0] || '';
+  
+  const index = pubList.indexOf(publicKey.trim());
+  if (index !== -1 && secList[index]) {
+    return secList[index];
+  }
+  
+  // fallback to first key
+  return secList[0] || '';
+}
+
+/**
+ * Resolves corresponding twilio Account SID, Auth Token and From Number from rotated lists.
+ */
+export function getRotatedTwilioKeys(sidStr: string | undefined, tokenStr: string | undefined, fromStr: string | undefined): { accountSid: string, authToken: string, fromNumber: string } {
+  if (!sidStr) return { accountSid: '', authToken: '', fromNumber: '' };
+  
+  const sids = sidStr.split(',').map(s => s.trim()).filter(Boolean);
+  const tokens = (tokenStr || '').split(',').map(s => s.trim()).filter(Boolean);
+  const froms = (fromStr || '').split(',').map(s => s.trim()).filter(Boolean);
+  
+  if (sids.length === 0) return { accountSid: '', authToken: '', fromNumber: '' };
+  
+  const index = Math.floor(Math.random() * sids.length);
+  return {
+    accountSid: sids[index] || '',
+    authToken: tokens[index] || tokens[0] || '',
+    fromNumber: froms[index] || froms[0] || ''
+  };
+}
+
+
+

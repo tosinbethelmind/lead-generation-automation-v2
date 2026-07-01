@@ -30,7 +30,7 @@ We have built an automated script that configures your local variables and deplo
 2. The wizard will ask for:
    * **Supabase URL & Keys**: Obtained from your Supabase Dashboard under **Project Settings > API**.
    * **Database Connection URI**: Copy the connection string from Supabase **Project Settings > Database > Connection String > URI**.
-     * *Format: `postgresql://postgres:[password]@db.[project-id].supabase.co:5432/postgres`*
+     * *Format: `postgresql://postgres:[password]@db.[project-id].supabase.co:6543/postgres?pgbouncer=true` (recommended for transaction/connection pooling) or port `5432` for direct connection.*
    * **Gemini API Key**: Obtain your free API key from [Google AI Studio](https://aistudio.google.com/).
 3. **What happens automatically**:
    * The script installs database drivers (`pg`), connects to Supabase, and runs `supabase_schema.sql` to create all tables (`leads`, `dnc`, `logs`) and performance indexes.

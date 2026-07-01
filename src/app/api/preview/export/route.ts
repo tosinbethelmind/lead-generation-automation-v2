@@ -4,8 +4,9 @@ import { getDesignTheme, buildFallbackCopy } from '../generate/route';
 import { parseScalingConfig } from '@/lib/scalingHelper';
 import fs from 'fs';
 import path from 'path';
+import { getOverridesDir } from '@/lib/overrides';
 
-const OVERRIDES_DIR = path.join(process.cwd(), 'src', 'data', 'overrides');
+const OVERRIDES_DIR = getOverridesDir();
 
 export async function GET(req: NextRequest) {
   try {

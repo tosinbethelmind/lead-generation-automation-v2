@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getRuntimeConfig } from '@/lib/localConfig';
+import { getRuntimeConfig, getMatchingSecretKey } from '@/lib/localConfig';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { leadId, email, name, theme, copy } = body;
+    const { leadId, email, name, theme, copy, selectedFeatures, customInstructions, publicKey } = body;
 
     if (!leadId || !email || !name) {
       return NextResponse.json({ error: 'Missing required fields: leadId, email, or name' }, { status: 400 });
     }
 
     const config = getRuntimeConfig();
-    const secretKey = config.paystackSecretKey;
+    const secretKey = getMatchingSecretKey(publicKey);
     const feeNGN = config.claimFeeNGN || 0;
 
     if (!secretKey) {
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     }
 
     const origin = new URL(req.url).origin;
-    const callbackUrl = `${origin}/preview/${leadId}`;
+    const callbackUrl = `${origin}/preview/${leadId}?payment=verifying`;
 
     // Paystack expects amount in kobo (NGN * 100)
     const amountInKobo = Math.round(feeNGN * 100);
@@ -38,6 +38,8 @@ export async function POST(req: NextRequest) {
         clientEmail: email,
         theme,
         copy,
+        selectedFeatures: selectedFeatures || [],
+        customInstructions: customInstructions || '',
         custom_fields: [
           { display_name: 'Lead ID', variable_name: 'lead_id', value: leadId },
           { display_name: 'Client Name', variable_name: 'client_name', value: name },

@@ -11,20 +11,14 @@ export async function GET(req: NextRequest) {
   }
 
   const password = process.env.DATABASE_PASSWORD || 'pHqrTQc2gpdSqnAx';
+  const projectRef = 'szyuterncawfxwzhvwcf';
+
+  const { getPgClient } = await import('@/lib/dbConnect');
+  console.log("Connecting to Supabase...");
   
-  // Use direct IPv6 hostname
-  const connectionString = `postgresql://postgres:${encodeURIComponent(password)}@db.szyuterncawfxwzhvwcf.supabase.co:5432/postgres?sslmode=require`;
-
-  console.log("Connecting directly to Supabase via IPv6 from Vercel...");
-  const client = new Client({
-    connectionString,
-    ssl: {
-      rejectUnauthorized: false
-    }
-  });
-
+  let client: any = null;
   try {
-    await client.connect();
+    client = await getPgClient(projectRef, password);
     console.log("Connected successfully to the database.");
 
     const migrationPath = path.join(process.cwd(), 'supabase', 'migrations', '001_init.sql');
@@ -44,9 +38,11 @@ export async function GET(req: NextRequest) {
     });
   } catch (err: any) {
     console.error("Migration error:", err);
-    try {
-      await client.end();
-    } catch (e) {}
+    if (client) {
+      try {
+        await client.end();
+      } catch (e) {}
+    }
     return NextResponse.json({
       success: false,
       error: err.message || err

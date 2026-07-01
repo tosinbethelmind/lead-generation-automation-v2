@@ -17,7 +17,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
-import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
+import { getRuntimeConfig, saveLocalConfig, rotateKey } from '@/lib/localConfig';
 import fs from 'fs';
 import path from 'path';
 
@@ -98,7 +98,8 @@ async function sendGmailMessage(to: string, subject: string, body: string, acces
 }
 
 async function sendResendMessage(to: string, subject: string, body: string, config: any) {
-  if (!config.resendApiKey) {
+  const activeKey = rotateKey(config.resendApiKey);
+  if (!activeKey) {
     throw new Error('Resend API Key is not configured.');
   }
   const from = config.resendFromEmail || 'onboarding@resend.dev';
@@ -106,7 +107,7 @@ async function sendResendMessage(to: string, subject: string, body: string, conf
   const resp = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${config.resendApiKey}`,
+      'Authorization': `Bearer ${activeKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -124,7 +125,8 @@ async function sendResendMessage(to: string, subject: string, body: string, conf
 }
 
 async function sendBrevoMessage(to: string, subject: string, body: string, config: any) {
-  if (!config.brevoApiKey) {
+  const activeKey = rotateKey(config.brevoApiKey);
+  if (!activeKey) {
     throw new Error('Brevo API Key is not configured.');
   }
   const senderName = config.brevoSenderName || 'ApexReach';
@@ -136,7 +138,7 @@ async function sendBrevoMessage(to: string, subject: string, body: string, confi
   const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: {
-      'api-key': config.brevoApiKey,
+      'api-key': activeKey,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -258,33 +260,44 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: `Missing required env vars: ${missingEnv.join(', ')}` }, { status: 500 });
     }
 
-    const secretKey = config.paystackSecretKey;
-    if (!secretKey) {
+    const secretKeys = (config.paystackSecretKey || '').split(',').map(k => k.trim()).filter(Boolean);
+    if (secretKeys.length === 0) {
       return NextResponse.json({ error: 'Paystack Secret Key is not configured on the server.' }, { status: 500 });
     }
 
-    // 1. Verify transaction status on Paystack
-    const verifyResp = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
-      headers: {
-        'Authorization': `Bearer ${secretKey}`,
-        'Content-Type': 'application/json'
+    // Try verifying with each key in the list
+    let transaction = null;
+    let verifyError = null;
+    let lastStatus = 500;
+
+    for (const key of secretKeys) {
+      try {
+        const verifyResp = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
+          headers: {
+            'Authorization': `Bearer ${key}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const verifyData = await verifyResp.json();
+        if (verifyResp.ok && verifyData.status && verifyData.data && verifyData.data.status === 'success') {
+          transaction = verifyData.data;
+          break;
+        } else {
+          verifyError = verifyData.message || 'Paystack verification failed';
+          lastStatus = verifyResp.status;
+        }
+      } catch (err: any) {
+        verifyError = err.message;
       }
-    });
-
-    const verifyData = await verifyResp.json();
-
-    if (!verifyResp.ok || !verifyData.status) {
-      return NextResponse.json({ error: verifyData.message || 'Paystack verification failed' }, { status: verifyResp.status });
     }
 
-    const transaction = verifyData.data;
-
-    if (transaction.status !== 'success') {
-      return NextResponse.json({ error: `Payment transaction status is: ${transaction.status}` }, { status: 400 });
+    if (!transaction) {
+      return NextResponse.json({ error: verifyError || 'Transaction not found or not successful' }, { status: lastStatus });
     }
+
 
     // Extract metadata from the initialized transaction
-    const { leadId, clientName, clientEmail, theme, copy } = transaction.metadata || {};
+    const { leadId, clientName, clientEmail, theme, copy, selectedFeatures, customInstructions } = transaction.metadata || {};
 
     if (!leadId || !clientEmail || !clientName) {
       return NextResponse.json({ error: 'Transaction succeeded, but required metadata was not found.' }, { status: 400 });
@@ -299,7 +312,9 @@ export async function GET(req: NextRequest) {
 
     // 2. Process claim event - update status & notes in sheets / Supabase
     const timestamp = new Date().toISOString();
-    const newNotes = `${lead.notes || ''}\n[CLAIMED - PAID ONLINE] Client claimed and paid Setup Fee (₦${(transaction.amount / 100).toLocaleString()}) via Paystack. Ref: ${reference}. Contact: ${clientName} (${clientEmail})`;
+    const featuresNote = selectedFeatures && selectedFeatures.length > 0 ? ` Activated Features: ${selectedFeatures.join(', ')}.` : '';
+    const instNote = customInstructions ? ` Custom Instructions: "${customInstructions}"` : '';
+    const newNotes = `${lead.notes || ''}\n[CLAIMED - PAID ONLINE] Client claimed and paid Setup Fee (₦${(transaction.amount / 100).toLocaleString()}) via Paystack. Ref: ${reference}. Contact: ${clientName} (${clientEmail}).${featuresNote}${instNote}`;
     await repo.updateLeadStatus(leadId, 'CONTACTED', newNotes, timestamp);
 
     // 3. Log event
@@ -329,6 +344,8 @@ export async function GET(req: NextRequest) {
         testimonials: [],
         ctaText: 'Book an Appointment',
       },
+      selectedFeatures: selectedFeatures || [],
+      customInstructions: customInstructions || '',
       claimedAt: timestamp,
       clientName,
       clientEmail,
@@ -425,6 +442,10 @@ Details:
 - Setup Fee Paid: ₦${(transaction.amount / 100).toLocaleString()} (via Paystack)
 - Paystack Ref: ${reference}
 - Status: CLAIMED (Lead Notes updated in CRM)
+
+Customizations:
+- Selected Automations: ${selectedFeatures && selectedFeatures.length > 0 ? selectedFeatures.join(', ') : 'None'}
+- Natural Language Instructions: ${customInstructions || 'None'}
 
 Deployment Status:
 ${gitNotice}

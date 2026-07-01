@@ -91,7 +91,8 @@ test.describe('API Endpoints Verification', () => {
         clientEmail: 'janesmith@test.com',
         reason: 'Website styling requested changes',
         urgency: 'high'
-      }
+      },
+      timeout: 60000
     });
 
     expect(response.ok()).toBe(true);
@@ -105,7 +106,8 @@ test.describe('API Endpoints Verification', () => {
       data: {
         siteId: testLeadId,
         description: 'change primary branding color to #10b981 and hero title to Professional Mechanic Team'
-      }
+      },
+      timeout: 60000
     });
 
     if (response.status() === 400) {

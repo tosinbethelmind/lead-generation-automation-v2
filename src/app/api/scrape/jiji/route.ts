@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createScrapeJob, updateScrapeJobStatus } from '@/app/api/scrape/queue';
+import { createScrapeJob, updateScrapeJobStatus, handleQueueDelegation } from '@/app/api/scrape/queue';
 import { saveLeads, addLog, normalizePhone, Lead } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import { extractEmailsFromText, enrichFromWebsite } from '@/lib/leadEnricher';
@@ -20,6 +20,10 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { url, options = {}, userId } = body;
+
+    const queueResp = await handleQueueDelegation(req, 'jiji', body);
+    if (queueResp) return queueResp;
+
     if (!url) {
       return NextResponse.json({ error: 'Missing url' }, { status: 400 });
     }

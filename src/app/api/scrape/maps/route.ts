@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
-import { getRuntimeConfig } from '@/lib/localConfig';
-import { enrichFromWebsite } from '@/lib/leadEnricher';
+import { getRuntimeConfig, rotateKey } from '@/lib/localConfig';
+import { enrichFromWebsite, validateLeadWithAI } from '@/lib/leadEnricher';
+import { handleQueueDelegation } from '@/app/api/scrape/queue';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -15,12 +16,15 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { query, limit = 5 } = body;
     
+    const queueResp = await handleQueueDelegation(req, 'maps', body);
+    if (queueResp) return queueResp;
+    
     if (!query) {
       return NextResponse.json({ error: "Missing required query string parameter." }, { status: 400 });
     }
     
     const config = getRuntimeConfig();
-    const apiKey = config.googlePlacesApiKey;
+    const apiKey = rotateKey(config.googlePlacesApiKey);
     
     const isSandbox = query.toLowerCase().includes('sandbox') || query.toLowerCase().includes('mock') || !apiKey || apiKey.trim() === '';
     
@@ -49,8 +53,38 @@ export async function POST(req: NextRequest) {
           status: 'NEW',
           last_contacted_at: '',
           duplicate_of_lead_id: '',
-          business_summary: 'Lagos Dental Clinic is a local business in Ikeja, Lagos. They have a basic website: https://lagosdentalclinic.com but lack online booking or payment gateway automation.',
-          notes: 'Sandbox mode lead.'
+          business_summary: 'Lagos Dental Clinic is a premium dental service in Ikeja, Lagos. They provide state-of-the-art teeth whitening, cleaning, and dental implants.',
+          notes: 'Sandbox mode lead.',
+          business_hours: JSON.stringify([
+            "Monday: 8:00 AM – 5:00 PM",
+            "Tuesday: 8:00 AM – 5:00 PM",
+            "Wednesday: 8:00 AM – 5:00 PM",
+            "Thursday: 8:00 AM – 5:00 PM",
+            "Friday: 8:00 AM – 5:00 PM",
+            "Saturday: 9:00 AM – 2:00 PM",
+            "Sunday: Closed"
+          ]),
+          reviews_data: JSON.stringify([
+            { author_name: "Tobi Alabi", rating: 5, text: "Excellent dental services! Very professional and clean clinic." },
+            { author_name: "Chinyere Oke", rating: 4, text: "Wait time was a bit long, but the dentist was very thorough and kind." },
+            { author_name: "Abiodun Bello", rating: 5, text: "Super friendly staff and very affordable pricing for dental scaling!" }
+          ]),
+          photos_data: JSON.stringify([
+            "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800",
+            "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800"
+          ]),
+          social_links: JSON.stringify({
+            facebook: "https://facebook.com/lagosdentalclinic",
+            instagram: "https://instagram.com/lagosdentalclinic",
+            linkedin: "https://linkedin.com/company/lagosdentalclinic"
+          }),
+          services_data: JSON.stringify([
+            "Dental Consultation",
+            "Teeth Whitening",
+            "Scaling and Polishing",
+            "Orthodontic Braces",
+            "Dental Implants"
+          ])
         },
         {
           lead_id: `mock_places_2`,
@@ -75,7 +109,32 @@ export async function POST(req: NextRequest) {
           last_contacted_at: '',
           duplicate_of_lead_id: '',
           business_summary: 'Ikeja Dental Care is a local business in Ikeja, Lagos with a strong Google rating of 4.2 stars (31 reviews) — but no website yet.',
-          notes: 'Sandbox mode lead.'
+          notes: 'Sandbox mode lead.',
+          business_hours: JSON.stringify([
+            "Monday: 9:00 AM – 6:00 PM",
+            "Tuesday: 9:00 AM – 6:00 PM",
+            "Wednesday: 9:00 AM – 6:00 PM",
+            "Thursday: 9:00 AM – 6:00 PM",
+            "Friday: 9:00 AM – 6:00 PM",
+            "Saturday: 10:00 AM – 4:00 PM",
+            "Sunday: Closed"
+          ]),
+          reviews_data: JSON.stringify([
+            { author_name: "Kemi Ade", rating: 4, text: "Affordable teeth cleaning. Simple setup but skilled doctors." },
+            { author_name: "Emeka Obi", rating: 5, text: "They saved my tooth with a quick root canal. Great service!" }
+          ]),
+          photos_data: JSON.stringify([
+            "https://images.unsplash.com/photo-1579684389782-64d84b5e901a?w=800"
+          ]),
+          social_links: JSON.stringify({
+            instagram: "https://instagram.com/ikejadentalcare"
+          }),
+          services_data: JSON.stringify([
+            "Teeth Cleaning",
+            "Tooth Extraction",
+            "Root Canal Therapy",
+            "Dental Fillings"
+          ])
         }
       ];
       
@@ -111,22 +170,65 @@ export async function POST(req: NextRequest) {
       let website = '';
       let address = record.formatted_address || '';
       
+      let businessHours = '';
+      let reviewsData = '';
+      let photosData = '';
+      let servicesData = '';
+      let editorialSummary = '';
+      
       // Fetch deep Place details to get contact and website information
       try {
-        const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=international_phone_number,formatted_phone_number,website&key=${apiKey}`;
+        const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=international_phone_number,formatted_phone_number,website,editorial_summary,opening_hours,photos,reviews,types&key=${apiKey}`;
         const detailsResp = await fetch(detailsUrl);
         const detailsData = await detailsResp.json();
         if (detailsData.status === 'OK' && detailsData.result) {
-          rawPhone = detailsData.result.international_phone_number || detailsData.result.formatted_phone_number || '';
-          website = detailsData.result.website || '';
+          const res = detailsData.result;
+          rawPhone = res.international_phone_number || res.formatted_phone_number || '';
+          website = res.website || '';
+          
+          if (res.opening_hours && res.opening_hours.weekday_text) {
+            businessHours = JSON.stringify(res.opening_hours.weekday_text);
+          }
+          if (res.reviews) {
+            reviewsData = JSON.stringify(res.reviews.map((rev: any) => ({
+              author_name: rev.author_name || 'Anonymous',
+              rating: rev.rating || 5,
+              text: rev.text || '',
+              relative_time_description: rev.relative_time_description || ''
+            })));
+          }
+          if (res.photos) {
+            const photoUrls = res.photos.slice(0, 5).map((photo: any) => 
+              `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=${photo.photo_reference}&key=${apiKey}`
+            );
+            photosData = JSON.stringify(photoUrls);
+          }
+          if (res.types) {
+            const friendlyTypes = res.types.map((type: string) => 
+              type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+            );
+            servicesData = JSON.stringify(friendlyTypes);
+          }
+          if (res.editorial_summary && res.editorial_summary.overview) {
+            editorialSummary = res.editorial_summary.overview;
+          }
         }
       } catch (err) {
         console.error('Failed to load deep details for place_id:', placeId, err);
       }
       
-      // ── CORE FILTER: Only include businesses with rating >= 4.0 ──
-      if ((record.rating || 0) < 4.0) {
-        // Rating too low — skip
+      // ── QUALITY FILTERS ──
+      const minReviews = config.minReviews ?? 1;
+      const minRating = config.minRating ?? 4.0;
+      const rating = record.rating || 0;
+      const reviews = record.user_ratings_total || 0;
+
+      if (rating < minRating) {
+        console.log(`[Google Maps Scraper] Filtering out lead "${record.name}" due to low rating (${rating} < ${minRating})`);
+        continue;
+      }
+      if (reviews < minReviews) {
+        console.log(`[Google Maps Scraper] Filtering out lead "${record.name}" due to low reviews count (${reviews} < ${minReviews})`);
         continue;
       }
 
@@ -155,7 +257,7 @@ export async function POST(req: NextRequest) {
         area = areaMatches[0];
       }
 
-      newLeads.push({
+      const leadObj: Partial<Lead> = {
         lead_id: `places_${placeId}`,
         source: 'GOOGLE',
         name: record.name || 'Local Business',
@@ -167,8 +269,8 @@ export async function POST(req: NextRequest) {
         phone_raw: rawPhone || websiteEnrichedPhone || '',
         email: email || '',
         website: website || '',
-        rating: record.rating || 0,
-        reviews_count: record.user_ratings_total || 0,
+        rating,
+        reviews_count: reviews,
         verified: !!record.opening_hours,
         listings_count: 1,
         profile_url: `https://www.google.com/maps/place/?q=place_id:${placeId}`,
@@ -177,16 +279,51 @@ export async function POST(req: NextRequest) {
         status: 'NEW',
         last_contacted_at: '',
         duplicate_of_lead_id: '',
-        business_summary: hasWebsite
+        business_summary: editorialSummary || (hasWebsite
           ? `${record.name} is a local business in ${area}, Lagos. They have a basic website: ${website} but lack online booking or payment gateway automation.`
-          : `${record.name} is a local business in ${area}, Lagos with a strong Google rating of ${record.rating || 'N/A'} stars (${record.user_ratings_total || 0} reviews) — but no website yet.`,
+          : `${record.name} is a local business in ${area}, Lagos with a strong Google rating of ${rating} stars (${reviews} reviews) — but no website yet.`),
         notes: hasWebsite
           ? `Imported via Google Places API. Has basic website: ${website}. Email: ${email || 'none'}. Pitch: Automation & Premium Feature Upgrade.`
-          : `Imported via Google Places API. No website detected on place details.`
-      });
+          : `Imported via Google Places API. No website detected on place details.`,
+        business_hours: businessHours,
+        reviews_data: reviewsData,
+        photos_data: photosData,
+        services_data: servicesData,
+        social_links: ''
+      };
+
+      newLeads.push(leadObj);
     }
     
-    const dbResult = await saveLeads(newLeads);
+    const finalLeads: Partial<Lead>[] = [];
+    const geminiApiKeyVal = config.geminiApiKey;
+    if (geminiApiKeyVal && newLeads.length > 0) {
+      console.log(`[Google Maps Scraper] Performing parallel AI relevance check for ${newLeads.length} leads...`);
+      const aiChecks = await Promise.all(
+        newLeads.map(async (leadObj) => {
+          try {
+            const aiCheck = await validateLeadWithAI(leadObj, geminiApiKeyVal);
+            return { leadObj, aiCheck };
+          } catch (err: any) {
+            console.error(`AI check failed for lead ${leadObj.name}:`, err.message);
+            return { leadObj, aiCheck: { isRelevant: true, score: 10, reason: 'AI check failed' } };
+          }
+        })
+      );
+
+      for (const { leadObj, aiCheck } of aiChecks) {
+        if (!aiCheck.isRelevant) {
+          console.log(`[Google Maps Scraper] Filtering out lead "${leadObj.name}" due to AI scoring: ${aiCheck.score}/10. Reason: ${aiCheck.reason}`);
+          continue;
+        }
+        leadObj.notes = `${leadObj.notes} AI Relevance Score: ${aiCheck.score}/10 (${aiCheck.reason})`;
+        finalLeads.push(leadObj);
+      }
+    } else {
+      finalLeads.push(...newLeads);
+    }
+    
+    const dbResult = await saveLeads(finalLeads);
     await addLog('Google Maps Scraper', 'SUCCESS', `Places scraping complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
     
     return NextResponse.json({
@@ -194,7 +331,7 @@ export async function POST(req: NextRequest) {
       mode: 'cloud',
       added: dbResult.added,
       skipped: dbResult.skipped,
-      leads: newLeads
+      leads: finalLeads
     });
     
   } catch (e: any) {

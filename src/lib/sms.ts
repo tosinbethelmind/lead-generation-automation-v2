@@ -1,5 +1,5 @@
 import twilio from 'twilio';
-import { getRuntimeConfig } from '@/lib/localConfig';
+import { getRuntimeConfig, getRotatedTwilioKeys, rotateKey } from '@/lib/localConfig';
 
 /**
  * Clean phone numbers to E.164 format.
@@ -80,7 +80,7 @@ export async function sendSmsMessage(lead: any, previewUrl: string, customMessag
   } 
   
   else if (provider === 'termii') {
-    const apiKey = config.termiiApiKey;
+    const apiKey = rotateKey(config.termiiApiKey);
     const senderId = config.termiiSenderId || 'Sandbox';
     if (!apiKey) {
       throw new Error('Termii API key is not configured.');
@@ -118,7 +118,7 @@ export async function sendSmsMessage(lead: any, previewUrl: string, customMessag
   
   else if (provider === 'africastalking') {
     const username = config.africastalkingUsername;
-    const apiKey = config.africastalkingApiKey;
+    const apiKey = rotateKey(config.africastalkingApiKey);
     const senderId = config.africastalkingSenderId;
     if (!username || !apiKey) {
       throw new Error("Africa's Talking username or API key is not configured.");
@@ -157,17 +157,19 @@ export async function sendSmsMessage(lead: any, previewUrl: string, customMessag
   } 
   
   else if (provider === 'twilio') {
-    const sid = config.twilioAccountSid;
-    const token = config.twilioAuthToken;
-    const from = config.twilioFromNumber;
-    if (!sid || !token || !from) {
+    const { accountSid, authToken, fromNumber } = getRotatedTwilioKeys(
+      config.twilioAccountSid,
+      config.twilioAuthToken,
+      config.twilioFromNumber
+    );
+    if (!accountSid || !authToken || !fromNumber) {
       throw new Error('Twilio configuration is incomplete.');
     }
 
-    const client = twilio(sid, token);
+    const client = twilio(accountSid, authToken);
     const result = await client.messages.create({
       to: phone,
-      from: from,
+      from: fromNumber,
       body: messageText,
     });
 

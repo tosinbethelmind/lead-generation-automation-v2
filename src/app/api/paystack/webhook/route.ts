@@ -77,18 +77,27 @@ export async function POST(req: NextRequest) {
     }
 
     const config = getRuntimeConfig();
-    const secretKey = config.paystackSecretKey;
-    if (!secretKey) {
+    const secretKeys = (config.paystackSecretKey || '').split(',').map(k => k.trim()).filter(Boolean);
+    if (secretKeys.length === 0) {
       return NextResponse.json({ error: 'Paystack Secret Key is not configured' }, { status: 500 });
     }
 
     const rawBody = await req.text();
-    const expectedSignature = crypto
-      .createHmac('sha512', secretKey)
-      .update(rawBody)
-      .digest('hex');
+    let signatureValid = false;
 
-    if (signature !== expectedSignature) {
+    for (const key of secretKeys) {
+      const expectedSignature = crypto
+        .createHmac('sha512', key)
+        .update(rawBody)
+        .digest('hex');
+
+      if (signature === expectedSignature) {
+        signatureValid = true;
+        break;
+      }
+    }
+
+    if (!signatureValid) {
       return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 });
     }
 

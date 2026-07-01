@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
+import { getRuntimeConfig, saveLocalConfig, rotateKey, getRotatedPaystackKeys } from '@/lib/localConfig';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
 import { getPitchDetails } from '@/lib/pitchHelper';
+import { getOverridesDir } from '@/lib/overrides';
 
 // ============================================================================
 // Google Cloud Vertex AI Token Refresher
@@ -154,6 +155,7 @@ export interface GeneratedSiteResponse {
     headingFont?: string;
     bodyFont?: string;
     gradient: string;
+    heroImage?: string;
   };
 }
 
@@ -171,8 +173,18 @@ Business Details:
 - Google Rating: ${lead.rating} stars out of 5
 - Number of Google Reviews: ${lead.reviews_count}
 - Brief: ${lead.business_summary}
+- Operating Hours: ${lead.business_hours || 'Not Available'}
+- Actual Google Reviews (JSON): ${lead.reviews_data || '[]'}
+- Business Photos (JSON array): ${lead.photos_data || '[]'}
+- Social Media Links (JSON object): ${lead.social_links || '{}'}
+- Services Offered (JSON array): ${lead.services_data || '[]'}
 
-Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. 
+Guidelines:
+1. Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business.
+2. Under "testimonials", use or adapt the real Google reviews provided in "Actual Google Reviews (JSON)" to populate the testimonials list (up to 3 items) instead of fabricating completely random names/reviews.
+3. Under "services", incorporate the actual services from "Services Offered (JSON array)" if present, or expand upon them matching the category. Make sure there are exactly 3 services.
+4. Try to select a "heroImage" URL from the "Business Photos (JSON array)" if there are any valid URLs. If none, do not specify it (it will default to a high-quality Unsplash category image).
+
 Font options should be premium pairings:
 - Elegant/Luxury: headingFont='Playfair Display' + bodyFont='Plus Jakarta Sans' (or Inter)
 - Technical/Modern: headingFont='Space Grotesk' + bodyFont='Inter'
@@ -204,7 +216,8 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
     "font": "Font Name (main/default font)",
     "headingFont": "Heading Font Name (selected from options above)",
     "bodyFont": "Body Font Name (selected from options above)",
-    "gradient": "linear-gradient(135deg, primary_color 0%, accent_color 100%)"
+    "gradient": "linear-gradient(135deg, primary_color 0%, accent_color 100%)",
+    "heroImage": "URL from Business Photos if available, otherwise omit this field"
   }
 }`;
 
@@ -256,8 +269,18 @@ Business Details:
 - Google Rating: ${lead.rating} stars out of 5
 - Number of Google Reviews: ${lead.reviews_count}
 - Brief: ${lead.business_summary}
+- Operating Hours: ${lead.business_hours || 'Not Available'}
+- Actual Google Reviews (JSON): ${lead.reviews_data || '[]'}
+- Business Photos (JSON array): ${lead.photos_data || '[]'}
+- Social Media Links (JSON object): ${lead.social_links || '{}'}
+- Services Offered (JSON array): ${lead.services_data || '[]'}
 
-Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. 
+Guidelines:
+1. Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business.
+2. Under "testimonials", use or adapt the real Google reviews provided in "Actual Google Reviews (JSON)" to populate the testimonials list (up to 3 items) instead of fabricating completely random names/reviews.
+3. Under "services", incorporate the actual services from "Services Offered (JSON array)" if present, or expand upon them matching the category. Make sure there are exactly 3 services.
+4. Try to select a "heroImage" URL from the "Business Photos (JSON array)" if there are any valid URLs. If none, do not specify it (it will default to a high-quality Unsplash category image).
+
 Font options should be premium pairings:
 - Elegant/Luxury: headingFont='Playfair Display' + bodyFont='Plus Jakarta Sans' (or Inter)
 - Technical/Modern: headingFont='Space Grotesk' + bodyFont='Inter'
@@ -289,11 +312,12 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
     "font": "Font Name (main/default font)",
     "headingFont": "Heading Font Name (selected from options above)",
     "bodyFont": "Body Font Name (selected from options above)",
-    "gradient": "linear-gradient(135deg, primary_color 0%, accent_color 100%)"
+    "gradient": "linear-gradient(135deg, primary_color 0%, accent_color 100%)",
+    "heroImage": "URL from Business Photos if available, otherwise omit this field"
   }
 }`;
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
   const resp = await fetch(endpoint, {
     method: 'POST',
@@ -304,7 +328,8 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 4096,
+        responseMimeType: 'application/json',
       },
     }),
   });
@@ -322,7 +347,8 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON found in Gemini AI Studio response');
     return JSON.parse(jsonMatch[0]) as GeneratedSiteResponse;
-  } catch {
+  } catch (err: any) {
+    console.error('Failed to parse Gemini response:', err.message, 'Raw text:', rawText);
     return { copy: buildFallbackCopy(lead) };
   }
 }
@@ -388,71 +414,134 @@ export async function GET(req: NextRequest) {
     }
 
     const config = getRuntimeConfig();
-    let theme = getDesignTheme(lead.category);
+    let copy: GeneratedCopy = {} as any;
+    let theme: DesignTheme = {} as any;
+    let cacheHit = false;
 
-    // Attempt Gemini or Vertex AI generation if credentials are set
-    let copy: GeneratedCopy;
-    let generatedResponse: GeneratedSiteResponse | null = null;
-    if (config.geminiApiKey) {
+    if (lead.generated_copy && lead.design_theme) {
       try {
-        generatedResponse = await generateCopyWithGeminiApiKey(lead, config.geminiApiKey);
-      } catch (err: any) {
-        console.warn('Gemini AI Studio generation failed, attempting Vertex AI or fallback:', err.message);
-        if (config.googleProjectId && config.googleRefreshToken) {
-          try {
-            const accessToken = await getValidAccessToken();
-            generatedResponse = await generateCopyWithVertexAI(lead, accessToken, config.googleProjectId);
-          } catch (vErr: any) {
-            console.warn('Vertex AI generation also failed, using fallback copy:', vErr.message);
-          }
+        copy = typeof lead.generated_copy === 'string' ? JSON.parse(lead.generated_copy) : lead.generated_copy;
+        theme = typeof lead.design_theme === 'string' ? JSON.parse(lead.design_theme) : lead.design_theme;
+        if (copy && theme && copy.heroTitle) {
+          cacheHit = true;
+          console.log(`[Cache Hit] Using pre-generated copy and theme for lead: ${leadId}`);
         }
-      }
-    } else if (config.googleProjectId && config.googleRefreshToken) {
-      try {
-        const accessToken = await getValidAccessToken();
-        generatedResponse = await generateCopyWithVertexAI(lead, accessToken, config.googleProjectId);
-      } catch (err: any) {
-        console.warn('Vertex AI generation failed, using fallback copy:', err.message);
+      } catch (e) {
+        console.warn('Failed to parse cached copy/theme from db, generating fresh:', e);
       }
     }
 
-    if (generatedResponse) {
-      copy = generatedResponse.copy;
-      if (generatedResponse.theme) {
-        theme = {
-          ...theme,
-          primary: generatedResponse.theme.primary || theme.primary,
-          accent: generatedResponse.theme.accent || theme.accent,
-          bg: generatedResponse.theme.bg || theme.bg,
-          text: generatedResponse.theme.text || theme.text,
-          font: generatedResponse.theme.font || theme.font,
-          headingFont: generatedResponse.theme.headingFont || theme.headingFont || generatedResponse.theme.font,
-          bodyFont: generatedResponse.theme.bodyFont || theme.bodyFont || generatedResponse.theme.font,
-          gradient: generatedResponse.theme.gradient || theme.gradient
-        };
+    if (!cacheHit) {
+      theme = getDesignTheme(lead.category);
+      let generatedResponse: GeneratedSiteResponse | null = null;
+      if (config.geminiApiKey) {
+        try {
+          const activeKey = rotateKey(config.geminiApiKey);
+          generatedResponse = await generateCopyWithGeminiApiKey(lead, activeKey);
+        } catch (err: any) {
+          console.warn('Gemini AI Studio generation failed, attempting Vertex AI or fallback:', err.message);
+          if (config.googleProjectId && config.googleRefreshToken) {
+            try {
+              const accessToken = await getValidAccessToken();
+              generatedResponse = await generateCopyWithVertexAI(lead, accessToken, config.googleProjectId);
+            } catch (vErr: any) {
+              console.warn('Vertex AI generation also failed, using fallback copy:', vErr.message);
+            }
+          }
+        }
+      } else if (config.googleProjectId && config.googleRefreshToken) {
+        try {
+          const accessToken = await getValidAccessToken();
+          generatedResponse = await generateCopyWithVertexAI(lead, accessToken, config.googleProjectId);
+        } catch (err: any) {
+          console.warn('Vertex AI generation failed, using fallback copy:', err.message);
+        }
       }
-    } else {
-      copy = buildFallbackCopy(lead);
+
+      let photoFallback = '';
+      if (lead.photos_data) {
+        try {
+          const photos = typeof lead.photos_data === 'string' ? JSON.parse(lead.photos_data) : lead.photos_data;
+          if (Array.isArray(photos) && photos.length > 0) {
+            photoFallback = photos[0];
+          }
+        } catch (_) {}
+      }
+
+      if (generatedResponse) {
+        copy = generatedResponse.copy;
+        if (generatedResponse.theme) {
+          theme = {
+            ...theme,
+            primary: generatedResponse.theme.primary || theme.primary,
+            accent: generatedResponse.theme.accent || theme.accent,
+            bg: generatedResponse.theme.bg || theme.bg,
+            text: generatedResponse.theme.text || theme.text,
+            font: generatedResponse.theme.font || theme.font,
+            headingFont: generatedResponse.theme.headingFont || theme.headingFont || generatedResponse.theme.font,
+            bodyFont: generatedResponse.theme.bodyFont || theme.bodyFont || generatedResponse.theme.font,
+            gradient: generatedResponse.theme.gradient || theme.gradient,
+            heroImage: generatedResponse.theme.heroImage || photoFallback || theme.heroImage
+          };
+        } else if (photoFallback) {
+          theme.heroImage = photoFallback;
+        }
+      } else {
+        copy = buildFallbackCopy(lead);
+        if (photoFallback) {
+          theme.heroImage = photoFallback;
+        }
+      }
+
+      // Save generated copy and theme to database for caching
+      try {
+        await repo.updateLeadFields(leadId, {
+          generated_copy: copy,
+          design_theme: theme
+        });
+        console.log(`[Cache Write] Persisted generated copy and theme for lead: ${leadId}`);
+      } catch (err) {
+        console.warn('Failed to cache copy/theme to db:', err);
+      }
     }
 
     // Merge overrides
-    const overridesPath = path.join(process.cwd(), 'src', 'data', 'overrides', `${leadId}.json`);
     let overrides: any = {};
-    if (fs.existsSync(overridesPath)) {
+    if (lead.overrides) {
       try {
-        overrides = JSON.parse(fs.readFileSync(overridesPath, 'utf8'));
-        if (overrides.theme) {
-          theme = { ...theme, ...overrides.theme };
-        }
-        if (overrides.copy) {
-          copy = { ...copy, ...overrides.copy };
-        }
+        overrides = typeof lead.overrides === 'string' ? JSON.parse(lead.overrides) : lead.overrides;
       } catch (err) {
-        console.warn('Failed to merge overrides in generator:', err);
+        console.warn('Failed to parse database overrides:', err);
+      }
+    } else {
+      const overridesPath = path.join(getOverridesDir(), `${leadId}.json`);
+      if (fs.existsSync(overridesPath)) {
+        try {
+          overrides = JSON.parse(fs.readFileSync(overridesPath, 'utf8'));
+        } catch (err) {
+          console.warn('Failed to merge local overrides in generator:', err);
+        }
       }
     }
 
-    const pitch = getPitchDetails(lead, origin, config.businessSignature || 'ApexReach');
+    if (overrides) {
+      if (overrides.theme) {
+        theme = { ...theme, ...overrides.theme };
+      }
+      if (overrides.copy) {
+        copy = { ...copy, ...overrides.copy };
+      }
+    }
+
+    let pitch = getPitchDetails(lead, origin, config.businessSignature || 'ApexReach');
+    if (overrides.pitch) {
+      pitch = {
+        ...pitch,
+        ...overrides.pitch
+      };
+    }
+
+    const keys = getRotatedPaystackKeys(config.paystackPublicKey, config.paystackSecretKey);
 
     return NextResponse.json({
       lead,
@@ -462,11 +551,14 @@ export async function GET(req: NextRequest) {
       overrides,
       generatedAt: new Date().toISOString(),
       paymentConfig: {
-        paystackPublicKey: config.paystackPublicKey || '',
+        paystackPublicKey: keys.publicKey,
         claimFeeNGN: config.claimFeeNGN || 0,
         moniepointBankName: config.moniepointBankName || '',
         moniepointAccountNumber: config.moniepointAccountNumber || '',
         moniepointAccountName: config.moniepointAccountName || '',
+        opayBankName: config.opayBankName || '',
+        opayAccountNumber: config.opayAccountNumber || '',
+        opayAccountName: config.opayAccountName || '',
       }
     });
   } catch (err: any) {

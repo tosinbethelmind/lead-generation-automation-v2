@@ -66,8 +66,10 @@ export async function generateCopyWithProviders(lead: any): Promise<GeneratedSit
   const geminiKeys: string[] = [];
   if (Array.isArray(config.geminiApiKeys) && config.geminiApiKeys.length) {
     geminiKeys.push(...config.geminiApiKeys);
-  } else if (config.geminiApiKey) {
-    geminiKeys.push(config.geminiApiKey);
+  }
+  if (config.geminiApiKey) {
+    const splitKeys = config.geminiApiKey.split(',').map(k => k.trim()).filter(Boolean);
+    geminiKeys.push(...splitKeys);
   }
 
   // Try Gemini keys first.

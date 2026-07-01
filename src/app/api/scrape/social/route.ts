@@ -4,6 +4,7 @@ import { getRuntimeConfig } from '@/lib/localConfig';
 import { extractEmailsFromText, enrichFromWebsite } from '@/lib/leadEnricher';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
+import { handleQueueDelegation } from '@/app/api/scrape/queue';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -22,6 +23,9 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { platform = 'instagram', query, limit = 5 } = body;
+
+    const queueResp = await handleQueueDelegation(req, 'social', body);
+    if (queueResp) return queueResp;
 
     const platUpper = platform.toUpperCase() as 'INSTAGRAM' | 'FACEBOOK' | 'TIKTOK' | 'LINKEDIN';
     if (!['INSTAGRAM', 'FACEBOOK', 'TIKTOK', 'LINKEDIN'].includes(platUpper)) {

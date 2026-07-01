@@ -1,13 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const OVERRIDES_DIR = path.join(process.cwd(), 'src', 'data', 'overrides');
-
-// Ensure directory exists
-if (!fs.existsSync(OVERRIDES_DIR)) {
-  fs.mkdirSync(OVERRIDES_DIR, { recursive: true });
-}
+import { getActiveLeadRepository } from '@/lib/googleSheets';
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,10 +10,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'leadId is required' }, { status: 400 });
     }
 
-    const filePath = path.join(OVERRIDES_DIR, `${leadId}.json`);
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath, 'utf8');
-      return NextResponse.json(JSON.parse(data));
+    const repo = getActiveLeadRepository();
+    const lead = await repo.getLeadById(leadId);
+
+    if (lead && lead.overrides) {
+      // Ensure it is returned as parsed object
+      const overrides = typeof lead.overrides === 'string' ? JSON.parse(lead.overrides) : lead.overrides;
+      return NextResponse.json(overrides);
     }
 
     return NextResponse.json({});
@@ -39,10 +34,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'leadId is required' }, { status: 400 });
     }
 
-    const filePath = path.join(OVERRIDES_DIR, `${leadId}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(overrides || {}, null, 2), 'utf8');
+    const repo = getActiveLeadRepository();
+    const success = await repo.updateLeadFields(leadId, { overrides });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

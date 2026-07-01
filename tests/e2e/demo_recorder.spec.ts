@@ -59,6 +59,10 @@ test.describe('ApexReach Complete Platform Walkthrough Demo', () => {
     // PHASE 1 — CONSOLE DASHBOARD
     // ═══════════════════════════════════════════════════════════════
     await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('onboarding_complete', 'true');
+    });
+    await page.goto('/');
     await page.waitForTimeout(2000);
     await speak(page, 'Welcome to ApexReach B2B Lead Engine. This is a complete voiced walkthrough of every feature on the platform.');
 

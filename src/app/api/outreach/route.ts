@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getLeads, addLog, updateLeadStatus } from '@/lib/googleSheets';
-import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
+import { getLeads, addLog, updateLeadStatus, getActiveLeadRepository } from '@/lib/googleSheets';
+import { getRuntimeConfig, saveLocalConfig, rotateKey } from '@/lib/localConfig';
+import { verifyEmailAddress } from '@/lib/leadEnricher';
 
 // ============================================================================
 // Google OAuth Token Refresher
@@ -71,6 +72,7 @@ class OutreachService {
     
     const leads = await getLeads();
     const leadMap = new Map(leads.map(l => [l.lead_id, l]));
+    const repo = getActiveLeadRepository();
     
     let sentCount = 0;
     const results = [];
@@ -80,9 +82,14 @@ class OutreachService {
       if (!lead) continue;
       
       const email = lead.email;
-      if (!email || !email.includes('@')) {
-        await updateLeadStatus(leadId, 'ERROR', 'Skipped: Missing or invalid business email address');
-        results.push({ leadId, status: 'ERROR', details: 'Invalid email address' });
+      const isValid = email ? verifyEmailAddress(email) : false;
+      
+      // Persist verification status in database
+      await repo.updateLeadFields(leadId, { email_verified: isValid });
+
+      if (!isValid) {
+        await updateLeadStatus(leadId, 'ERROR', 'Skipped: Invalid or unverified business email address');
+        results.push({ leadId, status: 'ERROR', details: 'Invalid or unverified email address' });
         continue;
       }
       
@@ -169,7 +176,8 @@ class OutreachService {
   }
 
   private async sendResendMessage(to: string, subject: string, body: string, config: any) {
-    if (!config.resendApiKey) {
+    const activeKey = rotateKey(config.resendApiKey);
+    if (!activeKey) {
       throw new Error('Resend API Key is not configured.');
     }
     const from = config.resendFromEmail || 'onboarding@resend.dev';
@@ -177,7 +185,7 @@ class OutreachService {
     const resp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.resendApiKey}`,
+        'Authorization': `Bearer ${activeKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
