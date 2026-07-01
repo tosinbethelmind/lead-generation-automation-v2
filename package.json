@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start-all": "concurrently \"npm run dev\" \"npm run local-runner\" \"npm run whatsapp-service\"",
         "dev": "next dev -p 3005",
     "build": "next build",
     "start": "next start -p 3005",
@@ -10,6 +11,7 @@
     "redeploy": "npx vercel --prod --yes",
     "typecheck": "tsc --noEmit",
     "setup": "node setup.js",
+    "local-trigger": "node scripts/local_trigger.js",
     "auto-setup": "node scripts/auto_setup.js",
     "demo": "npx playwright test tests/e2e/demo_recorder.spec.ts --headed",
     "whatsapp-service": "node scripts/whatsapp_baileys.js",
@@ -40,6 +42,8 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "concurrently": "^8.2.0",
+    "open": "^9.0.0",
     "@playwright/test": "^1.60.0",
     "@types/canvas-confetti": "^1.9.0",
     "@types/cors": "^2.8.19",

@@ -348,6 +348,24 @@ function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
 }
 
 export default function Home() {
+  // Local runner trigger state (dev only)
+  const [triggerLoading, setTriggerLoading] = useState(false);
+  const handleLocalTrigger = async () => {
+    setTriggerLoading(true);
+    try {
+      const res = await fetch('/api/local-trigger', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) {
+        alert('✅ Local runner started.');
+      } else {
+        alert(`⚠️ Error starting local runner: ${data.error || 'Unknown'}`);
+      }
+    } catch (e) {
+      alert('❌ Failed to trigger local runner');
+    } finally {
+      setTriggerLoading(false);
+    }
+  };
   const { theme, toggleTheme, mounted } = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [expandedProvider, setExpandedProvider] = useState<string | null>(null);
