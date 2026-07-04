@@ -21,18 +21,23 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Could not resolve project ref' }, { status: 500 });
     }
 
+    const fileName = searchParams.get('file') || '20260701_cache_columns_and_overrides.sql';
+    if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
+      return NextResponse.json({ error: 'Invalid migration file' }, { status: 400 });
+    }
+
     const { getPgClient } = await import('@/lib/dbConnect');
     console.log('[Migration] Connecting to database...');
     const client = await getPgClient(projectRef, dbPassword);
 
     try {
-      const migrationFile = path.join(process.cwd(), 'supabase', 'migrations', '20260701_cache_columns_and_overrides.sql');
+      const migrationFile = path.join(process.cwd(), 'supabase', 'migrations', fileName);
       if (!fs.existsSync(migrationFile)) {
         return NextResponse.json({ error: `Migration file not found at ${migrationFile}` }, { status: 404 });
       }
 
       const sql = fs.readFileSync(migrationFile, 'utf8');
-      console.log('[Migration] Running DDL commands...');
+      console.log(`[Migration] Running DDL commands from ${fileName}...`);
       await client.query(sql);
 
       return NextResponse.json({ success: true, message: 'Migration executed successfully' });

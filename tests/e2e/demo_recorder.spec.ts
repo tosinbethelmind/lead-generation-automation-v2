@@ -52,6 +52,50 @@ async function smoothScroll(page: Page, distance = 400, duration = 1200) {
 
 // ── MAIN TEST ──────────────────────────────────────────────────────
 test.describe('ApexReach Complete Platform Walkthrough Demo', () => {
+  let originalConfig: string;
+  const configPath = path.join(__dirname, '../../config.json');
+
+  test.beforeAll(() => {
+    // Save original config
+    originalConfig = fs.readFileSync(configPath, 'utf-8');
+    const parsed = JSON.parse(originalConfig);
+    // Force storageMode to local and dryRun to true
+    parsed.storageMode = 'local';
+    parsed.dryRun = true;
+    fs.writeFileSync(configPath, JSON.stringify(parsed, null, 2));
+
+    // Seed the mock lead in the local JSON database (local_db/leads_db.json)
+    const localDbDir = path.join(__dirname, '../../local_db');
+    if (!fs.existsSync(localDbDir)) {
+      fs.mkdirSync(localDbDir, { recursive: true });
+    }
+    const leadsDbPath = path.join(localDbDir, 'leads_db.json');
+    const dbLead = {
+      lead_id: 'mock_social_instagram_1781407838565_0',
+      source: 'INSTAGRAM',
+      name: 'Luxe Couture Lagos',
+      category: 'fashion',
+      phone_e164: '+2348000000000',
+      phone_raw: '08000000000',
+      email: 'luxe@example.com',
+      website: '',
+      status: 'NEW',
+      collected_at: new Date().toISOString()
+    };
+    fs.writeFileSync(leadsDbPath, JSON.stringify([dbLead], null, 2));
+  });
+
+  test.afterAll(() => {
+    // Restore config
+    fs.writeFileSync(configPath, originalConfig);
+
+    // Cleanup local leads database
+    const leadsDbPath = path.join(__dirname, '../../local_db/leads_db.json');
+    if (fs.existsSync(leadsDbPath)) {
+      fs.unlinkSync(leadsDbPath);
+    }
+  });
+
   test('01_full_voiced_platform_walkthrough', async ({ page }) => {
     initSpeechLog();
 
@@ -255,7 +299,7 @@ test.describe('ApexReach Complete Platform Walkthrough Demo', () => {
         await storageSelect.selectOption(mode);
         await page.waitForTimeout(800);
       }
-      await storageSelect.selectOption('supabase');
+      await storageSelect.selectOption('local');
       await page.waitForTimeout(500);
     }
 

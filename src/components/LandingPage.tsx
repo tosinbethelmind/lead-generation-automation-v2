@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X, Clock } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 interface PreviewData {
   lead: {
@@ -95,6 +96,46 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   };
 
   const [claimed, setClaimed] = useState(false);
+
+  // Countdown timer for preview expiration
+  const [timeLeft, setTimeLeft] = useState({ days: 4, hours: 16, minutes: 34, seconds: 12 });
+
+  useEffect(() => {
+    if (!isPreview) return;
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        } else if (prev.minutes > 0) {
+          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+        } else if (prev.hours > 0) {
+          return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        } else if (prev.days > 0) {
+          return { days: prev.days - 1, hours: 23, minutes: 59, seconds: 59 };
+        } else {
+          clearInterval(interval);
+          return prev;
+        }
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isPreview]);
+
+  // Scroll tracker to trigger floating CTA
+  const [showFloatingCta, setShowFloatingCta] = useState(false);
+
+  useEffect(() => {
+    if (!isPreview) return;
+    const handleScroll = () => {
+      if (window.scrollY > 400) {
+        setShowFloatingCta(true);
+      } else {
+        setShowFloatingCta(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isPreview]);
 
   // Dynamically load Google Fonts for headings and body
   useEffect(() => {
@@ -921,6 +962,11 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         throw new Error(result.error || 'Payment verification failed.');
       }
       setClaimMessage(result.message || 'Payment verified and website claimed successfully!');
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
     } catch (err: any) {
       setClaimMessage(`Verification Error: ${err.message}. Please contact support.`);
     } finally {
@@ -1020,6 +1066,11 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       }
       setClaimMessage(successMsg);
       setClaimed(true);
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
     } catch (err: unknown) {
       const error = err as Error;
       console.error(error);
@@ -1087,6 +1138,32 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               Hey <strong>{lead.name}</strong>, we custom-built this site based on your Google rating!
             </p>
           </div>
+
+          {/* Countdown Timer Badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} className="hide-mobile">
+            <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>⏰ RESERVED DOMAIN EXPIRES IN:</span>
+            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              {Object.entries(timeLeft).map(([unit, value]) => (
+                <div key={unit} style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{
+                    background: 'rgba(239, 68, 68, 0.15)',
+                    color: '#f87171',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    fontFamily: 'monospace'
+                  }}>
+                    {String(value).padStart(2, '0')}
+                  </span>
+                  <span style={{ fontSize: '0.65rem', color: '#94a3b8', marginLeft: '2px', marginRight: '4px', textTransform: 'uppercase' }}>
+                    {unit[0]}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button 
               type="button"
@@ -1107,21 +1184,18 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             >
               Need Custom Layout? Talk to Developer
             </button>
-            <a href="#claim" style={{
+            <a href="#claim" className="btn-hover-effect" style={{
               background: 'linear-gradient(135deg, #0284c7 0%, #14b8a6 100%)',
               color: '#fff',
               textDecoration: 'none',
               fontSize: '0.85rem',
-              fontWeight: 600,
+              fontWeight: 700,
               padding: '8px 16px',
               borderRadius: '8px',
               boxShadow: '0 0 15px rgba(2, 132, 199, 0.4)',
-              transition: 'transform 0.2s',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              Claim Website & Domain
+              transition: 'all 0.2s',
+            }}>
+              🔒 Claim My Custom Website & Domain
             </a>
           </div>
         </div>
@@ -1175,28 +1249,25 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           }}>{copy.heroSubtitle}</p>
 
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href={isPreview ? "#claim" : "#booking"} style={{
+            <a href={isPreview ? "#claim" : "#booking"} className="btn-hover-effect" style={{
               background: theme.primary,
               border: `1px solid ${theme.primary}`,
               color: '#fff',
               textDecoration: 'none',
               padding: '14px 28px',
               borderRadius: '8px',
-              fontWeight: 600,
+              fontWeight: 700,
               fontSize: '1rem',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
               boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
               transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.1)'}
-            onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
-            >
-              {copy.ctaText} <ArrowRight size={18} />
+            }}>
+              {isPreview ? '🔒 Secure & Claim My Custom Website' : copy.ctaText} <ArrowRight size={18} />
             </a>
             {lead.phone_raw && (
-              <a href={`tel:${lead.phone_e164}`} style={{
+              <a href={`tel:${lead.phone_e164}`} className="btn-hover-effect" style={{
                 background: 'rgba(255, 255, 255, 0.15)',
                 backdropFilter: 'blur(8px)',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
@@ -1210,10 +1281,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 alignItems: 'center',
                 gap: '8px',
                 transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'}
-              >
+              }}>
                 <Phone size={18} /> Call Us Directly
               </a>
             )}
@@ -1432,6 +1500,90 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           </div>
         </div>
       </section>
+
+      {/* Mid-page Persuasion CTA Card */}
+      {isPreview && (
+        <section className="reveal" style={{ padding: '60px 24px', background: '#fafaf9', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <div style={{
+              background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.accent || theme.primary} 100%)`,
+              borderRadius: '24px',
+              padding: '50px 40px',
+              color: '#ffffff',
+              boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)',
+              textAlign: 'center',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Subtle background decoration */}
+              <div style={{
+                position: 'absolute',
+                top: '-50px',
+                right: '-50px',
+                width: '150px',
+                height: '150px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '50%',
+                pointerEvents: 'none'
+              }}></div>
+              <div style={{
+                position: 'absolute',
+                bottom: '-30px',
+                left: '-30px',
+                width: '100px',
+                height: '100px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '50%',
+                pointerEvents: 'none'
+              }}></div>
+
+              <span style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                color: '#ffffff',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                padding: '6px 16px',
+                borderRadius: '99px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                display: 'inline-block',
+                marginBottom: '20px'
+              }}>🔒 Reserved Domain & Website Preview</span>
+
+              <h2 className="font-heading" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, margin: '0 0 16px 0', lineHeight: 1.2 }}>
+                Lock In Your Custom Platform Before It Expires
+              </h2>
+
+              <p style={{ fontSize: 'clamp(0.95rem, 2vw, 1.15rem)', opacity: 0.9, maxWidth: '650px', margin: '0 auto 36px', lineHeight: 1.6 }}>
+                We have reserved <strong>{lead.name.toLowerCase().replace(/\s+/g, '')}.com.ng</strong> (and options for .com) specifically for this build. Claim now to launch your auto-pilot customer generation system within 24 hours.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <a href="#claim" className="btn-hover-effect" style={{
+                  background: '#ffffff',
+                  color: theme.primary,
+                  textDecoration: 'none',
+                  padding: '16px 36px',
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  fontSize: '1.1rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15)',
+                  transition: 'all 0.2s'
+                }}>
+                  Secure My Custom Website & Domain <ArrowRight size={20} />
+                </a>
+                
+                <span style={{ fontSize: '0.85rem', opacity: 0.8, fontWeight: 500 }}>
+                  ⚡ Join 14+ other local top-rated businesses in {lead.city || 'your area'} who went digital.
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Booking Form (Interactive Automation Demo) */}
       <section id="booking" className="reveal" style={{
@@ -2158,8 +2310,29 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               <>
                 <ShieldCheck size={48} style={{ color: theme.primary, margin: '0 auto 20px' }} />
                 <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937', marginBottom: '12px' }}>Claim This Website & Domain</h2>
+                
+                {/* Social Proof Counter Banner */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  background: '#f0fdf4',
+                  border: '1px solid #bbf7d0',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  marginBottom: '24px',
+                  fontSize: '0.85rem',
+                  color: '#166534',
+                  fontWeight: 600,
+                  textAlign: 'left',
+                  lineHeight: 1.4
+                }}>
+                  <span>🔥 <strong>4 similar businesses in {lead.city || 'your area'}</strong> have already claimed their custom platforms this week! Claim yours now to lock in this design and secure your local domain.</span>
+                </div>
+
                 <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '30px', lineHeight: 1.5 }}>
-                  This is a live responsive preview of the website we designed for <strong>{lead.name}</strong>. Provide your email address below to claim ownership, customize the content, and deploy it to a live domain.
+                  This is a live responsive preview of the website we designed for <strong>{lead.name}</strong>. Provide your details below to claim ownership, customize content, and launch.
                 </p>
 
                 <form onSubmit={handleClaimSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'left' }}>
@@ -2355,20 +2528,20 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   <button 
                     type="submit" 
                     disabled={claimLoading}
+                    className="btn-hover-effect"
                     style={{
                       background: theme.primary,
                       color: '#fff',
                       border: 'none',
                       padding: '14px',
                       borderRadius: '8px',
-                      fontWeight: 600,
+                      fontWeight: 700,
                       fontSize: '1rem',
                       cursor: claimLoading ? 'not-allowed' : 'pointer',
                       marginTop: '10px',
-                      transition: 'background 0.2s'
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                      transition: 'all 0.2s'
                     }}
-                    onMouseEnter={(e) => !claimLoading && (e.currentTarget.style.filter = 'brightness(1.1)')}
-                    onMouseLeave={(e) => !claimLoading && (e.currentTarget.style.filter = 'brightness(1)')}
                   >
                     {claimLoading 
                       ? 'Processing...' 
@@ -2487,6 +2660,58 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         </div>
       </footer>
 
+      {/* Floating Sticky CTA Badge */}
+      {isPreview && showFloatingCta && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          left: '24px',
+          width: '280px',
+          background: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.5)',
+          borderRadius: '16px',
+          padding: '16px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          animation: 'fadeInUp 0.3s ease-out',
+          transition: 'all 0.3s'
+        }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: theme.primary }}>⚡ LIVE PREVIEW ACTIVE</span>
+              <span style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                color: '#ef4444',
+                fontSize: '0.65rem',
+                fontWeight: 700,
+                padding: '2px 6px',
+                borderRadius: '4px'
+              }}>EXPIRES SOON</span>
+            </div>
+            <strong style={{ fontSize: '0.85rem', color: '#1f2937', display: 'block' }}>Claim {lead.name} Website</strong>
+            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Includes custom domain & SEO setup</span>
+          </div>
+
+          <a href="#claim" className="btn-hover-effect" style={{
+            background: theme.primary,
+            color: '#ffffff',
+            textDecoration: 'none',
+            textAlign: 'center',
+            padding: '10px',
+            borderRadius: '8px',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            display: 'block'
+          }}>
+            Secure Website & Domain Now
+          </a>
+        </div>
+      )}
+
       {/* Styled utilities for mobile responsive behaviors & custom design settings */}
       <style jsx>{`
         @media (max-width: 768px) {
@@ -2568,6 +2793,37 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         .reveal.active {
           opacity: 1;
           transform: translateY(0);
+        }
+
+        .btn-hover-effect {
+          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s, box-shadow 0.2s !important;
+        }
+
+        .btn-hover-effect:hover {
+          transform: scale(1.03) translateY(-1px) !important;
+          box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15) !important;
+          filter: brightness(1.05);
+        }
+
+        input:focus, select:focus, textarea:focus {
+          border-color: ${theme.primary} !important;
+          box-shadow: 0 0 0 3px ${theme.primary}33 !important;
+          outline: none !important;
+        }
+
+        input, select, textarea {
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         @keyframes spin {

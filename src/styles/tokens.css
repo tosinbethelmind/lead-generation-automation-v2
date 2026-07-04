@@ -1,0 +1,17 @@
+:root {
+  --color-primary: #1e3a8a; /* Indigo 800 */
+  --color-secondary: #4f46e5; /* Indigo 600 */
+  --color-accent: #f59e0b; /* Amber 500 */
+  --font-base: 'Inter', system-ui, sans-serif;
+  --spacing-unit: 0.5rem;
+}
+
+/* Dark mode (prefers-color-scheme) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #93c5fd; /* Light Indigo */
+    --color-secondary: #a5b4fc; /* Light Indigo 400 */
+    --color-accent: #fbbf24; /* Amber 400 */
+    --font-base: 'Inter', system-ui, sans-serif;
+  }
+}

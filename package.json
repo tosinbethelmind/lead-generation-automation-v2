@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start-all": "concurrently \"npm run dev\" \"npm run local-runner\" \"npm run whatsapp-service\"",
-        "dev": "next dev -p 3005",
+        "dev": "next dev -p 3006",
     "build": "next build",
     "start": "next start -p 3005",
     "lint": "eslint",
@@ -39,7 +39,10 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "twilio": "^4.22.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "@magenta/music": "^1.23.1",
+    "tone": "^14.8.39",
+    "pitchy": "^2.0.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.0",

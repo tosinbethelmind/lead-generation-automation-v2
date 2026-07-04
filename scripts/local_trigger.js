@@ -5,7 +5,7 @@ const { spawn } = require('child_process');
 
 (async () => {
   try {
-    const vercelUrl = 'https://lead-generation-automation-v2.vercel.app';
+    const vercelUrl = 'https://lead-generation-automation-i0tmyufyc.vercel.app';
     console.log(`Opening Vercel site: ${vercelUrl}`);
     // Use the Windows `start` command to open the URL in the default browser.
     spawn('cmd', ['/c', 'start', '', vercelUrl], { stdio: 'ignore', detached: true });

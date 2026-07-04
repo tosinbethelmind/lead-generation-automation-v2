@@ -911,6 +911,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           leadId: previewLead.lead_id,
+          prompt: taskQueuePrompt,
           task: taskQueuePrompt,
           priority: taskQueuePriority
         })
@@ -2412,7 +2413,7 @@ ${config.businessSignature}`;
                       <th style={{ padding: '14px' }}>Area</th>
                       <th style={{ padding: '14px' }}>Email</th>
                       <th style={{ padding: '14px' }}>Stage</th>
-                      <th style={{ padding: '14px 20px' }}>Previews</th>
+                      <th style={{ padding: '14px 20px' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2496,15 +2497,44 @@ ${config.businessSignature}`;
                           </span>
                         </td>
                         <td style={{ padding: '14px 20px' }} onClick={(e) => e.stopPropagation()}>
-                          <a 
-                            href={`/preview/${lead.lead_id}`} 
-                            target="_blank" 
-                            rel="noreferrer" 
-                            className="btn-secondary" 
-                            style={{ padding: '4px 8px', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}
-                          >
-                            <Eye size={12} /> View Web Page
-                          </a>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <a 
+                              href={`/preview/${lead.lead_id}`} 
+                              target="_blank" 
+                              rel="noreferrer" 
+                              className="btn-secondary" 
+                              style={{ padding: '4px 8px', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', borderRadius: '4px' }}
+                              title="Open live preview of the generated landing page"
+                            >
+                              <Eye size={12} /> Preview
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPreviewLead(lead);
+                                setCrmPreviewTab('tasks');
+                                setTimeout(() => {
+                                  const textEl = document.querySelector('textarea[placeholder*="Dentist"]');
+                                  if (textEl) (textEl as HTMLTextAreaElement).focus();
+                                }, 150);
+                              }}
+                              className="btn-primary"
+                              style={{ 
+                                padding: '4px 8px', 
+                                fontSize: '0.75rem', 
+                                display: 'inline-flex', 
+                                alignItems: 'center', 
+                                gap: '4px', 
+                                borderRadius: '4px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)'
+                              }}
+                              title="Prompt Antigravity AI to redesign this website"
+                            >
+                              <Sparkles size={12} /> Agent Redesign
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

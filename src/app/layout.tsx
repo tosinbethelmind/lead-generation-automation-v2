@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import "../styles/tokens.css";
+import "../styles/glass.css";
 import "./globals.css";
 import DbHealthCheck from "@/components/DbHealthCheck";
 import { ThemeProvider } from "./ThemeContext";

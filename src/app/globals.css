@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: var(--font-base, 'Inter', sans-serif);
   --font-title: 'Outfit', sans-serif;
   
   --bg-dark: #07090e;
@@ -10,16 +10,16 @@
   --panel-border-hover: rgba(6, 182, 212, 0.25);
   --panel-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
   
-  --primary: #06b6d4; /* Neon Cyan */
-  --primary-hover: #22d3ee;
+  --primary: var(--color-primary, #06b6d4); /* Neon Cyan */
+  --primary-hover: var(--color-primary);
   --primary-glow: rgba(6, 182, 212, 0.25);
   
-  --secondary: #8b5cf6; /* Neon Purple */
+  --secondary: var(--color-secondary, #8b5cf6); /* Neon Purple */
   --secondary-glow: rgba(139, 92, 246, 0.25);
   
   --success: #10b981; /* Green */
   --success-glow: rgba(16, 185, 129, 0.2);
-  --warning: #f59e0b; /* Amber */
+  --warning: var(--color-accent, #f59e0b); /* Amber */
   --error: #ef4444; /* Red */
   
   --text-primary: #f8fafc;

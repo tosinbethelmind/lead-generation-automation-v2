@@ -16,7 +16,15 @@ export async function GET(_req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const updates = await req.json();
-    
+
+    // Validate Antigravity API keys array (max 10)
+    if (Array.isArray(updates.antigravityApiKeys)) {
+      if (updates.antigravityApiKeys.length > 10) {
+        return NextResponse.json({ error: 'Maximum of 10 Antigravity API keys allowed' }, { status: 400 });
+      }
+    }
+
+
     // Validate updates
     for (const [key, value] of Object.entries(updates)) {
       if (SECRET_KEYS.includes(key)) {

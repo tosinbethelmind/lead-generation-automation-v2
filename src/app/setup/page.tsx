@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 export default function SetupPage() {
   const router = useRouter();
   const [geminiKeys, setGeminiKeys] = useState(''); // comma separated
-  const [antigravityKey, setAntigravityKey] = useState('');
+  const [antigravityKeys, setAntigravityKeys] = useState(''); // comma separated, up to 10 keys
   const [antigravityModels, setAntigravityModels] = useState('gemini_flash_high,gemini_pro_low,gpt_oss,claude,sonneta,opus');
   const [onGroundMode, setOnGroundMode] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
@@ -15,7 +15,7 @@ export default function SetupPage() {
     e.preventDefault();
     setStatus('Saving...');
     const updates: any = {
-      antigravityApiKey: antigravityKey.trim(),
+      antigravityApiKeys: antigravityKeys.split(',').map(k => k.trim()).filter(Boolean),
       antigravityModels: antigravityModels.split(',').map(m => m.trim()).filter(Boolean),
       onGroundMode,
     };
@@ -56,13 +56,14 @@ export default function SetupPage() {
           />
         </label>
         <label className="flex flex-col">
-          <span className="font-medium mb-1">Antigravity API Key</span>
-          <input
-            type="text"
-            value={antigravityKey}
-            onChange={e => setAntigravityKey(e.target.value)}
-            className="border rounded px-3 py-2"
-          />
+          <span className="font-medium mb-1">Antigravity API Keys (comma separated, up to 10)</span>
+            <input
+              type="text"
+              value={antigravityKeys}
+              onChange={e => setAntigravityKeys(e.target.value)}
+              placeholder="key1,key2,... up to 10"
+              className="border rounded px-3 py-2"
+            />
         </label>
         <label className="flex flex-col">
           <span className="font-medium mb-1">Antigravity Models (comma separated)</span>

@@ -131,6 +131,14 @@ export interface LocalConfig {
   n8nWebhookUrl?: string;
   minReviews?: number;
   minRating?: number;
+
+  // Cloudflare & Vercel credentials for hosting/domain automation
+  cloudflareToken?: string;
+  cloudflareZoneId?: string;
+  vercelToken?: string;
+  vercelProjectId?: string;
+  vercelTeamId?: string;
+  vercelDeployHookUrl?: string;
 }
 
 export interface RuntimeConfig extends LocalConfig {
@@ -248,6 +256,12 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   minReviews: 1,
   minRating: 3.0,
   storageMode: 'hybrid',
+  cloudflareToken: '',
+  cloudflareZoneId: '',
+  vercelToken: '',
+  vercelProjectId: '',
+  vercelTeamId: '',
+  vercelDeployHookUrl: '',
 };
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
@@ -376,6 +390,12 @@ export function getRuntimeConfig(): RuntimeConfig {
     minReviews: process.env.MIN_REVIEWS !== undefined ? Number(process.env.MIN_REVIEWS) : (fileConfig.minReviews !== undefined ? Number(fileConfig.minReviews) : DEFAULT_CONFIG.minReviews),
     minRating: process.env.MIN_RATING !== undefined ? Number(process.env.MIN_RATING) : (fileConfig.minRating !== undefined ? Number(fileConfig.minRating) : DEFAULT_CONFIG.minRating),
     storageMode: (process.env.STORAGE_MODE as StorageMode) || fileConfig.storageMode || DEFAULT_CONFIG.storageMode,
+    cloudflareToken: process.env.CLOUDFLARE_TOKEN || fileConfig.cloudflareToken || DEFAULT_CONFIG.cloudflareToken,
+    cloudflareZoneId: process.env.CLOUDFLARE_ZONE_ID || fileConfig.cloudflareZoneId || DEFAULT_CONFIG.cloudflareZoneId,
+    vercelToken: process.env.VERCEL_TOKEN || fileConfig.vercelToken || DEFAULT_CONFIG.vercelToken,
+    vercelProjectId: process.env.VERCEL_PROJECT_ID || fileConfig.vercelProjectId || DEFAULT_CONFIG.vercelProjectId,
+    vercelTeamId: process.env.VERCEL_TEAM_ID || fileConfig.vercelTeamId || DEFAULT_CONFIG.vercelTeamId,
+    vercelDeployHookUrl: process.env.VERCEL_DEPLOY_HOOK_URL || fileConfig.vercelDeployHookUrl || DEFAULT_CONFIG.vercelDeployHookUrl,
   };
 
   return merged;
@@ -488,6 +508,12 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       minReviews: updated.minReviews,
       minRating: updated.minRating,
       storageMode: updated.storageMode,
+      cloudflareToken: updated.cloudflareToken,
+      cloudflareZoneId: updated.cloudflareZoneId,
+      vercelToken: updated.vercelToken,
+      vercelProjectId: updated.vercelProjectId,
+      vercelTeamId: updated.vercelTeamId,
+      vercelDeployHookUrl: updated.vercelDeployHookUrl,
     };
     
     fs.writeFileSync(WRITEABLE_CONFIG_FILE_PATH, JSON.stringify(fileData, null, 2), 'utf-8');
