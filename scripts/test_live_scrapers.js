@@ -111,13 +111,13 @@ async function main() {
       BASE_URL = 'http://localhost:3005';
       console.log(CYAN(`Auto-detected local server: ${BASE_URL}`));
     } catch (err) {
-      // Check 3000
+      // Check 3006
       try {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 300);
-        await fetch('http://localhost:3000/api/scrape/osm', { method: 'OPTIONS', signal: controller.signal });
+        await fetch('http://localhost:3006/api/scrape/osm', { method: 'OPTIONS', signal: controller.signal });
         clearTimeout(timer);
-        BASE_URL = 'http://localhost:3000';
+        BASE_URL = 'http://localhost:3006';
         console.log(CYAN(`Auto-detected local server: ${BASE_URL}`));
       } catch (err2) {
         console.log(CYAN(`No local server detected. Targeting Vercel: ${BASE_URL}`));

@@ -18,7 +18,7 @@ cp .env.example .env.local   # copy the example env file
 
 ### 3️⃣ Run a Local Development Server
 ```bash
-npm run dev          # http://localhost:3000
+npm run dev          # http://localhost:3006
 ```
 Make any changes, commit, and push. The client can preview them locally before deployment.
 

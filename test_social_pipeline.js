@@ -63,7 +63,7 @@ async function runTests() {
     }
   } catch (err) {
     console.log('✗ Test 1 Failed with error:', err.message);
-    console.log('Note: Ensure the local Next.js dev server is running on port 3000 to test APIs live.\n');
+    console.log('Note: Ensure the local Next.js dev server is running on port 3006 to test APIs live.\n');
   }
 
   // Test 2: Social Outreach (Redirect/Payload Prep)
