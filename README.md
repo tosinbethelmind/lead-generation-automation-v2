@@ -2,7 +2,7 @@
 
 This repository is a **template** for delivering the full lead‑generation platform to a client with complete ownership of the source code.
 
-**Live Production URL:** [https://lead-generation-automation.vercel.app](https://lead-generation-automation.vercel.app)
+**Live Production URL:** [https://lead-generation-automation-ecru.vercel.app](https://lead-generation-automation-ecru.vercel.app)
 
 ## Quick start
 1. **Fork this template** → GitHub **Use this template** → **Create a new repository** (make it private). 

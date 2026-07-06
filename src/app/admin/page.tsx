@@ -34,7 +34,7 @@ export default function AdminDashboardHome() {
   const systemStats = [
     { name: 'Database Status', value: 'Connected', status: 'ready', icon: Server },
     { name: 'Storage Provider', value: 'Supabase Buckets', status: 'ready', icon: Shield },
-    { name: 'Active Domain', value: 'lead-generation-automation.vercel.app', status: 'ready', icon: ExternalLink },
+    { name: 'Active Domain', value: 'lead-generation-automation-ecru.vercel.app', status: 'ready', icon: ExternalLink },
   ];
 
   return (
@@ -49,12 +49,12 @@ export default function AdminDashboardHome() {
           <div className="live-link-box">
             <span className="label">Live URL:</span>
             <a
-              href="https://lead-generation-automation.vercel.app/"
+              href="https://lead-generation-automation-ecru.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="live-url"
             >
-              https://lead-generation-automation.vercel.app/
+              https://lead-generation-automation-ecru.vercel.app/
               <ExternalLink className="inline-icon" />
             </a>
           </div>
