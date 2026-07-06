@@ -35,8 +35,13 @@ export function replaceSmsPlaceholders(template: string, lead: any, previewUrl: 
 /**
  * Send an SMS message using the configured provider.
  */
-export async function sendSmsMessage(lead: any, previewUrl: string, customMessage?: string): Promise<string> {
-  const config = getRuntimeConfig();
+export async function sendSmsMessage(
+  lead: any,
+  previewUrl: string,
+  customMessage?: string,
+  configOverride?: any
+): Promise<string> {
+  const config = configOverride || getRuntimeConfig();
   const provider = config.smsProvider || 'gateway';
   
   const rawTemplate = customMessage || config.smsMessageTemplate || 'Hello {{lead.name}}, please check {{previewUrl}} for details. {{signature}}';

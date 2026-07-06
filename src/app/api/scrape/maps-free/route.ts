@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
-import { extractMapsLeadData, validateLeadWithAI } from '@/lib/leadEnricher';
+import { extractMapsLeadData, validateLeadWithAI, enrichLeadContacts } from '@/lib/leadEnricher';
 import crypto from 'crypto';
 import { handleQueueDelegation } from '@/app/api/scrape/queue';
 
@@ -39,131 +39,229 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    await addLog('Maps-Free Scraper', 'START', `Starting Google Maps Free Puppeteer crawl for query: "${query}"`);
+    await addLog('Maps-Free Scraper', 'START', `Starting Maps-Free multi-source crawl for query: "${query}"`);
 
-    let browser: any;
-    let scrapedLeads: Partial<Lead>[] = [];
+    const origin = new URL(req.url).origin;
 
-    try {
-      const { launchBrowser } = await import('@/lib/browserLauncher');
-      browser = await launchBrowser();
-      const page = await browser.newPage();
+    // ── Phase 1: Fast parallel fallback sources (OSM + DuckDuckGo) ──────────
+    // These reliably return results in < 30s. Run them in parallel immediately.
+    await addLog('Maps-Free Scraper', 'INFO', `Running parallel OSM + DuckDuckGo crawl for: "${query}"`);
+
+    const [osmResult, ddgResult] = await Promise.allSettled([
+      fetch(`${origin}/api/scrape/osm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, limit, bypassQueue: true }),
+        signal: AbortSignal.timeout(35000)
+      }).then(r => r.json()).catch(() => null),
+      fetch(`${origin}/api/scrape/duckduckgo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, limit, bypassQueue: true }),
+        signal: AbortSignal.timeout(35000)
+      }).then(r => r.json()).catch(() => null)
+    ]);
+
+    const osmData = osmResult.status === 'fulfilled' ? osmResult.value : null;
+    const ddgData = ddgResult.status === 'fulfilled' ? ddgResult.value : null;
+
+    const fastLeads: Partial<Lead>[] = [
+      ...(osmData?.leads ?? []),
+      ...(ddgData?.leads ?? [])
+    ];
+
+    if (fastLeads.length >= limit) {
+      // Enough leads from fast sources — return immediately without browser
+      const trimmed = fastLeads.slice(0, limit);
       
-      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-      await page.setViewport({ width: 1280, height: 800 });
-
-      // Navigate directly to Google Maps search URL
-      const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
-      await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch((e: any) => {
-        console.log(`Main search page.goto promise timed out/interrupted: ${e.message}, proceeding...`);
-      });
-      await new Promise(r => setTimeout(r, 4000));
-
-      // Click on Reject All if GDPR banner pops up
-      try {
-        const clickedReject = await page.evaluate(() => {
-          const btns = Array.from(document.querySelectorAll('button'));
-          const rejectBtn = btns.find(btn => {
-            const label = btn.getAttribute('aria-label')?.toLowerCase() || '';
-            const text = btn.textContent?.toLowerCase() || '';
-            return label.includes('reject all') || label.includes('reject') || text.includes('reject all') || text.includes('reject');
-          });
-          if (rejectBtn) {
-            rejectBtn.click();
-            return true;
-          }
-          return false;
-        });
-        if (clickedReject) {
-          await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 8000 }).catch(() => {});
-          await new Promise(r => setTimeout(r, 2000));
-        }
-      } catch (e) {
-        // No GDPR overlay, ignore
-      }
-
-      // Wait for either results feed or a direct single place detail page to load
-      try {
-        await page.waitForFunction(() => {
-          return !!(document.querySelector('[role="feed"]') || document.querySelector('h1') || window.location.href.includes('/maps/place/'));
-        }, { timeout: 15000 });
-      } catch (e) {
-        console.log("Timeout waiting for feed or detail page elements");
-      }
-
-      // Check if we ended up directly on a business detail page
-      const currentUrl = page.url();
-      const isSinglePlace = currentUrl.includes('/maps/place/') || (await page.$('h1') && !(await page.$('[role="feed"]')));
-
-      if (isSinglePlace) {
-        try {
-          await page.waitForSelector('h1', { timeout: 8000 });
-        } catch (e) {}
-        // Extract single lead using shared enricher (3-strategy phone + email + website)
-        const data = await extractMapsLeadData(page, query);
-        if (data) {
-          const lead = buildLead(data, page.url(), query);
-          if (lead) scrapedLeads.push(lead);
-        }
-      } else {
-        // We are on a results list feed. Scroll to load items.
-        const feedSelector = '[role="feed"]';
-        const feedEl = await page.$(feedSelector);
-        if (feedEl) {
-          // Scroll the feed container down several times
-          for (let i = 0; i < 5; i++) {
-            await page.evaluate((el: any) => el.scrollBy(0, 1200), feedEl);
-            await new Promise(r => setTimeout(r, 1000));
-          }
-        }
-
-        // Get place anchor links
-        const links = await page.evaluate(() => {
-          const anchors = Array.from(document.querySelectorAll('a[href*="/maps/place/"]'));
-          return anchors.map(a => (a as HTMLAnchorElement).href);
-        });
-
-        // Deduplicate URLs and slice to limit to keep crawl time fast
-        const uniqueLinks = Array.from(new Set(links)).slice(0, Math.min(limit, 10));
-
-        const pagePromises = uniqueLinks.map(async (link) => {
-          let detailPage;
+      // Enrich contacts for the fast path leads
+      await addLog('Maps-Free Scraper', 'INFO', `Enriching contact info for ${trimmed.length} fast-path candidates in parallel...`);
+      await Promise.allSettled(
+        trimmed.map(async (lead) => {
           try {
-            detailPage = await browser.newPage();
-            await detailPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-            await detailPage.setViewport({ width: 1280, height: 800 });
-            await detailPage.goto(link, { waitUntil: 'domcontentloaded', timeout: 8000 }).catch((err: any) => {
-              console.log(`Detail page.goto timed out or was interrupted for ${link}, checking for h1 anyway...`);
-            });
-            await detailPage.waitForSelector('h1', { timeout: 8000 }).catch(() => {});
-            const data = await extractMapsLeadData(detailPage, query);
-            if (data) {
-              return buildLead(data, detailPage.url(), query);
+            const enriched = await enrichLeadContacts(lead);
+            if (enriched.email) lead.email = enriched.email;
+            if (enriched.phone) {
+              lead.phone_e164 = enriched.phone;
+              lead.phone_raw = enriched.phone;
+            }
+            if (Object.keys(enriched.socials).length > 0) {
+              lead.social_links = JSON.stringify(enriched.socials);
             }
           } catch (err: any) {
-            console.error(`Error loading place details for ${link}:`, err.message);
-          } finally {
-            if (detailPage) {
-              await detailPage.close().catch(() => {});
+            console.error(`Failed to enrich fast-path lead ${lead.name}:`, err.message);
+          }
+        })
+      );
+
+      const dbResult = await saveLeads(trimmed);
+      await addLog('Maps-Free Scraper', 'SUCCESS',
+        `Multi-source crawl complete (no browser needed). Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+      return NextResponse.json({
+        success: true,
+        mode: 'multi-source',
+        added: dbResult.added,
+        skipped: dbResult.skipped,
+        leads: trimmed
+      });
+    }
+
+    // ── Phase 2: Optional Google Maps browser enhancement ───────────────────
+    // Only attempt if fast sources returned fewer leads than requested.
+    await addLog('Maps-Free Scraper', 'INFO',
+      `Fast sources returned ${fastLeads.length}/${limit} leads. Attempting Google Maps browser enhancement...`);
+
+    let browser: any;
+    let scrapedLeads: Partial<Lead>[] = [...fastLeads];
+
+    // Hard 40 s cap: browser either succeeds quickly or we skip it
+    const BROWSER_TIMEOUT_MS = 40_000;
+
+
+    try {
+      const browserResult = await Promise.race([
+        (async () => {
+          const { launchBrowser } = await import('@/lib/browserLauncher');
+          browser = await launchBrowser();
+          const page = await browser.newPage();
+
+          await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+          await page.setViewport({ width: 1280, height: 800 });
+
+          // Navigate to Google Maps
+          const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
+          await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch((e: any) => {
+            console.log(`Main search page.goto timed out: ${e.message}, proceeding...`);
+          });
+          await new Promise(r => setTimeout(r, 3000));
+
+          // Dismiss GDPR / cookie banner if present
+          try {
+            const clickedReject = await page.evaluate(() => {
+              const btns = Array.from(document.querySelectorAll('button'));
+              const rejectBtn = (btns as HTMLButtonElement[]).find(btn => {
+                const label = btn.getAttribute('aria-label')?.toLowerCase() || '';
+                const text = btn.textContent?.toLowerCase() || '';
+                return label.includes('reject all') || label.includes('reject') ||
+                       text.includes('reject all') || text.includes('reject');
+              });
+              if (rejectBtn) { rejectBtn.click(); return true; }
+              return false;
+            });
+            if (clickedReject) {
+              await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 8000 }).catch(() => {});
+              await new Promise(r => setTimeout(r, 1500));
+            }
+          } catch (_) {}
+
+          // Wait for feed or detail page
+          try {
+            await page.waitForFunction(() =>
+              !!(document.querySelector('[role="feed"]') ||
+                 document.querySelector('h1') ||
+                 window.location.href.includes('/maps/place/')),
+              { timeout: 12000 }
+            );
+          } catch (_) {
+            console.log('[Maps-Free] Timeout waiting for feed/detail elements');
+          }
+
+          const currentUrl = page.url();
+          const isSinglePlace =
+            currentUrl.includes('/maps/place/') ||
+            (await page.$('h1') && !(await page.$('[role="feed"]')));
+
+          if (isSinglePlace) {
+            await page.waitForSelector('h1', { timeout: 6000 }).catch(() => {});
+            const data = await Promise.race([
+              extractMapsLeadData(page, query, true),
+              new Promise<null>(r => setTimeout(() => r(null), 12000))
+            ]);
+            if (data) {
+              const lead = buildLead(data, page.url(), query);
+              if (lead) scrapedLeads.push(lead);
+            }
+          } else {
+            const feedEl = await page.$('[role="feed"]');
+            if (feedEl) {
+              const scrollSteps = limit <= 5 ? 2 : 4;
+              for (let i = 0; i < scrollSteps; i++) {
+                await page.evaluate((el: any) => el.scrollBy(0, 1200), feedEl);
+                await new Promise(r => setTimeout(r, 900));
+              }
+            }
+
+            const links = await page.evaluate(() =>
+              Array.from(document.querySelectorAll('a[href*="/maps/place/"]'))
+                .map(a => (a as HTMLAnchorElement).href)
+            );
+            const uniqueLinks = Array.from(new Set(links)).slice(0, Math.min(limit, 8)) as string[];
+
+            const chunks: string[][] = [];
+            const chunkSize = 3;
+            for (let i = 0; i < uniqueLinks.length; i += chunkSize) {
+              chunks.push(uniqueLinks.slice(i, i + chunkSize));
+            }
+
+            for (const chunk of chunks) {
+              const detailPromises = chunk.map(async (link) => {
+                let detailPage;
+                try {
+                  detailPage = await browser.newPage();
+                  await detailPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+                  await detailPage.setViewport({ width: 1280, height: 800 });
+                  await detailPage.goto(link, { waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {});
+                  await detailPage.waitForSelector('h1', { timeout: 6000 }).catch(() => {});
+                  const data = await Promise.race([
+                    extractMapsLeadData(detailPage, query, true),
+                    new Promise<null>(r => setTimeout(() => r(null), 12000))
+                  ]);
+                  if (data) {
+                    return buildLead(data, detailPage.url(), query);
+                  }
+                } catch (err: any) {
+                  console.error(`Error loading place details for ${link}:`, err.message);
+                } finally {
+                  if (detailPage) await detailPage.close().catch(() => {});
+                }
+                return null;
+              });
+
+              const results = await Promise.all(detailPromises);
+              for (const lead of results) {
+                if (lead) scrapedLeads.push(lead);
+              }
             }
           }
-          return null;
-        });
+          return scrapedLeads;
+        })(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`Browser session timed out after ${BROWSER_TIMEOUT_MS / 1000}s`)), BROWSER_TIMEOUT_MS)
+        )
+      ]);
 
-        const results = await Promise.all(pagePromises);
-        for (const lead of results) {
-          if (lead) scrapedLeads.push(lead);
-        }
-      }
+      scrapedLeads = browserResult as Partial<Lead>[];
+
     } catch (browserErr: any) {
-      console.error("[Maps-Free] Real scrape failed:", browserErr.message);
-      await addLog('Maps-Free Scraper', 'WARNING', `Puppeteer failed: ${browserErr.message}. Attempting DuckDuckGo fallback...`);
-      let useFallback = true;
-      let fallbackReason = `Puppeteer error: ${browserErr.message}`;
-      
-      const ddgUrl = `${new URL(req.url).origin}/api/scrape/duckduckgo`;
+      console.error('[Maps-Free] Browser scrape failed:', browserErr.message);
+      await addLog('Maps-Free Scraper', 'WARNING',
+        `Puppeteer failed: ${browserErr.message}. Fast sources already returned ${fastLeads.length} leads. Returning those...`);
+
+      // If we already have some leads from Phase 1, return them rather than trying more fallbacks
+      if (fastLeads.length > 0) {
+        const dbResult = await saveLeads(fastLeads);
+        return NextResponse.json({
+          success: true,
+          mode: 'multi-source',
+          added: dbResult.added,
+          skipped: dbResult.skipped,
+          leads: fastLeads
+        });
+      }
+
+      // Fallback 1: DuckDuckGo
       try {
-        const ddgResp = await fetch(ddgUrl, {
+        const ddgResp = await fetch(`${origin}/api/scrape/duckduckgo`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ query, limit, bypassQueue: true })
@@ -171,61 +269,51 @@ export async function POST(req: NextRequest) {
         if (ddgResp.ok) {
           const ddgResult = await ddgResp.json();
           if (ddgResult.success && ddgResult.leads && ddgResult.leads.length > 0) {
-            await addLog('Maps-Free Scraper', 'SUCCESS', `Fallback to DuckDuckGo succeeded. Reason for fallback: ${fallbackReason}. Found ${ddgResult.leads.length} leads.`);
-            return NextResponse.json({
-              ...ddgResult,
-              mode: 'fallback-duckduckgo'
-            });
+            await addLog('Maps-Free Scraper', 'SUCCESS',
+              `DuckDuckGo fallback succeeded. Found ${ddgResult.leads.length} leads.`);
+            return NextResponse.json({ ...ddgResult, mode: 'fallback-duckduckgo' });
           }
         }
       } catch (ddgErr: any) {
-        console.error("DuckDuckGo fallback failed:", ddgErr.message);
-        await addLog('Maps-Free Scraper', 'ERROR', `Fallback to DuckDuckGo failed: ${ddgErr.message}`);
+        console.error('DuckDuckGo fallback failed:', ddgErr.message);
+      }
+
+      // Fallback 2: OpenStreetMap (always reliable)
+      await addLog('Maps-Free Scraper', 'WARNING', `DuckDuckGo fallback returned 0. Trying OSM fallback...`);
+      try {
+        const osmResp = await fetch(`${origin}/api/scrape/osm`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, limit, bypassQueue: true })
+        });
+        if (osmResp.ok) {
+          const osmResult = await osmResp.json();
+          if (osmResult.success && osmResult.leads && osmResult.leads.length > 0) {
+            await addLog('Maps-Free Scraper', 'SUCCESS',
+              `OSM fallback succeeded. Found ${osmResult.leads.length} leads.`);
+            return NextResponse.json({ ...osmResult, mode: 'fallback-osm' });
+          }
+        }
+      } catch (osmErr: any) {
+        console.error('OSM fallback also failed:', osmErr.message);
+        await addLog('Maps-Free Scraper', 'ERROR', `OSM fallback failed: ${osmErr.message}`);
       }
 
       return NextResponse.json({
         success: false,
-        error: `Google Maps scrape failed (${fallbackReason}) and DuckDuckGo fallback failed.`
+        error: `All fallbacks exhausted: Google Maps timed out, DuckDuckGo and OSM returned 0 results.`
       }, { status: 500 });
     } finally {
       if (browser) {
-        try {
-          await browser.close();
-        } catch (e) {
-          console.error("Error closing browser:", e);
-        }
+        try { await browser.close(); } catch (_) {}
       }
     }
 
     if (scrapedLeads.length === 0) {
-      console.log(`[Maps-Free] Google Maps returned 0 leads. Attempting DuckDuckGo fallback...`);
-      await addLog('Maps-Free Scraper', 'WARNING', `Live Maps scrape returned 0 leads. Attempting DuckDuckGo fallback...`);
-      
-      const ddgUrl = `${new URL(req.url).origin}/api/scrape/duckduckgo`;
-      try {
-        const ddgResp = await fetch(ddgUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query, limit, bypassQueue: true })
-        });
-        if (ddgResp.ok) {
-          const ddgResult = await ddgResp.json();
-          if (ddgResult.success && ddgResult.leads && ddgResult.leads.length > 0) {
-            await addLog('Maps-Free Scraper', 'SUCCESS', `Fallback to DuckDuckGo succeeded after Google Maps returned 0 leads. Found ${ddgResult.leads.length} leads.`);
-            return NextResponse.json({
-              ...ddgResult,
-              mode: 'fallback-duckduckgo'
-            });
-          }
-        }
-      } catch (ddgErr: any) {
-        console.error("DuckDuckGo fallback failed:", ddgErr.message);
-        await addLog('Maps-Free Scraper', 'ERROR', `Fallback to DuckDuckGo failed: ${ddgErr.message}`);
-      }
-
+      await addLog('Maps-Free Scraper', 'WARNING', `All sources returned 0 leads for query: "${query}"`);
       return NextResponse.json({
         success: false,
-        error: 'Live scrape returned 0 leads. Google Maps may have blocked access, and DuckDuckGo fallback returned 0 results.'
+        error: 'No leads found from any source (OSM, DuckDuckGo, or Google Maps). The query may be too specific.'
       }, { status: 500 });
     }
 
@@ -251,6 +339,32 @@ export async function POST(req: NextRequest) {
       return true;
     });
 
+    // ── Website enrichment: fetch direct business websites missing contacts ─
+    const toEnrich = candidates.filter(l => !l.email || !l.phone_e164);
+    if (toEnrich.length > 0) {
+      await addLog('Maps-Free Scraper', 'INFO', `Enriching contact info for ${toEnrich.length} candidates in parallel using browser/search fallbacks...`);
+      await Promise.allSettled(
+        toEnrich.map(async (lead) => {
+          try {
+            const enriched = await enrichLeadContacts(lead, browser);
+            if (enriched.email) lead.email = enriched.email;
+            if (enriched.phone) {
+              lead.phone_e164 = enriched.phone;
+              lead.phone_raw = enriched.phone;
+            }
+            if (Object.keys(enriched.socials).length > 0) {
+              lead.social_links = JSON.stringify(enriched.socials);
+            }
+            if (enriched.enriched) {
+              lead.notes = (lead.notes || '') + ` | Enriched: phone=${enriched.phone || 'none'}, email=${enriched.email || 'none'}`;
+            }
+          } catch (err: any) {
+            console.error(`Failed to enrich contacts for ${lead.name}:`, err.message);
+          }
+        })
+      );
+    }
+
     const apiKey = config.geminiApiKey;
     if (apiKey && candidates.length > 0) {
       console.log(`[Maps-Free] Performing parallel AI relevance check for ${candidates.length} leads...`);
@@ -261,7 +375,7 @@ export async function POST(req: NextRequest) {
             return { lead, aiCheck };
           } catch (err: any) {
             console.error(`AI check failed for lead ${lead.name}:`, err.message);
-            return { lead, aiCheck: { isRelevant: true, score: 10, reason: 'AI check failed' } };
+            return { lead, aiCheck: { isRelevant: true, score: 10, reason: 'AI check failed', pitchAngle: lead.website ? 'CRM Integration & WhatsApp Automation' : 'New Website Design' } };
           }
         })
       );
@@ -271,7 +385,7 @@ export async function POST(req: NextRequest) {
           console.log(`[Maps-Free] Filtering out lead "${lead.name}" due to AI scoring: ${aiCheck.score}/10. Reason: ${aiCheck.reason}`);
           continue;
         }
-        lead.notes = `${lead.notes || ''} AI Relevance Score: ${aiCheck.score}/10 (${aiCheck.reason})`;
+        lead.notes = `${lead.notes || ''} AI Relevance Score: ${aiCheck.score}/10 (${aiCheck.reason})${(aiCheck as any).pitchAngle ? ` [pitch: ${(aiCheck as any).pitchAngle}]` : ''}`;
         finalLeads.push(lead);
       }
     } else {

@@ -3,6 +3,7 @@ import { getRuntimeConfig, saveLocalConfig, rotateKey, getRotatedPaystackKeys } 
 import { getActiveLeadRepository } from '@/lib/googleSheets';
 import { getPitchDetails } from '@/lib/pitchHelper';
 import { getOverridesDir } from '@/lib/overrides';
+import { calculateLeadClaimFee } from '@/lib/pricing';
 
 // ============================================================================
 // Google Cloud Vertex AI Token Refresher
@@ -178,12 +179,34 @@ Business Details:
 - Business Photos (JSON array): ${lead.photos_data || '[]'}
 - Social Media Links (JSON object): ${lead.social_links || '{}'}
 - Services Offered (JSON array): ${lead.services_data || '[]'}
+- Existing Website URL: ${lead.website || 'None'}
+- Existing Website Title: ${lead.websiteTitle || 'None'}
+- Existing Website Meta Description: ${lead.websiteMeta || 'None'}
+- Existing Website Dominant Color: ${lead.websiteColor || 'None'}
+- Detected Website Platform/CMS: ${lead.cmsPlatform || 'Unknown'}
+- Platform Detection Confidence: ${lead.cmsConfidence || 'low'}
+- Recommended Upgrade Strategy: ${lead.upgradeStrategy || 'script_embed'}
+- Available Upgrade Tools/Plugins: ${Array.isArray(lead.pluginSuggestions) ? lead.pluginSuggestions.join(', ') : (lead.pluginSuggestions || 'JS Widget Embeds')}
+- Upgrade Method Note: ${lead.embedNote || ''}
 
 Guidelines:
-1. Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business.
+1. Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. If the business has an existing website dominant color (and it's a valid hex code), prioritize using or adapting that color as the primary theme color.
 2. Under "testimonials", use or adapt the real Google reviews provided in "Actual Google Reviews (JSON)" to populate the testimonials list (up to 3 items) instead of fabricating completely random names/reviews.
 3. Under "services", incorporate the actual services from "Services Offered (JSON array)" if present, or expand upon them matching the category. Make sure there are exactly 3 services.
 4. Try to select a "heroImage" URL from the "Business Photos (JSON array)" if there are any valid URLs. If none, do not specify it (it will default to a high-quality Unsplash category image).
+5. CRITICAL UPGRADE & MODERNIZATION PIPELINE RULES:
+   If the business has an existing website (i.e. Existing Website URL is not 'None' and is not empty), you MUST generate copy specifically pitching a "website upgrade" and "automation modernization" rather than pitching a "new website" or "getting online". Use the platform-specific context below:
+
+   UPGRADE STRATEGY = "${lead.upgradeStrategy || 'script_embed'}" — adapt your pitch accordingly:
+   - If strategy is "plugin": mention that features will be added by installing plugins directly onto their existing ${lead.cmsPlatform || 'website'} — no migration or redesign needed.
+   - If strategy is "script_embed": mention that features are added via a simple embed code on their existing site — zero rebuild required.
+   - If strategy is "full_rebuild": acknowledge that their current platform (${lead.cmsPlatform || 'website'}) limits what is possible, and pitch a full modernization/migration to an upgraded platform with all features built in.
+
+   - The heroTitle MUST be a high-conversion modernization/upgrade headline referencing their platform (e.g. "Power Up Your ${lead.cmsPlatform || 'Website'} with Automated Bookings & Paystack Payments").
+   - The heroSubtitle MUST refer to upgrading their existing website at ${lead.website || ''} using the specific upgrade method above.
+   - The services MUST list the specific tools from Available Upgrade Tools: ${Array.isArray(lead.pluginSuggestions) ? lead.pluginSuggestions.slice(0, 3).join(', ') : 'automation integrations'}.
+   - The aboutText should reference their ${lead.cmsPlatform || 'existing website'} and explain how adding these tools modernizes operations in ${lead.area}.
+   - The ctaText MUST use upgrade-focused language matching the strategy (e.g., "Install My Upgrade Plugins", "Add My Automation Widgets", or "Claim My Rebuilt Platform").
 
 Font options should be premium pairings:
 - Elegant/Luxury: headingFont='Playfair Display' + bodyFont='Plus Jakarta Sans' (or Inter)
@@ -274,12 +297,34 @@ Business Details:
 - Business Photos (JSON array): ${lead.photos_data || '[]'}
 - Social Media Links (JSON object): ${lead.social_links || '{}'}
 - Services Offered (JSON array): ${lead.services_data || '[]'}
+- Existing Website URL: ${lead.website || 'None'}
+- Existing Website Title: ${lead.websiteTitle || 'None'}
+- Existing Website Meta Description: ${lead.websiteMeta || 'None'}
+- Existing Website Dominant Color: ${lead.websiteColor || 'None'}
+- Detected Website Platform/CMS: ${lead.cmsPlatform || 'Unknown'}
+- Platform Detection Confidence: ${lead.cmsConfidence || 'low'}
+- Recommended Upgrade Strategy: ${lead.upgradeStrategy || 'script_embed'}
+- Available Upgrade Tools/Plugins: ${Array.isArray(lead.pluginSuggestions) ? lead.pluginSuggestions.join(', ') : (lead.pluginSuggestions || 'JS Widget Embeds')}
+- Upgrade Method Note: ${lead.embedNote || ''}
 
 Guidelines:
-1. Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business.
+1. Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. If the business has an existing website dominant color (and it's a valid hex code), prioritize using or adapting that color as the primary theme color.
 2. Under "testimonials", use or adapt the real Google reviews provided in "Actual Google Reviews (JSON)" to populate the testimonials list (up to 3 items) instead of fabricating completely random names/reviews.
 3. Under "services", incorporate the actual services from "Services Offered (JSON array)" if present, or expand upon them matching the category. Make sure there are exactly 3 services.
 4. Try to select a "heroImage" URL from the "Business Photos (JSON array)" if there are any valid URLs. If none, do not specify it (it will default to a high-quality Unsplash category image).
+5. CRITICAL UPGRADE & MODERNIZATION PIPELINE RULES:
+   If the business has an existing website (i.e. Existing Website URL is not 'None' and is not empty), you MUST generate copy specifically pitching a "website upgrade" and "automation modernization" rather than pitching a "new website" or "getting online". Use the platform-specific context below:
+
+   UPGRADE STRATEGY = "${lead.upgradeStrategy || 'script_embed'}" — adapt your pitch accordingly:
+   - If strategy is "plugin": mention that features will be added by installing plugins directly onto their existing ${lead.cmsPlatform || 'website'} — no migration or redesign needed.
+   - If strategy is "script_embed": mention that features are added via a simple embed code on their existing site — zero rebuild required.
+   - If strategy is "full_rebuild": acknowledge that their current platform (${lead.cmsPlatform || 'website'}) limits what is possible, and pitch a full modernization/migration to an upgraded platform with all features built in.
+
+   - The heroTitle MUST be a high-conversion modernization/upgrade headline referencing their platform (e.g. "Power Up Your ${lead.cmsPlatform || 'Website'} with Automated Bookings & Paystack Payments").
+   - The heroSubtitle MUST refer to upgrading their existing website at ${lead.website || ''} using the specific upgrade method above.
+   - The services MUST list the specific tools from Available Upgrade Tools: ${Array.isArray(lead.pluginSuggestions) ? lead.pluginSuggestions.slice(0, 3).join(', ') : 'automation integrations'}.
+   - The aboutText should reference their ${lead.cmsPlatform || 'existing website'} and explain how adding these tools modernizes operations in ${lead.area}.
+   - The ctaText MUST use upgrade-focused language matching the strategy (e.g., "Install My Upgrade Plugins", "Add My Automation Widgets", or "Claim My Rebuilt Platform").
 
 Font options should be premium pairings:
 - Elegant/Luxury: headingFont='Playfair Display' + bodyFont='Plus Jakarta Sans' (or Inter)
@@ -355,6 +400,25 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
 
 // Deterministic fallback when Gemini is unavailable (no project ID configured yet)
 export function buildFallbackCopy(lead: any): GeneratedCopy {
+  const hasWebsite = !!(lead.website && lead.website.trim() && lead.website.toLowerCase() !== 'none');
+  if (hasWebsite) {
+    return {
+      heroTitle: `Upgrade & Automate ${lead.name} Today`,
+      heroSubtitle: `Modernize your existing website at ${lead.website} with automated scheduling, WhatsApp notification routing, and Paystack payments.`,
+      services: [
+        { title: 'Interactive Booking & Scheduling', description: 'Integrate real-time appointment bookings directly into your website so customers can reserve spots 24/7.', icon: '📅' },
+        { title: 'Automated WhatsApp Notifications', description: 'Receive instant notifications on WhatsApp for new bookings, inquiries, and customer estimates automatically.', icon: '💬' },
+        { title: 'Paystack Checkout System', description: 'Enable secure online payments directly from your website to automate invoicing and improve cash flow.', icon: '💳' },
+      ],
+      aboutText: `Upgrade your current business operations in ${lead.area}. By adding interactive automation and payment integrations to your website, we help ${lead.name} streamline local customer interactions and increase bookings without the overhead.`,
+      testimonials: [
+        { name: 'Chukwuemeka A.', text: 'The scheduling and WhatsApp integration saved us hours of back-and-forth calling. Highly recommended upgrade!', rating: 5 },
+        { name: 'Adaeze O.', text: `Adding Paystack checkout to our existing site has doubled our reservation rate. Smooth and reliable.`, rating: 5 },
+      ],
+      ctaText: 'Claim My Website Upgrade',
+    };
+  }
+
   return {
     heroTitle: `${lead.name} — Trusted in ${lead.area}`,
     heroSubtitle: `Proudly serving ${lead.city} with excellence and dedication. Rated ${lead.rating} stars by ${lead.reviews_count} happy customers.`,
@@ -392,9 +456,27 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: `Lead ${leadId} not found` }, { status: 404 });
     }
 
-    // If lead has a website, fetch analysis data to enrich AI prompt
+    // If lead has a website, fetch analysis + CMS fingerprint data to enrich AI prompt
     let websiteInfo = null;
     if (lead.website) {
+      // Pre-populate from stored DB fields first as fallback
+      lead.cmsPlatform = lead.cms_platform || lead.cmsPlatform || 'custom';
+      lead.cmsConfidence = lead.cms_confidence || lead.cmsConfidence || 'low';
+      lead.upgradeStrategy = lead.upgrade_strategy || lead.upgradeStrategy || 'script_embed';
+      
+      let storedPlugins: string[] = [];
+      if (lead.plugin_suggestions) {
+        try {
+          storedPlugins = typeof lead.plugin_suggestions === 'string' ? JSON.parse(lead.plugin_suggestions) : lead.plugin_suggestions;
+        } catch (_) {
+          storedPlugins = String(lead.plugin_suggestions).split(',').map((s: string) => s.trim()).filter(Boolean);
+        }
+      } else if (lead.pluginSuggestions) {
+        storedPlugins = lead.pluginSuggestions;
+      }
+      lead.pluginSuggestions = storedPlugins;
+      lead.embedNote = lead.embed_note || lead.embedNote || '';
+
       try {
         const analysisResp = await fetch(`${origin}/api/analysis/website`, {
           method: 'POST',
@@ -403,10 +485,16 @@ export async function GET(req: NextRequest) {
         });
         if (analysisResp.ok) {
           websiteInfo = await analysisResp.json();
-          // Attach to lead for prompt usage
+          // Attach basic metadata
           lead.websiteTitle = websiteInfo.title;
           lead.websiteMeta = websiteInfo.metaDescription;
           lead.websiteColor = websiteInfo.dominantColor;
+          // Attach CMS platform intelligence
+          lead.cmsPlatform = websiteInfo.cms || lead.cmsPlatform || 'custom';
+          lead.cmsConfidence = websiteInfo.confidence || lead.cmsConfidence || 'low';
+          lead.upgradeStrategy = websiteInfo.upgradeStrategy || lead.upgradeStrategy || 'script_embed';
+          lead.pluginSuggestions = websiteInfo.pluginSuggestions || lead.pluginSuggestions || [];
+          lead.embedNote = websiteInfo.embedNote || lead.embedNote || '';
         }
       } catch (e) {
         console.warn('Website analysis failed:', e);
@@ -552,7 +640,7 @@ export async function GET(req: NextRequest) {
       generatedAt: new Date().toISOString(),
       paymentConfig: {
         paystackPublicKey: keys.publicKey,
-        claimFeeNGN: config.claimFeeNGN || 0,
+        claimFeeNGN: calculateLeadClaimFee(lead, config),
         moniepointBankName: config.moniepointBankName || '',
         moniepointAccountNumber: config.moniepointAccountNumber || '',
         moniepointAccountName: config.moniepointAccountName || '',

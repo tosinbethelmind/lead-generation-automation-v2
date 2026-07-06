@@ -46,6 +46,16 @@ export interface Lead {
   design_theme?: any;
   overrides?: any;
   email_verified?: boolean;
+  cms_platform?: string;
+  upgrade_strategy?: string;
+  cms_confidence?: string;
+  plugin_suggestions?: string;
+  embed_note?: string;
+  cmsPlatform?: string;
+  upgradeStrategy?: string;
+  cmsConfidence?: string;
+  pluginSuggestions?: string[];
+  embedNote?: string;
 }
 
 export function isMockLead(lead: Partial<Lead>): boolean {
@@ -75,14 +85,31 @@ export function deduplicateLeads<T extends Partial<Lead>>(leads: T[]): T[] {
     return revB - revA;
   });
 
-  const keptIds = new Set<string>();
-  const addedEmailKeys = new Set<string>();
-  const addedPhoneKeys = new Set<string>();
+  const idToKeptLead = new Map<string, T>();
+  const emailKeyToKeptLead = new Map<string, T>();
+  const phoneKeyToKeptLead = new Map<string, T>();
+
+  const mergeLeadFields = (target: T, source: T) => {
+    if (!target.email && source.email) target.email = source.email;
+    if (!target.phone_e164 && source.phone_e164) target.phone_e164 = source.phone_e164;
+    if (!target.phone_raw && source.phone_raw) target.phone_raw = source.phone_raw;
+    if (!target.website && source.website) target.website = source.website;
+    if (!target.social_links && source.social_links) target.social_links = source.social_links;
+    if (!target.business_hours && source.business_hours) target.business_hours = source.business_hours;
+    if (!target.reviews_data && source.reviews_data) target.reviews_data = source.reviews_data;
+    if (!target.photos_data && source.photos_data) target.photos_data = source.photos_data;
+    if (!target.services_data && source.services_data) target.services_data = source.services_data;
+    if (!target.business_summary && source.business_summary) target.business_summary = source.business_summary;
+    if (source.rating && (!target.rating || source.rating > target.rating)) target.rating = source.rating;
+    if (source.reviews_count && (!target.reviews_count || source.reviews_count > target.reviews_count)) target.reviews_count = source.reviews_count;
+    if (source.verified && !target.verified) target.verified = source.verified;
+  };
+
+  const finalLeads: T[] = [];
 
   for (const lead of sorted) {
     const leadId = lead.lead_id || '';
     if (!leadId) continue;
-    if (keptIds.has(leadId)) continue;
 
     const nameNorm = (lead.name || '').trim().toLowerCase();
     const emailNorm = (lead.email || '').trim().toLowerCase();
@@ -93,30 +120,41 @@ export function deduplicateLeads<T extends Partial<Lead>>(leads: T[]): T[] {
     const emailKey = emailNorm ? `${nameNorm}|${emailNorm}` : '';
     const phoneKey = phoneNorm ? `${nameNorm}|${phoneNorm}` : '';
 
-    let isDuplicate = false;
-    if (emailKey && addedEmailKeys.has(emailKey)) {
-      isDuplicate = true;
+    // Check if we already kept a lead matching this ID, email key, or phone key
+    let existingKept = idToKeptLead.get(leadId);
+    if (!existingKept && emailKey) {
+      existingKept = emailKeyToKeptLead.get(emailKey);
     }
-    if (phoneKey && addedPhoneKeys.has(phoneKey)) {
-      isDuplicate = true;
+    if (!existingKept && phoneKey) {
+      existingKept = phoneKeyToKeptLead.get(phoneKey);
     }
 
-    if (!isDuplicate) {
-      keptIds.add(leadId);
-      if (emailKey) addedEmailKeys.add(emailKey);
-      if (phoneKey) addedPhoneKeys.add(phoneKey);
+    if (existingKept) {
+      // Merge duplicate fields into the existing kept lead
+      mergeLeadFields(existingKept, lead);
+    } else {
+      // Keep this lead
+      const copy = { ...lead };
+      finalLeads.push(copy);
+      idToKeptLead.set(leadId, copy);
+      if (emailKey) emailKeyToKeptLead.set(emailKey, copy);
+      if (phoneKey) phoneKeyToKeptLead.set(phoneKey, copy);
     }
   }
 
+  // To preserve the original order of the unique items from the input list,
+  // we filter the original array to only include the ones that match our kept copies
   const seenIds = new Set<string>();
-  return leads.filter(l => {
-    const id = l.lead_id || '';
-    if (id && keptIds.has(id) && !seenIds.has(id)) {
+  const result: T[] = [];
+  for (const orig of leads) {
+    const id = orig.lead_id || '';
+    if (id && idToKeptLead.has(id) && !seenIds.has(id)) {
       seenIds.add(id);
-      return true;
+      const kept = idToKeptLead.get(id)!;
+      result.push(kept);
     }
-    return false;
-  });
+  }
+  return result;
 }
 
 export interface DncEntry {
@@ -149,7 +187,8 @@ const COLUMNS = [
   'verified', 'listings_count', 'profile_url', 'source_query_or_seed', 
   'collected_at', 'status', 'last_contacted_at', 'duplicate_of_lead_id', 
   'business_summary', 'notes',
-  'business_hours', 'reviews_data', 'photos_data', 'social_links', 'services_data'
+  'business_hours', 'reviews_data', 'photos_data', 'social_links', 'services_data',
+  'cms_platform', 'upgrade_strategy', 'cms_confidence', 'plugin_suggestions', 'embed_note'
 ];
 
 // ============================================================================
@@ -281,10 +320,17 @@ export function normalizePhone(
 ): string | null {
   if (!raw) return null;
   
-  // Strip non-numeric digits
-  let digits = raw.replace(/\D/g, '');
+  const trimmed = raw.trim();
+  const isExplicitIntl = trimmed.startsWith('+') || trimmed.startsWith('00');
   
-  if (country === 'NG') {
+  // Strip non-numeric digits
+  let digits = trimmed.replace(/\D/g, '');
+  
+  if (isExplicitIntl) {
+    if (trimmed.startsWith('00')) {
+      digits = digits.substring(2); // remove the leading '00'
+    }
+  } else if (country === 'NG') {
     if (digits.startsWith('2340')) {
       digits = '234' + digits.substring(4);
     } else if (digits.startsWith('0')) {
@@ -295,7 +341,7 @@ export function normalizePhone(
   }
   
   if (options?.strict) {
-    if (digits.length < 11 || digits.length > 15) {
+    if (digits.length < 9 || digits.length > 15) {
       return null;
     }
   } else {
@@ -317,16 +363,32 @@ export function extractPhonesFromText(text: string): string[] {
     // Strip everything except digits
     const digits = m.replace(/\D/g, '');
     
-    // Check if it matches Nigerian phone length and patterns:
+    // Check if m originally starts with a plus (or 00) for international formats
+    const trimmed = m.trim();
+    const isExplicitInternational = trimmed.startsWith('+') || trimmed.startsWith('00');
+    
+    // 1. Explicit international format (e.g., +15551234567, +447911123456)
+    if (isExplicitInternational && digits.length >= 9 && digits.length <= 15) {
+      const cleanDigits = trimmed.startsWith('00') ? digits.substring(2) : digits;
+      phones.push('+' + cleanDigits);
+    }
+    // 2. Nigerian Mobile patterns:
     // It should start with 234 followed by 70, 80, 81, 90, 91 (length 13)
     // Or start with 0 followed by 70, 80, 81, 90, 91 (length 11)
     // Or just be 10 digits starting with 70, 80, 81, 90, 91 (without leading 0)
-    if (digits.length === 13 && digits.startsWith('234') && ['7', '8', '9'].includes(digits[3])) {
+    else if (digits.length === 13 && digits.startsWith('234') && ['7', '8', '9'].includes(digits[3])) {
       phones.push('+' + digits);
     } else if (digits.length === 11 && digits.startsWith('0') && ['7', '8', '9'].includes(digits[1])) {
       phones.push('+234' + digits.substring(1));
     } else if (digits.length === 10 && ['7', '8', '9'].includes(digits[0])) {
       phones.push('+234' + digits);
+    }
+    // 3. Nigerian Landline patterns (e.g. Lagos 01-xxx-xxxx, Abuja 09-xxx-xxxx):
+    // Starts with 01 (length 9) or 09 (length 9) or 2341 (length 11) or 2349 (length 11)
+    else if (digits.length === 9 && (digits.startsWith('01') || digits.startsWith('09'))) {
+      phones.push('+234' + digits.substring(1));
+    } else if (digits.length === 11 && (digits.startsWith('2341') || digits.startsWith('2349'))) {
+      phones.push('+' + digits);
     }
   }
   return Array.from(new Set(phones)); // deduplicate
@@ -442,13 +504,51 @@ function rowToLead(row: any[]): Lead {
       lead[col] = String(val);
     }
   });
+
+  // Attach camelCase versions
+  if (lead.cms_platform) lead.cmsPlatform = lead.cms_platform;
+  if (lead.upgrade_strategy) lead.upgradeStrategy = lead.upgrade_strategy;
+  if (lead.cms_confidence) lead.cmsConfidence = lead.cms_confidence;
+  if (lead.plugin_suggestions) {
+    try {
+      lead.pluginSuggestions = JSON.parse(lead.plugin_suggestions);
+    } catch (_) {
+      lead.pluginSuggestions = lead.plugin_suggestions.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+  }
+  if (lead.embed_note) lead.embedNote = lead.embed_note;
+
   lead.isMock = isMockLead(lead);
   return lead as Lead;
 }
 
 function leadToRow(lead: Partial<Lead>): any[] {
+  const cms_platform = lead.cms_platform || lead.cmsPlatform || '';
+  const upgrade_strategy = lead.upgrade_strategy || lead.upgradeStrategy || '';
+  const cms_confidence = lead.cms_confidence || lead.cmsConfidence || '';
+  
+  let plugin_suggestions = '';
+  if (lead.plugin_suggestions) {
+    plugin_suggestions = Array.isArray(lead.plugin_suggestions) 
+      ? JSON.stringify(lead.plugin_suggestions) 
+      : String(lead.plugin_suggestions);
+  } else if (lead.pluginSuggestions) {
+    plugin_suggestions = JSON.stringify(lead.pluginSuggestions);
+  }
+  
+  const embed_note = lead.embed_note || lead.embedNote || '';
+
+  const fullLead = {
+    ...lead,
+    cms_platform,
+    upgrade_strategy,
+    cms_confidence,
+    plugin_suggestions,
+    embed_note
+  };
+
   return COLUMNS.map(col => {
-    const val = (lead as any)[col];
+    const val = (fullLead as any)[col];
     if (val === undefined || val === null) return '';
     if (col === 'verified') return String(val).toUpperCase();
     return val;
@@ -550,8 +650,21 @@ class GoogleSheetsLeadRepository implements ILeadRepository {
       
       for (const lead of newLeads) {
         if (!lead.lead_id) continue;
+
+        // Filter out invalid names
+        if (!isValidLeadName(lead.name)) {
+          skipped++;
+          continue;
+        }
         
         const normPhone = lead.phone_e164 ? (normalizePhone(lead.phone_e164) || '') : '';
+
+        // Filter out leads with absolutely no contact info
+        if (!normPhone && !lead.email && !lead.website) {
+          skipped++;
+          continue;
+        }
+
         const nameEmailKey = lead.email ? `${(lead.name || '').trim().toLowerCase()}|${(lead.email || '').trim().toLowerCase()}` : '';
         
         const isDup = 
@@ -779,8 +892,21 @@ class LocalJsonLeadRepository implements ILeadRepository {
       
       for (const partial of newLeads) {
         if (!partial.lead_id) continue;
+
+        // Filter out invalid names
+        if (!isValidLeadName(partial.name)) {
+          skipped++;
+          continue;
+        }
         
         const normPhone = partial.phone_e164 ? (normalizePhone(partial.phone_e164) || '') : '';
+
+        // Filter out leads with absolutely no contact info
+        if (!normPhone && !partial.email && !partial.website) {
+          skipped++;
+          continue;
+        }
+
         const nameEmailKey = partial.email ? `${(partial.name || '').trim().toLowerCase()}|${(partial.email || '').trim().toLowerCase()}` : '';
         
         const isDup = 
@@ -790,6 +916,30 @@ class LocalJsonLeadRepository implements ILeadRepository {
           (nameEmailKey && existingNameEmails.has(nameEmailKey));
           
         if (isDup) {
+          // Merge missing fields into the existing record in memory
+          const existing = leads.find(l => 
+            l.lead_id === partial.lead_id || 
+            (normPhone && l.phone_e164 === normPhone) ||
+            (partial.profile_url && l.profile_url === partial.profile_url)
+          );
+
+          if (existing) {
+            let updated = false;
+            if (!existing.email && partial.email) { existing.email = partial.email; updated = true; }
+            if (!existing.phone_e164 && partial.phone_e164) { existing.phone_e164 = partial.phone_e164; updated = true; }
+            if (!existing.phone_raw && partial.phone_raw) { existing.phone_raw = partial.phone_raw; updated = true; }
+            if (!existing.website && partial.website) { existing.website = partial.website; updated = true; }
+            if (!existing.social_links && partial.social_links) { existing.social_links = partial.social_links; updated = true; }
+            if (!existing.business_hours && partial.business_hours) { existing.business_hours = partial.business_hours; updated = true; }
+            if (!existing.reviews_data && partial.reviews_data) { existing.reviews_data = partial.reviews_data; updated = true; }
+            if (!existing.photos_data && partial.photos_data) { existing.photos_data = partial.photos_data; updated = true; }
+            if (!existing.services_data && partial.services_data) { existing.services_data = partial.services_data; updated = true; }
+            
+            if (updated) {
+              if (existing.phone_e164) existingPhones.add(existing.phone_e164);
+              if (existing.profile_url) existingUrls.add(existing.profile_url);
+            }
+          }
           skipped++;
         } else {
           const completeLead: Lead = {
@@ -831,7 +981,9 @@ class LocalJsonLeadRepository implements ILeadRepository {
         }
       }
       
-      if (addedLeads.length > 0) {
+      // Since some existing records in 'leads' may have been modified (merged),
+      // we must save the entire leads array (which includes addedLeads if length > 0)
+      if (addedLeads.length > 0 || skipped > 0) {
         await writeJsonFile<Lead[]>(LEADS_FILE, [...leads, ...addedLeads]);
       }
       
@@ -935,6 +1087,27 @@ function restoreLead(dbLead: any): Lead {
   restored.overrides = dbLead.overrides;
   restored.email_verified = dbLead.email_verified;
 
+  // Map website modernization properties
+  restored.cms_platform = dbLead.cms_platform;
+  restored.upgrade_strategy = dbLead.upgrade_strategy;
+  restored.cms_confidence = dbLead.cms_confidence;
+  restored.plugin_suggestions = dbLead.plugin_suggestions;
+  restored.embed_note = dbLead.embed_note;
+
+  if (dbLead.cms_platform) restored.cmsPlatform = dbLead.cms_platform;
+  if (dbLead.upgrade_strategy) restored.upgradeStrategy = dbLead.upgrade_strategy;
+  if (dbLead.cms_confidence) restored.cmsConfidence = dbLead.cms_confidence;
+  if (dbLead.plugin_suggestions) {
+    try {
+      restored.pluginSuggestions = typeof dbLead.plugin_suggestions === 'string' 
+        ? JSON.parse(dbLead.plugin_suggestions) 
+        : dbLead.plugin_suggestions;
+    } catch (_) {
+      restored.pluginSuggestions = String(dbLead.plugin_suggestions).split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+  }
+  if (dbLead.embed_note) restored.embedNote = dbLead.embed_note;
+
   const notes = dbLead.notes || '';
   if (notes.startsWith('[source:')) {
     const endIdx = notes.indexOf(']');
@@ -1037,7 +1210,20 @@ class SupabaseLeadRepository implements ILeadRepository {
 
       for (const lead of newLeads) {
         if (!lead.lead_id) continue;
+
+        // Filter out invalid names
+        if (!isValidLeadName(lead.name)) {
+          skipped++;
+          continue;
+        }
+        
         const normPhone = lead.phone_e164 ? (normalizePhone(lead.phone_e164) || '') : '';
+
+        // Filter out leads with absolutely no contact info
+        if (!normPhone && !lead.email && !lead.website) {
+          skipped++;
+          continue;
+        }
         
         const isDup = 
           existingIds.has(lead.lead_id) || 
@@ -1045,6 +1231,48 @@ class SupabaseLeadRepository implements ILeadRepository {
           (lead.profile_url && existingUrls.has(lead.profile_url));
 
         if (isDup) {
+          // Merge missing fields into the existing record in Supabase
+          const existing = existingLeads.find(l => 
+            l.lead_id === lead.lead_id || 
+            (normPhone && l.phone_e164 === normPhone) ||
+            (lead.profile_url && l.profile_url === lead.profile_url)
+          );
+
+          if (existing) {
+            const updates: Partial<Lead> = {};
+            if (!existing.email && lead.email) updates.email = lead.email;
+            if (!existing.phone_e164 && lead.phone_e164) {
+              updates.phone_e164 = lead.phone_e164;
+              updates.phone_raw = lead.phone_raw || lead.phone_e164;
+            }
+            if (!existing.website && lead.website) updates.website = lead.website;
+            if (!existing.social_links && lead.social_links) updates.social_links = lead.social_links;
+            if (!existing.business_hours && lead.business_hours) updates.business_hours = lead.business_hours;
+            if (!existing.reviews_data && lead.reviews_data) updates.reviews_data = lead.reviews_data;
+            if (!existing.photos_data && lead.photos_data) updates.photos_data = lead.photos_data;
+            if (!existing.services_data && lead.services_data) updates.services_data = lead.services_data;
+            if (!existing.cms_platform && (lead.cms_platform || lead.cmsPlatform)) updates.cms_platform = lead.cms_platform || lead.cmsPlatform;
+            if (!existing.upgrade_strategy && (lead.upgrade_strategy || lead.upgradeStrategy)) updates.upgrade_strategy = lead.upgrade_strategy || lead.upgradeStrategy;
+            if (!existing.cms_confidence && (lead.cms_confidence || lead.cmsConfidence)) updates.cms_confidence = lead.cms_confidence || lead.cmsConfidence;
+            if (!existing.plugin_suggestions && (lead.plugin_suggestions || lead.pluginSuggestions)) {
+              updates.plugin_suggestions = lead.plugin_suggestions 
+                ? (Array.isArray(lead.plugin_suggestions) ? JSON.stringify(lead.plugin_suggestions) : String(lead.plugin_suggestions))
+                : (lead.pluginSuggestions ? JSON.stringify(lead.pluginSuggestions) : '');
+            }
+            if (!existing.embed_note && (lead.embed_note || lead.embedNote)) updates.embed_note = lead.embed_note || lead.embedNote;
+
+            if (Object.keys(updates).length > 0) {
+              const { error: updateErr } = await supabase
+                .from('leads')
+                .update(updates)
+                .eq('lead_id', existing.lead_id);
+              if (!updateErr) {
+                Object.assign(existing, updates);
+                if (existing.phone_e164) existingPhones.add(existing.phone_e164);
+                if (existing.profile_url) existingUrls.add(existing.profile_url);
+              }
+            }
+          }
           skipped++;
         } else {
           lead.phone_e164 = normPhone || lead.phone_e164 || '';
@@ -1052,6 +1280,10 @@ class SupabaseLeadRepository implements ILeadRepository {
           const originalSource = lead.source || 'GOOGLE';
           const mappedSource = ['JIJI', 'INSTAGRAM', 'FACEBOOK', 'TIKTOK', 'LINKEDIN'].includes(originalSource) ? 'JIJI' : 'GOOGLE';
           const prefixedNotes = `[source:${originalSource}]${lead.notes || ''}`;
+
+          const pluginSuggestionsStr = lead.plugin_suggestions 
+            ? (Array.isArray(lead.plugin_suggestions) ? JSON.stringify(lead.plugin_suggestions) : String(lead.plugin_suggestions))
+            : (lead.pluginSuggestions ? JSON.stringify(lead.pluginSuggestions) : '');
 
           toInsert.push({
             lead_id: lead.lead_id,
@@ -1085,7 +1317,12 @@ class SupabaseLeadRepository implements ILeadRepository {
             generated_copy: lead.generated_copy || null,
             design_theme: lead.design_theme || null,
             overrides: lead.overrides || null,
-            email_verified: !!lead.email_verified
+            email_verified: !!lead.email_verified,
+            cms_platform: lead.cms_platform || lead.cmsPlatform || '',
+            upgrade_strategy: lead.upgrade_strategy || lead.upgradeStrategy || '',
+            cms_confidence: lead.cms_confidence || lead.cmsConfidence || '',
+            plugin_suggestions: pluginSuggestionsStr,
+            embed_note: lead.embed_note || lead.embedNote || ''
           });
 
           existingIds.add(lead.lead_id);
@@ -1166,6 +1403,22 @@ class SupabaseLeadRepository implements ILeadRepository {
       if (fields.overrides !== undefined) updates.overrides = fields.overrides;
       if (fields.email_verified !== undefined) updates.email_verified = fields.email_verified;
       if (fields.last_contacted_at !== undefined) updates.last_contacted_at = fields.last_contacted_at;
+
+      // Modernization fields
+      if (fields.cms_platform !== undefined) updates.cms_platform = fields.cms_platform;
+      if (fields.cmsPlatform !== undefined) updates.cms_platform = fields.cmsPlatform;
+      if (fields.upgrade_strategy !== undefined) updates.upgrade_strategy = fields.upgrade_strategy;
+      if (fields.upgradeStrategy !== undefined) updates.upgrade_strategy = fields.upgradeStrategy;
+      if (fields.cms_confidence !== undefined) updates.cms_confidence = fields.cms_confidence;
+      if (fields.cmsConfidence !== undefined) updates.cms_confidence = fields.cmsConfidence;
+      if (fields.plugin_suggestions !== undefined) {
+        updates.plugin_suggestions = Array.isArray(fields.plugin_suggestions) ? JSON.stringify(fields.plugin_suggestions) : String(fields.plugin_suggestions);
+      }
+      if (fields.pluginSuggestions !== undefined) {
+        updates.plugin_suggestions = JSON.stringify(fields.pluginSuggestions);
+      }
+      if (fields.embed_note !== undefined) updates.embed_note = fields.embed_note;
+      if (fields.embedNote !== undefined) updates.embed_note = fields.embedNote;
 
       const { data, error } = await supabase
         .from('leads')
@@ -1328,13 +1581,26 @@ export async function saveLeads(leads: Partial<Lead>[]): Promise<{ added: number
   if (rejected > 0) {
     console.log(`[saveLeads] Rejected ${rejected} leads with invalid names`);
   }
-  const deduplicated = deduplicateLeads(validLeads);
+  
+  // Reject leads that have absolutely no contact details (no phone, no email, no website)
+  const completeLeads = validLeads.filter(l => l.phone_e164 || l.phone_raw || l.email || l.website);
+  const incompleteCount = validLeads.length - completeLeads.length;
+  if (incompleteCount > 0) {
+    console.log(`[saveLeads] Rejected ${incompleteCount} leads with no phone, email, or website`);
+  }
+
+  const deduplicated = deduplicateLeads(completeLeads);
   return getActiveLeadRepository().saveLeads(deduplicated);
 }
 
 export async function updateLeadStatus(leadId: string, status: LeadStatus, notes?: string, lastContactedAt?: string): Promise<boolean> {
   return getActiveLeadRepository().updateLeadStatus(leadId, status, notes, lastContactedAt);
 }
+
+export async function updateLeadFields(leadId: string, fields: Partial<Lead>): Promise<boolean> {
+  return getActiveLeadRepository().updateLeadFields(leadId, fields);
+}
+
 
 export async function getDNCList(): Promise<string[]> {
   return getActiveDncRepository().getDncList();

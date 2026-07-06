@@ -253,13 +253,27 @@ export async function GET(req: NextRequest) {
 
     if (isMockRef || secretKeys.length === 0 || secretKeys[0] === 'mock') {
       console.log('Simulating Moniepoint verification in development/mock mode');
+      let claimFee = config.claimFeeNGN || 5000;
+      const targetLeadId = leadId || 'mock-lead-id';
+      if (targetLeadId && targetLeadId !== 'mock-lead-id') {
+        try {
+          const repo = getActiveLeadRepository();
+          const dbLead = await repo.getLeadById(targetLeadId);
+          if (dbLead) {
+            const { calculateLeadClaimFee } = require('@/lib/pricing');
+            claimFee = calculateLeadClaimFee(dbLead, config);
+          }
+        } catch (err) {
+          console.warn('Failed to fetch lead in mock payment verification:', err);
+        }
+      }
       transaction = {
         status: 'success',
         reference,
-        amount: (config.claimFeeNGN || 5000) * 100,
+        amount: claimFee * 100,
         paid_at: new Date().toISOString(),
         metadata: {
-          leadId: leadId || 'mock-lead-id',
+          leadId: targetLeadId,
           clientName: 'Demo Client',
           clientEmail: 'client@example.com'
         }

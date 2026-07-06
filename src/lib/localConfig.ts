@@ -139,6 +139,11 @@ export interface LocalConfig {
   vercelProjectId?: string;
   vercelTeamId?: string;
   vercelDeployHookUrl?: string;
+
+  // ── Hardened Automation Settings ───────────────────────
+  proxyPool?: string;
+  failoverPriority?: string;
+  serviceHealthStatus?: string;
 }
 
 export interface RuntimeConfig extends LocalConfig {
@@ -210,7 +215,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   sendgridSenderName: 'ApexReach',
 
   // Baileys Settings
-  whatsappBaileysUrl: 'http://localhost:3006',
+  whatsappBaileysUrl: 'http://localhost:3007',
 
   // Claiming / Payments Defaults
   paystackPublicKey: '',
@@ -262,6 +267,9 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   vercelProjectId: '',
   vercelTeamId: '',
   vercelDeployHookUrl: '',
+  proxyPool: '',
+  failoverPriority: 'whatsapp,sms,email',
+  serviceHealthStatus: '{}',
 };
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
@@ -396,6 +404,9 @@ export function getRuntimeConfig(): RuntimeConfig {
     vercelProjectId: process.env.VERCEL_PROJECT_ID || fileConfig.vercelProjectId || DEFAULT_CONFIG.vercelProjectId,
     vercelTeamId: process.env.VERCEL_TEAM_ID || fileConfig.vercelTeamId || DEFAULT_CONFIG.vercelTeamId,
     vercelDeployHookUrl: process.env.VERCEL_DEPLOY_HOOK_URL || fileConfig.vercelDeployHookUrl || DEFAULT_CONFIG.vercelDeployHookUrl,
+    proxyPool: process.env.PROXY_POOL || fileConfig.proxyPool || DEFAULT_CONFIG.proxyPool,
+    failoverPriority: process.env.FAILOVER_PRIORITY || fileConfig.failoverPriority || DEFAULT_CONFIG.failoverPriority,
+    serviceHealthStatus: process.env.SERVICE_HEALTH_STATUS || fileConfig.serviceHealthStatus || DEFAULT_CONFIG.serviceHealthStatus,
   };
 
   return merged;
@@ -409,20 +420,28 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
   try {
     const current = getRuntimeConfig();
     const updated = { ...current, ...config };
+
+    const getSavedValue = (key: keyof RuntimeConfig, envValue: any) => {
+      const val = updated[key];
+      if (envValue !== undefined && envValue !== '' && String(val) === String(envValue)) {
+        return '';
+      }
+      return val;
+    };
     
     // Save to config.json
     const fileData = {
       // Google auth
-      googleClientId: updated.googleClientId,
-      googleClientSecret: updated.googleClientSecret,
+      googleClientId: getSavedValue('googleClientId', process.env.GOOGLE_CLIENT_ID),
+      googleClientSecret: getSavedValue('googleClientSecret', process.env.GOOGLE_CLIENT_SECRET),
       googleAccessToken: updated.googleAccessToken,
       googleRefreshToken: updated.googleRefreshToken,
       googleTokenExpiry: updated.googleTokenExpiry,
       googleUserEmail: updated.googleUserEmail,
-      googleProjectId: updated.googleProjectId,
+      googleProjectId: getSavedValue('googleProjectId', process.env.GOOGLE_PROJECT_ID),
       // Google data tools
-      googleSpreadsheetId: updated.googleSpreadsheetId,
-      googlePlacesApiKey: updated.googlePlacesApiKey,
+      googleSpreadsheetId: getSavedValue('googleSpreadsheetId', process.env.GOOGLE_SPREADSHEET_ID),
+      googlePlacesApiKey: getSavedValue('googlePlacesApiKey', process.env.GOOGLE_PLACES_API_KEY),
       // Outreach
       dryRun: updated.dryRun,
       businessSignature: updated.businessSignature,
@@ -431,15 +450,15 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       // Alternative Outreach
       emailProvider: updated.emailProvider,
       whatsappProvider: updated.whatsappProvider,
-      resendApiKey: updated.resendApiKey,
-      resendFromEmail: updated.resendFromEmail,
-      brevoApiKey: updated.brevoApiKey,
+      resendApiKey: getSavedValue('resendApiKey', process.env.RESEND_API_KEY),
+      resendFromEmail: getSavedValue('resendFromEmail', process.env.RESEND_FROM_EMAIL),
+      brevoApiKey: getSavedValue('brevoApiKey', process.env.BREVO_API_KEY),
       brevoSenderName: updated.brevoSenderName,
       brevoSenderEmail: updated.brevoSenderEmail,
-      evolutionApiUrl: updated.evolutionApiUrl,
-      evolutionApiKey: updated.evolutionApiKey,
-      evolutionInstanceName: updated.evolutionInstanceName,
-      whapiToken: updated.whapiToken,
+      evolutionApiUrl: getSavedValue('evolutionApiUrl', process.env.EVOLUTION_API_URL),
+      evolutionApiKey: getSavedValue('evolutionApiKey', process.env.EVOLUTION_API_KEY),
+      evolutionInstanceName: getSavedValue('evolutionInstanceName', process.env.EVOLUTION_INSTANCE_NAME),
+      whapiToken: getSavedValue('whapiToken', process.env.WHAPI_TOKEN),
 
       // SMTP Settings
       smtpHost: updated.smtpHost,
@@ -499,9 +518,9 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       facebookMessageTemplate: updated.facebookMessageTemplate,
       tiktokMessageTemplate: updated.tiktokMessageTemplate,
       linkedinMessageTemplate: updated.linkedinMessageTemplate,
-      supabaseUrl: updated.supabaseUrl,
-      supabaseKey: updated.supabaseKey,
-      geminiApiKey: updated.geminiApiKey,
+      supabaseUrl: getSavedValue('supabaseUrl', process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL),
+      supabaseKey: getSavedValue('supabaseKey', process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+      geminiApiKey: getSavedValue('geminiApiKey', process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
       remoteBrowserWs: updated.remoteBrowserWs,
       scraperProxy: updated.scraperProxy,
       n8nWebhookUrl: updated.n8nWebhookUrl,
@@ -514,6 +533,9 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       vercelProjectId: updated.vercelProjectId,
       vercelTeamId: updated.vercelTeamId,
       vercelDeployHookUrl: updated.vercelDeployHookUrl,
+      proxyPool: updated.proxyPool,
+      failoverPriority: updated.failoverPriority,
+      serviceHealthStatus: updated.serviceHealthStatus,
     };
     
     fs.writeFileSync(WRITEABLE_CONFIG_FILE_PATH, JSON.stringify(fileData, null, 2), 'utf-8');

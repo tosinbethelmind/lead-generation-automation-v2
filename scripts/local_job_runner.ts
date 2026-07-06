@@ -41,8 +41,11 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
-const LOCAL_API_PORT = process.env.PORT || '3005';
+const LOCAL_API_PORT = process.env.PORT || '3006';
 const LOCAL_BASE_URL = `http://localhost:${LOCAL_API_PORT}`;
+
+// Track the currently processing job for real-time frontend reporting
+let currentJob: any = null;
 
 console.log('====================================================');
 console.log('🚀 Local Scraping Job Runner Started');
@@ -62,89 +65,99 @@ const endpointMap: Record<string, string> = {
 };
 
 async function processJob(job: any) {
+  currentJob = {
+    id: job.id,
+    type: job.type,
+    payload: job.payload,
+    startedAt: new Date().toISOString()
+  };
   console.log(`\n[${new Date().toISOString()}] Processing Job: ${job.id} (Type: ${job.type})`);
   
-  // 1. Mark job as running
-  const { error: updateError } = await supabase
-    .from('scrape_jobs')
-    .update({ 
-      status: 'running', 
-      updated_at: new Date().toISOString() 
-    })
-    .eq('id', job.id);
-
-  if (updateError) {
-    console.error(`❌ Failed to update status to "running" for job ${job.id}:`, updateError.message);
-    return;
-  }
-
-  // 2. Resolve endpoint url
-  const pathName = endpointMap[job.type];
-  if (!pathName) {
-    const errorMsg = `Unsupported job type: ${job.type}`;
-    console.error(`❌ ${errorMsg}`);
-    await failJob(job.id, errorMsg);
-    return;
-  }
-
-  const endpointUrl = `${LOCAL_BASE_URL}/api/scrape/${pathName}`;
-  console.log(`👉 Forwarding request to local scraper: ${endpointUrl}`);
-  
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      console.log(`⚠️ Job ${job.id} request timed out after 10 minutes.`);
-      controller.abort();
-    }, 600000); // 10 minutes timeout
-
-    // 3. Dispatch post request to local server
-    const response = await fetch(endpointUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-bypass-queue': 'true' // Bypass queue intercept to trigger actual execution
-      },
-      body: JSON.stringify({
-        ...job.payload,
-        bypassQueue: true // Fail-safe fallback parameter
-      }),
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Local endpoint returned status ${response.status}: ${errorText}`);
-    }
-
-    const resultData = await response.json();
-    if (resultData.error) {
-      throw new Error(resultData.error);
-    }
-
-    // 4. Mark job as completed
-    const { error: completeError } = await supabase
+    // 1. Mark job as running
+    const { error: updateError } = await supabase
       .from('scrape_jobs')
-      .update({
-        status: 'completed',
-        result: {
-          added: resultData.added || 0,
-          skipped: resultData.skipped || 0,
-          leadsCount: resultData.leads?.length || 0
-        },
-        updated_at: new Date().toISOString()
+      .update({ 
+        status: 'running', 
+        updated_at: new Date().toISOString() 
       })
       .eq('id', job.id);
 
-    if (completeError) {
-      console.error(`❌ Failed to update status to "completed" for job ${job.id}:`, completeError.message);
-    } else {
-      console.log(`✅ Job ${job.id} completed successfully. Added: ${resultData.added || 0}, Skipped: ${resultData.skipped || 0}`);
+    if (updateError) {
+      console.error(`❌ Failed to update status to "running" for job ${job.id}:`, updateError.message);
+      return;
     }
-  } catch (err: any) {
-    console.error(`❌ Error executing job ${job.id}:`, err.message);
-    await failJob(job.id, err.message);
+
+    // 2. Resolve endpoint url
+    const pathName = endpointMap[job.type];
+    if (!pathName) {
+      const errorMsg = `Unsupported job type: ${job.type}`;
+      console.error(`❌ ${errorMsg}`);
+      await failJob(job.id, errorMsg);
+      return;
+    }
+
+    const endpointUrl = `${LOCAL_BASE_URL}/api/scrape/${pathName}`;
+    console.log(`👉 Forwarding request to local scraper: ${endpointUrl}`);
+    
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.log(`⚠️ Job ${job.id} request timed out after 10 minutes.`);
+        controller.abort();
+      }, 600000); // 10 minutes timeout
+
+      // 3. Dispatch post request to local server
+      const response = await fetch(endpointUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-bypass-queue': 'true' // Bypass queue intercept to trigger actual execution
+        },
+        body: JSON.stringify({
+          ...job.payload,
+          bypassQueue: true // Fail-safe fallback parameter
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Local endpoint returned status ${response.status}: ${errorText}`);
+      }
+
+      const resultData = await response.json();
+      if (resultData.error) {
+        throw new Error(resultData.error);
+      }
+
+      // 4. Mark job as completed
+      const { error: completeError } = await supabase
+        .from('scrape_jobs')
+        .update({
+          status: 'completed',
+          result: {
+            added: resultData.added || 0,
+            skipped: resultData.skipped || 0,
+            leadsCount: resultData.leads?.length || 0
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', job.id);
+
+      if (completeError) {
+        console.error(`❌ Failed to update status to "completed" for job ${job.id}:`, completeError.message);
+      } else {
+        console.log(`✅ Job ${job.id} completed successfully. Added: ${resultData.added || 0}, Skipped: ${resultData.skipped || 0}`);
+      }
+    } catch (err: any) {
+      console.error(`❌ Error executing job ${job.id}:`, err.message);
+      await failJob(job.id, err.message);
+    }
+  } finally {
+    currentJob = null;
   }
 }
 
@@ -237,16 +250,86 @@ async function checkAndRecoverStuckJobs() {
   }
 }
 
+async function checkScheduledCampaigns() {
+  try {
+    console.log(`[${new Date().toISOString()}] 📅 Checking for scheduled campaigns...`);
+    const response = await fetch(`${LOCAL_BASE_URL}/api/schedule`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ action: 'trigger-next', force: false })
+    });
+    if (!response.ok) {
+      throw new Error(`Schedule endpoint returned status ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.success && data.queued) {
+      console.log(`[Scheduler] Auto-queued new campaign query: "${data.queued.query}"`);
+    } else if (data.success) {
+      console.log('[Scheduler] No campaign query queued (pacing active or all done).');
+    }
+  } catch (err: any) {
+    console.error('❌ Error checking scheduled campaigns:', err.message);
+  }
+}
+
 // Start queue polling, run startup recovery, and set intervals
 (async () => {
   await resetStuckJobs();
   await checkAndRecoverStuckJobs();
+  await checkScheduledCampaigns();
   
   // Poll queue for new jobs every 3 seconds
   setInterval(pollQueue, 3000);
   console.log('🔍 Polling queue every 3 seconds...');
+
+  // Write heartbeat file and database entry every 3 seconds to let Next.js dashboard know we are alive
+  setInterval(async () => {
+    const heartbeatData = { 
+      last_seen: Date.now(), 
+      pid: process.pid,
+      currentJob: currentJob
+    };
+    
+    // 1. Local file write
+    try {
+      const heartbeatPath = path.resolve(process.cwd(), 'local_runner_heartbeat.json');
+      fs.writeFileSync(heartbeatPath, JSON.stringify(heartbeatData), 'utf8');
+    } catch (err: any) {
+      console.error('❌ Heartbeat file write error:', err.message);
+    }
+
+    // 2. Database write
+    try {
+      if (supabase) {
+        // Delete older heartbeats to avoid table bloating
+        await supabase
+          .from('logs')
+          .delete()
+          .eq('run_id', 'local_runner')
+          .eq('step', 'heartbeat');
+
+        // Insert new heartbeat
+        await supabase
+          .from('logs')
+          .insert([{
+            run_id: 'local_runner',
+            step: 'heartbeat',
+            status: 'INFO',
+            message: JSON.stringify(heartbeatData)
+          }]);
+      }
+    } catch (err: any) {
+      // Fail silently to avoid clogging stdout on intermittent network issues
+    }
+  }, 3000);
   
   // Scan for stuck jobs every 5 minutes
   setInterval(checkAndRecoverStuckJobs, 5 * 60 * 1000);
   console.log('⏰ Scheduled stuck job recovery checks every 5 minutes.');
+
+  // Check scheduled campaigns every 5 minutes
+  setInterval(checkScheduledCampaigns, 5 * 60 * 1000);
+  console.log('⏰ Scheduled campaign checks every 5 minutes.');
 })();

@@ -11,7 +11,7 @@ export default defineConfig({
   reporter: 'list',
 
   use: {
-    baseURL: 'http://localhost:3005',
+    baseURL: 'http://localhost:3006',
     trace: 'off',
     video: {
       mode: 'on',

@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     `response_type=code&` +
     `scope=${encodeURIComponent(scopes.join(' '))}&` +
     `access_type=offline&` +
-    `prompt=consent` +
+    `prompt=${config.googleRefreshToken ? 'select_account' : 'consent'}` +
     (state ? `&state=${encodeURIComponent(state)}` : '');
 
   return NextResponse.redirect(authUrl);

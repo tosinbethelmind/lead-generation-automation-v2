@@ -58,7 +58,7 @@ export async function generateCopyWithAntigravityModel(lead: any, model: string,
 export async function generateCopyWithProviders(lead: any): Promise<GeneratedSiteResponse> {
   const config: RuntimeConfig = getRuntimeConfig();
   // If on‑ground mode is enabled, skip all remote LLM calls and use deterministic fallback.
-  if (config.onGroundMode ?? true) {
+  if (config.onGroundMode ?? false) {
     console.info('On‑ground mode enabled – using deterministic fallback copy');
     return { copy: buildFallbackCopy(lead) };
   }

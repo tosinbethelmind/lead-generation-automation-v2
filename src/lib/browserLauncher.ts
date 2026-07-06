@@ -36,11 +36,78 @@ function getLocalChromePath(): string {
   return '';
 }
 
-export async function launchBrowser() {
-  // Support connecting to a remote browser endpoint (like Browserless.io)
-  // to completely bypass Vercel serverless container library limitations (e.g., libnss3.so).
-  // Priority: env var > UI-saved config value
-  const savedConfig = getRuntimeConfig();
+const proxyFailures = new Map<string, { count: number; lastFailed: number }>();
+const TEMPORARY_BLACKLIST_MS = 5 * 60 * 1000; // 5 minutes
+
+export function reportProxyFailure(proxyUrl: string) {
+  const current = proxyFailures.get(proxyUrl) || { count: 0, lastFailed: 0 };
+  current.count += 1;
+  current.lastFailed = Date.now();
+  proxyFailures.set(proxyUrl, current);
+  console.log(`[browserLauncher] Reported failure for proxy: ${proxyUrl}. Fail count: ${current.count}`);
+}
+
+export function reportProxySuccess(proxyUrl: string) {
+  proxyFailures.delete(proxyUrl);
+}
+
+export function isProxyBlacklisted(proxyUrl: string): boolean {
+  const record = proxyFailures.get(proxyUrl);
+  if (!record) return false;
+  if (record.count >= 2 && (Date.now() - record.lastFailed) < TEMPORARY_BLACKLIST_MS) {
+    return true;
+  }
+  if ((Date.now() - record.lastFailed) >= TEMPORARY_BLACKLIST_MS) {
+    proxyFailures.delete(proxyUrl);
+    return false;
+  }
+  return false;
+}
+
+function getActiveProxy(config: any, triedProxies: Set<string> = new Set()): string | undefined {
+  let list: string[] = [];
+  if (config.proxyPool) {
+    list = config.proxyPool.split(',').map((p: string) => p.trim()).filter(Boolean);
+  }
+  if (config.scraperProxy && !list.includes(config.scraperProxy.trim())) {
+    list.push(config.scraperProxy.trim());
+  }
+
+  // Parse offline proxies from the latest health check
+  const offlineProxies = new Set<string>();
+  if (config.serviceHealthStatus) {
+    try {
+      const health = JSON.parse(config.serviceHealthStatus);
+      if (health.scraper && Array.isArray(health.scraper.proxies)) {
+        for (const p of health.scraper.proxies) {
+          if (p.status === 'offline' && p.url) {
+            offlineProxies.add(p.url.trim());
+          }
+        }
+      }
+    } catch (e) {
+      console.error('[browserLauncher] Error parsing serviceHealthStatus:', e);
+    }
+  }
+
+  const available = list.filter(p => !isProxyBlacklisted(p) && !offlineProxies.has(p) && !triedProxies.has(p));
+  if (available.length > 0) {
+    const selected = available[Math.floor(Math.random() * available.length)];
+    console.log('[browserLauncher] Selected proxy from pool:', selected);
+    return selected;
+  }
+
+  const fallback = list.filter(p => !triedProxies.has(p));
+  if (fallback.length > 0) {
+    const selected = fallback[Math.floor(Math.random() * fallback.length)];
+    console.log('[browserLauncher] All proxies blacklisted or offline. Fallback to:', selected);
+    return selected;
+  }
+
+  return undefined;
+}
+
+async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
   const remoteWs =
     process.env.REMOTE_BROWSER_WS ||
     process.env.BROWSERLESS_WS ||
@@ -51,48 +118,57 @@ export async function launchBrowser() {
     try {
       let finalWs = remoteWs;
       if (remoteWs.includes(',')) {
-        const urls = remoteWs.split(',').map(u => u.trim()).filter(Boolean);
+        const urls = remoteWs.split(',').map((u: string) => u.trim()).filter(Boolean);
         if (urls.length > 0) {
           finalWs = urls[Math.floor(Math.random() * urls.length)];
         }
       }
 
-      if (savedConfig.scraperProxy) {
-        // Parse and append proxy server to the websocket URL if it is a browserless-style URL
+      if (activeProxy) {
         const separator = finalWs.includes('?') ? '&' : '?';
-        finalWs = `${finalWs}${separator}--proxy-server=${encodeURIComponent(savedConfig.scraperProxy)}`;
-        console.log('[browserLauncher] Appending proxy server parameter to remote browser connection string:', savedConfig.scraperProxy);
+        finalWs = `${finalWs}${separator}--proxy-server=${encodeURIComponent(activeProxy)}`;
+        console.log('[browserLauncher] Appending proxy server parameter to remote browser connection string:', activeProxy);
       }
       console.log('[browserLauncher] Connecting to remote Chrome browser:', finalWs);
-      return await puppeteer.connect({
-        browserWSEndpoint: finalWs
-      });
+      const browser = await Promise.race([
+        puppeteer.connect({ browserWSEndpoint: finalWs }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Remote browser connect timed out after 10s')), 10000)
+        )
+      ]);
+      return browser;
     } catch (err: any) {
-      console.error('[browserLauncher] Failed to connect to remote browser, falling back:', err.message);
+      console.error('[browserLauncher] Failed to connect to remote browser:', err.message);
+      throw err;
     }
   }
 
-  const args = ['--no-sandbox', '--disable-setuid-sandbox'];
-  if (savedConfig.scraperProxy) {
-    args.push(`--proxy-server=${savedConfig.scraperProxy}`);
-    console.log('[browserLauncher] Using proxy rotation server:', savedConfig.scraperProxy);
+  const args = [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-accelerated-2d-canvas',
+    '--no-first-run',
+    '--no-zygote',
+    '--single-process',
+    '--disable-gpu'
+  ];
+  if (activeProxy) {
+    args.push(`--proxy-server=${activeProxy}`);
+    console.log('[browserLauncher] Using proxy server:', activeProxy);
   }
 
   const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
   if (isServerless) {
     try {
       const chromium = (await import('@sparticuz/chromium')).default as any;
-      
-      // Disable graphics mode under serverless environment to save memory and prevent crashes
       if (typeof chromium.setGraphicsMode === 'function') {
         chromium.setGraphicsMode(false);
       }
-      
       const launchArgs = [...chromium.args];
-      if (savedConfig.scraperProxy) {
-        launchArgs.push(`--proxy-server=${savedConfig.scraperProxy}`);
+      if (activeProxy) {
+        launchArgs.push(`--proxy-server=${activeProxy}`);
       }
-      
       return await puppeteer.launch({
         args: launchArgs,
         defaultViewport: chromium.defaultViewport,
@@ -101,14 +177,6 @@ export async function launchBrowser() {
       });
     } catch (e: any) {
       console.error('Failed to launch Puppeteer with @sparticuz/chromium:', e.message);
-      if (e.message.includes('Failed to launch the browser process') || e.message.includes('libnss3.so') || e.message.includes('Code: 127')) {
-        throw new Error(
-          'Failed to launch Puppeteer on Vercel/Serverless: Missing OS-level libraries (libnss3.so). ' +
-          'To run Puppeteer scrapers in production on Vercel, you must configure a remote browser connection. ' +
-          'Please set the environment variable "REMOTE_BROWSER_WS" (or "BROWSERLESS_WS") in your Vercel Dashboard ' +
-          'to point to a remote browser endpoint (e.g., from Browserless.io or a self-hosted chromium instance).'
-        );
-      }
       throw e;
     }
   } else {
@@ -120,10 +188,44 @@ export async function launchBrowser() {
         args
       });
     }
-    // Let puppeteer-core try to launch automatically if default location works
     return await puppeteer.launch({
       headless: true,
       args
     });
   }
 }
+
+export async function launchBrowser() {
+  const savedConfig = getRuntimeConfig();
+  const triedProxies = new Set<string>();
+  const maxLaunchAttempts = 4;
+  let lastError: any = null;
+
+  for (let attempt = 1; attempt <= maxLaunchAttempts; attempt++) {
+    const activeProxy = getActiveProxy(savedConfig, triedProxies);
+    if (activeProxy) {
+      triedProxies.add(activeProxy);
+    }
+
+    try {
+      const browser = await launchBrowserInstance(savedConfig, activeProxy);
+      if (activeProxy) {
+        reportProxySuccess(activeProxy);
+      }
+      return browser;
+    } catch (err: any) {
+      lastError = err;
+      console.error(`[browserLauncher] Launch attempt ${attempt} failed with proxy ${activeProxy || 'direct'}:`, err.message);
+      if (activeProxy) {
+        reportProxyFailure(activeProxy);
+      }
+      const remaining = getActiveProxy(savedConfig, triedProxies);
+      if (!remaining && !activeProxy) {
+        break;
+      }
+    }
+  }
+
+  throw new Error(`Failed to launch browser after ${maxLaunchAttempts} attempts. Last error: ${lastError?.message}`);
+}
+

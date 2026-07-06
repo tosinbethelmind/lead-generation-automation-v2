@@ -17,6 +17,7 @@ interface PreviewData {
     rating: number;
     reviews_count: number;
     business_summary: string;
+    website?: string;
   };
   theme: {
     primary: string;

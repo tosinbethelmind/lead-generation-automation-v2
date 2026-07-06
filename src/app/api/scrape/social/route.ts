@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone, extractPhonesFromText } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
-import { extractEmailsFromText, enrichFromWebsite } from '@/lib/leadEnricher';
+import { extractEmailsFromText, enrichLeadContacts } from '@/lib/leadEnricher';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 import { handleQueueDelegation } from '@/app/api/scrape/queue';
@@ -180,10 +180,12 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Accept leads with phone OR email OR website (we can enrich website later)
+      // Accept ALL valid profile URLs — contact data is sparse in snippets for social pages.
+      // We attempt enrichment via website fetch after collecting all profile leads.
       const hasPhone = phones && phones.length > 0;
       const hasEmail = emails.length > 0;
-      if (!hasPhone && !hasEmail && !website) return;
+      // Only hard-skip if there is truly no useful identifier at all
+      if (!name && !link) return;
 
       const cleanPhone = hasPhone ? phones[0] : null;
       const email = hasEmail ? emails[0] : '';
@@ -216,16 +218,26 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    // ── Website enrichment: if any lead has a website, fetch for more contacts
-    const toEnrich = scrapedLeads.filter(l => l.website && (!l.email || !l.phone_e164));
+    // ── Website/Search enrichment: fetch direct business websites and fall back to searches ─
+    const toEnrich = scrapedLeads.filter(l => !l.email || !l.phone_e164);
     if (toEnrich.length > 0) {
       await Promise.allSettled(
         toEnrich.map(async (lead) => {
-          const enriched = await enrichFromWebsite(lead.website || '');
-          if (!lead.email && enriched.email) lead.email = enriched.email;
-          if (!lead.phone_e164 && enriched.phone) {
-            lead.phone_e164 = enriched.phone;
-            lead.phone_raw = enriched.phone;
+          try {
+            const enriched = await enrichLeadContacts(lead);
+            if (enriched.email) lead.email = enriched.email;
+            if (enriched.phone) {
+              lead.phone_e164 = enriched.phone;
+              lead.phone_raw = enriched.phone;
+            }
+            if (Object.keys(enriched.socials).length > 0) {
+              lead.social_links = JSON.stringify(enriched.socials);
+            }
+            if (enriched.enriched) {
+              lead.notes = (lead.notes || '') + ` | Enriched: phone=${enriched.phone || 'none'}, email=${enriched.email || 'none'}`;
+            }
+          } catch (err: any) {
+            console.error(`Failed to enrich contacts for ${lead.name}:`, err.message);
           }
         })
       );

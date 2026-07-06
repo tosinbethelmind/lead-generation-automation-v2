@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createScrapeJob, updateScrapeJobStatus, handleQueueDelegation } from '@/app/api/scrape/queue';
-import { saveLeads, addLog, normalizePhone, Lead } from '@/lib/googleSheets';
-import { getRuntimeConfig } from '@/lib/localConfig';
-import { extractEmailsFromText, enrichFromWebsite } from '@/lib/leadEnricher';
+import { saveLeads, addLog, normalizePhone, extractPhonesFromText, Lead } from '@/lib/googleSheets';
+import { extractEmailsFromText, enrichLeadContacts } from '@/lib/leadEnricher';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 
@@ -13,10 +12,15 @@ export const maxDuration = 60;
 /**
  * POST /api/scrape/jiji
  * Body: { url: string, options?: any, userId?: string }
+ *
+ * Strategy: HTTP fetch + Nuxt __NUXT_DATA__ JSON blob parsing.
+ * Jiji is a Nuxt SSR app — phone numbers (as wa.me URLs) are embedded
+ * in the server-rendered HTML script tag and accessible via plain HTTP
+ * without any browser automation.
  */
 export async function POST(req: NextRequest) {
   let job: any = null;
-  
+
   try {
     const body = await req.json();
     const { url, options = {}, userId } = body;
@@ -28,16 +32,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing url' }, { status: 400 });
     }
 
-    const config = getRuntimeConfig();
-
-    const isSandbox = (url && (url.toLowerCase().includes('sandbox') || url.toLowerCase().includes('mock'))) || 
-                      (body.query && (body.query.toLowerCase().includes('sandbox') || body.query.toLowerCase().includes('mock'))) ||
-                      (options.query && (options.query.toLowerCase().includes('sandbox') || options.query.toLowerCase().includes('mock')));
+    const isSandbox =
+      (url && (url.toLowerCase().includes('sandbox') || url.toLowerCase().includes('mock'))) ||
+      (body.query && (body.query.toLowerCase().includes('sandbox') || body.query.toLowerCase().includes('mock'))) ||
+      (options.query && (options.query.toLowerCase().includes('sandbox') || options.query.toLowerCase().includes('mock')));
 
     if (isSandbox) {
       await addLog('Jiji Scraper', 'START', `Launching Jiji sandbox crawl for URL/Query: "${url}"`);
       const mockLeads = getMockJijiLeads(url);
-      
+
       let jobId = 'mock_job';
       try {
         job = await createScrapeJob('jiji', { url, options }, userId);
@@ -58,7 +61,7 @@ export async function POST(req: NextRequest) {
       } catch (saveErr) {
         console.warn('Failed to save mock leads to database:', saveErr);
       }
-      
+
       if (job) {
         try {
           await updateScrapeJobStatus(job.id, 'completed', { result: { leads: mockLeads, added, skipped } });
@@ -66,7 +69,7 @@ export async function POST(req: NextRequest) {
           console.warn('Queue job update failed in sandbox mode:', err);
         }
       }
-      
+
       await addLog('Jiji Scraper', 'SUCCESS', `Sandbox complete. Added: ${added}, Skipped: ${skipped}`);
       return NextResponse.json({
         success: true,
@@ -79,156 +82,154 @@ export async function POST(req: NextRequest) {
       }, { status: 200 });
     }
 
-    // Create a job entry in database
+    // ── Live scraping: HTTP Fetch + Nuxt __NUXT_DATA__ blob parsing ──────────
     job = await createScrapeJob('jiji', { url, options }, userId);
-
-    // Live scraping using HTTP Fetch + Cheerio
     await updateScrapeJobStatus(job.id, 'running');
-    await addLog('Jiji Scraper', 'START', `Launching Jiji high-performance Cheerio crawl for URL: "${url}"`);
+    await addLog('Jiji Scraper', 'START', `Launching Jiji Nuxt-data crawl for URL: "${url}"`);
 
-    const headers = {
+    const HEADERS = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'en-US,en;q=0.9',
       'Cache-Control': 'no-cache',
-      'Pragma': 'no-cache',
       'Referer': 'https://jiji.ng/'
     };
 
-    // 1. Resolve URL format
+    async function fetchJijiHtml(fetchUrl: string): Promise<string> {
+      const res = await fetch(fetchUrl, { headers: HEADERS, signal: AbortSignal.timeout(15000) });
+      if (res.status === 404) throw new Error(`404 at ${fetchUrl}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status} at ${fetchUrl}`);
+      return res.text();
+    }
+
+    // 1. Resolve & fetch the listing/search page
     let targetUrl = url.trim();
     if (!targetUrl.startsWith('http')) {
       targetUrl = `https://jiji.ng/lagos/search?query=${encodeURIComponent(targetUrl)}`;
     }
 
-    let responseHtml = '';
+    let listingHtml = '';
     try {
-      await addLog('Jiji Scraper', 'INFO', `Fetching search page: ${targetUrl}`);
-      const res = await fetch(targetUrl, { headers });
-      
-      // If we get a 404, try search query fallback
-      if (res.status === 404 && !targetUrl.includes('/search')) {
-        await addLog('Jiji Scraper', 'WARN', `Category page returned 404. Falling back to search query...`);
-        const slug = url.split('/').pop() || '';
+      listingHtml = await fetchJijiHtml(targetUrl);
+    } catch (err: any) {
+      // Category page may 404 — fall back to search query
+      if (err.message.includes('404') || err.message.includes('HTTP 4')) {
+        const slug = url.split('/').pop() || url;
         const fallbackUrl = `https://jiji.ng/lagos/search?query=${encodeURIComponent(slug.replace(/-/g, ' '))}`;
-        const fbRes = await fetch(fallbackUrl, { headers });
-        if (fbRes.ok) {
-          responseHtml = await fbRes.text();
-        } else {
-          throw new Error(`Fallback search page returned status ${fbRes.status}`);
-        }
-      } else if (res.ok) {
-        responseHtml = await res.text();
+        await addLog('Jiji Scraper', 'WARN', `${err.message}. Falling back to: ${fallbackUrl}`);
+        listingHtml = await fetchJijiHtml(fallbackUrl);
+        targetUrl = fallbackUrl;
       } else {
-        throw new Error(`Jiji page returned status ${res.status}`);
+        throw err;
       }
-    } catch (fetchErr: any) {
-      console.error('Fetch error:', fetchErr);
-      throw fetchErr;
     }
 
-    const $ = cheerio.load(responseHtml);
-    const cardData: any[] = [];
-    
-    $('.b-list-advert-base').each((i, el) => {
-      const href = $(el).attr('href') || $(el).find('a').attr('href') || '';
-      const cardTitle = $(el).find('.b-advert-title-inner, .qa-advert-list-item-title, .qa-advert-title span').text().trim();
-      const price = $(el).find('.b-list-advert__price, .qa-advert-list-item-price, .b-list-advert-base__item-price').text().trim();
-      const area = $(el).find('.b-list-advert__region, .qa-advert-list-item-region, .b-list-advert-base__region').text().trim().split(',')[0] || '';
-      
-      let absoluteUrl = href;
-      if (href && !href.startsWith('http')) {
-        absoluteUrl = 'https://jiji.ng' + (href.startsWith('/') ? '' : '/') + href;
-      }
-      
-      if (cardTitle && absoluteUrl) {
-        cardData.push({ title: cardTitle, price, area, url: absoluteUrl });
+    // 2. Extract listing card links from SSR HTML
+    const $ = cheerio.load(listingHtml);
+    const cardData: { title: string; area: string; url: string }[] = [];
+
+    $('a.b-list-advert-base, a[class*="advert-base"]').each((_i, el) => {
+      const href = $(el).attr('href') || '';
+      const cardTitle =
+        $(el).find('.b-advert-title-inner, .qa-advert-title span, [class*="title"]').first().text().trim() ||
+        $(el).attr('title') || '';
+      const area = $(el).find('.b-list-advert__region, [class*="region"]').first().text().trim().split(',')[0] || '';
+      if (!href) return;
+      const absoluteUrl = href.startsWith('http') ? href : `https://jiji.ng${href.startsWith('/') ? '' : '/'}${href}`;
+      if (absoluteUrl.includes('jiji.ng')) {
+        cardData.push({ title: cardTitle, area, url: absoluteUrl });
       }
     });
+
+    // Fallback: any /ad/ links if selectors above found nothing
+    if (cardData.length === 0) {
+      $('a[href*="/ad/"], a[href*="/lagos/"]').each((_i, el) => {
+        const href = $(el).attr('href') || '';
+        const text = $(el).text().trim();
+        if (!href || !text || href.includes('/search') || href === '/') return;
+        const absoluteUrl = href.startsWith('http') ? href : `https://jiji.ng${href}`;
+        if (absoluteUrl.includes('jiji.ng') && !cardData.find(c => c.url === absoluteUrl)) {
+          cardData.push({ title: text.substring(0, 60), area: '', url: absoluteUrl });
+        }
+      });
+    }
 
     const limit = Number(options.limit) || 5;
     const targets = cardData.slice(0, limit);
     const scrapedLeads: Partial<Lead>[] = [];
 
-    await addLog('Jiji Scraper', 'INFO', `Found ${cardData.length} items. Scraping details for top ${targets.length} listings...`);
+    await addLog('Jiji Scraper', 'INFO', `Found ${cardData.length} listings. Processing top ${targets.length}...`);
 
-    // 2. Scrape details page for phone number and seller info
-    for (const target of targets) {
+    // 3. Fetch each detail page and extract phone from Nuxt __NUXT_DATA__ blob
+    // 3. Fetch each detail page and extract phone from Nuxt __NUXT_DATA__ blob in parallel
+    const detailPromises = targets.map(async (target) => {
       try {
-        await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000)); // Be polite
-        const detailRes = await fetch(target.url, { headers });
-        if (!detailRes.ok) {
-          await addLog('Jiji Scraper', 'WARN', `Failed to fetch detail page ${target.url}: status ${detailRes.status}`);
-          continue;
-        }
-        
-        const detailHtml = await detailRes.text();
-        const $detail = cheerio.load(detailHtml);
-        
-        // Extract description
-        const description = $detail('.qa-description-text, .qa-advert-description-text, .b-advert-description-text').text().trim();
-        
-        // Extract seller name
-        let sellerName = $detail('.b-seller-block__name').text().trim();
-        if (!sellerName) {
-          const pageTitle = $detail('title').text();
-          if (pageTitle.includes(' - ')) {
-            const rightPart = pageTitle.split(' - ')[1] || '';
-            if (rightPart.includes(' ▷ Price:')) {
-              sellerName = rightPart.split(' ▷ Price:')[0]?.trim() || '';
-            } else if (rightPart.includes(' on Jiji.ng')) {
-              sellerName = rightPart.split(' on Jiji.ng')[0]?.trim() || '';
-            }
+        await new Promise(r => setTimeout(r, Math.random() * 500));
+
+        const detailHtml = await fetchJijiHtml(target.url).catch((e: any) => {
+          console.warn(`Jiji detail fetch failed for ${target.url}: ${e.message}`);
+          return null;
+        });
+        if (!detailHtml) return null;
+
+        let phoneVal = '';
+        let sellerName = '';
+        let description = '';
+
+        // Strategy A: parse __NUXT_DATA__ JSON blob (most reliable)
+        const nuxtDataMatch = detailHtml.match(/<script[^>]+id="__NUXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+        if (nuxtDataMatch) {
+          const blob = nuxtDataMatch[1];
+          const waMatch = blob.match(/wa\.me\/(\d+)/) || blob.match(/wa\.me%2F(\d+)/);
+          if (waMatch) phoneVal = waMatch[1];
+          if (!phoneVal) {
+            const phMatch = blob.match(/"phone"\s*:\s*"(\+?\d[\d\s\-\.]{6,})"/);
+            if (phMatch) phoneVal = phMatch[1];
           }
-        }
-        if (!sellerName) {
-          sellerName = 'Jiji Seller';
+          if (!phoneVal) {
+            const wuMatch = blob.match(/whatsapp_url[",:\s]+https[^"]*wa\.me\/(\d+)/);
+            if (wuMatch) phoneVal = wuMatch[1];
+          }
         }
 
-        // Extract phone number from different sources
-        let phoneVal = '';
-        
-        // Method A: Check for tel links
-        const telLink = $detail('a[href^="tel:"]').attr('href');
-        if (telLink) {
-          phoneVal = telLink.replace('tel:', '').trim();
-        }
-        
-        // Method B: Match wa.me URL
+        // Strategy B: wa.me link anywhere in raw HTML
         if (!phoneVal) {
-          const waMatches = detailHtml.match(/wa\.me\/(\d+)/);
-          if (waMatches && waMatches[1]) {
-            phoneVal = waMatches[1];
+          const waHref = detailHtml.match(/href="[^"]*wa\.me\/(\d+)[^"]*"/);
+          if (waHref) phoneVal = waHref[1];
+        }
+
+        // Strategy C: Nigerian number pattern inside script tags
+        if (!phoneVal) {
+          const scriptBlocks = detailHtml.match(/<script[^>]*>([\s\S]*?)<\/script>/g) || [];
+          const ngRegex = /(?:234\d{10}|0[789]\d{9})/;
+          for (const block of scriptBlocks) {
+            const m = block.match(ngRegex);
+            if (m) { phoneVal = m[0]; break; }
           }
         }
-        
-        // Method C: Regex scan on script tags and HTML body
+
+        // Extract seller name & description from HTML
+        const $d = cheerio.load(detailHtml);
+        sellerName = $d('.b-seller-block__name, .qa-seller-name').first().text().trim() || 'Jiji Seller';
+        description = $d('.qa-description-text, .b-advert-description-text').first().text().trim();
+
+        // Strategy D: phone in description text
+        if (!phoneVal && description) {
+          const descPhones = extractPhonesFromText(description);
+          if (descPhones.length > 0) {
+            phoneVal = descPhones[0];
+          }
+        }
+
+        // Strategy E: phone anywhere in detail page HTML
         if (!phoneVal) {
-          const phoneRegex = /(?:234\d{10}|0[789]\d{9})/g;
-          
-          // Scan scripts
-          $detail('script').each((i, el) => {
-            const scriptText = $detail(el).text();
-            if (scriptText.includes('phone') || scriptText.includes('advert')) {
-              const matches = scriptText.match(phoneRegex);
-              if (matches && matches[0]) {
-                phoneVal = matches[0];
-                return false; // break loop
-              }
-            }
-          });
-          
-          // Scan entire body if still not found
-          if (!phoneVal) {
-            const matches = detailHtml.match(phoneRegex);
-            if (matches && matches[0]) {
-              phoneVal = matches[0];
-            }
+          const htmlPhones = extractPhonesFromText(detailHtml);
+          if (htmlPhones.length > 0) {
+            phoneVal = htmlPhones[0];
           }
         }
 
         let finalPhone = phoneVal ? (normalizePhone(phoneVal, 'NG') || phoneVal) : '';
-        
         const emails = extractEmailsFromText(description);
         let email = emails[0] || '';
 
@@ -236,50 +237,29 @@ export async function POST(req: NextRequest) {
         const webMatch = description.match(websiteRegex);
         let website = '';
         if (webMatch) {
-          const matchedDomain = webMatch[1].toLowerCase();
-          if (!matchedDomain.includes('jiji')) {
-            website = webMatch[0];
-            if (!website.startsWith('http')) {
-              website = 'http://' + website;
-            }
+          const dom = webMatch[1].toLowerCase();
+          if (!dom.includes('jiji')) {
+            website = webMatch[0].startsWith('http') ? webMatch[0] : `http://${webMatch[0]}`;
           }
         }
 
-        if (website && (!email || !finalPhone)) {
-          try {
-            const enriched = await enrichFromWebsite(website);
-            if (!email && enriched.email) email = enriched.email;
-            if (!finalPhone && enriched.phone) {
-              finalPhone = enriched.phone;
-              phoneVal = enriched.phone;
-            }
-          } catch (enrichErr) {
-            console.warn(`Failed to enrich Jiji lead website ${website}:`, enrichErr);
-          }
-        }
-
-        // Skip leads with no phone number
-        if (!finalPhone) {
-          await addLog('Jiji Scraper', 'INFO', `Skipped listing "${target.title}" - no phone number found.`);
-          continue;
-        }
-
-        const category = target.url.split('/')[4]?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Solar Seller';
+        const category =
+          target.url.split('/')[4]?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Seller';
         const hash = crypto.createHash('sha256').update(target.url).digest('hex').substring(0, 16);
 
-        scrapedLeads.push({
+        const leadObj: Partial<Lead> = {
           lead_id: `jiji_${hash}`,
           source: 'JIJI',
           name: sellerName,
-          category: category,
+          category,
           address: target.area ? `${target.area}, Lagos, Nigeria` : 'Lagos, Nigeria',
           area: target.area || 'Lagos',
           city: 'Lagos',
           phone_e164: finalPhone,
           phone_raw: phoneVal,
           email: email || '',
-          website: website || '', 
-          rating: 4.0, 
+          website: website || '',
+          rating: 4.0,
           reviews_count: 1,
           verified: true,
           listings_count: 1,
@@ -290,36 +270,79 @@ export async function POST(req: NextRequest) {
           last_contacted_at: '',
           duplicate_of_lead_id: '',
           business_summary: description || `${target.title} listed on Jiji in ${target.area}.`,
-          notes: 'Scraped using high-performance Cheerio crawler.'
-        });
+          notes: 'Scraped via Nuxt __NUXT_DATA__ HTTP extraction.'
+        };
 
+        const hasWebsite = !!(website && (!email || !finalPhone));
+        return { leadObj, hasWebsite };
       } catch (itemErr: any) {
-        console.error(`Error scraping detail page ${target.url}:`, itemErr);
+        console.error(`Error scraping Jiji detail ${target.url}:`, itemErr.message);
+        return null;
       }
+    });
+    const parsedResults = await Promise.all(detailPromises);
+
+    // Run unified enrichment on all parsed results to get maximum contact info (emails, phones, socials)
+    const validParsed = parsedResults.filter((item): item is Exclude<typeof item, null> => item !== null);
+    if (validParsed.length > 0) {
+      await addLog('Jiji Scraper', 'INFO', `Enriching contact info for ${validParsed.length} Jiji listings using website/search fallbacks...`);
+      await Promise.allSettled(
+        validParsed.map(async (item) => {
+          const lead = item.leadObj;
+          try {
+            const enriched = await enrichLeadContacts(lead);
+            if (enriched.email) lead.email = enriched.email;
+            if (enriched.phone) {
+              lead.phone_e164 = enriched.phone;
+              lead.phone_raw = enriched.phone;
+            }
+            if (Object.keys(enriched.socials).length > 0) {
+              lead.social_links = JSON.stringify(enriched.socials);
+            }
+          } catch (err: any) {
+            console.error(`Failed to enrich contacts for ${lead.name}:`, err.message);
+          }
+
+          if (lead.phone_e164) {
+            scrapedLeads.push(lead);
+          } else {
+            await addLog('Jiji Scraper', 'INFO', `Skipped "${lead.name}" — no phone number found even after enrichment.`);
+          }
+        })
+      );
     }
 
-    // 3. Save leads to database
+    // 4. Save leads to database
     if (scrapedLeads.length > 0) {
       const dbResult = await saveLeads(scrapedLeads);
-      await updateScrapeJobStatus(job.id, 'completed', { result: { leads: scrapedLeads, added: dbResult.added, skipped: dbResult.skipped } });
-      await addLog('Jiji Scraper', 'SUCCESS', `Crawl complete. Scraped: ${scrapedLeads.length}, Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
-      return NextResponse.json({ success: true, mode: 'live', jobId: job.id, status: 'completed', added: dbResult.added, skipped: dbResult.skipped, leads: scrapedLeads }, { status: 200 });
+      await updateScrapeJobStatus(job.id, 'completed', {
+        result: { leads: scrapedLeads, added: dbResult.added, skipped: dbResult.skipped }
+      });
+      await addLog('Jiji Scraper', 'SUCCESS',
+        `Crawl complete. Scraped: ${scrapedLeads.length}, Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+      return NextResponse.json({
+        success: true, mode: 'live', jobId: job.id, status: 'completed',
+        added: dbResult.added, skipped: dbResult.skipped, leads: scrapedLeads
+      }, { status: 200 });
     } else {
       await updateScrapeJobStatus(job.id, 'completed', { result: { leads: [], added: 0, skipped: 0 } });
-      await addLog('Jiji Scraper', 'INFO', `Crawl completed but found 0 valid qualified leads (without phone numbers).`);
-      return NextResponse.json({ success: true, mode: 'live', jobId: job.id, status: 'completed', added: 0, skipped: 0, leads: [] }, { status: 200 });
+      await addLog('Jiji Scraper', 'INFO', `Crawl complete. 0 leads had extractable phone numbers.`);
+      return NextResponse.json({
+        success: true, mode: 'live', jobId: job.id, status: 'completed',
+        added: 0, skipped: 0, leads: []
+      }, { status: 200 });
     }
 
   } catch (err: any) {
     console.error('Jiji scrape error:', err);
     try {
       await addLog('Jiji Scraper', 'ERROR', `Scraper error: ${err.message}`);
-    } catch (logErr) {}
-    
+    } catch (_) {}
+
     if (job) {
       try {
         await updateScrapeJobStatus(job.id, 'failed', { error_message: err.message || 'Internal error' });
-      } catch (jobErr) {}
+      } catch (_) {}
     }
 
     return NextResponse.json({

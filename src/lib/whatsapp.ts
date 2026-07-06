@@ -133,7 +133,7 @@ export async function sendWhatsAppMessage(
     }
   } else if (provider === 'baileys') {
     // ── Local/Custom Baileys API Wrapper ──
-    const baseUrl = config.whatsappBaileysUrl || 'http://localhost:3006';
+    const baseUrl = config.whatsappBaileysUrl || 'http://localhost:3007';
     const url = `${baseUrl.replace(/\/+$/, '')}/send`;
 
     const payload = {

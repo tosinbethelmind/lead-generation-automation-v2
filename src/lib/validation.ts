@@ -126,6 +126,15 @@ export function validateSecret(field: string, value: string): string | null {
         return "Africa's Talking API Key must be at least 15 characters long.";
       }
       break;
+    case 'proxyPool': {
+      const proxies = trimmed.split(',').map(p => p.trim()).filter(Boolean);
+      for (const p of proxies) {
+        if (!p.startsWith('http://') && !p.startsWith('https://') && !p.startsWith('socks://') && !p.startsWith('socks5://')) {
+          return 'Each proxy must start with a valid protocol (http://, https://, socks://, socks5://).';
+        }
+      }
+      break;
+    }
   }
 
   return null;
@@ -156,7 +165,8 @@ export const SECRET_KEYS = [
   'interswitchAccount',
   'interswitchApiKey',
   'moniepointSecretKey',
-  'opaySecretKey'
+  'opaySecretKey',
+  'proxyPool'
 ];
 
 export const MASK_VALUE = '••••••••';

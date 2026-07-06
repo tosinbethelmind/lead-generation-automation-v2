@@ -101,7 +101,7 @@ test.describe('Security & Secrets Hardening Verification', () => {
     });
 
     // Navigate to dashboard
-    await page.goto('http://localhost:3005/');
+    await page.goto('/');
     
     // Check Google Client Secret input type is password initially in sidebar
     const clientSecretInput = page.locator('input[placeholder="Paste Client Secret..."]');

@@ -34,7 +34,13 @@ import {
   X,
   AlertTriangle,
   AlertCircle,
-  Menu
+  Menu,
+  Calendar,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Check
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { RuntimeConfig } from '@/lib/localConfig';
@@ -232,25 +238,43 @@ const WEBSITE_STYLE_PRESETS = [
   }
 ];
 
-type Tab = 'dashboard' | 'crm' | 'scrapers' | 'settings' | 'logs';
+type Tab = 'dashboard' | 'crm' | 'scrapers' | 'scheduler' | 'settings' | 'logs';
 
 function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
-  const [status, setStatus] = useState<string>('disconnected');
+  const [status, setStatus] = useState<string>('offline');
+  const [isProcessRunning, setIsProcessRunning] = useState<boolean>(false);
   const [qrUrl, setQrUrl] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
+  const [processLoading, setProcessLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isCloudProd = typeof window !== 'undefined' && 
+    window.location.hostname !== 'localhost' && 
+    window.location.hostname !== '127.0.0.1';
+
+  const handleProductionRedirect = () => {
+    window.open('http://localhost:3006/#whatsapp-settings', '_blank');
+  };
 
   const fetchStatus = async () => {
     try {
-      const res = await fetch(`${baseUrl.replace(/\/+$/, '')}/status`);
+      if (isCloudProd) {
+        setIsProcessRunning(false);
+        setStatus('offline');
+        setLoading(false);
+        return;
+      }
+      const res = await fetch('/api/local-trigger/whatsapp');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setStatus(data.status);
+      setIsProcessRunning(data.isRunning);
+      setStatus(data.isRunning ? data.status : 'offline');
       setQrUrl(data.qrCodeUrl || '');
       setError(null);
     } catch (err: any) {
-      setError(`Cannot connect to WhatsApp service at ${baseUrl}. Ensure the service is running (npm run whatsapp-service).`);
-      setStatus('disconnected');
+      setError(`Failed to fetch WhatsApp service status.`);
+      setIsProcessRunning(false);
+      setStatus('offline');
     } finally {
       setLoading(false);
     }
@@ -258,9 +282,54 @@ function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
 
   useEffect(() => {
     fetchStatus();
-    const interval = setInterval(fetchStatus, 3000);
-    return () => clearInterval(interval);
-  }, [baseUrl]);
+    if (!isCloudProd) {
+      const interval = setInterval(fetchStatus, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [baseUrl, isCloudProd]);
+
+  const handleStartService = async () => {
+    if (isCloudProd) {
+      handleProductionRedirect();
+      return;
+    }
+    setProcessLoading(true);
+    try {
+      const res = await fetch('/api/local-trigger/whatsapp', { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to start');
+      }
+      await new Promise(r => setTimeout(r, 2000));
+      await fetchStatus();
+    } catch (err: any) {
+      alert("Error starting WhatsApp service: " + err.message);
+    } finally {
+      setProcessLoading(false);
+    }
+  };
+
+  const handleStopService = async () => {
+    if (isCloudProd) {
+      handleProductionRedirect();
+      return;
+    }
+    if (!confirm("Are you sure you want to stop the local WhatsApp service?")) return;
+    setProcessLoading(true);
+    try {
+      const res = await fetch('/api/local-trigger/whatsapp', { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to stop');
+      }
+      await new Promise(r => setTimeout(r, 1000));
+      await fetchStatus();
+    } catch (err: any) {
+      alert("Error stopping WhatsApp service: " + err.message);
+    } finally {
+      setProcessLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     if (!confirm("Are you sure you want to disconnect WhatsApp and delete the session?")) return;
@@ -277,41 +346,153 @@ function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
 
   return (
     <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '8px', border: '1px dashed rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', width: '100%', marginTop: '12px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: status === 'connected' ? '#10B981' : status === 'qr' ? '#F59E0B' : '#EF4444' }} />
-          <span style={{ fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
-            Local Baileys: {status}
-          </span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Service Process:</span>
+            {isCloudProd ? (
+              <span style={{ 
+                fontSize: '0.75rem', 
+                fontWeight: 600, 
+                padding: '2px 8px', 
+                borderRadius: '12px', 
+                background: 'rgba(6, 182, 212, 0.1)',
+                color: '#06B6D4',
+                border: '1px solid rgba(6, 182, 212, 0.2)'
+              }}>
+                ☁️ CLOUD PRODUCTION (MANAGED LOCALLY)
+              </span>
+            ) : (
+              <span style={{ 
+                fontSize: '0.75rem', 
+                fontWeight: 600, 
+                padding: '2px 8px', 
+                borderRadius: '12px', 
+                background: isProcessRunning ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                color: isProcessRunning ? '#10B981' : '#EF4444',
+                border: `1px solid ${isProcessRunning ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`
+              }}>
+                {isProcessRunning ? '● RUNNING' : '○ STOPPED'}
+              </span>
+            )}
+          </div>
+          
+          {isCloudProd ? (
+            <button
+              type="button"
+              onClick={handleProductionRedirect}
+              style={{ 
+                padding: '4px 10px', 
+                background: 'rgba(6, 182, 212, 0.15)', 
+                border: '1px solid var(--primary)', 
+                color: '#fff', 
+                borderRadius: '4px', 
+                fontSize: '0.75rem', 
+                cursor: 'pointer',
+                fontWeight: 600
+              }}
+            >
+              Open Local Dashboard
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={processLoading}
+              onClick={isProcessRunning ? handleStopService : handleStartService}
+              style={{ 
+                padding: '4px 10px', 
+                background: isProcessRunning ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)', 
+                border: `1px solid ${isProcessRunning ? '#EF4444' : '#10B981'}`, 
+                color: isProcessRunning ? '#EF4444' : '#10B981', 
+                borderRadius: '4px', 
+                fontSize: '0.75rem', 
+                cursor: processLoading ? 'not-allowed' : 'pointer',
+                opacity: processLoading ? 0.5 : 1,
+                fontWeight: 500
+              }}
+            >
+              {processLoading ? 'Processing...' : isProcessRunning ? 'Stop Service' : 'Start Service'}
+            </button>
+          )}
         </div>
-        {status === 'connected' && (
-          <button 
-            type="button"
-            onClick={handleLogout}
-            style={{ padding: '4px 8px', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #EF4444', color: '#EF4444', borderRadius: '4px', fontSize: '0.75rem', cursor: 'pointer' }}
-          >
-            Disconnect Phone
-          </button>
+
+        {!isCloudProd && isProcessRunning && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'space-between', marginTop: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: status === 'connected' ? '#10B981' : status === 'qr' ? '#F59E0B' : '#EF4444' }} />
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
+                WhatsApp: {status}
+              </span>
+            </div>
+            {status === 'connected' && (
+              <button 
+                type="button"
+                onClick={handleLogout}
+                style={{ padding: '4px 8px', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #EF4444', color: '#EF4444', borderRadius: '4px', fontSize: '0.75rem', cursor: 'pointer' }}
+              >
+                Disconnect Phone
+              </button>
+            )}
+          </div>
         )}
       </div>
 
-      {error && (
-        <div style={{ color: '#EF4444', fontSize: '0.8rem', textAlign: 'center', padding: '10px', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '6px', border: '1px solid rgba(239, 68, 68, 0.1)' }}>
-          {error}
+      {isCloudProd && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '16px 8px', textAlign: 'center' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+            WhatsApp Baileys must run locally to establish connection. Pair and manage your device on your local console.
+          </span>
+          <button
+            type="button"
+            onClick={handleProductionRedirect}
+            style={{
+              padding: '8px 16px',
+              background: 'linear-gradient(90deg, #06b6d4, #0891b2)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              boxShadow: '0 4px 12px rgba(6, 182, 212, 0.2)'
+            }}
+          >
+            🖥️ Open Local Console (Port 3006)
+          </button>
         </div>
       )}
 
-      {loading && status === 'disconnected' && !error && (
-        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Loading WhatsApp connection state...</div>
+      {!isCloudProd && !isProcessRunning && !processLoading && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '16px 8px', textAlign: 'center' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+            WhatsApp Baileys service is currently offline. Click "Start Service" above or launch below.
+          </span>
+          <button
+            onClick={handleStartService}
+            style={{
+              padding: '8px 16px',
+              background: 'linear-gradient(90deg, #10B981, #059669)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)'
+            }}
+          >
+            🚀 Launch WhatsApp Service
+          </button>
+        </div>
       )}
 
-      {status === 'connecting' && (
+      {!isCloudProd && isProcessRunning && status === 'connecting' && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#F59E0B' }}>
           <span style={{ fontSize: '0.8rem' }}>Establishing web session connection...</span>
         </div>
       )}
 
-      {status === 'qr' && qrUrl && (
+      {!isCloudProd && isProcessRunning && status === 'qr' && qrUrl && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
           <div style={{ background: '#fff', padding: '12px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
             <img src={qrUrl} alt="WhatsApp QR Code" style={{ width: '180px', height: '180px', display: 'block' }} />
@@ -338,7 +519,7 @@ function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
         </div>
       )}
 
-      {status === 'connected' && (
+      {!isCloudProd && isProcessRunning && status === 'connected' && (
         <div style={{ color: '#10B981', fontSize: '0.85rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(16, 185, 129, 0.1)', padding: '8px 16px', borderRadius: '20px' }}>
           <span>✓ WhatsApp Web Session is Linked & Ready</span>
         </div>
@@ -348,20 +529,128 @@ function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
 }
 
 export default function Home() {
-  // Local runner trigger state (dev only)
+  // Local runner states
+  const [runnerStatus, setRunnerStatus] = useState<'online' | 'offline' | 'loading'>('loading');
   const [triggerLoading, setTriggerLoading] = useState(false);
+  const [testSmsNumber, setTestSmsNumber] = useState('');
+  const [testingSms, setTestingSms] = useState(false);
+  const [activeJob, setActiveJob] = useState<any | null>(null);
+  const [activeJobs, setActiveJobs] = useState<any[]>([]);
+  const [completedJobs, setCompletedJobs] = useState<any[]>([]);
+  const [isProductionEnv, setIsProductionEnv] = useState(false);
+
+  // Option C: Autostart states
+  const [copiedScript, setCopiedScript] = useState(false);
+  const [copiedManual, setCopiedManual] = useState(false);
+  const [showAutostartGuide, setShowAutostartGuide] = useState(false);
+
+  const handleCopyText = (text: string, setCopiedState: (val: boolean) => void) => {
+    navigator.clipboard.writeText(text);
+    setCopiedState(true);
+    setTimeout(() => setCopiedState(false), 2000);
+  };
+
+  const handleSendTestSms = async () => {
+    if (!testSmsNumber) {
+      addToast('Please enter a test phone number first.', 'error');
+      return;
+    }
+    setTestingSms(true);
+    addToast('Sending test SMS...', 'info');
+    try {
+      const res = await fetch('/api/config/test-sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ testNumber: testSmsNumber, config })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        addToast(`✅ Test SMS Sent: ${data.message || 'Success'}`, 'success');
+      } else {
+        addToast(`❌ Failed: ${data.error || 'Unknown error'}`, 'error');
+      }
+    } catch (err: any) {
+      addToast(`Error: ${err.message}`, 'error');
+    } finally {
+      setTestingSms(false);
+    }
+  };
+
+  const checkRunnerStatus = async () => {
+    try {
+      let res;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      try {
+        res = await fetch('http://localhost:3006/api/local-trigger', { signal: controller.signal });
+        clearTimeout(timeoutId);
+      } catch (err) {
+        clearTimeout(timeoutId);
+        res = await fetch('/api/local-trigger');
+      }
+
+      if (res.ok) {
+        const data = await res.json();
+        setRunnerStatus(data.isRunning ? 'online' : 'offline');
+        setActiveJob(data.currentJob || null);
+        setActiveJobs(data.activeJobs || []);
+        setCompletedJobs(data.completedJobs || []);
+        setIsProductionEnv(!!data.isProduction);
+      } else {
+        setRunnerStatus('offline');
+        setActiveJob(null);
+        setActiveJobs([]);
+        setCompletedJobs([]);
+      }
+    } catch (e) {
+      setRunnerStatus('offline');
+      setActiveJob(null);
+      setActiveJobs([]);
+      setCompletedJobs([]);
+    }
+  };
+
   const handleLocalTrigger = async () => {
     setTriggerLoading(true);
     try {
-      const res = await fetch('/api/local-trigger', { method: 'POST' });
+      const targetUrl = isProductionEnv ? 'http://localhost:3006/api/local-trigger' : '/api/local-trigger';
+      const res = await fetch(targetUrl, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'cors'
+      });
       const data = await res.json();
       if (res.ok) {
-        alert('✅ Local runner started.');
+        addToast('Local scraper runner started successfully.', 'success');
+        setRunnerStatus('online');
       } else {
-        alert(`⚠️ Error starting local runner: ${data.error || 'Unknown'}`);
+        addToast(`Error starting local runner: ${data.error || 'Unknown'}`, 'error');
       }
     } catch (e) {
-      alert('❌ Failed to trigger local runner');
+      addToast('Failed to trigger local runner. Is your local server running on port 3006?', 'error');
+    } finally {
+      setTriggerLoading(false);
+    }
+  };
+
+  const handleStopLocalRunner = async () => {
+    setTriggerLoading(true);
+    try {
+      const targetUrl = isProductionEnv ? 'http://localhost:3006/api/local-trigger' : '/api/local-trigger';
+      const res = await fetch(targetUrl, { 
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'cors'
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast('Local scraper runner stopped successfully.', 'success');
+        setRunnerStatus('offline');
+      } else {
+        addToast(`Error stopping local runner: ${data.error || 'Unknown'}`, 'error');
+      }
+    } catch (e) {
+      addToast('Failed to stop local runner. Is your local server running on port 3006?', 'error');
     } finally {
       setTriggerLoading(false);
     }
@@ -369,6 +658,121 @@ export default function Home() {
   const { theme, toggleTheme, mounted } = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [expandedProvider, setExpandedProvider] = useState<string | null>(null);
+
+  // Scheduler state variables
+  const [schedule, setSchedule] = useState<any>(null);
+  const [scheduleLoading, setScheduleLoading] = useState<boolean>(true);
+  const [generatingSchedule, setGeneratingSchedule] = useState<boolean>(false);
+  const [triggeringCampaign, setTriggeringCampaign] = useState<boolean>(false);
+  const [nicheFocusInput, setNicheFocusInput] = useState<string>('');
+  const [locationFocusInput, setLocationFocusInput] = useState<string>('');
+  const [savingSchedule, setSavingSchedule] = useState<boolean>(false);
+
+  const fetchSchedule = async () => {
+    try {
+      setScheduleLoading(true);
+      const res = await fetch('/api/schedule');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.schedule) {
+          setSchedule(data.schedule);
+          setNicheFocusInput(data.schedule.nicheFocus || '');
+          setLocationFocusInput(data.schedule.locationFocus || '');
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching schedule:', err);
+    } finally {
+      setScheduleLoading(false);
+    }
+  };
+
+  const handleSaveScheduleSettings = async (autoQueue: boolean, interval: number) => {
+    if (!schedule) return;
+    try {
+      setSavingSchedule(true);
+      const updated = {
+        ...schedule,
+        autoQueueEnabled: autoQueue,
+        intervalDays: interval
+      };
+      const res = await fetch('/api/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schedule: updated })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setSchedule(updated);
+          addToast('Campaign scheduler settings saved successfully.', 'success');
+        } else {
+          addToast(`Error saving settings: ${data.error}`, 'error');
+        }
+      }
+    } catch (e) {
+      addToast('Failed to save scheduler settings.', 'error');
+    } finally {
+      setSavingSchedule(false);
+    }
+  };
+
+  const handleGenerateAISchedule = async () => {
+    try {
+      setGeneratingSchedule(true);
+      const res = await fetch('/api/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'generate',
+          nicheFocus: nicheFocusInput,
+          locationFocus: locationFocusInput
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.schedule) {
+          setSchedule(data.schedule);
+          addToast('AI-powered campaign schedule generated successfully.', 'success');
+        } else {
+          addToast(`AI Generation failed: ${data.error || 'Unknown error'}`, 'error');
+        }
+      } else {
+        addToast('Failed to generate AI schedule.', 'error');
+      }
+    } catch (e) {
+      addToast('Error contacting schedule planner API.', 'error');
+    } finally {
+      setGeneratingSchedule(false);
+    }
+  };
+
+  const handleTriggerNextCampaign = async () => {
+    try {
+      setTriggeringCampaign(true);
+      const res = await fetch('/api/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'trigger-next',
+          force: true
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.queued) {
+          addToast(`Campaign dispatched successfully: "${data.queued.query}"`, 'success');
+          fetchSchedule();
+        } else {
+          addToast(data.message || 'No pending scheduled campaigns available.', 'info');
+        }
+      }
+    } catch (e) {
+      addToast('Error triggering campaign.', 'error');
+    } finally {
+      setTriggeringCampaign(false);
+    }
+  };
 
   const [isGmailConnecting, setIsGmailConnecting] = useState<boolean>(false);
   const [config, setConfig] = useState<RuntimeConfig>({
@@ -417,7 +821,7 @@ export default function Home() {
     evolutionApiKey: '',
     evolutionInstanceName: '',
     whapiToken: '',
-    whatsappBaileysUrl: 'http://localhost:3006',
+    whatsappBaileysUrl: 'http://localhost:3007',
     whatsappMessageTemplate: '',
     jijiEmail: '',
     jijiPassword: '',
@@ -476,6 +880,8 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [queryFilter, setQueryFilter] = useState('ALL');
+  const [websiteFilter, setWebsiteFilter] = useState<'ALL' | 'NEW_BUILD' | 'UPGRADE'>('ALL');
+  const [platformFilter, setPlatformFilter] = useState('ALL');
   
   // Loading states
   const [loadingConfig, setLoadingConfig] = useState(true);
@@ -485,6 +891,10 @@ export default function Home() {
   const [scraping, setScraping] = useState(false);
   const [sendingOutreach, setSendingOutreach] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+
+  // Bulk Scaling states
+  const [bulkQueuing, setBulkQueuing] = useState(false);
+  const [bulkQueuedCount, setBulkQueuedCount] = useState<number | null>(null);
 
   // Selected Lead for Outreach preview
   const [previewLead, setPreviewLead] = useState<Lead | null>(null);
@@ -511,6 +921,10 @@ export default function Home() {
     failures: 0,
     statusText: ''
   });
+
+  const [checkingHealth, setCheckingHealth] = useState(false);
+  const [healthStatus, setHealthStatus] = useState<any>(null);
+  const [outreachLogs, setOutreachLogs] = useState<{ leadName: string; logs: string[]; finalStatus: string; channelResults?: any[] }[]>([]);
 
   const [supabaseStatus, setSupabaseStatus] = useState<{
     configured: boolean;
@@ -540,7 +954,11 @@ export default function Home() {
   };
 
   const navigateToSettingsSection = (sectionId: string) => {
-    setActiveTab('settings');
+    if (sectionId === 'scraper-runner-control') {
+      setActiveTab('scrapers');
+    } else {
+      setActiveTab('settings');
+    }
     setTimeout(() => {
       const el = document.getElementById(sectionId);
       if (el) {
@@ -595,6 +1013,9 @@ export default function Home() {
     if (mainRef.current) {
       mainRef.current.scrollTop = 0;
     }
+    if (activeTab === 'scheduler') {
+      fetchSchedule();
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -627,6 +1048,8 @@ export default function Home() {
     setSearchTerm('');
     setQueryFilter('ALL');
     setStatusFilter('ALL');
+    setWebsiteFilter('ALL');
+    setPlatformFilter('ALL');
   };
 
   // Video Demo states
@@ -671,11 +1094,17 @@ export default function Home() {
     fetchLeads();
     fetchLogs();
     checkSheetsStatus();
+    checkRunnerStatus();
+    fetchSchedule();
 
     const isCompleted = localStorage.getItem("onboarding_complete");
     if (isCompleted !== "true") {
       setShowOnboarding(true);
     }
+
+    // Set up local runner polling interval
+    const interval = setInterval(checkRunnerStatus, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   // Fetch overrides and turnout settings on Lead select
@@ -998,6 +1427,118 @@ export default function Home() {
     }
   };
 
+  const runDiagnostics = async () => {
+    try {
+      setCheckingHealth(true);
+      addToast('Running channel connectivity diagnostics...', 'info');
+      const resp = await fetch('/api/health-check');
+      const data = await resp.json();
+      if (data.success) {
+        setHealthStatus(data.health);
+        addToast('Diagnostics complete!', 'success');
+        fetchConfig();
+      } else {
+        addToast('Diagnostics failed: ' + data.error, 'error');
+      }
+    } catch (err: any) {
+      addToast('Diagnostics error: ' + err.message, 'error');
+    } finally {
+      setCheckingHealth(false);
+    }
+  };
+
+  useEffect(() => {
+    if (config.serviceHealthStatus) {
+      try {
+        setHealthStatus(JSON.parse(config.serviceHealthStatus));
+      } catch (e) {
+        console.error("Failed to parse serviceHealthStatus", e);
+      }
+    } else {
+      setHealthStatus(null);
+    }
+  }, [config.serviceHealthStatus]);
+
+  const scrollToSectionAndFocus = (id: string, focusSelector?: string) => {
+    const section = document.getElementById(id);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const originalBorder = section.style.border;
+      const originalBoxShadow = section.style.boxShadow;
+      section.style.border = '1px solid var(--success)';
+      section.style.boxShadow = '0 0 15px rgba(16, 185, 129, 0.4)';
+      setTimeout(() => {
+        section.style.border = originalBorder;
+        section.style.boxShadow = originalBoxShadow;
+      }, 3000);
+      
+      if (focusSelector) {
+        setTimeout(() => {
+          const input = section.querySelector(focusSelector) as HTMLElement;
+          if (input) input.focus();
+        }, 600);
+      }
+    } else {
+      addToast(`Could not find settings section: ${id}`, 'error');
+    }
+  };
+
+  const quickRemoveProxy = async (proxyUrl: string) => {
+    if (!confirm(`Are you sure you want to remove this proxy from the pool?\n\n${proxyUrl}`)) {
+      return;
+    }
+    const currentPool = config.proxyPool || '';
+    const parts = currentPool.split(',').map((p: string) => p.trim()).filter(Boolean);
+    const updatedParts = parts.filter(p => p !== proxyUrl);
+    const updatedPool = updatedParts.join(', ');
+    
+    const newConfig = { ...config, proxyPool: updatedPool };
+    setConfig(newConfig);
+    
+    addToast("Removing proxy and updating configuration...", "info");
+    try {
+      const resp = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newConfig)
+      });
+      const data = await resp.json();
+      if (data && !data.error) {
+        addToast("Proxy removed successfully. Re-running diagnostics...", "success");
+        setTimeout(() => {
+          runDiagnostics();
+        }, 500);
+      } else {
+        addToast("Failed to update config: " + data.error, "error");
+      }
+    } catch (e: any) {
+      addToast("Failed to remove proxy: " + e.message, "error");
+    }
+  };
+
+  const verifyProxies = async () => {
+    addToast("Saving settings and running proxy diagnostics...", "info");
+    try {
+      const resp = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config)
+      });
+      const data = await resp.json();
+      if (data && !data.error) {
+        setConfig(data.config || data);
+        addToast("Settings saved. Verifying proxy connection...", "success");
+        setTimeout(() => {
+          runDiagnostics();
+        }, 500);
+      } else {
+        addToast("Failed to save configuration: " + data.error, "error");
+      }
+    } catch (e: any) {
+      addToast("Failed to verify proxies: " + e.message, "error");
+    }
+  };
+
   const saveConfig = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setSavingConfigState(true);
@@ -1010,11 +1551,12 @@ export default function Home() {
       });
       const data = await resp.json();
       if (data && !data.error) {
-        setConfig(data);
+        const savedConfig = data.config || data;
+        setConfig(savedConfig);
         setStatusMessage('Settings updated successfully!');
         addToast('Settings updated successfully!', 'success');
         confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
-        if (data.storageMode === 'supabase') {
+        if (savedConfig.storageMode === 'supabase') {
           checkSupabaseStatus();
         } else {
           setSupabaseStatus(null);
@@ -1174,6 +1716,23 @@ export default function Home() {
         setStatusMessage(`Job queued. Waiting for local background worker (Job ID: ${data.jobId})...`);
         addToast('Job queued for local processing.', 'info');
 
+        // Auto-start local runner if it is offline
+        if (runnerStatus === 'offline') {
+          setStatusMessage('Queue runner is offline. Auto-starting local background worker...');
+          try {
+            const targetUrl = isProductionEnv ? 'http://localhost:3006/api/local-trigger' : '/api/local-trigger';
+            await fetch(targetUrl, { 
+              method: 'POST', 
+              headers: { 'Content-Type': 'application/json' },
+              mode: 'cors' 
+            });
+            setRunnerStatus('online');
+            addToast('Auto-started local runner to process queue.', 'success');
+          } catch (e) {
+            console.error('Failed to auto-start local runner:', e);
+          }
+        }
+
         let jobCompleted = false;
         let attempts = 0;
         const maxAttempts = 200; // ~10 minutes max polling
@@ -1229,6 +1788,32 @@ export default function Home() {
     }
   };
 
+  // Run Bulk Queuer for 1000+ Leads/Week
+  const runBulkQueuer = async () => {
+    try {
+      setBulkQueuing(true);
+      addToast('Generating bulk scraper jobs...', 'info');
+      const resp = await fetch('/api/scrape/bulk-queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: 25 })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        setBulkQueuedCount(data.jobsCount);
+        addToast(data.message, 'success');
+        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+        handleRefreshAll();
+      } else {
+        addToast(data.error || 'Failed to queue bulk jobs', 'error');
+      }
+    } catch (e: any) {
+      addToast(`Error queueing bulk jobs: ${e.message}`, 'error');
+    } finally {
+      setBulkQueuing(false);
+    }
+  };
+
   // Run Dynamic Outreach Campaign
   const runOutreach = async () => {
     if (selectedLeads.size === 0) {
@@ -1268,6 +1853,7 @@ export default function Home() {
     const totalLeads = leadIdsArray.length;
     
     setSendingOutreach(true);
+    setOutreachLogs([]);
     setOutreachProgress({
       active: true,
       current: 0,
@@ -1315,17 +1901,52 @@ export default function Home() {
         if (data.error) {
           console.error(`Failed for ${leadName}:`, data.error);
           localFailures++;
+          setOutreachLogs(prev => [...prev, {
+            leadName,
+            logs: [`API connection failure: ${data.error}`],
+            finalStatus: 'ERROR'
+          }]);
         } else {
-          const failed = data.results && data.results.some((r: any) => r.status === 'ERROR');
-          if (failed) {
-            localFailures++;
+          const leadResult = data.results && data.results[0];
+          if (leadResult) {
+            const status = leadResult.status;
+            if (status === 'ERROR') {
+              localFailures++;
+            } else {
+              localSuccesses++;
+            }
+            setOutreachLogs(prev => [...prev, {
+              leadName,
+              logs: leadResult.logs || [leadResult.details || `Completed outreach`],
+              finalStatus: status,
+              channelResults: leadResult.channelResults
+            }]);
           } else {
-            localSuccesses++;
+            if (data.success) {
+              localSuccesses++;
+              setOutreachLogs(prev => [...prev, {
+                leadName,
+                logs: ['Outreach completed successfully.'],
+                finalStatus: 'CONTACTED'
+              }]);
+            } else {
+              localFailures++;
+              setOutreachLogs(prev => [...prev, {
+                leadName,
+                logs: ['Unknown failure during dispatch.'],
+                finalStatus: 'ERROR'
+              }]);
+            }
           }
         }
       } catch (e: any) {
         console.error(`Error sending to ${leadName}:`, e);
         localFailures++;
+        setOutreachLogs(prev => [...prev, {
+          leadName,
+          logs: [`System error: ${e.message}`],
+          finalStatus: 'ERROR'
+        }]);
       }
 
       setOutreachProgress(prev => ({
@@ -1349,10 +1970,6 @@ export default function Home() {
     setSelectedLeads(new Set());
     setSendingOutreach(false);
     handleRefreshAll();
-
-    setTimeout(() => {
-      setOutreachProgress(prev => ({ ...prev, active: false }));
-    }, 4000);
   };
 
   const getOutreachDetails = () => {
@@ -1542,6 +2159,9 @@ export default function Home() {
   // Get unique search queries from loaded leads
   const uniqueQueries = Array.from(new Set(leads.map(l => l.source_query_or_seed).filter(Boolean)));
 
+  // Get unique CMS platforms from loaded leads
+  const uniquePlatforms = Array.from(new Set(leads.map(l => l.cms_platform || l.cmsPlatform).filter(Boolean)));
+
   // Lead filter
   let filteredLeads = leads.filter(l => {
     const matchesSearch = l.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -1551,7 +2171,18 @@ export default function Home() {
                           (l.phone_e164 && l.phone_e164.includes(searchTerm));
     const matchesStatus = statusFilter === 'ALL' || l.status === statusFilter;
     const matchesQuery = queryFilter === 'ALL' || l.source_query_or_seed === queryFilter;
-    return matchesSearch && matchesStatus && matchesQuery;
+    
+    // Website filter
+    const hasWebsite = !!(l.website && l.website.trim() && l.website !== 'None');
+    const matchesWebsite = websiteFilter === 'ALL' || 
+                          (websiteFilter === 'UPGRADE' && hasWebsite) || 
+                          (websiteFilter === 'NEW_BUILD' && !hasWebsite);
+                          
+    // Platform filter
+    const cmsPlatform = l.cms_platform || l.cmsPlatform;
+    const matchesPlatform = platformFilter === 'ALL' || cmsPlatform === platformFilter;
+                          
+    return matchesSearch && matchesStatus && matchesQuery && matchesWebsite && matchesPlatform;
   });
 
   // Fallback: If search term is present but yielded 0 results, fall back to showing all leads for selected query/status
@@ -1559,7 +2190,16 @@ export default function Home() {
     filteredLeads = leads.filter(l => {
       const matchesStatus = statusFilter === 'ALL' || l.status === statusFilter;
       const matchesQuery = queryFilter === 'ALL' || l.source_query_or_seed === queryFilter;
-      return matchesStatus && matchesQuery;
+      
+      const hasWebsite = !!(l.website && l.website.trim() && l.website !== 'None');
+      const matchesWebsite = websiteFilter === 'ALL' || 
+                            (websiteFilter === 'UPGRADE' && hasWebsite) || 
+                            (websiteFilter === 'NEW_BUILD' && !hasWebsite);
+                            
+      const cmsPlatform = l.cms_platform || l.cmsPlatform;
+      const matchesPlatform = platformFilter === 'ALL' || cmsPlatform === platformFilter;
+                            
+      return matchesStatus && matchesQuery && matchesWebsite && matchesPlatform;
     });
   }
 
@@ -1612,19 +2252,20 @@ export default function Home() {
       return msg;
     }
 
-    return `Subject: Custom Web Design Proposal for ${lead.name}
-    
-Hi Team,
+    // ── Website-aware email preview (uses same logic as the backend getPitchDetails) ──
+    const hasWebsite = !!(lead.website && lead.website.trim());
+    const pitchMatch = lead.notes?.match(/\[pitch:\s*([^\]]+)\]/);
+    const pitchAngle = pitchMatch ? pitchMatch[1] : (hasWebsite ? 'CRM Integration & WhatsApp Automation' : 'New Website Design');
+    const previewUrl = `${origin}/preview/${lead.lead_id}`;
+    const webUrl = lead.website || '';
+    const sig = config.businessSignature || 'ApexReach';
+    const name = lead.name || 'Team';
+    const area = lead.area || 'Lagos';
 
-We saw you have an outstanding rating of ${lead.rating} stars with ${lead.reviews_count} reviews on Google Maps, but your business does not have a web address connected yet.
-
-To help you grow, we've custom-designed a landing page for you to review:
-${origin}/preview/${lead.lead_id}
-
-This page was auto-generated by ApexReach based on your top-rated local presence in ${lead.area || 'Lagos'}. If you like the design, you can claim it and connect it to your own custom domain.
-
-Best regards,
-${config.businessSignature}`;
+    if (hasWebsite) {
+      return `Subject: Upgrading ${name} — ${pitchAngle}\n\nHi ${name} Team,\n\nWe visited your current website (${webUrl}) and noticed a major growth opportunity — your site is missing ${pitchAngle.toLowerCase()}.\n\nWe built an interactive mockup upgrade preview specifically for your business:\n${previewUrl}\n\nYou can test the new feature live on the preview page. It shows exactly how it would work for your clients, including automated notifications and payment processing.\n\nIf you like what you see, we can deploy this as a full upgrade to your existing site — contact us via the page.\n\nBest regards,\n${sig}`;
+    }
+    return `Subject: Custom Web Design Proposal for ${name}\n\nHi ${name} Team,\n\nWe noticed ${name} has a top-rated reputation (${lead.rating} stars, ${lead.reviews_count} reviews) in ${area}, but does not have a web address connected yet.\n\nTo help you grow, we've custom-designed a landing page for you to review:\n${previewUrl}\n\nThis page was auto-generated by ApexReach and includes a live interactive ${pitchAngle.toLowerCase()} widget. If you like the design, you can claim it and connect it to your own custom domain.\n\nBest regards,\n${sig}`;
   };
 
   return (
@@ -1839,6 +2480,14 @@ ${config.businessSignature}`;
           </button>
           
           <button 
+            onClick={() => setActiveTab('scheduler')} 
+            className={`btn-secondary ${activeTab === 'scheduler' ? 'active' : ''}`}
+            style={{ justifyContent: 'flex-start', background: activeTab === 'scheduler' ? 'var(--primary-glow)' : 'transparent', borderColor: activeTab === 'scheduler' ? 'var(--primary)' : 'transparent', width: '100%' }}
+          >
+            <Calendar size={18} color={activeTab === 'scheduler' ? 'var(--primary)' : 'var(--text-secondary)'} /> Campaign Scheduler
+          </button>
+          
+          <button 
             onClick={() => setActiveTab('logs')} 
             className={`btn-secondary ${activeTab === 'logs' ? 'active' : ''}`}
             style={{ justifyContent: 'flex-start', background: activeTab === 'logs' ? 'var(--primary-glow)' : 'transparent', borderColor: activeTab === 'logs' ? 'var(--primary)' : 'transparent', width: '100%' }}
@@ -1917,6 +2566,13 @@ ${config.businessSignature}`;
           )}
 
           {renderStatusChip(
+            'Google OAuth',
+            config.googleRefreshToken ? (config.googleUserEmail ? `Connected (${config.googleUserEmail})` : 'Connected') : 'Setup Required',
+            config.googleRefreshToken ? 'green' : 'red',
+            'email-settings'
+          )}
+
+          {renderStatusChip(
             'Vertex AI',
             config.googleProjectId ? 'Configured' : 'Fallback Active',
             config.googleProjectId ? 'green' : 'yellow',
@@ -1947,6 +2603,151 @@ ${config.businessSignature}`;
               config.outreachChannel === 'whatsapp' ? 'whatsapp-settings' : 'email-settings'
             );
           })()}
+
+          {/* Interactive Scraper Runner Widget in Sidebar */}
+          <div 
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+              padding: '10px 12px',
+              borderRadius: '10px',
+              border: `1px solid ${runnerStatus === 'online' ? 'rgba(16, 185, 129, 0.2)' : runnerStatus === 'loading' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+              background: runnerStatus === 'online' ? 'rgba(16, 185, 129, 0.04)' : runnerStatus === 'loading' ? 'rgba(245, 158, 11, 0.04)' : 'rgba(239, 68, 68, 0.04)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <div 
+              onClick={() => navigateToSettingsSection('scraper-runner-control')}
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+              title="Click to view full runner settings"
+            >
+              <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8, fontWeight: 700, color: 'var(--text-secondary)' }}>
+                Scraper Runner
+              </span>
+              <span style={{ 
+                fontSize: '0.7rem', 
+                fontWeight: 700, 
+                color: runnerStatus === 'online' ? '#10B981' : runnerStatus === 'loading' ? '#F59E0B' : '#EF4444',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                <span style={{ 
+                  width: '6px', 
+                  height: '6px', 
+                  borderRadius: '50%', 
+                  backgroundColor: runnerStatus === 'online' ? '#10B981' : runnerStatus === 'loading' ? '#F59E0B' : '#EF4444',
+                  boxShadow: runnerStatus === 'online' ? '0 0 6px #10B981' : 'none'
+                }}></span>
+                {runnerStatus === 'online' ? 'ONLINE' : runnerStatus === 'loading' ? 'CHECKING' : 'OFFLINE'}
+              </span>
+            </div>
+
+            {runnerStatus === 'online' && activeJob && (
+              <div style={{ 
+                fontSize: '0.72rem', 
+                color: 'var(--text-secondary)', 
+                background: 'rgba(255,255,255,0.02)', 
+                padding: '6px 8px', 
+                borderRadius: '6px', 
+                marginTop: '2px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '2px',
+                border: '1px solid rgba(255,255,255,0.05)',
+                borderLeft: '3px solid #3B82F6'
+              }}>
+                <span style={{ fontWeight: 600, color: 'white', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span className="pulse-dot-blue" style={{ marginRight: 0 }}></span> Scraping: {activeJob.payload?.query || activeJob.payload?.category || 'Task'}
+                </span>
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  Engine: {activeJob.type.toUpperCase()} · {activeJob.payload?.location || 'Lagos'}
+                </span>
+              </div>
+            )}
+            
+            <div style={{ display: 'flex', gap: '8px', marginTop: '2px' }}>
+              {runnerStatus === 'online' ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleStopLocalRunner();
+                  }}
+                  disabled={triggerLoading}
+                  style={{
+                    flexGrow: 1,
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    color: '#EF4444',
+                    padding: '5px 8px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {triggerLoading ? <Loader2 size={12} className="spin-anim" /> : 'Stop Runner'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLocalTrigger();
+                  }}
+                  disabled={triggerLoading || runnerStatus === 'loading'}
+                  style={{
+                    flexGrow: 1,
+                    background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)',
+                    border: 'none',
+                    color: 'white',
+                    padding: '5px 8px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {triggerLoading ? <Loader2 size={12} className="spin-anim" /> : 'Start Runner'}
+                </button>
+              )}
+              
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  checkRunnerStatus();
+                }}
+                disabled={triggerLoading || runnerStatus === 'loading'}
+                style={{
+                  padding: '5px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  color: 'var(--text-secondary)',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+                title="Refresh runner status"
+              >
+                <RefreshCw size={12} className={runnerStatus === 'loading' ? 'spin-anim' : ''} />
+              </button>
+            </div>
+          </div>
         </div>
       </aside>
       
@@ -2051,9 +2852,38 @@ ${config.businessSignature}`;
         </header>
 
         {statusMessage && (
-          <div className="glass-panel" style={{ padding: '12px 18px', borderLeft: '4px solid var(--primary)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="glass-panel" style={{ padding: '12px 18px', borderLeft: '4px solid var(--primary)', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <Info size={18} color="var(--primary)" />
             <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{statusMessage}</span>
+            
+            {/* Inline Start Local Runner process button when the scraper is running/waiting but the runner is offline */}
+            {runnerStatus === 'offline' && (statusMessage.includes('Waiting for local') || statusMessage.includes('Job queued')) && (
+              <button 
+                type="button"
+                onClick={handleLocalTrigger}
+                disabled={triggerLoading}
+                className="btn-primary"
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  marginLeft: '12px',
+                  boxShadow: '0 2px 8px rgba(var(--primary-rgb), 0.25)'
+                }}
+              >
+                {triggerLoading ? <Loader2 size={12} className="spin-anim" /> : <Terminal size={12} />}
+                Start Local Runner
+              </button>
+            )}
+
             <button onClick={() => setStatusMessage('')} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>×</button>
           </div>
         )}
@@ -2208,7 +3038,240 @@ ${config.businessSignature}`;
                 </div>
               </div>
             </div>
-            
+
+            {/* Live Runner Progress & Queue Panel */}
+            <div className="glass-panel" style={{ padding: '20px', marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <style>{`
+                .pulse-dot-blue {
+                  display: inline-block;
+                  width: 8px;
+                  height: 8px;
+                  background-color: #3b82f6;
+                  border-radius: 50%;
+                  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+                  animation: pulse-blue 1.5s infinite;
+                  margin-right: 6px;
+                }
+                @keyframes pulse-blue {
+                  0% {
+                    transform: scale(0.95);
+                    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+                  }
+                  70% {
+                    transform: scale(1);
+                    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+                  }
+                  100% {
+                    transform: scale(0.95);
+                    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+                  }
+                }
+                .progress-bar-anim {
+                  position: relative;
+                  overflow: hidden;
+                }
+                .progress-bar-anim::after {
+                  content: '';
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  background: linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0) 100%
+                  );
+                  animation: shimmer 1.5s infinite;
+                }
+                @keyframes shimmer {
+                  0% { transform: translateX(-100%); }
+                  100% { transform: translateX(100%); }
+                }
+              `}</style>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '12px' }}>
+                <h3 style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, margin: 0 }}>
+                  <Terminal size={18} color="var(--primary)" /> Scraper Queue & Runner Progress
+                </h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ 
+                    fontSize: '0.7rem', 
+                    padding: '3px 8px', 
+                    borderRadius: '20px', 
+                    fontWeight: 600,
+                    background: runnerStatus === 'online' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                    color: runnerStatus === 'online' ? '#10B981' : '#EF4444',
+                    border: `1px solid ${runnerStatus === 'online' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
+                  }}>
+                    Runner: {runnerStatus.toUpperCase()}
+                  </span>
+                  <button 
+                    type="button" 
+                    onClick={checkRunnerStatus}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px' }}
+                    title="Refresh runner queue"
+                  >
+                    <RefreshCw size={14} className={runnerStatus === 'loading' ? 'spin-anim' : ''} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Active Task (If any is processing) */}
+              {activeJob ? (
+                <div style={{ 
+                  background: 'rgba(59, 130, 246, 0.05)', 
+                  border: '1px solid rgba(59, 130, 246, 0.2)', 
+                  borderRadius: '8px', 
+                  padding: '14px', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '8px' 
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#60A5FA', fontWeight: 700, display: 'flex', alignItems: 'center' }}>
+                      <span className="pulse-dot-blue"></span> ACTIVE SCRAE RUN
+                    </span>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                      Started: {new Date(activeJob.startedAt || activeJob.created_at).toLocaleTimeString()}
+                    </span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '2px' }}>
+                    <div>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>Search Niche</span>
+                      <strong style={{ fontSize: '0.85rem', color: 'white' }}>{activeJob.payload?.query || activeJob.payload?.category || 'Bulk Scraping Niche'}</strong>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>Target Location</span>
+                      <strong style={{ fontSize: '0.85rem', color: 'white' }}>{activeJob.payload?.location || 'Lagos, Nigeria'}</strong>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
+                    <div style={{ flexGrow: 1, height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden', position: 'relative' }}>
+                      <div className="progress-bar-anim" style={{ height: '100%', background: 'linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%)', width: '100%' }}></div>
+                    </div>
+                    <span style={{ fontSize: '0.7rem', color: '#60A5FA', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Loader2 size={10} className="spin-anim" /> Scraping...
+                    </span>
+                  </div>
+                </div>
+              ) : runnerStatus === 'online' ? (
+                <div style={{ 
+                  background: 'rgba(16, 185, 129, 0.03)', 
+                  border: '1px dashed rgba(16, 185, 129, 0.2)', 
+                  borderRadius: '8px', 
+                  padding: '14px', 
+                  textAlign: 'center',
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.8rem'
+                }}>
+                  ⚡ Runner is online & idling. Waiting for scheduled campaigns or manual scraper actions.
+                </div>
+              ) : (
+                <div style={{ 
+                  background: 'rgba(239, 68, 68, 0.03)', 
+                  border: '1px dashed rgba(239, 68, 68, 0.2)', 
+                  borderRadius: '8px', 
+                  padding: '14px', 
+                  textAlign: 'center',
+                  color: 'var(--text-muted)',
+                  fontSize: '0.8rem'
+                }}>
+                  ⚠️ Runner is offline. Launch it from the settings panel below to process queued scrapers.
+                </div>
+              )}
+
+              {/* Columns for Queue and History */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '4px' }}>
+                {/* Active & Queued Jobs list */}
+                <div>
+                  <h4 style={{ fontSize: '0.8rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                    <Sliders size={12} color="var(--primary)" /> Pending Queue ({activeJobs.filter(j => j.status === 'queued').length})
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {activeJobs.length === 0 ? (
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No pending tasks in queue.</span>
+                    ) : (
+                      activeJobs.map((j) => (
+                        <div key={j.id} style={{ 
+                          background: 'rgba(255,255,255,0.01)', 
+                          border: '1px solid rgba(255,255,255,0.03)', 
+                          borderRadius: '6px', 
+                          padding: '6px 8px', 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'center' 
+                        }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', maxWidth: '75%' }}>
+                            <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {j.payload?.query || j.payload?.category || 'Scraper Run'}
+                            </span>
+                            <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>
+                              Engine: {j.type.toUpperCase()} · Location: {j.payload?.location || 'Lagos'}
+                            </span>
+                          </div>
+                          <span style={{ 
+                            fontSize: '0.6rem', 
+                            padding: '2px 5px', 
+                            borderRadius: '4px',
+                            fontWeight: 600,
+                            background: j.status === 'running' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255,255,255,0.05)',
+                            color: j.status === 'running' ? '#60A5FA' : 'var(--text-secondary)'
+                          }}>
+                            {j.status.toUpperCase()}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* History / Completed Jobs list */}
+                <div>
+                  <h4 style={{ fontSize: '0.8rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                    <CheckCircle size={12} color="var(--success)" /> Recent Scraping Results
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {completedJobs.length === 0 ? (
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No completed scraper runs yet.</span>
+                    ) : (
+                      completedJobs.map((j) => (
+                        <div key={j.id} style={{ 
+                          background: 'rgba(255,255,255,0.01)', 
+                          border: '1px solid rgba(255,255,255,0.03)', 
+                          borderRadius: '6px', 
+                          padding: '6px 8px', 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'center' 
+                        }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', maxWidth: '70%' }}>
+                            <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {j.payload?.query || j.payload?.category || 'Scraper Run'}
+                            </span>
+                            <span style={{ fontSize: '0.62rem', color: j.status === 'failed' ? '#EF4444' : '#10B981', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={j.status === 'failed' ? j.error_message : undefined}>
+                              {j.status === 'failed' ? `Failed: ${j.error_message || 'Timeout'}` : `Ingested: ${j.result?.leadsCount || j.result?.added || 0} leads`}
+                            </span>
+                          </div>
+                          <span style={{ 
+                            fontSize: '0.6rem', 
+                            padding: '2px 5px', 
+                            borderRadius: '4px',
+                            fontWeight: 600,
+                            background: j.status === 'completed' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                            color: j.status === 'completed' ? '#10B981' : '#EF4444'
+                          }}>
+                            {j.status.toUpperCase()}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               <section className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <h3 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2343,7 +3406,32 @@ ${config.businessSignature}`;
                 </select>
               </div>
 
-              {(searchTerm || queryFilter !== 'ALL' || statusFilter !== 'ALL') && (
+              <div>
+                <select 
+                  value={websiteFilter} 
+                  onChange={(e) => setWebsiteFilter(e.target.value as any)}
+                  style={{ background: 'var(--input-bg-darker)', color: 'var(--text-primary)', border: '1px solid var(--panel-border)', borderRadius: '8px', padding: '8px 12px', outline: 'none' }}
+                >
+                  <option value="ALL">All Project Types</option>
+                  <option value="NEW_BUILD">New Build Prospects (No Site)</option>
+                  <option value="UPGRADE">Modernization & Upgrade-Ready (Has Site)</option>
+                </select>
+              </div>
+
+              <div>
+                <select 
+                  value={platformFilter} 
+                  onChange={(e) => setPlatformFilter(e.target.value)}
+                  style={{ background: 'var(--input-bg-darker)', color: 'var(--text-primary)', border: '1px solid var(--panel-border)', borderRadius: '8px', padding: '8px 12px', outline: 'none' }}
+                >
+                  <option value="ALL">All CMS Platforms</option>
+                  {uniquePlatforms.map((p, idx) => (
+                    <option key={idx} value={p}>{String(p).toUpperCase()}</option>
+                  ))}
+                </select>
+              </div>
+
+              {(searchTerm || queryFilter !== 'ALL' || statusFilter !== 'ALL' || websiteFilter !== 'ALL' || platformFilter !== 'ALL') && (
                 <button
                   type="button"
                   onClick={resetFilters}
@@ -2412,6 +3500,7 @@ ${config.businessSignature}`;
                       <th style={{ padding: '14px' }}>Rating</th>
                       <th style={{ padding: '14px' }}>Area</th>
                       <th style={{ padding: '14px' }}>Email</th>
+                      <th style={{ padding: '14px', minWidth: '160px' }}>Website / Offer</th>
                       <th style={{ padding: '14px' }}>Stage</th>
                       <th style={{ padding: '14px 20px' }}>Actions</th>
                     </tr>
@@ -2419,14 +3508,14 @@ ${config.businessSignature}`;
                   <tbody>
                     {loadingLeads && (
                       <tr>
-                        <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                        <td colSpan={9} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
                           Retrieving lead directory from Sheets database...
                         </td>
                       </tr>
                     )}
                     {!loadingLeads && filteredLeads.length === 0 && (
                       <tr>
-                        <td colSpan={8} style={{ textAlign: 'center', padding: '60px 40px' }}>
+                        <td colSpan={9} style={{ textAlign: 'center', padding: '60px 40px' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                             <span style={{ fontSize: '1.5rem' }}>🔍</span>
                             <div style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '1rem' }}>No results for this filter</div>
@@ -2491,6 +3580,36 @@ ${config.businessSignature}`;
                         </td>
                         <td style={{ padding: '14px', color: 'var(--text-secondary)' }}>{lead.area}</td>
                         <td style={{ padding: '14px', fontFamily: 'monospace' }}>{lead.email || 'N/A'}</td>
+                        <td style={{ padding: '14px' }}>
+                          {(() => {
+                            const hasWebsite = !!(lead.website && lead.website.trim());
+                            const pitchMatch = lead.notes?.match(/\[pitch:\s*([^\]]+)\]/);
+                            const pitchAngle = pitchMatch ? pitchMatch[1] : (hasWebsite ? 'CRM Integration' : 'New Website Design');
+                            return (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <span style={{
+                                  fontSize: '0.65rem',
+                                  fontWeight: 800,
+                                  padding: '2px 7px',
+                                  borderRadius: '4px',
+                                  letterSpacing: '0.04em',
+                                  textTransform: 'uppercase',
+                                  display: 'inline-block',
+                                  width: 'fit-content',
+                                  background: hasWebsite ? 'rgba(16, 185, 129, 0.12)' : 'rgba(245, 158, 11, 0.12)',
+                                  color: hasWebsite ? '#10B981' : '#F59E0B',
+                                  border: `1px solid ${hasWebsite ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`
+                                }}>
+                                  {hasWebsite ? '✓ Has Website' : '⊕ Needs Site'}
+                                </span>
+                                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}
+                                  title={`Recommended offer: ${pitchAngle}`}>
+                                  → {pitchAngle}
+                                </span>
+                              </div>
+                            );
+                          })()}
+                        </td>
                         <td style={{ padding: '14px' }}>
                           <span className={`badge ${lead.status === 'NEW' ? 'badge-new' : lead.status === 'CONTACTED' ? 'badge-contacted' : 'badge-error'}`}>
                             {lead.status}
@@ -2724,6 +3843,90 @@ ${config.businessSignature}`;
                           <div style={{ marginBottom: '6px' }}><strong style={{ color: 'var(--text-secondary)' }}>Rating:</strong> {previewLead.rating} Stars</div>
                         </div>
 
+                        {/* ── AI Upgrade Intelligence Card ── */}
+                        {(() => {
+                          const hasWebsite = !!(previewLead.website && previewLead.website.trim());
+                          const pitchMatch = previewLead.notes?.match(/\[pitch:\s*([^\]]+)\]/);
+                          const aiScoreMatch = previewLead.notes?.match(/AI Relevance Score:\s*(\d+)\/10/);
+                          const pitchAngle = pitchMatch ? pitchMatch[1] : (hasWebsite ? 'CRM Integration & WhatsApp Automation' : 'New Website Design');
+                          const aiScore = aiScoreMatch ? parseInt(aiScoreMatch[1]) : null;
+
+                          const upgradeOffers: Record<string, { icon: string; desc: string; color: string }> = {
+                            'New Website Design':               { icon: '🌐', desc: 'Build a modern professional website with a booking/inquiry widget.', color: '#F59E0B' },
+                            'Online Booking & Intake':          { icon: '📅', desc: 'Add patient scheduling, intake forms, and WhatsApp appointment reminders.', color: '#06B6D4' },
+                            'Table Reservation System':         { icon: '🍽️', desc: 'Online table booking with kitchen alert notifications and SMS reminders.', color: '#EA580C' },
+                            'Trade-In Estimator & CRM':         { icon: '🚗', desc: 'Smart vehicle valuation calculator with sales team WhatsApp routing.', color: '#EF4444' },
+                            'Paystack Checkout & E-Commerce':   { icon: '🛒', desc: 'Shopping cart with Paystack/Flutterwave checkout and automated invoices.', color: '#10B981' },
+                            'Client Portal & Invoicing':        { icon: '📊', desc: 'Client-facing quote builder, branded PDF invoicing, and Google Sheets CRM sync.', color: '#8B5CF6' },
+                            'CRM Integration & WhatsApp Automation': { icon: '🤖', desc: 'AI chatbot, WhatsApp drip campaigns, and lead-to-CRM pipeline automation.', color: '#3B82F6' },
+                          };
+                          const offer = upgradeOffers[pitchAngle] || upgradeOffers['CRM Integration & WhatsApp Automation'];
+
+                          return (
+                            <div style={{
+                              background: hasWebsite ? 'rgba(6, 182, 212, 0.06)' : 'rgba(245, 158, 11, 0.06)',
+                              border: `1px solid ${hasWebsite ? 'rgba(6, 182, 212, 0.2)' : 'rgba(245, 158, 11, 0.2)'}`,
+                              borderRadius: '10px',
+                              padding: '12px 14px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '8px'
+                            }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <span style={{ fontSize: '1.1rem' }}>{offer.icon}</span>
+                                  <span style={{ fontSize: '0.8rem', fontWeight: 800, color: offer.color, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                                    AI-Recommended Upgrade
+                                  </span>
+                                </div>
+                                {aiScore !== null && (
+                                  <span style={{
+                                    fontSize: '0.7rem',
+                                    fontWeight: 700,
+                                    padding: '2px 8px',
+                                    borderRadius: '20px',
+                                    background: aiScore >= 8 ? 'rgba(16,185,129,0.15)' : aiScore >= 6 ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.15)',
+                                    color: aiScore >= 8 ? '#10B981' : aiScore >= 6 ? '#F59E0B' : '#EF4444',
+                                    border: `1px solid ${aiScore >= 8 ? 'rgba(16,185,129,0.3)' : aiScore >= 6 ? 'rgba(245,158,11,0.3)' : 'rgba(239,68,68,0.3)'}`
+                                  }}>
+                                    Score: {aiScore}/10
+                                  </span>
+                                )}
+                              </div>
+                              <div style={{
+                                fontSize: '0.85rem',
+                                fontWeight: 700,
+                                color: 'var(--text-primary)',
+                                padding: '6px 10px',
+                                background: `${offer.color}18`,
+                                borderRadius: '6px',
+                                border: `1px solid ${offer.color}30`
+                              }}>
+                                {pitchAngle}
+                              </div>
+                              <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                                {offer.desc}
+                              </div>
+                              {hasWebsite && previewLead.website && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Current site:</span>
+                                  <a href={previewLead.website} target="_blank" rel="noreferrer"
+                                    style={{ fontSize: '0.72rem', color: '#06B6D4', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}
+                                    title={previewLead.website}>
+                                    {previewLead.website.replace(/^https?:\/\/(www\.)?/, '')}
+                                  </a>
+                                  <ExternalLink size={10} color="#06B6D4" />
+                                </div>
+                              )}
+                              {!hasWebsite && (
+                                <div style={{ fontSize: '0.72rem', color: '#F59E0B', fontStyle: 'italic' }}>
+                                  💡 No website detected — pitch a brand-new web presence.
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '4px 0', padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
                           <input 
                             type="checkbox" 
@@ -2735,7 +3938,13 @@ ${config.businessSignature}`;
                                 setCustomMessageText(renderTemplatePreview(previewLead));
                                 const channel = config.outreachChannel || 'gmail';
                                 if (['gmail', 'email'].includes(channel)) {
-                                  setCustomSubjectText(`Custom Web Design Proposal for ${previewLead.name}`);
+                                  // Use the AI pitch subject if available
+                                  const pitchMatchS = previewLead.notes?.match(/\[pitch:\s*([^\]]+)\]/);
+                                  const hasWebsiteS = !!(previewLead.website && previewLead.website.trim());
+                                  const pitchAngleS = pitchMatchS ? pitchMatchS[1] : (hasWebsiteS ? 'CRM Integration & WhatsApp Automation' : 'New Website Design');
+                                  setCustomSubjectText(hasWebsiteS
+                                    ? `Upgrading ${previewLead.name} — ${pitchAngleS}`
+                                    : `Custom Web Design Proposal for ${previewLead.name}`);
                                 }
                               }
                             }}
@@ -3353,14 +4562,672 @@ ${config.businessSignature}`;
               />
             </div>
 
-            <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h4 style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--primary)' }}>Verification Rules</h4>
-              <ul style={{ paddingLeft: '20px', margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <li><strong>Website Check:</strong> Includes all businesses. Leads with a website receive upgrade/automation pitches; leads without a website receive new-site design proposals.</li>
-                <li><strong>Outreach Sync:</strong> Automatically normalizes phone numbers and syncs target lists to Google Sheets in real-time.</li>
-                <li><strong>Rating Floor:</strong> Defaults to high ratings or checks Maps rating thresholds.</li>
-              </ul>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div 
+                id="scraper-runner-control"
+                className="glass-panel" 
+                style={{ 
+                  padding: '24px', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '16px',
+                  background: runnerStatus === 'online' 
+                    ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(255,255,255,0.01) 100%)' 
+                    : 'var(--card-bg)',
+                  border: runnerStatus === 'online'
+                    ? '1px solid rgba(16, 185, 129, 0.15)'
+                    : '1px solid var(--panel-border)',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h4 style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Terminal size={18} color="var(--primary)" />
+                    Local Scraper Runner
+                  </h4>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ 
+                      width: '8px', 
+                      height: '8px', 
+                      borderRadius: '50%', 
+                      backgroundColor: runnerStatus === 'online' ? '#10B981' : runnerStatus === 'loading' ? '#F59E0B' : '#EF4444',
+                      boxShadow: runnerStatus === 'online' 
+                        ? '0 0 10px #10B981, 0 0 20px rgba(16, 185, 129, 0.4)' 
+                        : 'none'
+                    }} />
+                    <span style={{ 
+                      fontSize: '0.75rem', 
+                      fontWeight: 600, 
+                      textTransform: 'uppercase', 
+                      color: runnerStatus === 'online' ? '#10B981' : runnerStatus === 'loading' ? '#F59E0B' : '#EF4444' 
+                    }}>
+                      {runnerStatus === 'online' ? 'Running' : runnerStatus === 'loading' ? 'Checking' : 'Offline'}
+                    </span>
+                  </div>
+                </div>
+
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.4' }}>
+                  {isProductionEnv 
+                    ? "Monitoring local worker via database heartbeat. You can start/stop the local worker directly using the buttons below if your local server is running on port 3006."
+                    : "Spawns and manages the local background queue worker process tree. It will automatically process queued scraper jobs in the background."}
+                </p>
+
+                <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                  {runnerStatus === 'online' ? (
+                    <button
+                      type="button"
+                      onClick={handleStopLocalRunner}
+                      disabled={triggerLoading}
+                      className="btn-secondary"
+                      style={{
+                        flexGrow: 1,
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        borderColor: '#EF4444',
+                        color: '#EF4444',
+                        padding: '10px 14px',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {triggerLoading ? <Loader2 size={16} className="spin-anim" /> : 'Stop Runner'}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleLocalTrigger}
+                      disabled={triggerLoading || runnerStatus === 'loading'}
+                      className="btn-primary"
+                      style={{
+                        flexGrow: 1,
+                        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)',
+                        padding: '10px 14px',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        border: 'none',
+                        color: 'white',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {triggerLoading ? <Loader2 size={16} className="spin-anim" /> : 'Start Runner'}
+                    </button>
+                  )}
+                  
+                  <button
+                    type="button"
+                    onClick={checkRunnerStatus}
+                    disabled={triggerLoading || runnerStatus === 'loading'}
+                    className="btn-secondary"
+                    style={{
+                      padding: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '8px',
+                      cursor: 'pointer'
+                    }}
+                    title="Refresh runner status"
+                  >
+                    <RefreshCw size={16} className={runnerStatus === 'loading' ? 'animate-spin' : ''} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Option C: Set-and-Forget Autostart Guide */}
+              <div
+                className="glass-panel"
+                style={{
+                  padding: '20px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.04) 0%, rgba(255,255,255,0.01) 100%)',
+                  border: '1px solid rgba(56, 189, 248, 0.15)',
+                  borderRadius: '12px',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div 
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                  onClick={() => setShowAutostartGuide(!showAutostartGuide)}
+                >
+                  <h4 style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                    <Settings size={18} color="#38bdf8" />
+                    Option C: Set-and-Forget Autostart
+                  </h4>
+                  <button 
+                    type="button" 
+                    style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                  >
+                    {showAutostartGuide ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+                </div>
+
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', lineHeight: '1.4', margin: 0 }}>
+                  Automatically launches the automation stack silently in the background whenever you log into Windows.
+                </p>
+
+                {showAutostartGuide && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
+                    
+                    {/* Step 1 */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontSize: '0.75rem', fontWeight: 700 }}>1</span>
+                        <h5 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Install Windows Startup Shortcut</h5>
+                      </div>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0 4px 0', paddingLeft: '26px' }}>
+                        Press <kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 4px', borderRadius: '4px', fontSize: '0.7rem' }}>Win + X</kbd> and open <strong>Terminal</strong> or <strong>PowerShell</strong> (no admin privileges needed), then run:
+                      </p>
+                      
+                      <div style={{ marginLeft: '26px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '10px 12px' }}>
+                          <code style={{ fontSize: '0.72rem', color: '#a78bfa', wordBreak: 'break-all', fontFamily: 'monospace' }}>
+                            powershell -ExecutionPolicy Bypass -File "c:\Users\HomePC\Desktop\website Projects\lead generation automation\scripts\install_startup_shortcut.ps1"
+                          </code>
+                        </div>
+                        
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyText('powershell -ExecutionPolicy Bypass -File "c:\\Users\\HomePC\\Desktop\\website Projects\\lead generation automation\\scripts\\install_startup_shortcut.ps1"', setCopiedScript)}
+                            style={{
+                              background: 'rgba(56, 189, 248, 0.1)',
+                              border: '1px solid rgba(56, 189, 248, 0.3)',
+                              borderRadius: '6px',
+                              padding: '6px 12px',
+                              color: '#38bdf8',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              transition: 'all 0.2s'
+                            }}
+                            title="Copy the command to register the shortcut in your Windows startup folder"
+                          >
+                            {copiedScript ? (
+                              <>
+                                <Check size={14} color="#10B981" />
+                                Copied Command!
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={14} />
+                                Copy Shortcut Installer
+                              </>
+                            )}
+                          </button>
+                          
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                            👉 Run once to enable autostart on PC login.
+                          </span>
+                        </div>
+                      </div>
+
+                      <div style={{ marginLeft: '26px', marginTop: '4px', fontSize: '0.72rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(16, 185, 129, 0.05)', padding: '6px 10px', borderRadius: '6px', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
+                        <span><span>✅ Success: Created Windows startup shortcut at: ...\Startup\LeadGenAutomation.lnk</span></span>
+                      </div>
+                    </div>
+
+                    {/* Step 2 */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontSize: '0.75rem', fontWeight: 700 }}>2</span>
+                        <h5 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>What Happens Automatically Under the Hood</h5>
+                      </div>
+                      <div style={{ marginLeft: '26px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                        <p style={{ margin: 0 }}>Whenever you start or restart your PC:</p>
+                        <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <li><strong>Network Wait Loop:</strong> The script triggers automatically and pings Google DNS (8.8.8.8). It waits silently until your system connects to the internet.</li>
+                          <li><strong>Launch Verification:</strong> It checks if the server is already active on port 3006.</li>
+                          <li><strong>Execution:</strong> Once online, it runs <code>npm run start-all</code> silently, spinning up:
+                            <ul style={{ margin: '4px 0 0 0', paddingLeft: '16px', listStyleType: 'circle' }}>
+                              <li>The Next.js Web App (to host the Dashboard).</li>
+                              <li>The Local Job Runner (to process scraper jobs).</li>
+                            </ul>
+                          </li>
+                          <li><strong>Log Retention:</strong> Startup logs are saved to <code>startup_log.txt</code> and full terminal execution streams are written to <code>services_output.log</code>.</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* Step 3 */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontSize: '0.75rem', fontWeight: 700 }}>3</span>
+                        <h5 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Run it Manually (Right Now)</h5>
+                      </div>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0 4px 0', paddingLeft: '26px' }}>
+                        If you want to start the services immediately without restarting your computer, run in your project folder:
+                      </p>
+                      
+                      <div style={{ marginLeft: '26px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '10px 12px' }}>
+                          <code style={{ fontSize: '0.72rem', color: '#a78bfa', wordBreak: 'break-all', fontFamily: 'monospace' }}>
+                            npm run start-all
+                          </code>
+                        </div>
+                        
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyText('npm run start-all', setCopiedManual)}
+                            style={{
+                              background: 'rgba(167, 139, 250, 0.1)',
+                              border: '1px solid rgba(167, 139, 250, 0.3)',
+                              borderRadius: '6px',
+                              padding: '6px 12px',
+                              color: '#a78bfa',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              transition: 'all 0.2s'
+                            }}
+                            title="Copy the command to manually start the Next.js app and scraper service immediately"
+                          >
+                            {copiedManual ? (
+                              <>
+                                <Check size={14} color="#10B981" />
+                                Copied Command!
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={14} />
+                                Copy Run Command
+                              </>
+                            )}
+                          </button>
+                          
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                            👉 Run to start background automation immediately.
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, paddingLeft: '26px' }}>
+                        Keep the terminal running or minimized. The local runner will start processing any pending campaign queue jobs immediately.
+                      </p>
+                    </div>
+
+                  </div>
+                )}
+              </div>
+
+              {/* Bulk Lead Scaler Panel */}
+              <div
+                className="glass-panel"
+                style={{
+                  padding: '24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px',
+                  background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.06) 0%, rgba(16, 185, 129, 0.04) 100%)',
+                  border: '1px solid rgba(139, 92, 246, 0.2)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                {/* Glow accent bar */}
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
+                  background: 'linear-gradient(90deg, #8B5CF6, #10B981, #8B5CF6)',
+                  backgroundSize: '200% 100%',
+                  animation: 'shimmer 3s linear infinite'
+                }} />
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Flame size={20} color="#8B5CF6" />
+                  <h4 style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)', margin: 0 }}>
+                    Bulk Lead Scaler
+                  </h4>
+                  <span style={{
+                    fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px',
+                    background: 'rgba(139, 92, 246, 0.15)', border: '1px solid rgba(139, 92, 246, 0.3)',
+                    borderRadius: '20px', color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '0.06em'
+                  }}>1,000+/week</span>
+                </div>
+
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', margin: 0 }}>
+                  Automatically generates <strong style={{ color: 'var(--text-primary)' }}>50 scraper jobs</strong> across 12 business niches (dentists, solar, boutique, restaurants…) and 10 Lagos suburbs. Each job pulls 25 leads — targeting <strong style={{ color: '#10B981' }}>1,250+ hydrated leads</strong> queued in one click.
+                </p>
+
+                {/* Estimate meters */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  {[
+                    { label: 'Jobs Queued', value: bulkQueuedCount !== null ? String(bulkQueuedCount) : '50', color: '#8B5CF6' },
+                    { label: 'Est. Leads', value: bulkQueuedCount !== null ? String(bulkQueuedCount * 25) : '~1,250', color: '#10B981' },
+                  ].map(({ label, value, color }) => (
+                    <div key={label} style={{
+                      padding: '10px 14px',
+                      background: 'rgba(0,0,0,0.2)',
+                      borderRadius: '8px',
+                      border: `1px solid ${color}22`
+                    }}>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>{label}</div>
+                      <div style={{ fontSize: '1.3rem', fontWeight: 700, color }}>{value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  id="bulk-queue-btn"
+                  onClick={runBulkQueuer}
+                  disabled={bulkQueuing || runnerStatus !== 'online'}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                    padding: '12px 20px',
+                    background: bulkQueuing
+                      ? 'rgba(139, 92, 246, 0.3)'
+                      : 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)',
+                    border: 'none', borderRadius: '10px',
+                    color: 'white', fontWeight: 700, fontSize: '0.9rem',
+                    cursor: bulkQueuing || runnerStatus !== 'online' ? 'not-allowed' : 'pointer',
+                    opacity: bulkQueuing || runnerStatus !== 'online' ? 0.7 : 1,
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 15px rgba(124, 58, 237, 0.35)'
+                  }}
+                >
+                  {bulkQueuing
+                    ? <><Loader2 size={16} className="animate-spin" /> Queueing Jobs...</>
+                    : <><Sparkles size={16} /> ⚡ Queue 1,000 Leads Now</>
+                  }
+                </button>
+
+                {runnerStatus !== 'online' && (
+                  <p style={{ fontSize: '0.75rem', color: '#F59E0B', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <AlertTriangle size={12} /> Start the Local Runner above before bulk queueing.
+                  </p>
+                )}
+
+                {bulkQueuedCount !== null && (
+                  <div style={{
+                    padding: '10px 14px', borderRadius: '8px',
+                    background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.2)',
+                    fontSize: '0.8rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: '8px'
+                  }}>
+                    <CheckCircle size={14} />
+                    {bulkQueuedCount} jobs queued · ~{bulkQueuedCount * 25} leads being collected in background
+                  </div>
+                )}
+              </div>
+
+              <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <h4 style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--primary)' }}>Verification Rules</h4>
+                <ul style={{ paddingLeft: '20px', margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <li><strong>Website Check:</strong> Includes all businesses. Leads with a website receive upgrade/automation pitches; leads without a website receive new-site design proposals.</li>
+                  <li><strong>Outreach Sync:</strong> Automatically normalizes phone numbers and syncs target lists to Google Sheets in real-time.</li>
+                  <li><strong>Rating Floor:</strong> Defaults to high ratings or checks Maps rating thresholds.</li>
+                </ul>
+              </div>
             </div>
+          </div>
+        )}
+
+        {/* TAB: CAMPAIGN SCHEDULER */}
+        {activeTab === 'scheduler' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Top Control Panel */}
+            <div className="glass-panel" style={{ padding: '30px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '16px' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Calendar size={24} /> 30-Day Campaign Scheduler
+                  </h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>
+                    Plan, pace, and automate your lead generation pipeline using AI. Spreads queries across a 30-day window.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={handleTriggerNextCampaign}
+                    disabled={triggeringCampaign || !schedule}
+                    className="btn-secondary"
+                    style={{
+                      background: 'rgba(139, 92, 246, 0.1)',
+                      borderColor: 'rgba(139, 92, 246, 0.3)',
+                      color: '#a78bfa',
+                      fontWeight: 600,
+                      fontSize: '0.85rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {triggeringCampaign ? <Loader2 size={16} className="animate-spin" /> : <Clock size={16} />}
+                    Trigger Next Now
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleGenerateAISchedule}
+                    disabled={generatingSchedule}
+                    className="btn-primary"
+                    style={{
+                      background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)',
+                      border: 'none',
+                      color: 'white',
+                      fontWeight: 600,
+                      fontSize: '0.85rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {generatingSchedule ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                    Generate 30-Day Plan (AI)
+                  </button>
+                </div>
+              </div>
+
+              {scheduleLoading ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                  <Loader2 size={24} className="animate-spin" style={{ margin: '0 auto 10px' }} />
+                  Loading active campaign plan...
+                </div>
+              ) : !schedule ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                  No active schedule found. Click "Generate 30-Day Plan" above to configure your pipeline.
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+                  {/* Left Side: pacing & focus constraints */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h4 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Pacing & Campaign Controls</h4>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.02)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                      <input
+                        type="checkbox"
+                        id="autoQueueEnabled"
+                        checked={schedule.autoQueueEnabled}
+                        onChange={(e) => handleSaveScheduleSettings(e.target.checked, schedule.intervalDays)}
+                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                      />
+                      <label htmlFor="autoQueueEnabled" style={{ fontSize: '0.88rem', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 500 }}>
+                        Enable Auto-Queue (Background Automation)
+                      </label>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+                        Pacing Interval (Days between searches)
+                      </label>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <input
+                          type="number"
+                          min="1"
+                          max="30"
+                          value={schedule.intervalDays}
+                          onChange={(e) => handleSaveScheduleSettings(schedule.autoQueueEnabled, parseInt(e.target.value) || 1)}
+                          style={{
+                            width: '80px',
+                            background: 'rgba(0, 0, 0, 0.2)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '6px',
+                            padding: '8px 12px',
+                            color: 'white',
+                            textAlign: 'center'
+                          }}
+                        />
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          Run next query query every {schedule.intervalDays} days. (Takes ~36 days for 12 queries).
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Side: AI seed constraints */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h4 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>AI Seed Target Filters</h4>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                      <div>
+                        <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Niche Focus Constraint</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. dentists, boutique, gyms"
+                          value={nicheFocusInput}
+                          onChange={(e) => setNicheFocusInput(e.target.value)}
+                          style={{
+                            width: '100%',
+                            background: 'rgba(0, 0, 0, 0.2)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '6px',
+                            padding: '8px 12px',
+                            color: 'white'
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Location Focus Constraint</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Lekki, Ikeja, Lagos"
+                          value={locationFocusInput}
+                          onChange={(e) => setLocationFocusInput(e.target.value)}
+                          style={{
+                            width: '100%',
+                            background: 'rgba(0, 0, 0, 0.2)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '6px',
+                            padding: '8px 12px',
+                            color: 'white'
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                      💡 If empty, the AI generator dynamically maps non-overlapping niches and suburbs across Lagos based on real database lead saturation stats.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Campaign Pipeline Matrix */}
+            {schedule && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 600, margin: 0 }}>
+                    Campaign Plan Matrix: <span style={{ color: 'var(--primary)' }}>{schedule.monthYear}</span>
+                  </h3>
+                  {schedule.lastTriggeredAt && (
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                      Last query queued: {new Date(schedule.lastTriggeredAt).toLocaleString()}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+                  {schedule.weeks.map((week: any) => (
+                    <div
+                      key={week.weekNumber}
+                      className="glass-panel"
+                      style={{
+                        padding: '16px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px',
+                        background: 'rgba(255, 255, 255, 0.015)',
+                        border: '1px solid rgba(255, 255, 255, 0.04)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '8px' }}>
+                        <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--primary)' }}>Week {week.weekNumber}</span>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>3 Targets</span>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {week.queries.map((q: any) => (
+                          <div
+                            key={q.id}
+                            style={{
+                              padding: '10px 12px',
+                              background: 'rgba(0,0,0,0.15)',
+                              borderRadius: '6px',
+                              border: q.status === 'queued' ? '1px solid rgba(139, 92, 246, 0.3)' : '1px solid rgba(255,255,255,0.02)',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '6px'
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '4px' }}>
+                              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={q.query}>
+                                {q.query}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: '0.62rem',
+                                  padding: '1px 5px',
+                                  borderRadius: '4px',
+                                  textTransform: 'uppercase',
+                                  background: q.status === 'completed' ? 'rgba(16, 185, 129, 0.15)' : q.status === 'queued' ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.05)',
+                                  color: q.status === 'completed' ? '#10B981' : q.status === 'queued' ? '#a78bfa' : 'var(--text-muted)',
+                                  border: q.status === 'completed' ? '1px solid rgba(16, 185, 129, 0.3)' : q.status === 'queued' ? '1px solid rgba(139, 92, 246, 0.3)' : '1px solid rgba(255,255,255,0.08)'
+                                }}
+                              >
+                                {q.status}
+                              </span>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                              <span style={{ textTransform: 'capitalize' }}>
+                                Engine: {q.scraper === 'maps-free' ? 'Google Maps' : q.scraper}
+                              </span>
+                              {q.leadsScraped !== undefined && (
+                                <span style={{ color: '#10B981', fontWeight: 600 }}>
+                                  +{q.leadsScraped} leads
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -3449,6 +5316,21 @@ ${config.businessSignature}`;
                     placeholder="e.g. ApexReach Team"
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+                    Cascade Failover Sequence
+                  </label>
+                  <input 
+                    type="text" 
+                    value={config.failoverPriority || ''} 
+                    onChange={(e) => setConfig({ ...config, failoverPriority: e.target.value })}
+                    placeholder="whatsapp,sms,email"
+                    style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
+                  />
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    Comma-separated channels in fallback order (e.g. <code>whatsapp,sms,email</code>)
+                  </div>
                 </div>
               </div>
             </div>
@@ -3687,6 +5569,37 @@ ${config.businessSignature}`;
                 </div>
               </div>
 
+              {/* Proxy Settings & Rotation Pool */}
+              <div id="proxy-settings" style={{ marginTop: '20px', padding: '16px', background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--success)', display: 'block', margin: 0 }}>
+                    🌐 Dynamic Proxy Pool (IP Rotation)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={verifyProxies}
+                    disabled={checkingHealth}
+                    className="btn-secondary"
+                    style={{ padding: '6px 12px', fontSize: '0.72rem', borderRadius: '6px' }}
+                  >
+                    {checkingHealth ? 'Testing...' : 'Verify Proxies'}
+                  </button>
+                </div>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0 10px 0' }}>
+                  Prevent IP-based scraper blocks by rotating through a list of proxies (e.g. brightdata, webshare, oxylabs). Format: comma-separated URLs.
+                </p>
+                <textarea 
+                  value={config.proxyPool || ''} 
+                  onChange={(e) => setConfig({ ...config, proxyPool: e.target.value })}
+                  placeholder="http://username:password@proxy.example.com:8080, socks5://username:password@proxy2.example.com:1080"
+                  rows={2}
+                  style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem', resize: 'vertical' }}
+                />
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '6px' }}>
+                  If empty, falls back to the default scraper proxy or local IP. Protocol prefix is required (<code>http://</code>, <code>socks5://</code>, etc.).
+                </div>
+              </div>
+
             </div>
 
             {/* Section B: Email Provider */}
@@ -3735,25 +5648,82 @@ ${config.businessSignature}`;
               {config.emailProvider === 'gmail' && (
                 <>
                   <div style={{ display: 'grid', gap: '12px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '10px 14px',
+                      borderRadius: '6px',
+                      background: config.googleRefreshToken ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+                      border: `1px solid ${config.googleRefreshToken ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                      color: config.googleRefreshToken ? '#10b981' : '#ef4444',
+                      fontSize: '0.85rem',
+                      fontWeight: 600
+                    }}>
+                      <div style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        background: config.googleRefreshToken ? '#10b981' : '#ef4444',
+                        boxShadow: `0 0 8px ${config.googleRefreshToken ? '#10b981' : '#ef4444'}`
+                      }} />
+                      {config.googleRefreshToken 
+                        ? `Active: Connected as ${config.googleUserEmail || 'Google User'}` 
+                        : 'Disconnected: Google Account Sign-In Required'}
+                    </div>
+
+                    {(!config.googleClientId || !config.googleClientSecret) && (
+                      <span style={{ fontSize: '0.78rem', color: '#ff4757', fontWeight: 600 }}>
+                        ⚠️ Please configure Google OAuth Client ID and Secret below before connecting.
+                      </span>
+                    )}
+
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         setIsGmailConnecting(true);
-                        window.location.href = '/api/auth/google';
+                        try {
+                          // Auto-save the config first
+                          const resp = await fetch('/api/config', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              ...config,
+                              googleClientId: config.googleClientId,
+                              googleClientSecret: config.googleClientSecret,
+                              googleProjectId: config.googleProjectId,
+                            })
+                          });
+                          const data = await resp.json();
+                          if (data && !data.error) {
+                            setConfig(data.config || data);
+                            addToast('Settings auto-saved! Redirecting to Google...', 'success');
+                            window.location.href = '/api/auth/google';
+                          } else {
+                            addToast(data.error || 'Failed to save configuration before redirecting.', 'error');
+                            setIsGmailConnecting(false);
+                          }
+                        } catch (e: any) {
+                          addToast(e.message || 'Error occurred during auto-save.', 'error');
+                          setIsGmailConnecting(false);
+                        }
                       }}
-                      disabled={isGmailConnecting}
+                      disabled={isGmailConnecting || !config.googleClientId || !config.googleClientSecret}
                       style={{
                         width: '100%',
                         padding: '10px 16px',
-                        background: isGmailConnecting ? 'rgba(100,100,100,0.5)' : 'linear-gradient(90deg, hsl(210,70%,50%), hsl(210,70%,70%))',
-                        color: 'var(--text-primary)',
+                        background: (isGmailConnecting || !config.googleClientId || !config.googleClientSecret)
+                          ? 'rgba(100, 100, 100, 0.2)'
+                          : 'linear-gradient(90deg, hsl(210,70%,50%), hsl(210,70%,70%))',
+                        color: (isGmailConnecting || !config.googleClientId || !config.googleClientSecret) ? 'var(--text-muted)' : 'var(--text-primary)',
                         border: 'none',
                         borderRadius: '6px',
-                        cursor: isGmailConnecting ? 'default' : 'pointer',
+                        cursor: (isGmailConnecting || !config.googleClientId || !config.googleClientSecret) ? 'not-allowed' : 'pointer',
                         fontSize: '0.9rem',
                         fontWeight: 600,
+                        transition: 'all 0.2s ease',
                       }}
                     >
-                      {isGmailConnecting ? 'Connecting…' : 'Connect Gmail'}
+                      {isGmailConnecting ? 'Connecting…' : (config.googleRefreshToken ? 'Reconnect Google Account' : 'Sign in with Google')}
                     </button>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                       Authorize the app via Google OAuth. Credentials are saved automatically.
@@ -4054,12 +6024,12 @@ ${config.businessSignature}`;
                       type="text" 
                       value={config.whatsappBaileysUrl || ''} 
                       onChange={(e) => setConfig({ ...config, whatsappBaileysUrl: e.target.value })}
-                      placeholder="http://localhost:3006"
+                      placeholder="http://localhost:3007"
                       style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
                   
-                  <BaileysPairingPanel baseUrl={config.whatsappBaileysUrl || 'http://localhost:3006'} />
+                  <BaileysPairingPanel baseUrl={config.whatsappBaileysUrl || 'http://localhost:3007'} />
                 </div>
               )}
 
@@ -4259,6 +6229,45 @@ ${config.businessSignature}`;
                 />
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                   Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{signature}}`}</code>
+                </div>
+              </div>
+
+              {/* Test SMS Provider Connection */}
+              <div style={{ marginTop: '20px', padding: '16px', background: 'rgba(6, 182, 212, 0.05)', border: '1px solid rgba(6, 182, 212, 0.2)', borderRadius: '10px' }}>
+                <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--primary)', display: 'block', marginBottom: '6px' }}>
+                  ⚡ Test SMS Configuration
+                </label>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0 10px 0' }}>
+                  Verify that your {config.smsProvider === 'gateway' ? 'Android SMS Gateway' : config.smsProvider === 'termii' ? 'Termii API' : config.smsProvider === 'africastalking' ? "Africa's Talking API" : 'Twilio API'} works by sending a test text message.
+                </p>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input 
+                    type="tel" 
+                    value={testSmsNumber} 
+                    onChange={(e) => setTestSmsNumber(e.target.value)}
+                    placeholder="Enter phone number (e.g. +2348031234567)"
+                    style={{ flex: 1, padding: '10px 12px', background: 'var(--input-bg)', border: '1px solid rgba(6, 182, 212, 0.3)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSendTestSms}
+                    disabled={testingSms}
+                    style={{ 
+                      padding: '10px 16px', 
+                      fontSize: '0.8rem', 
+                      borderRadius: '8px', 
+                      whiteSpace: 'nowrap', 
+                      background: 'linear-gradient(90deg, var(--primary), #0891b2)', 
+                      color: '#fff', 
+                      border: 'none', 
+                      cursor: 'pointer',
+                      opacity: testingSms ? 0.6 : 1,
+                      fontWeight: 600,
+                      boxShadow: '0 4px 12px rgba(6, 182, 212, 0.15)'
+                    }}
+                  >
+                    {testingSms ? 'Sending...' : 'Send Test SMS'}
+                  </button>
                 </div>
               </div>
             </div>
@@ -4580,6 +6589,389 @@ ${config.businessSignature}`;
               </div>
             </div>
 
+            {/* Outreach Channel Connectivity Health Diagnostics Panel */}
+            <div className="glass-panel" style={{ padding: '24px', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>📶</span> Outreach Channel Connectivity & API Health Diagnostics
+                  </h4>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', margin: '4px 0 0 0' }}>
+                    Verify channel status, proxy server blocks, and credential validity across the outreach cascade.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={runDiagnostics}
+                  disabled={checkingHealth}
+                  className="btn-secondary"
+                  style={{
+                    padding: '8px 16px',
+                    fontSize: '0.8rem',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  {checkingHealth ? (
+                    <>
+                      <Loader2 size={12} className="spin-anim" /> Testing Channels...
+                    </>
+                  ) : (
+                    'Run Connectivity Test'
+                  )}
+                </button>
+              </div>
+
+              {healthStatus ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
+                    {/* WhatsApp Health Card */}
+                    {(() => {
+                      const waStatus = healthStatus.whatsapp?.status;
+                      const isUnconfigured = waStatus === 'unconfigured';
+                      const isHealthy = waStatus === 'healthy' || healthStatus.whatsapp?.connected;
+                      const cardBg = isHealthy ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)';
+                      const cardBorder = isHealthy ? '1px solid rgba(16, 185, 129, 0.15)' : '1px solid rgba(239, 68, 68, 0.15)';
+                      const textCol = isHealthy ? 'var(--success)' : 'var(--error)';
+                      const statusLabel = isHealthy ? 'CONNECTED' : isUnconfigured ? 'UNCONFIGURED' : 'DISCONNECTED';
+                      
+                      return (
+                        <div style={{
+                          padding: '12px 16px',
+                          background: cardBg,
+                          border: cardBorder,
+                          borderRadius: '8px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between'
+                        }}>
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>WhatsApp (Baileys)</span>
+                              <span style={{
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                color: textCol
+                              }}>
+                                {statusLabel}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                              {healthStatus.whatsapp?.details || 'No session active'}
+                            </div>
+                          </div>
+                          {!isHealthy && (
+                            <button 
+                              type="button" 
+                              onClick={() => scrollToSectionAndFocus('whatsapp-settings', 'select')}
+                              style={{
+                                marginTop: '10px',
+                                padding: '4px 8px',
+                                background: 'rgba(239, 68, 68, 0.1)',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                                borderRadius: '4px',
+                                color: '#fca5a5',
+                                fontSize: '0.65rem',
+                                cursor: 'pointer',
+                                width: 'fit-content',
+                                fontWeight: 600
+                              }}
+                            >
+                              🔧 Re-pair WhatsApp
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
+
+                    {/* SMS Health Card */}
+                    {(() => {
+                      const smsStatus = healthStatus.sms?.status;
+                      const isUnconfigured = smsStatus === 'unconfigured';
+                      const isHealthy = smsStatus === 'ready';
+                      const cardBg = isHealthy ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)';
+                      const cardBorder = isHealthy ? '1px solid rgba(16, 185, 129, 0.15)' : '1px solid rgba(239, 68, 68, 0.15)';
+                      const textCol = isHealthy ? 'var(--success)' : 'var(--error)';
+                      const statusLabel = isHealthy ? 'READY' : isUnconfigured ? 'UNCONFIGURED' : 'OFFLINE';
+                      
+                      return (
+                        <div style={{
+                          padding: '12px 16px',
+                          background: cardBg,
+                          border: cardBorder,
+                          borderRadius: '8px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between'
+                        }}>
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>SMS Gateway</span>
+                              <span style={{
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                color: textCol
+                              }}>
+                                {statusLabel}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                              {healthStatus.sms?.details || 'API Key missing/invalid'}
+                            </div>
+                          </div>
+                          {!isHealthy && (
+                            <button 
+                              type="button" 
+                              onClick={() => scrollToSectionAndFocus('sms-settings', 'select')}
+                              style={{
+                                marginTop: '10px',
+                                padding: '4px 8px',
+                                background: 'rgba(239, 68, 68, 0.1)',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                                borderRadius: '4px',
+                                color: '#fca5a5',
+                                fontSize: '0.65rem',
+                                cursor: 'pointer',
+                                width: 'fit-content',
+                                fontWeight: 600
+                              }}
+                            >
+                              🔧 Configure SMS
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
+
+                    {/* Email Health Card */}
+                    {(() => {
+                      const emailStatus = healthStatus.email?.status;
+                      const isUnconfigured = emailStatus === 'unconfigured';
+                      const isHealthy = emailStatus === 'ready';
+                      const cardBg = isHealthy ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)';
+                      const cardBorder = isHealthy ? '1px solid rgba(16, 185, 129, 0.15)' : '1px solid rgba(239, 68, 68, 0.15)';
+                      const textCol = isHealthy ? 'var(--success)' : 'var(--error)';
+                      const statusLabel = isHealthy ? 'READY' : isUnconfigured ? 'UNCONFIGURED' : 'OFFLINE';
+                      
+                      return (
+                        <div style={{
+                          padding: '12px 16px',
+                          background: cardBg,
+                          border: cardBorder,
+                          borderRadius: '8px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between'
+                        }}>
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>Email ({config.emailProvider || 'gmail'})</span>
+                              <span style={{
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                color: textCol
+                              }}>
+                                {statusLabel}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                              {healthStatus.email?.details || 'SMTP credentials missing'}
+                            </div>
+                          </div>
+                          {!isHealthy && (
+                            <button 
+                              type="button" 
+                              onClick={() => scrollToSectionAndFocus('email-settings', 'select')}
+                              style={{
+                                marginTop: '10px',
+                                padding: '4px 8px',
+                                background: 'rgba(239, 68, 68, 0.1)',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                                borderRadius: '4px',
+                                color: '#fca5a5',
+                                fontSize: '0.65rem',
+                                cursor: 'pointer',
+                                width: 'fit-content',
+                                fontWeight: 600
+                              }}
+                            >
+                              🔧 Update Credentials
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
+
+                    {/* Scraper IP & Proxies Card */}
+                    {(() => {
+                      const scraperStatus = healthStatus.scraper?.status;
+                      const isUnhealthy = scraperStatus === 'unhealthy';
+                      const isWarning = scraperStatus === 'warning';
+                      const isOk = scraperStatus === 'ok';
+                      
+                      const cardBg = isOk 
+                        ? 'rgba(16, 185, 129, 0.05)' 
+                        : isWarning 
+                        ? 'rgba(245, 158, 11, 0.05)' 
+                        : 'rgba(239, 68, 68, 0.05)';
+                      const cardBorder = isOk 
+                        ? '1px solid rgba(16, 185, 129, 0.15)' 
+                        : isWarning 
+                        ? '1px solid rgba(245, 158, 11, 0.15)' 
+                        : '1px solid rgba(239, 68, 68, 0.15)';
+                      const textCol = isOk 
+                        ? 'var(--success)' 
+                        : isWarning 
+                        ? '#f59e0b' 
+                        : 'var(--error)';
+                      const statusLabel = isOk 
+                        ? 'ACTIVE' 
+                        : isWarning 
+                        ? 'WARNING' 
+                        : 'UNHEALTHY';
+                      
+                      return (
+                        <div style={{
+                          padding: '12px 16px',
+                          background: cardBg,
+                          border: cardBorder,
+                          borderRadius: '8px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between'
+                        }}>
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>Scraper IP / Proxy</span>
+                              <span style={{
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                color: textCol
+                              }}>
+                                {statusLabel}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              IP: {healthStatus.scraper?.ip || 'Unknown'} | {healthStatus.scraper?.details || 'No proxies configured'}
+                            </div>
+                          </div>
+                          {!isOk && (
+                            <button 
+                              type="button" 
+                              onClick={() => scrollToSectionAndFocus('proxy-settings', 'textarea')}
+                              style={{
+                                marginTop: '10px',
+                                padding: '4px 8px',
+                                background: isWarning ? 'rgba(245, 158, 11, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                                border: isWarning ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+                                borderRadius: '4px',
+                                color: isWarning ? '#fde047' : '#fca5a5',
+                                fontSize: '0.65rem',
+                                cursor: 'pointer',
+                                width: 'fit-content',
+                                fontWeight: 600
+                              }}
+                            >
+                              🔧 Configure Proxies
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Tested Proxies verification status panel */}
+                  {healthStatus.scraper?.proxies && healthStatus.scraper.proxies.length > 0 && (
+                    <div style={{
+                      marginTop: '8px',
+                      padding: '12px 16px',
+                      background: 'rgba(0, 0, 0, 0.2)',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      borderRadius: '8px'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span>🌐 Proxy Pool Verification Status</span>
+                          <span style={{ fontSize: '0.7rem', padding: '1px 6px', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-muted)' }}>
+                            {healthStatus.scraper.proxies.filter((p: any) => p.status === 'online').length} / {healthStatus.scraper.proxies.length} Online
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        {healthStatus.scraper.proxies.map((proxy: any, pIdx: number) => {
+                          let displayName = proxy.url;
+                          try {
+                            const urlObj = new URL(proxy.url.trim().includes('://') ? proxy.url.trim() : 'http://' + proxy.url.trim());
+                            displayName = `${urlObj.protocol}//${urlObj.username ? '***:***@' : ''}${urlObj.host}`;
+                          } catch (e) {}
+
+                          return (
+                            <div key={pIdx} style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              padding: '6px 10px',
+                              background: proxy.status === 'online' ? 'rgba(16, 185, 129, 0.02)' : 'rgba(239, 68, 68, 0.02)',
+                              border: proxy.status === 'online' ? '1px solid rgba(16, 185, 129, 0.05)' : '1px solid rgba(239, 68, 68, 0.05)',
+                              borderRadius: '6px',
+                              fontSize: '0.72rem'
+                            }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                                <div style={{
+                                  width: '6px',
+                                  height: '6px',
+                                  borderRadius: '50%',
+                                  background: proxy.status === 'online' ? 'var(--success)' : 'var(--error)'
+                                }} />
+                                <span style={{ fontFamily: 'monospace', color: 'var(--text-secondary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }} title={proxy.url}>
+                                  {displayName}
+                                </span>
+                                {proxy.latency > 0 && (
+                                  <span style={{ fontSize: '0.68rem', color: '#34d399', fontWeight: 500 }}>
+                                    ({proxy.latency}ms)
+                                  </span>
+                                )}
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                {proxy.status === 'offline' && (
+                                  <span style={{ fontSize: '0.68rem', color: '#f87171' }} title={proxy.error}>
+                                    {proxy.error || 'Failed'}
+                                  </span>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => quickRemoveProxy(proxy.url)}
+                                  style={{
+                                    border: 'none',
+                                    background: 'transparent',
+                                    color: 'var(--error)',
+                                    cursor: 'pointer',
+                                    fontSize: '0.68rem',
+                                    padding: '2px 4px',
+                                    borderRadius: '4px',
+                                    fontWeight: 500
+                                  }}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '16px', color: 'var(--text-muted)', fontSize: '0.8rem', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: '8px' }}>
+                  No diagnostics data available. Run connectivity test to verify channel integration status.
+                </div>
+              )}
+            </div>
+
             {/* Safety & Action */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
@@ -4699,7 +7091,8 @@ ${config.businessSignature}`;
           zIndex: 9999
         }}>
           <div className="glass-panel" style={{
-            width: '450px',
+            width: '600px',
+            maxWidth: '95%',
             padding: '30px',
             borderRadius: '16px',
             background: 'var(--panel-bg)',
@@ -4711,7 +7104,7 @@ ${config.businessSignature}`;
             textAlign: 'center'
           }}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-              Outreach Progress
+              Outreach Campaign Status
             </h3>
             
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
@@ -4756,6 +7149,232 @@ ${config.businessSignature}`;
                 </div>
               </div>
             </div>
+
+            {/* Real-time Diagnostics Log */}
+            {outreachLogs.length > 0 && (
+              <div style={{
+                textAlign: 'left',
+                marginTop: '10px',
+                borderTop: '1px solid rgba(255,255,255,0.05)',
+                paddingTop: '15px'
+              }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                  Fallback Routing Diagnostics Log
+                </div>
+                <div style={{
+                  maxHeight: '180px',
+                  overflowY: 'auto',
+                  background: 'rgba(0,0,0,0.3)',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  padding: '12px',
+                  fontFamily: 'monospace',
+                  fontSize: '0.72rem',
+                  lineHeight: '1.4',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  color: 'var(--text-secondary)'
+                }}>
+                  {outreachLogs.map((item, idx) => (
+                    <div key={idx} style={{
+                      paddingBottom: idx === outreachLogs.length - 1 ? '0' : '10px',
+                      borderBottom: idx === outreachLogs.length - 1 ? 'none' : '1px dashed rgba(255,255,255,0.05)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontWeight: 600, color: 'var(--primary)' }}>{item.leadName}</span>
+                        <span style={{
+                          color: item.finalStatus === 'ERROR' ? 'var(--error)' : 'var(--success)',
+                          fontWeight: 700,
+                          fontSize: '0.75rem'
+                        }}>
+                          {item.finalStatus}
+                        </span>
+                      </div>
+
+                      {/* Channel cascade results badges */}
+                      {item.channelResults && item.channelResults.length > 0 && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '2px 0' }}>
+                          {item.channelResults.map((cRes: any, cIdx: number) => {
+                            let badgeColor = 'var(--text-muted)';
+                            let badgeBg = 'rgba(255,255,255,0.05)';
+                            let labelText = cRes.channel.toUpperCase();
+                            
+                            if (cRes.status === 'success') {
+                              badgeColor = 'var(--success)';
+                              badgeBg = 'rgba(16, 185, 129, 0.1)';
+                              labelText += ' (Sent)';
+                            } else if (cRes.status === 'skipped') {
+                              badgeColor = '#f59e0b';
+                              badgeBg = 'rgba(245, 158, 11, 0.1)';
+                              labelText += ' (Bypassed)';
+                            } else if (cRes.status === 'failed') {
+                              badgeColor = 'var(--error)';
+                              badgeBg = 'rgba(239, 68, 68, 0.1)';
+                              labelText += ' (Failed)';
+                            }
+                            
+                            return (
+                              <div 
+                                key={cIdx} 
+                                style={{ 
+                                  fontSize: '0.62rem', 
+                                  padding: '2px 6px', 
+                                  borderRadius: '4px', 
+                                  color: badgeColor, 
+                                  background: badgeBg, 
+                                  border: `1px solid ${badgeColor}20`,
+                                  fontWeight: 500
+                                }} 
+                                title={cRes.error || cRes.fixAction || ''}
+                              >
+                                {labelText}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingLeft: '8px' }}>
+                        {item.logs.map((logStr, lIdx) => (
+                          <div key={lIdx} style={{
+                            color: logStr.includes('Failed') || logStr.includes('Failure') || logStr.includes('Error') || logStr.includes('skipped') || logStr.includes('Skipped')
+                              ? '#f87171'
+                              : logStr.includes('succeeded') || logStr.includes('sent') || logStr.includes('Simulated') || logStr.includes('CONTACTED')
+                                ? '#34d399'
+                                : 'var(--text-muted)'
+                          }}>
+                            • {logStr}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Recommend Fix Banner */}
+                      {item.channelResults?.some((c: any) => c.status === 'failed' && c.fixAction) && (
+                        <div style={{
+                          marginTop: '4px',
+                          padding: '8px',
+                          background: 'rgba(239, 68, 68, 0.05)',
+                          borderLeft: '3px solid var(--error)',
+                          borderRadius: '4px',
+                          fontSize: '0.7rem',
+                          color: 'var(--text-secondary)',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: '10px'
+                        }}>
+                          {(() => {
+                            const failedCh = item.channelResults.find((c: any) => c.status === 'failed' && c.fixAction);
+                            let buttonText = 'Resolve Settings';
+                            let onClickAction = () => {};
+
+                            if (failedCh) {
+                              const errLower = (failedCh.error || '').toLowerCase();
+                              const fixLower = (failedCh.fixAction || '').toLowerCase();
+                              
+                              if (failedCh.channel === 'whatsapp' && (errLower.includes('session') || errLower.includes('disconnect') || errLower.includes('expired') || errLower.includes('logout') || errLower.includes('logged out'))) {
+                                buttonText = '🔧 Re-pair WhatsApp';
+                                onClickAction = () => {
+                                  setOutreachProgress(prev => ({ ...prev, active: false }));
+                                  scrollToSectionAndFocus('whatsapp-settings', 'select');
+                                };
+                              } else if (failedCh.channel === 'email' && (errLower.includes('credentials') || errLower.includes('auth') || errLower.includes('unauthorized') || errLower.includes('key'))) {
+                                buttonText = '🔧 Update Email Settings';
+                                onClickAction = () => {
+                                  setOutreachProgress(prev => ({ ...prev, active: false }));
+                                  scrollToSectionAndFocus('email-settings', 'select');
+                                };
+                              } else if (fixLower.includes('proxy') || failedCh.errorCategory === 'IP_BLOCKED' || errLower.includes('proxy') || errLower.includes('tunnel') || errLower.includes('ip blocked') || errLower.includes('rate-limit') || errLower.includes('429')) {
+                                buttonText = '🔧 Configure Proxies';
+                                onClickAction = () => {
+                                  setOutreachProgress(prev => ({ ...prev, active: false }));
+                                  scrollToSectionAndFocus('proxy-settings', 'textarea');
+                                };
+                              } else {
+                                if (failedCh.channel === 'whatsapp') {
+                                  buttonText = '🔧 Configure WhatsApp';
+                                  onClickAction = () => {
+                                    setOutreachProgress(prev => ({ ...prev, active: false }));
+                                    scrollToSectionAndFocus('whatsapp-settings', 'select');
+                                  };
+                                } else if (failedCh.channel === 'sms') {
+                                  buttonText = '🔧 Configure SMS';
+                                  onClickAction = () => {
+                                    setOutreachProgress(prev => ({ ...prev, active: false }));
+                                    scrollToSectionAndFocus('sms-settings', 'select');
+                                  };
+                                } else if (failedCh.channel === 'email') {
+                                  buttonText = '🔧 Configure Email';
+                                  onClickAction = () => {
+                                    setOutreachProgress(prev => ({ ...prev, active: false }));
+                                    scrollToSectionAndFocus('email-settings', 'select');
+                                  };
+                                } else {
+                                  buttonText = '🔧 Resolve Settings';
+                                  onClickAction = () => {
+                                    setOutreachProgress(prev => ({ ...prev, active: false }));
+                                    const configTab = document.getElementById('tab-settings');
+                                    if (configTab) configTab.click();
+                                  };
+                                }
+                              }
+                            }
+
+                            return (
+                              <>
+                                <div style={{ minWidth: 0 }}>
+                                  <span style={{ fontWeight: 600, color: 'var(--error)' }}>Recommended Action: </span>
+                                  <span>{failedCh ? failedCh.fixAction : ''}</span>
+                                </div>
+                                <button 
+                                  type="button"
+                                  onClick={onClickAction}
+                                  style={{ 
+                                    padding: '2px 8px', 
+                                    background: 'rgba(239, 68, 68, 0.15)', 
+                                    border: '1px solid rgba(239, 68, 68, 0.3)', 
+                                    borderRadius: '4px', 
+                                    color: '#fca5a5', 
+                                    cursor: 'pointer', 
+                                    fontSize: '0.65rem',
+                                    whiteSpace: 'nowrap',
+                                    fontWeight: 600
+                                  }}
+                                >
+                                  {buttonText}
+                                </button>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!sendingOutreach && (
+              <button
+                type="button"
+                onClick={() => setOutreachProgress(prev => ({ ...prev, active: false }))}
+                className="btn-secondary"
+                style={{
+                  marginTop: '10px',
+                  padding: '10px 16px',
+                  width: '100%',
+                  borderRadius: '8px',
+                  fontWeight: 600,
+                  fontSize: '0.85rem'
+                }}
+              >
+                Close Progress Panel
+              </button>
+            )}
           </div>
         </div>
       )}

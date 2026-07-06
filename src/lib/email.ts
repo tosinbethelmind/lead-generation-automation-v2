@@ -109,7 +109,8 @@ export async function sendSmtpMessage(to: string, subject: string, body: string,
       user: config.smtpUser,
       pass: config.smtpPass,
     },
-  });
+    family: 4 // Force IPv4 connection to prevent local network IPv6 unreachable errors
+  } as any);
 
   const senderName = config.smtpSenderName || 'ApexReach';
   const fromEmail = config.smtpFrom || config.smtpUser;

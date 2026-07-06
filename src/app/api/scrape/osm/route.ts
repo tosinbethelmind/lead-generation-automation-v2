@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
-import { enrichFromWebsite } from '@/lib/leadEnricher';
+import { enrichLeadContacts } from '@/lib/leadEnricher';
 import { handleQueueDelegation } from '@/app/api/scrape/queue';
 
 // Configure execution timeout for Vercel serverless execution
@@ -332,27 +332,35 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // ── Website enrichment: fetch contact info from OSM-listed websites ────
-    const toEnrich = leadsToSave.filter(l => l.website && (!l.email || !l.phone_e164));
+    // Slice to target limit first, so we only run website enrichment for the leads we will actually save
+    const sliced = leadsToSave.slice(0, limit);
+
+    // ── Website/Search enrichment: fetch direct business websites and fall back to searches ─
+    const toEnrich = sliced.filter(l => !l.email || !l.phone_e164);
     if (toEnrich.length > 0) {
-      await addLog('OSM Scraper', 'INFO', `Enriching ${toEnrich.length} leads from their websites...`);
+      await addLog('OSM Scraper', 'INFO', `Enriching ${toEnrich.length} leads using website/search fallbacks...`);
       await Promise.allSettled(
         toEnrich.map(async (lead) => {
-          const enriched = await enrichFromWebsite(lead.website || '');
-          if (!lead.email && enriched.email) lead.email = enriched.email;
-          if (!lead.phone_e164 && enriched.phone) {
-            lead.phone_e164 = enriched.phone;
-            lead.phone_raw = enriched.phone;
-          }
-          if (enriched.email || enriched.phone) {
-            lead.notes = (lead.notes || '') + ` | Website enriched: phone=${enriched.phone || 'none'}, email=${enriched.email || 'none'}`;
+          try {
+            const enriched = await enrichLeadContacts(lead);
+            if (enriched.email) lead.email = enriched.email;
+            if (enriched.phone) {
+              lead.phone_e164 = enriched.phone;
+              lead.phone_raw = enriched.phone;
+            }
+            if (Object.keys(enriched.socials).length > 0) {
+              lead.social_links = JSON.stringify(enriched.socials);
+            }
+            if (enriched.enriched) {
+              lead.notes = (lead.notes || '') + ` | Enriched: phone=${enriched.phone || 'none'}, email=${enriched.email || 'none'}`;
+            }
+          } catch (err: any) {
+            console.error(`Failed to enrich contacts for ${lead.name}:`, err.message);
           }
         })
       );
     }
 
-    // Slice to target limit and save
-    const sliced = leadsToSave.slice(0, limit);
     const dbResult = await saveLeads(sliced);
     
     await addLog('OSM Scraper', 'SUCCESS', `OSM scraping complete using ${methodUsed}. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);

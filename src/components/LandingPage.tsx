@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X, Clock } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { TransferRebuildOptions } from '@/components/TransferRebuildOptions';
 
 interface PreviewData {
   lead: {
@@ -20,7 +21,12 @@ interface PreviewData {
     reviews_data?: string;
     photos_data?: string;
     social_links?: string;
-    services_data?: string;
+    website?: string;
+    cmsPlatform?: string;
+    cmsConfidence?: number;
+    upgradeStrategy?: string;
+    pluginSuggestions?: string | string[];
+    embedNote?: string;
   };
   theme: {
     primary: string;
@@ -68,6 +74,7 @@ interface LandingPageProps {
 
 export default function LandingPage({ data, leadId, isPreview = false }: LandingPageProps) {
   const { lead, theme, copy, paymentConfig } = data;
+  const hasWebsite = !!(lead.website && lead.website.trim() && lead.website.toLowerCase() !== 'none');
 
   const pitch = data.pitch || {
     categoryKey: 'general',
@@ -1135,13 +1142,17 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               letterSpacing: '0.05em'
             }}>ApexReach Demo</span>
             <p style={{ fontSize: '0.85rem', color: '#cbd5e1', margin: 0, fontWeight: 500 }} className="hide-mobile">
-              Hey <strong>{lead.name}</strong>, we custom-built this site based on your Google rating!
+              {hasWebsite 
+                ? <>Hey <strong>{lead.name}</strong>, we custom-built these automation upgrades for your website!</>
+                : <>Hey <strong>{lead.name}</strong>, we custom-built this site based on your Google rating!</>}
             </p>
           </div>
 
           {/* Countdown Timer Badge */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} className="hide-mobile">
-            <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>⏰ RESERVED DOMAIN EXPIRES IN:</span>
+            <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>
+              {hasWebsite ? '⏰ UPGRADE OFFER RESERVED FOR:' : '⏰ RESERVED DOMAIN EXPIRES IN:'}
+            </span>
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               {Object.entries(timeLeft).map(([unit, value]) => (
                 <div key={unit} style={{ display: 'flex', alignItems: 'center' }}>
@@ -1195,7 +1206,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               boxShadow: '0 0 15px rgba(2, 132, 199, 0.4)',
               transition: 'all 0.2s',
             }}>
-              🔒 Claim My Custom Website & Domain
+              {hasWebsite ? '🔒 Claim My Website Upgrade' : '🔒 Claim My Custom Website & Domain'}
             </a>
           </div>
         </div>
@@ -1228,6 +1239,24 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             <Star style={{ color: '#fbbf24', fill: '#fbbf24' }} size={16} />
             <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Rated {lead.rating} Stars by {lead.reviews_count} Locals</span>
           </div>
+          {hasWebsite && lead.cmsPlatform && (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(6px)',
+              borderRadius: '99px',
+              padding: '4px 12px',
+              border: '1px solid rgba(255,255,255,0.2)',
+              marginBottom: '16px',
+            }}>
+              <ShieldCheck size={14} style={{ color: '#10b981' }} />
+              <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#fff' }}>
+                {lead.cmsPlatform.charAt(0).toUpperCase() + lead.cmsPlatform.slice(1)} – {(lead.upgradeStrategy || 'full_rebuild').replace('_', ' ')}
+              </span>
+            </div>
+          )}
 
           <h1 style={{ 
             fontSize: 'clamp(2.2rem, 5vw, 4rem)', 
@@ -1264,7 +1293,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
               transition: 'all 0.2s'
             }}>
-              {isPreview ? '🔒 Secure & Claim My Custom Website' : copy.ctaText} <ArrowRight size={18} />
+              {isPreview 
+                ? (hasWebsite ? '🔒 Secure & Claim My Website Upgrade' : '🔒 Secure & Claim My Custom Website')
+                : copy.ctaText} <ArrowRight size={18} />
             </a>
             {lead.phone_raw && (
               <a href={`tel:${lead.phone_e164}`} className="btn-hover-effect" style={{
@@ -1537,7 +1568,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 pointerEvents: 'none'
               }}></div>
 
-              <span style={{
+               <span style={{
                 background: 'rgba(255, 255, 255, 0.2)',
                 color: '#ffffff',
                 fontSize: '0.8rem',
@@ -1548,14 +1579,16 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 letterSpacing: '0.05em',
                 display: 'inline-block',
                 marginBottom: '20px'
-              }}>🔒 Reserved Domain & Website Preview</span>
+              }}>{hasWebsite ? '🔒 Website Upgrade & Automation Preview' : '🔒 Reserved Domain & Website Preview'}</span>
 
               <h2 className="font-heading" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, margin: '0 0 16px 0', lineHeight: 1.2 }}>
-                Lock In Your Custom Platform Before It Expires
+                {hasWebsite ? 'Lock In Your Website Upgrade Before It Expires' : 'Lock In Your Custom Platform Before It Expires'}
               </h2>
 
               <p style={{ fontSize: 'clamp(0.95rem, 2vw, 1.15rem)', opacity: 0.9, maxWidth: '650px', margin: '0 auto 36px', lineHeight: 1.6 }}>
-                We have reserved <strong>{lead.name.toLowerCase().replace(/\s+/g, '')}.com.ng</strong> (and options for .com) specifically for this build. Claim now to launch your auto-pilot customer generation system within 24 hours.
+                {hasWebsite 
+                  ? <>We have designed these custom automation tools specifically for your website. Claim now to integrate your auto-pilot customer generation system within 24 hours.</>
+                  : <>We have reserved <strong>{lead.name.toLowerCase().replace(/\s+/g, '')}.com.ng</strong> (and options for .com) specifically for this build. Claim now to launch your auto-pilot customer generation system within 24 hours.</>}
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
@@ -1573,7 +1606,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15)',
                   transition: 'all 0.2s'
                 }}>
-                  Secure My Custom Website & Domain <ArrowRight size={20} />
+                  {hasWebsite ? 'Secure My Website Upgrade & Automations' : 'Secure My Custom Website & Domain'} <ArrowRight size={20} />
                 </a>
                 
                 <span style={{ fontSize: '0.85rem', opacity: 0.8, fontWeight: 500 }}>
@@ -1607,139 +1640,253 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 borderRadius: '99px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
-              }}>Step 1: Choose Website Automations</span>
+              }}>{hasWebsite ? 'Step 1: Choose System Automations' : 'Step 1: Choose Website Automations'}</span>
               <h2 className="font-heading" style={{ fontSize: '2.2rem', fontWeight: 700, color: '#1f2937', marginTop: '16px', marginBottom: '12px' }}>
-                Select Interactive Features for Your Site
+                {hasWebsite ? 'Select Interactive Features for Your Website' : 'Select Interactive Features for Your Site'}
               </h2>
               <p style={{ color: '#64748b', maxWidth: '600px', margin: '0 auto 30px', fontSize: '0.95rem', lineHeight: 1.5 }}>
-                Activate the tools you want included on your live business website. Click <strong>Test Demo</strong> to preview how each automation works instantly.
+                {hasWebsite 
+                  ? 'Activate the tools you want integrated with your business website. Click Test Demo to preview how each automation works instantly.'
+                  : 'Activate the tools you want included on your live business website. Click Test Demo to preview how each automation works instantly.'}
               </p>
 
-              {/* Grid of feature cards */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                gap: '20px',
-                marginBottom: '40px',
-                textAlign: 'left'
-              }}>
-                {[
-                  {
-                    id: 'quote_estimator',
-                    icon: '📊',
-                    title: 'Project Estimator & Invoicing',
-                    desc: 'Let clients calculate service price quotes in real-time and generate branded invoices.'
-                  },
-                  {
-                    id: 'patient_intake',
-                    icon: '🗓️',
-                    title: 'Appointment Booking & Intake',
-                    desc: 'Let clients self-schedule appointments and fill out digital intake forms.'
-                  },
-                  {
-                    id: 'ecommerce',
-                    icon: '🛒',
-                    title: 'Paystack Store Checkout',
-                    desc: 'Sell products online with shopping cart checkout and secure credit card payments.'
-                  },
-                  {
-                    id: 'vehicle_valuation',
-                    icon: '🚗',
-                    title: 'Smart Valuation Calculator',
-                    desc: 'Offer prospective clients instant asset appraisals to capture high-value sales leads.'
-                  },
-                  {
-                    id: 'table_reservation',
-                    icon: '🍽️',
-                    title: 'Table & Seat Reservation',
-                    desc: 'Allow guests to reserve dining tables, pick time slots, and pre-order food.'
-                  }
-                ].map((feat) => {
-                  const isSelected = selectedFeatures.includes(feat.id);
-                  const isActiveDemo = activeWidget === feat.id;
-
-                  return (
-                    <div
-                      key={feat.id}
-                      style={{
-                        background: '#ffffff',
-                        border: isSelected ? `2px solid ${theme.primary}` : '1px solid #e2e8f0',
-                        borderRadius: '16px',
-                        padding: '24px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        gap: '16px',
-                        boxShadow: isSelected ? '0 10px 25px -5px rgba(0, 0, 0, 0.05)' : '0 4px 6px -1px rgba(0, 0, 0, 0.02)',
-                        transition: 'all 0.2s ease',
-                        position: 'relative'
-                      }}
-                    >
-                      {isSelected && (
-                        <span style={{
-                          position: 'absolute',
-                          top: '12px',
-                          right: '12px',
-                          background: theme.primary,
-                          color: '#ffffff',
-                          fontSize: '0.7rem',
-                          fontWeight: 700,
-                          padding: '3px 8px',
-                          borderRadius: '12px'
+              {hasWebsite ? (
+                <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+                  {/* Platform Badge Card */}
+                  <div style={{
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '16px',
+                    padding: '24px',
+                    marginBottom: '32px',
+                    boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.05)',
+                    textAlign: 'left'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{
+                          background: theme.primary + '10',
+                          color: theme.primary,
+                          padding: '10px',
+                          borderRadius: '12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
                         }}>
-                          ✓ Active
-                        </span>
-                      )}
-                      <div>
-                        <div style={{ fontSize: '2rem', marginBottom: '12px' }}>{feat.icon}</div>
-                        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1f2937', marginBottom: '8px', marginTop: 0 }}>
-                          {feat.title}
-                        </h3>
-                        <p style={{ fontSize: '0.82rem', color: '#64748b', margin: 0, lineHeight: 1.4 }}>
-                          {feat.desc}
-                        </p>
+                          <ShieldCheck size={24} />
+                        </div>
+                        <div>
+                          <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1f2937' }}>
+                            Website Modernization Profile
+                          </h4>
+                          <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                            CMS & Performance Audit Analysis
+                          </span>
+                        </div>
                       </div>
-
-                      <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
-                        <button
-                          type="button"
-                          onClick={() => toggleFeature(feat.id)}
-                          style={{
-                            flex: 1,
-                            padding: '8px 12px',
-                            borderRadius: '8px',
-                            border: isSelected ? `1px solid ${theme.primary}` : '1px solid #cbd5e1',
-                            background: isSelected ? 'transparent' : '#ffffff',
-                            color: isSelected ? theme.primary : '#4b5563',
-                            fontSize: '0.8rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            textAlign: 'center'
-                          }}
-                        >
-                          {isSelected ? 'Disable' : 'Add to Site'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => { setActiveWidget(feat.id); setDemoStatus(null); }}
-                          style={{
-                            padding: '8px 12px',
-                            borderRadius: '8px',
-                            border: 'none',
-                            background: isActiveDemo ? 'rgba(2, 132, 199, 0.1)' : '#f1f5f9',
-                            color: isActiveDemo ? theme.primary : '#4b5563',
-                            fontSize: '0.8rem',
-                            fontWeight: 700,
-                            cursor: 'pointer'
-                          }}
-                        >
-                          ⚡ Test Demo
-                        </button>
+                      <div style={{
+                        background: '#10b98115',
+                        color: '#10b981',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        padding: '6px 12px',
+                        borderRadius: '99px',
+                        border: '1px solid #10b98125'
+                      }}>
+                        {lead.cmsPlatform ? lead.cmsPlatform.toUpperCase() : 'DETECTED'}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+                      <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '12px' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginBottom: '4px' }}>Detection Confidence</span>
+                        <strong style={{ fontSize: '0.95rem', color: '#1f2937' }}>
+                          {lead.cmsConfidence ? `${lead.cmsConfidence}%` : 'High (Fingerprinted)'}
+                        </strong>
+                      </div>
+                      <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '12px' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginBottom: '4px' }}>Recommended Path</span>
+                        <strong style={{ fontSize: '0.95rem', color: '#1f2937' }}>
+                          {lead.upgradeStrategy === 'full_rebuild' ? 'Full Static Rebuild' : 
+                           lead.upgradeStrategy === 'plugin' ? 'WordPress/CMS Plugin' : 'Script Embed Integration'}
+                        </strong>
+                      </div>
+                    </div>
+
+                    {lead.pluginSuggestions && (
+                      <div style={{ marginBottom: '16px' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', display: 'block', marginBottom: '8px' }}>
+                          Recommended Enhancements:
+                        </span>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          {(Array.isArray(lead.pluginSuggestions) ? lead.pluginSuggestions : JSON.parse(lead.pluginSuggestions || '[]')).map((plugin: string, idx: number) => (
+                            <span key={idx} style={{
+                              background: '#eff6ff',
+                              color: '#1d4ed8',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              padding: '4px 10px',
+                              borderRadius: '6px',
+                              border: '1px solid #bfdbfe'
+                            }}>
+                              🔌 {plugin}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {lead.embedNote && (
+                      <div style={{
+                        background: '#fffbeb',
+                        border: '1px solid #fde68a',
+                        borderRadius: '10px',
+                        padding: '12px 16px',
+                        fontSize: '0.8rem',
+                        color: '#b45309',
+                        lineHeight: 1.4
+                      }}>
+                        💡 <strong>Developer Note:</strong> {lead.embedNote}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* strategy & feature customizer */}
+                  <TransferRebuildOptions 
+                    lead={lead} 
+                    onSuccess={(newPreviewUrl) => {
+                      window.location.href = newPreviewUrl;
+                    }}
+                  />
+                </div>
+              ) : (
+                /* Grid of feature cards */
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                  gap: '20px',
+                  marginBottom: '40px',
+                  textAlign: 'left'
+                }}>
+                  {[
+                    {
+                      id: 'quote_estimator',
+                      icon: '📊',
+                      title: 'Project Estimator & Invoicing',
+                      desc: 'Let clients calculate service price quotes in real-time and generate branded invoices.'
+                    },
+                    {
+                      id: 'patient_intake',
+                      icon: '🗓️',
+                      title: 'Appointment Booking & Intake',
+                      desc: 'Let clients self-schedule appointments and fill out digital intake forms.'
+                    },
+                    {
+                      id: 'ecommerce',
+                      icon: '🛒',
+                      title: 'Paystack Store Checkout',
+                      desc: 'Sell products online with shopping cart checkout and secure credit card payments.'
+                    },
+                    {
+                      id: 'vehicle_valuation',
+                      icon: '🚗',
+                      title: 'Smart Valuation Calculator',
+                      desc: 'Offer prospective clients instant asset appraisals to capture high-value sales leads.'
+                    },
+                    {
+                      id: 'table_reservation',
+                      icon: '🍽️',
+                      title: 'Table & Seat Reservation',
+                      desc: 'Allow guests to reserve dining tables, pick time slots, and pre-order food.'
+                    }
+                  ].map((feat) => {
+                    const isSelected = selectedFeatures.includes(feat.id);
+                    const isActiveDemo = activeWidget === feat.id;
+
+                    return (
+                      <div
+                        key={feat.id}
+                        style={{
+                          background: '#ffffff',
+                          border: isSelected ? `2px solid ${theme.primary}` : '1px solid #e2e8f0',
+                          borderRadius: '16px',
+                          padding: '24px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          gap: '16px',
+                          boxShadow: isSelected ? '0 10px 25px -5px rgba(0, 0, 0, 0.05)' : '0 4px 6px -1px rgba(0, 0, 0, 0.02)',
+                          transition: 'all 0.2s ease',
+                          position: 'relative'
+                        }}
+                      >
+                        {isSelected && (
+                          <span style={{
+                            position: 'absolute',
+                            top: '12px',
+                            right: '12px',
+                            background: theme.primary,
+                            color: '#ffffff',
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            padding: '3px 8px',
+                            borderRadius: '12px'
+                          }}>
+                            ✓ Active
+                          </span>
+                        )}
+                        <div>
+                          <div style={{ fontSize: '2rem', marginBottom: '12px' }}>{feat.icon}</div>
+                          <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1f2937', marginBottom: '8px', marginTop: 0 }}>
+                            {feat.title}
+                          </h3>
+                          <p style={{ fontSize: '0.82rem', color: '#64748b', margin: 0, lineHeight: 1.4 }}>
+                            {feat.desc}
+                          </p>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                          <button
+                            type="button"
+                            onClick={() => toggleFeature(feat.id)}
+                            style={{
+                              flex: 1,
+                              padding: '8px 12px',
+                              borderRadius: '8px',
+                              border: isSelected ? `1px solid ${theme.primary}` : '1px solid #cbd5e1',
+                              background: isSelected ? 'transparent' : '#ffffff',
+                              color: isSelected ? theme.primary : '#4b5563',
+                              fontSize: '0.8rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              textAlign: 'center'
+                            }}
+                          >
+                            {isSelected ? 'Disable' : 'Add to Site'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setActiveWidget(feat.id); setDemoStatus(null); }}
+                            style={{
+                              padding: '8px 12px',
+                              borderRadius: '8px',
+                              border: 'none',
+                              background: isActiveDemo ? 'rgba(2, 132, 199, 0.1)' : '#f1f5f9',
+                              color: isActiveDemo ? theme.primary : '#4b5563',
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            ⚡ Test Demo
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
 
               {/* Demo Section Header */}
               <div style={{ margin: '40px 0 20px', textAlign: 'center' }}>
@@ -2309,7 +2456,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             {!claimed ? (
               <>
                 <ShieldCheck size={48} style={{ color: theme.primary, margin: '0 auto 20px' }} />
-                <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937', marginBottom: '12px' }}>Claim This Website & Domain</h2>
+                 <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937', marginBottom: '12px' }}>
+                  {hasWebsite ? 'Claim My Website Upgrade & Automations' : 'Claim This Website & Domain'}
+                </h2>
                 
                 {/* Social Proof Counter Banner */}
                 <div style={{
@@ -2328,11 +2477,19 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   textAlign: 'left',
                   lineHeight: 1.4
                 }}>
-                  <span>🔥 <strong>4 similar businesses in {lead.city || 'your area'}</strong> have already claimed their custom platforms this week! Claim yours now to lock in this design and secure your local domain.</span>
+                  {hasWebsite ? (
+                    <span>🔥 <strong>4 similar businesses in {lead.city || 'your area'}</strong> have upgraded their platforms this week! Claim yours now to lock in these features.</span>
+                  ) : (
+                    <span>🔥 <strong>4 similar businesses in {lead.city || 'your area'}</strong> have already claimed their custom platforms this week! Claim yours now to lock in this design and secure your local domain.</span>
+                  )}
                 </div>
 
                 <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '30px', lineHeight: 1.5 }}>
-                  This is a live responsive preview of the website we designed for <strong>{lead.name}</strong>. Provide your details below to claim ownership, customize content, and launch.
+                  {hasWebsite ? (
+                    <>This is a live responsive preview of the website upgrade we designed for <strong>{lead.name}</strong>. Provide your details below to claim and integrate these automations.</>
+                  ) : (
+                    <>This is a live responsive preview of the website we designed for <strong>{lead.name}</strong>. Provide your details below to claim ownership, customize content, and launch.</>
+                  )}
                 </p>
 
                 <form onSubmit={handleClaimSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'left' }}>
@@ -2551,7 +2708,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   </button>
 
                   <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Or need custom layout/integrations?</span>
+                    <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                      {hasWebsite ? 'Or need other custom integrations?' : 'Or need custom layout/integrations?'}
+                    </span>
                     <button 
                       type="button" 
                       onClick={handleEscalate} 
@@ -2564,6 +2723,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                         cursor: 'pointer',
                         textDecoration: 'underline',
                       }}
+                      onMouseEnter={(e) => e.currentTarget.style.color = '#0284c7'}
                     >
                       Talk to a developer for custom requirements
                     </button>
@@ -2575,7 +2735,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 <Award size={64} style={{ color: '#10b981', margin: '0 auto 24px' }} />
                 <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937', marginBottom: '12px' }}>Request Submitted!</h2>
                 <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '24px' }}>
-                  {claimMessage || `Thank you! We've received your request to claim the website and domain for ${lead.name}. Our automation is triggering a deployment of your live files on GitHub and Vercel. We will contact you at the email provided to transfer ownership.`}
+                  {claimMessage || (hasWebsite 
+                    ? `Thank you! We've received your request to claim the website upgrade for ${lead.name}. Our automation is preparing the integration files. We will contact you at the email provided to finalize setup.` 
+                    : `Thank you! We've received your request to claim the website and domain for ${lead.name}. Our automation is triggering a deployment of your live files on GitHub and Vercel. We will contact you at the email provided to transfer ownership.`)}
                 </p>
                 <button 
                   onClick={() => setClaimed(false)}

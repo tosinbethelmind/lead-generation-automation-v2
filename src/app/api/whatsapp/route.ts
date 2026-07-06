@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getLeads, addLog, updateLeadStatus } from '@/lib/googleSheets';
+import { getLeads, addLog } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
-import { sendWhatsAppMessage } from '@/lib/whatsapp';
+import { OutreachManager } from '@/lib/outreachManager';
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * POST /api/whatsapp
- * Body: { leadIds: string[], dryRunOverride?: boolean }
+ * Body: { leadIds: string[], dryRunOverride?: boolean, customMessage?: string }
  */
 export async function POST(req: NextRequest) {
   try {
@@ -31,42 +33,35 @@ export async function POST(req: NextRequest) {
     const results: any[] = [];
     let sentCount = 0;
 
-    for (const leadId of leadIds) {
+    for (let i = 0; i < leadIds.length; i++) {
+      const leadId = leadIds[i];
       const lead = leadMap.get(leadId);
       if (!lead) continue;
 
-      const phone = lead.phone_e164 || lead.phone_raw;
-      if (!phone) {
-        await updateLeadStatus(leadId, 'ERROR', 'Skipped: Missing phone number');
-        results.push({ leadId, status: 'ERROR', details: 'Missing phone number' });
-        continue;
+      if (sentCount > 0 && !isDryRun) {
+        const delay = Math.floor(Math.random() * 15000) + 10000;
+        console.log(`[WhatsApp API Route] Sleeping for ${delay / 1000}s to mimic human behavior...`);
+        await sleep(delay);
       }
 
-      const previewUrl = `${origin}/preview/${leadId}`;
+      const cascadeResult = await OutreachManager.dispatchWithFallback(lead as any, origin, {
+        isDryRun,
+        customMessage,
+        channelsOverride: ['whatsapp']
+      });
 
-      if (isDryRun) {
-        const defaultTemplate = `Hi {{lead.name}},\n\nWe generated a custom landing page for your business. Check it out: {{previewUrl}}\n\nBest, {{businessSignature}}`;
-        const template = customMessage || config.whatsappMessageTemplate || defaultTemplate;
-        const msg = template
-          .replace(/{{\s*lead\.name\s*}}/g, lead.name)
-          .replace(/{{\s*previewUrl\s*}}/g, previewUrl)
-          .replace(/{{\s*businessSignature\s*}}/g, config.businessSignature || '')
-          .replace(/{{\s*signature\s*}}/g, config.businessSignature || '');
-
-        await updateLeadStatus(leadId, 'CONTACTED', `[DRY RUN] Simulated WhatsApp sent to ${phone}. Message: ${msg}`);
-        results.push({ leadId, status: 'CONTACTED', details: `[DRY RUN] Simulated to: ${phone}` });
+      if (cascadeResult.success) {
         sentCount++;
-      } else {
-        try {
-          await sendWhatsAppMessage(lead, previewUrl, origin, customMessage);
-          results.push({ leadId, status: 'CONTACTED', details: `WhatsApp sent to ${phone}` });
-          sentCount++;
-        } catch (err: any) {
-          console.error(`WhatsApp outreach failure for ${phone}:`, err);
-          await updateLeadStatus(leadId, 'ERROR', `WhatsApp API Failure: ${err.message}`);
-          results.push({ leadId, status: 'ERROR', details: err.message });
-        }
       }
+
+      results.push({
+        leadId,
+        name: lead.name,
+        status: cascadeResult.finalStatus,
+        details: cascadeResult.logs[cascadeResult.logs.length - 1],
+        logs: cascadeResult.logs,
+        channelResults: cascadeResult.channelResults
+      });
     }
 
     await addLog('WhatsApp Outreach', 'SUCCESS', `Finished WhatsApp outreach. Sent: ${sentCount}`);

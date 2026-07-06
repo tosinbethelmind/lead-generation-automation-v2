@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Lead, saveLeads, addLog, normalizePhone } from '@/lib/googleSheets';
 import { getRuntimeConfig, rotateKey } from '@/lib/localConfig';
-import { enrichFromWebsite, validateLeadWithAI } from '@/lib/leadEnricher';
+import { enrichLeadContacts, validateLeadWithAI } from '@/lib/leadEnricher';
 import { handleQueueDelegation } from '@/app/api/scrape/queue';
 
 // Configure execution timeout for Vercel serverless execution
@@ -164,7 +164,7 @@ export async function POST(req: NextRequest) {
     const placeRecords = (searchData.results || []).slice(0, limit);
     const newLeads: Partial<Lead>[] = [];
     
-    for (const record of placeRecords) {
+    const detailsPromises = placeRecords.map(async (record: any) => {
       const placeId = record.place_id;
       let rawPhone = '';
       let website = '';
@@ -176,7 +176,7 @@ export async function POST(req: NextRequest) {
       let servicesData = '';
       let editorialSummary = '';
       
-      // Fetch deep Place details to get contact and website information
+      // Fetch deep Place details in parallel
       try {
         const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=international_phone_number,formatted_phone_number,website,editorial_summary,opening_hours,photos,reviews,types&key=${apiKey}`;
         const detailsResp = await fetch(detailsUrl);
@@ -225,30 +225,14 @@ export async function POST(req: NextRequest) {
 
       if (rating < minRating) {
         console.log(`[Google Maps Scraper] Filtering out lead "${record.name}" due to low rating (${rating} < ${minRating})`);
-        continue;
+        return null;
       }
       if (reviews < minReviews) {
         console.log(`[Google Maps Scraper] Filtering out lead "${record.name}" due to low reviews count (${reviews} < ${minReviews})`);
-        continue;
+        return null;
       }
 
       let normPhone = rawPhone ? normalizePhone(rawPhone, 'NG') : null;
-      let email = '';
-      let websiteEnrichedPhone: string | null = null;
-      const hasWebsite = !!(website && website.trim());
-
-      if (hasWebsite) {
-        try {
-          const enriched = await enrichFromWebsite(website);
-          if (enriched.email) email = enriched.email;
-          if (enriched.phone) websiteEnrichedPhone = enriched.phone;
-        } catch (enrichErr) {
-          console.error(`Failed to enrich website ${website}:`, enrichErr);
-        }
-      }
-
-      const finalPhone = normPhone || websiteEnrichedPhone;
-      if (!finalPhone) continue;
 
       // Parse Lagos area/neighborhood if possible
       let area = 'Lagos';
@@ -257,6 +241,7 @@ export async function POST(req: NextRequest) {
         area = areaMatches[0];
       }
 
+      const hasWebsite = !!(website && website.trim());
       const leadObj: Partial<Lead> = {
         lead_id: `places_${placeId}`,
         source: 'GOOGLE',
@@ -265,9 +250,9 @@ export async function POST(req: NextRequest) {
         address,
         area,
         city: 'Lagos',
-        phone_e164: finalPhone,
-        phone_raw: rawPhone || websiteEnrichedPhone || '',
-        email: email || '',
+        phone_e164: normPhone || '',
+        phone_raw: rawPhone || '',
+        email: '',
         website: website || '',
         rating,
         reviews_count: reviews,
@@ -283,7 +268,7 @@ export async function POST(req: NextRequest) {
           ? `${record.name} is a local business in ${area}, Lagos. They have a basic website: ${website} but lack online booking or payment gateway automation.`
           : `${record.name} is a local business in ${area}, Lagos with a strong Google rating of ${rating} stars (${reviews} reviews) — but no website yet.`),
         notes: hasWebsite
-          ? `Imported via Google Places API. Has basic website: ${website}. Email: ${email || 'none'}. Pitch: Automation & Premium Feature Upgrade.`
+          ? `Imported via Google Places API. Has basic website: ${website}. Pitch: Automation & Premium Feature Upgrade.`
           : `Imported via Google Places API. No website detected on place details.`,
         business_hours: businessHours,
         reviews_data: reviewsData,
@@ -292,7 +277,48 @@ export async function POST(req: NextRequest) {
         social_links: ''
       };
 
-      newLeads.push(leadObj);
+      return { leadObj, hasWebsite };
+    });
+
+    const resolvedRecords = await Promise.all(detailsPromises);
+    const validResolved = resolvedRecords.filter((item): item is Exclude<typeof item, null> => item !== null);
+    
+    // We want to enrich any lead missing email or phone_e164
+    const toEnrich = validResolved.filter(item => !item.leadObj.email || !item.leadObj.phone_e164);
+    const noEnrichNeeded = validResolved.filter(item => item.leadObj.email && item.leadObj.phone_e164);
+
+    for (const item of noEnrichNeeded) {
+      if (item.leadObj.phone_e164) {
+        newLeads.push(item.leadObj);
+      }
+    }
+
+    if (toEnrich.length > 0) {
+      await addLog('Google Maps Scraper', 'INFO', `Enriching website/search contact info for ${toEnrich.length} leads in parallel...`);
+      await Promise.allSettled(
+        toEnrich.map(async (item) => {
+          const lead = item.leadObj;
+          try {
+            const enriched = await enrichLeadContacts(lead);
+            if (enriched.email) lead.email = enriched.email;
+            if (enriched.phone) {
+              lead.phone_e164 = enriched.phone;
+              lead.phone_raw = enriched.phone;
+            }
+            if (enriched.socials && Object.keys(enriched.socials).length > 0) {
+              lead.social_links = JSON.stringify(enriched.socials);
+            }
+            if (enriched.enriched) {
+              lead.notes = lead.notes + ` | Enriched: phone=${enriched.phone || 'none'}, email=${enriched.email || 'none'}`;
+            }
+          } catch (enrichErr: any) {
+            console.error(`Failed to enrich contacts for ${lead.name}:`, enrichErr.message);
+          }
+          if (lead.phone_e164) {
+            newLeads.push(lead);
+          }
+        })
+      );
     }
     
     const finalLeads: Partial<Lead>[] = [];
@@ -306,7 +332,7 @@ export async function POST(req: NextRequest) {
             return { leadObj, aiCheck };
           } catch (err: any) {
             console.error(`AI check failed for lead ${leadObj.name}:`, err.message);
-            return { leadObj, aiCheck: { isRelevant: true, score: 10, reason: 'AI check failed' } };
+            return { leadObj, aiCheck: { isRelevant: true, score: 10, reason: 'AI check failed', pitchAngle: leadObj.website ? 'CRM Integration & WhatsApp Automation' : 'New Website Design' } };
           }
         })
       );
@@ -316,7 +342,7 @@ export async function POST(req: NextRequest) {
           console.log(`[Google Maps Scraper] Filtering out lead "${leadObj.name}" due to AI scoring: ${aiCheck.score}/10. Reason: ${aiCheck.reason}`);
           continue;
         }
-        leadObj.notes = `${leadObj.notes} AI Relevance Score: ${aiCheck.score}/10 (${aiCheck.reason})`;
+        leadObj.notes = `${leadObj.notes} AI Relevance Score: ${aiCheck.score}/10 (${aiCheck.reason})${(aiCheck as any).pitchAngle ? ` [pitch: ${(aiCheck as any).pitchAngle}]` : ''}`;
         finalLeads.push(leadObj);
       }
     } else {

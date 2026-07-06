@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRuntimeConfig, getMatchingSecretKey } from '@/lib/localConfig';
+import { getActiveLeadRepository } from '@/lib/googleSheets';
+import { calculateLeadClaimFee } from '@/lib/pricing';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,7 +14,14 @@ export async function POST(req: NextRequest) {
 
     const config = getRuntimeConfig();
     const secretKey = getMatchingSecretKey(publicKey);
-    const feeNGN = config.claimFeeNGN || 0;
+    
+    const repo = getActiveLeadRepository();
+    const lead = await repo.getLeadById(leadId);
+    if (!lead) {
+      return NextResponse.json({ error: `Lead with ID ${leadId} not found` }, { status: 404 });
+    }
+
+    const feeNGN = calculateLeadClaimFee(lead, config);
 
     if (!secretKey) {
       return NextResponse.json({ error: 'Paystack Secret Key is not configured on the server.' }, { status: 500 });

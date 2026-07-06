@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getLeads, addLog, updateLeadStatus } from '@/lib/googleSheets';
+import { getLeads, addLog } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
-import { sendSmsMessage, replaceSmsPlaceholders, cleanPhoneNumber } from '@/lib/sms';
+import { OutreachManager } from '@/lib/outreachManager';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -20,9 +20,8 @@ export async function POST(req: NextRequest) {
 
     const config = getRuntimeConfig();
     const isDryRun = dryRunOverride !== undefined ? dryRunOverride : config.dryRun;
-    const provider = config.smsProvider || 'gateway';
 
-    await addLog('SMS Outreach', 'START', `Launching SMS outreach (${provider}) for ${leadIds.length} leads (Dry Run: ${isDryRun}).`);
+    await addLog('SMS Outreach', 'START', `Launching SMS outreach for ${leadIds.length} leads (Dry Run: ${isDryRun}).`);
 
     const leads = await getLeads();
     const leadMap = new Map(leads.map(l => [l.lead_id, l]));
@@ -35,41 +34,28 @@ export async function POST(req: NextRequest) {
       const lead = leadMap.get(leadId);
       if (!lead) continue;
 
-      const rawPhone = lead.phone_e164 || lead.phone_raw;
-      if (!rawPhone) {
-        await updateLeadStatus(leadId, 'ERROR', 'Skipped: Missing phone number');
-        results.push({ leadId, status: 'ERROR', details: 'Missing phone number' });
-        continue;
-      }
-
-      const phone = cleanPhoneNumber(rawPhone);
-      const previewUrl = `${origin}/preview/${leadId}`;
-
-      // Rate limit throttling for real carrier gateways/APIs: wait 1 second between dispatches
       if (i > 0 && !isDryRun) {
-        await sleep(1000);
+        await sleep(1000); // 1s throttle delay for SMS
       }
 
-      if (isDryRun) {
-        const defaultTemplate = 'Hello {{lead.name}}, please check {{previewUrl}} for details. {{signature}}';
-        const template = customMessage || config.smsMessageTemplate || defaultTemplate;
-        const msg = replaceSmsPlaceholders(template, lead, previewUrl);
+      const cascadeResult = await OutreachManager.dispatchWithFallback(lead as any, origin, {
+        isDryRun,
+        customMessage,
+        channelsOverride: ['sms']
+      });
 
-        await updateLeadStatus(leadId, 'CONTACTED', `[DRY RUN] Simulated SMS (${provider}) sent to ${phone}. Message: ${msg}`);
-        results.push({ leadId, status: 'CONTACTED', details: `[DRY RUN] Simulated to: ${phone}` });
+      if (cascadeResult.success) {
         sentCount++;
-      } else {
-        try {
-          const sendDetails = await sendSmsMessage(lead, previewUrl, customMessage);
-          await updateLeadStatus(leadId, 'CONTACTED', `SMS sent via ${provider} to ${phone}`);
-          results.push({ leadId, status: 'CONTACTED', details: sendDetails });
-          sentCount++;
-        } catch (err: any) {
-          console.error(`SMS outreach failure for ${phone}:`, err);
-          await updateLeadStatus(leadId, 'ERROR', `SMS API Failure (${provider}): ${err.message}`);
-          results.push({ leadId, status: 'ERROR', details: err.message });
-        }
       }
+
+      results.push({
+        leadId,
+        name: lead.name,
+        status: cascadeResult.finalStatus,
+        details: cascadeResult.logs[cascadeResult.logs.length - 1],
+        logs: cascadeResult.logs,
+        channelResults: cascadeResult.channelResults
+      });
     }
 
     await addLog('SMS Outreach', 'SUCCESS', `Finished SMS outreach. Sent: ${sentCount}`);

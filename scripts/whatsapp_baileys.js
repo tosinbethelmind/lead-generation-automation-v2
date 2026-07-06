@@ -74,7 +74,7 @@ async function connectToWhatsApp() {
   sock.ev.on('creds.update', saveCreds);
 }
 
-// REST Endpoint to send message
+// REST Endpoint to send message with human-like typing simulation
 app.post('/send', async (req, res) => {
   const { phone, message } = req.body;
   if (!phone || !message) {
@@ -89,6 +89,17 @@ app.post('/send', async (req, res) => {
     const cleanPhone = phone.replace(/\D/g, '');
     const jid = `${cleanPhone}@s.whatsapp.net`;
     
+    // Simulate human typing
+    try {
+      await sock.sendPresenceUpdate('composing', jid);
+      // Typing duration depends on message length (approx 15ms per character, capped between 1.5s and 4s)
+      const typingDuration = Math.min(Math.max(message.length * 15, 1500), 4000);
+      await new Promise(resolve => setTimeout(resolve, typingDuration));
+      await sock.sendPresenceUpdate('paused', jid);
+    } catch (presenceErr) {
+      console.warn("[Baileys Service] Failed to send presence update, sending message anyway:", presenceErr.message);
+    }
+
     await sock.sendMessage(jid, { text: message });
     console.log(`[Baileys Service] Message successfully sent to ${cleanPhone}`);
     return res.json({ success: true, message: `Message sent to ${cleanPhone}` });
@@ -127,7 +138,7 @@ app.post('/logout', (req, res) => {
   }
 });
 
-const PORT = process.env.WHATSAPP_BAILEYS_PORT || 3006;
+const PORT = process.env.WHATSAPP_BAILEYS_PORT || 3007;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Baileys Custom WhatsApp service running on http://localhost:${PORT}`);
   connectToWhatsApp().catch(err => console.error("Error starting Baileys connect process:", err));
