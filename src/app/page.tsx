@@ -6330,8 +6330,8 @@ export default function Home() {
             <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>6. Jiji Bulk Messaging Outreach</h4>
-                <a href="https://jiji.ng" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#0af' }}>
-                  Jiji Nigeria →
+                <a href="https://jiji.ng/login.html" target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#60a5fa', textDecoration: 'underline', fontWeight: 500 }}>
+                  🔑 Open Jiji Login / Sign-up →
                 </a>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
@@ -6341,7 +6341,7 @@ export default function Home() {
                     type="text" 
                     value={config.jijiEmail || ''} 
                     onChange={(e) => setConfig({ ...config, jijiEmail: e.target.value })}
-                    placeholder="e.g. jijiuser@email.com"
+                    placeholder="e.g. jijiuser@email.com or +234..."
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
@@ -6355,8 +6355,16 @@ export default function Home() {
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
-                <div style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: '6px', color: '#f59e0b', fontSize: '0.8rem', background: 'rgba(245, 158, 11, 0.05)', padding: '10px 14px', borderRadius: '6px', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
-                  <span>⚠️ Credentials are stored in your database. Use a dedicated account, not your personal login.</span>
+                <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8rem', background: 'rgba(59, 130, 246, 0.05)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#60a5fa', fontWeight: 600 }}>
+                    <span>ℹ️ Account Isolation Recommended</span>
+                  </div>
+                  <div style={{ color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+                    To protect your main account from potential anti-spam restrictions, we highly recommend using a separate/secondary account. 
+                    <a href="https://jiji.ng/login.html" target="_blank" rel="noreferrer" style={{ color: '#60a5fa', marginLeft: '6px', fontWeight: 600, textDecoration: 'underline' }}>
+                      Click here to Register or Log In on Jiji Nigeria.
+                    </a>
+                  </div>
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Jiji Message Template</label>
