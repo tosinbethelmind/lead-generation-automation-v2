@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -12,6 +12,25 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [user, setUser] = React.useState<{ name: string; email: string; role: string; permissions: string[] } | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    fetch('/api/admin/me')
+      .then((res) => {
+        if (!res.ok) throw new Error('Not logged in');
+        return res.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          setUser(data.user);
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, [pathname]);
 
   // Simple client-side logout
   const handleLogout = () => {
@@ -19,23 +38,52 @@ export default function AdminLayout({
     router.push('/admin/login');
   };
 
+  const hasPermission = (permission: string) => {
+    if (!user) return false;
+    return user.role === 'super_admin' || user.permissions.includes('*') || user.permissions.includes(permission);
+  };
+
   const navItems = [
     {
       name: 'Overview',
       path: '/admin',
       icon: LayoutDashboard,
+      visible: true,
+    },
+    {
+      name: 'Specialise Solar Pipeline',
+      path: '/admin/solar-pipeline',
+      icon: Sun,
+      visible: true,
     },
     {
       name: 'Design Customize',
       path: '/admin/design',
       icon: Palette,
+      visible: loading || hasPermission('edit_design'),
     },
     {
       name: 'Domain & Hosting',
       path: '/admin/domain',
       icon: Globe,
+      visible: loading || hasPermission('manage_domains'),
     },
-  ];
+    {
+      name: 'Team & Security',
+      path: '/admin/team',
+      icon: Users,
+      visible: loading || hasPermission('manage_team'),
+    },
+  ].filter(item => item.visible);
+
+  const hasPageAccess = () => {
+    if (pathname === '/admin' || pathname === '/admin/login' || loading) return true;
+    if (pathname === '/admin/solar-pipeline') return true;
+    if (pathname === '/admin/design') return hasPermission('edit_design');
+    if (pathname === '/admin/domain') return hasPermission('manage_domains');
+    if (pathname === '/admin/team') return hasPermission('manage_team');
+    return true;
+  };
 
   // If we are on the login page, don't show the layout frame
   if (pathname === '/admin/login') {
@@ -50,10 +98,20 @@ export default function AdminLayout({
             <ShieldAlert />
           </div>
           <div>
-            <h3>ApexReach</h3>
+            <h3 style={{ fontSize: '0.85rem', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.2' }}>Bethelmind Analytics & Strategy</h3>
             <span className="brand-badge">Admin</span>
           </div>
         </div>
+
+        {user && (
+          <div className="user-profile-badge">
+            <div className="avatar">{user.name.charAt(0).toUpperCase()}</div>
+            <div className="info">
+              <span className="name">{user.name}</span>
+              <span className="role">{user.role.replace('_', ' ')}</span>
+            </div>
+          </div>
+        )}
 
         <nav className="sidebar-nav">
           {navItems.map((item) => {
@@ -94,7 +152,20 @@ export default function AdminLayout({
           </div>
         </header>
 
-        <div className="content-body">{children}</div>
+        <div className="content-body">
+          {!hasPageAccess() ? (
+            <div className="access-denied-container glass-panel">
+              <ShieldAlert className="denied-icon" />
+              <h2>Access Denied</h2>
+              <p>Your team member account does not have permission to access this panel.</p>
+              <Link href="/admin" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                Return to Dashboard
+              </Link>
+            </div>
+          ) : (
+            children
+          )}
+        </div>
       </main>
 
       <style jsx global>{`
@@ -324,6 +395,79 @@ export default function AdminLayout({
           .content-body {
             padding: 20px;
           }
+        }
+
+        .user-profile-badge {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 12px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
+          margin-bottom: 20px;
+        }
+        .user-profile-badge .avatar {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: var(--primary, #06b6d4);
+          color: #07090e;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 0.9rem;
+        }
+        .user-profile-badge .info {
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        .user-profile-badge .info .name {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #f8fafc;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+        .user-profile-badge .info .role {
+          font-size: 0.7rem;
+          color: #94a3b8;
+          text-transform: capitalize;
+        }
+
+        .access-denied-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 40px;
+          text-align: center;
+          background: rgba(239, 68, 68, 0.05);
+          border: 1px solid rgba(239, 68, 68, 0.1);
+          border-radius: 16px;
+          max-width: 500px;
+          margin: 60px auto;
+        }
+        .denied-icon {
+          width: 64px;
+          height: 64px;
+          color: #ef4444;
+          margin-bottom: 20px;
+        }
+        .access-denied-container h2 {
+          font-family: var(--font-title, 'Outfit', sans-serif);
+          font-size: 1.8rem;
+          font-weight: 700;
+          margin-bottom: 12px;
+          color: #f8fafc;
+        }
+        .access-denied-container p {
+          color: #94a3b8;
+          margin-bottom: 24px;
+          line-height: 1.5;
         }
       `}</style>
     </div>

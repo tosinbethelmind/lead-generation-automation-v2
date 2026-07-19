@@ -57,6 +57,8 @@ interface PreviewData {
     opayBankName?: string;
     opayAccountNumber?: string;
     opayAccountName?: string;
+    opayPublicKey?: string;
+    opayMerchantId?: string;
   };
   selectedFeatures?: string[];
   customInstructions?: string;
@@ -75,6 +77,7 @@ interface LandingPageProps {
 export default function LandingPage({ data, leadId, isPreview = false }: LandingPageProps) {
   const { lead, theme, copy, paymentConfig } = data;
   const hasWebsite = !!(lead.website && lead.website.trim() && lead.website.toLowerCase() !== 'none');
+  const websiteUrl = lead.website || '';
 
   const pitch = data.pitch || {
     categoryKey: 'general',
@@ -88,45 +91,107 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       'Instant WhatsApp notifications for new business proposals'
     ],
     whatsappSim: [
-      { sender: 'customer', text: 'Hi! I calculated a cost estimate of ₦400,000 for standard web automation.', timeOffsetMs: 500 },
+      { sender: 'customer', text: 'Hi! I calculated a cost estimate of ₦600,000 for standard web automation.', timeOffsetMs: 500 },
       { sender: 'bot', text: 'Hello! Branded PDF Estimate Quote #8283 has been dispatched to your email. An agent will contact you shortly.', timeOffsetMs: 1600 },
-      { sender: 'agent', text: '🔔 [New Quote Request] Client calculated ₦400,000 estimate. Contact: info@client.com. PDF Invoice #8283 generated. Logs synced to Google Sheets CRM.', timeOffsetMs: 3100 }
+      { sender: 'agent', text: '🔔 [New Quote Request] Client calculated ₦600,000 estimate. Contact: info@client.com. PDF Invoice #8283 generated. Logs synced to Google Sheets CRM.', timeOffsetMs: 3100 }
     ],
     invoiceDemo: {
       currency: '₦',
       taxRate: 0.075,
       items: [
-        { name: 'Standard Project Set-Up & Consulting Fee', price: 150000, qty: 1 },
-        { name: 'Implementation & Custom Development Service', price: 250000, qty: 1 }
+        { name: 'Standard Project Set-Up & Consulting Fee', price: 200000, qty: 1 },
+        { name: 'Implementation & Custom Development Service', price: 400000, qty: 1 }
       ]
     }
   };
 
   const [claimed, setClaimed] = useState(false);
 
-  // Countdown timer for preview expiration
-  const [timeLeft, setTimeLeft] = useState({ days: 4, hours: 16, minutes: 34, seconds: 12 });
+  // Test Alert Widget States
+  const [testAlertPhone, setTestAlertPhone] = useState('');
+  const [testAlertChannel, setTestAlertChannel] = useState<'whatsapp' | 'call'>('whatsapp');
+  const [testAlertLoading, setTestAlertLoading] = useState(false);
+  const [testAlertResult, setTestAlertResult] = useState<string | null>(null);
+
+  // Domain Checker States
+  const [domainSlug, setDomainSlug] = useState(() => {
+    const cleaned = lead.name ? lead.name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 20) : 'yourbusiness';
+    return cleaned;
+  });
+  const [domainStatus, setDomainStatus] = useState<'idle' | 'checking' | 'registrar'>('idle');
+  // Delayed test alert widget visibility
+  const [showTestAlert, setShowTestAlert] = useState(false);
+
+  const handleTestAlert = async () => {
+    if (!testAlertPhone.trim()) return;
+    setTestAlertLoading(true);
+    setTestAlertResult(null);
+    try {
+      const res = await fetch('/api/preview/test-alert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: testAlertPhone,
+          businessName: lead.name,
+          leadId,
+          channel: testAlertChannel
+        })
+      });
+      const data = await res.json();
+      setTestAlertResult(data.message || (data.success ? '✅ Alert sent! Check your phone.' : `❌ ${data.error}`));
+    } catch (err: any) {
+      setTestAlertResult('❌ Network error. Please try again.');
+    } finally {
+      setTestAlertLoading(false);
+    }
+  };
+
+  const handleDomainCheck = () => {
+    if (!domainSlug.trim()) return;
+    setDomainStatus('checking');
+    // After a brief delay, redirect the user to a real registrar to check availability
+    setTimeout(() => {
+      setDomainStatus('registrar');
+    }, 900);
+  };
+
+  // Countdown timer — persisted across page reloads via localStorage
+  const COUNTDOWN_DURATION_MS = 5 * 24 * 60 * 60 * 1000; // 5 days
+  const [timeLeft, setTimeLeft] = useState({ days: 4, hours: 23, minutes: 59, seconds: 59 });
 
   useEffect(() => {
-    if (!isPreview) return;
+    if (!isPreview || typeof window === 'undefined') return;
+    const storageKey = `apex_countdown_${leadId}`;
+    let expiresAt: number;
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      expiresAt = parseInt(stored, 10);
+    } else {
+      expiresAt = Date.now() + COUNTDOWN_DURATION_MS;
+      localStorage.setItem(storageKey, String(expiresAt));
+    }
+
+    const computeTimeLeft = () => {
+      const remaining = Math.max(0, expiresAt - Date.now());
+      const totalSeconds = Math.floor(remaining / 1000);
+      return {
+        days: Math.floor(totalSeconds / 86400),
+        hours: Math.floor((totalSeconds % 86400) / 3600),
+        minutes: Math.floor((totalSeconds % 3600) / 60),
+        seconds: totalSeconds % 60,
+      };
+    };
+
+    setTimeLeft(computeTimeLeft());
     const interval = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        } else if (prev.days > 0) {
-          return { days: prev.days - 1, hours: 23, minutes: 59, seconds: 59 };
-        } else {
-          clearInterval(interval);
-          return prev;
-        }
-      });
+      const tl = computeTimeLeft();
+      setTimeLeft(tl);
+      if (tl.days === 0 && tl.hours === 0 && tl.minutes === 0 && tl.seconds === 0) {
+        clearInterval(interval);
+      }
     }, 1000);
     return () => clearInterval(interval);
-  }, [isPreview]);
+  }, [isPreview, leadId]);
 
   // Scroll tracker to trigger floating CTA
   const [showFloatingCta, setShowFloatingCta] = useState(false);
@@ -142,6 +207,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, [isPreview]);
+
+  // Delay the test alert widget so it doesn't compete with the hero pitch
+  useEffect(() => {
+    if (!isPreview) return;
+    const timer = setTimeout(() => setShowTestAlert(true), 12000);
+    return () => clearTimeout(timer);
   }, [isPreview]);
 
   // Dynamically load Google Fonts for headings and body
@@ -319,7 +391,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         businessName: lead.name,
         businessAddress: lead.address || 'Lagos, Nigeria',
         businessPhone: lead.phone_raw || '+234 123 4567',
-        signature: 'ApexReach Automations'
+        signature: 'Bethelmind Analytics & Strategy Automations'
       };
 
       setActiveModalInvoice(newInvoice);
@@ -875,6 +947,38 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   const [paymentMethod, setPaymentMethod] = useState<'paystack' | 'moniepoint' | 'opay'>('paystack');
   const [loadingOverlay, setLoadingOverlay] = useState(true);
 
+  // Graded automation package selection
+  const [selectedStrategy, setSelectedStrategy] = useState<'script_embed' | 'basic_presence' | 'plugin' | 'full_rebuild'>(
+    (lead.upgradeStrategy as any) || (hasWebsite ? 'script_embed' : 'basic_presence')
+  );
+
+  const getDynamicClaimFee = () => {
+    let base = 0;
+    if (selectedStrategy === 'full_rebuild') base = 600000;
+    else if (selectedStrategy === 'plugin') base = 250000;
+    else if (selectedStrategy === 'basic_presence') base = 150000;
+    else if (selectedStrategy === 'script_embed') base = 65000;
+    else base = 65000;
+
+    const featureCatalog = [
+      { id: 'quote_estimator', cost: 35000 },
+      { id: 'patient_intake', cost: 35000 },
+      { id: 'ecommerce', cost: 50000 },
+      { id: 'vehicle_valuation', cost: 30000 },
+      { id: 'table_reservation', cost: 25000 }
+    ];
+
+    let featuresCost = 0;
+    selectedFeatures.forEach((fid: string) => {
+      const f = featureCatalog.find((x) => x.id === fid);
+      if (f) {
+        featuresCost += f.cost;
+      }
+    });
+
+    return base + featuresCost;
+  };
+
   // Preloader Overlay timeout
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -946,24 +1050,30 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     }
   };
 
-  // Verify transaction if redirecting back from Paystack
+  // Verify transaction if redirecting back from payment gateway
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const paymentStatus = params.get('payment');
       const ref = params.get('reference');
+      const gateway = params.get('gateway');
       if (paymentStatus === 'verifying' && ref) {
-        verifyOnlinePayment(ref);
+        const resolvedGateway = gateway || (ref.startsWith('OPAY') ? 'opay' : 'paystack');
+        verifyOnlinePayment(ref, resolvedGateway);
       }
     }
   }, []);
 
-  const verifyOnlinePayment = async (reference: string) => {
+  const verifyOnlinePayment = async (reference: string, gateway: string) => {
     setClaimLoading(true);
-    setClaimMessage('Verifying your online payment with Paystack, please wait...');
+    const providerName = gateway === 'opay' ? 'OPay' : 'Paystack';
+    setClaimMessage(`Verifying your online payment with ${providerName}, please wait...`);
     setClaimed(true);
     try {
-      const res = await fetch(`/api/paystack/verify?reference=${encodeURIComponent(reference)}`);
+      const verifyUrl = gateway === 'opay'
+        ? `/api/opay/verify?reference=${encodeURIComponent(reference)}&leadId=${encodeURIComponent(leadId)}`
+        : `/api/paystack/verify?reference=${encodeURIComponent(reference)}`;
+      const res = await fetch(verifyUrl);
       const result = await res.json();
       if (!res.ok) {
         throw new Error(result.error || 'Payment verification failed.');
@@ -1012,10 +1122,15 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     e.preventDefault();
     setClaimLoading(true);
     try {
-      const hasOnlinePayment = paymentMethod === 'paystack' && paymentConfig?.claimFeeNGN && paymentConfig.claimFeeNGN > 0;
+      const feeNGN = getDynamicClaimFee();
+      const hasOnlinePayment = (
+        (paymentMethod === 'paystack' && paymentConfig?.paystackPublicKey) ||
+        (paymentMethod === 'opay' && paymentConfig?.opayPublicKey)
+      ) && feeNGN > 0;
 
       if (hasOnlinePayment) {
-        const res = await fetch('/api/paystack/initialize', {
+        const initializeUrl = paymentMethod === 'opay' ? '/api/opay/initialize' : '/api/paystack/initialize';
+        const res = await fetch(initializeUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1026,14 +1141,15 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             copy,
             selectedFeatures,
             customInstructions,
-            publicKey: paymentConfig?.paystackPublicKey
+            publicKey: paymentMethod === 'opay' ? paymentConfig?.opayPublicKey : paymentConfig?.paystackPublicKey,
+            upgradeStrategy: selectedStrategy
           })
         });
         const result = await res.json();
         if (!res.ok) {
-          throw new Error(result.error || 'Failed to initialize Paystack transaction');
+          throw new Error(result.error || `Failed to initialize ${paymentMethod === 'opay' ? 'OPay' : 'Paystack'} transaction`);
         }
-        // Redirect client to Paystack payment gateway
+        // Redirect client to payment gateway
         window.location.href = result.authorization_url;
         return;
       }
@@ -1046,7 +1162,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         theme,
         copy,
         selectedFeatures,
-        customInstructions
+        customInstructions,
+        upgradeStrategy: selectedStrategy
       };
 
       if (paymentMethod === 'moniepoint') {
@@ -1067,9 +1184,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
 
       let successMsg = result.message || 'Request submitted successfully!';
       if (paymentMethod === 'moniepoint') {
-        successMsg = `Manual bank transfer request submitted! Please transfer ₦${paymentConfig?.claimFeeNGN?.toLocaleString() || '0'} to the Moniepoint account listed below. Once verified, your website will be deployed and fully setup.`;
+        successMsg = `Manual bank transfer request submitted! Please transfer ₦${getDynamicClaimFee().toLocaleString()} to the Moniepoint account listed below. Once verified, your website will be deployed and fully setup.`;
       } else if (paymentMethod === 'opay') {
-        successMsg = `Manual bank transfer request submitted! Please transfer ₦${paymentConfig?.claimFeeNGN?.toLocaleString() || '0'} to the OPay account listed below. Once verified, your website will be deployed and fully setup.`;
+        successMsg = `Manual bank transfer request submitted! Please transfer ₦${getDynamicClaimFee().toLocaleString()} to the OPay account listed below. Once verified, your website will be deployed and fully setup.`;
       }
       setClaimMessage(successMsg);
       setClaimed(true);
@@ -1087,10 +1204,14 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     }
   };
 
+  const headingFontFamily = theme.headingFont || 'Cormorant Garamond';
+  const bodyFontFamily = theme.bodyFont || theme.font || 'Inter';
+
   return (
     <div className="font-body premium-mesh-bg" style={{ 
-      background: theme.bg, 
-      color: '#1e293b', 
+      background: theme.bg || '#050505', 
+      color: theme.text || '#f8fafc',
+      fontFamily: bodyFontFamily,
       minHeight: '100vh',
       position: 'relative',
       paddingTop: isPreview ? '64px' : '0px',
@@ -1100,7 +1221,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       {loadingOverlay && (
         <div className="preloader-overlay">
           <div className="preloader-spinner"></div>
-          <div className="preloader-logo font-heading">{lead.name}</div>
+          <div className="preloader-logo font-heading" style={{ fontFamily: headingFontFamily }}>{lead.name}</div>
         </div>
       )}
 
@@ -1108,7 +1229,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link 
-        href={`https://fonts.googleapis.com/css2?family=${(theme.headingFont || theme.font || 'Outfit').replace(/\s+/g, '+')}:wght@400;500;600;700;800&family=${(theme.bodyFont || theme.font || 'Inter').replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`} 
+        href={`https://fonts.googleapis.com/css2?family=${headingFontFamily.replace(/\s+/g, '+')}:ital,wght@0,300..700;1,300..700&family=${bodyFontFamily.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`} 
         rel="stylesheet" 
       />
 
@@ -1120,31 +1241,32 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           left: 0,
           right: 0,
           height: '64px',
-          background: 'rgba(9, 13, 22, 0.95)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'rgba(5, 5, 5, 0.95)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
           color: '#fff',
           zIndex: 1000,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: '0 24px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+          boxShadow: '0 4px 30px rgba(0,0,0,0.5)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ 
-              background: 'linear-gradient(135deg, #0284c7 0%, #14b8a6 100%)', 
+              background: 'linear-gradient(135deg, #d4af37 0%, #aa7c11 100%)', 
               fontSize: '0.7rem', 
               fontWeight: 700, 
               padding: '4px 8px', 
               borderRadius: '4px',
               textTransform: 'uppercase',
-              letterSpacing: '0.05em'
-            }}>ApexReach Demo</span>
-            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', margin: 0, fontWeight: 500 }} className="hide-mobile">
+              letterSpacing: '0.05em',
+              color: '#000'
+            }}>Exclusive Invitation</span>
+            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', margin: 0, fontWeight: 500, fontFamily: headingFontFamily }} className="hide-mobile">
               {hasWebsite 
-                ? <>Hey <strong>{lead.name}</strong>, we custom-built these automation upgrades for your website!</>
-                : <>Hey <strong>{lead.name}</strong>, we custom-built this site based on your Google rating!</>}
+                ? <>Exclusively prepared proposal & custom features for <strong>{lead.name}</strong></>
+                : <>Bespoke identity concept crafted for <strong>{lead.name}</strong></>}
             </p>
           </div>
 
@@ -1157,8 +1279,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               {Object.entries(timeLeft).map(([unit, value]) => (
                 <div key={unit} style={{ display: 'flex', alignItems: 'center' }}>
                   <span style={{
-                    background: 'rgba(239, 68, 68, 0.15)',
-                    color: '#f87171',
+                    background: 'rgba(212, 175, 55, 0.15)',
+                    color: '#d4af37',
                     fontSize: '0.85rem',
                     fontWeight: 700,
                     padding: '2px 6px',
@@ -1196,17 +1318,17 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               Need Custom Layout? Talk to Developer
             </button>
             <a href="#claim" className="btn-hover-effect" style={{
-              background: 'linear-gradient(135deg, #0284c7 0%, #14b8a6 100%)',
-              color: '#fff',
+              background: 'linear-gradient(135deg, #d4af37 0%, #aa7c11 100%)',
+              color: '#000',
               textDecoration: 'none',
               fontSize: '0.85rem',
               fontWeight: 700,
               padding: '8px 16px',
               borderRadius: '8px',
-              boxShadow: '0 0 15px rgba(2, 132, 199, 0.4)',
+              boxShadow: '0 0 15px rgba(212, 175, 55, 0.4)',
               transition: 'all 0.2s',
             }}>
-              {hasWebsite ? '🔒 Claim My Website Upgrade' : '🔒 Claim My Custom Website & Domain'}
+              {hasWebsite ? '🔒 Accept Bespoke Site upgrade' : '🔒 Accept Bespoke Site Proposal'}
             </a>
           </div>
         </div>
@@ -1218,7 +1340,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         minHeight: '75vh', 
         display: 'flex', 
         alignItems: 'center',
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80'})`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80'})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: '#fff',
@@ -1259,12 +1381,16 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           )}
 
           <h1 style={{ 
+            fontFamily: headingFontFamily,
             fontSize: 'clamp(2.2rem, 5vw, 4rem)', 
             lineHeight: 1.1, 
             fontWeight: 700, 
             marginBottom: '20px',
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-            letterSpacing: '-0.02em'
+            letterSpacing: '-0.02em',
+            background: 'linear-gradient(135deg, #ffffff 30%, #d4af37 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
           }}>{copy.heroTitle}</h1>
 
           <p style={{ 
@@ -1317,6 +1443,12 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               </a>
             )}
           </div>
+          {/* Price teaser below CTAs */}
+          {isPreview && (
+            <p style={{ marginTop: '20px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)', textAlign: 'center' }}>
+              Full website setup from <strong style={{ color: '#d4af37' }}>₦65,000</strong> — includes hosting, domain &amp; automation. Offer reserved exclusively for {lead.name}.
+            </p>
+          )}
         </div>
       </section>
 
@@ -1343,6 +1475,64 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           </div>
         </div>
       </section>
+
+      {/* What Happens Next — 3-step process (preview only) */}
+      {isPreview && (
+        <section className="reveal" style={{ background: '#f8fafc', padding: '60px 24px', borderBottom: '1px solid #e2e8f0' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <h2 className="font-heading" style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1f2937', marginBottom: '8px' }}>What Happens After You Claim</h2>
+              <p style={{ color: '#64748b', fontSize: '0.95rem' }}>Simple, fast, and handled entirely by us.</p>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px' }}>
+              {[
+                { step: '01', icon: '🔒', title: 'Claim Today', desc: 'Fill in your name and email below and confirm your chosen package. Takes under 60 seconds.' },
+                { step: '02', icon: '⚙️', title: 'We Build & Deploy', desc: 'Our team customises your site, connects your phone number, and deploys it to your own domain within 48 hours.' },
+                { step: '03', icon: '📲', title: 'Customers Find You', desc: 'Patients and clients start booking directly from your website — you receive instant WhatsApp notifications for every lead.' },
+              ].map((item) => (
+                <div key={item.step} style={{
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '14px',
+                  padding: '28px 24px',
+                  position: 'relative',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+                }}>
+                  <span style={{
+                    position: 'absolute',
+                    top: '16px',
+                    right: '16px',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    color: '#cbd5e1',
+                    letterSpacing: '0.1em'
+                  }}>{item.step}</span>
+                  <div style={{ fontSize: '2rem', marginBottom: '14px' }}>{item.icon}</div>
+                  <h3 className="font-heading" style={{ fontSize: '1.1rem', fontWeight: 700, color: theme.primary, marginBottom: '8px' }}>{item.title}</h3>
+                  <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem', lineHeight: 1.6 }}>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '32px' }}>
+              <a href="#claim" style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: theme.primary,
+                color: '#fff',
+                textDecoration: 'none',
+                padding: '13px 28px',
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                boxShadow: '0 4px 14px rgba(0,0,0,0.12)',
+              }}>
+                Get My Site Live in 48 Hours <ArrowRight size={16} />
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Services Grid */}
       <section className="reveal" style={{ padding: '80px 24px' }}>
@@ -2038,7 +2228,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 letterSpacing: '0.05em'
               }}>Walkthrough & Pricing Strategy</span>
               <h2 style={{ fontSize: '2.2rem', fontWeight: 700, marginTop: '16px', marginBottom: '12px' }}>
-                How ApexReach Scales Your Business
+                How Bethelmind Analytics & Strategy Scales Your Business
               </h2>
               <p style={{ color: '#94a3b8', maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem' }}>
                 Watch a quick 1-minute video showing our automated lead generation, instant pitching, and custom domain deployment system.
@@ -2056,7 +2246,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               }}>
                 <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '12px' }}>
                   <video 
-                    src="/assets/apexreach-demo.webm" 
+                    src="/assets/bethelmind-demo.webm" 
                     controls 
                     poster="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
                     style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
@@ -2067,50 +2257,179 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               {/* Pricing / Grade Breakdown */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#38bdf8' }}>Graded Automation Packages</h3>
-                <p style={{ color: '#cbd5e1', lineHeight: 1.6, fontSize: '0.95rem' }}>
-                  Select the option that matches your business model. Every package includes a premium landing page tailored to your high-rated Google reputation.
-                </p>
+                
+                {/* Dynamic Recommendation Alert Box */}
+                <div style={{
+                  background: 'rgba(56, 189, 248, 0.08)',
+                  border: '1px solid rgba(56, 189, 248, 0.2)',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>🔍</span>
+                    <strong style={{ fontSize: '0.9rem', color: '#38bdf8' }}>AI Audit Recommendation for {lead.name}</strong>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.4' }}>
+                    {hasWebsite ? (
+                      <>
+                        We analyzed your active website at <a href={websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`} target="_blank" rel="noopener noreferrer" style={{ color: '#38bdf8', textDecoration: 'underline' }}>{websiteUrl}</a>. 
+                        To preserve your current SEO ranking and minimize changes, we recommend the <strong>Lead Widget Upgrade (₦65,000)</strong> to embed our automated booking and quotation systems directly on your current site.
+                      </>
+                    ) : (
+                      <>
+                        We could not find an active website online for your business. We recommend deploying the <strong>Basic Online Presence (₦150,000)</strong> package to establish your online credibility with a custom <code>.com.ng</code> domain, or upgrading to the <strong>Growth Engine (₦250,000)</strong> to capture bookings and leads automatically.
+                      </>
+                    )}
+                  </p>
+                </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #94a3b8' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <strong style={{ fontSize: '1.1rem', color: '#fff' }}>1. Basic Online Presence</strong>
-                      <span style={{ fontWeight: 700, color: '#94a3b8' }}>₦150,000</span>
+                  {/* Script Embed Package */}
+                  <div style={{ background: '#1d2433', padding: '24px', borderRadius: '12px', borderLeft: '4px solid #f59e0b', border: '1px dashed rgba(245, 158, 11, 0.3)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <strong style={{ fontSize: '1.2rem', color: '#fff' }}>⚡ Lead Widget Upgrade (For Existing Sites)</strong>
+                      <span style={{ fontWeight: 700, color: '#f59e0b', fontSize: '1.2rem' }}>₦65,000</span>
                     </div>
-                    <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.4 }}>
-                      Includes custom design, fast hosting, basic SEO configuration, mobile-first responsive layout, and phone link connection. Best for simple local credibility.
+                    <p style={{ margin: '0 0 16px 0', color: '#cbd5e1', fontSize: '0.85rem', lineHeight: 1.4 }}>
+                      Perfect if you already have a website but want to add our automated quote calculators, intake forms, or instant lead alerts.
                     </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: '0.8rem', color: '#94a3b8' }}>
+                      <div>✅ Custom Interactive Quote / Booking Widget</div>
+                      <div>✅ Easily Copy-Pasteable Embed Code</div>
+                      <div>✅ Works on WordPress, Wix, Shopify & Custom Sites</div>
+                      <div>✅ Direct CRM & Email Notification Alerts</div>
+                      <div>✅ Zero Hosting/Domain Setup Required</div>
+                      <div>✅ Full Setup Assistance Included</div>
+                    </div>
                   </div>
 
-                  <div style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #60a5fa' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <strong style={{ fontSize: '1.1rem', color: '#fff' }}>2. Growth Engine (Simple Automation)</strong>
-                      <span style={{ fontWeight: 700, color: '#60a5fa' }}>₦250,000</span>
+                  {/* Basic Package */}
+                  <div style={{ background: '#1e293b', padding: '24px', borderRadius: '12px', borderLeft: '4px solid #94a3b8' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <strong style={{ fontSize: '1.2rem', color: '#fff' }}>1. Basic Online Presence</strong>
+                      <span style={{ fontWeight: 700, color: '#94a3b8', fontSize: '1.2rem' }}>₦150,000</span>
                     </div>
-                    <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.4 }}>
-                      Adds automated booking intake form, direct email/WhatsApp alerts for new leads, and automated basic invoicing or PDF receipt generation.
+                    <p style={{ margin: '0 0 16px 0', color: '#cbd5e1', fontSize: '0.85rem', lineHeight: 1.4 }}>
+                      Best for establishing local credibility, security, and search visibility.
                     </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: '0.8rem', color: '#94a3b8' }}>
+                      <div>✅ Custom Domain (.com.ng) Included</div>
+                      <div>✅ 100% Free Managed Fast Hosting</div>
+                      <div>✅ SSL Security & HTTPS Setup</div>
+                      <div>✅ Click-to-Call & WhatsApp Chat Link</div>
+                      <div>✅ Basic SEO Setup & Google Indexing</div>
+                      <div>✅ Fully Mobile Responsive Layout</div>
+                    </div>
                   </div>
 
-                  <div style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #10b981' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <strong style={{ fontSize: '1.1rem', color: '#fff' }}>3. Automated Powerhouse (Big Automation)</strong>
-                      <span style={{ fontWeight: 700, color: '#10b981' }}>₦400,000</span>
+                  {/* Growth Package */}
+                  <div style={{ background: '#1e293b', padding: '24px', borderRadius: '12px', borderLeft: '4px solid #60a5fa', position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '-10px', right: '16px', background: '#38bdf8', color: '#0f172a', fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>Popular Upgrade</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <strong style={{ fontSize: '1.2rem', color: '#fff' }}>2. Growth Engine (Simple Automation)</strong>
+                      <span style={{ fontWeight: 700, color: '#60a5fa', fontSize: '1.2rem' }}>₦250,000</span>
                     </div>
-                    <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.4 }}>
-                      Adds full payment gateway checkout (Paystack/Flutterwave), advanced CRM bidirectional sheet logging, automated follow-up drip campaign, and custom database integrations.
+                    <p style={{ margin: '0 0 16px 0', color: '#cbd5e1', fontSize: '0.85rem', lineHeight: 1.4 }}>
+                      Perfect for capturing bookings, generating automated estimates, and getting instant lead alerts.
                     </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: '0.8rem', color: '#60a5fa' }}>
+                      <div>🔹 <strong>Everything in Basic</strong></div>
+                      <div>✅ Custom Quote/Price Estimator Widget</div>
+                      <div>✅ Automated Booking Intake Form</div>
+                      <div>✅ Instant SMS & Email Lead Notifications</div>
+                      <div>✅ Automated PDF Invoicing & Receipts</div>
+                      <div>✅ Client Auto-responder Emails</div>
+                    </div>
                   </div>
 
-                  <div style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', borderLeft: '4px solid #8b5cf6' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <strong style={{ fontSize: '1.1rem', color: '#fff' }}>4. Bespoke Enterprise Automations</strong>
-                      <span style={{ fontWeight: 700, color: '#8b5cf6' }}>₦Contact for Negotiation</span>
+                  {/* Powerhouse Package */}
+                  <div style={{ background: '#1e293b', padding: '24px', borderRadius: '12px', borderLeft: '4px solid #10b981' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <strong style={{ fontSize: '1.2rem', color: '#fff' }}>3. Automated Powerhouse (Full Autopilot)</strong>
+                      <span style={{ fontWeight: 700, color: '#10b981', fontSize: '1.2rem' }}>₦600,000</span>
                     </div>
-                    <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.4 }}>
-                      Integrates custom accounting pipelines, warehouse inventory bots, advanced lead generation scrapers, and legacy CRM bidirectional sync. Contact for customized project scoping.
+                    <p style={{ margin: '0 0 16px 0', color: '#cbd5e1', fontSize: '0.85rem', lineHeight: 1.4 }}>
+                      Best for scaling operations, collecting automated online payments, and syncing lead data directly to CRM.
                     </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: '0.8rem', color: '#10b981' }}>
+                      <div>🔥 <strong>Everything in Growth</strong></div>
+                      <div>✅ Integrated Paystack/Flutterwave Checkout</div>
+                      <div>✅ Bidirectional Google Sheets CRM Sync</div>
+                      <div>✅ WhatsApp Follow-up Drip Campaigns</div>
+                      <div>✅ Dynamic Lead Scoring Dashboard</div>
+                      <div>✅ Automated Google Review Request Alerts</div>
+                      <div>✅ Monthly Analytics & Conversion Reports</div>
+                    </div>
                   </div>
+
+                  {/* Bespoke Enterprise */}
+                  <div style={{ background: '#1e293b', padding: '24px', borderRadius: '12px', borderLeft: '4px solid #8b5cf6' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <strong style={{ fontSize: '1.2rem', color: '#fff' }}>4. Bespoke Enterprise Solutions</strong>
+                      <span style={{ fontWeight: 700, color: '#8b5cf6', fontSize: '1.2rem' }}>Contact Us</span>
+                    </div>
+                    <p style={{ margin: '0 0 16px 0', color: '#cbd5e1', fontSize: '0.85rem', lineHeight: 1.4 }}>
+                      Designed for custom CRM setups, accounting software syncs, and multi-channel marketing automation.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: '0.8rem', color: '#8b5cf6' }}>
+                      <div>✅ Custom Accounting (Odoo, Zoho) Syncs</div>
+                      <div>✅ Advanced Lead Scrapers & Data Enrichers</div>
+                      <div>✅ Multi-agent Shared Inbox Setups</div>
+                      <div>✅ Bidirectional Calendar & Staff Syncs</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Decision Making Support & FAQs */}
+            <div style={{
+              marginTop: '48px',
+              paddingTop: '32px',
+              borderTop: '1px solid rgba(255,255,255,0.08)'
+            }}>
+              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                <h4 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#38bdf8', margin: '0 0 8px 0' }}>
+                  Frequently Asked Questions
+                </h4>
+                <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>
+                  Everything you need to know about claiming your high-converting automation platform
+                </p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff', display: 'block', marginBottom: '6px' }}>🔑 Do I own the website and domain?</strong>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.4' }}>
+                    Yes, 100%. Once claimed, ownership of the domain is transferred to you, and we hand over the full website files and GitHub source code repository. There are no proprietary lock-ins.
+                  </p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff', display: 'block', marginBottom: '6px' }}>⚡ How long does deployment take?</strong>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.4' }}>
+                    The draft preview is already generated. Once you claim, our automated system maps the custom domain and deploys live files within 24 to 48 hours.
+                  </p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff', display: 'block', marginBottom: '6px' }}>🛠️ Can I request edits and changes?</strong>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.4' }}>
+                    Absolutely. Every package includes 30 days of free revisions where our design team will customize copy, upload your branding logos, and fine-tune form fields.
+                  </p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff', display: 'block', marginBottom: '6px' }}>💳 How is payment handled?</strong>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.4' }}>
+                    We support both instant Paystack checkout and verified bank transfers. We offer a 50% upfront starting deposit option, with the remaining 50% paid only after you verify the final setup on your live domain.
+                  </p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', gridColumn: '1 / -1' }}>
+                  <strong style={{ fontSize: '0.9rem', color: '#fff', display: 'block', marginBottom: '6px' }}>🔌 What if I don't have access to my website files or backend logins?</strong>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.4' }}>
+                    <strong>We handle 100% of the integration for you at no extra cost.</strong> Our team provides complimentary white-glove setup. You can either delegate temporary guest access to your CMS (WordPress, Wix, Shopify), introduce us to your current webmaster/developer, or install our 1-click plugin. If you have no logins at all, we can inject the script remotely via Cloudflare DNS or Google Tag Manager without editing your server files directly.
+                  </p>
                 </div>
               </div>
             </div>
@@ -2233,6 +2552,179 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 <Receipt size={14} /> View Invoice & Receipt
               </button>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── WhatsApp Direct Support Chat Button ─────────────────────────────── */}
+      {isPreview && (
+        <a
+          id="wa-chat-float"
+          href={`https://wa.me/2348000000000?text=${encodeURIComponent(`Hello Bethelmind Analytics & Strategy! I'm ${lead.name} in ${lead.city || lead.area}. I want to claim the website you built for my business. Preview: ${typeof window !== 'undefined' ? window.location.href : ''}`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Chat Bethelmind Analytics & Strategy Support on WhatsApp"
+          style={{
+            position: 'fixed',
+            bottom: whatsappSimActive ? '450px' : '24px',
+            right: '24px',
+            background: '#25d366',
+            color: '#ffffff',
+            borderRadius: '50px',
+            padding: '14px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            fontWeight: 700,
+            fontSize: '0.9rem',
+            textDecoration: 'none',
+            boxShadow: '0 8px 25px rgba(37, 211, 102, 0.45)',
+            zIndex: 10001,
+            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            animation: 'fadeInUp 0.5s ease-out'
+          }}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.523 5.847L.057 24l6.304-1.654A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.892a9.88 9.88 0 0 1-5.034-1.375l-.361-.214-3.741.981.999-3.648-.235-.374A9.865 9.865 0 0 1 2.108 12C2.108 6.519 6.519 2.108 12 2.108c5.48 0 9.892 4.41 9.892 9.892 0 5.481-4.411 9.892-9.892 9.892z"/>
+          </svg>
+          Chat Support Now
+        </a>
+      )}
+
+      {/* ─── Test Phone Alert Widget — delayed 12s so it doesn't compete with hero pitch ─── */}
+      {isPreview && !whatsappSimActive && showTestAlert && (
+        <div
+          id="test-alert-widget"
+          style={{
+            position: 'fixed',
+            bottom: '90px',
+            right: '24px',
+            width: '300px',
+            background: 'rgba(255,255,255,0.97)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.6)',
+            borderRadius: '16px',
+            padding: '18px',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.12)',
+            zIndex: 10000,
+            fontFamily: 'system-ui, sans-serif',
+            animation: 'fadeInUp 0.4s ease-out both'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #0284c7, #14b8a6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Phone size={16} color="#fff" />
+            </div>
+            <div>
+              <strong style={{ fontSize: '0.85rem', color: '#1f2937', display: 'block' }}>🎯 Try a Live Alert</strong>
+              <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Get a real notification on your phone</span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+            <button
+              type="button"
+              onClick={() => setTestAlertChannel('whatsapp')}
+              style={{
+                flex: 1, padding: '7px', fontSize: '0.75rem', fontWeight: 600, borderRadius: '7px', cursor: 'pointer', border: 'none',
+                background: testAlertChannel === 'whatsapp' ? '#25d366' : '#f1f5f9',
+                color: testAlertChannel === 'whatsapp' ? '#fff' : '#64748b'
+              }}
+            >WhatsApp</button>
+            <button
+              type="button"
+              onClick={() => setTestAlertChannel('call')}
+              style={{
+                flex: 1, padding: '7px', fontSize: '0.75rem', fontWeight: 600, borderRadius: '7px', cursor: 'pointer', border: 'none',
+                background: testAlertChannel === 'call' ? '#0284c7' : '#f1f5f9',
+                color: testAlertChannel === 'call' ? '#fff' : '#64748b'
+              }}
+            >Voice Call</button>
+          </div>
+
+          <input
+            type="tel"
+            value={testAlertPhone}
+            onChange={(e) => setTestAlertPhone(e.target.value)}
+            placeholder="+234 803 123 4567"
+            style={{ width: '100%', padding: '10px', fontSize: '0.85rem', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '10px', boxSizing: 'border-box', outline: 'none' }}
+          />
+
+          {testAlertResult && (
+            <div style={{ fontSize: '0.78rem', color: testAlertResult.startsWith('❌') ? '#ef4444' : '#10b981', marginBottom: '10px', lineHeight: 1.4 }}>
+              {testAlertResult}
+            </div>
+          )}
+
+          <button
+            type="button"
+            id="send-test-alert-btn"
+            onClick={handleTestAlert}
+            disabled={testAlertLoading || !testAlertPhone.trim()}
+            style={{
+              width: '100%', padding: '10px', background: theme.primary, color: '#fff', border: 'none',
+              borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem', cursor: testAlertLoading ? 'not-allowed' : 'pointer',
+              opacity: testAlertLoading ? 0.7 : 1
+            }}
+          >
+            {testAlertLoading ? 'Sending...' : `Send ${testAlertChannel === 'call' ? '📞 Voice Call' : '💬 WhatsApp'} to My Phone`}
+          </button>
+        </div>
+      )}
+
+      {/* ─── .com.ng Domain Availability Strip ───────────────────────────────── */}
+      {isPreview && (
+        <div
+          id="domain-checker-strip"
+          style={{
+            position: 'fixed',
+            top: '64px',
+            left: 0, right: 0,
+            background: domainStatus === 'registrar' ? 'rgba(14, 165, 233, 0.92)' : 'rgba(2, 132, 199, 0.92)',
+            backdropFilter: 'blur(10px)',
+            color: '#fff',
+            padding: '8px 20px',
+            zIndex: 999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            transition: 'background 0.4s',
+            flexWrap: 'wrap'
+          }}
+        >
+          {domainStatus === 'registrar' ? (
+            <>
+              <span>🔍 <strong>{domainSlug}.com.ng</strong> — Check live availability on the registrar:</span>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <a href={`https://www.whogohost.com/domain/?s=${domainSlug}.com.ng`} target="_blank" rel="noopener noreferrer" style={{ background: '#fff', color: '#0284c7', padding: '4px 12px', borderRadius: '20px', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 700 }}>Check on Whogohost</a>
+                <a href={`https://web.com.ng/?s=${domainSlug}`} target="_blank" rel="noopener noreferrer" style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', padding: '4px 12px', borderRadius: '20px', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 600 }}>or Web4Africa</a>
+              </div>
+            </>
+          ) : domainStatus === 'checking' ? (
+            <span>⏳ Looking up <strong>{domainSlug}.com.ng</strong>...</span>
+          ) : (
+            <>
+              <span>🔍 Check if your domain is available:</span>
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  value={domainSlug}
+                  onChange={(e) => setDomainSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 30))}
+                  placeholder="yourbusiness"
+                  style={{ padding: '4px 10px', borderRadius: '6px', border: 'none', fontSize: '0.8rem', color: '#1f2937', width: '140px' }}
+                />
+                <span style={{ opacity: 0.8 }}>.com.ng</span>
+                <button
+                  type="button"
+                  onClick={handleDomainCheck}
+                  style={{ background: '#fff', color: '#0284c7', border: 'none', borderRadius: '6px', padding: '4px 12px', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
+                >Check</button>
+              </div>
+            </>
           )}
         </div>
       )}
@@ -2516,78 +3008,130 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     />
                   </div>
 
-                  {/* Payment Options Selector */}
-                  {paymentConfig && paymentConfig.claimFeeNGN > 0 && (
+                  {/* Strategy Package Selection */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Selected Package</label>
+                    <select
+                      value={selectedStrategy}
+                      onChange={(e) => setSelectedStrategy(e.target.value as any)}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '8px',
+                        background: '#fff',
+                        fontSize: '0.9rem',
+                        color: '#1f2937',
+                        fontWeight: 600,
+                        outline: 'none'
+                      }}
+                    >
+                      {hasWebsite && (
+                        <option value="script_embed">Lead Widget Upgrade — ₦65,000</option>
+                      )}
+                      <option value="basic_presence">Basic Online Presence — ₦150,000</option>
+                      <option value="plugin">Growth Engine (Simple Automation) — ₦250,000</option>
+                      <option value="full_rebuild">Automated Powerhouse — ₦600,000</option>
+                    </select>
+                  </div>
+
+                  {/* Payment Options — Paystack primary, bank transfer secondary */}
+                  {paymentConfig && getDynamicClaimFee() > 0 && (
                     <div style={{ marginBottom: '8px' }}>
-                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '8px' }}>Select Claim / Setup Package Option</label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                      {/* Primary: Pay Online (Paystack) */}
+                      {paymentConfig.paystackPublicKey && (
                         <button
                           type="button"
                           onClick={() => setPaymentMethod('paystack')}
-                          disabled={!paymentConfig.paystackPublicKey}
                           style={{
-                            padding: '10px 4px',
-                            borderRadius: '8px',
+                            width: '100%',
+                            padding: '14px',
+                            borderRadius: '10px',
                             border: paymentMethod === 'paystack' ? `2px solid ${theme.primary}` : '1px solid #cbd5e1',
-                            background: paymentMethod === 'paystack' ? `${theme.primary}10` : '#fff',
-                            color: paymentMethod === 'paystack' ? theme.primary : '#4b5563',
-                            fontWeight: 600,
-                            cursor: !paymentConfig.paystackPublicKey ? 'not-allowed' : 'pointer',
+                            background: paymentMethod === 'paystack' ? `${theme.primary}12` : '#fff',
+                            color: paymentMethod === 'paystack' ? theme.primary : '#1f2937',
+                            fontWeight: 700,
+                            cursor: 'pointer',
                             transition: 'all 0.2s',
-                            textAlign: 'center',
-                            fontSize: '0.75rem'
+                            fontSize: '0.95rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            marginBottom: '10px',
                           }}
                         >
-                          💳 Pay Online
-                          <span style={{ display: 'block', fontSize: '0.6rem', fontWeight: 400, marginTop: '2px', color: '#64748b' }}>
-                            Instant Setup
-                          </span>
+                          💳 Pay Online with Paystack
+                          <span style={{ fontSize: '0.75rem', fontWeight: 400, color: paymentMethod === 'paystack' ? theme.primary : '#64748b' }}>— Instant Setup</span>
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setPaymentMethod('moniepoint')}
-                          disabled={!paymentConfig.moniepointAccountNumber}
-                          style={{
-                            padding: '10px 4px',
-                            borderRadius: '8px',
-                            border: paymentMethod === 'moniepoint' ? `2px solid ${theme.primary}` : '1px solid #cbd5e1',
-                            background: paymentMethod === 'moniepoint' ? `${theme.primary}10` : '#fff',
-                            color: paymentMethod === 'moniepoint' ? theme.primary : '#4b5563',
-                            fontWeight: 600,
-                            cursor: !paymentConfig.moniepointAccountNumber ? 'not-allowed' : 'pointer',
-                            transition: 'all 0.2s',
-                            textAlign: 'center',
-                            fontSize: '0.75rem'
-                          }}
-                        >
-                          🏦 Moniepoint
-                          <span style={{ display: 'block', fontSize: '0.6rem', fontWeight: 400, marginTop: '2px', color: '#64748b' }}>
-                            Manual Approval
-                          </span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setPaymentMethod('opay')}
-                          disabled={!paymentConfig.opayAccountNumber}
-                          style={{
-                            padding: '10px 4px',
-                            borderRadius: '8px',
-                            border: paymentMethod === 'opay' ? `2px solid ${theme.primary}` : '1px solid #cbd5e1',
-                            background: paymentMethod === 'opay' ? `${theme.primary}10` : '#fff',
-                            color: paymentMethod === 'opay' ? theme.primary : '#4b5563',
-                            fontWeight: 600,
-                            cursor: !paymentConfig.opayAccountNumber ? 'not-allowed' : 'pointer',
-                            transition: 'all 0.2s',
-                            textAlign: 'center',
-                            fontSize: '0.75rem'
-                          }}
-                        >
-                          🏦 OPay
-                          <span style={{ display: 'block', fontSize: '0.6rem', fontWeight: 400, marginTop: '2px', color: '#64748b' }}>
-                            Manual Approval
-                          </span>
-                        </button>
-                      </div>
+                      )}
+
+                      {/* Secondary: Bank Transfer (collapsed by default) */}
+                      {(paymentConfig.moniepointAccountNumber || paymentConfig.opayAccountNumber) && (
+                        <div>
+                          <button
+                            type="button"
+                            onClick={() => setPaymentMethod(paymentMethod === 'moniepoint' || paymentMethod === 'opay' ? 'paystack' : 'moniepoint')}
+                            style={{
+                              width: '100%',
+                              background: 'none',
+                              border: 'none',
+                              color: '#64748b',
+                              fontSize: '0.8rem',
+                              cursor: 'pointer',
+                              textDecoration: 'underline',
+                              padding: '4px 0',
+                              textAlign: 'center'
+                            }}
+                          >
+                            {(paymentMethod === 'moniepoint' || paymentMethod === 'opay') ? '▲ Hide bank transfer option' : '📋 Prefer to pay via bank transfer?'}
+                          </button>
+                          {(paymentMethod === 'moniepoint' || paymentMethod === 'opay') && (
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                              {paymentConfig.moniepointAccountNumber && (
+                                <button
+                                  type="button"
+                                  onClick={() => setPaymentMethod('moniepoint')}
+                                  style={{
+                                    flex: 1,
+                                    padding: '10px 6px',
+                                    borderRadius: '8px',
+                                    border: paymentMethod === 'moniepoint' ? `2px solid ${theme.primary}` : '1px solid #cbd5e1',
+                                    background: paymentMethod === 'moniepoint' ? `${theme.primary}10` : '#fff',
+                                    color: paymentMethod === 'moniepoint' ? theme.primary : '#4b5563',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    fontSize: '0.8rem',
+                                    textAlign: 'center',
+                                  }}
+                                >
+                                  🏦 Moniepoint
+                                </button>
+                              )}
+                              {(paymentConfig.opayPublicKey || paymentConfig.opayAccountNumber) && (
+                                <button
+                                  type="button"
+                                  onClick={() => setPaymentMethod('opay')}
+                                  style={{
+                                    flex: 1,
+                                    padding: '10px 6px',
+                                    borderRadius: '8px',
+                                    border: paymentMethod === 'opay' ? `2px solid ${theme.primary}` : '1px solid #cbd5e1',
+                                    background: paymentMethod === 'opay' ? `${theme.primary}10` : '#fff',
+                                    color: paymentMethod === 'opay' ? theme.primary : '#4b5563',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    fontSize: '0.8rem',
+                                    textAlign: 'center',
+                                  }}
+                                >
+                                  🏦 OPay
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -2610,7 +3154,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
                           <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Amount Due:</span>
-                          <strong style={{ color: '#1e2937' }}>₦{paymentConfig.claimFeeNGN.toLocaleString()}</strong>
+                          <strong style={{ color: '#1e2937' }}>₦{getDynamicClaimFee().toLocaleString()}</strong>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
                           <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Bank Name:</span>
@@ -2630,42 +3174,60 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
 
                   {/* Payment Details Container - OPay */}
                   {paymentMethod === 'opay' && paymentConfig && (
-                    <div style={{
-                      background: 'rgba(2, 132, 199, 0.03)',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '12px',
-                      padding: '20px',
-                      marginBottom: '8px',
-                      fontSize: '0.9rem'
-                    }}>
-                      <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', fontWeight: 700, color: theme.primary }}>
-                        OPay Transfer Instructions
-                      </h4>
-                      <p style={{ color: '#64748b', fontSize: '0.8rem', margin: '0 0 16px 0', lineHeight: 1.4 }}>
-                        Transfer the setup fee to the OPay account below, then click the Claim button. Our admin will verify and activate your site.
-                      </p>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
-                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Amount Due:</span>
-                          <strong style={{ color: '#1e2937' }}>₦{paymentConfig.claimFeeNGN.toLocaleString()}</strong>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
-                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Bank Name:</span>
-                          <strong style={{ color: '#1e2937' }}>{paymentConfig.opayBankName || 'OPay / Paycom'}</strong>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
-                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Number:</span>
-                          <strong style={{ color: theme.primary, letterSpacing: '0.05em' }}>{paymentConfig.opayAccountNumber}</strong>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Name:</span>
-                          <strong style={{ color: '#1e2937', textTransform: 'uppercase' }}>{paymentConfig.opayAccountName}</strong>
+                    paymentConfig.opayPublicKey ? (
+                      <div style={{
+                        background: 'rgba(2, 132, 199, 0.03)',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '12px',
+                        padding: '20px',
+                        marginBottom: '8px',
+                        fontSize: '0.9rem'
+                      }}>
+                        <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', fontWeight: 700, color: theme.primary }}>
+                          🏦 OPay Secure Checkout
+                        </h4>
+                        <p style={{ color: '#64748b', fontSize: '0.8rem', margin: '0', lineHeight: 1.4 }}>
+                          Clicking the button below will securely redirect you to OPay Cashier to complete the payment of <strong>₦{getDynamicClaimFee().toLocaleString()}</strong>. Your website will be automatically deployed upon successful payment.
+                        </p>
+                      </div>
+                    ) : (
+                      <div style={{
+                        background: 'rgba(2, 132, 199, 0.03)',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '12px',
+                        padding: '20px',
+                        marginBottom: '8px',
+                        fontSize: '0.9rem'
+                      }}>
+                        <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', fontWeight: 700, color: theme.primary }}>
+                          OPay Transfer Instructions
+                        </h4>
+                        <p style={{ color: '#64748b', fontSize: '0.8rem', margin: '0 0 16px 0', lineHeight: 1.4 }}>
+                          Transfer the setup fee to the OPay account below, then click the Claim button. Our admin will verify and activate your site.
+                        </p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
+                            <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Amount Due:</span>
+                            <strong style={{ color: '#1e2937' }}>₦{getDynamicClaimFee().toLocaleString()}</strong>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
+                            <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Bank Name:</span>
+                            <strong style={{ color: '#1e2937' }}>{paymentConfig.opayBankName || 'OPay / Paycom'}</strong>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}>
+                            <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Number:</span>
+                            <strong style={{ color: theme.primary, letterSpacing: '0.05em' }}>{paymentConfig.opayAccountNumber}</strong>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Name:</span>
+                            <strong style={{ color: '#1e2937', textTransform: 'uppercase' }}>{paymentConfig.opayAccountName}</strong>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )
                   )}
 
-                  {paymentMethod === 'paystack' && paymentConfig && paymentConfig.claimFeeNGN > 0 && (
+                  {paymentMethod === 'paystack' && paymentConfig && getDynamicClaimFee() > 0 && (
                     <div style={{
                       background: 'rgba(16, 185, 129, 0.03)',
                       border: '1px dashed #cbd5e1',
@@ -2677,7 +3239,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     }}>
                       <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>One-time Setup Fee</span>
                       <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#10b981', marginTop: '2px' }}>
-                        ₦{paymentConfig.claimFeeNGN.toLocaleString()}
+                        ₦{getDynamicClaimFee().toLocaleString()}
                       </div>
                     </div>
                   )}
@@ -2702,8 +3264,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   >
                     {claimLoading 
                       ? 'Processing...' 
-                      : paymentMethod === 'paystack' && paymentConfig?.claimFeeNGN && paymentConfig.claimFeeNGN > 0
-                        ? `Pay NGN ${paymentConfig.claimFeeNGN.toLocaleString()} & Deploy`
+                      : paymentMethod === 'paystack' && getDynamicClaimFee() > 0
+                        ? `Pay NGN ${getDynamicClaimFee().toLocaleString()} & Deploy`
                         : 'Confirm Claim Request'}
                   </button>
 
@@ -2817,7 +3379,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           })()}
           
           <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '10px' }}>
-            &copy; {new Date().getFullYear()} {lead.name}. All rights reserved. Deployed via ApexReach Reputation Automations.
+            &copy; {new Date().getFullYear()} {lead.name}. All rights reserved. Deployed via Bethelmind Analytics & Strategy Reputation Automations.
           </div>
         </div>
       </footer>

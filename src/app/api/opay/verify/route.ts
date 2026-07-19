@@ -9,46 +9,9 @@ import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
 import { getRuntimeConfig, saveLocalConfig, rotateKey } from '@/lib/localConfig';
 import fs from 'fs';
 import path from 'path';
+import { verifyOPay } from '@/lib/payments/opay';
 
-// ============================================================================
-// Google OAuth Token Refresher
-// ============================================================================
-
-async function getValidAccessToken(config: any): Promise<string> {
-  const now = Date.now();
-  const bufferMs = 5 * 60 * 1000;
-
-  if (config.googleAccessToken && config.googleTokenExpiry && config.googleTokenExpiry - bufferMs > now) {
-    return config.googleAccessToken;
-  }
-
-  if (!config.googleRefreshToken || !config.googleClientId || !config.googleClientSecret) {
-    throw new Error('Google session expired. Please sign in again in the console.');
-  }
-
-  const resp = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: config.googleClientId,
-      client_secret: config.googleClientSecret,
-      refresh_token: config.googleRefreshToken,
-      grant_type: 'refresh_token',
-    }),
-  });
-
-  const data = await resp.json();
-  if (!resp.ok || !data.access_token) {
-    throw new Error('Google refresh token validation failed. Please sign in again.');
-  }
-
-  saveLocalConfig({
-    googleAccessToken: data.access_token,
-    googleTokenExpiry: Date.now() + (data.expires_in || 3600) * 1000,
-  });
-
-  return data.access_token;
-}
+import { getValidAccessToken } from '@/lib/googleAuth';
 
 // ============================================================================
 // Email Sender Helpers
@@ -118,7 +81,7 @@ async function sendBrevoMessage(to: string, subject: string, body: string, confi
   if (!activeKey) {
     throw new Error('Brevo API Key is not configured.');
   }
-  const senderName = config.brevoSenderName || 'ApexReach';
+  const senderName = config.brevoSenderName || 'Bethelmind Analytics & Strategy';
   const senderEmail = config.brevoSenderEmail;
   if (!senderEmail) {
     throw new Error('Brevo Sender Email is not configured.');
@@ -248,8 +211,10 @@ export async function GET(req: NextRequest) {
 
     // Check if reference is mock or if secret keys are missing/mock
     const isMockRef = reference.startsWith('OPAY-MOCK') || reference.startsWith('MOCK');
-    const opaySecret = process.env.OPAY_SECRET_KEY || '';
+    const opaySecret = process.env.OPAY_SECRET_KEY || config.opaySecretKey || '';
     const secretKeys = opaySecret.split(',').map(k => k.trim()).filter(Boolean);
+    const opayMerchant = process.env.OPAY_MERCHANT_ID || config.opayMerchantId || '';
+    const merchantIds = opayMerchant.split(',').map(id => id.trim()).filter(Boolean);
 
     if (isMockRef || secretKeys.length === 0 || secretKeys[0] === 'mock') {
       console.log('Simulating OPay verification in development/mock mode');
@@ -280,22 +245,16 @@ export async function GET(req: NextRequest) {
       };
     } else {
       // Try verifying with OPay API status check using rotated keys
-      for (const key of secretKeys) {
+      for (let i = 0; i < secretKeys.length; i++) {
+        const key = secretKeys[i];
+        const merchantId = merchantIds[i] || merchantIds[0] || '';
         try {
-          const verifyResp = await fetch(`https://api.opaycheckout.com/api/v1/international/cashier/status`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${key}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ reference })
-          });
-          const verifyData = await verifyResp.json();
-          if (verifyResp.ok && verifyData.code === '00000' && verifyData.data && verifyData.data.status === 'SUCCESS') {
+          const verifyData = await verifyOPay(reference, key, merchantId);
+          if (verifyData.code === '00000' && verifyData.data && verifyData.data.status === 'SUCCESS') {
             transaction = {
               status: 'success',
               reference,
-              amount: Number(verifyData.data.amount || 0),
+              amount: Number(verifyData.data.amount || 0) * 100, // Convert Naira to Kobo
               paid_at: verifyData.data.paidAt || new Date().toISOString(),
               metadata: verifyData.data.metadata || {}
             };
@@ -454,12 +413,12 @@ ${gitNotice}
 Please contact them at ${clientEmail} as soon as possible to finalize their website build.
 
 Best regards,
-ApexReach Lead Engine`;
+Bethelmind Analytics & Strategy Lead Engine`;
 
     if (adminEmail && !config.dryRun) {
       try {
         if (emailProvider === 'gmail') {
-          const accessToken = await getValidAccessToken(config);
+          const accessToken = await getValidAccessToken();
           await sendGmailMessage(adminEmail, adminSubject, adminBody, accessToken);
         } else if (emailProvider === 'resend') {
           await sendResendMessage(adminEmail, adminSubject, adminBody, config);

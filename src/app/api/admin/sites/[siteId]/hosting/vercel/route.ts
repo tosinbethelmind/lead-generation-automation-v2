@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Placeholder for Vercel deployment integration.
-// Replace with actual Vercel SDK or API calls in production.
+const VERCEL_API = 'https://api.vercel.com/v10/projects';
 
 function verifyPassword(req: NextRequest): boolean {
   const password = req.headers.get('x-admin-password');
@@ -23,11 +22,53 @@ export async function POST(req: NextRequest, context: any) {
     return NextResponse.json({ error: 'siteId is required' }, { status: 400 });
   }
 
-  const body = await req.json();
-  const { config } = body; // expecting hosting config
+  try {
+    const body = await req.json();
+    const { domain } = body;
 
-  // Placeholder behavior: acknowledge request.
-  console.log('Vercel deployment request for', siteId, config);
+    if (!domain) {
+      return NextResponse.json({ error: 'domain is required' }, { status: 400 });
+    }
 
-  return NextResponse.json({ success: true, message: 'Vercel deployment placeholder executed.' });
+    const vercelToken = process.env.VERCEL_TOKEN || '';
+    const projectId = process.env.VERCEL_PROJECT_ID || 'prj_xh9RFVPAaJWRbDzL2exOHWwjMD1p';
+    const teamId = 'team_wazv1qGXcoYV8evkITxITCon';
+
+    const isSandbox = vercelToken.startsWith('vc_placeholder') || !vercelToken;
+
+    if (isSandbox) {
+      console.log(`[Vercel Hosting Sandbox] Simulated binding for site ${siteId} -> ${domain}`);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return NextResponse.json({
+        success: true,
+        sandbox: true,
+        message: `[Sandbox] Domain ${domain} bound to Vercel project for site ${siteId}.`
+      });
+    }
+
+    console.log(`[Vercel Hosting API] Attaching domain ${domain} to Vercel project ${projectId} for site ${siteId}`);
+    
+    const vercelUrl = `${VERCEL_API}/${projectId}/domains${teamId ? `?teamId=${teamId}` : ''}`;
+    const vercelRes = await fetch(vercelUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${vercelToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: domain })
+    });
+
+    const vercelData = await vercelRes.json();
+    if (!vercelRes.ok || vercelData.error) {
+      const errorMsg = vercelData?.error?.message || 'Vercel domain mapping error';
+      throw new Error(`Vercel: ${errorMsg}`);
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Domain ${domain} successfully bound to Vercel project for site ${siteId}.`
+    });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
 }

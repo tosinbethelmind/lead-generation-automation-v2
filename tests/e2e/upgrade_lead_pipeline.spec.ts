@@ -8,8 +8,11 @@ test.describe('Website Upgrade & Modernization Lead Pipeline E2E Verification', 
   test.use({ baseURL: 'http://localhost:3006' });
 
   let originalConfig: string;
-  const configPath = path.join(__dirname, '../../config.json');
-  const leadsDbPath = path.join(__dirname, '../../local_db/leads_db.json');
+  const workerIndex = process.env.TEST_WORKER_INDEX || '';
+  const configFileName = workerIndex ? `config.worker-${workerIndex}.json` : 'config.json';
+  const configPath = path.join(__dirname, '../../', configFileName);
+  const leadsDbFileName = workerIndex ? `leads_db.worker-${workerIndex}.json` : 'leads_db.json';
+  const leadsDbPath = path.join(__dirname, '../../local_db', leadsDbFileName);
 
   const mockLeads = [
     {
@@ -47,6 +50,12 @@ test.describe('Website Upgrade & Modernization Lead Pipeline E2E Verification', 
   ];
 
   test.beforeAll(async () => {
+    // Seed worker config from root config.json if not present
+    const rootConfigPath = path.join(__dirname, '../../config.json');
+    if (configFileName !== 'config.json' && !fs.existsSync(configPath) && fs.existsSync(rootConfigPath)) {
+      fs.copyFileSync(rootConfigPath, configPath);
+    }
+
     // 1. Save original config
     originalConfig = fs.readFileSync(configPath, 'utf-8');
     const parsed = JSON.parse(originalConfig);
@@ -107,6 +116,12 @@ test.describe('Website Upgrade & Modernization Lead Pipeline E2E Verification', 
     // Restore config
     if (originalConfig) {
       fs.writeFileSync(configPath, originalConfig);
+    }
+    // Clean up worker-specific config file if created
+    if (configFileName !== 'config.json' && fs.existsSync(configPath)) {
+      try {
+        fs.unlinkSync(configPath);
+      } catch (e) {}
     }
 
     // Cleanup local leads database

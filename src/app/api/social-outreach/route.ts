@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRuntimeConfig, getOutreachOrigin } from '@/lib/localConfig';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
-import { getRuntimeConfig } from '@/lib/localConfig';
 
 // Helper to format message templates
 function formatMessage(template: string, lead: any, previewUrl: string, signature: string, platform: string): string {
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No matching leads found in the database." }, { status: 404 });
     }
 
-    const origin = req.nextUrl.origin;
+    const origin = getOutreachOrigin(req.url);
     const signature = config.businessSignature;
     const isSimulation = config.dryRun || dryRun;
 

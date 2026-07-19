@@ -1,7 +1,7 @@
 // src/app/api/paystack/webhook/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
+import { getActiveLeadRepository, addLog, updateLeadFields } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import { sendPaymentConfirmation, sendNotificationEmail } from '@/lib/email';
 import fs from 'fs';
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
     if (event.event === 'charge.success') {
       const transaction = event.data;
       if (transaction.status === 'success') {
-        const { leadId, clientName, clientEmail, theme, copy } = transaction.metadata || {};
+        const { leadId, clientName, clientEmail, theme, copy, selectedFeatures, customInstructions, upgradeStrategy } = transaction.metadata || {};
         const reference = transaction.reference;
         const amountPaid = transaction.amount / 100;
 
@@ -122,10 +122,34 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ error: `Lead with ID ${leadId} not found` }, { status: 404 });
         }
 
+        const { parseScalingConfig } = require('@/lib/scalingHelper');
+        let scaling;
+        try {
+          scaling = parseScalingConfig(lead.notes);
+        } catch (parseErr) {
+          scaling = { mode: 'none' };
+        }
+
         // 1. Process claim and update CRM lead status
         const timestamp = new Date().toISOString();
-        const newNotes = `${lead.notes || ''}\n[CLAIMED - PAID WEBHOOK] Claimed via webhook. Paid Setup Fee (₦${amountPaid.toLocaleString()}). Ref: ${reference}. Contact: ${clientName} (${clientEmail})`;
+        const gitPendingTag = scaling.mode === 'git-batch' ? ' [GIT_SYNC_PENDING: true]' : '';
+        const featuresNote = selectedFeatures && selectedFeatures.length > 0 ? ` Activated Features: ${selectedFeatures.join(', ')}.` : '';
+        const instNote = customInstructions ? ` Custom Instructions: "${customInstructions}"` : '';
+        const strategyNote = upgradeStrategy ? ` Strategy: ${upgradeStrategy}.` : '';
+        const newNotes = `${lead.notes || ''}\n[CLAIMED - PAID WEBHOOK]${gitPendingTag} Claimed via webhook. Paid Setup Fee (₦${amountPaid.toLocaleString()}). Ref: ${reference}. Contact: ${clientName} (${clientEmail}).${strategyNote}${featuresNote}${instNote}`;
         await repo.updateLeadStatus(leadId, 'CONTACTED', newNotes, timestamp);
+
+        // Also save the updated fields to sheets/Supabase
+        try {
+          await updateLeadFields(leadId, {
+            upgrade_strategy: upgradeStrategy || lead.upgradeStrategy || 'script_embed',
+            upgradeStrategy: upgradeStrategy || lead.upgradeStrategy || 'script_embed',
+            plugin_suggestions: selectedFeatures || [],
+            pluginSuggestions: selectedFeatures || []
+          });
+        } catch (fieldErr: any) {
+          console.warn('Failed to update lead upgrade strategy fields during webhook payment processing:', fieldErr.message);
+        }
 
         // 2. Log event
         await addLog(
@@ -154,6 +178,8 @@ export async function POST(req: NextRequest) {
             testimonials: [],
             ctaText: 'Book an Appointment',
           },
+          selectedFeatures: selectedFeatures || [],
+          customInstructions: customInstructions || '',
           claimedAt: timestamp,
           clientName,
           clientEmail,
@@ -169,12 +195,21 @@ export async function POST(req: NextRequest) {
 
         // 4. Save locally
         try {
+          let workerIndex = '';
+          try {
+            workerIndex = req.headers.get('x-test-worker-index') || '';
+          } catch (e) {}
+          if (!workerIndex) {
+            workerIndex = process.env.TEST_WORKER_INDEX || '';
+          }
           const dataDir = path.join(process.cwd(), 'src', 'data', 'sites');
           if (!fs.existsSync(dataDir)) {
             fs.mkdirSync(dataDir, { recursive: true });
           }
-          const filePath = path.join(dataDir, `${leadId}.json`);
-          fs.writeFileSync(filePath, siteConfigString, 'utf-8');
+          const baseName = workerIndex ? `${leadId}.worker-${workerIndex}.json` : `${leadId}.json`;
+          const filePath = path.join(dataDir, baseName);
+          const { writeJsonFileSyncAtomic } = require('@/lib/atomicIo');
+          writeJsonFileSyncAtomic(filePath, siteConfig);
         } catch (fsErr: any) {
           console.warn('[Webhook] Failed to write claimed site config to local filesystem:', fsErr.message);
         }
@@ -183,14 +218,6 @@ export async function POST(req: NextRequest) {
         const githubPat = process.env.GITHUB_PAT;
         const githubRepo = process.env.GITHUB_REPO;
         const githubBranch = process.env.GITHUB_BRANCH || 'main';
-
-        const { parseScalingConfig } = require('@/lib/scalingHelper');
-        let scaling;
-        try {
-          scaling = parseScalingConfig(lead.notes);
-        } catch (parseErr) {
-          scaling = { mode: 'none' };
-        }
 
         if (scaling.mode === 'git' && githubPat && githubRepo) {
           try {
@@ -219,9 +246,9 @@ export async function POST(req: NextRequest) {
           console.warn('[Webhook] Failed to send payment confirmation email:', mailErr.message);
         }
 
-        // 7. Send notification to admin
+        // 7. Send notification to admin (Only if not in git-batch mode to prevent resource/SMTP exhaustion)
         const adminEmail = config.googleUserEmail || config.resendFromEmail || config.brevoSenderEmail;
-        if (adminEmail) {
+        if (scaling.mode !== 'git-batch' && adminEmail) {
           const adminSubject = `🎉 Webhook Claim Confirmation: ${lead.name}`;
           const adminBody = `Hi Admin,
 
@@ -236,7 +263,7 @@ Details:
 - Paystack Ref: ${reference}
 
 Best regards,
-ApexReach Lead Engine`;
+Bethelmind Analytics & Strategy Lead Engine`;
 
           try {
             await sendNotificationEmail(adminEmail, adminSubject, adminBody);

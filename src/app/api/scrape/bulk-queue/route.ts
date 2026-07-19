@@ -4,17 +4,27 @@ import { createScrapeJob } from '@/lib/supabaseClient';
 // Default target niches
 const DEFAULT_NICHES = [
   'dentist',
+  'clinic',
   'pharmacy',
   'restaurant',
   'boutique',
   'salon',
-  'solar installer',
   'gym',
   'lawyer',
   'hotel',
   'car dealer',
   'mechanic',
-  'school'
+  'school',
+  'spa',
+  'consultancy',
+  'real estate',
+  'supermarket',
+  'travel agency',
+  'catering',
+  'laundry',
+  'security company',
+  'furniture shop',
+  'logistics'
 ];
 
 // Default target areas in Lagos
@@ -28,11 +38,22 @@ const DEFAULT_LOCATIONS = [
   'gbagada',
   'maryland',
   'festac',
-  'apapa'
+  'apapa',
+  'ajah',
+  'ikorodu',
+  'alimosho',
+  'agege',
+  'oshodi',
+  'isolo',
+  'ipaja',
+  'ojodu',
+  'ogudu',
+  'sangotedo',
+  'epe'
 ];
 
 function getScraperType(niche: string): 'jiji' | 'osm' | 'maps-free' | 'social' | 'duckduckgo' | 'maps' {
-  const retailNiches = ['boutique', 'salon', 'restaurant', 'gym'];
+  const retailNiches = ['boutique', 'salon', 'restaurant', 'gym', 'spa', 'catering'];
   if (retailNiches.includes(niche.toLowerCase())) {
     return 'social';
   }
@@ -46,15 +67,21 @@ export async function POST(req: NextRequest) {
     // Allow overriding niches/locations/limit via body
     const niches = Array.isArray(body.niches) && body.niches.length > 0 ? body.niches : DEFAULT_NICHES;
     const locations = Array.isArray(body.locations) && body.locations.length > 0 ? body.locations : DEFAULT_LOCATIONS;
-    const limit = typeof body.limit === 'number' ? body.limit : 25; // 25 leads per run
+    
+    // Support Lagos 10k daily mode overrides
+    const isLagosDaily10k = !!body.targetLagosDaily10k;
+    const defaultLimit = isLagosDaily10k ? 100 : 25;
+    const defaultMaxJobs = isLagosDaily10k ? 100 : 50;
 
-    console.log(`[Bulk Queue API] Starting generation: ${niches.length} niches x ${locations.length} locations (limit: ${limit})`);
+    const limit = typeof body.limit === 'number' ? body.limit : defaultLimit; 
+    const maxJobsToQueue = typeof body.maxJobsToQueue === 'number' ? body.maxJobsToQueue : defaultMaxJobs;
+
+    console.log(`[Bulk Queue API] Starting generation: ${niches.length} niches x ${locations.length} locations (limit: ${limit}, maxJobs: ${maxJobsToQueue})`);
 
     const jobsCreated: { id: string; query: string; scraper: string }[] = [];
 
-    // Limit generating combinations to avoid extreme database inserts (max 60 jobs per click, which is ~1500 leads)
+    // Limit generating combinations to avoid extreme database inserts
     let jobsQueuedCount = 0;
-    const maxJobsToQueue = 50; 
 
     // Shuffle the lists to make sure consecutive runs get different mixes of queries
     const shuffledNiches = [...niches].sort(() => Math.random() - 0.5);

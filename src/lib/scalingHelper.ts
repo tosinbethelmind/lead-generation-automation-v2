@@ -1,4 +1,4 @@
-export type ScalingMode = 'dynamic' | 'n8n' | 'git';
+export type ScalingMode = 'dynamic' | 'n8n' | 'git' | 'git-batch';
 export type SubmissionType = 'central' | 'web3forms' | 'sheets' | 'supabase';
 
 export interface ScalingConfig {
@@ -12,7 +12,7 @@ export interface ScalingConfig {
  * Format in notes: [SCALING_MODE: dynamic] [SUBMISSION_TYPE: central] [SUBMISSION_KEY: key_here]
  */
 export function parseScalingConfig(notes: string = '', defaultMode: ScalingMode = 'dynamic'): ScalingConfig {
-  const modeMatch = notes.match(/\[SCALING_MODE:\s*(dynamic|n8n|git)\]/i);
+  const modeMatch = notes.match(/\[SCALING_MODE:\s*(dynamic|n8n|git|git-batch)\]/i);
   const typeMatch = notes.match(/\[SUBMISSION_TYPE:\s*(central|web3forms|sheets|supabase)\]/i);
   const keyMatch = notes.match(/\[SUBMISSION_KEY:\s*([^\]]+)\]/i);
 

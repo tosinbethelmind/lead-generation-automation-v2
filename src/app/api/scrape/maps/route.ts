@@ -322,7 +322,7 @@ export async function POST(req: NextRequest) {
     }
     
     const finalLeads: Partial<Lead>[] = [];
-    const geminiApiKeyVal = config.geminiApiKey;
+    const geminiApiKeyVal = config.geminiApiKey || config.antigravityApiKey || (config.antigravityApiKeys && config.antigravityApiKeys[0]) || '';
     if (geminiApiKeyVal && newLeads.length > 0) {
       console.log(`[Google Maps Scraper] Performing parallel AI relevance check for ${newLeads.length} leads...`);
       const aiChecks = await Promise.all(

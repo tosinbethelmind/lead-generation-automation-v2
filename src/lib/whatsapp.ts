@@ -2,6 +2,41 @@ import { getRuntimeConfig } from '@/lib/localConfig';
 import { addLog, updateLeadStatus } from '@/lib/googleSheets';
 
 /**
+ * Resolves spintax formatted text, e.g. "{Hi|Hello|Hey} {{lead.name}}" -> "Hi {{lead.name}}"
+ * Masks double curly braces placeholders during parsing to prevent conflict.
+ */
+export function parseSpintax(text: string): string {
+  // 1. Mask double curly braces placeholders, e.g. {{lead.name}} -> __SPINTAX_PLACEHOLDER_0__
+  const placeholders: string[] = [];
+  const placeholderPattern = /\{\{[^{}]+\}\}/g;
+  
+  let processedText = text.replace(placeholderPattern, (match) => {
+    placeholders.push(match);
+    return `__SPINTAX_PLACEHOLDER_${placeholders.length - 1}__`;
+  });
+
+  // 2. Parse spintax options
+  const spintaxPattern = /\{([^{}]+)\}/g;
+  let matches = processedText.match(spintaxPattern);
+  
+  while (matches && matches.length > 0) {
+    for (const match of matches) {
+      const options = match.slice(1, -1).split('|');
+      const chosen = options[Math.floor(Math.random() * options.length)];
+      processedText = processedText.replace(match, chosen);
+    }
+    matches = processedText.match(spintaxPattern);
+  }
+
+  // 3. Unmask placeholders
+  for (let i = 0; i < placeholders.length; i++) {
+    processedText = processedText.replace(`__SPINTAX_PLACEHOLDER_${i}__`, placeholders[i]);
+  }
+
+  return processedText;
+}
+
+/**
  * Sends a WhatsApp text message using the selected WhatsApp provider.
  * Supports simple placeholder substitution in the message template.
  */
@@ -37,8 +72,11 @@ export async function sendWhatsAppMessage(
   const defaultTemplate = `Hi {{lead.name}},\n\nWe generated a custom landing page for your business. Check it out: {{previewUrl}}\n\nBest, {{businessSignature}}`;
   const template = customMessage || config.whatsappMessageTemplate || defaultTemplate;
 
+  // Resolve spintax variations (e.g. {Hi|Hello|Hey})
+  const spintaxTemplate = parseSpintax(template);
+
   // Simple placeholder substitution
-  const message = template
+  const message = spintaxTemplate
     .replace(/{{\s*lead\.name\s*}}/g, lead.name)
     .replace(/{{\s*previewUrl\s*}}/g, previewUrl)
     .replace(/{{\s*businessSignature\s*}}/g, config.businessSignature || '')
@@ -48,12 +86,54 @@ export async function sendWhatsAppMessage(
 
   if (provider === 'cloud') {
     // ── Meta WhatsApp Cloud API ──
-    const payload = {
-      messaging_product: 'whatsapp',
-      to: cleanPhone,
-      type: 'text',
-      text: { body: message },
-    };
+    const templateName = config.whatsappTemplateName;
+    const languageCode = config.whatsappTemplateLanguageCode || 'en_US';
+
+    let payload: any;
+
+    if (templateName) {
+      // Sending a Template Message (Recommended/Required for Cold Outreach)
+      payload = {
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: cleanPhone,
+        type: 'template',
+        template: {
+          name: templateName,
+          language: {
+            code: languageCode
+          },
+          components: [
+            {
+              type: 'body',
+              parameters: [
+                {
+                  type: 'text',
+                  text: lead.name
+                },
+                {
+                  type: 'text',
+                  text: previewUrl
+                },
+                {
+                  type: 'text',
+                  text: config.businessSignature || ''
+                }
+              ]
+            }
+          ]
+        }
+      };
+    } else {
+      // Fallback: Sending a Free-Form Text Message (Requires an active 24-hour session window)
+      payload = {
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: cleanPhone,
+        type: 'text',
+        text: { body: message }
+      };
+    }
 
     const url = `https://graph.facebook.com/v16.0/${config.whatsappPhoneNumberId}/messages`;
 
@@ -69,7 +149,8 @@ export async function sendWhatsAppMessage(
     const data = await resp.json();
     if (!resp.ok) {
       const errMsg = data.error?.message || resp.statusText;
-      throw new Error(`Meta WhatsApp Cloud API error: ${errMsg}`);
+      const subDetails = data.error?.error_data?.details || '';
+      throw new Error(`Meta WhatsApp Cloud API error: ${errMsg}${subDetails ? ` (${subDetails})` : ''}`);
     }
   } else if (provider === 'evolution') {
     // ── Evolution API (Self-Hosted QR Code Connection) ──

@@ -35,9 +35,23 @@ export interface MonthlySchedule {
 
 // Fallback JSON file path
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
-const SCHEDULER_FILE = isServerless
-  ? path.join('/tmp', 'query_schedule.json')
-  : path.join(process.cwd(), 'local_db', 'query_schedule.json');
+
+import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from './atomicIo';
+
+import { getWorkerIndex } from './requestContext';
+
+function getSchedulerFilePath(fileName: string): string {
+  const workerIndex = getWorkerIndex();
+
+  const nameParts = fileName.split('.');
+  const baseName = workerIndex 
+    ? `${nameParts[0]}.worker-${workerIndex}.${nameParts[1]}` 
+    : fileName;
+
+  return isServerless
+    ? path.join('/tmp', baseName)
+    : path.join(process.cwd(), 'local_db', baseName);
+}
 
 // Default niches and locations
 const DEFAULT_NICHES = [
@@ -143,9 +157,20 @@ export async function getMonthlySchedule(): Promise<MonthlySchedule> {
   // 2. Try Local File
   if (!schedule) {
     try {
-      if (fs.existsSync(SCHEDULER_FILE)) {
-        const content = fs.readFileSync(SCHEDULER_FILE, 'utf-8');
-        schedule = JSON.parse(content);
+      const schedulerPath = getSchedulerFilePath('query_schedule.json');
+      const bundlePath = path.join(process.cwd(), 'local_db', 'query_schedule.json');
+      
+      // Copy base schedule if worker-specific file doesn't exist
+      if (schedulerPath !== bundlePath && !fs.existsSync(schedulerPath) && fs.existsSync(bundlePath)) {
+        try {
+          fs.copyFileSync(bundlePath, schedulerPath);
+        } catch (err) {
+          console.error('Error copying base schedule to worker path:', err);
+        }
+      }
+
+      if (fs.existsSync(schedulerPath)) {
+        schedule = readJsonFileSyncWithRetry<MonthlySchedule | null>(schedulerPath, null);
       }
     } catch (e) {
       console.error('[Scheduler] Error reading local schedule file:', e);
@@ -242,12 +267,9 @@ export async function saveMonthlySchedule(schedule: MonthlySchedule): Promise<bo
 
 function saveToLocalFile(schedule: MonthlySchedule): boolean {
   try {
-    const dir = path.dirname(SCHEDULER_FILE);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(SCHEDULER_FILE, JSON.stringify(schedule, null, 2), 'utf-8');
-    console.log('[Scheduler] Saved schedule to local file:', SCHEDULER_FILE);
+    const schedulerPath = getSchedulerFilePath('query_schedule.json');
+    writeJsonFileSyncAtomic(schedulerPath, schedule);
+    console.log('[Scheduler] Saved schedule to local file:', schedulerPath);
     return true;
   } catch (e) {
     console.error('[Scheduler] Error writing local schedule file:', e);
@@ -292,9 +314,18 @@ async function getDbStats(): Promise<{ niches: Record<string, number>; cities: R
 
   // 2. Try Local File
   try {
-    const leadsFile = path.join(process.cwd(), 'local_db', 'leads.json');
+    const leadsFile = getSchedulerFilePath('leads.json');
+    const bundleLeads = path.join(process.cwd(), 'local_db', 'leads.json');
+    
+    // Copy base leads if worker-specific file doesn't exist
+    if (leadsFile !== bundleLeads && !fs.existsSync(leadsFile) && fs.existsSync(bundleLeads)) {
+      try {
+        fs.copyFileSync(bundleLeads, leadsFile);
+      } catch (err) {}
+    }
+
     if (fs.existsSync(leadsFile)) {
-      const leads = JSON.parse(fs.readFileSync(leadsFile, 'utf-8'));
+      const leads = readJsonFileSyncWithRetry<any[]>(leadsFile, []);
       if (Array.isArray(leads)) {
         leads.forEach((l: any) => {
           if (l.category) stats.niches[l.category] = (stats.niches[l.category] || 0) + 1;
@@ -323,7 +354,7 @@ export async function generateAISchedule(nicheFocus?: string, locationFocus?: st
   // Get current lead metrics
   const stats = await getDbStats();
   
-  const prompt = `You are the Campaign Scheduler AI for ApexReach lead automation.
+  const prompt = `You are the Campaign Scheduler AI for Bethelmind Analytics & Strategy lead automation.
 Your task is to generate a highly optimized 30-day lead generation plan (4 weeks, 3 queries per week = 12 total queries).
 The goal is to expand our contact pipeline with high-quality local business targets while avoiding duplication of existing data.
 

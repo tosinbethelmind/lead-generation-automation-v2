@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getLeads, saveLeads, getSyncStats } from '@/lib/googleSheets';
+import { getLeads, saveLeads, getSyncStats, updateLeadStatus } from '@/lib/googleSheets';
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,8 +29,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
-
-import { updateLeadStatus } from '@/lib/googleSheets';
 
 export async function PATCH(req: NextRequest) {
   try {

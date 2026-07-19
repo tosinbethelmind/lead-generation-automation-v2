@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Simple placeholder for Cloudflare API integration.
-// In production, replace with proper Cloudflare SDK calls.
+const CLOUDFLARE_API = 'https://api.cloudflare.com/client/v4/zones';
 
 function verifyPassword(req: NextRequest): boolean {
   const password = req.headers.get('x-admin-password');
@@ -23,12 +22,58 @@ export async function POST(req: NextRequest, context: any) {
     return NextResponse.json({ error: 'siteId is required' }, { status: 400 });
   }
 
-  const body = await req.json();
-  const { config } = body; // expecting hosting config
+  try {
+    const body = await req.json();
+    const { domain, proxied = true } = body;
 
-  // Placeholder behavior: just acknowledge receipt.
-  // Real implementation would call Cloudflare API to create DNS records, etc.
-  console.log('Cloudflare provisioning request for', siteId, config);
+    if (!domain) {
+      return NextResponse.json({ error: 'domain is required' }, { status: 400 });
+    }
 
-  return NextResponse.json({ success: true, message: 'Cloudflare provisioning placeholder executed.' });
+    const cfToken = process.env.CLOUDFLARE_TOKEN || '';
+    const cfZoneId = process.env.CLOUDFLARE_ZONE_ID || '';
+
+    const isSandbox = cfToken.startsWith('cf_placeholder') || !cfToken;
+
+    if (isSandbox) {
+      console.log(`[Cloudflare Hosting Sandbox] Simulated CNAME record registration for site ${siteId} -> ${domain}`);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return NextResponse.json({
+        success: true,
+        sandbox: true,
+        message: `[Sandbox] DNS configured for site ${siteId} -> ${domain}.`
+      });
+    }
+
+    const dnsBody = {
+      type: 'CNAME',
+      name: domain,
+      content: 'cname.vercel-dns.com',
+      ttl: 1,
+      proxied: !!proxied
+    };
+
+    console.log(`[Cloudflare Hosting API] Creating DNS CNAME record for site ${siteId} (${domain})`);
+    const dnsRes = await fetch(`${CLOUDFLARE_API}/${cfZoneId}/dns_records`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${cfToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dnsBody)
+    });
+
+    const dnsData = await dnsRes.json();
+    if (!dnsRes.ok || !dnsData.success) {
+      const errorMsg = dnsData?.errors?.[0]?.message || 'Cloudflare DNS provisioning error';
+      throw new Error(`Cloudflare: ${errorMsg}`);
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Cloudflare DNS successfully configured for site ${siteId} -> ${domain}.`
+    });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
 }

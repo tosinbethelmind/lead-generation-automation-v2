@@ -89,6 +89,29 @@ export function validateSecret(field: string, value: string): string | null {
       }
       break;
     }
+    case 'antigravityApiKey': {
+      const keys = trimmed.split(',').map(k => k.trim()).filter(Boolean);
+      for (const k of keys) {
+        if (k.length < 20) {
+          return 'Each Antigravity API Key must be at least 20 characters long.';
+        }
+      }
+      break;
+    }
+    case 'antigravityApiKeys': {
+      const keys = trimmed.split(',').map(k => k.trim()).filter(Boolean);
+      for (const k of keys) {
+        if (k.length < 20) {
+          return 'Each Antigravity API Key in the array must be at least 20 characters long.';
+        }
+      }
+      break;
+    }
+    case 'jijiCookies':
+      if (trimmed.length < 10) {
+        return 'Jiji Cookies must be a valid serialized JSON cookie string of at least 10 characters.';
+      }
+      break;
     case 'googlePlacesApiKey':
       if (trimmed.length < 20) {
         return 'Google Places API Key must be at least 20 characters long.';
@@ -124,6 +147,21 @@ export function validateSecret(field: string, value: string): string | null {
     case 'africastalkingApiKey':
       if (trimmed.length < 15) {
         return "Africa's Talking API Key must be at least 15 characters long.";
+      }
+      break;
+    case 'browserlessApiKey':
+      if (trimmed.length < 5) {
+        return 'Browserless API Key must be at least 5 characters long.';
+      }
+      break;
+    case 'browserbaseApiKey':
+      if (trimmed.length < 5) {
+        return 'Browserbase API Key must be at least 5 characters long.';
+      }
+      break;
+    case 'webshareProxy':
+      if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://') && !trimmed.startsWith('socks://') && !trimmed.startsWith('socks5://')) {
+        return 'Each Webshare proxy must start with a valid protocol (http://, https://, socks://, socks5://).';
       }
       break;
     case 'proxyPool': {
@@ -162,11 +200,20 @@ export const SECRET_KEYS = [
   'claudeApiKey',
   'openaiApiKey',
   'antigravityApiKey',
+  'antigravityApiKeys',
+  'jijiCookies',
   'interswitchAccount',
   'interswitchApiKey',
   'moniepointSecretKey',
   'opaySecretKey',
-  'proxyPool'
+  'proxyPool',
+  'browserlessApiKey',
+  'browserlessApiKeys',
+  'browserbaseApiKey',
+  'browserbaseApiKeys',
+  'webshareProxies',
+  'torProxyUrl',
+  'torControlUrl'
 ];
 
 export const MASK_VALUE = '••••••••';
@@ -178,7 +225,11 @@ export function maskConfig(config: RuntimeConfig): any {
   const masked = { ...config } as any;
   for (const key of SECRET_KEYS) {
     if (masked[key]) {
-      masked[key] = MASK_VALUE;
+      if (Array.isArray(masked[key])) {
+        masked[key] = masked[key].map(() => MASK_VALUE);
+      } else {
+        masked[key] = MASK_VALUE;
+      }
     }
   }
   return masked;

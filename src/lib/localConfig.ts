@@ -96,6 +96,8 @@ export interface LocalConfig {
   opayAccountNumber?: string;
   opayAccountName?: string;
   opaySecretKey?: string;
+  opayMerchantId?: string;
+  opayPublicKey?: string;
 
   // ── Legacy / optional (kept for backward compat) ───────
   apifyToken: string;
@@ -117,7 +119,9 @@ export interface LocalConfig {
   mistralApiKey?: string;
   // Antigravity model credentials
   antigravityApiKey?: string;
+  antigravityApiKeys?: string[];
   antigravityModels?: string[]; // e.g., ['gemini_flash_high','gemini_pro_low','gpt_oss','claude','sonneta','opus']
+  jijiCookies?: string;
   // ── On‑ground mode flag ────────────────────────────────────
   onGroundMode?: boolean;
 
@@ -144,6 +148,31 @@ export interface LocalConfig {
   proxyPool?: string;
   failoverPriority?: string;
   serviceHealthStatus?: string;
+  liveLink?: string;
+
+  // Rotating browser and proxy pool settings
+  browserlessApiKeys?: string[];
+  browserbaseApiKeys?: string[];
+  webshareProxies?: string[];
+  useTorProxy?: boolean;
+  torProxyUrl?: string;
+  torControlUrl?: string;
+  activeBrowserProvider?: 'local' | 'browserless' | 'browserbase' | 'tor' | 'rotation';
+  browserProviderRotation?: 'round-robin' | 'random';
+  teamMembers?: TeamMember[];
+  metaWebhookVerifyToken?: string;
+  metaAppSecret?: string;
+  autoQueueLagosDaily10k?: boolean;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  token: string;
+  role: 'super_admin' | 'outreach_manager' | 'designer' | 'viewer';
+  permissions: string[];
+  createdAt: string;
 }
 
 export interface RuntimeConfig extends LocalConfig {
@@ -165,9 +194,10 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   // Google data tools
   googleSpreadsheetId: '',
   googlePlacesApiKey: '',
+  liveLink: 'https://lead-generation-automation-e0oitxcsi.vercel.app',
   // Outreach
   dryRun: true,
-  businessSignature: 'ApexReach',
+  businessSignature: 'Bethelmind Analytics & Strategy',
   outreachChannel: 'gmail',
   // WhatsApp template (optional)
   whatsappMessageTemplate: '',
@@ -205,14 +235,14 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   smtpUser: '',
   smtpPass: '',
   smtpFrom: '',
-  smtpSenderName: 'ApexReach',
+  smtpSenderName: 'Bethelmind Analytics & Strategy',
   // ── SMTP Preset Default ─────────────────────────────────────
   smtpPreset: 'custom',
 
   // SendGrid Settings
   sendgridApiKey: '',
   sendgridFromEmail: '',
-  sendgridSenderName: 'ApexReach',
+  sendgridSenderName: 'Bethelmind Analytics & Strategy',
 
   // Baileys Settings
   whatsappBaileysUrl: 'http://localhost:3007',
@@ -229,6 +259,8 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   opayAccountNumber: '',
   opayAccountName: '',
   opaySecretKey: '',
+  opayMerchantId: '',
+  opayPublicKey: '',
 
   // SMS Outreach Defaults
   smsProvider: 'gateway',
@@ -252,15 +284,18 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   supabaseUrl: '',
   supabaseKey: '',
   antigravityApiKey: '',
+  antigravityApiKeys: [],
   antigravityModels: [],
+  jijiCookies: '',
   onGroundMode: false,
   geminiApiKey: '',
+  geminiApiKeys: [],
   remoteBrowserWs: '',
   scraperProxy: '',
   n8nWebhookUrl: '',
   minReviews: 1,
   minRating: 3.0,
-  storageMode: 'hybrid',
+  storageMode: 'supabase',
   cloudflareToken: '',
   cloudflareZoneId: '',
   vercelToken: '',
@@ -270,22 +305,54 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   proxyPool: '',
   failoverPriority: 'whatsapp,sms,email',
   serviceHealthStatus: '{}',
+  browserlessApiKeys: [],
+  browserbaseApiKeys: [],
+  webshareProxies: [],
+  useTorProxy: false,
+  torProxyUrl: 'socks5://127.0.0.1:9050',
+  torControlUrl: '127.0.0.1:9051',
+  activeBrowserProvider: 'rotation',
+  browserProviderRotation: 'round-robin',
+  teamMembers: [],
 };
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
-const BUNDLE_CONFIG_FILE_PATH = path.join(process.cwd(), 'config.json');
-const WRITEABLE_CONFIG_FILE_PATH = isServerless
-  ? path.join('/tmp', 'config.json')
-  : BUNDLE_CONFIG_FILE_PATH;
+
+import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from './atomicIo';
+
+import { getWorkerIndex } from './requestContext';
+
+export function getConfigFilePath(workerIndexOverride?: string): string {
+  const workerIndex = workerIndexOverride || getWorkerIndex();
+
+  const baseName = workerIndex ? `config.worker-${workerIndex}.json` : 'config.json';
+  
+  if (process.env.APEXREACH_CONFIG_PATH) {
+    return path.resolve(/*turbopackIgnore: true*/ process.env.APEXREACH_CONFIG_PATH);
+  }
+  
+  return isServerless
+    ? path.join('/tmp', baseName)
+    : path.join(/*turbopackIgnore: true*/ process.cwd(), baseName);
+}
 
 export function getRuntimeConfig(): RuntimeConfig {
   let fileConfig: Partial<LocalConfig & { storageMode: StorageMode }> = {};
   try {
-    const readPath = fs.existsSync(WRITEABLE_CONFIG_FILE_PATH) ? WRITEABLE_CONFIG_FILE_PATH : BUNDLE_CONFIG_FILE_PATH;
-    if (fs.existsSync(readPath)) {
-      const data = fs.readFileSync(readPath, 'utf-8');
-      fileConfig = JSON.parse(data);
+    const writeablePath = getConfigFilePath();
+    const bundlePath = path.join(/*turbopackIgnore: true*/ process.cwd(), 'config.json');
+    
+    // Copy base config if worker-specific file doesn't exist
+    if (writeablePath !== bundlePath && !fs.existsSync(writeablePath) && fs.existsSync(bundlePath)) {
+      try {
+        fs.copyFileSync(bundlePath, writeablePath);
+      } catch (err) {
+        console.error('Error copying base config to worker config:', err);
+      }
     }
+
+    const readPath = fs.existsSync(writeablePath) ? writeablePath : bundlePath;
+    fileConfig = readJsonFileSyncWithRetry(readPath, {});
   } catch (e) {
     console.error('Error reading local config:', e);
   }
@@ -354,6 +421,8 @@ export function getRuntimeConfig(): RuntimeConfig {
     opayAccountNumber: process.env.OPAY_ACCOUNT_NUMBER || fileConfig.opayAccountNumber || DEFAULT_CONFIG.opayAccountNumber,
     opayAccountName: process.env.OPAY_ACCOUNT_NAME || fileConfig.opayAccountName || DEFAULT_CONFIG.opayAccountName,
     opaySecretKey: process.env.OPAY_SECRET_KEY || fileConfig.opaySecretKey || DEFAULT_CONFIG.opaySecretKey,
+    opayMerchantId: process.env.OPAY_MERCHANT_ID || fileConfig.opayMerchantId || DEFAULT_CONFIG.opayMerchantId,
+    opayPublicKey: process.env.OPAY_PUBLIC_KEY || fileConfig.opayPublicKey || DEFAULT_CONFIG.opayPublicKey,
 
     // SMS Outreach Configuration
     smsProvider: (process.env.SMS_PROVIDER as any) || fileConfig.smsProvider || DEFAULT_CONFIG.smsProvider,
@@ -392,6 +461,12 @@ export function getRuntimeConfig(): RuntimeConfig {
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || fileConfig.supabaseUrl || DEFAULT_CONFIG.supabaseUrl,
     supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || fileConfig.supabaseKey || DEFAULT_CONFIG.supabaseKey,
     geminiApiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || fileConfig.geminiApiKey || DEFAULT_CONFIG.geminiApiKey,
+    geminiApiKeys: process.env.GEMINI_API_KEYS ? process.env.GEMINI_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.geminiApiKeys || DEFAULT_CONFIG.geminiApiKeys),
+    antigravityApiKey: process.env.ANTIGRAVITY_API_KEY || fileConfig.antigravityApiKey || DEFAULT_CONFIG.antigravityApiKey,
+    antigravityApiKeys: process.env.ANTIGRAVITY_API_KEYS ? process.env.ANTIGRAVITY_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.antigravityApiKeys || DEFAULT_CONFIG.antigravityApiKeys),
+    antigravityModels: process.env.ANTIGRAVITY_MODELS ? process.env.ANTIGRAVITY_MODELS.split(',').map(s => s.trim()) : (fileConfig.antigravityModels || DEFAULT_CONFIG.antigravityModels),
+    jijiCookies: process.env.JIJI_COOKIES || fileConfig.jijiCookies || DEFAULT_CONFIG.jijiCookies,
+    onGroundMode: process.env.ON_GROUND_MODE === 'true' || fileConfig.onGroundMode || DEFAULT_CONFIG.onGroundMode,
     remoteBrowserWs: process.env.REMOTE_BROWSER_WS || process.env.BROWSERLESS_WS || fileConfig.remoteBrowserWs || DEFAULT_CONFIG.remoteBrowserWs,
     scraperProxy: process.env.SCRAPER_PROXY || fileConfig.scraperProxy || DEFAULT_CONFIG.scraperProxy,
     n8nWebhookUrl: process.env.N8N_WEBHOOK_URL || fileConfig.n8nWebhookUrl || DEFAULT_CONFIG.n8nWebhookUrl,
@@ -407,6 +482,17 @@ export function getRuntimeConfig(): RuntimeConfig {
     proxyPool: process.env.PROXY_POOL || fileConfig.proxyPool || DEFAULT_CONFIG.proxyPool,
     failoverPriority: process.env.FAILOVER_PRIORITY || fileConfig.failoverPriority || DEFAULT_CONFIG.failoverPriority,
     serviceHealthStatus: process.env.SERVICE_HEALTH_STATUS || fileConfig.serviceHealthStatus || DEFAULT_CONFIG.serviceHealthStatus,
+    
+    // Rotating browser and proxy pool
+    browserlessApiKeys: process.env.BROWSERLESS_API_KEYS ? process.env.BROWSERLESS_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.browserlessApiKeys || DEFAULT_CONFIG.browserlessApiKeys),
+    browserbaseApiKeys: process.env.BROWSERBASE_API_KEYS ? process.env.BROWSERBASE_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.browserbaseApiKeys || DEFAULT_CONFIG.browserbaseApiKeys),
+    webshareProxies: process.env.WEBSHARE_PROXIES ? process.env.WEBSHARE_PROXIES.split(',').map(s => s.trim()) : (fileConfig.webshareProxies || DEFAULT_CONFIG.webshareProxies),
+    useTorProxy: process.env.USE_TOR_PROXY === 'true' || fileConfig.useTorProxy || DEFAULT_CONFIG.useTorProxy,
+    torProxyUrl: process.env.TOR_PROXY_URL || fileConfig.torProxyUrl || DEFAULT_CONFIG.torProxyUrl,
+    torControlUrl: process.env.TOR_CONTROL_URL || fileConfig.torControlUrl || DEFAULT_CONFIG.torControlUrl,
+    activeBrowserProvider: (process.env.ACTIVE_BROWSER_PROVIDER as any) || fileConfig.activeBrowserProvider || DEFAULT_CONFIG.activeBrowserProvider,
+    browserProviderRotation: (process.env.BROWSER_PROVIDER_ROTATION as any) || fileConfig.browserProviderRotation || DEFAULT_CONFIG.browserProviderRotation,
+    teamMembers: fileConfig.teamMembers || DEFAULT_CONFIG.teamMembers,
   };
 
   return merged;
@@ -421,8 +507,16 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
     const current = getRuntimeConfig();
     const updated = { ...current, ...config };
 
+    const writeablePath = getConfigFilePath();
+    const bundlePath = path.join(/*turbopackIgnore: true*/ process.cwd(), 'config.json');
+    const readPath = fs.existsSync(writeablePath) ? writeablePath : bundlePath;
+    const fileConfig = readJsonFileSyncWithRetry(readPath, {}) as Record<string, any>;
+
     const getSavedValue = (key: keyof RuntimeConfig, envValue: any) => {
       const val = updated[key];
+      if (fileConfig && fileConfig[key] !== undefined && fileConfig[key] !== '') {
+        return val;
+      }
       if (envValue !== undefined && envValue !== '' && String(val) === String(envValue)) {
         return '';
       }
@@ -491,6 +585,8 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       opayAccountNumber: updated.opayAccountNumber,
       opayAccountName: updated.opayAccountName,
       opaySecretKey: updated.opaySecretKey,
+      opayMerchantId: updated.opayMerchantId,
+      opayPublicKey: updated.opayPublicKey,
 
       // SMS Outreach Configuration
       smsProvider: updated.smsProvider,
@@ -521,6 +617,12 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       supabaseUrl: getSavedValue('supabaseUrl', process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL),
       supabaseKey: getSavedValue('supabaseKey', process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
       geminiApiKey: getSavedValue('geminiApiKey', process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
+      geminiApiKeys: updated.geminiApiKeys,
+      antigravityApiKey: getSavedValue('antigravityApiKey', process.env.ANTIGRAVITY_API_KEY),
+      antigravityApiKeys: updated.antigravityApiKeys,
+      antigravityModels: updated.antigravityModels,
+      jijiCookies: updated.jijiCookies,
+      onGroundMode: updated.onGroundMode,
       remoteBrowserWs: updated.remoteBrowserWs,
       scraperProxy: updated.scraperProxy,
       n8nWebhookUrl: updated.n8nWebhookUrl,
@@ -536,9 +638,20 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       proxyPool: updated.proxyPool,
       failoverPriority: updated.failoverPriority,
       serviceHealthStatus: updated.serviceHealthStatus,
+
+      // Rotating browser and proxy pool
+      browserlessApiKeys: updated.browserlessApiKeys,
+      browserbaseApiKeys: updated.browserbaseApiKeys,
+      webshareProxies: updated.webshareProxies,
+      useTorProxy: updated.useTorProxy,
+      torProxyUrl: updated.torProxyUrl,
+      torControlUrl: updated.torControlUrl,
+      activeBrowserProvider: updated.activeBrowserProvider,
+      browserProviderRotation: updated.browserProviderRotation,
+      teamMembers: updated.teamMembers,
     };
     
-    fs.writeFileSync(WRITEABLE_CONFIG_FILE_PATH, JSON.stringify(fileData, null, 2), 'utf-8');
+    writeJsonFileSyncAtomic(writeablePath, fileData);
     return updated;
   } catch (e) {
     console.error('Error writing local config:', e);
@@ -618,6 +731,31 @@ export function getRotatedTwilioKeys(sidStr: string | undefined, tokenStr: strin
     authToken: tokens[index] || tokens[0] || '',
     fromNumber: froms[index] || froms[0] || ''
   };
+}
+
+/**
+ * Resolves the absolute base URL / origin to use for outreach preview links.
+ * Prefers the configured liveLink if present; falls back to the requested URL's origin,
+ * and finally defaults to https://lead-generation-automation-ecru.vercel.app.
+ */
+export function getOutreachOrigin(reqUrl?: string): string {
+  const config = getRuntimeConfig();
+  if (config.liveLink && config.liveLink.trim()) {
+    let link = config.liveLink.trim();
+    if (!link.startsWith('http://') && !link.startsWith('https://')) {
+      link = 'https://' + link;
+    }
+    if (link.endsWith('/')) {
+      link = link.slice(0, -1);
+    }
+    return link;
+  }
+  if (reqUrl) {
+    try {
+      return new URL(reqUrl).origin;
+    } catch (_) {}
+  }
+  return 'https://lead-generation-automation-ecru.vercel.app';
 }
 
 

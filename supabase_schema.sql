@@ -76,3 +76,13 @@ CREATE TABLE IF NOT EXISTS scrape_jobs (
 -- Indexing for fast status lookups and job history query performance
 CREATE INDEX IF NOT EXISTS idx_scrape_jobs_status ON scrape_jobs(status);
 CREATE INDEX IF NOT EXISTS idx_scrape_jobs_created_at ON scrape_jobs(created_at DESC);
+
+-- 5. Create APP_SETTINGS table for durable runtime configuration
+-- This allows API keys (Gemini, Paystack, etc.) saved via the UI to survive
+-- Vercel / serverless cold starts, where /tmp is ephemeral.
+CREATE TABLE IF NOT EXISTS app_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
+

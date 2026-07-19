@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getLeads, addLog } from '@/lib/googleSheets';
-import { getRuntimeConfig } from '@/lib/localConfig';
+import { getRuntimeConfig, getOutreachOrigin } from '@/lib/localConfig';
 import { OutreachManager } from '@/lib/outreachManager';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -12,7 +12,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export async function POST(req: NextRequest) {
   try {
     const { leadIds, dryRunOverride, customMessage } = await req.json();
-    const origin = new URL(req.url).origin;
+    const origin = getOutreachOrigin(req.url);
 
     if (!leadIds || !Array.isArray(leadIds) || leadIds.length === 0) {
       return NextResponse.json({ error: 'Missing or empty leadIds parameter.' }, { status: 400 });

@@ -4,13 +4,17 @@ const path = require('path');
 const { Client } = require('pg');
 
 async function runMigration() {
-  // Use Supabase service‑role key from environment variables
-  const connectionString = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
-    ? `${process.env.SUPABASE_URL}?apikey=${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const match = supabaseUrl.match(/https:\/\/([a-z0-9]+)\.supabase\.co/i);
+  const projectRef = match ? match[1] : '';
+  const password = process.env.DATABASE_PASSWORD || 'pHqrTQc2gpdSqnAx';
+
+  const connectionString = projectRef
+    ? `postgresql://postgres:${encodeURIComponent(password)}@db.${projectRef}.supabase.co:6543/postgres?sslmode=require`
     : null;
 
   if (!connectionString) {
-    console.error("Error: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in the environment.");
+    console.error("Error: Could not parse project ref from SUPABASE_URL / NEXT_PUBLIC_SUPABASE_URL.");
     process.exit(1);
   }
 

@@ -26,17 +26,39 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Load the current site JSON
-    const sitePath = path.join(SITES_DIR, `${siteId}.json`);
+    let workerIndex = '';
+    try {
+      workerIndex = req.headers.get('x-test-worker-index') || '';
+    } catch (e) {}
+    if (!workerIndex) {
+      workerIndex = process.env.TEST_WORKER_INDEX || '';
+    }
+
+    const baseName = workerIndex ? `${siteId}.worker-${workerIndex}.json` : `${siteId}.json`;
+    const sitePath = path.join(SITES_DIR, baseName);
+    const bundlePath = path.join(SITES_DIR, `${siteId}.json`);
+
+    // Copy base config if worker-specific file doesn't exist
+    if (sitePath !== bundlePath && !fs.existsSync(sitePath) && fs.existsSync(bundlePath)) {
+      try {
+        fs.copyFileSync(bundlePath, sitePath);
+      } catch (err) {
+        console.error('Error copying base site config to worker path:', err);
+      }
+    }
+
     if (!fs.existsSync(sitePath)) {
       return NextResponse.json(
-        { error: `Site config "${siteId}.json" not found.` },
+        { error: `Site config "${baseName}" not found.` },
         { status: 404 }
       );
     }
 
+    const { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } = require('@/lib/atomicIo');
     let siteConfig: any;
     try {
-      siteConfig = JSON.parse(fs.readFileSync(sitePath, 'utf8'));
+      siteConfig = readJsonFileSyncWithRetry(sitePath, null);
+      if (!siteConfig) throw new Error('Parsed config is empty');
     } catch {
       return NextResponse.json(
         { error: 'Failed to parse existing site config.' },
@@ -171,7 +193,7 @@ Example response:
     const updatedJson = JSON.stringify(siteConfig, null, 2);
 
     // 4. Write locally
-    fs.writeFileSync(sitePath, updatedJson, 'utf-8');
+    writeJsonFileSyncAtomic(sitePath, siteConfig);
 
     // 5. Commit to GitHub to trigger Vercel rebuild
     const githubPat  = process.env.GITHUB_PAT;

@@ -1,12 +1,71 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRuntimeConfig, rotateKey } from '@/lib/localConfig';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
-import { getValidAccessToken, getDesignTheme, buildFallbackCopy } from '../generate/route';
+import { getValidAccessToken } from '@/lib/googleAuth';
+import { getDesignTheme, buildFallbackCopy } from '@/lib/designGenerator';
 import fs from 'fs';
 import path from 'path';
 import { getOverridesDir } from '@/lib/overrides';
+import { generateRedesignWithProviders } from '@/lib/aiRedesign';
 
 const OVERRIDES_DIR = getOverridesDir();
+
+
+function tryKeywordPresets(prompt: string): any | null {
+  const normalized = prompt.toLowerCase();
+  
+  if (/\b(dark|black|midnight|darkmode|dark mode)\b/.test(normalized)) {
+    return {
+      primary: '#0f172a',
+      accent: '#38bdf8',
+      bg: '#020617',
+      text: '#f8fafc',
+      gradient: 'linear-gradient(135deg, #0f172a 0%, #020617 100%)'
+    };
+  }
+
+  if (/\b(light|white|clean|lightmode|light mode|minimal)\b/.test(normalized)) {
+    return {
+      primary: '#1e293b',
+      accent: '#0f766e',
+      bg: '#ffffff',
+      text: '#0f172a',
+      gradient: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)'
+    };
+  }
+
+  if (/\b(green|eco|nature|garden|organic|lawn)\b/.test(normalized)) {
+    return {
+      primary: '#14532d',
+      accent: '#22c55e',
+      bg: '#f0fdf4',
+      text: '#14532d',
+      gradient: 'linear-gradient(135deg, #14532d 0%, #22c55e 100%)'
+    };
+  }
+
+  if (/\b(blue|ocean|water|aqua|marine|professional)\b/.test(normalized)) {
+    return {
+      primary: '#1e3a8a',
+      accent: '#3b82f6',
+      bg: '#f0f9ff',
+      text: '#1e3a8a',
+      gradient: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)'
+    };
+  }
+
+  if (/\b(gold|luxury|premium|elegant|vip|expensive)\b/.test(normalized)) {
+    return {
+      primary: '#1c1917',
+      accent: '#d97706',
+      bg: '#fafaf9',
+      text: '#1c1917',
+      gradient: 'linear-gradient(135deg, #1c1917 0%, #d97706 100%)'
+    };
+  }
+
+  return null;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,12 +84,11 @@ export async function POST(req: NextRequest) {
     }
 
     const config = getRuntimeConfig();
-    const hasGeminiKey = !!config.geminiApiKey;
-    const hasVertex = !!(config.googleProjectId && config.googleRefreshToken);
 
-    if (!hasGeminiKey && !hasVertex) {
-      return NextResponse.json({ error: 'Neither Gemini AI API Key nor Google Vertex AI is configured. Please go to Settings and enter a key.' }, { status: 400 });
-    }
+    // Check if background queue is required
+    const { parseScalingConfig } = require('@/lib/scalingHelper');
+    const scaling = parseScalingConfig(lead.notes);
+    const isQueueRequired = scaling.mode === 'git-batch' || req.nextUrl.searchParams.get('queue') === 'true';
 
     // Load current baseline or existing overrides to let AI perform delta updates
     const themeDefault = getDesignTheme(lead.category);
@@ -55,6 +113,49 @@ export async function POST(req: NextRequest) {
       showAbout: true,
       ...currentOverrides.visibility
     };
+
+    // 1. Try Shortcut Presets first (0ms, $0 cost)
+    const presetTheme = tryKeywordPresets(prompt);
+    if (presetTheme) {
+      const mergedOverrides = {
+        ...currentOverrides,
+        theme: {
+          ...currentTheme,
+          ...presetTheme
+        }
+      };
+      
+      fs.writeFileSync(overridesPath, JSON.stringify(mergedOverrides, null, 2), 'utf8');
+
+      const { addLog } = require('@/lib/googleSheets');
+      await addLog(
+        'AI Redesign Shortcut',
+        'SUCCESS',
+        `Lead "${lead.name}" redesigned using preset shortcut for prompt: "${prompt}"`
+      );
+
+      return NextResponse.json({ success: true, overrides: mergedOverrides, shortcut: true });
+    }
+
+    // 2. If no shortcut matched, check if we should queue the LLM request
+    if (isQueueRequired) {
+      const timestamp = new Date().toISOString();
+      const updatedNotes = `${lead.notes || ''}\n[REDESIGN_PENDING: true] [REDESIGN_PROMPT: ${prompt}] at ${timestamp}`;
+      await repo.updateLeadStatus(leadId, lead.status, updatedNotes, timestamp);
+
+      const { addLog } = require('@/lib/googleSheets');
+      await addLog(
+        'AI Redesign Queue',
+        'INFO',
+        `Lead "${lead.name}" redesign queued for prompt: "${prompt}"`
+      );
+
+      return NextResponse.json({
+        success: true,
+        queued: true,
+        message: 'Your custom redesign request is being processed by the AI in the background.'
+      });
+    }
 
     const aiPrompt = `You are an expert web designer. Your task is to update a business landing page design based on the user request.
   
@@ -109,49 +210,7 @@ Generate a JSON object containing the modified design overrides. Only modify wha
   ]
 }`;
 
-    let resp;
-    if (hasGeminiKey) {
-      const activeKey = rotateKey(config.geminiApiKey);
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`;
-      resp = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: aiPrompt }] }],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 1024,
-          },
-        }),
-      });
-    } else {
-      const accessToken = await getValidAccessToken();
-      const endpoint = `https://us-central1-aiplatform.googleapis.com/v1/projects/${config.googleProjectId}/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent`;
-      resp = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: aiPrompt }] }],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 1024,
-          },
-        }),
-      });
-    }
-
-    if (!resp.ok) {
-      const err = await resp.json();
-      throw new Error(`Gemini generation error: ${err.error?.message || resp.statusText}`);
-    }
-
-    const data = await resp.json();
-    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const rawText = await generateRedesignWithProviders(aiPrompt);
     
     // Parse JSON
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);

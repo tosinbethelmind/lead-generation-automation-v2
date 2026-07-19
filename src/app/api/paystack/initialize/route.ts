@@ -6,7 +6,7 @@ import { calculateLeadClaimFee } from '@/lib/pricing';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { leadId, email, name, theme, copy, selectedFeatures, customInstructions, publicKey } = body;
+    const { leadId, email, name, theme, copy, selectedFeatures, customInstructions, publicKey, upgradeStrategy } = body;
 
     if (!leadId || !email || !name) {
       return NextResponse.json({ error: 'Missing required fields: leadId, email, or name' }, { status: 400 });
@@ -19,6 +19,16 @@ export async function POST(req: NextRequest) {
     const lead = await repo.getLeadById(leadId);
     if (!lead) {
       return NextResponse.json({ error: `Lead with ID ${leadId} not found` }, { status: 404 });
+    }
+
+    // Assign chosen strategy and features in-memory for correct pricing
+    if (upgradeStrategy) {
+      lead.upgrade_strategy = upgradeStrategy;
+      lead.upgradeStrategy = upgradeStrategy;
+    }
+    if (selectedFeatures) {
+      lead.plugin_suggestions = selectedFeatures;
+      lead.pluginSuggestions = selectedFeatures;
     }
 
     const feeNGN = calculateLeadClaimFee(lead, config);
@@ -49,6 +59,7 @@ export async function POST(req: NextRequest) {
         copy,
         selectedFeatures: selectedFeatures || [],
         customInstructions: customInstructions || '',
+        upgradeStrategy: upgradeStrategy || lead.upgradeStrategy || 'script_embed',
         custom_fields: [
           { display_name: 'Lead ID', variable_name: 'lead_id', value: leadId },
           { display_name: 'Client Name', variable_name: 'client_name', value: name },

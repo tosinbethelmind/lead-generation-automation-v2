@@ -5,13 +5,21 @@ export async function GET(req: NextRequest) {
   const { searchParams, origin } = new URL(req.url);
   const code = searchParams.get('code');
   const error = searchParams.get('error');
+  const useClaspRedirect = searchParams.get('use_clasp_redirect') === 'true';
+
+  const handleError = (reason: string) => {
+    if (useClaspRedirect) {
+      return NextResponse.json({ error: reason }, { status: 400 });
+    }
+    return NextResponse.redirect(`${origin}/?auth=error&reason=${encodeURIComponent(reason)}`);
+  };
 
   if (error) {
-    return NextResponse.redirect(`${origin}/?auth=error&reason=${encodeURIComponent(error)}`);
+    return handleError(error);
   }
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/?auth=error&reason=missing_code`);
+    return handleError('missing_code');
   }
 
   const config = getRuntimeConfig();
@@ -19,10 +27,10 @@ export async function GET(req: NextRequest) {
   const clientSecret = config.googleClientSecret;
 
   if (!clientId || !clientSecret) {
-    return NextResponse.redirect(`${origin}/?auth=error&reason=missing_credentials`);
+    return handleError('missing_credentials');
   }
 
-  const redirectUri = `${origin}/api/auth/callback`;
+  const redirectUri = useClaspRedirect ? 'http://localhost:9005' : `${origin}/api/auth/callback`;
 
   try {
     // Exchange authorization code for tokens
@@ -42,7 +50,7 @@ export async function GET(req: NextRequest) {
 
     if (!tokenResp.ok || !tokenData.access_token) {
       console.error('Token exchange failed:', tokenData);
-      return NextResponse.redirect(`${origin}/?auth=error&reason=token_exchange_failed`);
+      return handleError('token_exchange_failed');
     }
 
     // Fetch user email from Google userinfo
@@ -64,18 +72,30 @@ export async function GET(req: NextRequest) {
     }
 
     // Persist Antigravity key alongside Google tokens
+    const isNewAccount = !!(config.googleUserEmail && userData.email && userData.email !== config.googleUserEmail);
+    const finalRefreshToken = tokenData.refresh_token || (isNewAccount ? '' : config.googleRefreshToken);
+
+    if (!finalRefreshToken) {
+      console.error('[OAuth Callback] Missing refresh token for account:', userData.email);
+      return handleError('missing_refresh_token_reauth_required');
+    }
+
     saveLocalConfig({
       googleAccessToken: tokenData.access_token,
-      googleRefreshToken: tokenData.refresh_token || config.googleRefreshToken,
+      googleRefreshToken: finalRefreshToken,
       googleTokenExpiry: tokenData.expires_in ? Date.now() + tokenData.expires_in * 1000 : 0,
       googleUserEmail: userData.email || '',
       antigravityApiKey: antigravityKey || config.antigravityApiKey,
       ...(projectId ? { googleProjectId: projectId } : {}),
     });
 
+    if (useClaspRedirect) {
+      return NextResponse.json({ success: true, email: userData.email });
+    }
+
     return NextResponse.redirect(`${origin}/?auth=success&email=${encodeURIComponent(userData.email || 'Connected')}`);
   } catch (err: any) {
     console.error('OAuth callback error:', err);
-    return NextResponse.redirect(`${origin}/?auth=error&reason=${encodeURIComponent(err.message)}`);
+    return handleError(err.message);
   }
 }

@@ -1,6 +1,8 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
+import { verifySessionToken } from '@/lib/session';
+import { getAdminUser, checkPermission } from '@/lib/auth';
 
 const TOKENS_PATH = path.join(process.cwd(), 'src', 'styles', 'tokens.css');
 
@@ -14,12 +16,13 @@ const DEFAULTS = {
 
 export async function GET(req: NextRequest) {
   try {
-    // Check authorization cookie
-    const adminToken = process.env.ADMIN_TOKEN || 'admin_secret_token_123';
+    // Verify admin token and permission
     const tokenCookie = req.cookies.get('admin-token')?.value;
+    const session = await verifySessionToken(tokenCookie);
+    const adminUser = getAdminUser(session?.token);
 
-    if (tokenCookie !== adminToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!adminUser || (!checkPermission(adminUser, 'view_dashboard') && !checkPermission(adminUser, 'edit_design'))) {
+      return NextResponse.json({ error: 'Forbidden. view_dashboard or edit_design permission required.' }, { status: 403 });
     }
 
     try {
@@ -48,12 +51,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    // Check authorization cookie
-    const adminToken = process.env.ADMIN_TOKEN || 'admin_secret_token_123';
+    // Verify admin token and permission
     const tokenCookie = req.cookies.get('admin-token')?.value;
+    const session = await verifySessionToken(tokenCookie);
+    const adminUser = getAdminUser(session?.token);
 
-    if (tokenCookie !== adminToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!adminUser || !checkPermission(adminUser, 'edit_design')) {
+      return NextResponse.json({ error: 'Forbidden. edit_design permission required.' }, { status: 403 });
     }
 
     const { primary, secondary, accent, font } = await req.json();

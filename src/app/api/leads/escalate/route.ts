@@ -73,7 +73,7 @@ Please review this lead in the admin dashboard or contact the client directly.
 ${clientEmail ? `Reply directly to: ${clientEmail}` : ''}
 
 Best regards,
-ApexReach Automation Engine`;
+Bethelmind Analytics & Strategy Automation Engine`;
 
       await sendNotificationEmail(adminEmail, subject, emailBody);
     }

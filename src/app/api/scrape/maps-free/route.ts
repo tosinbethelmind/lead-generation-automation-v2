@@ -365,7 +365,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const apiKey = config.geminiApiKey;
+    const apiKey = config.geminiApiKey || config.antigravityApiKey || (config.antigravityApiKeys && config.antigravityApiKeys[0]) || '';
     if (apiKey && candidates.length > 0) {
       console.log(`[Maps-Free] Performing parallel AI relevance check for ${candidates.length} leads...`);
       const aiChecks = await Promise.all(

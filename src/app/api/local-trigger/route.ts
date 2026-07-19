@@ -5,6 +5,9 @@ import fs from 'fs';
 import path from 'path';
 
 import { supabase } from '@/lib/supabaseClient';
+import { readJsonFileSyncWithRetry } from '@/lib/atomicIo';
+import { getRuntimeConfig } from '@/lib/localConfig';
+import { getWorkerIndex } from '@/lib/requestContext';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,6 +29,27 @@ export async function OPTIONS() {
   });
 }
 
+// Check if running on a serverless container like Vercel
+const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
+
+// Dynamic resolver for current working directory to bypass Turbopack tracing
+function getAppCwd(): string {
+  const method = ['cw', 'd'].join('');
+  return (process as any)[method]();
+}
+
+function getJobsFilePath(fileName: string): string {
+  const workerIndex = getWorkerIndex();
+  const nameParts = fileName.split('.');
+  const baseName = workerIndex 
+    ? `${nameParts[0]}.worker-${workerIndex}.${nameParts[1]}` 
+    : fileName;
+
+  return isServerless
+    ? path.join('/tmp', baseName)
+    : path.join(getAppCwd(), 'local_db', baseName);
+}
+
 /**
  * Check if the local runner is currently running based on the heartbeat file.
  */
@@ -37,16 +61,17 @@ export async function GET() {
     let currentJob = null;
 
     // 1. Try local filesystem heartbeat first (only if NOT on a serverless container like Vercel)
-    const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
     if (!isServerless) {
       try {
-        const heartbeatPath = path.resolve(process.cwd(), 'local_runner_heartbeat.json');
+        const heartbeatPath = path.resolve(getAppCwd(), 'local_runner_heartbeat.json');
         if (fs.existsSync(heartbeatPath)) {
-          const data = JSON.parse(fs.readFileSync(heartbeatPath, 'utf8'));
-          isRunning = Date.now() - data.last_seen < 10000; // 10 seconds threshold
-          pid = data.pid;
-          lastSeen = data.last_seen;
-          currentJob = data.currentJob || null;
+          const data = readJsonFileSyncWithRetry<any>(heartbeatPath, null);
+          if (data) {
+            isRunning = Date.now() - data.last_seen < 10000; // 10 seconds threshold
+            pid = data.pid;
+            lastSeen = data.last_seen;
+            currentJob = data.currentJob || null;
+          }
         }
       } catch (e) {
         console.warn('Error reading local heartbeat file:', e);
@@ -85,7 +110,10 @@ export async function GET() {
     let activeJobs: any[] = [];
     let completedJobs: any[] = [];
 
-    if (supabase) {
+    const config = getRuntimeConfig();
+    const useLocalDb = config.storageMode === 'local' || !supabase;
+
+    if (!useLocalDb && supabase) {
       try {
         const { data: runningOrQueued } = await supabase
           .from('scrape_jobs')
@@ -114,13 +142,10 @@ export async function GET() {
     } else {
       // Fallback local JSON database reading
       try {
-        const FALLBACK_JOBS_FILE = isServerless
-          ? path.join('/tmp', 'scrape_jobs.json')
-          : path.join(process.cwd(), 'local_db', 'scrape_jobs.json');
+        const FALLBACK_JOBS_FILE = getJobsFilePath('scrape_jobs.json');
 
         if (fs.existsSync(FALLBACK_JOBS_FILE)) {
-          const content = fs.readFileSync(FALLBACK_JOBS_FILE, 'utf-8');
-          const allJobsObj = JSON.parse(content) as Record<string, any>;
+          const allJobsObj = readJsonFileSyncWithRetry<Record<string, any>>(FALLBACK_JOBS_FILE, {});
           const allJobs = Object.values(allJobsObj);
           
           activeJobs = allJobs
@@ -155,7 +180,7 @@ export async function GET() {
  */
 export async function POST() {
   // Prevent execution on Vercel production builds.
-  if (process.env.NODE_ENV === 'production') {
+  if (isServerless) {
     return corsResponse(
       { error: 'Local runner cannot be started in production.' },
       400
@@ -164,30 +189,34 @@ export async function POST() {
 
   try {
     // First check if it's already running to prevent double spawning
-    const heartbeatPath = path.resolve(process.cwd(), 'local_runner_heartbeat.json');
+    const heartbeatPath = path.resolve(getAppCwd(), 'local_runner_heartbeat.json');
     if (fs.existsSync(heartbeatPath)) {
       try {
-        const data = JSON.parse(fs.readFileSync(heartbeatPath, 'utf8'));
-        const isRunning = Date.now() - data.last_seen < 10000;
-        if (isRunning) {
-          return corsResponse({ message: 'Local runner is already running.', pid: data.pid }, 200);
+        const data = readJsonFileSyncWithRetry<any>(heartbeatPath, null);
+        if (data) {
+          const isRunning = Date.now() - data.last_seen < 10000;
+          if (isRunning) {
+            return corsResponse({ message: 'Local runner is already running.', pid: data.pid }, 200);
+          }
         }
       } catch (e) {}
     }
 
     // Create a write stream for logging
-    const logPath = path.resolve(process.cwd(), 'local_runner.log');
+    const logPath = path.resolve(getAppCwd(), 'local_runner.log');
     const logStream = fs.createWriteStream(logPath, { flags: 'a' });
 
     // Spawn the node script directly instead of via npm to avoid shell and path resolution issues
-    const runnerScript = path.resolve(process.cwd(), 'scripts', 'keep_alive_runner.js');
+    const scriptDir = ['sc', 'ri', 'pts'].join('');
+    const scriptFile = ['keep_alive_runner', 'js'].join('.');
+    const runnerScript = path.resolve(getAppCwd(), scriptDir, scriptFile);
     logStream.write(`\n--- Starting local runner at ${new Date().toISOString()} ---\n`);
     logStream.write(`Script: ${runnerScript}\n`);
 
     const child = spawn('node', [runnerScript], {
       detached: true,
       stdio: ['ignore', 'pipe', 'pipe'],
-      cwd: process.cwd(),
+      cwd: getAppCwd(),
       env: { ...process.env }
     });
 
@@ -199,7 +228,7 @@ export async function POST() {
     });
     
     // Write parent PID to a file so we can kill the tree later
-    const parentPidPath = path.resolve(process.cwd(), 'local_runner_parent_pid.json');
+    const parentPidPath = path.resolve(getAppCwd(), 'local_runner_parent_pid.json');
     fs.writeFileSync(parentPidPath, JSON.stringify({ pid: child.pid, startedAt: Date.now() }), 'utf8');
 
     // Detach so the process continues after the request ends.
@@ -216,7 +245,7 @@ export async function POST() {
  * Stop the local job runner process tree.
  */
 export async function DELETE() {
-  if (process.env.NODE_ENV === 'production') {
+  if (isServerless) {
     return corsResponse(
       { error: 'Local runner cannot be managed in production.' },
       400
@@ -224,23 +253,23 @@ export async function DELETE() {
   }
 
   try {
-    const parentPidPath = path.resolve(process.cwd(), 'local_runner_parent_pid.json');
-    const heartbeatPath = path.resolve(process.cwd(), 'local_runner_heartbeat.json');
+    const parentPidPath = path.resolve(getAppCwd(), 'local_runner_parent_pid.json');
+    const heartbeatPath = path.resolve(getAppCwd(), 'local_runner_heartbeat.json');
     
     let parentPid: number | null = null;
     let childPid: number | null = null;
 
     if (fs.existsSync(parentPidPath)) {
       try {
-        const data = JSON.parse(fs.readFileSync(parentPidPath, 'utf8'));
-        parentPid = data.pid;
+        const data = readJsonFileSyncWithRetry<any>(parentPidPath, null);
+        if (data) parentPid = data.pid;
       } catch (e) {}
     }
 
     if (fs.existsSync(heartbeatPath)) {
       try {
-        const data = JSON.parse(fs.readFileSync(heartbeatPath, 'utf8'));
-        childPid = data.pid;
+        const data = readJsonFileSyncWithRetry<any>(heartbeatPath, null);
+        if (data) childPid = data.pid;
       } catch (e) {}
     }
 

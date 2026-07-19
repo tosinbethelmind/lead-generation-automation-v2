@@ -10,45 +10,7 @@ import { getRuntimeConfig, saveLocalConfig, rotateKey } from '@/lib/localConfig'
 import fs from 'fs';
 import path from 'path';
 
-// ============================================================================
-// Google OAuth Token Refresher
-// ============================================================================
-
-async function getValidAccessToken(config: any): Promise<string> {
-  const now = Date.now();
-  const bufferMs = 5 * 60 * 1000;
-
-  if (config.googleAccessToken && config.googleTokenExpiry && config.googleTokenExpiry - bufferMs > now) {
-    return config.googleAccessToken;
-  }
-
-  if (!config.googleRefreshToken || !config.googleClientId || !config.googleClientSecret) {
-    throw new Error('Google session expired. Please sign in again in the console.');
-  }
-
-  const resp = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: config.googleClientId,
-      client_secret: config.googleClientSecret,
-      refresh_token: config.googleRefreshToken,
-      grant_type: 'refresh_token',
-    }),
-  });
-
-  const data = await resp.json();
-  if (!resp.ok || !data.access_token) {
-    throw new Error('Google refresh token validation failed. Please sign in again.');
-  }
-
-  saveLocalConfig({
-    googleAccessToken: data.access_token,
-    googleTokenExpiry: Date.now() + (data.expires_in || 3600) * 1000,
-  });
-
-  return data.access_token;
-}
+import { getValidAccessToken } from '@/lib/googleAuth';
 
 // ============================================================================
 // Email Sender Helpers
@@ -118,7 +80,7 @@ async function sendBrevoMessage(to: string, subject: string, body: string, confi
   if (!activeKey) {
     throw new Error('Brevo API Key is not configured.');
   }
-  const senderName = config.brevoSenderName || 'ApexReach';
+  const senderName = config.brevoSenderName || 'Bethelmind Analytics & Strategy';
   const senderEmail = config.brevoSenderEmail;
   if (!senderEmail) {
     throw new Error('Brevo Sender Email is not configured.');
@@ -452,12 +414,12 @@ ${gitNotice}
 Please contact them at ${clientEmail} as soon as possible to finalize their website build.
 
 Best regards,
-ApexReach Lead Engine`;
+Bethelmind Analytics & Strategy Lead Engine`;
 
     if (adminEmail && !config.dryRun) {
       try {
         if (emailProvider === 'gmail') {
-          const accessToken = await getValidAccessToken(config);
+          const accessToken = await getValidAccessToken();
           await sendGmailMessage(adminEmail, adminSubject, adminBody, accessToken);
         } else if (emailProvider === 'resend') {
           await sendResendMessage(adminEmail, adminSubject, adminBody, config);

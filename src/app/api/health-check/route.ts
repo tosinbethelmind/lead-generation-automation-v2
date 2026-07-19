@@ -1,73 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
-import net from 'net';
 
-function parseProxyString(proxyStr: string) {
+/**
+ * Test a proxy by routing a real HTTP GET request through it using undici's ProxyAgent.
+ * This matches exactly what curl does and avoids false failures from CONNECT tunnel blocks.
+ */
+async function testProxyConnection(
+  proxyUrl: string,
+  timeoutMs = 8000
+): Promise<{ online: boolean; latency: number; error?: string }> {
+  const start = Date.now();
   try {
-    let clean = proxyStr.trim();
-    if (!clean) return null;
-    if (!clean.includes('://')) {
-      clean = 'http://' + clean;
+    const { ProxyAgent, fetch: undiciFetch } = await import('undici');
+    const dispatcher = new ProxyAgent({
+      uri: proxyUrl,
+      connectTimeout: timeoutMs,
+      headersTimeout: timeoutMs,
+      bodyTimeout: timeoutMs,
+    });
+    // Fetch the Webshare IP-echo endpoint through the proxy — same as the curl test
+    const resp = await undiciFetch('https://ipv4.webshare.io/', {
+      dispatcher,
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    const latency = Date.now() - start;
+    if (resp.ok || resp.status < 500) {
+      return { online: true, latency };
     }
-    const parsed = new URL(clean);
-    return {
-      protocol: parsed.protocol,
-      host: parsed.hostname,
-      port: parsed.port ? parseInt(parsed.port, 10) : (parsed.protocol === 'https:' ? 443 : 80),
-      username: parsed.username ? decodeURIComponent(parsed.username) : undefined,
-      password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
-      original: proxyStr
-    };
-  } catch (err) {
-    return null;
+    return { online: false, latency, error: `HTTP ${resp.status}` };
+  } catch (err: any) {
+    return { online: false, latency: Date.now() - start, error: err?.message || String(err) };
   }
-}
-
-function testProxyConnection(proxy: any, timeoutMs = 3000): Promise<{ online: boolean; latency: number; error?: string }> {
-  return new Promise((resolve) => {
-    if (!proxy) {
-      return resolve({ online: false, latency: 0, error: 'Invalid proxy format' });
-    }
-    const start = Date.now();
-    const socket = net.createConnection({
-      host: proxy.host,
-      port: proxy.port
-    });
-    
-    socket.setTimeout(timeoutMs);
-    
-    socket.on('connect', () => {
-      if (proxy.protocol.startsWith('http')) {
-        const connectReq = `CONNECT api.ipify.org:443 HTTP/1.1\r\nHost: api.ipify.org:443\r\n\r\n`;
-        socket.write(connectReq);
-        socket.once('data', (data) => {
-          const resp = data.toString();
-          if (resp.includes('200') || resp.includes('Established') || resp.includes('established')) {
-            const latency = Date.now() - start;
-            socket.destroy();
-            resolve({ online: true, latency });
-          } else {
-            socket.destroy();
-            resolve({ online: false, latency: Date.now() - start, error: 'Proxy refused handshake' });
-          }
-        });
-      } else {
-        const latency = Date.now() - start;
-        socket.destroy();
-        resolve({ online: true, latency });
-      }
-    });
-    
-    socket.on('timeout', () => {
-      socket.destroy();
-      resolve({ online: false, latency: Date.now() - start, error: 'Timeout' });
-    });
-    
-    socket.on('error', (err) => {
-      socket.destroy();
-      resolve({ online: false, latency: Date.now() - start, error: err.message });
-    });
-  });
 }
 
 export async function GET(req: NextRequest) {
@@ -287,21 +250,34 @@ export async function GET(req: NextRequest) {
       const parts = config.proxyPool.split(',').map((p: string) => p.trim()).filter(Boolean);
       proxyList.push(...parts);
     }
-    if (config.scraperProxy && !proxyList.includes(config.scraperProxy.trim())) {
+    if (config.scraperProxy) {
       proxyList.push(config.scraperProxy.trim());
     }
+    if ((config as any).webshareProxies) {
+      const ws = (config as any).webshareProxies;
+      if (Array.isArray(ws)) {
+        proxyList.push(...ws);
+      } else if (typeof ws === 'string') {
+        const parts = ws.split(/[,\n]+/).map((p: string) => p.trim()).filter(Boolean);
+        proxyList.push(...parts);
+      }
+    }
+
+    // Filter out duplicate proxies and ignore mock/placeholder entries like 12.34.56.78 or example.com
+    const uniqueRawProxies = Array.from(new Set(proxyList.map(p => p.trim()).filter(Boolean)));
+    const filteredProxyList = uniqueRawProxies.filter(p => !p.includes('12.34.56.78') && !p.includes('proxy.example.com'));
 
     const testedProxies: any[] = [];
     let onlineCount = 0;
     
-    if (proxyList.length > 0) {
-      // Test all proxies in parallel
-      const tests = proxyList.map(async (proxyStr) => {
-        const parsed = parseProxyString(proxyStr);
-        if (!parsed) {
-          return { url: proxyStr, status: 'offline', error: 'Invalid proxy format', latency: 0 };
+    if (filteredProxyList.length > 0) {
+      // Test all proxies in parallel using a real HTTP fetch through each proxy
+      const tests = filteredProxyList.map(async (proxyStr) => {
+        let normalized = proxyStr.trim();
+        if (normalized && !normalized.includes('://')) {
+          normalized = 'http://' + normalized;
         }
-        const result = await testProxyConnection(parsed, 4000);
+        const result = await testProxyConnection(normalized, 8000);
         return {
           url: proxyStr,
           status: result.online ? 'online' : 'offline',
@@ -322,16 +298,16 @@ export async function GET(req: NextRequest) {
     let scraperStatus: 'ok' | 'warning' | 'unhealthy' = 'ok';
     let scraperDetails = 'No proxies configured';
 
-    if (proxyList.length > 0) {
-      if (onlineCount === proxyList.length) {
+    if (filteredProxyList.length > 0) {
+      if (onlineCount === filteredProxyList.length) {
         scraperStatus = 'ok';
-        scraperDetails = `All ${proxyList.length} proxies online`;
+        scraperDetails = `All ${filteredProxyList.length} proxies online`;
       } else if (onlineCount > 0) {
         scraperStatus = 'warning';
-        scraperDetails = `${onlineCount}/${proxyList.length} proxies online`;
+        scraperDetails = `${onlineCount}/${filteredProxyList.length} proxies online`;
       } else {
         scraperStatus = 'unhealthy';
-        scraperDetails = `All ${proxyList.length} proxies offline!`;
+        scraperDetails = `All ${filteredProxyList.length} proxies offline!`;
       }
     } else {
       scraperDetails = 'Direct connection active (no proxies)';

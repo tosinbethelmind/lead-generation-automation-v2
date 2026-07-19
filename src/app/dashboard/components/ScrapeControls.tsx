@@ -12,6 +12,8 @@ interface ScrapeControlsProps {
   onExecute: () => void;
   isConfigured: boolean;
   requiresKey: boolean;
+  runAllConcurrently: boolean;
+  setRunAllConcurrently: (val: boolean) => void;
 }
 
 export default function ScrapeControls({
@@ -23,7 +25,9 @@ export default function ScrapeControls({
   scraping,
   onExecute,
   isConfigured,
-  requiresKey
+  requiresKey,
+  runAllConcurrently,
+  setRunAllConcurrently
 }: ScrapeControlsProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -76,12 +80,33 @@ export default function ScrapeControls({
         </div>
       </div>
 
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
+        <input
+          type="checkbox"
+          id="run-all-concurrently-check"
+          checked={runAllConcurrently}
+          onChange={(e) => setRunAllConcurrently(e.target.checked)}
+          style={{
+            width: '16px',
+            height: '16px',
+            accentColor: 'var(--primary)',
+            cursor: 'pointer'
+          }}
+        />
+        <label 
+          htmlFor="run-all-concurrently-check" 
+          style={{ fontSize: '0.82rem', color: '#e2e8f0', cursor: 'pointer', userSelect: 'none' }}
+        >
+          Run query on all scraping engines concurrently (Maps, OSM, Jiji, Socials, DuckDuckGo)
+        </label>
+      </div>
+
       <button
         onClick={onExecute}
         disabled={scraping}
         className="btn-primary"
         style={{
-          marginTop: '8px',
+          marginTop: '4px',
           alignSelf: 'flex-start',
           display: 'inline-flex',
           alignItems: 'center',
@@ -91,25 +116,30 @@ export default function ScrapeControls({
         {scraping ? (
           <>
             <Loader2 size={16} className="spin-anim" />
-            Executing Scraper...
+            Starting Scraper...
           </>
         ) : (
           <>
             <Search size={16} />
-            Execute Scraper
+            Start Scraper
           </>
         )}
       </button>
 
       {/* Warnings & Messages */}
-      {requiresKey && !isConfigured && (
+      {!runAllConcurrently && requiresKey && !isConfigured && (
         <div style={{ fontSize: '0.8rem', color: 'var(--warning)', marginTop: '4px' }}>
           ⚠️ Provider API key is missing. Scraper will fall back to sandbox mode with simulated B2B leads.
         </div>
       )}
-      {!requiresKey && (
+      {!runAllConcurrently && !requiresKey && (
         <div style={{ fontSize: '0.8rem', color: 'var(--success)', marginTop: '4px' }}>
           ✨ This provider does not require any external API keys.
+        </div>
+      )}
+      {runAllConcurrently && (
+        <div style={{ fontSize: '0.8rem', color: 'var(--primary)', marginTop: '4px' }}>
+          💡 All 7 engines will be queued in parallel. Standard API key limits / browser restrictions will be bypassed using proxy and queue routing.
         </div>
       )}
     </div>

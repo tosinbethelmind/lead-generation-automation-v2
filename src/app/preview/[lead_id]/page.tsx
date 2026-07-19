@@ -50,6 +50,8 @@ interface PreviewData {
     opayBankName?: string;
     opayAccountNumber?: string;
     opayAccountName?: string;
+    opayPublicKey?: string;
+    opayMerchantId?: string;
   };
 }
 

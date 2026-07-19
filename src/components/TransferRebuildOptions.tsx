@@ -16,7 +16,7 @@ const FEATURE_CATALOG = [
 ];
 
 export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ lead, onSuccess }) => {
-  const [strategy, setStrategy] = useState<'full_rebuild' | 'plugin' | 'script_embed'>('full_rebuild');
+  const [strategy, setStrategy] = useState<'full_rebuild' | 'plugin' | 'basic_presence' | 'script_embed'>('full_rebuild');
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [cost, setCost] = useState<number>(0);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -51,7 +51,7 @@ export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ 
 
   // Set initial strategy based on lead recommendation
   useEffect(() => {
-    if (lead?.upgradeStrategy && ['full_rebuild', 'plugin', 'script_embed'].includes(lead.upgradeStrategy)) {
+    if (lead?.upgradeStrategy && ['full_rebuild', 'plugin', 'basic_presence', 'script_embed'].includes(lead.upgradeStrategy)) {
       setStrategy(lead.upgradeStrategy);
     }
   }, [lead]);
@@ -61,6 +61,7 @@ export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ 
     let base = 0;
     if (strategy === 'full_rebuild') base = 600000;
     else if (strategy === 'plugin') base = 250000;
+    else if (strategy === 'basic_presence') base = 150000;
     else base = 65000; // script_embed
 
     const featuresCost = selectedFeatures.reduce((sum, fid) => {
@@ -145,6 +146,13 @@ export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ 
             price: '₦250,000',
             desc: 'Direct CMS plugin/shortcode integration for WordPress & Shopify.',
             icon: <Smartphone size={20} />
+          },
+          {
+            value: 'basic_presence',
+            label: 'Basic Presence',
+            price: '₦150,000',
+            desc: 'Essential landing page to get online, get found, and build local credibility.',
+            icon: <Globe size={20} />
           },
           {
             value: 'script_embed',

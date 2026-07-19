@@ -32,7 +32,7 @@ async function runMigration() {
   const password = process.env.DATABASE_PASSWORD || 'pHqrTQc2gpdSqnAx';
 
   const connectionString = projectRef
-    ? `postgresql://postgres:${encodeURIComponent(password)}@db.${projectRef}.supabase.co:5432/postgres?sslmode=require`
+    ? `postgresql://postgres:${encodeURIComponent(password)}@db.${projectRef}.supabase.co:6543/postgres?sslmode=require`
     : null;
 
   if (!connectionString) {

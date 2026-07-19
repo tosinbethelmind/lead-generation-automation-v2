@@ -5,6 +5,7 @@ import { extractEmailsFromText, enrichLeadContacts } from '@/lib/leadEnricher';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 import { handleQueueDelegation } from '@/app/api/scrape/queue';
+import { proxyFetch } from '@/lib/proxyRotator';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -84,14 +85,10 @@ export async function POST(req: NextRequest) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const userAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
-        const resp = await fetch(url, {
-          headers: {
-            'User-Agent': userAgent,
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9,en-GB;q=0.8',
-            'Referer': 'https://duckduckgo.com/',
-            'Cache-Control': 'max-age=0'
-          }
+        const resp = await proxyFetch('social', url, {
+          'User-Agent': userAgent,
+          'Referer': 'https://duckduckgo.com/',
+          'Cache-Control': 'max-age=0'
         });
 
         if (!resp.ok) {

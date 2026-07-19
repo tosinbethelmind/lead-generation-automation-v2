@@ -16,50 +16,11 @@
  * response to avoid leaking sensitive lead data, and logs all steps.
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
+import { getActiveLeadRepository, addLog, updateLeadFields } from '@/lib/googleSheets';
 import { getRuntimeConfig, saveLocalConfig, rotateKey } from '@/lib/localConfig';
 import fs from 'fs';
 import path from 'path';
-
-// ============================================================================
-// Google OAuth Token Refresher
-// ============================================================================
-
-async function getValidAccessToken(config: any): Promise<string> {
-  const now = Date.now();
-  const bufferMs = 5 * 60 * 1000;
-
-  if (config.googleAccessToken && config.googleTokenExpiry && config.googleTokenExpiry - bufferMs > now) {
-    return config.googleAccessToken;
-  }
-
-  if (!config.googleRefreshToken || !config.googleClientId || !config.googleClientSecret) {
-    throw new Error('Google session expired. Please sign in again in the console.');
-  }
-
-  const resp = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: config.googleClientId,
-      client_secret: config.googleClientSecret,
-      refresh_token: config.googleRefreshToken,
-      grant_type: 'refresh_token',
-    }),
-  });
-
-  const data = await resp.json();
-  if (!resp.ok || !data.access_token) {
-    throw new Error('Google refresh token validation failed. Please sign in again.');
-  }
-
-  saveLocalConfig({
-    googleAccessToken: data.access_token,
-    googleTokenExpiry: Date.now() + (data.expires_in || 3600) * 1000,
-  });
-
-  return data.access_token;
-}
+import { getValidAccessToken } from '@/lib/googleAuth';
 
 // ============================================================================
 // Email Sender Helpers
@@ -129,7 +90,7 @@ async function sendBrevoMessage(to: string, subject: string, body: string, confi
   if (!activeKey) {
     throw new Error('Brevo API Key is not configured.');
   }
-  const senderName = config.brevoSenderName || 'ApexReach';
+  const senderName = config.brevoSenderName || 'Bethelmind Analytics & Strategy';
   const senderEmail = config.brevoSenderEmail;
   if (!senderEmail) {
     throw new Error('Brevo Sender Email is not configured.');
@@ -297,7 +258,7 @@ export async function GET(req: NextRequest) {
 
 
     // Extract metadata from the initialized transaction
-    const { leadId, clientName, clientEmail, theme, copy, selectedFeatures, customInstructions } = transaction.metadata || {};
+    const { leadId, clientName, clientEmail, theme, copy, selectedFeatures, customInstructions, upgradeStrategy } = transaction.metadata || {};
 
     if (!leadId || !clientEmail || !clientName) {
       return NextResponse.json({ error: 'Transaction succeeded, but required metadata was not found.' }, { status: 400 });
@@ -314,8 +275,22 @@ export async function GET(req: NextRequest) {
     const timestamp = new Date().toISOString();
     const featuresNote = selectedFeatures && selectedFeatures.length > 0 ? ` Activated Features: ${selectedFeatures.join(', ')}.` : '';
     const instNote = customInstructions ? ` Custom Instructions: "${customInstructions}"` : '';
-    const newNotes = `${lead.notes || ''}\n[CLAIMED - PAID ONLINE] Client claimed and paid Setup Fee (₦${(transaction.amount / 100).toLocaleString()}) via Paystack. Ref: ${reference}. Contact: ${clientName} (${clientEmail}).${featuresNote}${instNote}`;
+    const strategyNote = upgradeStrategy ? ` Strategy: ${upgradeStrategy}.` : '';
+    const newNotes = `${lead.notes || ''}\n[CLAIMED - PAID ONLINE] Client claimed and paid Setup Fee (₦${(transaction.amount / 100).toLocaleString()}) via Paystack. Ref: ${reference}. Contact: ${clientName} (${clientEmail}).${strategyNote}${featuresNote}${instNote}`;
+    
     await repo.updateLeadStatus(leadId, 'CONTACTED', newNotes, timestamp);
+
+    // Also save the updated fields to sheets/Supabase
+    try {
+      await updateLeadFields(leadId, {
+        upgrade_strategy: upgradeStrategy || lead.upgradeStrategy || 'script_embed',
+        upgradeStrategy: upgradeStrategy || lead.upgradeStrategy || 'script_embed',
+        plugin_suggestions: selectedFeatures || [],
+        pluginSuggestions: selectedFeatures || []
+      });
+    } catch (fieldErr: any) {
+      console.warn('Failed to update lead upgrade strategy fields during redirect payment verification:', fieldErr.message);
+    }
 
     // 3. Log event
     await addLog(
@@ -453,12 +428,12 @@ ${gitNotice}
 Please contact them at ${clientEmail} as soon as possible to finalize their website build and assist with custom domain mapping.
 
 Best regards,
-ApexReach Lead Engine`;
+Bethelmind Analytics & Strategy Lead Engine`;
 
     if (adminEmail && !config.dryRun) {
       try {
         if (provider === 'gmail') {
-          const accessToken = await getValidAccessToken(config);
+          const accessToken = await getValidAccessToken();
           await sendGmailMessage(adminEmail, adminSubject, adminBody, accessToken);
         } else if (provider === 'resend') {
           await sendResendMessage(adminEmail, adminSubject, adminBody, config);

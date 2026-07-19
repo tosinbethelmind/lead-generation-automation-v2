@@ -1,0 +1,13 @@
+{
+  "theme": {
+    "primary": "#0f172a",
+    "accent": "#38bdf8",
+    "bg": "#020617",
+    "text": "#f8fafc",
+    "font": "Outfit",
+    "headingFont": "Outfit",
+    "bodyFont": "Inter",
+    "heroImage": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80",
+    "gradient": "linear-gradient(135deg, #0f172a 0%, #020617 100%)"
+  }
+}

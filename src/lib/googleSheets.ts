@@ -237,50 +237,66 @@ class WriteQueue {
 
 const dbQueue = new WriteQueue();
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
-const BUNDLE_DB_DIR = path.join(process.cwd(), 'local_db');
-const WRITEABLE_DB_DIR = isServerless ? path.join('/tmp', 'local_db') : BUNDLE_DB_DIR;
 
-// Ensure writeable db folder exists
-try {
-  if (!fs.existsSync(WRITEABLE_DB_DIR)) {
-    fs.mkdirSync(WRITEABLE_DB_DIR, { recursive: true });
+import { readJsonFileAsyncWithRetry, writeJsonFileAsyncAtomic } from './atomicIo';
+
+import { getWorkerIndex } from './requestContext';
+
+function getDbFilePath(fileName: string): string {
+  const workerIndex = getWorkerIndex();
+
+  const nameParts = fileName.split('.');
+  const baseName = workerIndex 
+    ? `${nameParts[0]}.worker-${workerIndex}.${nameParts[1]}` 
+    : fileName;
+
+  const BUNDLE_DB_DIR = path.join(process.cwd(), 'local_db');
+  const WRITEABLE_DB_DIR = isServerless ? path.join('/tmp', 'local_db') : BUNDLE_DB_DIR;
+
+  // Ensure writeable db folder exists
+  try {
+    if (!fs.existsSync(WRITEABLE_DB_DIR)) {
+      fs.mkdirSync(WRITEABLE_DB_DIR, { recursive: true });
+    }
+  } catch (e) {
+    console.warn('Could not create WRITEABLE_DB_DIR:', e);
   }
-} catch (e) {
-  console.warn('Could not create WRITEABLE_DB_DIR:', e);
+
+  return path.join(WRITEABLE_DB_DIR, baseName);
 }
 
-const LEADS_FILE = path.join(WRITEABLE_DB_DIR, 'leads_db.json');
-const DNC_FILE = path.join(WRITEABLE_DB_DIR, 'dnc_db.json');
-const LOGS_FILE = path.join(WRITEABLE_DB_DIR, 'logs_db.json');
+const LEADS_FILE = 'leads_db.json';
+const DNC_FILE = 'dnc_db.json';
+const LOGS_FILE = 'logs_db.json';
 
-const BUNDLE_LEADS_FILE = path.join(BUNDLE_DB_DIR, 'leads_db.json');
-const BUNDLE_DNC_FILE = path.join(BUNDLE_DB_DIR, 'dnc_db.json');
-const BUNDLE_LOGS_FILE = path.join(BUNDLE_DB_DIR, 'logs_db.json');
+async function readJsonFile<T>(fileName: string, defaultValue: T): Promise<T> {
+  const filePath = getDbFilePath(fileName);
+  const bundlePath = path.join(path.join(process.cwd(), 'local_db'), fileName);
 
-async function readJsonFile<T>(filePath: string, defaultValue: T): Promise<T> {
   try {
     let targetPath = filePath;
-    if (filePath === LEADS_FILE && !fs.existsSync(LEADS_FILE) && fs.existsSync(BUNDLE_LEADS_FILE)) {
-      targetPath = BUNDLE_LEADS_FILE;
-    } else if (filePath === DNC_FILE && !fs.existsSync(DNC_FILE) && fs.existsSync(BUNDLE_DNC_FILE)) {
-      targetPath = BUNDLE_DNC_FILE;
-    } else if (filePath === LOGS_FILE && !fs.existsSync(LOGS_FILE) && fs.existsSync(BUNDLE_LOGS_FILE)) {
-      targetPath = BUNDLE_LOGS_FILE;
+    // Copy base db if worker-specific file doesn't exist
+    if (filePath !== bundlePath && !fs.existsSync(filePath) && fs.existsSync(bundlePath)) {
+      try {
+        fs.copyFileSync(bundlePath, filePath);
+      } catch (err) {
+        console.error(`Error copying base DB ${fileName} to worker path:`, err);
+      }
     }
 
     if (!fs.existsSync(targetPath)) {
       return defaultValue;
     }
-    const data = await fsPromises.readFile(targetPath, 'utf-8');
-    return JSON.parse(data) as T;
+    return await readJsonFileAsyncWithRetry<T>(targetPath, defaultValue);
   } catch (err) {
-    console.error(`Error reading file ${filePath}:`, err);
+    console.error(`Error reading file ${fileName}:`, err);
     return defaultValue;
   }
 }
 
-async function writeJsonFile<T>(filePath: string, data: T): Promise<void> {
-  await fsPromises.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+async function writeJsonFile<T>(fileName: string, data: T): Promise<void> {
+  const filePath = getDbFilePath(fileName);
+  await writeJsonFileAsyncAtomic<T>(filePath, data);
 }
 
 // ============================================================================

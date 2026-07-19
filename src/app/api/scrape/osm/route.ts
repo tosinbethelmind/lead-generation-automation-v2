@@ -211,7 +211,7 @@ async function fetchFromNominatim(keyword: string, bbox: string, limit: number):
   const resp = await fetch(nominatimUrl, {
     method: 'GET',
     headers: {
-      'User-Agent': 'ApexReachLeadGen/1.0 (contact@apexreach.net)',
+      'User-Agent': 'BethelmindLeadGen/1.0 (contact@bethelmind.com)',
       'Accept-Language': 'en'
     }
   });
@@ -289,7 +289,7 @@ export async function POST(req: NextRequest) {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'ApexReachLeadGen/1.0 (contact@apexreach.net)'
+            'User-Agent': 'BethelmindLeadGen/1.0 (contact@bethelmind.com)'
           },
           body: `data=${encodeURIComponent(overpassQuery)}`
         });

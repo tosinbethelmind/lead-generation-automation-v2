@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
-import { getRuntimeConfig } from '@/lib/localConfig';
+import { getRuntimeConfig, getOutreachOrigin } from '@/lib/localConfig';
 
 export const maxDuration = 60;
 
@@ -35,17 +35,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No matching leads found in the database." }, { status: 404 });
     }
 
-    const origin = req.nextUrl.origin;
-    const signature = config.businessSignature || "ApexReach";
+    const origin = getOutreachOrigin(req.url);
+    const signature = config.businessSignature || "Bethelmind Analytics & Strategy";
     const jijiTemplate = config.jijiMessageTemplate || 
       "Hello {{lead.name}},\n\nI noticed your listing on Jiji with an impressive {{lead.rating}}★ rating! Since you don't currently have a website, I built a personalized landing page preview for you to check out: {{previewUrl}}\n\nLet me know if you would like to go live with this!\n\nBest regards,\n{{signature}}";
 
     const results: { leadId: string; name: string; status: 'SUCCESS' | 'SKIPPED' | 'FAILED'; error?: string; messageSent?: string }[] = [];
-
-    const useSimulatedOutreach = dryRun || config.storageMode === 'local' || !config.jijiEmail || !config.jijiPassword;
+    const useSimulatedOutreach = dryRun || config.storageMode === 'local' || (!config.jijiCookies && (!config.jijiEmail || !config.jijiPassword));
 
     if (useSimulatedOutreach) {
-      const modeText = dryRun ? "Dry Run" : "Local Sandbox (Missing Jiji Credentials)";
+      const modeText = dryRun ? "Dry Run" : "Local Sandbox (Missing Jiji Credentials/Cookies)";
       await addLog('Jiji Outreach', 'START', `Starting simulated Jiji outreach campaign for ${targetLeads.length} leads in ${modeText} mode`);
 
       for (const lead of targetLeads) {
@@ -96,45 +95,78 @@ export async function POST(req: NextRequest) {
       await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
       await page.setViewport({ width: 1280, height: 800 });
 
-      // Go to Jiji sign in
-      await page.goto('https://jiji.ng/login.html', { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await new Promise(r => setTimeout(r, 2000));
+      let loggedIn = false;
 
-      // Automated Authentication
-      try {
-        await page.waitForSelector('input[type="email"], input[name="email"], input[placeholder*="email"]', { timeout: 5000 });
-        
-        await page.evaluate((email, pass) => {
-          const emailInput = document.querySelector('input[type="email"], input[name="email"], input[placeholder*="email"]') as HTMLInputElement;
-          const passInput = document.querySelector('input[type="password"], input[name="password"]') as HTMLInputElement;
-          if (emailInput && passInput) {
-            emailInput.value = email;
-            passInput.value = pass;
+      // Inject Jiji cookies if configured
+      if (config.jijiCookies) {
+        try {
+          const cookies = JSON.parse(config.jijiCookies);
+          if (Array.isArray(cookies)) {
+            await page.setCookie(...cookies);
+            console.log('[Jiji Outreach] Injected stored session cookies.');
             
-            emailInput.dispatchEvent(new Event('input', { bubbles: true }));
-            passInput.dispatchEvent(new Event('input', { bubbles: true }));
+            // Go to home page to check if we are logged in
+            await page.goto('https://jiji.ng/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+            await new Promise(r => setTimeout(r, 2000));
             
-            const submitBtn = document.querySelector('button[type="submit"]') || 
-                              Array.from(document.querySelectorAll('button')).find(btn => {
-                                const t = btn.textContent?.toLowerCase() || '';
-                                return t.includes('log in') || t.includes('sign in');
-                              });
-            if (submitBtn) {
-              (submitBtn as HTMLElement).click();
+            loggedIn = await page.evaluate(() => {
+              return document.body.innerText.toLowerCase().includes('sign out') ||
+                     !!document.querySelector('a[href*="/logout"]') ||
+                     !!document.querySelector('.b-header-profile') ||
+                     !!document.querySelector('a[href*="/my-advertisement"]');
+            });
+
+            if (loggedIn) {
+              console.log('[Jiji Outreach] Cookie authentication successful.');
+              await addLog('Jiji Outreach', 'INFO', 'Authenticated successfully using stored session cookies.');
+            } else {
+              console.log('[Jiji Outreach] Cookies present but session not active.');
             }
-          } else {
-            throw new Error('Email or password input fields not found');
           }
-        }, config.jijiEmail || '', config.jijiPassword || '');
-
-        await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
-      } catch (authErr: any) {
-        console.error("Jiji Authentication failed:", authErr);
-        await addLog('Jiji Outreach', 'WARN', `Live login failed: ${authErr.message}.`);
-        throw new Error(`Jiji Authentication Failed: ${authErr.message}`);
+        } catch (e: any) {
+          console.error('[Jiji Outreach] Failed to parse/inject stored cookies:', e.message);
+        }
       }
 
-      // Loop and dispatch messages
+      if (!loggedIn) {
+        // Go to Jiji sign in
+        await page.goto('https://jiji.ng/login.html', { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await new Promise(r => setTimeout(r, 2000));
+
+        // Automated Authentication
+        try {
+          await page.waitForSelector('input[type="email"], input[name="email"], input[placeholder*="email"]', { timeout: 5000 });
+          
+          await page.evaluate((email, pass) => {
+            const emailInput = document.querySelector('input[type="email"], input[name="email"], input[placeholder*="email"]') as HTMLInputElement;
+            const passInput = document.querySelector('input[type="password"], input[name="password"]') as HTMLInputElement;
+            if (emailInput && passInput) {
+              emailInput.value = email;
+              passInput.value = pass;
+              
+              emailInput.dispatchEvent(new Event('input', { bubbles: true }));
+              passInput.dispatchEvent(new Event('input', { bubbles: true }));
+              
+              const submitBtn = document.querySelector('button[type="submit"]') || 
+                                Array.from(document.querySelectorAll('button')).find(btn => {
+                                  const t = btn.textContent?.toLowerCase() || '';
+                                  return t.includes('log in') || t.includes('sign in');
+                                });
+              if (submitBtn) {
+                (submitBtn as HTMLElement).click();
+              }
+            } else {
+              throw new Error('Email or password input fields not found');
+            }
+          }, config.jijiEmail || '', config.jijiPassword || '');
+
+          await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
+        } catch (authErr: any) {
+          console.error("Jiji Authentication failed:", authErr);
+          await addLog('Jiji Outreach', 'WARN', `Live login failed: ${authErr.message}.`);
+          throw new Error(`Jiji Authentication Failed: ${authErr.message}`);
+        }
+      }      // Loop and dispatch messages
       for (const lead of targetLeads) {
         if (lead.source !== 'JIJI' || !lead.profile_url) {
           results.push({

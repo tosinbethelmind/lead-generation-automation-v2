@@ -43,7 +43,7 @@ export default function AdminDashboardHome() {
         {/* Welcome Box */}
         <div className="bento-card welcome-card glass-panel col-span-2">
           <div className="card-header">
-            <h2>Welcome to ApexReach Admin</h2>
+            <h2>Welcome to Bethelmind Analytics & Strategy Admin</h2>
             <p>You have full client ownership. Authenticated as secure administrator.</p>
           </div>
           <div className="live-link-box">

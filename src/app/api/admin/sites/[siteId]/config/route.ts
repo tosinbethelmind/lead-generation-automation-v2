@@ -4,7 +4,7 @@ import path from 'path';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import { commitFileToGitHub } from '@/lib/github';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
-import { getDesignTheme, buildFallbackCopy } from '@/app/api/preview/generate/route';
+import { getDesignTheme, buildFallbackCopy } from '@/lib/designGenerator';
 
 const SITES_DIR = path.join(process.cwd(), 'src', 'data', 'sites');
 

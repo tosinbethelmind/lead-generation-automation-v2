@@ -28,6 +28,7 @@ import {
   Palette,
   Sliders,
   Terminal,
+  Sun,
   Share2,
   Sparkles,
   Loader2,
@@ -65,7 +66,7 @@ const WEBSITE_STYLE_PRESETS = [
     },
     copy: {
       heroTitle: 'Compassionate Care, Advanced Medical Expertise',
-      heroSubtitle: 'Providing state-of-the-art medical treatments and personalized wellness services in a warm, welcoming environment.',
+      heroSubtitle: 'Your patients can book appointments online 24/7, receive reminders automatically, and pay from their phone — without a single phone call.',
       ctaText: 'Schedule a Consultation',
       aboutText: 'Our clinic is dedicated to offering premium clinical care for you and your family. With a team of board-certified professionals and advanced diagnostics, we prioritize your long-term health and peace of mind.'
     },
@@ -88,7 +89,7 @@ const WEBSITE_STYLE_PRESETS = [
     },
     copy: {
       heroTitle: 'Your Journey to a Bright, Confident Smile Starts Here',
-      heroSubtitle: 'State-of-the-art general, cosmetic, and restorative dentistry tailored to your unique comfort.',
+      heroSubtitle: 'Let patients book appointments, choose their procedure, and get reminders automatically — so you fill your calendar without lifting a finger.',
       ctaText: 'Book a Dental Visit',
       aboutText: 'We believe a beautiful smile is a healthy smile. Our modern dental suite is fully equipped to provide gentle cleanings, advanced implants, orthodontic alignment, and pain-free treatments for all ages.'
     },
@@ -111,7 +112,7 @@ const WEBSITE_STYLE_PRESETS = [
     },
     copy: {
       heroTitle: 'Professional Auto Repair, Diagnostics & Maintenance',
-      heroSubtitle: 'Getting you back on the road safely and quickly with honest mechanics and guaranteed workmanship.',
+      heroSubtitle: 'Customers get an instant quote online, book a service slot, and receive a WhatsApp confirmation — no waiting on hold, no missed revenue.',
       ctaText: 'Book Repair Service',
       aboutText: 'From oil changes and brake repairs to complex engine diagnostics, our certified technicians use industry-leading tools to keep your vehicle running at peak performance.'
     },
@@ -134,7 +135,7 @@ const WEBSITE_STYLE_PRESETS = [
     },
     copy: {
       heroTitle: 'Indulge in Premium Hair, Beauty & Wellness Treatments',
-      heroSubtitle: 'A luxurious sanctuary designed to rejuvenate your style, restore your energy, and pamper your senses.',
+      heroSubtitle: 'Clients book their preferred stylist and time online — you stop missing walk-ins and start filling your diary weeks in advance.',
       ctaText: 'Reserve Your Treatment',
       aboutText: 'Our expert stylists and therapists customize every service—from trendy hair highlights to soothing facial treatments—ensuring you leave feeling radiant, relaxed, and fully confident.'
     },
@@ -157,7 +158,7 @@ const WEBSITE_STYLE_PRESETS = [
     },
     copy: {
       heroTitle: 'Crafted Culinary Experiences & Seasonal Flavors',
-      heroSubtitle: 'Savor delicious, locally sourced dishes served with passion in a vibrant, friendly atmosphere.',
+      heroSubtitle: 'Diners reserve their table online, pre-order food, and receive instant confirmation — so you manage a fully-booked restaurant without a single phone call.',
       ctaText: 'Reserve a Table',
       aboutText: 'We take pride in building a menu that celebrates classic recipes with a modern twist. Whether it is a cozy family dinner or a festive celebration, we make every meal an occasion.'
     },
@@ -180,7 +181,7 @@ const WEBSITE_STYLE_PRESETS = [
     },
     copy: {
       heroTitle: '24/7 Professional Home Repair & Handyman Services',
-      heroSubtitle: 'Reliable, licensed, and friendly technicians ready to fix any emergency repair with guaranteed quality.',
+      heroSubtitle: 'Customers get an instant repair estimate, book a slot, and receive a WhatsApp confirmation — you never miss a job because they could not reach you by phone.',
       ctaText: 'Request Repair Dispatch',
       aboutText: 'We specialize in prompt plumbing, electrical, and HVAC repairs. No job is too small or too complex. We stand by our work with upfront pricing and lifetime satisfaction guarantees.'
     },
@@ -203,7 +204,7 @@ const WEBSITE_STYLE_PRESETS = [
     },
     copy: {
       heroTitle: 'Unleash Your Strength & Reach Your Peak Fitness',
-      heroSubtitle: 'Access premium workout equipment, certified personal trainers, and high-energy group fitness classes.',
+      heroSubtitle: 'Members sign up online, calculate their membership plan, and pay instantly — you grow your gym roster without chasing manual registrations.',
       ctaText: 'Claim Free Day Pass',
       aboutText: 'Our community-focused gym is built to support your unique fitness journey. With dynamic training programs, clean facilities, and modern recovery zones, we help you hit your goals.'
     },
@@ -226,7 +227,7 @@ const WEBSITE_STYLE_PRESETS = [
     },
     copy: {
       heroTitle: 'Strategic Guidance & Professional Advice You Can Trust',
-      heroSubtitle: 'Empowering business growth, managing compliance risks, and securing your legal/financial interests.',
+      heroSubtitle: 'Prospects book a free discovery call online, fill in their brief, and get an instant follow-up — so you convert consultations instead of answering cold enquiries.',
       ctaText: 'Request Strategy Session',
       aboutText: 'Our experienced advisors partner with companies and individuals to navigate complex financial, legal, and operational landscapes, providing clear blueprints to scale safely.'
     },
@@ -539,10 +540,7 @@ export default function Home() {
   const [completedJobs, setCompletedJobs] = useState<any[]>([]);
   const [isProductionEnv, setIsProductionEnv] = useState(false);
 
-  // Option C: Autostart states
-  const [copiedScript, setCopiedScript] = useState(false);
-  const [copiedManual, setCopiedManual] = useState(false);
-  const [showAutostartGuide, setShowAutostartGuide] = useState(false);
+  const [latestLogs, setLatestLogs] = useState<any[]>([]);
 
   const handleCopyText = (text: string, setCopiedState: (val: boolean) => void) => {
     navigator.clipboard.writeText(text);
@@ -607,6 +605,16 @@ export default function Home() {
       setActiveJob(null);
       setActiveJobs([]);
       setCompletedJobs([]);
+    }
+
+    try {
+      const logsResp = await fetch('/api/logs');
+      if (logsResp.ok) {
+        const logsData = await logsResp.json();
+        setLatestLogs(logsData.slice(0, 3));
+      }
+    } catch (err) {
+      // Ignore background log errors silently
     }
   };
 
@@ -786,7 +794,7 @@ export default function Home() {
     googleTokenExpiry: 0,
     googleUserEmail: '',
     dryRun: true,
-    businessSignature: 'ApexReach',
+    businessSignature: 'Bethelmind Analytics & Strategy',
     outreachChannel: 'gmail',
     apifyToken: '',
     apifyDatasetId: '',
@@ -804,7 +812,7 @@ export default function Home() {
     resendApiKey: '',
     resendFromEmail: '',
     brevoApiKey: '',
-    brevoSenderName: 'ApexReach',
+    brevoSenderName: 'Bethelmind Analytics & Strategy',
     brevoSenderEmail: '',
     smtpHost: '',
     smtpPort: 587,
@@ -812,10 +820,10 @@ export default function Home() {
     smtpUser: '',
     smtpPass: '',
     smtpFrom: '',
-    smtpSenderName: 'ApexReach',
+    smtpSenderName: 'Bethelmind Analytics & Strategy',
     sendgridApiKey: '',
     sendgridFromEmail: '',
-    sendgridSenderName: 'ApexReach',
+    sendgridSenderName: 'Bethelmind Analytics & Strategy',
     whatsappProvider: 'cloud',
     evolutionApiUrl: '',
     evolutionApiKey: '',
@@ -847,7 +855,10 @@ export default function Home() {
     moniepointAccountName: '',
     opayBankName: 'OPay Digital Services (Merchant)',
     opayAccountNumber: '',
-    opayAccountName: ''
+    opayAccountName: '',
+    antigravityApiKey: '',
+    antigravityApiKeys: [],
+    antigravityModels: []
   });
   
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -871,10 +882,16 @@ export default function Home() {
   const [logs, setLogs] = useState<any[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
   
+  // Meta Cloud API Connection Helper State
+  const [metaConnecting, setMetaConnecting] = useState(false);
+  const [metaStatus, setMetaStatus] = useState('');
+  const metaIntervalRef = React.useRef<any>(null);
+  
   // Scraper Forms
   const [selectedScraper, setSelectedScraper] = useState<'google' | 'jiji' | 'osm' | 'apify' | 'maps-free' | 'duckduckgo' | 'instagram' | 'facebook' | 'tiktok' | 'linkedin'>('google');
   const [gMapsQuery, setGMapsQuery] = useState('Car Dealers Lagos');
   const [gMapsLimit, setGMapsLimit] = useState(10);
+  const [runAllConcurrently, setRunAllConcurrently] = useState<boolean>(false);
   
   // Filter & Search states
   const [searchTerm, setSearchTerm] = useState('');
@@ -882,6 +899,7 @@ export default function Home() {
   const [queryFilter, setQueryFilter] = useState('ALL');
   const [websiteFilter, setWebsiteFilter] = useState<'ALL' | 'NEW_BUILD' | 'UPGRADE'>('ALL');
   const [platformFilter, setPlatformFilter] = useState('ALL');
+  const [channelFilter, setChannelFilter] = useState('ALL');
   
   // Loading states
   const [loadingConfig, setLoadingConfig] = useState(true);
@@ -1050,6 +1068,7 @@ export default function Home() {
     setStatusFilter('ALL');
     setWebsiteFilter('ALL');
     setPlatformFilter('ALL');
+    setChannelFilter('ALL');
   };
 
   // Video Demo states
@@ -1539,6 +1558,101 @@ export default function Home() {
     }
   };
 
+  const startMetaConnection = async () => {
+    setMetaConnecting(true);
+    setMetaStatus('Initializing...');
+    addToast('Starting Meta connection helper...', 'info');
+
+    if (metaIntervalRef.current) {
+      clearInterval(metaIntervalRef.current);
+    }
+
+    try {
+      const res = await fetch('/api/auth/meta/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'start' })
+      });
+      const data = await res.json();
+      if (data.error) {
+        setMetaConnecting(false);
+        setMetaStatus(`Error: ${data.error}`);
+        addToast(`Failed to start: ${data.error}`, 'error');
+        return;
+      }
+
+      metaIntervalRef.current = setInterval(async () => {
+        try {
+          const statusRes = await fetch('/api/auth/meta/connect?action=status');
+          const statusData = await statusRes.json();
+          if (statusData && statusData.status) {
+            setMetaStatus(statusData.status);
+            
+            if (statusData.status.includes('Success')) {
+              clearInterval(metaIntervalRef.current);
+              setMetaConnecting(false);
+              addToast('Successfully linked Facebook account and retrieved credentials!', 'success');
+              confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+              
+              const configRes = await fetch('/api/config');
+              const configData = await configRes.json();
+              if (configData && !configData.error) {
+                setConfig(configData.config || configData);
+              }
+            } else if (statusData.status.includes('Error')) {
+              clearInterval(metaIntervalRef.current);
+              setMetaConnecting(false);
+              addToast(statusData.status, 'error');
+            }
+          }
+        } catch (pollErr: any) {
+          console.error('Polling error:', pollErr);
+        }
+      }, 1500);
+
+    } catch (e: any) {
+      setMetaConnecting(false);
+      setMetaStatus(`Error: ${e.message}`);
+      addToast(`Error connecting to Meta: ${e.message}`, 'error');
+    }
+  };
+
+  const stopMetaConnection = async () => {
+    if (metaIntervalRef.current) {
+      clearInterval(metaIntervalRef.current);
+    }
+    setMetaConnecting(false);
+    setMetaStatus('Stopping browser...');
+    addToast('Stopping Meta connection helper...', 'info');
+
+    try {
+      const res = await fetch('/api/auth/meta/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'stop' })
+      });
+      const data = await res.json();
+      if (data.error) {
+        setMetaStatus(`Error stopping: ${data.error}`);
+        addToast(`Failed to stop: ${data.error}`, 'error');
+      } else {
+        setMetaStatus('Stopped');
+        addToast('Browser stopped successfully.', 'success');
+      }
+    } catch (e: any) {
+      setMetaStatus(`Error stopping: ${e.message}`);
+      addToast(`Error stopping: ${e.message}`, 'error');
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (metaIntervalRef.current) {
+        clearInterval(metaIntervalRef.current);
+      }
+    };
+  }, []);
+
   const saveConfig = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setSavingConfigState(true);
@@ -1666,146 +1780,194 @@ export default function Home() {
   const runScraper = async () => {
     try {
       setScraping(true);
-      let endpoint = '/api/scrape/maps';
-      let payload: any = { query: gMapsQuery, limit: gMapsLimit };
-      let scraperName = 'Google Places API';
-
-      if (selectedScraper === 'jiji') {
-        endpoint = '/api/scrape/jiji';
-        const searchSlug = gMapsQuery.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        payload = { 
-          url: gMapsQuery.startsWith('http') ? gMapsQuery : `https://jiji.ng/lagos/${searchSlug}`, 
-          limit: gMapsLimit 
-        };
-        scraperName = 'Jiji.ng Crawler';
-      } else if (selectedScraper === 'osm') {
-        endpoint = '/api/scrape/osm';
-        payload = { query: gMapsQuery, limit: gMapsLimit };
-        scraperName = 'OpenStreetMap (OSM)';
-      } else if (selectedScraper === 'apify') {
-        endpoint = '/api/apify';
-        payload = { query: gMapsQuery, limit: gMapsLimit };
-        scraperName = 'Apify Google Maps';
-      } else if (selectedScraper === 'maps-free') {
-        endpoint = '/api/scrape/maps-free';
-        payload = { query: gMapsQuery, limit: gMapsLimit };
-        scraperName = 'Google Maps Free';
-      } else if (selectedScraper === 'duckduckgo') {
-        endpoint = '/api/scrape/duckduckgo';
-        payload = { query: gMapsQuery, limit: gMapsLimit };
-        scraperName = 'DuckDuckGo Scraper';
-      } else if (['instagram', 'facebook', 'tiktok', 'linkedin'].includes(selectedScraper)) {
-        endpoint = '/api/scrape/social';
-        payload = { platform: selectedScraper, query: gMapsQuery, limit: gMapsLimit };
-        scraperName = selectedScraper.charAt(0).toUpperCase() + selectedScraper.slice(1) + ' Scraper';
-      }
-
-      setStatusMessage(`Executing ${scraperName} scrape for "${payload.query || payload.url}"...`);
       
-      const resp = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await resp.json();
-      if (data.error) {
-        const errMsg = data.error.includes("blocked by the platform") ? data.error : `Error: ${data.error}`;
-        setStatusMessage(errMsg);
-        addToast(data.error, 'error');
-      } else if (data.status === 'queued' && data.jobId) {
-        setStatusMessage(`Job queued. Waiting for local background worker (Job ID: ${data.jobId})...`);
-        addToast('Job queued for local processing.', 'info');
+      const scrapersToRun = runAllConcurrently 
+        ? ['google', 'jiji', 'osm', 'maps-free', 'duckduckgo', 'instagram', 'facebook'] 
+        : [selectedScraper];
 
-        // Auto-start local runner if it is offline
-        if (runnerStatus === 'offline') {
-          setStatusMessage('Queue runner is offline. Auto-starting local background worker...');
-          try {
-            const targetUrl = isProductionEnv ? 'http://localhost:3006/api/local-trigger' : '/api/local-trigger';
-            await fetch(targetUrl, { 
-              method: 'POST', 
-              headers: { 'Content-Type': 'application/json' },
-              mode: 'cors' 
-            });
-            setRunnerStatus('online');
-            addToast('Auto-started local runner to process queue.', 'success');
-          } catch (e) {
-            console.error('Failed to auto-start local runner:', e);
+      const queuedJobIds: string[] = [];
+
+      for (const scraper of scrapersToRun) {
+        let endpoint = '/api/scrape/maps';
+        let payload: any = { query: gMapsQuery, limit: gMapsLimit };
+        let scraperName = 'Google Places API';
+
+        if (scraper === 'jiji') {
+          endpoint = '/api/scrape/jiji';
+          const searchSlug = gMapsQuery.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          payload = { 
+            url: gMapsQuery.startsWith('http') ? gMapsQuery : `https://jiji.ng/lagos/${searchSlug}`, 
+            limit: gMapsLimit 
+          };
+          scraperName = 'Jiji.ng Crawler';
+        } else if (scraper === 'osm') {
+          endpoint = '/api/scrape/osm';
+          payload = { query: gMapsQuery, limit: gMapsLimit };
+          scraperName = 'OpenStreetMap (OSM)';
+        } else if (scraper === 'apify') {
+          endpoint = '/api/apify';
+          payload = { query: gMapsQuery, limit: gMapsLimit };
+          scraperName = 'Apify Google Maps';
+        } else if (scraper === 'maps-free') {
+          endpoint = '/api/scrape/maps-free';
+          payload = { query: gMapsQuery, limit: gMapsLimit };
+          scraperName = 'Google Maps Free';
+        } else if (scraper === 'duckduckgo') {
+          endpoint = '/api/scrape/duckduckgo';
+          payload = { query: gMapsQuery, limit: gMapsLimit };
+          scraperName = 'DuckDuckGo Scraper';
+        } else if (['instagram', 'facebook', 'tiktok', 'linkedin'].includes(scraper)) {
+          endpoint = '/api/scrape/social';
+          payload = { platform: scraper, query: gMapsQuery, limit: gMapsLimit };
+          scraperName = scraper.charAt(0).toUpperCase() + scraper.slice(1) + ' Scraper';
+        }
+
+        setStatusMessage(`Executing ${scraperName} scrape for "${payload.query || payload.url}"...`);
+        
+        try {
+          const resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const data = await resp.json();
+          if (data.error) {
+            addToast(`[${scraperName}] ${data.error}`, 'error');
+          } else if (data.status === 'queued' && data.jobId) {
+            addToast(`[${scraperName}] Job queued (ID: ${data.jobId}).`, 'info');
+            queuedJobIds.push(data.jobId);
+          } else if (data.added !== undefined) {
+             // Direct sync-run response
+             addToast(`[${scraperName}] Sync execution completed. Added ${data.added} leads.`, 'success');
           }
+        } catch (err: any) {
+          addToast(`Failed request for ${scraperName}: ${err.message}`, 'error');
         }
-
-        let jobCompleted = false;
-        let attempts = 0;
-        const maxAttempts = 200; // ~10 minutes max polling
-
-        while (!jobCompleted && attempts < maxAttempts) {
-          attempts++;
-          await new Promise(resolve => setTimeout(resolve, 3000));
-
-          try {
-            const jobResp = await fetch(`/api/scrape/jobs/${data.jobId}`);
-            if (!jobResp.ok) continue;
-
-            const jobStatus = await jobResp.json();
-            if (jobStatus.status === 'completed') {
-              jobCompleted = true;
-              const added = jobStatus.result?.added ?? 0;
-              const skipped = jobStatus.result?.skipped ?? 0;
-              const successMsg = `${scraperName} completed! Added ${added} new leads, skipped ${skipped} duplicates.`;
-              setStatusMessage(successMsg);
-              addToast(successMsg, 'success');
-              confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
-              handleRefreshAll();
-            } else if (jobStatus.status === 'failed') {
-              jobCompleted = true;
-              const errMsg = jobStatus.error_message || 'Local scraper execution failed.';
-              setStatusMessage(`Error: ${errMsg}`);
-              addToast(errMsg, 'error');
-            } else {
-              setStatusMessage(`Waiting for local scraper... Status: ${jobStatus.status} (Attempt ${attempts})`);
-            }
-          } catch (pollErr: any) {
-            console.error('Error polling job status:', pollErr);
-          }
-        }
-
-        if (!jobCompleted) {
-          setStatusMessage('Scrape job timed out. The local runner might not be active.');
-          addToast('Job timed out. Ensure your local background worker is running.', 'error');
-        }
-      } else {
-        const successMsg = `${scraperName} completed! Added ${data.added} new leads, skipped ${data.skipped} duplicates.`;
-        setStatusMessage(successMsg);
-        addToast(successMsg, 'success');
-        confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
-        handleRefreshAll();
       }
+
+      setStatusMessage(runAllConcurrently ? 'All scraping engines initiated.' : 'Scraping request sent.');
+
+      // Auto-start local runner if it is offline
+      if (runnerStatus === 'offline' && queuedJobIds.length > 0) {
+        setStatusMessage('Queue runner is offline. Auto-starting local background worker...');
+        try {
+          const targetUrl = isProductionEnv ? 'http://localhost:3006/api/local-trigger' : '/api/local-trigger';
+          await fetch(targetUrl, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            mode: 'cors' 
+          });
+          setRunnerStatus('online');
+          addToast('Auto-started local runner to process queue.', 'success');
+        } catch {
+          addToast('Could not start queue runner.', 'error');
+        }
+      }
+
+      if (queuedJobIds.length === 0) {
+        setScraping(false);
+        handleRefreshAll();
+        setStatusMessage('Sync scrape runs completed.');
+        return;
+      }
+
+      // Stream job status and log updates via SSE instead of polling
+      await new Promise<void>((resolve) => {
+        const streamUrl = `/api/logs/stream?jobIds=${queuedJobIds.join(',')}`;
+        const es = new EventSource(streamUrl);
+        const activeJobs = new Set<string>(queuedJobIds);
+
+        es.addEventListener('status', (e: MessageEvent) => {
+          try {
+            const { jobId, status, error } = JSON.parse(e.data);
+            if (status === 'completed') {
+              activeJobs.delete(jobId);
+              handleRefreshAll();
+              addToast(`Scrape job ${jobId.substring(0, 8)} completed.`, 'success');
+            } else if (status === 'failed') {
+              activeJobs.delete(jobId);
+              addToast(`Scrape job ${jobId.substring(0, 8)} failed: ${error || 'Unknown error'}`, 'error');
+            } else if (status === 'running') {
+              const completedCount = queuedJobIds.length - activeJobs.size;
+              setStatusMessage(`Scraping progress: ${completedCount}/${queuedJobIds.length} completed. (Running job ${jobId.substring(0, 8)}...)`);
+            }
+          } catch (_) {}
+        });
+
+        es.addEventListener('log', (e: MessageEvent) => {
+          try {
+            const newLines: any[] = JSON.parse(e.data);
+            if (newLines.length > 0) {
+              const last = newLines[newLines.length - 1];
+              // Row format: [run_id, timestamp, step, '', status, message]
+              const [runId, , step, , status, message] = last;
+              const completedCount = queuedJobIds.length - activeJobs.size;
+              setStatusMessage(
+                `Scraping (${completedCount}/${queuedJobIds.length} done) | [${runId ?? ''}] [${step ?? ''}/${status ?? ''}] ${message ?? ''}`
+              );
+            }
+          } catch (_) {}
+        });
+
+        es.addEventListener('done', () => {
+          es.close();
+          resolve();
+        });
+
+        es.onerror = () => {
+          es.close();
+          resolve();
+        };
+
+        // Safety timeout: close after 11 minutes regardless
+        const timeout = setTimeout(() => {
+          es.close();
+          resolve();
+        }, 11 * 60 * 1000);
+
+        // Also resolve when all jobs are tracked as finished
+        const checkDone = setInterval(() => {
+          if (activeJobs.size === 0) {
+            clearInterval(checkDone);
+            clearTimeout(timeout);
+            es.close();
+            resolve();
+          }
+        }, 2000);
+      });
+
+      setStatusMessage('All active scrape runs finalized.');
+      confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+      handleRefreshAll();
     } catch (e: any) {
-      const errMsg = e.message.includes("blocked by the platform") ? e.message : `Error: ${e.message}`;
-      setStatusMessage(errMsg);
-      addToast(e.message, 'error');
+      addToast(`Scraper Execution Error: ${e.message}`, 'error');
     } finally {
       setScraping(false);
     }
   };
 
-  // Run Bulk Queuer for 1000+ Leads/Week
+  // Run Bulk Queuer for 10,000 Daily Leads (Lagos)
   const runBulkQueuer = async () => {
     try {
       setBulkQueuing(true);
-      addToast('Generating bulk scraper jobs...', 'info');
+      addToast('Dispatching Lagos 10K Daily Scraper...', 'info');
       const resp = await fetch('/api/scrape/bulk-queue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ limit: 25 })
+        body: JSON.stringify({ 
+          limit: 100, 
+          maxJobsToQueue: 100, 
+          targetLagosDaily10k: true 
+        })
       });
       const data = await resp.json();
       if (data.success) {
         setBulkQueuedCount(data.jobsCount);
-        addToast(data.message, 'success');
+        addToast(data.message || `Successfully queued ${data.jobsCount} scraper jobs for Lagos.`, 'success');
         confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
         handleRefreshAll();
       } else {
-        addToast(data.error || 'Failed to queue bulk jobs', 'error');
+        addToast(data.error || 'Failed to queue Lagos scraper jobs', 'error');
       }
     } catch (e: any) {
       addToast(`Error queueing bulk jobs: ${e.message}`, 'error');
@@ -1813,6 +1975,63 @@ export default function Home() {
       setBulkQueuing(false);
     }
   };
+
+  // Standalone Lagos 10K launcher: auto-starts runner if offline, then queues all jobs
+  const runLagos10KStandalone = async () => {
+    setBulkQueuing(true);
+    try {
+      // Step 1: Auto-start the runner if it's not already online
+      if (runnerStatus !== 'online') {
+        addToast('🚀 Step 1/2: Starting Local Runner...', 'info');
+        try {
+          const targetUrl = isProductionEnv ? 'http://localhost:3006/api/local-trigger' : '/api/local-trigger';
+          const runnerRes = await fetch(targetUrl, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            mode: 'cors'
+          });
+          if (runnerRes.ok) {
+            setRunnerStatus('online');
+            addToast('✅ Local Runner started successfully!', 'success');
+          } else {
+            const d = await runnerRes.json().catch(() => ({}));
+            addToast(`⚠️ Runner start issue: ${d.error || 'Unknown'}. Attempting to queue anyway...`, 'error');
+          }
+        } catch (err: any) {
+          addToast(`⚠️ Could not reach runner on port 3006. Make sure your local server is running (npm run dev). Attempting queue anyway...`, 'error');
+        }
+        // Brief pause so runner has time to initialise
+        await new Promise(r => setTimeout(r, 1500));
+      }
+
+      // Step 2: Queue all Lagos 10K scraper jobs
+      addToast('⚡ Step 2/2: Dispatching Lagos 10K Lead Scrapers...', 'info');
+      const resp = await fetch('/api/scrape/bulk-queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          limit: 100, 
+          maxJobsToQueue: 100, 
+          targetLagosDaily10k: true 
+        })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        setBulkQueuedCount(data.jobsCount);
+        addToast(`🎉 ${data.jobsCount} scraper jobs launched! Targeting 10,000 Lagos leads.`, 'success');
+        confetti({ particleCount: 200, spread: 120, origin: { y: 0.6 } });
+        await checkRunnerStatus();
+        handleRefreshAll();
+      } else {
+        addToast(data.error || 'Failed to queue Lagos scraper jobs', 'error');
+      }
+    } catch (e: any) {
+      addToast(`Lagos 10K Error: ${e.message}`, 'error');
+    } finally {
+      setBulkQueuing(false);
+    }
+  };
+
 
   // Run Dynamic Outreach Campaign
   const runOutreach = async () => {
@@ -2181,8 +2400,35 @@ export default function Home() {
     // Platform filter
     const cmsPlatform = l.cms_platform || l.cmsPlatform;
     const matchesPlatform = platformFilter === 'ALL' || cmsPlatform === platformFilter;
+
+    // Channel filter
+    let matchesChannel = true;
+    if (channelFilter !== 'ALL') {
+      const notesLower = (l.notes || '').toLowerCase();
+      if (channelFilter === 'whatsapp_success') {
+        matchesChannel = notesLower.includes('via whatsapp');
+      } else if (channelFilter === 'email_success') {
+        matchesChannel = notesLower.includes('via email') || notesLower.includes('via gmail');
+      } else if (channelFilter === 'sms_success') {
+        matchesChannel = notesLower.includes('via sms');
+      } else if (channelFilter === 'jiji_success') {
+        matchesChannel = notesLower.includes('via jiji');
+      } else if (channelFilter === 'whatsapp_failed') {
+        matchesChannel = notesLower.includes('- whatsapp: failed') || notesLower.includes('- whatsapp: skipped') || notesLower.includes('whatsapp failed');
+      } else if (channelFilter === 'email_failed') {
+        matchesChannel = notesLower.includes('- email: failed') || notesLower.includes('- email: skipped') || notesLower.includes('email failed');
+      } else if (channelFilter === 'sms_failed') {
+        matchesChannel = notesLower.includes('- sms: failed') || notesLower.includes('- sms: skipped') || notesLower.includes('sms failed');
+      } else if (channelFilter === 'jiji_failed') {
+        matchesChannel = notesLower.includes('- jiji: failed') || notesLower.includes('- jiji: skipped') || notesLower.includes('jiji failed');
+      } else if (channelFilter === 'whatsapp_failed_email_success') {
+        const waFailed = notesLower.includes('- whatsapp: failed') || notesLower.includes('- whatsapp: skipped') || notesLower.includes('whatsapp failed');
+        const emailSuccess = notesLower.includes('via email') || notesLower.includes('via gmail');
+        matchesChannel = waFailed && emailSuccess;
+      }
+    }
                           
-    return matchesSearch && matchesStatus && matchesQuery && matchesWebsite && matchesPlatform;
+    return matchesSearch && matchesStatus && matchesQuery && matchesWebsite && matchesPlatform && matchesChannel;
   });
 
   // Fallback: If search term is present but yielded 0 results, fall back to showing all leads for selected query/status
@@ -2198,14 +2444,40 @@ export default function Home() {
                             
       const cmsPlatform = l.cms_platform || l.cmsPlatform;
       const matchesPlatform = platformFilter === 'ALL' || cmsPlatform === platformFilter;
+
+      let matchesChannel = true;
+      if (channelFilter !== 'ALL') {
+        const notesLower = (l.notes || '').toLowerCase();
+        if (channelFilter === 'whatsapp_success') {
+          matchesChannel = notesLower.includes('via whatsapp');
+        } else if (channelFilter === 'email_success') {
+          matchesChannel = notesLower.includes('via email') || notesLower.includes('via gmail');
+        } else if (channelFilter === 'sms_success') {
+          matchesChannel = notesLower.includes('via sms');
+        } else if (channelFilter === 'jiji_success') {
+          matchesChannel = notesLower.includes('via jiji');
+        } else if (channelFilter === 'whatsapp_failed') {
+          matchesChannel = notesLower.includes('- whatsapp: failed') || notesLower.includes('- whatsapp: skipped') || notesLower.includes('whatsapp failed');
+        } else if (channelFilter === 'email_failed') {
+          matchesChannel = notesLower.includes('- email: failed') || notesLower.includes('- email: skipped') || notesLower.includes('email failed');
+        } else if (channelFilter === 'sms_failed') {
+          matchesChannel = notesLower.includes('- sms: failed') || notesLower.includes('- sms: skipped') || notesLower.includes('sms failed');
+        } else if (channelFilter === 'jiji_failed') {
+          matchesChannel = notesLower.includes('- jiji: failed') || notesLower.includes('- jiji: skipped') || notesLower.includes('jiji failed');
+        } else if (channelFilter === 'whatsapp_failed_email_success') {
+          const waFailed = notesLower.includes('- whatsapp: failed') || notesLower.includes('- whatsapp: skipped') || notesLower.includes('whatsapp failed');
+          const emailSuccess = notesLower.includes('via email') || notesLower.includes('via gmail');
+          matchesChannel = waFailed && emailSuccess;
+        }
+      }
                             
-      return matchesStatus && matchesQuery && matchesWebsite && matchesPlatform;
+      return matchesStatus && matchesQuery && matchesWebsite && matchesPlatform && matchesChannel;
     });
   }
 
   const renderTemplatePreview = (lead: Lead | null) => {
     if (!lead) return 'Select a lead to see custom outreach message variables';
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://apexreach.net';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://lead-generation-automation-ecru.vercel.app';
     
     if (config.outreachChannel === 'sms') {
       const smsTemplate = config.smsMessageTemplate || 
@@ -2215,7 +2487,7 @@ export default function Home() {
       msg = msg.replace(/\{\{lead\.rating\}\}/g, String(lead.rating || '4.0'));
       msg = msg.replace(/\{\{lead\.reviews_count\}\}/g, String(lead.reviews_count || '0'));
       msg = msg.replace(/\{\{previewUrl\}\}/g, `${origin}/preview/${lead.lead_id}`);
-      msg = msg.replace(/\{\{signature\}\}/g, config.businessSignature || 'ApexReach');
+      msg = msg.replace(/\{\{signature\}\}/g, config.businessSignature || 'Bethelmind Analytics & Strategy');
       return msg;
     }
 
@@ -2227,7 +2499,7 @@ export default function Home() {
       msg = msg.replace(/\{\{lead\.rating\}\}/g, String(lead.rating || '4.0'));
       msg = msg.replace(/\{\{lead\.reviews_count\}\}/g, String(lead.reviews_count || '0'));
       msg = msg.replace(/\{\{previewUrl\}\}/g, `${origin}/preview/${lead.lead_id}`);
-      msg = msg.replace(/\{\{signature\}\}/g, config.businessSignature || 'ApexReach');
+      msg = msg.replace(/\{\{signature\}\}/g, config.businessSignature || 'Bethelmind Analytics & Strategy');
       return msg;
     }
 
@@ -2248,7 +2520,7 @@ export default function Home() {
       msg = msg.replace(/\{\{lead\.rating\}\}/g, String(lead.rating || '4.0'));
       msg = msg.replace(/\{\{lead\.reviews_count\}\}/g, String(lead.reviews_count || '0'));
       msg = msg.replace(/\{\{previewUrl\}\}/g, `${origin}/preview/${lead.lead_id}`);
-      msg = msg.replace(/\{\{signature\}\}/g, config.businessSignature || 'ApexReach');
+      msg = msg.replace(/\{\{signature\}\}/g, config.businessSignature || 'Bethelmind Analytics & Strategy');
       return msg;
     }
 
@@ -2258,14 +2530,14 @@ export default function Home() {
     const pitchAngle = pitchMatch ? pitchMatch[1] : (hasWebsite ? 'CRM Integration & WhatsApp Automation' : 'New Website Design');
     const previewUrl = `${origin}/preview/${lead.lead_id}`;
     const webUrl = lead.website || '';
-    const sig = config.businessSignature || 'ApexReach';
+    const sig = config.businessSignature || 'Bethelmind Analytics & Strategy';
     const name = lead.name || 'Team';
     const area = lead.area || 'Lagos';
 
     if (hasWebsite) {
       return `Subject: Upgrading ${name} — ${pitchAngle}\n\nHi ${name} Team,\n\nWe visited your current website (${webUrl}) and noticed a major growth opportunity — your site is missing ${pitchAngle.toLowerCase()}.\n\nWe built an interactive mockup upgrade preview specifically for your business:\n${previewUrl}\n\nYou can test the new feature live on the preview page. It shows exactly how it would work for your clients, including automated notifications and payment processing.\n\nIf you like what you see, we can deploy this as a full upgrade to your existing site — contact us via the page.\n\nBest regards,\n${sig}`;
     }
-    return `Subject: Custom Web Design Proposal for ${name}\n\nHi ${name} Team,\n\nWe noticed ${name} has a top-rated reputation (${lead.rating} stars, ${lead.reviews_count} reviews) in ${area}, but does not have a web address connected yet.\n\nTo help you grow, we've custom-designed a landing page for you to review:\n${previewUrl}\n\nThis page was auto-generated by ApexReach and includes a live interactive ${pitchAngle.toLowerCase()} widget. If you like the design, you can claim it and connect it to your own custom domain.\n\nBest regards,\n${sig}`;
+    return `Subject: Custom Web Design Proposal for ${name}\n\nHi ${name} Team,\n\nWe noticed ${name} has a top-rated reputation (${lead.rating} stars, ${lead.reviews_count} reviews) in ${area}, but does not have a web address connected yet.\n\nTo help you grow, we've custom-designed a landing page for you to review:\n${previewUrl}\n\nThis page was auto-generated by Bethelmind Analytics & Strategy and includes a live interactive ${pitchAngle.toLowerCase()} widget. If you like the design, you can claim it and connect it to your own custom domain.\n\nBest regards,\n${sig}`;
   };
 
   return (
@@ -2354,8 +2626,8 @@ export default function Home() {
         style={{ width: '280px', flexShrink: 0, borderRight: '1px solid var(--panel-border)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', maxHeight: '100vh' }}
       >
         <div>
-          <h2 style={{ fontFamily: 'var(--font-title)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)' }}>
-            <Database size={24} /> ApexReach
+          <h2 style={{ fontFamily: 'var(--font-title)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary)', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.2' }}>
+            <Database size={24} /> Bethelmind Analytics & Strategy
           </h2>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600 }}>B2B Lead Engine</span>
         </div>
@@ -2426,7 +2698,8 @@ export default function Home() {
                       padding: 0,
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      zIndex: 10
                     }}
                     title={showClientSecret ? "Hide Client Secret" : "Show Client Secret"}
                   >
@@ -2469,6 +2742,14 @@ export default function Home() {
             style={{ justifyContent: 'flex-start', background: activeTab === 'crm' ? 'var(--primary-glow)' : 'transparent', borderColor: activeTab === 'crm' ? 'var(--primary)' : 'transparent', width: '100%' }}
           >
             <Users size={18} color={activeTab === 'crm' ? 'var(--primary)' : 'var(--text-secondary)'} /> Leads CRM
+          </button>
+
+          <button 
+            onClick={() => window.location.href = '/admin/solar-pipeline'} 
+            className="btn-secondary"
+            style={{ justifyContent: 'flex-start', background: 'transparent', borderColor: 'transparent', width: '100%' }}
+          >
+            <Sun size={18} color="var(--text-secondary)" /> Specialise Solar Pipeline
           </button>
           
           <button 
@@ -2666,6 +2947,45 @@ export default function Home() {
                 </span>
               </div>
             )}
+
+            {/* Live Pipeline Activity Logs Feed */}
+            {latestLogs && latestLogs.length > 0 && (
+              <div style={{
+                fontSize: '0.68rem',
+                fontFamily: 'monospace',
+                background: 'rgba(0, 0, 0, 0.25)',
+                padding: '6px 8px',
+                borderRadius: '6px',
+                marginTop: '4px',
+                border: '1px solid rgba(255,255,255,0.03)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                maxHeight: '120px',
+                overflowY: 'auto'
+              }}>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.62rem', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8 }}>
+                  Live Pipeline Feed
+                </div>
+                {latestLogs.map((log: any, idx: number) => {
+                  const [runId, timestamp, step, _, logStatus, message] = log;
+                  const timeStr = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                  const color = logStatus === 'ERROR' ? '#EF4444' : logStatus === 'SUCCESS' ? '#10B981' : '#3B82F6';
+                  return (
+                    <div key={idx} style={{ color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', opacity: 0.8, fontSize: '0.6rem' }}>
+                        <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{runId}</span>
+                        <span>{timeStr}</span>
+                      </div>
+                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', gap: '3px', alignItems: 'center' }}>
+                        <span style={{ color, fontSize: '0.6rem', fontWeight: 700 }}>[{logStatus}]</span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem' }} title={message}>{message}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             
             <div style={{ display: 'flex', gap: '8px', marginTop: '2px' }}>
               {runnerStatus === 'online' ? (
@@ -2854,7 +3174,7 @@ export default function Home() {
         {statusMessage && (
           <div className="glass-panel" style={{ padding: '12px 18px', borderLeft: '4px solid var(--primary)', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <Info size={18} color="var(--primary)" />
-            <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{statusMessage}</span>
+            <span id="scraper-status-message" style={{ fontSize: '0.9rem', fontWeight: 500 }}>{statusMessage}</span>
             
             {/* Inline Start Local Runner process button when the scraper is running/waiting but the runner is offline */}
             {runnerStatus === 'offline' && (statusMessage.includes('Waiting for local') || statusMessage.includes('Job queued')) && (
@@ -2933,6 +3253,60 @@ export default function Home() {
         </div>
         {/* VIDEO DEMO SECTION */}
         {activeTab === 'dashboard' && (
+          <div className="glass-panel" style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '16px 20px',
+            background: config.googleRefreshToken ? 'rgba(16, 185, 129, 0.05)' : 'rgba(59, 130, 246, 0.05)',
+            border: `1px solid ${config.googleRefreshToken ? 'rgba(16, 185, 129, 0.15)' : 'rgba(59, 130, 246, 0.15)'}`,
+            borderLeft: `4px solid ${config.googleRefreshToken ? '#10b981' : '#3b82f6'}`,
+            borderRadius: '12px',
+            marginBottom: '20px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ fontSize: '24px' }}>🤖</div>
+              <div style={{ textAlign: 'left' }}>
+                <strong style={{ color: 'var(--text-primary)', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  Google Workspace Automation Center
+                  <span className={`badge ${config.googleRefreshToken ? 'badge-success' : 'badge-new'}`}>
+                    {config.googleRefreshToken ? 'PERFECTED & ACTIVE' : 'SIGN-IN REQUIRED'}
+                  </span>
+                </strong>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', margin: '4px 0 0 0' }}>
+                  {config.googleRefreshToken 
+                    ? `Successfully synchronized to ${config.googleUserEmail || 'your Google account'}. Click below if you need to re-link or change accounts.`
+                    : 'Link your Google account to authorize background sheets sync, automated email outreach, and Gemini key rotation.'}
+                </p>
+              </div>
+            </div>
+            <a 
+              href="/api/auth/google?prompt=select_account%20consent"
+              className="btn btn-primary"
+              style={{
+                fontSize: '0.8rem',
+                padding: '8px 18px',
+                background: 'linear-gradient(135deg, #1877f2 0%, #06b6d4 100%)',
+                color: '#fff',
+                textDecoration: 'none',
+                borderRadius: '8px',
+                fontWeight: 600,
+                boxShadow: '0 4px 12px rgba(6, 182, 212, 0.25)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              {config.googleRefreshToken ? '🔄 Reconnect Google Account' : '⚡ One-Click Connect Google'}
+            </a>
+          </div>
+        )}
+
+        {/* VIDEO DEMO SECTION */}
+        {activeTab === 'dashboard' && (
           <section className="glass-panel" style={{ padding: '24px', marginBottom: '0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
               <div>
@@ -2941,13 +3315,13 @@ export default function Home() {
                   Platform Walkthrough Demo
                 </h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>
-                  Watch a complete voiced tour of every feature in the ApexReach Lead Engine
+                  Watch a complete voiced tour of every feature in the Bethelmind Analytics & Strategy Lead Engine
                 </p>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <a
-                  href="/assets/apexreach-demo.webm"
-                  download="ApexReach-Platform-Demo.webm"
+                  href="/assets/bethelmind-demo.webm"
+                  download="Bethelmind-Platform-Demo.webm"
                   className="btn btn-secondary"
                   style={{
                     display: 'flex',
@@ -2991,7 +3365,7 @@ export default function Home() {
                 onEnded={() => setVideoPlaying(false)}
                 style={{ background: '#000', width: '100%', height: '100%' }}
               >
-                <source src="/assets/apexreach-demo.webm" type="video/webm" />
+                <source src="/assets/bethelmind-demo.webm" type="video/webm" />
               </video>
               <div className={`video-play-overlay ${videoPlaying ? 'hidden' : ''}`}>
                 <div className="video-play-btn">
@@ -3388,8 +3762,26 @@ export default function Home() {
                 >
                   <option value="ALL">All Lifecycle Stages</option>
                   <option value="NEW">NEW (Uncontacted)</option>
-                  <option value="CONTACTED">CONTACTED (Emailed)</option>
+                  <option value="CONTACTED">CONTACTED (All channels)</option>
                   <option value="ERROR">ERROR</option>
+                </select>
+              </div>
+
+              <div>
+                <select 
+                  value={channelFilter} 
+                  onChange={(e) => setChannelFilter(e.target.value)}
+                  style={{ background: 'var(--input-bg-darker)', color: 'var(--text-primary)', border: '1px solid var(--panel-border)', borderRadius: '8px', padding: '8px 12px', outline: 'none' }}
+                >
+                  <option value="ALL">All Outreach Channels</option>
+                  <option value="whatsapp_success">Reached via WhatsApp</option>
+                  <option value="email_success">Reached via Email</option>
+                  <option value="sms_success">Reached via SMS</option>
+                  <option value="jiji_success">Reached via Jiji</option>
+                  <option value="whatsapp_failed">WhatsApp Failed/Skipped</option>
+                  <option value="email_failed">Email Failed/Skipped</option>
+                  <option value="sms_failed">SMS Failed/Skipped</option>
+                  <option value="whatsapp_failed_email_success">Email Sent (WhatsApp Failed)</option>
                 </select>
               </div>
 
@@ -3431,7 +3823,7 @@ export default function Home() {
                 </select>
               </div>
 
-              {(searchTerm || queryFilter !== 'ALL' || statusFilter !== 'ALL' || websiteFilter !== 'ALL' || platformFilter !== 'ALL') && (
+              {(searchTerm || queryFilter !== 'ALL' || statusFilter !== 'ALL' || websiteFilter !== 'ALL' || platformFilter !== 'ALL' || channelFilter !== 'ALL') && (
                 <button
                   type="button"
                   onClick={resetFilters}
@@ -3463,25 +3855,55 @@ export default function Home() {
               <div className="glass-panel" style={{ overflowX: 'auto', minHeight: '400px', width: `${crmTableWidth}px`, flexShrink: 0 }}>
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h3 style={{ fontSize: '1.1rem' }}>Leads Directory ({filteredLeads.length} matching)</h3>
-                  {selectedLeads.size > 0 && (
-                    <button 
-                      onClick={runOutreach} 
-                      disabled={outreachDetails.isDisabled || sendingOutreach} 
-                      className="btn-primary" 
-                      style={{ 
-                        fontSize: '0.85rem', 
-                        padding: '8px 16px', 
-                        display: 'flex', 
-                        alignItems: 'center', 
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <a
+                      href="/api/export/leads"
+                      download="leads.xlsx"
+                      className="btn-secondary"
+                      style={{
+                        fontSize: '0.85rem',
+                        padding: '8px 16px',
+                        display: 'flex',
+                        alignItems: 'center',
                         gap: '6px',
-                        opacity: (outreachDetails.isDisabled || sendingOutreach) ? 0.6 : 1,
-                        cursor: (outreachDetails.isDisabled || sendingOutreach) ? 'not-allowed' : 'pointer'
+                        background: 'rgba(16, 185, 129, 0.1)',
+                        borderColor: 'rgba(16, 185, 129, 0.3)',
+                        color: '#34d399',
+                        textDecoration: 'none',
+                        borderRadius: '8px',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
                       }}
                     >
-                      {sendingOutreach ? <Loader2 size={14} className="spin-anim" /> : outreachDetails.icon} 
-                      {sendingOutreach ? 'Sending...' : outreachDetails.label} ({selectedLeads.size})
-                    </button>
-                  )}
+                      <Database size={14} /> Download Excel Spreadsheet
+                    </a>
+
+                    {selectedLeads.size > 0 && (
+                      <button 
+                        onClick={runOutreach} 
+                        disabled={outreachDetails.isDisabled || sendingOutreach} 
+                        className="btn-primary" 
+                        style={{ 
+                          fontSize: '0.85rem', 
+                          padding: '8px 16px', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '6px',
+                          opacity: (outreachDetails.isDisabled || sendingOutreach) ? 0.6 : 1,
+                          cursor: (outreachDetails.isDisabled || sendingOutreach) ? 'not-allowed' : 'pointer'
+                        }}
+                      >
+                        {sendingOutreach ? <Loader2 size={14} className="spin-anim" /> : outreachDetails.icon} 
+                        {sendingOutreach ? 'Sending...' : outreachDetails.label} ({selectedLeads.size})
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
@@ -3612,7 +4034,16 @@ export default function Home() {
                         </td>
                         <td style={{ padding: '14px' }}>
                           <span className={`badge ${lead.status === 'NEW' ? 'badge-new' : lead.status === 'CONTACTED' ? 'badge-contacted' : 'badge-error'}`}>
-                            {lead.status}
+                            {(() => {
+                              if (lead.status === 'CONTACTED') {
+                                const notesLower = (lead.notes || '').toLowerCase();
+                                if (notesLower.includes('via whatsapp')) return 'WHATSAPP';
+                                if (notesLower.includes('via email') || notesLower.includes('via gmail')) return 'EMAIL';
+                                if (notesLower.includes('via sms')) return 'SMS';
+                                if (notesLower.includes('via jiji')) return 'JIJI';
+                              }
+                              return lead.status;
+                            })()}
                           </span>
                         </td>
                         <td style={{ padding: '14px 20px' }} onClick={(e) => e.stopPropagation()}>
@@ -4559,6 +4990,8 @@ export default function Home() {
                 onExecute={runScraper}
                 isConfigured={selectedScraper === 'google' ? !!config.googlePlacesApiKey : true}
                 requiresKey={selectedScraper === 'google'}
+                runAllConcurrently={runAllConcurrently}
+                setRunAllConcurrently={setRunAllConcurrently}
               />
             </div>
 
@@ -4683,194 +5116,44 @@ export default function Home() {
                     <RefreshCw size={16} className={runnerStatus === 'loading' ? 'animate-spin' : ''} />
                   </button>
                 </div>
-              </div>
 
-              {/* Option C: Set-and-Forget Autostart Guide */}
-              <div
-                className="glass-panel"
-                style={{
-                  padding: '20px 24px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.04) 0%, rgba(255,255,255,0.01) 100%)',
-                  border: '1px solid rgba(56, 189, 248, 0.15)',
-                  borderRadius: '12px',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <div 
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-                  onClick={() => setShowAutostartGuide(!showAutostartGuide)}
+                {/* Quick-access Lagos 10K shortcut button */}
+                <button
+                  type="button"
+                  id="bulk-queue-btn-quick"
+                  onClick={runLagos10KStandalone}
+                  disabled={bulkQueuing}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                    width: '100%',
+                    padding: '11px 16px',
+                    background: bulkQueuing
+                      ? 'rgba(6, 182, 212, 0.25)'
+                      : 'linear-gradient(135deg, #06B6D4 0%, #7C3AED 100%)',
+                    border: 'none', borderRadius: '10px',
+                    color: 'white', fontWeight: 700, fontSize: '0.88rem',
+                    cursor: bulkQueuing ? 'not-allowed' : 'pointer',
+                    opacity: bulkQueuing ? 0.65 : 1,
+                    marginTop: '4px',
+                    boxShadow: '0 4px 15px rgba(6, 182, 212, 0.3)',
+                    transition: 'all 0.2s',
+                  }}
                 >
-                  <h4 style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-                    <Settings size={18} color="#38bdf8" />
-                    Option C: Set-and-Forget Autostart
-                  </h4>
-                  <button 
-                    type="button" 
-                    style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                  >
-                    {showAutostartGuide ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </button>
-                </div>
-
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', lineHeight: '1.4', margin: 0 }}>
-                  Automatically launches the automation stack silently in the background whenever you log into Windows.
-                </p>
-
-                {showAutostartGuide && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
-                    
-                    {/* Step 1 */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontSize: '0.75rem', fontWeight: 700 }}>1</span>
-                        <h5 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Install Windows Startup Shortcut</h5>
-                      </div>
-                      <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0 4px 0', paddingLeft: '26px' }}>
-                        Press <kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 4px', borderRadius: '4px', fontSize: '0.7rem' }}>Win + X</kbd> and open <strong>Terminal</strong> or <strong>PowerShell</strong> (no admin privileges needed), then run:
-                      </p>
-                      
-                      <div style={{ marginLeft: '26px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '10px 12px' }}>
-                          <code style={{ fontSize: '0.72rem', color: '#a78bfa', wordBreak: 'break-all', fontFamily: 'monospace' }}>
-                            powershell -ExecutionPolicy Bypass -File "c:\Users\HomePC\Desktop\website Projects\lead generation automation\scripts\install_startup_shortcut.ps1"
-                          </code>
-                        </div>
-                        
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          <button
-                            type="button"
-                            onClick={() => handleCopyText('powershell -ExecutionPolicy Bypass -File "c:\\Users\\HomePC\\Desktop\\website Projects\\lead generation automation\\scripts\\install_startup_shortcut.ps1"', setCopiedScript)}
-                            style={{
-                              background: 'rgba(56, 189, 248, 0.1)',
-                              border: '1px solid rgba(56, 189, 248, 0.3)',
-                              borderRadius: '6px',
-                              padding: '6px 12px',
-                              color: '#38bdf8',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              fontSize: '0.75rem',
-                              fontWeight: 600,
-                              transition: 'all 0.2s'
-                            }}
-                            title="Copy the command to register the shortcut in your Windows startup folder"
-                          >
-                            {copiedScript ? (
-                              <>
-                                <Check size={14} color="#10B981" />
-                                Copied Command!
-                              </>
-                            ) : (
-                              <>
-                                <Copy size={14} />
-                                Copy Shortcut Installer
-                              </>
-                            )}
-                          </button>
-                          
-                          <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
-                            👉 Run once to enable autostart on PC login.
-                          </span>
-                        </div>
-                      </div>
-
-                      <div style={{ marginLeft: '26px', marginTop: '4px', fontSize: '0.72rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(16, 185, 129, 0.05)', padding: '6px 10px', borderRadius: '6px', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
-                        <span><span>✅ Success: Created Windows startup shortcut at: ...\Startup\LeadGenAutomation.lnk</span></span>
-                      </div>
-                    </div>
-
-                    {/* Step 2 */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontSize: '0.75rem', fontWeight: 700 }}>2</span>
-                        <h5 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>What Happens Automatically Under the Hood</h5>
-                      </div>
-                      <div style={{ marginLeft: '26px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                        <p style={{ margin: 0 }}>Whenever you start or restart your PC:</p>
-                        <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <li><strong>Network Wait Loop:</strong> The script triggers automatically and pings Google DNS (8.8.8.8). It waits silently until your system connects to the internet.</li>
-                          <li><strong>Launch Verification:</strong> It checks if the server is already active on port 3006.</li>
-                          <li><strong>Execution:</strong> Once online, it runs <code>npm run start-all</code> silently, spinning up:
-                            <ul style={{ margin: '4px 0 0 0', paddingLeft: '16px', listStyleType: 'circle' }}>
-                              <li>The Next.js Web App (to host the Dashboard).</li>
-                              <li>The Local Job Runner (to process scraper jobs).</li>
-                            </ul>
-                          </li>
-                          <li><strong>Log Retention:</strong> Startup logs are saved to <code>startup_log.txt</code> and full terminal execution streams are written to <code>services_output.log</code>.</li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* Step 3 */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontSize: '0.75rem', fontWeight: 700 }}>3</span>
-                        <h5 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Run it Manually (Right Now)</h5>
-                      </div>
-                      <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0 4px 0', paddingLeft: '26px' }}>
-                        If you want to start the services immediately without restarting your computer, run in your project folder:
-                      </p>
-                      
-                      <div style={{ marginLeft: '26px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '10px 12px' }}>
-                          <code style={{ fontSize: '0.72rem', color: '#a78bfa', wordBreak: 'break-all', fontFamily: 'monospace' }}>
-                            npm run start-all
-                          </code>
-                        </div>
-                        
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          <button
-                            type="button"
-                            onClick={() => handleCopyText('npm run start-all', setCopiedManual)}
-                            style={{
-                              background: 'rgba(167, 139, 250, 0.1)',
-                              border: '1px solid rgba(167, 139, 250, 0.3)',
-                              borderRadius: '6px',
-                              padding: '6px 12px',
-                              color: '#a78bfa',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              fontSize: '0.75rem',
-                              fontWeight: 600,
-                              transition: 'all 0.2s'
-                            }}
-                            title="Copy the command to manually start the Next.js app and scraper service immediately"
-                          >
-                            {copiedManual ? (
-                              <>
-                                <Check size={14} color="#10B981" />
-                                Copied Command!
-                              </>
-                            ) : (
-                              <>
-                                <Copy size={14} />
-                                Copy Run Command
-                              </>
-                            )}
-                          </button>
-                          
-                          <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
-                            👉 Run to start background automation immediately.
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, paddingLeft: '26px' }}>
-                        Keep the terminal running or minimized. The local runner will start processing any pending campaign queue jobs immediately.
-                      </p>
-                    </div>
-
-                  </div>
+                  {bulkQueuing
+                    ? <><Loader2 size={15} className="animate-spin" /> Queueing 10K Jobs...</>
+                    : <><Flame size={15} /> ⚡ Start Lagos 10K Scraper</>
+                  }
+                </button>
+                {runnerStatus !== 'online' && (
+                  <p style={{ fontSize: '0.72rem', color: '#F59E0B', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <AlertTriangle size={11} /> Runner offline — clicking will auto-start it then launch scrapers.
+                  </p>
                 )}
               </div>
 
-              {/* Bulk Lead Scaler Panel */}
+              {/* Autostart set-and-forget instructions removed to streamline Settings panel */}
+
+              {/* Lagos 10K Daily Lead Scraper & Automation Panel */}
               <div
                 className="glass-panel"
                 style={{
@@ -4878,8 +5161,8 @@ export default function Home() {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '14px',
-                  background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.06) 0%, rgba(16, 185, 129, 0.04) 100%)',
-                  border: '1px solid rgba(139, 92, 246, 0.2)',
+                  background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.06) 0%, rgba(139, 92, 246, 0.04) 100%)',
+                  border: '1px solid rgba(6, 182, 212, 0.25)',
                   position: 'relative',
                   overflow: 'hidden'
                 }}
@@ -4887,32 +5170,32 @@ export default function Home() {
                 {/* Glow accent bar */}
                 <div style={{
                   position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
-                  background: 'linear-gradient(90deg, #8B5CF6, #10B981, #8B5CF6)',
+                  background: 'linear-gradient(90deg, #06B6D4, #8B5CF6, #10B981)',
                   backgroundSize: '200% 100%',
                   animation: 'shimmer 3s linear infinite'
                 }} />
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Flame size={20} color="#8B5CF6" />
+                  <Flame size={20} color="#06B6D4" />
                   <h4 style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)', margin: 0 }}>
-                    Bulk Lead Scaler
+                    Lagos 10K Daily Lead Scraper
                   </h4>
                   <span style={{
                     fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px',
-                    background: 'rgba(139, 92, 246, 0.15)', border: '1px solid rgba(139, 92, 246, 0.3)',
-                    borderRadius: '20px', color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '0.06em'
-                  }}>1,000+/week</span>
+                    background: 'rgba(6, 182, 212, 0.15)', border: '1px solid rgba(6, 182, 212, 0.3)',
+                    borderRadius: '20px', color: '#06B6D4', textTransform: 'uppercase', letterSpacing: '0.06em'
+                  }}>10,000/day</span>
                 </div>
 
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', margin: 0 }}>
-                  Automatically generates <strong style={{ color: 'var(--text-primary)' }}>50 scraper jobs</strong> across 12 business niches (dentists, solar, boutique, restaurants…) and 10 Lagos suburbs. Each job pulls 25 leads — targeting <strong style={{ color: '#10B981' }}>1,250+ hydrated leads</strong> queued in one click.
+                  Automatically generates up to <strong style={{ color: 'var(--text-primary)' }}>100 scraper jobs</strong> across 22 business niches (clinics, lawyer, boutiques, transport…) and 20 Lagos suburbs. Targetting <strong style={{ color: '#10B981' }}>10,000+ hydrated local leads</strong> daily.
                 </p>
 
                 {/* Estimate meters */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   {[
-                    { label: 'Jobs Queued', value: bulkQueuedCount !== null ? String(bulkQueuedCount) : '50', color: '#8B5CF6' },
-                    { label: 'Est. Leads', value: bulkQueuedCount !== null ? String(bulkQueuedCount * 25) : '~1,250', color: '#10B981' },
+                    { label: 'Scrapers Configured', value: bulkQueuedCount !== null ? String(bulkQueuedCount) : '100', color: '#8B5CF6' },
+                    { label: 'Target Leads', value: bulkQueuedCount !== null ? String(bulkQueuedCount * 100) : '10,000', color: '#10B981' },
                   ].map(({ label, value, color }) => (
                     <div key={label} style={{
                       padding: '10px 14px',
@@ -4926,34 +5209,68 @@ export default function Home() {
                   ))}
                 </div>
 
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '2px 0 6px 0', padding: '10px', background: 'rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                  <input
+                    type="checkbox"
+                    id="auto-queue-lagos-daily-check"
+                    checked={config.autoQueueLagosDaily10k !== false}
+                    onChange={async (e) => {
+                      const updatedConfig = { ...config, autoQueueLagosDaily10k: e.target.checked };
+                      setConfig(updatedConfig);
+                      try {
+                        await fetch('/api/config', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify(updatedConfig)
+                        });
+                        addToast(e.target.checked ? 'Daily Lagos scraper automation enabled!' : 'Daily Lagos automation disabled.', 'success');
+                      } catch {
+                        addToast('Failed to update automation settings', 'error');
+                      }
+                    }}
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      accentColor: 'var(--primary)',
+                      cursor: 'pointer'
+                    }}
+                  />
+                  <label 
+                    htmlFor="auto-queue-lagos-daily-check" 
+                    style={{ fontSize: '0.8rem', color: '#e2e8f0', cursor: 'pointer', userSelect: 'none' }}
+                  >
+                    Automate daily 24h cron runs to queue 10k leads
+                  </label>
+                </div>
+
                 <button
                   type="button"
                   id="bulk-queue-btn"
-                  onClick={runBulkQueuer}
-                  disabled={bulkQueuing || runnerStatus !== 'online'}
+                  onClick={runLagos10KStandalone}
+                  disabled={bulkQueuing}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                     padding: '12px 20px',
                     background: bulkQueuing
-                      ? 'rgba(139, 92, 246, 0.3)'
-                      : 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)',
+                      ? 'rgba(6, 182, 212, 0.3)'
+                      : 'linear-gradient(135deg, #06B6D4 0%, #7C3AED 100%)',
                     border: 'none', borderRadius: '10px',
                     color: 'white', fontWeight: 700, fontSize: '0.9rem',
-                    cursor: bulkQueuing || runnerStatus !== 'online' ? 'not-allowed' : 'pointer',
-                    opacity: bulkQueuing || runnerStatus !== 'online' ? 0.7 : 1,
+                    cursor: bulkQueuing ? 'not-allowed' : 'pointer',
+                    opacity: bulkQueuing ? 0.7 : 1,
                     transition: 'all 0.2s',
-                    boxShadow: '0 4px 15px rgba(124, 58, 237, 0.35)'
+                    boxShadow: '0 4px 15px rgba(6, 182, 212, 0.35)'
                   }}
                 >
                   {bulkQueuing
-                    ? <><Loader2 size={16} className="animate-spin" /> Queueing Jobs...</>
-                    : <><Sparkles size={16} /> ⚡ Queue 1,000 Leads Now</>
+                    ? <><Loader2 size={16} className="animate-spin" /> Starting Scrapers...</>
+                    : <><Sparkles size={16} /> ⚡ Start Lagos Scraper (10K Leads)</>
                   }
                 </button>
 
                 {runnerStatus !== 'online' && (
                   <p style={{ fontSize: '0.75rem', color: '#F59E0B', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <AlertTriangle size={12} /> Start the Local Runner above before bulk queueing.
+                    <AlertTriangle size={12} /> Start the Local Runner above before triggering the Lagos Scraper.
                   </p>
                 )}
 
@@ -4964,7 +5281,7 @@ export default function Home() {
                     fontSize: '0.8rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: '8px'
                   }}>
                     <CheckCircle size={14} />
-                    {bulkQueuedCount} jobs queued · ~{bulkQueuedCount * 25} leads being collected in background
+                    {bulkQueuedCount} scraper engines running in pool · targetting ~{bulkQueuedCount * 100} leads
                   </div>
                 )}
               </div>
@@ -5313,7 +5630,7 @@ export default function Home() {
                     type="text" 
                     value={config.businessSignature} 
                     onChange={(e) => setConfig({ ...config, businessSignature: e.target.value })}
-                    placeholder="e.g. ApexReach Team"
+                    placeholder="e.g. Bethelmind Analytics & Strategy Team"
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
@@ -5344,7 +5661,7 @@ export default function Home() {
                 </a>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '0 0 16px 0' }}>
-                ApexReach stores leads, logs, and stats in Google Sheets worksheets. You can test your connection or initialize missing worksheets below.
+                Bethelmind Analytics & Strategy stores leads, logs, and stats in Google Sheets worksheets. You can test your connection or initialize missing worksheets below.
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', alignItems: 'end' }}>
                 <div>
@@ -5494,14 +5811,112 @@ export default function Home() {
                   />
                 </div>
                 <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+                      Gemini AI API Key (Copywriting) <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const keysStr = config.geminiApiKey || '';
+                        if (!keysStr) {
+                          alert("Please enter at least one Gemini API key first.");
+                          return;
+                        }
+                        const firstKey = keysStr.split(',')[0].trim();
+                        addToast("Testing Gemini connection...", "info");
+                        try {
+                          const res = await fetch('/api/config/test-antigravity', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ apiKey: firstKey, model: 'gemini-1.5-flash' })
+                          });
+                          const data = await res.json();
+                          if (data.success) {
+                            addToast(data.message, "success");
+                          } else {
+                            addToast("Gemini Connection Failed: " + data.error, "error");
+                          }
+                        } catch (err: any) {
+                          addToast("Error testing connection: " + err.message, "error");
+                        }
+                      }}
+                      className="btn-secondary"
+                      style={{ fontSize: '0.7rem', padding: '3px 8px', borderRadius: '4px' }}
+                    >
+                      Test Connection
+                    </button>
+                  </div>
+                  <textarea 
+                    value={Array.isArray((config as any).geminiApiKeys) && (config as any).geminiApiKeys.length > 0 ? (config as any).geminiApiKeys.join(', ') : (config.geminiApiKey || '')} 
+                    onChange={(e) => setConfig({ ...config, geminiApiKey: e.target.value })}
+                    placeholder="Paste Gemini API Key(s) separated by commas or newlines"
+                    rows={2}
+                    style={{ width: '100%', padding: '10px 12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem', resize: 'vertical' }}
+                  />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+                      Antigravity API Key(s) (Fallback Model Chain) <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const keysStr = config.antigravityApiKey || '';
+                        if (!keysStr) {
+                          alert("Please enter at least one Antigravity API key first.");
+                          return;
+                        }
+                        const firstKey = keysStr.split(',')[0].trim();
+                        const modelsStr = config.antigravityModels || '';
+                        const firstModel = Array.isArray(modelsStr) 
+                          ? (modelsStr[0] || 'gemini_flash_high')
+                          : (typeof modelsStr === 'string' ? (modelsStr.split(',')[0].trim() || 'gemini_flash_high') : 'gemini_flash_high');
+
+                        addToast("Testing Antigravity connection...", "info");
+                        try {
+                          const res = await fetch('/api/config/test-antigravity', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ apiKey: firstKey, model: firstModel })
+                          });
+                          const data = await res.json();
+                          if (data.success) {
+                            addToast(data.message, "success");
+                          } else {
+                            addToast("Connection Failed: " + data.error, "error");
+                          }
+                        } catch (err: any) {
+                          addToast("Error: " + err.message, "error");
+                        }
+                      }}
+                      className="btn-secondary"
+                      style={{ fontSize: '0.7rem', padding: '3px 8px', borderRadius: '4px' }}
+                    >
+                      Test Connection
+                    </button>
+                  </div>
+                  <textarea 
+                    value={Array.isArray((config as any).antigravityApiKeys) && (config as any).antigravityApiKeys.length > 0 ? (config as any).antigravityApiKeys.join(', ') : (config.antigravityApiKey || '')} 
+                    onChange={(e) => setConfig({ ...config, antigravityApiKey: e.target.value })}
+                    placeholder="Paste Antigravity API Key(s) separated by commas or newlines"
+                    rows={2}
+                    style={{ width: '100%', padding: '10px 12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem', resize: 'vertical' }}
+                  />
+                </div>
+                <div>
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
-                    Gemini AI API Key (Copywriting) <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(Supports rotation: separate with commas)</span>
+                    Antigravity Models Pool <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(separate with commas)</span>
                   </label>
                   <input 
-                    type="password" 
-                    value={config.geminiApiKey} 
-                    onChange={(e) => setConfig({ ...config, geminiApiKey: e.target.value })}
-                    placeholder="Paste Gemini API Key(s) separated by commas"
+                    type="text" 
+                    value={Array.isArray(config.antigravityModels) ? config.antigravityModels.join(', ') : (config.antigravityModels || '')} 
+                    onChange={(e) => {
+                      const models = e.target.value.split(',').map(m => m.trim()).filter(Boolean);
+                      setConfig({ ...config, antigravityModels: models });
+                    }}
+                    placeholder="gemini_flash_high, gemini_pro_low, gpt_oss, claude, sonneta, opus"
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
@@ -5512,7 +5927,7 @@ export default function Home() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
                   <div>
                     <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>⚡</span> Remote Browser WebSocket URL
+                      <span>⚡</span> Remote Browser Token(s) or WebSocket URL
                     </label>
                     <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
                       Required to fix <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>libnss3.so</code> errors on Vercel. Connect to a hosted Chromium service like Browserless.io instead of launching a local browser.
@@ -5527,19 +5942,48 @@ export default function Home() {
                     Get free token →
                   </a>
                 </div>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <input 
-                    type="text" 
-                    value={(config as any).remoteBrowserWs || ''} 
-                    onChange={(e) => setConfig({ ...config, remoteBrowserWs: e.target.value } as any)}
-                    placeholder="wss://chrome.browserless.io?token=YOUR_TOKEN"
-                    style={{ flex: 1, padding: '11px 12px', background: 'var(--input-bg)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem' }}
-                  />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
+                      Browserless API Token(s) <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(separate with commas)</span>
+                    </label>
+                    <textarea 
+                      value={Array.isArray((config as any).browserlessApiKeys) && (config as any).browserlessApiKeys.length > 0 ? (config as any).browserlessApiKeys.join(', ') : ((config as any).browserlessApiKey || '')} 
+                      onChange={(e) => setConfig({ ...config, browserlessApiKey: e.target.value } as any)}
+                      placeholder="Paste Browserless API token(s) (separated by commas or newlines)"
+                      rows={2}
+                      style={{ width: '100%', padding: '10px 12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem', resize: 'vertical' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
+                      Browserbase API Key(s) <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(separate with commas)</span>
+                    </label>
+                    <textarea 
+                      value={Array.isArray((config as any).browserbaseApiKeys) && (config as any).browserbaseApiKeys.length > 0 ? (config as any).browserbaseApiKeys.join(', ') : ((config as any).browserbaseApiKey || '')} 
+                      onChange={(e) => setConfig({ ...config, browserbaseApiKey: e.target.value } as any)}
+                      placeholder="Paste Browserbase API key(s) (separated by commas or newlines)"
+                      rows={2}
+                      style={{ width: '100%', padding: '10px 12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem', resize: 'vertical' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
+                      Legacy WebSocket URL (or Custom Chromium API Endpoint)
+                    </label>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <input 
+                        type="text" 
+                        value={(config as any).remoteBrowserWs || ''} 
+                        onChange={(e) => setConfig({ ...config, remoteBrowserWs: e.target.value } as any)}
+                        placeholder="Paste full WebSocket URL (wss://...)"
+                        style={{ flex: 1, padding: '11px 12px', background: 'var(--input-bg)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem' }}
+                      />
                   <button
                     type="button"
                     onClick={async () => {
                       const ws = (config as any).remoteBrowserWs;
-                      if (!ws) { addToast('Enter a WebSocket URL first.', 'error'); return; }
+                      if (!ws) { addToast('Enter a WebSocket URL or API token first.', 'error'); return; }
                       addToast('Testing remote browser connection...', 'info');
                       try {
                         const res = await fetch('/api/config/test-browser', {
@@ -5562,31 +6006,51 @@ export default function Home() {
                   >
                     Test Connection
                   </button>
+                    </div>
+                  </div>
                 </div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.5 }}>
-                  <strong style={{ color: 'var(--text-secondary)' }}>Free option:</strong> Sign up at <a href="https://browserless.io" target="_blank" style={{ color: '#0af' }}>Browserless.io</a> → copy the WebSocket URL from your dashboard.
-                  Format: <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: '3px' }}>wss://chrome.browserless.io?token=YOUR_TOKEN</code>
+                  <strong style={{ color: 'var(--text-secondary)' }}>Free option:</strong> Sign up at <a href="https://browserless.io" target="_blank" style={{ color: '#0af' }}>Browserless.io</a> → copy the API token from your dashboard.
+                  You can paste one token, or multiple tokens separated by commas for rotation.
                 </div>
               </div>
 
               {/* Proxy Settings & Rotation Pool */}
               <div id="proxy-settings" style={{ marginTop: '20px', padding: '16px', background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap', gap: '10px' }}>
                   <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--success)', display: 'block', margin: 0 }}>
                     🌐 Dynamic Proxy Pool (IP Rotation)
                   </label>
-                  <button
-                    type="button"
-                    onClick={verifyProxies}
-                    disabled={checkingHealth}
-                    className="btn-secondary"
-                    style={{ padding: '6px 12px', fontSize: '0.72rem', borderRadius: '6px' }}
-                  >
-                    {checkingHealth ? 'Testing...' : 'Verify Proxies'}
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <a
+                      href="https://www.webshare.io/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: '0.72rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
+                    >
+                      Webshare 10 Free →
+                    </a>
+                    <a
+                      href="https://proxyscrape.com/free-proxy-list"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: '0.72rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
+                    >
+                      ProxyScrape List →
+                    </a>
+                    <button
+                      type="button"
+                      onClick={verifyProxies}
+                      disabled={checkingHealth}
+                      className="btn-secondary"
+                      style={{ padding: '6px 12px', fontSize: '0.72rem', borderRadius: '6px', marginLeft: '6px' }}
+                    >
+                      {checkingHealth ? 'Testing...' : 'Verify Proxies'}
+                    </button>
+                  </div>
                 </div>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0 10px 0' }}>
-                  Prevent IP-based scraper blocks by rotating through a list of proxies (e.g. brightdata, webshare, oxylabs). Format: comma-separated URLs.
+                  Prevent IP-based scraper blocks by rotating through a list of proxies (e.g. brightdata, webshare, oxylabs). Paste proxies separated by commas or newlines.
                 </p>
                 <textarea 
                   value={config.proxyPool || ''} 
@@ -5595,8 +6059,23 @@ export default function Home() {
                   rows={2}
                   style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem', resize: 'vertical' }}
                 />
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '6px' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '6px', marginBottom: '16px' }}>
                   If empty, falls back to the default scraper proxy or local IP. Protocol prefix is required (<code>http://</code>, <code>socks5://</code>, etc.).
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+                    🌐 Webshare / Custom Rotating Proxies <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(separate with commas)</span>
+                  </label>
+                  <textarea 
+                    value={Array.isArray((config as any).webshareProxies) && (config as any).webshareProxies.length > 0 ? (config as any).webshareProxies.join(', ') : ((config as any).webshareProxies ? (config as any).webshareProxies.toString() : '')} 
+                    onChange={(e) => setConfig({ ...config, webshareProxies: e.target.value } as any)}
+                    placeholder="http://username:password@proxy.webshare.io:80, socks5://username:password@proxy2.webshare.io:1080"
+                    rows={2}
+                    style={{ width: '100%', padding: '10px 12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem', resize: 'vertical' }}
+                  />
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '6px' }}>
+                    Automatically rotates exit IP per request. Used for high-volume concurrent scraping.
+                  </div>
                 </div>
               </div>
 
@@ -5678,53 +6157,109 @@ export default function Home() {
                       </span>
                     )}
 
-                    <button
-                      onClick={async () => {
-                        setIsGmailConnecting(true);
-                        try {
-                          // Auto-save the config first
-                          const resp = await fetch('/api/config', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              ...config,
-                              googleClientId: config.googleClientId,
-                              googleClientSecret: config.googleClientSecret,
-                              googleProjectId: config.googleProjectId,
-                            })
-                          });
-                          const data = await resp.json();
-                          if (data && !data.error) {
-                            setConfig(data.config || data);
-                            addToast('Settings auto-saved! Redirecting to Google...', 'success');
-                            window.location.href = '/api/auth/google';
-                          } else {
-                            addToast(data.error || 'Failed to save configuration before redirecting.', 'error');
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                      <button
+                        onClick={async () => {
+                          setIsGmailConnecting(true);
+                          try {
+                            // Auto-save the config first
+                            const resp = await fetch('/api/config', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                ...config,
+                                googleClientId: config.googleClientId,
+                                googleClientSecret: config.googleClientSecret,
+                                googleProjectId: config.googleProjectId,
+                              })
+                            });
+                            const data = await resp.json();
+                            if (data && !data.error) {
+                              setConfig(data.config || data);
+                              addToast('Settings auto-saved! Redirecting to Google...', 'success');
+                              
+                              const isClasp = config.googleClientId === '1072944905499-vm2v2i5dvn0a0d2o4ca36i1vge8cvbn0.apps.googleusercontent.com';
+                              window.location.href = `/api/auth/google${isClasp ? '?use_clasp_redirect=true' : ''}`;
+                            } else {
+                              addToast(data.error || 'Failed to save configuration before redirecting.', 'error');
+                              setIsGmailConnecting(false);
+                            }
+                          } catch (e: any) {
+                            addToast(e.message || 'Error occurred during auto-save.', 'error');
                             setIsGmailConnecting(false);
                           }
-                        } catch (e: any) {
-                          addToast(e.message || 'Error occurred during auto-save.', 'error');
-                          setIsGmailConnecting(false);
-                        }
-                      }}
-                      disabled={isGmailConnecting || !config.googleClientId || !config.googleClientSecret}
-                      style={{
-                        width: '100%',
-                        padding: '10px 16px',
-                        background: (isGmailConnecting || !config.googleClientId || !config.googleClientSecret)
-                          ? 'rgba(100, 100, 100, 0.2)'
-                          : 'linear-gradient(90deg, hsl(210,70%,50%), hsl(210,70%,70%))',
-                        color: (isGmailConnecting || !config.googleClientId || !config.googleClientSecret) ? 'var(--text-muted)' : 'var(--text-primary)',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: (isGmailConnecting || !config.googleClientId || !config.googleClientSecret) ? 'not-allowed' : 'pointer',
-                        fontSize: '0.9rem',
-                        fontWeight: 600,
-                        transition: 'all 0.2s ease',
-                      }}
-                    >
-                      {isGmailConnecting ? 'Connecting…' : (config.googleRefreshToken ? 'Reconnect Google Account' : 'Sign in with Google')}
-                    </button>
+                        }}
+                        disabled={isGmailConnecting || !config.googleClientId || !config.googleClientSecret}
+                        style={{
+                          width: '100%',
+                          padding: '10px 16px',
+                          background: (isGmailConnecting || !config.googleClientId || !config.googleClientSecret)
+                            ? 'rgba(100, 100, 100, 0.2)'
+                            : 'linear-gradient(90deg, hsl(210,70%,50%), hsl(210,70%,70%))',
+                          color: (isGmailConnecting || !config.googleClientId || !config.googleClientSecret) ? 'var(--text-muted)' : 'var(--text-primary)',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: (isGmailConnecting || !config.googleClientId || !config.googleClientSecret) ? 'not-allowed' : 'pointer',
+                          fontSize: '0.9rem',
+                          fontWeight: 600,
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        {isGmailConnecting ? 'Connecting…' : (config.googleRefreshToken ? 'Reconnect Google Account' : 'Sign in with Google')}
+                      </button>
+
+                      {config.googleClientId === '1072944905499-vm2v2i5dvn0a0d2o4ca36i1vge8cvbn0.apps.googleusercontent.com' && (
+                        <div style={{ background: 'rgba(255, 165, 0, 0.05)', border: '1px dashed orange', padding: '10px', borderRadius: '6px', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <span style={{ fontSize: '0.78rem', color: '#ffb936', fontWeight: 500 }}>
+                            💡 Using Default clasp Credentials: After signing in, copy the resulting URL from your browser's address bar (even if it says "site can't be reached") and paste it below:
+                          </span>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <input
+                              type="text"
+                              placeholder="Paste http://localhost:9005/?code=... here"
+                              id="claspCodeInput"
+                              style={{ flex: 1, padding: '6px 10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '4px', color: 'var(--text-primary)', fontSize: '0.8rem', outline: 'none' }}
+                            />
+                            <button
+                              onClick={async () => {
+                                const inputVal = (document.getElementById('claspCodeInput') as HTMLInputElement)?.value;
+                                if (!inputVal) {
+                                  addToast('Please paste the redirect URL or code first.', 'error');
+                                  return;
+                                }
+                                try {
+                                  let code = inputVal.trim();
+                                  if (inputVal.includes('code=')) {
+                                    const parsedUrl = new URL(inputVal.trim());
+                                    code = parsedUrl.searchParams.get('code') || inputVal.trim();
+                                  }
+                                  addToast('Submitting authorization code...', 'info');
+                                  const resp = await fetch(`/api/auth/callback?code=${encodeURIComponent(code)}&use_clasp_redirect=true`);
+                                  const data = await resp.json();
+                                  if (data && !data.error) {
+                                    // Refresh configuration
+                                    const configResp = await fetch('/api/config');
+                                    const configData = await configResp.json();
+                                    setConfig(configData.config || configData);
+                                    addToast('Successfully authenticated and saved Google credentials!', 'success');
+                                    if (document.getElementById('claspCodeInput')) {
+                                      (document.getElementById('claspCodeInput') as HTMLInputElement).value = '';
+                                    }
+                                  } else {
+                                    addToast(data.error || 'Authentication failed.', 'error');
+                                  }
+                                } catch (e: any) {
+                                  addToast(e.message || 'Error occurred during token exchange.', 'error');
+                                }
+                              }}
+                              style={{ padding: '6px 12px', background: 'orange', color: 'black', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
+                            >
+                              Submit
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                       Authorize the app via Google OAuth. Credentials are saved automatically.
                     </span>
@@ -5787,7 +6322,7 @@ export default function Home() {
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender Display Name</label>
-                    <input type="text" value={config.brevoSenderName || ''} onChange={(e) => setConfig({ ...config, brevoSenderName: e.target.value })} placeholder="e.g. ApexReach Support" style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }} />
+                    <input type="text" value={config.brevoSenderName || ''} onChange={(e) => setConfig({ ...config, brevoSenderName: e.target.value })} placeholder="e.g. Bethelmind Analytics & Strategy Support" style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }} />
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Sender Verified Email</label>
@@ -5854,7 +6389,7 @@ export default function Home() {
                       type="text" 
                       value={config.smtpSenderName || ''} 
                       onChange={(e) => setConfig({ ...config, smtpSenderName: e.target.value })}
-                      placeholder="e.g. ApexReach Marketing"
+                      placeholder="e.g. Bethelmind Analytics & Strategy Marketing"
                       style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
                     />
                   </div>
@@ -5885,7 +6420,7 @@ export default function Home() {
                   </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block' }}>Sender Display Name</label>
-                    <input type="text" value={config.sendgridSenderName || ''} onChange={(e) => setConfig({ ...config, sendgridSenderName: e.target.value })} placeholder="e.g. ApexReach Outreach" style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)' }} />
+                    <input type="text" value={config.sendgridSenderName || ''} onChange={(e) => setConfig({ ...config, sendgridSenderName: e.target.value })} placeholder="e.g. Bethelmind Analytics & Strategy Outreach" style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)' }} />
                   </div>
                 </div>
               )}
@@ -5920,6 +6455,97 @@ export default function Home() {
 
               {config.whatsappProvider === 'cloud' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'var(--input-bg-lighter)', padding: '16px', borderRadius: '8px' }}>
+                  <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '10px', background: 'rgba(6, 182, 212, 0.04)', border: '1px dashed rgba(6, 182, 212, 0.3)', borderRadius: '8px', padding: '12px 14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>Meta Auto-Link Helper</span>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Automate retrieval of Phone Number ID & Token using a headed browser.</span>
+                      </div>
+                      {!metaConnecting ? (
+                        <button
+                          type="button"
+                          onClick={startMetaConnection}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            background: 'linear-gradient(135deg, #1877F2 0%, #06B6D4 100%)',
+                            border: 'none',
+                            borderRadius: '6px',
+                            color: 'white',
+                            padding: '8px 16px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 8px rgba(6, 182, 212, 0.25)',
+                            transition: 'opacity 0.2s'
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9' }}
+                          onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+                        >
+                          <span>⚡ Auto-Link Facebook Account</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={stopMetaConnection}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            background: '#EF4444',
+                            border: 'none',
+                            borderRadius: '6px',
+                            color: 'white',
+                            padding: '8px 16px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 8px rgba(239, 68, 68, 0.25)',
+                            transition: 'opacity 0.2s'
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9' }}
+                          onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+                        >
+                          <span>🛑 Cancel/Stop Browser</span>
+                        </button>
+                      )}
+                    </div>
+                    {metaStatus && (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        borderRadius: '6px',
+                        padding: '6px 10px',
+                        fontSize: '0.75rem'
+                      }}>
+                        {metaConnecting && (
+                          <>
+                            <style dangerouslySetInnerHTML={{__html: `
+                              @keyframes pulse {
+                                0%, 100% { opacity: 1; transform: scale(1); }
+                                50% { opacity: 0.4; transform: scale(1.2); }
+                              }
+                            `}} />
+                            <span style={{
+                              width: '8px',
+                              height: '8px',
+                              borderRadius: '50%',
+                              background: '#06B6D4',
+                              display: 'inline-block',
+                              animation: 'pulse 1.5s infinite'
+                            }} />
+                          </>
+                        )}
+                        <span style={{ color: metaStatus.includes('Error') ? '#EF4444' : metaStatus.includes('Success') ? '#10B981' : '#06B6D4', fontWeight: 550 }}>
+                          {metaStatus}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Phone Number ID</label>
                     <input 
@@ -6044,8 +6670,9 @@ export default function Home() {
                     rows={4}
                     style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.85rem', resize: 'vertical' }}
                   />
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{businessSignature}}`}</code>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <div>Supported placeholders: <code>{`{{lead.name}}`}</code>, <code>{`{{previewUrl}}`}</code>, <code>{`{{businessSignature}}`}</code></div>
+                    <div style={{ color: '#06B6D4' }}>✨ Anti-Ban Spintax enabled: Use <code>{`{Hello|Hi|Hey}`}</code> syntax to randomize message variations.</div>
                   </div>
                 </div>
               )}
@@ -6101,7 +6728,7 @@ export default function Home() {
                   <textarea 
                     value={config.twilioCallMessageTemplate || ''} 
                     onChange={(e) => setConfig({ ...config, twilioCallMessageTemplate: e.target.value })}
-                    placeholder="Hello, this is a call from ApexReach to let you know we custom designed a web page for your business..."
+                    placeholder="Hello, this is a call from Bethelmind Analytics & Strategy to let you know we custom designed a web page for your business..."
                     rows={3}
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem', resize: 'vertical' }}
                   />
@@ -6522,7 +7149,7 @@ export default function Home() {
                     type="text" 
                     value={config.moniepointAccountName || ''} 
                     onChange={(e) => setConfig({ ...config, moniepointAccountName: e.target.value })}
-                    placeholder="e.g. ApexReach Ventures"
+                    placeholder="e.g. Bethelmind Analytics & Strategy Ventures"
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
@@ -6573,7 +7200,7 @@ export default function Home() {
                     type="text" 
                     value={config.opayAccountName || ''} 
                     onChange={(e) => setConfig({ ...config, opayAccountName: e.target.value })}
-                    placeholder="e.g. ApexReach Ventures (OPay)"
+                    placeholder="e.g. Bethelmind Analytics & Strategy Ventures (OPay)"
                     style={{ width: '100%', padding: '12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
@@ -7417,7 +8044,7 @@ export default function Home() {
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0, color: 'var(--primary)' }}>
-                ApexReach Quick Setup Wizard
+                Bethelmind Analytics & Strategy Quick Setup Wizard
               </h3>
               <button 
                 onClick={() => {
@@ -7448,7 +8075,7 @@ export default function Home() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Step 1: Connect Supabase Database</h4>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
-                      ApexReach uses Supabase to securely save scraped leads, cache outreach history, and track campaign pipeline logs.
+                      Bethelmind Analytics & Strategy uses Supabase to securely save scraped leads, cache outreach history, and track campaign pipeline logs.
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Supabase URL</label>
@@ -7569,6 +8196,97 @@ export default function Home() {
                         </div>
                         {config.whatsappProvider === 'cloud' && (
                           <>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', background: 'rgba(6, 182, 212, 0.04)', border: '1px dashed rgba(6, 182, 212, 0.3)', borderRadius: '8px', padding: '12px 14px', marginTop: '4px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>Meta Auto-Link Helper</span>
+                                  <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Automate retrieval of Phone Number ID & Token.</span>
+                                </div>
+                                {!metaConnecting ? (
+                                  <button
+                                    type="button"
+                                    onClick={startMetaConnection}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '6px',
+                                      background: 'linear-gradient(135deg, #1877F2 0%, #06B6D4 100%)',
+                                      border: 'none',
+                                      borderRadius: '6px',
+                                      color: 'white',
+                                      padding: '8px 16px',
+                                      fontSize: '0.75rem',
+                                      fontWeight: 600,
+                                      cursor: 'pointer',
+                                      boxShadow: '0 2px 8px rgba(6, 182, 212, 0.25)',
+                                      transition: 'opacity 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9' }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+                                  >
+                                    <span>⚡ Auto-Link Facebook</span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={stopMetaConnection}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '6px',
+                                      background: '#EF4444',
+                                      border: 'none',
+                                      borderRadius: '6px',
+                                      color: 'white',
+                                      padding: '8px 16px',
+                                      fontSize: '0.75rem',
+                                      fontWeight: 600,
+                                      cursor: 'pointer',
+                                      boxShadow: '0 2px 8px rgba(239, 68, 68, 0.25)',
+                                      transition: 'opacity 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9' }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+                                  >
+                                    <span>🛑 Cancel/Stop Browser</span>
+                                  </button>
+                                )}
+                              </div>
+                              {metaStatus && (
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  background: 'rgba(255, 255, 255, 0.03)',
+                                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                                  borderRadius: '6px',
+                                  padding: '6px 10px',
+                                  fontSize: '0.75rem'
+                                }}>
+                                  {metaConnecting && (
+                                    <>
+                                      <style dangerouslySetInnerHTML={{__html: `
+                                        @keyframes pulse {
+                                          0%, 100% { opacity: 1; transform: scale(1); }
+                                          50% { opacity: 0.4; transform: scale(1.2); }
+                                        }
+                                      `}} />
+                                      <span style={{
+                                        width: '8px',
+                                        height: '8px',
+                                        borderRadius: '50%',
+                                        background: '#06B6D4',
+                                        display: 'inline-block',
+                                        animation: 'pulse 1.5s infinite'
+                                      }} />
+                                    </>
+                                  )}
+                                  <span style={{ color: metaStatus.includes('Error') ? '#EF4444' : metaStatus.includes('Success') ? '#10B981' : '#06B6D4', fontWeight: 550 }}>
+                                    {metaStatus}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                               <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Phone Number ID</label>
                               <input 
@@ -7888,7 +8606,7 @@ export default function Home() {
                         onClick={() => {
                           localStorage.setItem("onboarding_complete", "true");
                           setShowOnboarding(false);
-                          addToast('Quick setup complete! Welcome to ApexReach.', 'success');
+                          addToast('Quick setup complete! Welcome to Bethelmind Analytics & Strategy.', 'success');
                         }}
                         className="btn-primary"
                         style={{ padding: '8px 20px', fontSize: '0.85rem', cursor: 'pointer' }}

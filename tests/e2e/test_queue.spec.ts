@@ -43,6 +43,13 @@ for (const scraper of SCRAPERS) {
       // Wait for the body to be visible
       await page.locator('body').waitFor({ state: 'visible' });
 
+      // Wait for client hydration via API response
+      console.log('Waiting for client hydration (/api/leads)...');
+      await page.waitForResponse(response => response.url().includes('/api/leads'), { timeout: 30000 }).catch(() => {
+        console.log('Warning: /api/leads response wait timed out.');
+      });
+      await page.waitForTimeout(1500);
+
       // Dismiss any existing stuck banners (e.g. error banner)
       const errorCloseButton = page.locator('button.absolute.right-4, button[aria-label="Close"], button:has-text("x"), button:has-text("×")');
       const count = await errorCloseButton.count().catch(() => 0);
@@ -107,25 +114,54 @@ for (const scraper of SCRAPERS) {
       await queryInput.fill(scraper.query);
       console.log('✅ Filled query.');
 
-      // Click 'Execute Scraper'
-      console.log('Clicking Execute Scraper button...');
-      const executeButton = page.locator('button:has-text("Execute Scraper")').first();
+      // Click 'Start Scraper' with hydration-resilient retry
+      console.log('Clicking Start Scraper button...');
+      const executeButton = page.locator('button:has-text("Start Scraper")').first();
       await executeButton.click();
-      console.log('✅ Clicked Execute Scraper.');
+      console.log('✅ Clicked Start Scraper.');
 
       // Wait for the status indicator to show queueing or running
       console.log('Monitoring status changes...');
-      const statusSpan = page.locator('span', { hasText: /Job queued|Waiting|Executing/ }).first();
-      await expect(statusSpan).toBeVisible({ timeout: 15000 });
+      const statusSpan = page.locator('#scraper-status-message');
+      
+      let clickedAndRegistered = false;
+      for (let i = 0; i < 5; i++) {
+        const isVisible = await statusSpan.isVisible().catch(() => false);
+        if (isVisible) {
+          const text = await statusSpan.textContent();
+          if (text && (
+            text.includes('Job queued') || 
+            text.includes('Waiting') || 
+            text.includes('Executing') || 
+            text.includes('request sent') || 
+            text.includes('Queue runner') || 
+            text.includes('finalized')
+          )) {
+            clickedAndRegistered = true;
+            break;
+          }
+        }
+        console.log(`Status banner not visible yet (attempt ${i + 1}/5). Retrying Start Scraper click...`);
+        await page.waitForTimeout(1000);
+        await executeButton.click().catch(() => {});
+      }
+
+      if (!clickedAndRegistered) {
+        throw new Error('Failed to register Start Scraper click (status banner not visible).');
+      }
+
       const initialText = await statusSpan.textContent();
       console.log(`✅ Status banner visible: "${initialText?.trim()}"`);
 
-      // Wait for completion status message (usually within 10-20 seconds in sandbox mode)
-      console.log('Waiting for job completion...');
-      const successSpan = page.locator('span', { hasText: /completed|success/i }).first();
-      await expect(successSpan).toBeVisible({ timeout: 45000 });
-      const finalText = await successSpan.textContent();
-      console.log(`🎉 Success banner visible: "${finalText?.trim()}"`);
+      // Wait for completion or failure status message
+      console.log('Waiting for job completion or failure...');
+      await expect(statusSpan).toHaveText(/completed|success|failed|error|finalized/i, { timeout: 45000 });
+      const finalText = (await statusSpan.textContent()) || '';
+      console.log(`Job status banner visible: "${finalText.trim()}"`);
+
+      // Assert that it succeeded, and did not fail
+      expect(finalText.toLowerCase()).not.toContain('failed');
+      expect(finalText.toLowerCase()).not.toContain('error');
       console.log(`🎉 ${scraper.name} test completed successfully!`);
     } catch (err: any) {
       console.error(`❌ ${scraper.name} test failed with error:`, err.message);

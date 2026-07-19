@@ -7,9 +7,10 @@ const projectDir = path.resolve(__dirname, '..');
 function startRunner() {
   console.log(`[KeepAlive] Starting local_job_runner.ts...`);
   
-  const child = spawn('node', ['-r', 'ts-node/register', scriptPath], {
+  const child = spawn('npx', ['tsx', 'scripts/local_job_runner.ts'], {
     stdio: 'inherit',
-    cwd: projectDir
+    cwd: projectDir,
+    shell: true
   });
 
   child.on('close', (code) => {

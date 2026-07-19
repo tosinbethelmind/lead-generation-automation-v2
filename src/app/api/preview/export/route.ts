@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
-import { getDesignTheme, buildFallbackCopy } from '../generate/route';
+import { getDesignTheme, buildFallbackCopy } from '@/lib/designGenerator';
 import { parseScalingConfig } from '@/lib/scalingHelper';
 import fs from 'fs';
 import path from 'path';

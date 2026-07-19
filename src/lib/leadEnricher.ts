@@ -617,26 +617,106 @@ Output ONLY a JSON response:
   "pitchAngle": "[EXACTLY one label from the list above]"
 }`;
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    let text = '';
+    if (apiKey.startsWith('1//')) {
+      const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID || '';
+      const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET || '';
 
-    const resp = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 256,
+      const tokenUrl = 'https://oauth2.googleapis.com/token';
+      const refreshResp = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          client_id: CLIENT_ID,
+          client_secret: CLIENT_SECRET,
+          refresh_token: apiKey,
+          grant_type: 'refresh_token',
+        }),
+      });
+
+      if (!refreshResp.ok) {
+        const errText = await refreshResp.text();
+        throw new Error(`Antigravity OAuth refresh failed for key: ${errText}`);
+      }
+
+      const tokenData = (await refreshResp.json()) as any;
+      const accessToken = tokenData.access_token;
+
+      // Query loadCodeAssist to retrieve projectId dynamically
+      const codeAssistEp = 'https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist';
+      const assistResp = await fetch(codeAssistEp, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+          'User-Agent': 'Antigravity/4.1.29'
         },
-      }),
-    });
+        body: JSON.stringify({ metadata: { ideType: 'ANTIGRAVITY' } }),
+      });
 
-    if (!resp.ok) {
-      throw new Error(`Gemini validation call failed: ${resp.statusText}`);
+      if (!assistResp.ok) {
+        const errText = await assistResp.text();
+        throw new Error(`loadCodeAssist failed: ${errText}`);
+      }
+
+      const assistData = (await assistResp.json()) as any;
+      const projectId = assistData.cloudaicompanionProject || 'cloudaicompanion-enterprise';
+
+      // Call generateContent
+      const generateEp = 'https://cloudcode-pa.googleapis.com/v1internal:generateContent';
+      const generateResp = await fetch(generateEp, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+          'User-Agent': 'Antigravity/4.1.29'
+        },
+        body: JSON.stringify({
+          project: projectId,
+          model: 'gemini-2.5-flash',
+          request: {
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: prompt }]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.2,
+              maxOutputTokens: 256,
+            }
+          }
+        }),
+      });
+
+      if (!generateResp.ok) {
+        const errText = await generateResp.text();
+        throw new Error(`generateContent failed: ${errText}`);
+      }
+
+      const generateData = (await generateResp.json()) as any;
+      text = generateData.response?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    } else {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.2,
+            maxOutputTokens: 256,
+          },
+        }),
+      });
+
+      if (!resp.ok) {
+        throw new Error(`Gemini validation call failed: ${resp.statusText}`);
+      }
+
+      const data = (await resp.json()) as any;
+      text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     }
-
-    const data = await resp.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const match = text.match(/\{[\s\S]*\}/);
     if (match) {
       const parsed = JSON.parse(match[0]);

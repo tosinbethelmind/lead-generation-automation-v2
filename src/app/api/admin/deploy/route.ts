@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import path from 'path';
+import { verifySessionToken } from '@/lib/session';
+import { getAdminUser, checkPermission } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    // Verify admin token (in addition to middleware)
-    const adminToken = process.env.ADMIN_TOKEN || 'admin_secret_token_123';
+    // Verify admin token and permission
     const tokenCookie = req.cookies.get('admin-token')?.value;
+    const session = await verifySessionToken(tokenCookie);
+    const adminUser = getAdminUser(session?.token);
 
-    if (tokenCookie !== adminToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!adminUser || !checkPermission(adminUser, 'trigger_deploy')) {
+      return NextResponse.json({ error: 'Forbidden. trigger_deploy permission required.' }, { status: 403 });
     }
 
     const projectRoot = process.cwd();

@@ -27,18 +27,25 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Update lead's status/notes in sheet/Supabase
+    const { parseScalingConfig } = require('@/lib/scalingHelper');
+    const scaling = parseScalingConfig(lead.notes);
+
     const timestamp = new Date().toISOString();
     const transferPending = (paymentMethod === 'bank_transfer_moniepoint' || paymentMethod === 'bank_transfer_opay' || paymentMethod === 'bank_transfer') ? ' [MANUAL TRANSFER PENDING]' : '';
     const featuresNote = selectedFeatures && selectedFeatures.length > 0 ? ` Activated Features: ${selectedFeatures.join(', ')}.` : '';
     const instNote = customInstructions ? ` Custom Instructions: "${customInstructions}"` : '';
-    const newNotes = `${lead.notes || ''}\n[CLAIMED${transferPending}] Client requested ownership on ${timestamp}. Contact: ${clientName} (${clientEmail}).${featuresNote}${instNote}`;
+    
+    const gitPendingTag = scaling.mode === 'git-batch' ? ' [GIT_SYNC_PENDING: true]' : '';
+    const redesignPendingTag = customInstructions ? ' [REDESIGN_PENDING: true]' : '';
+
+    const newNotes = `${lead.notes || ''}\n[CLAIMED${transferPending}]${gitPendingTag}${redesignPendingTag} Client requested ownership on ${timestamp}. Contact: ${clientName} (${clientEmail}).${featuresNote}${instNote}`;
     await repo.updateLeadStatus(leadId, 'CONTACTED', newNotes, timestamp);
 
     // 2. Add log entry
     await addLog(
       'Lead Claim Event',
       'SUCCESS',
-      `Lead "${lead.name}" claimed by ${clientName} (${clientEmail})`
+      `Lead "${lead.name}" claimed by ${clientName} (${clientEmail}) [Mode: ${scaling.mode}]`
     );
 
     // 3. Assemble JSON configuration for the claimed website
@@ -73,12 +80,23 @@ export async function POST(req: NextRequest) {
     // 4. Local filesystem write (for local dev mode synchronization)
     let localWriteSuccess = false;
     try {
+      let workerIndex = '';
+      try {
+        workerIndex = req.headers.get('x-test-worker-index') || '';
+      } catch (e) {}
+      if (!workerIndex) {
+        workerIndex = process.env.TEST_WORKER_INDEX || '';
+      }
+
       const dataDir = path.join(process.cwd(), 'src', 'data', 'sites');
       if (!fs.existsSync(dataDir)) {
         fs.mkdirSync(dataDir, { recursive: true });
       }
-      const filePath = path.join(dataDir, `${leadId}.json`);
-      fs.writeFileSync(filePath, siteConfigString, 'utf-8');
+      const baseName = workerIndex ? `${leadId}.worker-${workerIndex}.json` : `${leadId}.json`;
+      const filePath = path.join(dataDir, baseName);
+      
+      const { writeJsonFileSyncAtomic } = require('@/lib/atomicIo');
+      writeJsonFileSyncAtomic(filePath, siteConfig);
       localWriteSuccess = true;
       console.log(`Locally wrote claimed site config to ${filePath}`);
     } catch (fsErr: unknown) {
@@ -93,9 +111,6 @@ export async function POST(req: NextRequest) {
 
     let githubCommitStatus = 'SKIPPED';
     let githubErrorMsg = '';
-
-    const { parseScalingConfig } = require('@/lib/scalingHelper');
-    const scaling = parseScalingConfig(lead.notes);
 
     if (scaling.mode === 'git') {
       if (githubPat && githubRepo) {
@@ -125,6 +140,9 @@ export async function POST(req: NextRequest) {
       } else {
         console.log('GitHub integration skipped: GITHUB_PAT or GITHUB_REPO not defined in environment variables.');
       }
+    } else if (scaling.mode === 'git-batch') {
+      githubCommitStatus = 'QUEUED';
+      console.log('GitHub commit deferred to background batch sync worker.');
     } else {
       console.log(`GitHub commit skipped: Turnout mode is '${scaling.mode}' (not 'git').`);
     }
@@ -135,9 +153,11 @@ export async function POST(req: NextRequest) {
 
     const gitNotice = githubCommitStatus === 'SUCCESS' 
       ? '✅ Live website files automatically committed to GitHub. Vercel deployment triggered.' 
-      : githubCommitStatus === 'FAILED'
-        ? `⚠️ Automatic deployment failed: ${githubErrorMsg}`
-        : 'ℹ️ GitHub deployment skipped (keys not configured in .env.local).';
+      : githubCommitStatus === 'QUEUED'
+        ? '⏳ Live website files queued for background batch deployment commit.'
+        : githubCommitStatus === 'FAILED'
+          ? `⚠️ Automatic deployment failed: ${githubErrorMsg}`
+          : 'ℹ️ GitHub deployment skipped.';
 
     const isManualTransfer = paymentMethod === 'bank_transfer' || paymentMethod === 'bank_transfer_moniepoint' || paymentMethod === 'bank_transfer_opay';
     const transferSubjectSuffix = isManualTransfer ? ' (Manual Bank Transfer Pending)' : '';
@@ -169,15 +189,22 @@ ${gitNotice}
 Please contact them at ${clientEmail} as soon as possible to finalize their website build and assist with custom domain mapping.
 
 Best regards,
-ApexReach Lead Engine`;
+Bethelmind Analytics & Strategy Lead Engine`;
 
-    if (adminEmail) {
-      await sendNotificationEmail(adminEmail, adminSubject, adminBody);
+    // Only send synchronous email notifications if NOT using git-batch mode
+    if (scaling.mode !== 'git-batch' && adminEmail) {
+      try {
+        await sendNotificationEmail(adminEmail, adminSubject, adminBody);
+      } catch (mailErr: any) {
+        console.error('Failed to send admin claim notification email:', mailErr.message);
+      }
     }
 
     let userMessage = 'Website claimed successfully!';
     if (githubCommitStatus === 'SUCCESS') {
       userMessage = 'Website claimed! Live files committed to GitHub. Vercel is deploying the updates.';
+    } else if (githubCommitStatus === 'QUEUED') {
+      userMessage = 'Website claimed successfully! Your site is live dynamically, and static deployment is queued.';
     } else if (githubCommitStatus === 'FAILED') {
       userMessage = `Website claimed in CRM, but Git deployment failed: ${githubErrorMsg}`;
     } else {

@@ -70,7 +70,7 @@ export async function sendBrevoMessage(to: string, subject: string, body: string
   if (!activeKey) {
     throw new Error('Brevo API Key is not configured.');
   }
-  const senderName = config.brevoSenderName || 'ApexReach';
+  const senderName = config.brevoSenderName || 'Bethelmind Analytics & Strategy';
   const senderEmail = config.brevoSenderEmail;
   if (!senderEmail) {
     throw new Error('Brevo Sender Email is not configured.');
@@ -112,7 +112,7 @@ export async function sendSmtpMessage(to: string, subject: string, body: string,
     family: 4 // Force IPv4 connection to prevent local network IPv6 unreachable errors
   } as any);
 
-  const senderName = config.smtpSenderName || 'ApexReach';
+  const senderName = config.smtpSenderName || 'Bethelmind Analytics & Strategy';
   const fromEmail = config.smtpFrom || config.smtpUser;
 
   await transporter.sendMail({
@@ -132,7 +132,7 @@ export async function sendSendGridMessage(to: string, subject: string, body: str
   if (!fromEmail) {
     throw new Error('SendGrid From Email is not configured.');
   }
-  const senderName = config.sendgridSenderName || 'ApexReach';
+  const senderName = config.sendgridSenderName || 'Bethelmind Analytics & Strategy';
 
   const resp = await fetch('https://api.sendgrid.com/v3/mail/send', {
     method: 'POST',
@@ -192,8 +192,8 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
  */
 export async function sendMarketingEmail(to: string, subject?: string, body?: string): Promise<boolean> {
   const config = getRuntimeConfig();
-  const finalSubject = subject || config.marketingSubject || 'Special Offer from ApexReach';
-  const finalBody = body || config.marketingBody || 'Hello,\n\nWe have exciting new services you might be interested in. Check them out at https://apexreach.com/offers.';
+  const finalSubject = subject || config.marketingSubject || 'Special Offer from Bethelmind Analytics & Strategy';
+  const finalBody = body || config.marketingBody || 'Hello,\n\nWe have exciting new services you might be interested in. Check them out at https://bethelmind.com/offers.';
   return sendNotificationEmail(to, finalSubject, finalBody);
 }
 
@@ -220,7 +220,7 @@ Your Transaction Details:
 Our team is currently setting up your live website custom routing. If you have a custom domain name you would like to map to this page, please reply to this email with the domain details.
 
 Best regards,
-The ApexReach Team`;
+The Bethelmind Analytics & Strategy Team`;
 
   return sendNotificationEmail(to, subject, body);
 }

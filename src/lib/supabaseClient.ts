@@ -3,8 +3,8 @@ import { getRuntimeConfig } from './localConfig';
 
 // Initialise a singleton Supabase client for the whole app
 const config = getRuntimeConfig();
-const supabaseUrl = config.supabaseUrl;
-const supabaseKey = config.supabaseKey;
+const supabaseUrl = config.supabaseUrl || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = config.supabaseKey || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 export const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey, {
   auth: {
@@ -45,22 +45,41 @@ export interface ScrapeJob {
 
 // Fallback JSON database file paths
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
-const FALLBACK_JOBS_FILE = isServerless 
-  ? path.join('/tmp', 'scrape_jobs.json')
-  : path.join(process.cwd(), 'local_db', 'scrape_jobs.json');
+
+import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from './atomicIo';
+
+import { getWorkerIndex } from './requestContext';
+
+function getJobsFilePath(fileName: string): string {
+  const workerIndex = getWorkerIndex();
+
+  const nameParts = fileName.split('.');
+  const baseName = workerIndex 
+    ? `${nameParts[0]}.worker-${workerIndex}.${nameParts[1]}` 
+    : fileName;
+
+  return isServerless
+    ? path.join('/tmp', baseName)
+    : path.join(process.cwd(), 'local_db', baseName);
+}
 
 const fallbackJobsInMemory: Record<string, ScrapeJob> = {};
 
 function readFallbackJobs(): Record<string, ScrapeJob> {
   try {
-    const dir = path.dirname(FALLBACK_JOBS_FILE);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    const filePath = getJobsFilePath('scrape_jobs.json');
+    const bundlePath = path.join(process.cwd(), 'local_db', 'scrape_jobs.json');
+
+    // Copy base jobs if worker-specific file doesn't exist
+    if (filePath !== bundlePath && !fs.existsSync(filePath) && fs.existsSync(bundlePath)) {
+      try {
+        fs.copyFileSync(bundlePath, filePath);
+      } catch (err) {
+        console.error('Error copying base scrape_jobs to worker path:', err);
+      }
     }
-    if (fs.existsSync(FALLBACK_JOBS_FILE)) {
-      const content = fs.readFileSync(FALLBACK_JOBS_FILE, 'utf-8');
-      return JSON.parse(content);
-    }
+
+    return readJsonFileSyncWithRetry<Record<string, ScrapeJob>>(filePath, {});
   } catch (e) {
     console.error('Error reading fallback jobs:', e);
   }
@@ -69,35 +88,28 @@ function readFallbackJobs(): Record<string, ScrapeJob> {
 
 function writeFallbackJobs(jobs: Record<string, ScrapeJob>) {
   try {
-    const dir = path.dirname(FALLBACK_JOBS_FILE);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(FALLBACK_JOBS_FILE, JSON.stringify(jobs, null, 2), 'utf-8');
+    const filePath = getJobsFilePath('scrape_jobs.json');
+    writeJsonFileSyncAtomic(filePath, jobs);
   } catch (e) {
     console.error('Error writing fallback jobs:', e);
   }
 }
 
 function saveFallbackJob(job: ScrapeJob) {
-  fallbackJobsInMemory[job.id] = job;
   const jobs = readFallbackJobs();
   jobs[job.id] = job;
   writeFallbackJobs(jobs);
 }
 
 function getFallbackJob(id: string): ScrapeJob | null {
-  if (fallbackJobsInMemory[id]) return fallbackJobsInMemory[id];
   const jobs = readFallbackJobs();
   if (jobs[id]) {
-    fallbackJobsInMemory[id] = jobs[id];
     return jobs[id];
   }
   return null;
 }
 
 function removeFallbackJob(id: string) {
-  delete fallbackJobsInMemory[id];
   const jobs = readFallbackJobs();
   if (jobs[id]) {
     delete jobs[id];
@@ -129,7 +141,7 @@ export async function createScrapeJob(
     updated_at: new Date().toISOString()
   };
 
-  if (!supabase) {
+  if (!supabase || config.storageMode === 'local') {
     saveFallbackJob(newJob);
     return newJob;
   }
@@ -165,7 +177,8 @@ export async function createScrapeJob(
 
 /** Retrieve a job by its ID */
 export async function getScrapeJob(id: string): Promise<ScrapeJob | null> {
-  if (!supabase) {
+  const config = getRuntimeConfig();
+  if (!supabase || config.storageMode === 'local') {
     return getFallbackJob(id);
   }
 
@@ -198,7 +211,8 @@ export async function updateScrapeJobStatus(
 ): Promise<ScrapeJob> {
   const updatePayload = { status, ...updates, updated_at: new Date().toISOString() };
 
-  if (!supabase) {
+  const config = getRuntimeConfig();
+  if (!supabase || config.storageMode === 'local') {
     const job = getFallbackJob(id);
     if (!job) throw new Error(`Job not found: ${id}`);
     const updatedJob = { ...job, ...updatePayload };
@@ -238,7 +252,8 @@ export async function updateScrapeJobStatus(
 
 /** Delete a job (admin only) */
 export async function deleteScrapeJob(id: string): Promise<void> {
-  if (!supabase) {
+  const config = getRuntimeConfig();
+  if (!supabase || config.storageMode === 'local') {
     removeFallbackJob(id);
     return;
   }

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'leadId is required' }, { status: 400 });
     }
 
-    const validStrategies = ['full_rebuild', 'plugin', 'script_embed'];
+    const validStrategies = ['full_rebuild', 'plugin', 'basic_presence', 'script_embed'];
     if (!strategy || !validStrategies.includes(strategy)) {
       return NextResponse.json({ error: `Invalid strategy. Must be one of: ${validStrategies.join(', ')}` }, { status: 400 });
     }

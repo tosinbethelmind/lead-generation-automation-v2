@@ -1,45 +1,114 @@
-// src/lib/payments/opay.ts
-/**
- * OPay payment integration wrapper.
- * Provides functions to initialize OPay (if needed) and verify a transaction.
- */
+import crypto from 'crypto';
 
 export interface OPayInitParams {
-  publicKey: string; // OPay public key (if applicable)
+  publicKey: string;
+  merchantId: string;
   amountNgn: number;
   email: string;
-  txRef: string; // transaction reference
+  name: string;
+  txRef: string;
+  callbackUrl: string;
+  returnUrl: string;
+  leadId: string;
 }
 
 /**
- * Initiates an OPay payment (placeholder).
- * In a real implementation this would load OPay's SDK or redirect to checkout.
+ * Initiates an OPay cashier checkout payment.
+ * Requests a cashierUrl redirect from OPay.
  */
-export const initiateOPay = async (params: OPayInitParams): Promise<{ reference: string }> => {
-  const reference = `OPAY-${Math.floor(100000 + Math.random() * 900000)}`;
-  console.log('OPay payment initiated', { ...params, reference });
-  // Simulate async delay
-  await new Promise((res) => setTimeout(res, 500));
-  return { reference };
-};
+export const initiateOPay = async (
+  params: OPayInitParams
+): Promise<{ reference: string; cashierUrl: string }> => {
+  const { publicKey, merchantId, amountNgn, email, name, txRef, callbackUrl, returnUrl, leadId } = params;
 
-/**
- * Verifies an OPay transaction on the server side.
- */
-export const verifyOPay = async (reference: string, secretKey: string): Promise<any> => {
-  // Mock OPay verification request to sandbox or standard API endpoint
-  const url = `https://sandbox-api.opaycheckout.com/api/v1/international/cashier/status`;
+  if (publicKey === 'mock' || !publicKey || merchantId === 'mock' || !merchantId) {
+    console.log('Using mock OPay initialization fallback');
+    return {
+      reference: txRef,
+      cashierUrl: returnUrl,
+    };
+  }
+
+  const isTest = publicKey.toLowerCase().includes('test') || publicKey.toLowerCase().includes('sandbox');
+  const baseUrl = isTest ? 'https://testapi.opaycheckout.com' : 'https://api.opaycheckout.com';
+  const url = `${baseUrl}/api/v1/international/cashier/create`;
+
+  const payload = {
+    country: 'NG',
+    reference: txRef,
+    amount: {
+      total: Math.round(amountNgn),
+      currency: 'NGN',
+    },
+    returnUrl,
+    callbackUrl,
+    product: {
+      name: 'Website Setup & Claim Fee',
+      description: `Claiming lead website ${leadId}`,
+    },
+    userInfo: {
+      userEmail: email,
+      userId: leadId,
+      userName: name,
+    },
+  };
+
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${secretKey}`,
+      Authorization: `Bearer ${publicKey}`,
+      MerchantId: merchantId,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ reference }),
+    body: JSON.stringify(payload),
   });
+
+  const result = await response.json();
+
+  if (!response.ok || result.code !== '00000') {
+    throw new Error(result.message || 'OPay checkout creation failed');
+  }
+
+  return {
+    reference: result.data.reference,
+    cashierUrl: result.data.cashierUrl,
+  };
+};
+
+/**
+ * Verifies an OPay cashier transaction status using HMAC-SHA512 signature authentication.
+ */
+export const verifyOPay = async (
+  reference: string,
+  secretKey: string,
+  merchantId: string
+): Promise<any> => {
+  const isTest = secretKey.toLowerCase().includes('test') || secretKey.toLowerCase().includes('sandbox');
+  const baseUrl = isTest ? 'https://testapi.opaycheckout.com' : 'https://api.opaycheckout.com';
+  const url = `${baseUrl}/api/v1/international/cashier/status`;
+
+  const payload = { reference };
+  // Keys sorted alphabetically; since there is only one key ('reference'), stringify is already sorted.
+  const message = JSON.stringify(payload);
+  const signature = crypto
+    .createHmac('sha512', secretKey)
+    .update(message)
+    .digest('hex');
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${signature}`,
+      MerchantId: merchantId,
+      'Content-Type': 'application/json',
+    },
+    body: message,
+  });
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message ?? 'OPay verification failed');
+    throw new Error(error.message ?? 'OPay status verification request failed');
   }
+
   return response.json();
 };

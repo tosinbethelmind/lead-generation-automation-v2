@@ -8,7 +8,7 @@ const regions = [
   'ap-south-1', 'ap-northeast-1', 'ap-northeast-2', 'ap-northeast-3'
 ];
 
-const projectRef = 'xrbuzirrsybuudmbklsm';
+const projectRef = 'szyuterncawfxwzhvwcf';
 const password = 'pHqrTQc2gpdSqnAx';
 
 async function testConnections() {

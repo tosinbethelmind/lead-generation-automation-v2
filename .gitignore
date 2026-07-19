@@ -57,3 +57,12 @@ next-env.d.ts
 
 /scratch/
 /src/data/sites/
+
+# local runner logs and pids
+local_runner.log
+local_runner_heartbeat.json
+local_runner_parent_pid.json
+services_output.log
+whatsapp_baileys.log
+startup_log.txt
+

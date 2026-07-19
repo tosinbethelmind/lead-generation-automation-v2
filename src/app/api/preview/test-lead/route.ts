@@ -1,47 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
 import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
-
-// ============================================================================
-// Google OAuth Token Refresher
-// ============================================================================
-
-async function getValidAccessToken(): Promise<string> {
-  const config = getRuntimeConfig();
-  const now = Date.now();
-  const bufferMs = 5 * 60 * 1000; // 5 minute buffer
-
-  if (config.googleAccessToken && config.googleTokenExpiry && config.googleTokenExpiry - bufferMs > now) {
-    return config.googleAccessToken;
-  }
-
-  if (!config.googleRefreshToken || !config.googleClientId || !config.googleClientSecret) {
-    throw new Error('Google session expired. Please sign in again in the console.');
-  }
-
-  const resp = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: config.googleClientId,
-      client_secret: config.googleClientSecret,
-      refresh_token: config.googleRefreshToken,
-      grant_type: 'refresh_token',
-    }),
-  });
-
-  const data = await resp.json();
-  if (!resp.ok || !data.access_token) {
-    throw new Error('Google refresh token validation failed. Please sign in again.');
-  }
-
-  saveLocalConfig({
-    googleAccessToken: data.access_token,
-    googleTokenExpiry: Date.now() + (data.expires_in || 3600) * 1000,
-  });
-
-  return data.access_token;
-}
+import { getValidAccessToken } from '@/lib/googleAuth';
 
 // ============================================================================
 // Send Gmail Message
@@ -123,7 +83,7 @@ Customer Details:
 This alert was triggered instantly and sent to your inbox. Claim your website today to activate this workflow live!
 
 Best regards,
-ApexReach Automation Suite`;
+Bethelmind Analytics & Strategy Automation Suite`;
 
     // Log the test trigger event
     await addLog(

@@ -9,18 +9,15 @@ export const FEATURE_CATALOG = [
 ];
 
 export function calculateLeadClaimFee(lead: any, config: RuntimeConfig): number {
-  // If the lead does not have a website (New Build), fall back to standard setup claim fee
-  const hasWebsite = lead.has_website !== false && lead.hasWebsite !== false;
-  if (!hasWebsite) {
-    return config.claimFeeNGN || 0;
-  }
+  const hasWebsite = lead.has_website !== false && lead.hasWebsite !== false && lead.website && lead.website.trim() !== '';
+  const strategy = lead.upgrade_strategy || lead.upgradeStrategy || (hasWebsite ? 'script_embed' : 'basic_presence');
   
-  const strategy = lead.upgrade_strategy || lead.upgradeStrategy || 'full_rebuild';
   let base = 0;
   if (strategy === 'full_rebuild') base = 600000;
   else if (strategy === 'plugin') base = 250000;
+  else if (strategy === 'basic_presence') base = 150000;
   else if (strategy === 'script_embed') base = 65000;
-  else base = 600000;
+  else base = config.claimFeeNGN || 600000;
   
   let featuresCost = 0;
   let selectedFeatures: string[] = [];

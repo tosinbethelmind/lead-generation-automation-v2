@@ -3,7 +3,13 @@ import path from 'path';
 import { notFound } from 'next/navigation';
 import LandingPage from '@/components/LandingPage';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
-import { getDesignTheme, buildFallbackCopy } from '@/app/api/preview/generate/route';
+import { getDesignTheme, buildFallbackCopy } from '@/lib/designGenerator';
+
+// Revalidate every 60 seconds so updated configs propagate quickly without full rebuild
+export const revalidate = 60;
+// Always render dynamically so middleware subdomain rewriting works correctly
+export const dynamic = 'force-dynamic';
+
 
 interface PreviewData {
   lead: {

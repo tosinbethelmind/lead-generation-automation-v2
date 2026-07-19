@@ -120,4 +120,39 @@ test.describe('API Endpoints Verification', () => {
       expect(body.appliedDelta).toBeDefined();
     }
   });
+
+  test('POST /api/admin/sites/[siteId]/hosting/cloudflare should provision DNS in sandbox or production', async ({ request }) => {
+    const response = await request.post(`/api/admin/sites/${testLeadId}/hosting/cloudflare`, {
+      headers: {
+        'x-admin-password': process.env.ADMIN_PASSWORD || 'admin123'
+      },
+      data: {
+        domain: 'test-custom-domain.com',
+        proxied: true
+      }
+    });
+
+    console.log('CLOUDFLARE RESPONSE:', response.status(), await response.text());
+    expect(response.ok()).toBe(true);
+    const body = await response.json();
+    expect(body.success).toBe(true);
+    expect(body.message).toBeDefined();
+  });
+
+  test('POST /api/admin/sites/[siteId]/hosting/vercel should bind domain in sandbox or production', async ({ request }) => {
+    const response = await request.post(`/api/admin/sites/${testLeadId}/hosting/vercel`, {
+      headers: {
+        'x-admin-password': process.env.ADMIN_PASSWORD || 'admin123'
+      },
+      data: {
+        domain: 'test-custom-domain.com'
+      }
+    });
+
+    console.log('VERCEL RESPONSE:', response.status(), await response.text());
+    expect(response.ok()).toBe(true);
+    const body = await response.json();
+    expect(body.success).toBe(true);
+    expect(body.message).toBeDefined();
+  });
 });

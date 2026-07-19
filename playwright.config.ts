@@ -10,8 +10,24 @@ export default defineConfig({
   workers: 1,
   reporter: 'list',
 
+  webServer: {
+    command: 'npx next dev -p 3009',
+    url: 'http://127.0.0.1:3009',
+    reuseExistingServer: true,
+    timeout: 300000,
+    stdout: 'pipe',
+    stderr: 'pipe',
+    env: {
+      STORAGE_MODE: 'local',
+      DRY_RUN: 'true',
+      MOCK_SCRAPER: 'true',
+      NODE_OPTIONS: '--max-old-space-size=4096',
+      META_APP_SECRET: 'solar-quote-pro-test-app-secret-2026'
+    }
+  },
+
   use: {
-    baseURL: 'http://localhost:3006',
+    baseURL: 'http://127.0.0.1:3009',
     trace: 'off',
     video: {
       mode: 'on',
@@ -30,7 +46,7 @@ export default defineConfig({
       name: 'apexreach-demo',
       use: {
         ...devices['Desktop Chrome'],
-        executablePath: 'C:\\Users\\HomePC\\AppData\\Local\\Perplexity\\Comet\\Application\\comet.exe'
+        // executablePath: 'C:\\Users\\HomePC\\AppData\\Local\\Perplexity\\Comet\\Application\\comet.exe'
       },
     },
   ],

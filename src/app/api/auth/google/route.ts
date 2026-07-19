@@ -12,7 +12,10 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const redirectUri = `${new URL(req.url).origin}/api/auth/callback`;
+  const useClaspRedirect = new URL(req.url).searchParams.get('use_clasp_redirect') === 'true';
+  const redirectUri = useClaspRedirect
+    ? 'http://localhost:9005'
+    : `${new URL(req.url).origin}/api/auth/callback`;
   const scopes = [
     // Sheets DB
     'https://www.googleapis.com/auth/spreadsheets',
@@ -29,6 +32,7 @@ export async function GET(req: NextRequest) {
   ];
 
   const state = new URL(req.url).searchParams.get('state') || '';
+  const promptParam = new URL(req.url).searchParams.get('prompt') || (config.googleRefreshToken ? 'select_account consent' : 'consent');
 
   const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` + 
     `client_id=${encodeURIComponent(clientId)}&` +
@@ -36,7 +40,7 @@ export async function GET(req: NextRequest) {
     `response_type=code&` +
     `scope=${encodeURIComponent(scopes.join(' '))}&` +
     `access_type=offline&` +
-    `prompt=${config.googleRefreshToken ? 'select_account' : 'consent'}` +
+    `prompt=${encodeURIComponent(promptParam)}` +
     (state ? `&state=${encodeURIComponent(state)}` : '');
 
   return NextResponse.redirect(authUrl);
