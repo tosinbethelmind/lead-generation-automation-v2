@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start-all": "concurrently \"npm run dev\" \"npm run local-runner\" \"npm run whatsapp-service\"",
+    "start-all": "concurrently \"npm run dev\" \"npm run local-runner\"",
+    "start-all-with-outreach": "concurrently \"npm run dev\" \"npm run local-runner\" \"npm run whatsapp-service\"",
     "dev": "next dev -p 3006",
     "build": "next build",
     "start": "next start -p 3005",
@@ -39,6 +40,8 @@
     "pino": "^10.3.1",
     "pitchy": "^2.0.0",
     "puppeteer-core": "^25.2.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
     "react": "19.2.4",

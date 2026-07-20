@@ -97,8 +97,8 @@ async function supabaseWithRetry<T>(queryPromiseFn: () => Promise<{ data: T | nu
   return { data: null, error: { message: 'Max retries reached.' } };
 }
 
-const LOCAL_API_PORT = process.env.PORT || '3006';
-const LOCAL_BASE_URL = `http://localhost:${LOCAL_API_PORT}`;
+let LOCAL_API_PORT = process.env.PORT || '3006';
+let LOCAL_BASE_URL = `http://localhost:${LOCAL_API_PORT}`;
 
 // Track the currently processing job for real-time frontend reporting
 let currentJob: any = null;
@@ -110,7 +110,7 @@ if (isLocalMode) {
 } else {
   console.log(`Supabase URL: ${supabaseUrl}`);
 }
-console.log(`Local Next.js URL: ${LOCAL_BASE_URL}`);
+console.log(`Initial Next.js Base Port Option: ${LOCAL_API_PORT}`);
 console.log('====================================================');
 
 // Local Queue Utilities for Offline Mode
@@ -576,6 +576,40 @@ async function checkLagosDailyScraper() {
 
 // Start queue polling, run startup recovery, and set intervals
 (async () => {
+  // Discover active port dynamically on startup
+  async function discoverLocalPort(): Promise<string> {
+    const portsToTarget = ['3006', '3005', '3009', '3000', '3007'];
+    if (process.env.PORT && !portsToTarget.includes(process.env.PORT)) {
+      portsToTarget.unshift(process.env.PORT);
+    }
+    
+    console.log(`🔍 Probing local Next.js server ports: [${portsToTarget.join(', ')}]...`);
+    for (const port of portsToTarget) {
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 400);
+        const res = await fetch(`http://localhost:${port}/api/scrape/osm`, {
+          method: 'OPTIONS',
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+        if (res.ok || res.status === 404 || res.status === 405 || res.status === 200) {
+          console.log(`🟢 Successfully discovered active Next.js API server on port: ${port}`);
+          return port;
+        }
+      } catch (err) {
+        // silent fallback to next port
+      }
+    }
+    const fallbackPort = process.env.PORT || '3006';
+    console.warn(`⚠️ Could not auto-detect active Next.js server. Falling back to port: ${fallbackPort}`);
+    return fallbackPort;
+  }
+
+  LOCAL_API_PORT = await discoverLocalPort();
+  LOCAL_BASE_URL = `http://localhost:${LOCAL_API_PORT}`;
+  console.log(`🌐 Base API URL resolved dynamically to: ${LOCAL_BASE_URL}`);
+
   // Asynchronous Batch Deployment synchronization handler
   async function triggerBatchSync() {
     try {
@@ -684,7 +718,8 @@ async function checkLagosDailyScraper() {
     const heartbeatData = { 
       last_seen: Date.now(), 
       pid: process.pid,
-      currentJob: currentJob
+      currentJob: currentJob,
+      port: LOCAL_API_PORT
     };
     
     // 1. Local file write

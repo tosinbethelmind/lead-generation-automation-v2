@@ -19,6 +19,8 @@
  */
 
 import { getRuntimeConfig } from './localConfig';
+import { buildStealthHeaders } from './scraperHeaders';
+import { isProxyBlacklisted, reportProxyFailure, reportProxySuccess } from './browserLauncher';
 
 export type ScraperEngine = 'duckduckgo' | 'jiji' | 'instagram' | 'facebook' | 'tiktok' | 'osm' | 'maps-free' | 'social';
 
@@ -108,9 +110,14 @@ const ENGINE_OFFSETS: Record<string, number> = {
 export function getProxyForEngine(engine: ScraperEngine): ProxyEntry | null {
   const pool = getProxyPool();
   if (pool.length === 0) return null;
+
+  // Filter out temporarily blacklisted proxies to avoid routing requests to offline/blocked IPs
+  const available = pool.filter(p => !isProxyBlacklisted(p.url));
+  const activePool = available.length > 0 ? available : pool; // fallback if all are down
+
   const offset = ENGINE_OFFSETS[engine] ?? 0;
-  const index = (offset + Math.floor(_roundRobinIndex / Math.max(pool.length, 1))) % pool.length;
-  return pool[index];
+  const index = (offset + Math.floor(_roundRobinIndex / Math.max(activePool.length, 1))) % activePool.length;
+  return activePool[index];
 }
 
 /**
@@ -127,11 +134,10 @@ export async function buildProxyFetchOptions(
   proxy: ProxyEntry | null,
   extraHeaders?: Record<string, string>
 ): Promise<RequestInit> {
+  // Build a full realistic browser header set, then merge any extras
   const headers: Record<string, string> = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Cache-Control': 'no-cache',
-    ...extraHeaders
+    ...buildStealthHeaders(),
+    ...extraHeaders,
   };
 
   if (!proxy) {
@@ -188,9 +194,27 @@ export async function proxyFetch(
   if (proxy) {
     console.log(`[ProxyRotator] ${engine} → ${proxy.label} → ${url.substring(0, 80)}`);
     try {
-      return await fetch(url, { ...opts, signal });
+      const res = await fetch(url, { ...opts, signal });
+      if (res.status === 403 || res.status === 407 || res.status === 502 || res.status === 503 || res.status === 504) {
+        console.warn(`[ProxyRotator] Proxy ${proxy.label} returned status ${res.status}. Retrying with fresh UA in 2s...`);
+        reportProxyFailure(proxy.url);
+        await new Promise(r => setTimeout(r, 2000));
+        // Retry once with a fresh User-Agent before giving up on the proxy
+        const retryOpts = await buildProxyFetchOptions(proxy, extraHeaders);
+        const retry = await fetch(url, { ...retryOpts, signal });
+        if (retry.ok) {
+          reportProxySuccess(proxy.url);
+          return retry;
+        }
+        console.warn(`[ProxyRotator] Retry also failed (${retry.status}). Falling back to direct fetch...`);
+        const directOpts = await buildProxyFetchOptions(null, extraHeaders);
+        return await fetch(url, { ...directOpts, signal });
+      }
+      reportProxySuccess(proxy.url);
+      return res;
     } catch (err: any) {
       console.warn(`[ProxyRotator] Proxy ${proxy.label} fetch failed: ${err.message || err}. Falling back to direct fetch.`);
+      reportProxyFailure(proxy.url);
       const directOpts = await buildProxyFetchOptions(null, extraHeaders);
       return fetch(url, { ...directOpts, signal });
     }

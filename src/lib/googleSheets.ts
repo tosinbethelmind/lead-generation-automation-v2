@@ -1500,7 +1500,7 @@ class SupabaseLogRepository implements ILogRepository {
         .order('timestamp', { ascending: false })
         .limit(100);
       if (error) throw error;
-      return (data || []).map((row: any) => [
+      const formatted = (data || []).map((row: any) => [
         row.run_id,
         row.timestamp,
         row.step,
@@ -1508,6 +1508,7 @@ class SupabaseLogRepository implements ILogRepository {
         row.status,
         row.message
       ]);
+      return formatted.reverse();
     } catch (e: any) {
       console.warn('Supabase getLogs error, falling back to local JSON:', e.message);
       return this.fallback.getLogs();

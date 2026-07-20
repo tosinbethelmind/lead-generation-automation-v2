@@ -6,6 +6,7 @@ import { extractEmailsFromText, enrichLeadContacts } from '@/lib/leadEnricher';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 import { proxyFetch } from '@/lib/proxyRotator';
+import { buildStealthHeaders, humanDelay } from '@/lib/scraperHeaders';
 
 // Configure execution timeout for Vercel serverless execution
 export const maxDuration = 60;
@@ -88,23 +89,46 @@ export async function POST(req: NextRequest) {
     await updateScrapeJobStatus(job.id, 'running');
     await addLog('Jiji Scraper', 'START', `Launching Jiji Nuxt-data crawl for URL: "${url}"`);
 
-    const HEADERS = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      'Accept-Language': 'en-US,en;q=0.9',
-      'Cache-Control': 'no-cache',
-      'Referer': 'https://jiji.ng/'
-    };
+    // ── Stealth fetch wrapper ─────────────────────────────────────────────────
+    // Reuses Cloudflare clearance cookies extracted by a background stealth browser session.
+    // If a request returns 403/429, we invalidate the session cookies and re-extract them.
+    const { getCloudflareCookieHeader, invalidateCfSession } = await import('@/lib/cloudflareSession');
 
     async function fetchJijiHtml(fetchUrl: string): Promise<string> {
-      const res = await proxyFetch('jiji', fetchUrl, {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Referer': 'https://jiji.ng/'
-      }, AbortSignal.timeout(15000));
-      if (res.status === 404) throw new Error(`404 at ${fetchUrl}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status} at ${fetchUrl}`);
-      return res.text();
+      const attempt = async () => {
+        const { cookieHeader, userAgent } = await getCloudflareCookieHeader();
+        const baseHeaders = buildStealthHeaders('https://jiji.ng/');
+        const hdrs: Record<string, string> = {
+          ...baseHeaders,
+        };
+
+        if (cookieHeader) {
+          hdrs['Cookie'] = cookieHeader;
+        }
+        if (userAgent) {
+          hdrs['User-Agent'] = userAgent;
+        }
+
+        const res = await proxyFetch('jiji', fetchUrl, hdrs, AbortSignal.timeout(20000));
+        if (res.status === 404) throw new Error(`404 at ${fetchUrl}`);
+        if (res.status === 403 || res.status === 429) {
+          invalidateCfSession(); // drop invalid credentials
+          throw new Error(`BLOCKED:${res.status} at ${fetchUrl}`);
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status} at ${fetchUrl}`);
+        return res.text();
+      };
+
+      try {
+        return await attempt();
+      } catch (e: any) {
+        if (e.message.startsWith('BLOCKED:')) {
+          await addLog('Jiji Scraper', 'WARN', `${e.message} — waiting 3s then retrying with fresh UA and CF session...`);
+          await humanDelay(3000, 5000);
+          return await attempt(); // one final retry (attempts to solve CF again)
+        }
+        throw e;
+      }
     }
 
     // 1. Resolve & fetch the listing/search page
@@ -169,7 +193,8 @@ export async function POST(req: NextRequest) {
     // 3. Fetch each detail page and extract phone from Nuxt __NUXT_DATA__ blob in parallel
     const detailPromises = targets.map(async (target) => {
       try {
-        await new Promise(r => setTimeout(r, Math.random() * 500));
+        // Jitter: stagger parallel requests 1–4s apart to avoid rate-limit patterns
+        await humanDelay(1000, 4000);
 
         const detailHtml = await fetchJijiHtml(target.url).catch((e: any) => {
           console.warn(`Jiji detail fetch failed for ${target.url}: ${e.message}`);

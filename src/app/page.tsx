@@ -539,6 +539,7 @@ export default function Home() {
   const [activeJobs, setActiveJobs] = useState<any[]>([]);
   const [completedJobs, setCompletedJobs] = useState<any[]>([]);
   const [isProductionEnv, setIsProductionEnv] = useState(false);
+  const [localPort, setLocalPort] = useState<string>('3006');
 
   const [latestLogs, setLatestLogs] = useState<any[]>([]);
 
@@ -580,7 +581,7 @@ export default function Home() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 2000);
       try {
-        res = await fetch('http://localhost:3006/api/local-trigger', { signal: controller.signal });
+        res = await fetch(`http://localhost:${localPort || '3006'}/api/local-trigger`, { signal: controller.signal });
         clearTimeout(timeoutId);
       } catch (err) {
         clearTimeout(timeoutId);
@@ -594,6 +595,9 @@ export default function Home() {
         setActiveJobs(data.activeJobs || []);
         setCompletedJobs(data.completedJobs || []);
         setIsProductionEnv(!!data.isProduction);
+        if (data.port) {
+          setLocalPort(data.port);
+        }
       } else {
         setRunnerStatus('offline');
         setActiveJob(null);
@@ -621,7 +625,7 @@ export default function Home() {
   const handleLocalTrigger = async () => {
     setTriggerLoading(true);
     try {
-      const targetUrl = isProductionEnv ? 'http://localhost:3006/api/local-trigger' : '/api/local-trigger';
+      const targetUrl = isProductionEnv ? `http://localhost:${localPort || '3006'}/api/local-trigger` : '/api/local-trigger';
       const res = await fetch(targetUrl, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -635,7 +639,7 @@ export default function Home() {
         addToast(`Error starting local runner: ${data.error || 'Unknown'}`, 'error');
       }
     } catch (e) {
-      addToast('Failed to trigger local runner. Is your local server running on port 3006?', 'error');
+      addToast(`Failed to trigger local runner. Is your local server running on port ${localPort || '3006'}?`, 'error');
     } finally {
       setTriggerLoading(false);
     }
@@ -644,7 +648,7 @@ export default function Home() {
   const handleStopLocalRunner = async () => {
     setTriggerLoading(true);
     try {
-      const targetUrl = isProductionEnv ? 'http://localhost:3006/api/local-trigger' : '/api/local-trigger';
+      const targetUrl = isProductionEnv ? `http://localhost:${localPort || '3006'}/api/local-trigger` : '/api/local-trigger';
       const res = await fetch(targetUrl, { 
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -658,7 +662,7 @@ export default function Home() {
         addToast(`Error stopping local runner: ${data.error || 'Unknown'}`, 'error');
       }
     } catch (e) {
-      addToast('Failed to stop local runner. Is your local server running on port 3006?', 'error');
+      addToast(`Failed to stop local runner. Is your local server running on port ${localPort || '3006'}?`, 'error');
     } finally {
       setTriggerLoading(false);
     }
@@ -1851,7 +1855,7 @@ export default function Home() {
       if (runnerStatus === 'offline' && queuedJobIds.length > 0) {
         setStatusMessage('Queue runner is offline. Auto-starting local background worker...');
         try {
-          const targetUrl = isProductionEnv ? 'http://localhost:3006/api/local-trigger' : '/api/local-trigger';
+          const targetUrl = isProductionEnv ? `http://localhost:${localPort || '3006'}/api/local-trigger` : '/api/local-trigger';
           await fetch(targetUrl, { 
             method: 'POST', 
             headers: { 'Content-Type': 'application/json' },
@@ -1950,14 +1954,15 @@ export default function Home() {
   const runBulkQueuer = async () => {
     try {
       setBulkQueuing(true);
-      addToast('Dispatching Lagos 10K Daily Scraper...', 'info');
+      addToast('Dispatching Lagos 10K Multi-Engine Scraper (Google Maps, Jiji, OSM, Social, DuckDuckGo)...', 'info');
       const resp = await fetch('/api/scrape/bulk-queue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           limit: 100, 
           maxJobsToQueue: 100, 
-          targetLagosDaily10k: true 
+          targetLagosDaily10k: true,
+          scrapers: ['maps-free', 'jiji', 'osm', 'social', 'duckduckgo']
         })
       });
       const data = await resp.json();
@@ -1984,7 +1989,7 @@ export default function Home() {
       if (runnerStatus !== 'online') {
         addToast('🚀 Step 1/2: Starting Local Runner...', 'info');
         try {
-          const targetUrl = isProductionEnv ? 'http://localhost:3006/api/local-trigger' : '/api/local-trigger';
+          const targetUrl = isProductionEnv ? `http://localhost:${localPort || '3006'}/api/local-trigger` : '/api/local-trigger';
           const runnerRes = await fetch(targetUrl, { 
             method: 'POST', 
             headers: { 'Content-Type': 'application/json' },
@@ -1998,21 +2003,22 @@ export default function Home() {
             addToast(`⚠️ Runner start issue: ${d.error || 'Unknown'}. Attempting to queue anyway...`, 'error');
           }
         } catch (err: any) {
-          addToast(`⚠️ Could not reach runner on port 3006. Make sure your local server is running (npm run dev). Attempting queue anyway...`, 'error');
+          addToast(`⚠️ Could not reach runner on port ${localPort || '3006'}. Make sure your local server is running (npm run dev). Attempting queue anyway...`, 'error');
         }
         // Brief pause so runner has time to initialise
         await new Promise(r => setTimeout(r, 1500));
       }
 
       // Step 2: Queue all Lagos 10K scraper jobs
-      addToast('⚡ Step 2/2: Dispatching Lagos 10K Lead Scrapers...', 'info');
+      addToast('⚡ Step 2/2: Dispatching Lagos 10K Multi-Engine Lead Scrapers (Google Maps, Jiji, OSM, Social, DuckDuckGo)...', 'info');
       const resp = await fetch('/api/scrape/bulk-queue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           limit: 100, 
           maxJobsToQueue: 100, 
-          targetLagosDaily10k: true 
+          targetLagosDaily10k: true,
+          scrapers: ['maps-free', 'jiji', 'osm', 'social', 'duckduckgo']
         })
       });
       const data = await resp.json();
@@ -2925,6 +2931,22 @@ export default function Home() {
               </span>
             </div>
 
+            {/* Live stats integrations */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              fontSize: '0.72rem',
+              color: 'var(--text-secondary)',
+              borderBottom: '1px solid rgba(255,255,255,0.05)',
+              paddingBottom: '6px',
+              marginTop: '4px',
+              gap: '8px'
+            }}>
+              <span>Total leads: <strong style={{ color: 'var(--primary)' }}>{stats.totalLeads}</strong></span>
+              <span>New leads: <strong style={{ color: '#F59E0B' }}>{stats.newLeads}</strong></span>
+            </div>
+
             {runnerStatus === 'online' && activeJob && (
               <div style={{ 
                 fontSize: '0.72rem', 
@@ -2961,7 +2983,7 @@ export default function Home() {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '4px',
-                maxHeight: '120px',
+                maxHeight: '280px',
                 overflowY: 'auto'
               }}>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '0.62rem', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8 }}>
@@ -3563,7 +3585,7 @@ export default function Home() {
                   <h4 style={{ fontSize: '0.8rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
                     <Sliders size={12} color="var(--primary)" /> Pending Queue ({activeJobs.filter(j => j.status === 'queued').length})
                   </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto', paddingRight: '4px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '300px', overflowY: 'auto', paddingRight: '4px' }}>
                     {activeJobs.length === 0 ? (
                       <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No pending tasks in queue.</span>
                     ) : (
@@ -3606,7 +3628,7 @@ export default function Home() {
                   <h4 style={{ fontSize: '0.8rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
                     <CheckCircle size={12} color="var(--success)" /> Recent Scraping Results
                   </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto', paddingRight: '4px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '300px', overflowY: 'auto', paddingRight: '4px' }}>
                     {completedJobs.length === 0 ? (
                       <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No completed scraper runs yet.</span>
                     ) : (
@@ -3720,10 +3742,10 @@ export default function Home() {
 
               <section className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <h3 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={20} color="var(--success)" /> Pipeline Execution Log</h3>
-                <div style={{ height: '220px', overflowY: 'auto', background: 'var(--input-bg-darker)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                <div style={{ height: '380px', overflowY: 'auto', background: 'var(--input-bg-darker)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', fontFamily: 'monospace', fontSize: '0.8rem' }}>
                   {loadingLogs && <div style={{ color: 'var(--text-secondary)' }}>Retrieving sync logs...</div>}
                   {!loadingLogs && logs.length === 0 && <div style={{ color: 'var(--text-muted)' }}>No logs logged in Google Sheets.</div>}
-                  {logs.slice(0, 10).map((log, idx) => (
+                  {logs.slice(0, 30).map((log, idx) => (
                     <div key={idx} style={{ paddingBottom: '6px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                       <span style={{ color: 'var(--text-muted)' }}>[{new Date(log[1]).toLocaleTimeString()}]</span>{' '}
                       <span style={{ color: log[4] === 'ERROR' ? 'var(--error)' : log[4] === 'SUCCESS' ? 'var(--success)' : 'var(--primary)' }}>
@@ -5943,29 +5965,129 @@ export default function Home() {
                   </a>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Active Browser Provider Selector */}
+                  <div>
+                    <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px', fontWeight: 600 }}>
+                      🌐 Active Browser Provider <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 400 }}>(which provider the 10 scrapers use)</span>
+                    </label>
+                    <select
+                      value={(config as any).activeBrowserProvider || 'local'}
+                      onChange={(e) => setConfig({ ...config, activeBrowserProvider: e.target.value as any } as any)}
+                      style={{ width: '100%', padding: '10px 12px', background: 'var(--input-bg)', border: '1px solid rgba(245, 158, 11, 0.4)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.85rem' }}
+                    >
+                      <option value="local">🖥️ Local Chromium (no API key needed)</option>
+                      <option value="browserless">⚡ Browserless.io (use API tokens above)</option>
+                      <option value="browserbase">🌐 Browserbase.com (use API keys above)</option>
+                      <option value="tor">🧅 Tor Proxy (anonymised local browser)</option>
+                      <option value="rotation">🔄 Rotation (cycle all configured providers)</option>
+                    </select>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      Set to <strong>Browserless.io</strong> to use your API tokens. Set to <strong>Rotation</strong> to automatically cycle all providers.
+                    </div>
+                  </div>
+
                   <div>
                     <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
                       Browserless API Token(s) <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(separate with commas)</span>
                     </label>
                     <textarea 
                       value={Array.isArray((config as any).browserlessApiKeys) && (config as any).browserlessApiKeys.length > 0 ? (config as any).browserlessApiKeys.join(', ') : ((config as any).browserlessApiKey || '')} 
-                      onChange={(e) => setConfig({ ...config, browserlessApiKey: e.target.value } as any)}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        const keys = raw.split(/[,\n]+/).map((k: string) => k.trim()).filter(Boolean);
+                        setConfig({
+                          ...config,
+                          browserlessApiKey: raw,
+                          browserlessApiKeys: keys,
+                          ...(keys.length > 0 && (config as any).activeBrowserProvider !== 'rotation' ? { activeBrowserProvider: 'browserless' } : {}),
+                        } as any);
+                      }}
                       placeholder="Paste Browserless API token(s) (separated by commas or newlines)"
                       rows={2}
                       style={{ width: '100%', padding: '10px 12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem', resize: 'vertical' }}
                     />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const raw = (config as any).browserlessApiKey || 
+                                    (Array.isArray((config as any).browserlessApiKeys) && (config as any).browserlessApiKeys.length > 0 ? (config as any).browserlessApiKeys[0] : '');
+                        if (!raw) { addToast('Enter a Browserless API token first.', 'error'); return; }
+                        addToast('Testing Browserless connection...', 'info');
+                        try {
+                          const res = await fetch('/api/config/test-browser', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ provider: 'browserless', apiKey: raw })
+                          });
+                          const data = await res.json();
+                          if (data.success) {
+                            addToast('✅ Browserless connected successfully!', 'success');
+                          } else {
+                            addToast('❌ Connection failed: ' + data.error, 'error');
+                          }
+                        } catch (err: any) {
+                          addToast('Error: ' + err.message, 'error');
+                        }
+                      }}
+                      className="btn-secondary"
+                      style={{ padding: '6px 12px', fontSize: '0.75rem', borderRadius: '6px', marginTop: '8px', cursor: 'pointer' }}
+                    >
+                      Test Connection
+                    </button>
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
-                      Browserbase API Key(s) <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(separate with commas)</span>
-                    </label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0 }}>
+                        Browserbase API Key(s) <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(separate with commas)</span>
+                      </label>
+                      <a
+                        href="https://www.browserbase.com"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ fontSize: '0.72rem', color: '#0af', whiteSpace: 'nowrap', marginLeft: '12px' }}
+                      >
+                        Get free key →
+                      </a>
+                    </div>
                     <textarea 
                       value={Array.isArray((config as any).browserbaseApiKeys) && (config as any).browserbaseApiKeys.length > 0 ? (config as any).browserbaseApiKeys.join(', ') : ((config as any).browserbaseApiKey || '')} 
-                      onChange={(e) => setConfig({ ...config, browserbaseApiKey: e.target.value } as any)}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        const keys = raw.split(/[,\n]+/).map((k: string) => k.trim()).filter(Boolean);
+                        setConfig({ ...config, browserbaseApiKey: raw, browserbaseApiKeys: keys } as any);
+                      }}
                       placeholder="Paste Browserbase API key(s) (separated by commas or newlines)"
                       rows={2}
                       style={{ width: '100%', padding: '10px 12px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.82rem', resize: 'vertical' }}
                     />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const raw = (config as any).browserbaseApiKey || 
+                                    (Array.isArray((config as any).browserbaseApiKeys) && (config as any).browserbaseApiKeys.length > 0 ? (config as any).browserbaseApiKeys[0] : '');
+                        if (!raw) { addToast('Enter a Browserbase API key first.', 'error'); return; }
+                        addToast('Testing Browserbase connection...', 'info');
+                        try {
+                          const res = await fetch('/api/config/test-browser', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ provider: 'browserbase', apiKey: raw })
+                          });
+                          const data = await res.json();
+                          if (data.success) {
+                            addToast('✅ Browserbase connected successfully!', 'success');
+                          } else {
+                            addToast('❌ Connection failed: ' + data.error, 'error');
+                          }
+                        } catch (err: any) {
+                          addToast('Error: ' + err.message, 'error');
+                        }
+                      }}
+                      className="btn-secondary"
+                      style={{ padding: '6px 12px', fontSize: '0.75rem', borderRadius: '6px', marginTop: '8px', cursor: 'pointer' }}
+                    >
+                      Test Connection
+                    </button>
                   </div>
                   <div>
                     <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>

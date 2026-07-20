@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import puppeteer from 'puppeteer-core';
 import net from 'net';
 import { getLocalChromePath } from '@/lib/browserLauncher';
+import { getRuntimeConfig } from '@/lib/localConfig';
+import { MASK_VALUE } from '@/lib/validation';
 
 /**
  * POST /api/config/test-browser
@@ -118,23 +120,34 @@ export async function POST(req: NextRequest) {
 
     // 3. Remote WebSocket Test (Browserless, Browserbase, or Custom WS URL)
     let testWsUrl = '';
+    const savedConfig = getRuntimeConfig();
+
     if (provider === 'browserless') {
       if (!apiKey) return NextResponse.json({ success: false, error: 'API key is required for Browserless.' }, { status: 400 });
       // Support comma-separated keys for browserless provider
-      const keys = apiKey.split(/[\n,]+/).map((k: string) => k.trim()).filter(Boolean);
+      let keys = apiKey.split(/[\n,]+/).map((k: string) => k.trim()).filter(Boolean);
+      if (keys.some((k: string) => k === MASK_VALUE)) {
+        keys = savedConfig.browserlessApiKeys || [];
+      }
       if (keys.length > 0) {
         testWsUrl = `wss://chrome.browserless.io?token=${keys[0]}`;
       }
     } else if (provider === 'browserbase') {
       if (!apiKey) return NextResponse.json({ success: false, error: 'API key is required for Browserbase.' }, { status: 400 });
       // Support comma-separated keys for browserbase provider
-      const keys = apiKey.split(/[\n,]+/).map((k: string) => k.trim()).filter(Boolean);
+      let keys = apiKey.split(/[\n,]+/).map((k: string) => k.trim()).filter(Boolean);
+      if (keys.some((k: string) => k === MASK_VALUE)) {
+        keys = savedConfig.browserbaseApiKeys || [];
+      }
       if (keys.length > 0) {
         testWsUrl = `wss://connect.browserbase.com?apiKey=${keys[0]}`;
       }
     } else {
       // For legacy/direct config, extract the first URL or token from comma-separated list
-      const items = (wsUrl || '').split(/[\n,]+/).map((i: string) => i.trim()).filter(Boolean);
+      let items = (wsUrl || '').split(/[\n,]+/).map((i: string) => i.trim()).filter(Boolean);
+      if (items.some((i: string) => i === MASK_VALUE)) {
+        items = savedConfig.browserlessApiKeys || [];
+      }
       if (items.length > 0) {
         const firstItem = items[0];
         if (firstItem.startsWith('ws://') || firstItem.startsWith('wss://')) {

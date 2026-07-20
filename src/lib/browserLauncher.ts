@@ -1,8 +1,14 @@
-import puppeteer from 'puppeteer-core';
+import puppeteerExtra from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import puppeteerCore from 'puppeteer-core';
 import os from 'os';
 import fs from 'fs';
 import net from 'net';
 import { getRuntimeConfig } from '@/lib/localConfig';
+
+// Apply stealth plugin globally — patches fingerprinting, WebDriver flags,
+// navigator.plugins, canvas, WebGL, and 13+ other Cloudflare signals.
+puppeteerExtra.use(StealthPlugin());
 
 export function getLocalChromePath(): string {
   const platform = os.platform();
@@ -185,7 +191,12 @@ function getActiveProxy(config: any, triedProxies: Set<string> = new Set()): str
 }
 
 async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
-  const provider = savedConfig.activeBrowserProvider || 'local';
+  const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
+  let provider = savedConfig.activeBrowserProvider || 'local';
+  if (isServerless && provider === 'local') {
+    console.log('[browserLauncher] Serverless/cloud environment detected. Overriding provider "local" to "browserless".');
+    provider = 'browserless';
+  }
   console.log(`[browserLauncher] Launching browser using provider: ${provider}`);
 
   // Base arguments for local Chromium or Tor SOCKS5 launches
@@ -216,11 +227,14 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
 
   // Determine WebSocket Endpoint if remote provider is selected
   let wsUrls: string[] = [];
+  const rotMode = savedConfig.browserProviderRotation || 'round-robin';
 
   if (provider === 'browserless') {
     const keys = savedConfig.browserlessApiKeys || [];
     if (keys.length > 0) {
-      const idx = browserlessIndex++ % keys.length;
+      const idx = rotMode === 'random'
+        ? Math.floor(Math.random() * keys.length)
+        : browserlessIndex++ % keys.length;
       const key = keys[idx];
       let url = `wss://chrome.browserless.io?token=${key}`;
       if (activeProxy) {
@@ -231,7 +245,9 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
   } else if (provider === 'browserbase') {
     const keys = savedConfig.browserbaseApiKeys || [];
     if (keys.length > 0) {
-      const idx = browserbaseIndex++ % keys.length;
+      const idx = rotMode === 'random'
+        ? Math.floor(Math.random() * keys.length)
+        : browserbaseIndex++ % keys.length;
       const key = keys[idx];
       let url = `wss://connect.browserbase.com?apiKey=${key}`;
       if (activeProxy) {
@@ -256,8 +272,13 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
     });
 
     if (wsUrls.length > 0) {
-      const rotationIdx = rotationIndex++ % wsUrls.length;
-      wsUrls = [wsUrls[rotationIdx], ...wsUrls.slice(rotationIdx + 1), ...wsUrls.slice(0, rotationIdx)];
+      if (rotMode === 'random') {
+        const shuffled = [...wsUrls].sort(() => Math.random() - 0.5);
+        wsUrls = shuffled;
+      } else {
+        const rotationIdx = rotationIndex++ % wsUrls.length;
+        wsUrls = [wsUrls[rotationIdx], ...wsUrls.slice(rotationIdx + 1), ...wsUrls.slice(0, rotationIdx)];
+      }
     }
   }
 
@@ -293,7 +314,7 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
       
       try {
         const browser = await Promise.race([
-          puppeteer.connect({ browserWSEndpoint: finalWs }),
+          puppeteerCore.connect({ browserWSEndpoint: finalWs }),
           new Promise<never>((_, reject) =>
             setTimeout(() => reject(new Error('Remote browser connect timed out after 10s')), 10000)
           )
@@ -311,7 +332,6 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
   }
 
   // Local launch
-  const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
   if (isServerless) {
     try {
       const chromium = (await import(/* webpackIgnore: true */ '@sparticuz/chromium')).default as any;
@@ -324,7 +344,7 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
       } else if (activeProxy) {
         launchArgs.push(`--proxy-server=${activeProxy}`);
       }
-      return await puppeteer.launch({
+      return await (puppeteerExtra as any).launch({
         args: launchArgs,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(),
@@ -337,13 +357,13 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
   } else {
     const localPath = getLocalChromePath();
     if (localPath) {
-      return await puppeteer.launch({
+      return await (puppeteerExtra as any).launch({
         executablePath: localPath,
         headless: true,
         args
       });
     }
-    return await puppeteer.launch({
+    return await (puppeteerExtra as any).launch({
       headless: true,
       args
     });
@@ -383,3 +403,70 @@ export async function launchBrowser() {
 
   throw new Error(`Failed to launch browser after ${maxLaunchAttempts} attempts. Last error: ${lastError?.message}`);
 }
+
+/**
+ * Apply additional stealth settings to an open Puppeteer page.
+ * Call this on every new page BEFORE navigating to any target URL.
+ *
+ * Patches:
+ *  - Random realistic viewport (avoids the default 800x600 headless signal)
+ *  - navigator.webdriver override (belt-and-suspenders on top of stealth plugin)
+ *  - chrome.runtime stub (Cloudflare checks for this)
+ *  - Sec-Fetch / sec-ch-ua extra HTTP headers
+ *  - Randomised User-Agent from the shared rotation pool
+ */
+export async function applyStealthToPage(page: any): Promise<void> {
+  const { getNextUAProfile } = await import('@/lib/scraperHeaders');
+  const ua = getNextUAProfile();
+
+  // Randomise viewport — real users are not all 800x600
+  const widths  = [1280, 1366, 1440, 1536, 1920];
+  const heights = [720, 768, 800, 864, 900, 1080];
+  const width  = widths[Math.floor(Math.random() * widths.length)];
+  const height = heights[Math.floor(Math.random() * heights.length)];
+  await page.setViewport({ width, height });
+  await page.setUserAgent(ua.userAgent);
+
+  // Extra HTTP headers — matches the UA's sec-ch-ua etc.
+  const extraHeaders: Record<string, string> = {
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+  };
+  if (ua.secChUa) {
+    extraHeaders['sec-ch-ua']          = ua.secChUa;
+    extraHeaders['sec-ch-ua-mobile']   = ua.secChUaMobile;
+    extraHeaders['sec-ch-ua-platform'] = ua.secChUaPlatform;
+  }
+  await page.setExtraHTTPHeaders(extraHeaders);
+
+  // Belt-and-suspenders: patch any remaining fingerprint leaks via JS
+  await page.evaluateOnNewDocument(() => {
+    // Remove webdriver flag
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+
+    // Stub chrome.runtime so Cloudflare sees a "real" Chrome environment
+    if (!(window as any).chrome) {
+      (window as any).chrome = { runtime: {} };
+    }
+
+    // Spoof plugins length (headless Chrome has 0 plugins)
+    Object.defineProperty(navigator, 'plugins', {
+      get: () => {
+        const arr: any = [
+          { name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer', description: 'Portable Document Format' },
+          { name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai', description: '' },
+          { name: 'Native Client', filename: 'internal-nacl-plugin', description: '' },
+        ];
+        arr.length = 3;
+        return arr;
+      },
+    });
+
+    // Spoof languages
+    Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+  });
+}
+

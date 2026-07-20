@@ -88,12 +88,13 @@ export async function POST(req: NextRequest) {
     
     let browser;
     try {
-      const { launchBrowser } = await import('@/lib/browserLauncher');
+      const { launchBrowser, applyStealthToPage } = await import('@/lib/browserLauncher');
       browser = await launchBrowser();
       const page = await browser.newPage();
       
-      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-      await page.setViewport({ width: 1280, height: 800 });
+      // Apply full stealth hardening: randomised viewport, UA rotation,
+      // sec-ch-ua headers, and JS fingerprint patches.
+      await applyStealthToPage(page);
 
       let loggedIn = false;
 
@@ -137,7 +138,7 @@ export async function POST(req: NextRequest) {
         try {
           await page.waitForSelector('input[type="email"], input[name="email"], input[placeholder*="email"]', { timeout: 5000 });
           
-          await page.evaluate((email, pass) => {
+          await page.evaluate((email: string, pass: string) => {
             const emailInput = document.querySelector('input[type="email"], input[name="email"], input[placeholder*="email"]') as HTMLInputElement;
             const passInput = document.querySelector('input[type="password"], input[name="password"]') as HTMLInputElement;
             if (emailInput && passInput) {
@@ -203,7 +204,7 @@ export async function POST(req: NextRequest) {
             await new Promise(r => setTimeout(r, 2000));
 
             // Enter chat text
-            const textEntered = await page.evaluate((msg) => {
+            const textEntered = await page.evaluate((msg: string) => {
               const textarea = document.querySelector('textarea, textarea[placeholder*="message"]') as HTMLTextAreaElement;
               if (textarea) {
                 textarea.value = msg;

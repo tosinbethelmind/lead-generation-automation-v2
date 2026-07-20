@@ -76,7 +76,13 @@ export async function POST(req: NextRequest) {
     const limit = typeof body.limit === 'number' ? body.limit : defaultLimit; 
     const maxJobsToQueue = typeof body.maxJobsToQueue === 'number' ? body.maxJobsToQueue : defaultMaxJobs;
 
-    console.log(`[Bulk Queue API] Starting generation: ${niches.length} niches x ${locations.length} locations (limit: ${limit}, maxJobs: ${maxJobsToQueue})`);
+    // Supported scraper engines for Lagos 10k execution
+    const defaultScrapers = ['maps-free', 'jiji', 'osm', 'social', 'duckduckgo'];
+    const scrapers: string[] = Array.isArray(body.scrapers) && body.scrapers.length > 0 
+      ? body.scrapers 
+      : defaultScrapers;
+
+    console.log(`[Bulk Queue API] Starting bulk generation: ${niches.length} niches x ${locations.length} locations. Using scrapers: [${scrapers.join(', ')}] (limit: ${limit}, maxJobs: ${maxJobsToQueue})`);
 
     const jobsCreated: { id: string; query: string; scraper: string }[] = [];
 
@@ -92,23 +98,35 @@ export async function POST(req: NextRequest) {
         if (jobsQueuedCount >= maxJobsToQueue) break;
 
         const query = `${niche} ${location}`;
-        const scraper = getScraperType(niche);
-        
-        let payload: any = { query, limit, bypassQueue: true };
-        if (scraper === 'social') {
-          payload.platform = 'instagram';
-        }
 
-        try {
-          const job = await createScrapeJob(scraper, payload);
-          jobsCreated.push({
-            id: job.id,
-            query,
-            scraper
-          });
-          jobsQueuedCount++;
-        } catch (err: any) {
-          console.error(`[Bulk Queue API] Failed to queue job for "${query}":`, err.message);
+        for (const scraper of scrapers) {
+          if (jobsQueuedCount >= maxJobsToQueue) break;
+
+          let payload: any = { limit, bypassQueue: true };
+
+          if (scraper === 'social') {
+            payload.query = query;
+            payload.platform = 'instagram';
+          } else if (scraper === 'jiji') {
+            // Jiji crawler expects 'url'. If query is not a URL, the route formats it automatically,
+            // but we'll format a clean, organic target slug here.
+            const searchSlug = query.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            payload.url = `https://jiji.ng/lagos/${searchSlug}`;
+          } else {
+            payload.query = query;
+          }
+
+          try {
+            const job = await createScrapeJob(scraper, payload);
+            jobsCreated.push({
+              id: job.id,
+              query: scraper === 'jiji' ? payload.url : query,
+              scraper
+            });
+            jobsQueuedCount++;
+          } catch (err: any) {
+            console.error(`[Bulk Queue API] Failed to queue job for "${query}" on ${scraper}:`, err.message);
+          }
         }
       }
       if (jobsQueuedCount >= maxJobsToQueue) break;

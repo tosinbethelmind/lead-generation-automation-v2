@@ -59,6 +59,7 @@ export async function GET() {
     let pid = null;
     let lastSeen = null;
     let currentJob = null;
+    let port = null;
 
     // 1. Try local filesystem heartbeat first (only if NOT on a serverless container like Vercel)
     if (!isServerless) {
@@ -71,6 +72,7 @@ export async function GET() {
             pid = data.pid;
             lastSeen = data.last_seen;
             currentJob = data.currentJob || null;
+            port = data.port || null;
           }
         }
       } catch (e) {
@@ -99,6 +101,7 @@ export async function GET() {
             pid = parsed.pid;
             lastSeen = parsed.last_seen;
             currentJob = parsed.currentJob || null;
+            port = parsed.port || null;
           }
         }
       } catch (dbErr) {
@@ -166,6 +169,7 @@ export async function GET() {
       pid, 
       lastSeen,
       currentJob,
+      port,
       activeJobs,
       completedJobs,
       isProduction: isServerless
@@ -178,7 +182,7 @@ export async function GET() {
 /**
  * Start the local job runner.
  */
-export async function POST() {
+export async function POST(req: Request) {
   // Prevent execution on Vercel production builds.
   if (isServerless) {
     return corsResponse(
@@ -213,11 +217,14 @@ export async function POST() {
     logStream.write(`\n--- Starting local runner at ${new Date().toISOString()} ---\n`);
     logStream.write(`Script: ${runnerScript}\n`);
 
+    const host = req.headers.get('host') || 'localhost:3006';
+    const hostPort = host.includes(':') ? host.split(':').pop() : '3006';
+
     const child = spawn('node', [runnerScript], {
       detached: true,
       stdio: ['ignore', 'pipe', 'pipe'],
       cwd: getAppCwd(),
-      env: { ...process.env }
+      env: { ...process.env, PORT: hostPort }
     });
 
     child.stdout?.pipe(logStream);
@@ -274,19 +281,21 @@ export async function DELETE() {
     }
 
     // Kill process tree
-    const targetPid = parentPid || childPid;
-    if (targetPid) {
+    const pids: number[] = [];
+    if (parentPid) pids.push(parentPid);
+    if (childPid) pids.push(childPid);
+
+    for (const pid of pids) {
       if (process.platform === 'win32') {
-        // Kill the parent command shell and all its children recursively
-        exec(`taskkill /pid ${targetPid} /f /t`, (err) => {
-          if (err) console.error('Error killing process tree on Windows:', err);
+        exec(`taskkill /pid ${pid} /f /t`, (err) => {
+          if (err) console.log(`[local-trigger] Skip PID kill error for ${pid}:`, err.message);
         });
       } else {
         try {
-          process.kill(-targetPid); // process group kill
+          process.kill(-pid); // process group kill
         } catch (err) {
           try {
-            process.kill(targetPid);
+            process.kill(pid);
           } catch (e) {}
         }
       }
