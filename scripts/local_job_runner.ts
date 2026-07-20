@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import dns from 'dns';
 import { createClient } from '@supabase/supabase-js';
-import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from '../src/lib/atomicIo';
+import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from '../src/lib/atomicIo.ts';
 
 if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder('ipv4first');

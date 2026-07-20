@@ -187,6 +187,13 @@ export async function proxyFetch(
 
   if (proxy) {
     console.log(`[ProxyRotator] ${engine} → ${proxy.label} → ${url.substring(0, 80)}`);
+    try {
+      return await fetch(url, { ...opts, signal });
+    } catch (err: any) {
+      console.warn(`[ProxyRotator] Proxy ${proxy.label} fetch failed: ${err.message || err}. Falling back to direct fetch.`);
+      const directOpts = await buildProxyFetchOptions(null, extraHeaders);
+      return fetch(url, { ...directOpts, signal });
+    }
   }
 
   return fetch(url, { ...opts, signal });
