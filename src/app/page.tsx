@@ -616,6 +616,9 @@ export default function Home() {
       if (logsResp.ok) {
         const logsData = await logsResp.json();
         setLatestLogs(logsData.slice(0, 3));
+        if (Array.isArray(logsData)) {
+          setLogs([...logsData].reverse());
+        }
       }
     } catch (err) {
       // Ignore background log errors silently
@@ -1875,67 +1878,116 @@ export default function Home() {
         return;
       }
 
-      // Stream job status and log updates via SSE instead of polling
+      // Stream job status via SSE with a fallback to HTTP polling
       await new Promise<void>((resolve) => {
-        const streamUrl = `/api/logs/stream?jobIds=${queuedJobIds.join(',')}`;
-        const es = new EventSource(streamUrl);
         const activeJobs = new Set<string>(queuedJobIds);
+        let es: EventSource | null = null;
+        let isPolling = false;
+        let pollInterval: NodeJS.Timeout | null = null;
 
-        es.addEventListener('status', (e: MessageEvent) => {
-          try {
-            const { jobId, status, error } = JSON.parse(e.data);
-            if (status === 'completed') {
-              activeJobs.delete(jobId);
-              handleRefreshAll();
-              addToast(`Scrape job ${jobId.substring(0, 8)} completed.`, 'success');
-            } else if (status === 'failed') {
-              activeJobs.delete(jobId);
-              addToast(`Scrape job ${jobId.substring(0, 8)} failed: ${error || 'Unknown error'}`, 'error');
-            } else if (status === 'running') {
-              const completedCount = queuedJobIds.length - activeJobs.size;
-              setStatusMessage(`Scraping progress: ${completedCount}/${queuedJobIds.length} completed. (Running job ${jobId.substring(0, 8)}...)`);
+        const startPollingFallback = () => {
+          if (isPolling) return;
+          isPolling = true;
+          console.warn('⚠️ SSE stream failed. Falling back to HTTP polling for job updates...');
+          
+          pollInterval = setInterval(async () => {
+            try {
+              for (const jobId of Array.from(activeJobs)) {
+                const res = await fetch(`/api/scrape/jobs/${jobId}`);
+                if (res.ok) {
+                  const job = await res.json();
+                  if (job.status === 'completed') {
+                    activeJobs.delete(jobId);
+                    handleRefreshAll();
+                    addToast(`Scrape job ${jobId.substring(0, 8)} completed.`, 'success');
+                  } else if (job.status === 'failed') {
+                    activeJobs.delete(jobId);
+                    addToast(`Scrape job ${jobId.substring(0, 8)} failed: ${job.error_message || 'Unknown error'}`, 'error');
+                  } else if (job.status === 'running') {
+                    const completedCount = queuedJobIds.length - activeJobs.size;
+                    setStatusMessage(`Scraping progress: ${completedCount}/${queuedJobIds.length} completed. (Running job ${jobId.substring(0, 8)}...)`);
+                  }
+                }
+              }
+              if (activeJobs.size === 0) {
+                cleanup();
+              }
+            } catch (err) {
+              console.error('Polling error:', err);
             }
-          } catch (_) {}
-        });
+          }, 3000);
+        };
 
-        es.addEventListener('log', (e: MessageEvent) => {
-          try {
-            const newLines: any[] = JSON.parse(e.data);
-            if (newLines.length > 0) {
-              const last = newLines[newLines.length - 1];
-              // Row format: [run_id, timestamp, step, '', status, message]
-              const [runId, , step, , status, message] = last;
-              const completedCount = queuedJobIds.length - activeJobs.size;
-              setStatusMessage(
-                `Scraping (${completedCount}/${queuedJobIds.length} done) | [${runId ?? ''}] [${step ?? ''}/${status ?? ''}] ${message ?? ''}`
-              );
-            }
-          } catch (_) {}
-        });
-
-        es.addEventListener('done', () => {
-          es.close();
-          resolve();
-        });
-
-        es.onerror = () => {
-          es.close();
+        const cleanup = () => {
+          if (es) {
+            try { es.close(); } catch (_) {}
+          }
+          if (pollInterval) {
+            clearInterval(pollInterval);
+          }
           resolve();
         };
 
+        try {
+          const streamUrl = `/api/logs/stream?jobIds=${queuedJobIds.join(',')}`;
+          es = new EventSource(streamUrl);
+
+          es.addEventListener('status', (e: MessageEvent) => {
+            try {
+              const { jobId, status, error } = JSON.parse(e.data);
+              if (status === 'completed') {
+                activeJobs.delete(jobId);
+                handleRefreshAll();
+                addToast(`Scrape job ${jobId.substring(0, 8)} completed.`, 'success');
+              } else if (status === 'failed') {
+                activeJobs.delete(jobId);
+                addToast(`Scrape job ${jobId.substring(0, 8)} failed: ${error || 'Unknown error'}`, 'error');
+              } else if (status === 'running') {
+                const completedCount = queuedJobIds.length - activeJobs.size;
+                setStatusMessage(`Scraping progress: ${completedCount}/${queuedJobIds.length} completed. (Running job ${jobId.substring(0, 8)}...)`);
+              }
+            } catch (_) {}
+          });
+
+          es.addEventListener('log', (e: MessageEvent) => {
+            try {
+              const newLines: any[] = JSON.parse(e.data);
+              if (newLines.length > 0) {
+                const last = newLines[newLines.length - 1];
+                const [runId, , step, , status, message] = last;
+                const completedCount = queuedJobIds.length - activeJobs.size;
+                setStatusMessage(
+                  `Scraping (${completedCount}/${queuedJobIds.length} done) | [${runId ?? ''}] [${step ?? ''}/${status ?? ''}] ${message ?? ''}`
+                );
+              }
+            } catch (_) {}
+          });
+
+          es.addEventListener('done', () => {
+            cleanup();
+          });
+
+          es.onerror = () => {
+            if (es) {
+              try { es.close(); } catch (_) {}
+            }
+            startPollingFallback();
+          };
+        } catch (err) {
+          startPollingFallback();
+        }
+
         // Safety timeout: close after 11 minutes regardless
         const timeout = setTimeout(() => {
-          es.close();
-          resolve();
+          cleanup();
         }, 11 * 60 * 1000);
 
-        // Also resolve when all jobs are tracked as finished
+        // Also check if all jobs are tracked as finished
         const checkDone = setInterval(() => {
           if (activeJobs.size === 0) {
             clearInterval(checkDone);
             clearTimeout(timeout);
-            es.close();
-            resolve();
+            cleanup();
           }
         }, 2000);
       });
