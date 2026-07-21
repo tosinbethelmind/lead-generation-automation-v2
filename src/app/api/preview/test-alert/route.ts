@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const config = getRuntimeConfig();
 
     const businessLabel = businessName || 'your business';
-    const previewUrl = `${config.liveLink || 'https://lead-generation-automation-ecru.vercel.app'}/preview/${leadId || 'demo'}`;
+    const previewUrl = `${config.liveLink || 'https://lead-generation-automation-e0oitxcsi.vercel.app'}/preview/${leadId || 'demo'}`;
 
     // ── Option A: Meta WhatsApp Cloud API ────────────────────────────────────
     if (

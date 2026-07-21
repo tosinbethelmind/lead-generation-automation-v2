@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       lead_id: 'test_lead_id'
     };
 
-    const previewUrl = 'https://lead-generation-automation-ecru.vercel.app/demo-proposal';
+    const previewUrl = 'https://lead-generation-automation-e0oitxcsi.vercel.app/demo-proposal';
     const testMessage = `Hello from Bethelmind Analytics & Strategy! Your WhatsApp Meta Cloud API integration is successfully linked and verified.`;
 
     // Send using standard utility (handles template vs free-form message)

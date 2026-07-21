@@ -16,11 +16,13 @@ export default function SetupPage() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error' | null; message: string | null }>({ type: null, message: null });
 
-  // Tab 4 HF state
-  const [activeRunnerBackend, setActiveRunnerBackend] = useState<'local' | 'huggingface'>('local');
+  // Tab 4 HF & GitHub Actions state
+  const [activeRunnerBackend, setActiveRunnerBackend] = useState<'local' | 'huggingface' | 'github_actions'>('local');
   const [hfToken, setHfToken] = useState('');
   const [spaceName, setSpaceName] = useState('bethelmind-lead-engine');
   const [isPrivateSpace, setIsPrivateSpace] = useState(true);
+  const [githubToken, setGithubToken] = useState('');
+  const [githubRepo, setGithubRepo] = useState('');
   const [deploying, setDeploying] = useState(false);
   const [deployStatus, setDeployStatus] = useState<{ type: 'success' | 'error' | null; message: string | null }>({ type: null, message: null });
 
@@ -150,6 +152,8 @@ export default function SetupPage() {
         setHfToken(config.hfToken || '');
         setSpaceName(config.spaceName || 'bethelmind-lead-engine');
         setIsPrivateSpace(config.isPrivateSpace !== false);
+        setGithubToken(config.githubToken || '');
+        setGithubRepo(config.githubRepo || '');
       }
     } catch (err) {
       console.error('Failed to load configuration:', err);
@@ -239,7 +243,9 @@ export default function SetupPage() {
       activeRunnerBackend,
       hfToken,
       spaceName,
-      isPrivateSpace
+      isPrivateSpace,
+      githubToken,
+      githubRepo
     };
 
     try {
@@ -1117,55 +1123,89 @@ export default function SetupPage() {
                     </div>
                     <select
                       value={activeRunnerBackend}
-                      onChange={e => setActiveRunnerBackend(e.target.value as 'local' | 'huggingface')}
+                      onChange={e => setActiveRunnerBackend(e.target.value as 'local' | 'huggingface' | 'github_actions')}
                       style={selectStyle}
                     >
                       <option value="local">💻 Local PC Workstation</option>
-                      <option value="huggingface">☁️ Cloud (Hugging Face Spaces)</option>
+                      <option value="huggingface">☁️ Cloud (Hugging Face Spaces - PRO)</option>
+                      <option value="github_actions">🐙 Cloud (GitHub Actions - Free)</option>
                     </select>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <span style={labelStyle}>Hugging Face Write Token</span>
-                    <input 
-                      type="password" 
-                      value={hfToken} 
-                      onChange={e => setHfToken(e.target.value)} 
-                      placeholder="hf_..." 
-                      style={inputStyle} 
-                    />
-                    <span style={hintStyle}>
-                      Create a token with <strong>Write</strong> permission in your Hugging Face account under Settings &gt; Access Tokens.
-                    </span>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                {activeRunnerBackend === 'github_actions' ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <span style={labelStyle}>Space Name</span>
+                      <span style={labelStyle}>GitHub Personal Access Token (PAT)</span>
                       <input 
-                        type="text" 
-                        value={spaceName} 
-                        onChange={e => setSpaceName(e.target.value)} 
+                        type="password" 
+                        value={githubToken} 
+                        onChange={e => setGithubToken(e.target.value)} 
+                        placeholder="ghp_..." 
                         style={inputStyle} 
                       />
-                      <span style={hintStyle}>Name of the Hugging Face Space. E.g. bethelmind-lead-engine</span>
+                      <span style={hintStyle}>
+                        Generate a token with <strong>repo</strong> or <strong>workflow</strong> scope to trigger runs on-demand.
+                      </span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <span style={labelStyle}>Space Visibility</span>
-                      <select 
-                        value={isPrivateSpace ? 'private' : 'public'} 
-                        onChange={e => setIsPrivateSpace(e.target.value === 'private')} 
-                        style={selectStyle}
-                      >
-                        <option value="private">Private Space (Recommended)</option>
-                        <option value="public">Public Space</option>
-                      </select>
-                      <span style={hintStyle}>Private spaces keep your Supabase and API key secrets hidden.</span>
+                      <span style={labelStyle}>GitHub Repository (username/repo)</span>
+                      <input 
+                        type="text" 
+                        value={githubRepo} 
+                        onChange={e => setGithubRepo(e.target.value)} 
+                        placeholder="username/repository" 
+                        style={inputStyle} 
+                      />
+                      <span style={hintStyle}>
+                        The owner/name of your GitHub repository. E.g. <code>tosinbethelmind/lead-generation-automation-v2</code>
+                      </span>
                     </div>
                   </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <span style={labelStyle}>Hugging Face Write Token</span>
+                      <input 
+                        type="password" 
+                        value={hfToken} 
+                        onChange={e => setHfToken(e.target.value)} 
+                        placeholder="hf_..." 
+                        style={inputStyle} 
+                      />
+                      <span style={hintStyle}>
+                        Create a token with <strong>Write</strong> permission in your Hugging Face account under Settings &gt; Access Tokens.
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={labelStyle}>Space Name</span>
+                        <input 
+                          type="text" 
+                          value={spaceName} 
+                          onChange={e => setSpaceName(e.target.value)} 
+                          style={inputStyle} 
+                        />
+                        <span style={hintStyle}>Name of the Hugging Face Space. E.g. bethelmind-lead-engine</span>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={labelStyle}>Space Visibility</span>
+                        <select 
+                          value={isPrivateSpace ? 'private' : 'public'} 
+                          onChange={e => setIsPrivateSpace(e.target.value === 'private')} 
+                          style={selectStyle}
+                        >
+                          <option value="private">Private Space (Recommended)</option>
+                          <option value="public">Public Space</option>
+                        </select>
+                        <span style={hintStyle}>Private spaces keep your Supabase and API key secrets hidden.</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                   {deployStatus.message && (
                     <div style={{
@@ -1230,7 +1270,6 @@ export default function SetupPage() {
                     </button>
                   </div>
                 </div>
-              </div>
             )}
 
             {/* Status Messages */}

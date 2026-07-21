@@ -58,6 +58,10 @@ const isHuggingFaceEnv = process.env.RUNNER_ENVIRONMENT === 'huggingface' || !!p
 let cachedActiveRunner: string | null = null;
 let lastActiveRunnerCheck = 0;
 
+// Throttle failover log so it only prints once every 5 minutes
+let lastFailoverLogTime = 0;
+const FAILOVER_LOG_THROTTLE_MS = 5 * 60 * 1000;
+
 async function checkActiveRunnerBackend(): Promise<string> {
   const now = Date.now();
   if (now - lastActiveRunnerCheck < 15000 && cachedActiveRunner !== null) {
@@ -122,11 +126,19 @@ async function isActiveRunner(): Promise<boolean> {
         const inactiveDuration = Date.now() - logTime;
         // 5 minutes threshold (300,000 ms)
         if (inactiveDuration > 300000) {
-          console.log(`⚠️ [Failover] Cloud runner (Hugging Face) is offline (last heartbeat ${Math.round(inactiveDuration / 1000)}s ago). Local PC runner activating fallback.`);
+          const now = Date.now();
+          if (now - lastFailoverLogTime > FAILOVER_LOG_THROTTLE_MS) {
+            console.log(`⚠️ [Failover] Cloud runner (Hugging Face) is offline (last heartbeat ${Math.round(inactiveDuration / 1000)}s ago). Local PC runner activating fallback.`);
+            lastFailoverLogTime = now;
+          }
           return true;
         }
       } else {
-        console.log(`⚠️ [Failover] Cloud runner (Hugging Face) heartbeat not recorded. Local PC runner taking over fallback.`);
+        const now = Date.now();
+        if (now - lastFailoverLogTime > FAILOVER_LOG_THROTTLE_MS) {
+          console.log(`⚠️ [Failover] Cloud runner (Hugging Face) heartbeat not recorded. Local PC runner taking over fallback.`);
+          lastFailoverLogTime = now;
+        }
         return true;
       }
     } catch (err: any) {
@@ -182,7 +194,11 @@ async function supabaseWithRetry<T>(queryPromiseFn: () => Promise<{ data: T | nu
 }
 
 let LOCAL_API_PORT = process.env.PORT || '3006';
-let LOCAL_BASE_URL = `http://localhost:${LOCAL_API_PORT}`;
+// Allow cloud deployments to point at the Vercel-hosted scraper API instead of localhost
+let LOCAL_BASE_URL = process.env.SCRAPER_API_BASE_URL
+  ? process.env.SCRAPER_API_BASE_URL.replace(/\/$/, '')
+  : `http://localhost:${LOCAL_API_PORT}`;
+
 
 // Track the currently processing job for real-time frontend reporting
 let currentJob: any = null;
@@ -705,9 +721,15 @@ async function checkLagosDailyScraper() {
     return fallbackPort;
   }
 
-  LOCAL_API_PORT = await discoverLocalPort();
-  LOCAL_BASE_URL = `http://localhost:${LOCAL_API_PORT}`;
-  console.log(`🌐 Base API URL resolved dynamically to: ${LOCAL_BASE_URL}`);
+  // If a remote API URL is already configured, skip localhost port discovery
+  if (process.env.SCRAPER_API_BASE_URL) {
+    console.log(`🌐 Using pre-configured SCRAPER_API_BASE_URL: ${LOCAL_BASE_URL}`);
+  } else {
+    LOCAL_API_PORT = await discoverLocalPort();
+    LOCAL_BASE_URL = `http://localhost:${LOCAL_API_PORT}`;
+    console.log(`🌐 Base API URL resolved dynamically to: ${LOCAL_BASE_URL}`);
+  }
+
 
   // Asynchronous Batch Deployment synchronization handler
   async function triggerBatchSync() {
@@ -737,7 +759,11 @@ async function checkLagosDailyScraper() {
         }
       }
     } catch (err: any) {
-      console.error('❌ Error executing background batch sync:', err.message);
+      // Suppress fetch errors silently — Next.js server may not be running locally
+      const isFetchError = err.message?.toLowerCase().includes('fetch') || err.message?.toLowerCase().includes('econnrefused') || err.message?.toLowerCase().includes('network');
+      if (!isFetchError) {
+        console.error('❌ Error executing background batch sync:', err.message);
+      }
     }
   }
 

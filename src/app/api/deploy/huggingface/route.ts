@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Could not resolve Hugging Face username.' }, { status: 400 });
     }
 
-    // 2. Create the Space repository
+    // 2. Create the Space repository with gradio SDK (100% free)
     const createRepoRes = await fetch('https://huggingface.co/api/repos/create', {
       method: 'POST',
       headers: {
@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         name: spaceName,
         type: 'space',
-        sdk: 'docker',
+        sdk: 'gradio',
         private: !!isPrivate
       })
     });
@@ -145,15 +145,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: `Failed to create Hugging Face Space: ${errorMsg}` }, { status: createRepoRes.status });
     }
 
-    // 3. Set secrets from current runtime config
+    // 3. Set secrets from current config/env
     const currentConfig = getRuntimeConfig();
+    const supabaseUrlVal = process.env.NEXT_PUBLIC_SUPABASE_URL || currentConfig.supabaseUrl || '';
+    const supabaseKeyVal = process.env.SUPABASE_SERVICE_ROLE_KEY || currentConfig.supabaseKey || '';
+    const liveLinkVal = currentConfig.liveLink || (req.headers.get('host') ? `https://${req.headers.get('host')}` : 'https://lead-generation-automation-e0oitxcsi.vercel.app');
+
     const secretsToSet = [
-      { key: 'SUPABASE_URL', value: currentConfig.supabaseUrl || '' },
-      { key: 'SUPABASE_SERVICE_ROLE_KEY', value: currentConfig.supabaseKey || '' },
-      { key: 'GEMINI_API_KEY', value: currentConfig.geminiApiKey || '' },
-      { key: 'BROWSERLESS_API_KEY', value: Array.isArray(currentConfig.browserlessApiKeys) && currentConfig.browserlessApiKeys.length > 0 ? currentConfig.browserlessApiKeys[0] : '' },
-      { key: 'BROWSERBASE_API_KEY', value: Array.isArray(currentConfig.browserbaseApiKeys) && currentConfig.browserbaseApiKeys.length > 0 ? currentConfig.browserbaseApiKeys[0] : '' },
-      { key: 'ACTIVE_BROWSER_PROVIDER', value: currentConfig.activeBrowserProvider || 'local' }
+      { key: 'SUPABASE_URL', value: supabaseUrlVal },
+      { key: 'SUPABASE_SERVICE_ROLE_KEY', value: supabaseKeyVal },
+      { key: 'SCRAPER_API_BASE_URL', value: liveLinkVal }
     ];
 
     for (const secret of secretsToSet) {
@@ -177,13 +178,36 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 4. Bundle and upload files
+    // 4. Bundle only the 3 Python runner files
     const projectDir = process.cwd();
-    const actions = getFilesToDeploy(projectDir);
+    const appPyPath = path.join(projectDir, 'huggingface', 'app.py');
+    const reqsTxtPath = path.join(projectDir, 'huggingface', 'requirements.txt');
+    const readmeMdPath = path.join(projectDir, 'huggingface', 'README.md');
 
-    if (actions.length === 0) {
-      return NextResponse.json({ success: false, error: 'No deployable files found in project directory.' }, { status: 500 });
+    if (!fs.existsSync(appPyPath) || !fs.existsSync(reqsTxtPath) || !fs.existsSync(readmeMdPath)) {
+      return NextResponse.json({ success: false, error: 'Hugging Face runner files are missing in workspace.' }, { status: 500 });
     }
+
+    const actions = [
+      {
+        operation: 'add',
+        path: 'app.py',
+        content: fs.readFileSync(appPyPath).toString('base64'),
+        encoding: 'base64'
+      },
+      {
+        operation: 'add',
+        path: 'requirements.txt',
+        content: fs.readFileSync(reqsTxtPath).toString('base64'),
+        encoding: 'base64'
+      },
+      {
+        operation: 'add',
+        path: 'README.md',
+        content: fs.readFileSync(readmeMdPath).toString('base64'),
+        encoding: 'base64'
+      }
+    ];
 
     // Commit files to main branch
     const commitRes = await fetch(`https://huggingface.co/api/spaces/${username}/${spaceName}/commit/main`, {
@@ -193,7 +217,7 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        commit_message: 'Automated deployment of Lead Gen Background Runner',
+        commit_message: 'Automated deployment of Python Lead Gen Cloud Runner',
         actions
       })
     });

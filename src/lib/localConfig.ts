@@ -163,9 +163,11 @@ export interface LocalConfig {
   metaWebhookVerifyToken?: string;
   metaAppSecret?: string;
   autoQueueLagosDaily10k?: boolean;
-  activeRunnerBackend?: 'local' | 'huggingface';
+  activeRunnerBackend?: 'local' | 'huggingface' | 'github_actions';
   hfToken?: string;
   spaceName?: string;
+  githubToken?: string;
+  githubRepo?: string;
 }
 
 export interface TeamMember {
@@ -317,9 +319,11 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   activeBrowserProvider: 'rotation',
   browserProviderRotation: 'round-robin',
   teamMembers: [],
-  activeRunnerBackend: 'local',
+  activeRunnerBackend: 'github_actions',
   hfToken: '',
   spaceName: '',
+  githubToken: '',
+  githubRepo: '',
 };
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
@@ -661,6 +665,8 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       activeRunnerBackend: updated.activeRunnerBackend,
       hfToken: updated.hfToken,
       spaceName: updated.spaceName,
+      githubToken: updated.githubToken,
+      githubRepo: updated.githubRepo,
     };
     
     writeJsonFileSyncAtomic(writeablePath, fileData);
@@ -767,7 +773,7 @@ export function getOutreachOrigin(reqUrl?: string): string {
       return new URL(reqUrl).origin;
     } catch (_) {}
   }
-  return 'https://lead-generation-automation-ecru.vercel.app';
+  return 'https://lead-generation-automation-e0oitxcsi.vercel.app';
 }
 
 

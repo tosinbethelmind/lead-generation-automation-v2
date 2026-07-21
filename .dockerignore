@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.git/
+*.log
+local_db/
+local_runner_heartbeat.json
+local_runner_parent_pid.json
+local_runner.log
+scratch/
+docs/
+.env*

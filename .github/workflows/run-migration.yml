@@ -1,0 +1,27 @@
+name: Run Supabase SQL Migration
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install database driver
+        run: npm install pg
+
+      - name: Run Migration Script
+        env:
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD || 'pHqrTQc2gpdSqnAx' }}
+          NEXT_PUBLIC_SUPABASE_URL: 'https://szyuterncawfxwzhvwcf.supabase.co'
+        run: node run-queue-hardening-migration.js

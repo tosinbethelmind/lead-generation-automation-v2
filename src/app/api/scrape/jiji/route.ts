@@ -333,10 +333,11 @@ export async function POST(req: NextRequest) {
             console.error(`Failed to enrich contacts for ${lead.name}:`, err.message);
           }
 
-          if (lead.phone_e164) {
+          // Save if we have phone OR email OR website — any of these enables outreach
+          if (lead.phone_e164 || lead.email || lead.website) {
             scrapedLeads.push(lead);
           } else {
-            await addLog('Jiji Scraper', 'INFO', `Skipped "${lead.name}" — no phone number found even after enrichment.`);
+            await addLog('Jiji Scraper', 'INFO', `Skipped "${lead.name}" — no phone, email, or website found even after enrichment.`);
           }
         })
       );

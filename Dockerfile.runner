@@ -1,0 +1,32 @@
+# Cloud Runner Container for ApexReach Lead Generation Pipeline
+# Runs the job runner 24/7, polling Supabase queue and calling Vercel scraper APIs.
+
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install tsx globally to run TypeScript directly
+RUN npm install -g tsx
+
+# Copy package manifests first (docker layer cache)
+COPY package.json package-lock.json* ./
+
+# Install only what's needed (skip postinstall scripts which may need system deps)
+RUN npm ci --ignore-scripts 2>/dev/null || npm install --ignore-scripts
+
+# Copy runner source files
+COPY scripts/local_job_runner.ts ./scripts/
+COPY scripts/keep_alive_runner.js ./scripts/
+COPY scripts/cloud_runner_entrypoint.js ./scripts/
+COPY src/lib/atomicIo.ts ./src/lib/
+COPY src/lib/requestContext.ts ./src/lib/
+COPY config.json ./
+
+# Set cloud environment flags
+ENV RUNNER_ENVIRONMENT=huggingface
+ENV NODE_ENV=production
+ENV PORT=8080
+
+EXPOSE 8080
+
+CMD ["node", "scripts/cloud_runner_entrypoint.js"]

@@ -240,15 +240,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (scrapedLeads.length > 0) {
-      const dbResult = await saveLeads(scrapedLeads);
-      await addLog('Social Scraper', 'SUCCESS', `Scraped ${scrapedLeads.length} ${platUpper} accounts. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+    // Only keep leads where we actually have some contact info
+    const contactableLeads = scrapedLeads.filter(l => l.phone_e164 || l.email || l.website);
+    const droppedCount = scrapedLeads.length - contactableLeads.length;
+    if (droppedCount > 0) {
+      await addLog('Social Scraper', 'INFO', `Dropped ${droppedCount} ${platUpper} profiles with no phone, email, or website after enrichment.`);
+    }
+
+    if (contactableLeads.length > 0) {
+      const dbResult = await saveLeads(contactableLeads);
+      await addLog('Social Scraper', 'SUCCESS', `Scraped ${scrapedLeads.length} ${platUpper} accounts. ${contactableLeads.length} contactable. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
       return NextResponse.json({
         success: true,
         mode: 'live',
         added: dbResult.added,
         skipped: dbResult.skipped,
-        leads: scrapedLeads
+        leads: contactableLeads
       });
     } else {
       await addLog('Social Scraper', 'INFO', `Search completed but found 0 leads matching criteria.`);

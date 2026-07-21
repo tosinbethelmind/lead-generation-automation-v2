@@ -65,6 +65,27 @@ async function controlHFSpace(action: 'resume' | 'pause'): Promise<{ success: bo
   return { success: true, message: `Space ${spaceId} successfully ${action}d.` };
 }
 
+async function triggerGitHubWorkflow(tokenStr: string, repoStr: string): Promise<boolean> {
+  const url = `https://api.github.com/repos/${repoStr}/dispatches`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/vnd.github+json',
+      'Authorization': `Bearer ${tokenStr}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'ApexReach-App'
+    },
+    body: JSON.stringify({
+      event_type: 'run-queue'
+    })
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`GitHub API error (HTTP ${response.status}): ${errorText}`);
+  }
+  return true;
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
@@ -156,7 +177,9 @@ export async function GET() {
     // 2. If not running locally (or running on Vercel), query the corresponding Supabase log heartbeat
     if (!isRunning && supabase) {
       try {
-        const targetRunId = activeRunner === 'huggingface' ? 'huggingface_runner' : 'local_runner';
+        const targetRunId = activeRunner === 'huggingface'
+          ? 'huggingface_runner'
+          : (activeRunner === 'github_actions' ? 'github_actions_runner' : 'local_runner');
         const { data: dbLogs } = await supabase
           .from('logs')
           .select('*')
@@ -290,6 +313,20 @@ export async function POST(req: Request) {
     }
   }
 
+  if (activeRunner === 'github_actions') {
+    const token = config.githubToken;
+    const repo = config.githubRepo;
+    if (!token || !repo) {
+       return corsResponse({ error: 'GitHub Action configuration (Token and Repo) is not set in Settings.' }, 400);
+    }
+    try {
+      await triggerGitHubWorkflow(token, repo);
+      return corsResponse({ message: 'GitHub Actions Cloud runner triggered successfully.', success: true });
+    } catch (err: any) {
+      return corsResponse({ error: `Failed to trigger GitHub Action: ${err.message}` }, 500);
+    }
+  }
+
   try {
     // First check if it's already running to prevent double spawning
     const heartbeatPath = path.resolve(getAppCwd(), 'local_runner_heartbeat.json');
@@ -382,6 +419,10 @@ export async function DELETE() {
     } catch (err: any) {
       return corsResponse({ error: `Cloud runner control failed: ${err.message}` }, 500);
     }
+  }
+
+  if (activeRunner === 'github_actions') {
+    return corsResponse({ message: 'GitHub Actions runners run on-demand and shut down automatically when the queue is finished. Manual stopping is not required.', success: true });
   }
 
   try {

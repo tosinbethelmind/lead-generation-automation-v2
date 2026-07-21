@@ -383,6 +383,88 @@ export class OutreachManager {
               throw new Error(resObj?.error || jijiData.error || 'Jiji Chat API failed');
             }
           }
+        } else if (channel === 'contact_form') {
+          const website = lead.website;
+          if (!website || !website.startsWith('http')) {
+            logs.push(`[Contact Form] Skipped: Lead has no website URL`);
+            channelResults.push({ channel, status: 'skipped', error: 'No website URL' });
+            continue;
+          }
+          if (isDryRun) {
+            logs.push(`[Contact Form] [DRY RUN] Would submit contact form on ${website}`);
+            channelResults.push({ channel, status: 'success' });
+            success = true;
+            successfulChannel = 'contact_form';
+          } else {
+            const { submitContactForm } = await import('./contactFormSubmitter');
+            const res = await submitContactForm(lead, origin, config.businessSignature || '');
+            if (res.success) {
+              logs.push(`[Contact Form] Success: ${res.notes}`);
+              channelResults.push({ channel, status: 'success' });
+              success = true;
+              successfulChannel = 'contact_form';
+            } else {
+              throw new Error(res.notes || 'Contact form submission failed');
+            }
+          }
+        } else if (channel === 'social_dm') {
+          const socialsStr = lead.social_links;
+          let socialsParsed: Record<string, string> = {};
+          if (socialsStr) {
+            try {
+              socialsParsed = typeof socialsStr === 'string' ? JSON.parse(socialsStr) : socialsStr;
+            } catch (_) {}
+          }
+          const hasSocial = Object.keys(socialsParsed || {}).some(k => socialsParsed[k]);
+          
+          if (!hasSocial && !lead.profile_url) {
+            logs.push(`[Social DM] Skipped: Lead has no social links`);
+            channelResults.push({ channel, status: 'skipped', error: 'No social links' });
+            continue;
+          }
+
+          // Generate DM helper links
+          const dmLinks: string[] = [];
+          if (lead.profile_url) {
+            if (lead.profile_url.includes('facebook.com')) {
+              const parts = lead.profile_url.replace(/\/$/, '').split('/');
+              const lastPart = parts[parts.length - 1];
+              dmLinks.push(`Facebook Messenger: https://m.me/${lastPart}`);
+            } else if (lead.profile_url.includes('instagram.com')) {
+              dmLinks.push(`Instagram DM: ${lead.profile_url.replace(/\/$/, '')}/direct/inbox/`);
+            } else {
+              dmLinks.push(`Profile DM: ${lead.profile_url}`);
+            }
+          }
+          
+          Object.entries(socialsParsed).forEach(([platform, link]) => {
+            if (!link) return;
+            if (platform === 'facebook') {
+              const parts = link.replace(/\/$/, '').split('/');
+              const lastPart = parts[parts.length - 1];
+              dmLinks.push(`Facebook Messenger: https://m.me/${lastPart}`);
+            } else if (platform === 'instagram') {
+              dmLinks.push(`Instagram DM: ${link.replace(/\/$/, '')}/direct/inbox/`);
+            } else if (platform === 'twitter' || platform === 'x') {
+              dmLinks.push(`Twitter DM: ${link}`);
+            } else if (platform === 'linkedin') {
+              dmLinks.push(`LinkedIn Profile: ${link}`);
+            }
+          });
+
+          const notesMsg = `Generated click-to-chat helper DM links:\n${dmLinks.join('\n')}`;
+          logs.push(`[Social DM] Generated ${dmLinks.length} click-to-chat messaging links.`);
+          
+          if (!isDryRun) {
+            await updateLeadFields(leadId, {
+              status: 'CONTACTED',
+              notes: (lead.notes || '') + ` | [Social DM Helper] ${notesMsg}`
+            });
+          }
+          
+          channelResults.push({ channel, status: 'success' });
+          success = true;
+          successfulChannel = 'social_dm';
         }
       } catch (err: any) {
         const errorMsg = err.message || String(err);

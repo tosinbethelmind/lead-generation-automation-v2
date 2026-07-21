@@ -41,9 +41,25 @@ cd $WorkDir
 # Check if process is already running to prevent duplicate spawns
 $portInUse = Get-NetTCPConnection -LocalPort 3006 -ErrorAction SilentlyContinue
 if ($portInUse) {
-    Log-Msg "Port 3006 is already in use. Automation stack is likely already running."
-    exit 0
+    Log-Msg "Port 3006 is already in use. Dev server is already running."
+} else {
+    # Start Next.js dev server in a minimized window
+    Start-Process -FilePath "cmd.exe" -ArgumentList "/k title ApexReach-DevServer && npm run dev" -WorkingDirectory $WorkDir -WindowStyle Minimized
+    Log-Msg "Dev server launched on port 3006."
+    Start-Sleep -Seconds 8
 }
 
-# Run the concurrent services and log outputs
-npm run start-all >> "$WorkDir\services_output.log" 2>&1
+# Check if local runner is already running (look for keep_alive_runner in node processes)
+$runnerRunning = Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object {
+    $_.CommandLine -like "*keep_alive_runner*"
+}
+
+if ($runnerRunning) {
+    Log-Msg "Local runner is already running. Skipping duplicate launch."
+} else {
+    # Start local job runner in a separate minimized window
+    Start-Process -FilePath "cmd.exe" -ArgumentList "/k title ApexReach-LocalRunner && node scripts/keep_alive_runner.js" -WorkingDirectory $WorkDir -WindowStyle Minimized
+    Log-Msg "Local job runner launched."
+}
+
+Log-Msg "ApexReach stack started successfully. Dev server: port 3006. Runner: active."

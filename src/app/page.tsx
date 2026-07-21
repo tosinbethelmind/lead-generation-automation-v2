@@ -581,7 +581,9 @@ export default function Home() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 2000);
       try {
-        if (config?.activeRunnerBackend === 'huggingface') {
+        const activeRunner = config?.activeRunnerBackend || 'local';
+        const isCloud = activeRunner === 'huggingface' || activeRunner === 'github_actions';
+        if (isCloud) {
           res = await fetch('/api/local-trigger');
         } else {
           res = await fetch(`http://localhost:${localPort || '3006'}/api/local-trigger`, { signal: controller.signal });
@@ -632,7 +634,9 @@ export default function Home() {
   const handleLocalTrigger = async () => {
     setTriggerLoading(true);
     try {
-      const targetUrl = (config?.activeRunnerBackend === 'huggingface' || !isProductionEnv) 
+      const activeRunner = config?.activeRunnerBackend || 'local';
+      const isCloud = activeRunner === 'huggingface' || activeRunner === 'github_actions';
+      const targetUrl = (isCloud || !isProductionEnv) 
         ? '/api/local-trigger' 
         : `http://localhost:${localPort || '3006'}/api/local-trigger`;
       const res = await fetch(targetUrl, { 
@@ -657,7 +661,9 @@ export default function Home() {
   const handleStopLocalRunner = async () => {
     setTriggerLoading(true);
     try {
-      const targetUrl = (config?.activeRunnerBackend === 'huggingface' || !isProductionEnv) 
+      const activeRunner = config?.activeRunnerBackend || 'local';
+      const isCloud = activeRunner === 'huggingface' || activeRunner === 'github_actions';
+      const targetUrl = (isCloud || !isProductionEnv) 
         ? '/api/local-trigger' 
         : `http://localhost:${localPort || '3006'}/api/local-trigger`;
       const res = await fetch(targetUrl, { 
@@ -1864,16 +1870,23 @@ export default function Home() {
 
       // Auto-start local runner if it is offline
       if (runnerStatus === 'offline' && queuedJobIds.length > 0) {
-        setStatusMessage('Queue runner is offline. Auto-starting local background worker...');
+        const activeRunner = config?.activeRunnerBackend || 'local';
+        const isCloud = activeRunner === 'huggingface' || activeRunner === 'github_actions';
+        const runnerLabel = activeRunner === 'github_actions'
+          ? 'GitHub Actions cloud runner'
+          : (activeRunner === 'huggingface' ? 'Hugging Face space' : 'local background worker');
+        setStatusMessage(`Queue runner is offline. Auto-starting ${runnerLabel}...`);
         try {
-          const targetUrl = isProductionEnv ? `http://localhost:${localPort || '3006'}/api/local-trigger` : '/api/local-trigger';
+          const targetUrl = (isCloud || !isProductionEnv) 
+            ? '/api/local-trigger' 
+            : `http://localhost:${localPort || '3006'}/api/local-trigger`;
           await fetch(targetUrl, { 
             method: 'POST', 
             headers: { 'Content-Type': 'application/json' },
             mode: 'cors' 
           });
           setRunnerStatus('online');
-          addToast('Auto-started local runner to process queue.', 'success');
+          addToast(`Auto-started ${runnerLabel} to process queue.`, 'success');
         } catch {
           addToast('Could not start queue runner.', 'error');
         }
@@ -2047,9 +2060,17 @@ export default function Home() {
     try {
       // Step 1: Auto-start the runner if it's not already online
       if (runnerStatus !== 'online') {
-        addToast('🚀 Step 1/2: Starting Local Runner...', 'info');
+        const activeRunner = config?.activeRunnerBackend || 'local';
+        const isHF = activeRunner === 'huggingface';
+        const isCloud = activeRunner === 'huggingface' || activeRunner === 'github_actions';
+        const runnerLabel = activeRunner === 'github_actions' 
+          ? 'GitHub Actions Cloud Runner' 
+          : (activeRunner === 'huggingface' ? 'Cloud Space Runner' : 'Local Runner');
+        addToast(`🚀 Step 1/2: Starting ${runnerLabel}...`, 'info');
         try {
-          const targetUrl = isProductionEnv ? `http://localhost:${localPort || '3006'}/api/local-trigger` : '/api/local-trigger';
+          const targetUrl = (isCloud || !isProductionEnv) 
+            ? '/api/local-trigger' 
+            : `http://localhost:${localPort || '3006'}/api/local-trigger`;
           const runnerRes = await fetch(targetUrl, { 
             method: 'POST', 
             headers: { 'Content-Type': 'application/json' },
@@ -2057,13 +2078,15 @@ export default function Home() {
           });
           if (runnerRes.ok) {
             setRunnerStatus('online');
-            addToast('✅ Local Runner started successfully!', 'success');
+            addToast(isHF ? '✅ Cloud Space Runner started successfully!' : '✅ Local Runner started successfully!', 'success');
           } else {
             const d = await runnerRes.json().catch(() => ({}));
             addToast(`⚠️ Runner start issue: ${d.error || 'Unknown'}. Attempting to queue anyway...`, 'error');
           }
         } catch (err: any) {
-          addToast(`⚠️ Could not reach runner on port ${localPort || '3006'}. Make sure your local server is running (npm run dev). Attempting queue anyway...`, 'error');
+          addToast(isHF 
+            ? `⚠️ Could not reach cloud trigger endpoint. Attempting queue anyway...` 
+            : `⚠️ Could not reach runner on port ${localPort || '3006'}. Make sure your local server is running (npm run dev). Attempting queue anyway...`, 'error');
         }
         // Brief pause so runner has time to initialise
         await new Promise(r => setTimeout(r, 1500));
@@ -2543,7 +2566,7 @@ export default function Home() {
 
   const renderTemplatePreview = (lead: Lead | null) => {
     if (!lead) return 'Select a lead to see custom outreach message variables';
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://lead-generation-automation-ecru.vercel.app';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://lead-generation-automation-e0oitxcsi.vercel.app';
     
     if (config.outreachChannel === 'sms') {
       const smsTemplate = config.smsMessageTemplate || 
@@ -5098,7 +5121,7 @@ export default function Home() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h4 style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Terminal size={18} color="var(--primary)" />
-                    {config?.activeRunnerBackend === 'huggingface' ? 'Cloud Scraper Runner' : 'Local Scraper Runner'}
+                    {config?.activeRunnerBackend === 'github_actions' ? 'GitHub Actions Cloud Runner' : (config?.activeRunnerBackend === 'huggingface' ? 'Hugging Face Space Runner' : 'Local Scraper Runner')}
                   </h4>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ 
@@ -5129,14 +5152,15 @@ export default function Home() {
                     onChange={async (e) => {
                       const target = e.target.value;
                       try {
-                        addToast(`Switching active runner target to ${target === 'local' ? 'Local PC' : 'Cloud (Hugging Face)'}...`, 'info');
+                        const targetLabel = target === 'local' ? 'Local PC' : (target === 'github_actions' ? 'GitHub Actions (Free)' : 'Cloud (Hugging Face)');
+                        addToast(`Switching active runner target to ${targetLabel}...`, 'info');
                         const saveRes = await fetch('/api/config', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ activeRunnerBackend: target })
                         });
                         if (saveRes.ok) {
-                          addToast(`Runner target switched to ${target === 'local' ? 'Local PC' : 'Cloud Space'}!`, 'success');
+                          addToast(`Runner target switched to ${target === 'local' ? 'Local PC' : (target === 'github_actions' ? 'GitHub Actions' : 'Cloud Space')}!`, 'success');
                           fetchConfig();
                           setTimeout(checkRunnerStatus, 500);
                         } else {
@@ -5158,16 +5182,19 @@ export default function Home() {
                     }}
                   >
                     <option value="local">💻 Local PC Workstation</option>
-                    <option value="huggingface">☁️ Cloud (Hugging Face)</option>
+                    <option value="huggingface">☁️ Cloud (Hugging Face - PRO)</option>
+                    <option value="github_actions">🐙 Cloud (GitHub Actions - Free)</option>
                   </select>
                 </div>
 
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.4' }}>
-                  {config?.activeRunnerBackend === 'huggingface'
-                    ? "Persistent background queue execution running on Hugging Face Spaces. Automatically syncs with your Supabase queue."
-                    : isProductionEnv 
-                      ? "Monitoring local worker via database heartbeat. You can start/stop the local worker directly using the buttons below if your local server is running on port 3006."
-                      : "Spawns and manages the local background queue worker process tree. It will automatically process queued scraper jobs in the background."}
+                  {config?.activeRunnerBackend === 'github_actions'
+                    ? "On-demand cloud queue execution run via GitHub Actions. Automatically spins up when tasks are enqueued, and logs statistics in Supabase logs."
+                    : config?.activeRunnerBackend === 'huggingface'
+                      ? "Persistent background queue execution running on Hugging Face Spaces. Automatically syncs with your Supabase queue."
+                      : isProductionEnv 
+                        ? "Monitoring local worker via database heartbeat. You can start/stop the local worker directly using the buttons below if your local server is running on port 3006."
+                        : "Spawns and manages the local background queue worker process tree. It will automatically process queued scraper jobs in the background."}
                 </p>
 
                 <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
@@ -5196,7 +5223,7 @@ export default function Home() {
                     >
                       {triggerLoading 
                         ? <Loader2 size={16} className="spin-anim" /> 
-                        : config?.activeRunnerBackend === 'huggingface' ? 'Pause Cloud Space' : 'Stop Runner'}
+                        : config?.activeRunnerBackend === 'github_actions' ? 'GitHub Actions (On-Demand)' : (config?.activeRunnerBackend === 'huggingface' ? 'Pause Cloud Space' : 'Stop Runner')}
                     </button>
                   ) : (
                     <button
@@ -5223,7 +5250,7 @@ export default function Home() {
                     >
                       {triggerLoading 
                         ? <Loader2 size={16} className="spin-anim" /> 
-                        : config?.activeRunnerBackend === 'huggingface' ? 'Start Cloud Space' : 'Start Runner'}
+                        : config?.activeRunnerBackend === 'github_actions' ? 'Trigger GitHub Action' : (config?.activeRunnerBackend === 'huggingface' ? 'Start Cloud Space' : 'Start Runner')}
                     </button>
                   )}
                   

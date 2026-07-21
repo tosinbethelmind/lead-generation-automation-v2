@@ -390,7 +390,7 @@ export async function enrichContactsViaSearch(name: string, city: string): Promi
   };
 
   try {
-    const query = `"${name}" "${city}" contact email OR phone OR site`;
+    const query = `"${name}" Lagos Nigeria phone email site:vconnect.com OR site:businesslist.com.ng OR site:google.com OR site:infobel.com`;
     const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
     const userAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
     
@@ -457,6 +457,121 @@ export async function enrichContactsViaSearch(name: string, city: string): Promi
     console.error(`[enrichContactsViaSearch] search failed for ${name}:`, err.message);
     return result;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Tier 3 (extra) — Nigerian Business Directory enrichment
+// Scrapes VConnect and BusinessList.com.ng — plain-HTML sites with phone/email
+// for Lagos businesses. No JS required, no API key needed.
+// ---------------------------------------------------------------------------
+
+/**
+ * Scrape Nigerian business directories (VConnect, BusinessList) for a business's phone/email.
+ * These directories often have contact info that doesn't appear in DuckDuckGo snippets.
+ */
+export async function enrichFromNigerianDirectories(name: string, city: string): Promise<{
+  phone: string | null;
+  email: string | null;
+}> {
+  let phone: string | null = null;
+  let email: string | null = null;
+
+  const userAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+
+  // --- Source 1: VConnect ---
+  try {
+    const vconnectUrl = `https://www.vconnect.com/search?kwd=${encodeURIComponent(name)}&location=${encodeURIComponent(city)}`;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 7000);
+    const resp = await fetch(vconnectUrl, {
+      headers: { 'User-Agent': userAgent, Accept: 'text/html' },
+      signal: ctrl.signal
+    });
+    clearTimeout(t);
+    if (resp.ok) {
+      const html = await resp.text();
+      const $ = cheerio.load(html);
+      // VConnect shows business contact snippets in .biz-details or .phone-number spans
+      const snippetText = $('.biz-details, .phone-number, .phone, .email, .biz-info').text();
+      const bodyText = $('body').text();
+      const allText = snippetText || bodyText.substring(0, 5000);
+
+      if (!phone) {
+        const phones = extractPhonesFromText(allText);
+        if (phones.length > 0) phone = normalizePhone(phones[0], 'NG');
+      }
+      if (!email) {
+        const emails = extractEmailsFromText(allText);
+        if (emails.length > 0) email = emails[0];
+      }
+    }
+  } catch (_) {
+    // VConnect unreachable — move on
+  }
+
+  // --- Source 2: BusinessList.com.ng ---
+  if (!phone || !email) {
+    try {
+      const blUrl = `https://www.businesslist.com.ng/search/${encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-'))}`;
+      const ctrl2 = new AbortController();
+      const t2 = setTimeout(() => ctrl2.abort(), 7000);
+      const resp2 = await fetch(blUrl, {
+        headers: { 'User-Agent': userAgent, Accept: 'text/html' },
+        signal: ctrl2.signal
+      });
+      clearTimeout(t2);
+      if (resp2.ok) {
+        const html2 = await resp2.text();
+        const $2 = cheerio.load(html2);
+        // BusinessList shows phone/email inside .company-details, .phone, .email spans
+        const snippetText2 = $2('.company-details, .phone, .email, .company-name').text();
+        const bodyText2 = $2('body').text();
+        const allText2 = snippetText2 || bodyText2.substring(0, 5000);
+
+        if (!phone) {
+          const phones2 = extractPhonesFromText(allText2);
+          if (phones2.length > 0) phone = normalizePhone(phones2[0], 'NG');
+        }
+        if (!email) {
+          const emails2 = extractEmailsFromText(allText2);
+          if (emails2.length > 0) email = emails2[0];
+        }
+      }
+    } catch (_) {
+      // BusinessList unreachable — ignore
+    }
+  }
+
+  // --- Source 3: Infobel Nigeria (global directory with good NG coverage) ---
+  if (!phone || !email) {
+    try {
+      const infobelUrl = `https://www.infobel.com/en/nigeria/search?q=${encodeURIComponent(name + ' ' + city)}`;
+      const ctrl3 = new AbortController();
+      const t3 = setTimeout(() => ctrl3.abort(), 7000);
+      const resp3 = await fetch(infobelUrl, {
+        headers: { 'User-Agent': userAgent, Accept: 'text/html' },
+        signal: ctrl3.signal
+      });
+      clearTimeout(t3);
+      if (resp3.ok) {
+        const html3 = await resp3.text();
+        const $3 = cheerio.load(html3);
+        const bodyText3 = $3('body').text().substring(0, 5000);
+        if (!phone) {
+          const phones3 = extractPhonesFromText(bodyText3);
+          if (phones3.length > 0) phone = normalizePhone(phones3[0], 'NG');
+        }
+        if (!email) {
+          const emails3 = extractEmailsFromText(bodyText3);
+          if (emails3.length > 0) email = emails3[0];
+        }
+      }
+    } catch (_) {
+      // Infobel unreachable — ignore
+    }
+  }
+
+  return { phone, email };
 }
 
 /**
@@ -561,6 +676,98 @@ export async function enrichLeadContacts(
     }
   }
 
+  // Stage 3: Nigerian Business Directory enrichment (VConnect, BusinessList, Infobel)
+  // Only runs when we are still missing phone OR email after stages 1+2.
+  if (!currentEmail || !currentPhone) {
+    try {
+      const dirResult = await enrichFromNigerianDirectories(lead.name || '', lead.city || 'Lagos');
+      if (dirResult.phone && !currentPhone) {
+        currentPhone = dirResult.phone;
+        enriched = true;
+        console.log(`[enrichLeadContacts] Directory enrichment found phone for ${lead.name}: ${dirResult.phone}`);
+      }
+      if (dirResult.email && !currentEmail) {
+        currentEmail = dirResult.email;
+        enriched = true;
+        console.log(`[enrichLeadContacts] Directory enrichment found email for ${lead.name}: ${dirResult.email}`);
+      }
+    } catch (e: any) {
+      console.warn(`[enrichLeadContacts] Nigerian directory enrichment failed for ${lead.name}:`, e.message);
+    }
+  }
+
+  // Stage 4: Social profile snippet bio enrichment (if still missing email OR phone)
+  if (!currentEmail || !currentPhone) {
+    const candidates = new Set<string>();
+    if (lead.profile_url && (lead.profile_url.includes('instagram.com') || lead.profile_url.includes('facebook.com') || lead.profile_url.includes('tiktok.com') || lead.profile_url.includes('twitter.com') || lead.profile_url.includes('x.com'))) {
+      candidates.add(lead.profile_url);
+    }
+    Object.values(currentSocials).forEach(link => {
+      if (link && (link.includes('instagram.com') || link.includes('facebook.com') || link.includes('tiktok.com') || link.includes('twitter.com') || link.includes('x.com'))) {
+        candidates.add(link);
+      }
+    });
+
+    for (const link of candidates) {
+      if (currentPhone && currentEmail) break;
+      try {
+        const bioResult = await enrichFromSocialProfileSnippet(link);
+        if (bioResult.phone && !currentPhone) {
+          currentPhone = bioResult.phone;
+          enriched = true;
+          console.log(`[enrichLeadContacts] Social bio enrichment found phone for ${lead.name}: ${bioResult.phone}`);
+        }
+        if (bioResult.email && !currentEmail) {
+          currentEmail = bioResult.email;
+          enriched = true;
+          console.log(`[enrichLeadContacts] Social bio enrichment found email for ${lead.name}: ${bioResult.email}`);
+        }
+      } catch (err: any) {
+        console.warn(`[enrichLeadContacts] Social bio enrichment failed for ${link}:`, err.message);
+      }
+    }
+  }
+
+  // Generate outreach helper links for direct messaging and forms
+  const dmLinks: string[] = [];
+  if (lead.website && lead.website.startsWith('http')) {
+    const cleanWeb = lead.website.replace(/\/$/, '');
+    dmLinks.push(`Form: ${cleanWeb}/contact`);
+    (currentSocials as any).contact_form = `${cleanWeb}/contact`;
+  }
+  
+  if (lead.profile_url) {
+    if (lead.profile_url.includes('facebook.com')) {
+      const parts = lead.profile_url.replace(/\/$/, '').split('/');
+      const lastPart = parts[parts.length - 1];
+      dmLinks.push(`FB Msg: https://m.me/${lastPart}`);
+      (currentSocials as any).facebook_messenger = `https://m.me/${lastPart}`;
+    } else if (lead.profile_url.includes('instagram.com')) {
+      const targetUrl = lead.profile_url.replace(/\/$/, '');
+      dmLinks.push(`IG DM: ${targetUrl}/direct/inbox/`);
+      (currentSocials as any).instagram_dm = `${targetUrl}/direct/inbox/`;
+    }
+  }
+
+  Object.entries(currentSocials).forEach(([platform, link]) => {
+    if (!link) return;
+    if (platform === 'facebook' && !(currentSocials as any).facebook_messenger) {
+      const parts = link.replace(/\/$/, '').split('/');
+      const lastPart = parts[parts.length - 1];
+      dmLinks.push(`FB Msg: https://m.me/${lastPart}`);
+      (currentSocials as any).facebook_messenger = `https://m.me/${lastPart}`;
+    } else if (platform === 'instagram' && !(currentSocials as any).instagram_dm) {
+      const targetUrl = link.replace(/\/$/, '');
+      dmLinks.push(`IG DM: ${targetUrl}/direct/inbox/`);
+      (currentSocials as any).instagram_dm = `${targetUrl}/direct/inbox/`;
+    }
+  });
+
+  if (dmLinks.length > 0) {
+    const channelsSummary = `[Outreach Channels: ${dmLinks.join(' | ')}]`;
+    lead.notes = (lead.notes || '') + ` | ${channelsSummary}`;
+  }
+
   return {
     phone: currentPhone,
     email: currentEmail,
@@ -572,6 +779,60 @@ export async function enrichLeadContacts(
     pluginSuggestions,
     embedNote
   };
+}
+
+/**
+ * Scrapes DuckDuckGo snippets for a social profile link (Instagram/Facebook/etc.)
+ * and parses contact numbers / email addresses from user profile bios indexed on DDG.
+ */
+export async function enrichFromSocialProfileSnippet(profileUrl: string): Promise<{
+  phone: string | null;
+  email: string | null;
+}> {
+  const result: { phone: string | null; email: string | null } = { phone: null, email: null };
+  if (!profileUrl || !profileUrl.startsWith('http')) return result;
+
+  // Extract clean site name + path (e.g. site:instagram.com/shopname)
+  let siteQuery = '';
+  try {
+    const u = new URL(profileUrl);
+    siteQuery = `site:${u.hostname}${u.pathname}`;
+  } catch (_) {
+    siteQuery = profileUrl;
+  }
+
+  const userAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+  try {
+    const query = `"${siteQuery}" phone OR email OR "whatsapp" OR "contact"`;
+    const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 6500);
+    const resp = await fetch(url, {
+      headers: {
+        'User-Agent': userAgent,
+        'Accept': 'text/html',
+        'Referer': 'https://duckduckgo.com/'
+      },
+      signal: ctrl.signal
+    });
+    clearTimeout(t);
+    if (resp.ok) {
+      const html = await resp.text();
+      const $ = cheerio.load(html);
+      const snippets: string[] = [];
+      $('.web-result, .result__snippet').each((_, elem) => {
+        snippets.push($(elem).text());
+      });
+      const combinedText = snippets.join(' \n ');
+      const phones = extractPhonesFromText(combinedText);
+      const emails = extractEmailsFromText(combinedText);
+      if (phones.length > 0) result.phone = normalizePhone(phones[0], 'NG');
+      if (emails.length > 0) result.email = emails[0];
+    }
+  } catch (err: any) {
+    console.warn(`[enrichFromSocialProfileSnippet] DDG scan failed for ${profileUrl}:`, err.message);
+  }
+  return result;
 }
 
 /**

@@ -361,9 +361,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const dbResult = await saveLeads(sliced);
+    // Only save leads that have at least one contactable field (phone, email, or website)
+    const contactableLeads = sliced.filter(l => l.phone_e164 || l.email || l.website);
+    const filteredOut = sliced.length - contactableLeads.length;
+    if (filteredOut > 0) {
+      await addLog('OSM Scraper', 'INFO', `Filtered out ${filteredOut} leads with no phone, email, or website.`);
+    }
+
+    const dbResult = await saveLeads(contactableLeads);
     
-    await addLog('OSM Scraper', 'SUCCESS', `OSM scraping complete using ${methodUsed}. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+    await addLog('OSM Scraper', 'SUCCESS', `OSM scraping complete using ${methodUsed}. ${contactableLeads.length}/${sliced.length} leads contactable. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
     
     return NextResponse.json({
       success: true,
@@ -371,7 +378,7 @@ export async function POST(req: NextRequest) {
       method: methodUsed,
       added: dbResult.added,
       skipped: dbResult.skipped,
-      leads: sliced
+      leads: contactableLeads
     });
     
   } catch (e: any) {

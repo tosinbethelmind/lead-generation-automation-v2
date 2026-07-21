@@ -82,7 +82,7 @@ const MESSAGE_TEMPLATE = `{Hi|Hello} {{name}},
 
 We noticed your solar/inverter listing on {{source}} in {{city}}. We operate SolarQuotePro.ng, a leading platform connecting high-intent B2C homeowners with vetted local installers. We would love to onboard your business to receive residential installation leads.
 
-Learn more & sign up here: https://lead-generation-automation-ecru.vercel.app/signup
+Learn more & sign up here: https://lead-generation-automation-e0oitxcsi.vercel.app/signup
 
 Best,
 The SolarQuotePro Team
