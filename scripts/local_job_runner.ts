@@ -53,6 +53,90 @@ if (!isLocalMode && (!supabaseUrl || !supabaseKey)) {
 
 const supabase = (!isLocalMode && supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
 
+const isHuggingFaceEnv = process.env.RUNNER_ENVIRONMENT === 'huggingface' || !!process.env.SPACE_ID;
+
+let cachedActiveRunner: string | null = null;
+let lastActiveRunnerCheck = 0;
+
+async function checkActiveRunnerBackend(): Promise<string> {
+  const now = Date.now();
+  if (now - lastActiveRunnerCheck < 15000 && cachedActiveRunner !== null) {
+    return cachedActiveRunner;
+  }
+  
+  if (isLocalMode) {
+    cachedActiveRunner = 'local';
+    lastActiveRunnerCheck = now;
+    return 'local';
+  }
+  if (!supabase) {
+    cachedActiveRunner = 'local';
+    lastActiveRunnerCheck = now;
+    return 'local';
+  }
+
+  try {
+    const { data } = await supabaseWithRetry(() => supabase!
+      .from('app_settings')
+      .select('value')
+      .eq('key', 'apexreach_runtime_config')
+      .maybeSingle()
+    );
+
+    if (data?.value) {
+      const parsed = JSON.parse(data.value);
+      cachedActiveRunner = parsed.activeRunnerBackend || 'local';
+    } else {
+      cachedActiveRunner = 'local';
+    }
+  } catch (err: any) {
+    cachedActiveRunner = 'local';
+  }
+  lastActiveRunnerCheck = now;
+  return cachedActiveRunner;
+}
+
+async function isActiveRunner(): Promise<boolean> {
+  const activeRunner = await checkActiveRunnerBackend();
+  
+  if (activeRunner === (isHuggingFaceEnv ? 'huggingface' : 'local')) {
+    return true;
+  }
+
+  // Fallback: If active backend is huggingface, but this is the local workspace,
+  // check if huggingface_runner has gone offline (missing heartbeats) to take over.
+  if (activeRunner === 'huggingface' && !isHuggingFaceEnv && supabase) {
+    try {
+      const { data: dbLogs } = await supabaseWithRetry(() => supabase!
+        .from('logs')
+        .select('*')
+        .eq('run_id', 'huggingface_runner')
+        .eq('step', 'heartbeat')
+        .order('created_at', { ascending: false })
+        .limit(1)
+      );
+
+      if (dbLogs && dbLogs.length > 0) {
+        const logEntry = dbLogs[0];
+        const logTime = new Date(logEntry.created_at || logEntry.timestamp).getTime();
+        const inactiveDuration = Date.now() - logTime;
+        // 5 minutes threshold (300,000 ms)
+        if (inactiveDuration > 300000) {
+          console.log(`⚠️ [Failover] Cloud runner (Hugging Face) is offline (last heartbeat ${Math.round(inactiveDuration / 1000)}s ago). Local PC runner activating fallback.`);
+          return true;
+        }
+      } else {
+        console.log(`⚠️ [Failover] Cloud runner (Hugging Face) heartbeat not recorded. Local PC runner taking over fallback.`);
+        return true;
+      }
+    } catch (err: any) {
+      console.warn(`[Failover Check Error] ${err.message}. Standing by...`);
+    }
+  }
+
+  return false;
+}
+
 // Helper to wrap Supabase operations with automatic retry logic with exponential backoff
 async function supabaseWithRetry<T>(queryPromiseFn: () => Promise<{ data: T | null; error: any }>, retries = 5, initialDelay = 1000): Promise<{ data: T | null; error: any }> {
   let delay = initialDelay;
@@ -320,6 +404,9 @@ async function failJob(id: string, errorMessage: string) {
 
 async function pollQueue() {
   try {
+    const isActive = await isActiveRunner();
+    if (!isActive) return;
+
     if (isLocalMode) {
       const jobs = readLocalJobs();
       const nextJobId = Object.keys(jobs)
@@ -384,6 +471,8 @@ async function pollQueue() {
 
 async function resetStuckJobs() {
   try {
+    const isActive = await isActiveRunner();
+    if (!isActive) return;
     console.log('🔄 Cleaning up and resetting stuck/running jobs...');
     if (isLocalMode) {
       const jobs = readLocalJobs();
@@ -422,6 +511,8 @@ async function resetStuckJobs() {
 
 async function checkAndRecoverStuckJobs() {
   try {
+    const isActive = await isActiveRunner();
+    if (!isActive) return;
     console.log(`🔍 [${new Date().toISOString()}] Checking stuck jobs...`);
     if (isLocalMode) {
       const jobs = readLocalJobs();
@@ -493,6 +584,8 @@ async function checkAndRecoverStuckJobs() {
 
 async function checkScheduledCampaigns() {
   try {
+    const isActive = await isActiveRunner();
+    if (!isActive) return;
     console.log(`[${new Date().toISOString()}] 📅 Checking for scheduled campaigns...`);
     const response = await fetch(`${LOCAL_BASE_URL}/api/schedule`, {
       method: 'POST',
@@ -517,18 +610,23 @@ async function checkScheduledCampaigns() {
 
 async function checkLagosDailyScraper() {
   try {
+    const isActive = await isActiveRunner();
+    if (!isActive) return;
     const configPath = path.resolve(process.cwd(), 'config.json');
     let autoQueueEnabled = false;
+    let targetVolume = 10000;
     if (fs.existsSync(configPath)) {
       try {
         const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        // We will support a setting in config if needed, default to true for scaling objective
         autoQueueEnabled = config.autoQueueLagosDaily10k !== false;
+        if (config.lagosDailyLeadTarget) {
+          targetVolume = Number(config.lagosDailyLeadTarget);
+        }
       } catch {}
     }
 
     if (!autoQueueEnabled) {
-      console.log('[Scheduler] Daily automated 10K Lagos Scraper is disabled in settings.');
+      console.log('[Scheduler] Daily automated Lagos Scraper is disabled in settings.');
       return;
     }
 
@@ -548,13 +646,14 @@ async function checkLagosDailyScraper() {
     // Check if 24 hours (86,400,000 ms) have passed
     const now = Date.now();
     if (now - lastRunTime >= 24 * 60 * 60 * 1000) {
-      console.log(`[Scheduler] 24h passed. Triggering automated daily 10K Lagos Scraper...`);
+      const maxJobs = Math.ceil(targetVolume / 100);
+      console.log(`[Scheduler] 24h passed. Triggering automated daily Lagos Scraper (Target leads: ${targetVolume}, queuing ${maxJobs} jobs)...`);
       const response = await fetch(`${LOCAL_BASE_URL}/api/scrape/bulk-queue`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           limit: 100, 
-          maxJobsToQueue: 100,
+          maxJobsToQueue: maxJobs,
           targetLagosDaily10k: true
         })
       });
@@ -613,6 +712,8 @@ async function checkLagosDailyScraper() {
   // Asynchronous Batch Deployment synchronization handler
   async function triggerBatchSync() {
     try {
+      const isActive = await isActiveRunner();
+      if (!isActive) return;
       console.log(`[${new Date().toISOString()}] 🔄 Running background Git-batch sync check...`);
       const cronSecret = process.env.CRON_SECRET || 'apexreach_sync_secret';
       const response = await fetch(`${LOCAL_BASE_URL}/api/deploy/batch-sync?secret=${cronSecret}`, {
@@ -641,6 +742,11 @@ async function checkLagosDailyScraper() {
   }
 
   if (process.env.RUN_ONCE === 'true') {
+    const isActive = await isActiveRunner();
+    if (!isActive) {
+      console.log('🏃 RUN_ONCE mode active but environment is inactive. Exiting.');
+      process.exit(0);
+    }
     console.log('🏃 RUN_ONCE mode active: Processing all queued jobs and then exiting...');
     await resetStuckJobs();
     await checkAndRecoverStuckJobs();
@@ -733,11 +839,12 @@ async function checkLagosDailyScraper() {
     // 2. Database write
     try {
       if (supabase) {
+        const runId = isHuggingFaceEnv ? 'huggingface_runner' : 'local_runner';
         // Delete older heartbeats to avoid table bloating
         await supabaseWithRetry(() => supabase!
           .from('logs')
           .delete()
-          .eq('run_id', 'local_runner')
+          .eq('run_id', runId)
           .eq('step', 'heartbeat')
         );
 
@@ -745,7 +852,7 @@ async function checkLagosDailyScraper() {
         await supabaseWithRetry(() => supabase!
           .from('logs')
           .insert([{
-            run_id: 'local_runner',
+            run_id: runId,
             step: 'heartbeat',
             status: 'INFO',
             message: JSON.stringify(heartbeatData)

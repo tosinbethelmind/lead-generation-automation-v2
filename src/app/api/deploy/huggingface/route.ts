@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { getRuntimeConfig } from '@/lib/localConfig';
+import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
 
 interface CommitAction {
   operation: 'add';
@@ -201,6 +201,17 @@ export async function POST(req: NextRequest) {
     if (!commitRes.ok) {
       const errorMsg = await commitRes.text();
       return NextResponse.json({ success: false, error: `Failed to commit files to Hugging Face Space: ${errorMsg}` }, { status: commitRes.status });
+    }
+
+    // Persist new deployment configurations and activate Space runner backend
+    try {
+      saveLocalConfig({
+        hfToken,
+        spaceName,
+        activeRunnerBackend: 'huggingface'
+      });
+    } catch (saveErr: any) {
+      console.error('Failed to auto-save deployment configs to config.json:', saveErr.message);
     }
 
     return NextResponse.json({

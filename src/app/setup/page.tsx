@@ -11,10 +11,18 @@ import {
 
 export default function SetupPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'ai' | 'browser' | 'outreach'>('ai');
+  const [activeTab, setActiveTab] = useState<'ai' | 'browser' | 'outreach' | 'deploy'>('ai');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error' | null; message: string | null }>({ type: null, message: null });
+
+  // Tab 4 HF state
+  const [activeRunnerBackend, setActiveRunnerBackend] = useState<'local' | 'huggingface'>('local');
+  const [hfToken, setHfToken] = useState('');
+  const [spaceName, setSpaceName] = useState('bethelmind-lead-engine');
+  const [isPrivateSpace, setIsPrivateSpace] = useState(true);
+  const [deploying, setDeploying] = useState(false);
+  const [deployStatus, setDeployStatus] = useState<{ type: 'success' | 'error' | null; message: string | null }>({ type: null, message: null });
 
   // Tab 1: AI & Core API Keys
   const [geminiKeys, setGeminiKeys] = useState('');
@@ -138,6 +146,10 @@ export default function SetupPage() {
         setEvolutionApiKey(config.evolutionApiKey || '');
         setEvolutionInstanceName(config.evolutionInstanceName || '');
         setJijiConnected(!!config.jijiCookies);
+        setActiveRunnerBackend(config.activeRunnerBackend || 'local');
+        setHfToken(config.hfToken || '');
+        setSpaceName(config.spaceName || 'bethelmind-lead-engine');
+        setIsPrivateSpace(config.isPrivateSpace !== false);
       }
     } catch (err) {
       console.error('Failed to load configuration:', err);
@@ -223,7 +235,11 @@ export default function SetupPage() {
       whatsappBaileysUrl,
       evolutionApiUrl,
       evolutionApiKey,
-      evolutionInstanceName
+      evolutionInstanceName,
+      activeRunnerBackend,
+      hfToken,
+      spaceName,
+      isPrivateSpace
     };
 
     try {
@@ -336,6 +352,40 @@ export default function SetupPage() {
       setStatus({ type: 'error', message: 'SMS endpoint connection error: ' + err.message });
     } finally {
       setTestingSms(false);
+    }
+  };
+
+  const handleHuggingFaceDeploy = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!hfToken.trim() || !spaceName.trim()) {
+      setDeployStatus({ type: 'error', message: 'Hugging Face Token and Space Name are required.' });
+      return;
+    }
+    setDeploying(true);
+    setDeployStatus({ type: null, message: null });
+    try {
+      const res = await fetch('/api/deploy/huggingface', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          hfToken: hfToken.trim(), 
+          spaceName: spaceName.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-'), 
+          isPrivate: isPrivateSpace 
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDeployStatus({ 
+          type: 'success', 
+          message: `Successfully deployed! Workspace is ready at: ${data.spaceUrl}` 
+        });
+      } else {
+        setDeployStatus({ type: 'error', message: data.error || 'Deployment failed.' });
+      }
+    } catch (err: any) {
+      setDeployStatus({ type: 'error', message: err.message || 'An unexpected error occurred.' });
+    } finally {
+      setDeploying(false);
     }
   };
 
@@ -458,7 +508,7 @@ export default function SetupPage() {
           </div>
 
           {/* Tabs Navigation */}
-          <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', marginBottom: '24px', gap: '4px' }}>
+          <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', marginBottom: '24px', gap: '4px', flexWrap: 'wrap' }}>
             <button type="button" onClick={() => setActiveTab('ai')} style={tabStyle(activeTab === 'ai')}>
               <Cpu style={{ width: '14px', height: '14px' }} /> AI & Core Engines
             </button>
@@ -467,6 +517,9 @@ export default function SetupPage() {
             </button>
             <button type="button" onClick={() => setActiveTab('outreach')} style={tabStyle(activeTab === 'outreach')}>
               <Mail style={{ width: '14px', height: '14px' }} /> Outreach Gateways
+            </button>
+            <button type="button" onClick={() => setActiveTab('deploy')} style={tabStyle(activeTab === 'deploy')}>
+              <ExternalLink style={{ width: '14px', height: '14px' }} /> Cloud Deployment
             </button>
           </div>
 
@@ -1036,6 +1089,147 @@ export default function SetupPage() {
                   </div>
                 </div>
 
+              </div>
+            )}
+
+            {/* ======= TAB 4: CLOUD DEPLOYMENT ======= */}
+            {activeTab === 'deploy' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{
+                  background: 'rgba(99, 102, 241, 0.05)',
+                  border: '1px solid rgba(99, 102, 241, 0.2)',
+                  borderRadius: '14px',
+                  padding: '18px 20px',
+                }}>
+                  <strong style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', display: 'block', marginBottom: '4px' }}>
+                    🤖 Deploy Background Runner to Hugging Face Spaces
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', color: '#94a3b8', lineHeight: 1.4, display: 'block' }}>
+                    This compiles your project files using Docker and pushes them to a Hugging Face Space. 
+                    The Space runs 24/7 in the cloud, syncing automatically with your Supabase queue. 
+                    Your laptop can remain powered off while scraping!
+                  </span>
+
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px', background: 'rgba(255,255,255,0.02)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#f8fafc', display: 'block' }}>Active Automation Runner Profile</span>
+                      <span style={{ fontSize: '0.68rem', color: '#64748b' }}>Select where job execution takes place.</span>
+                    </div>
+                    <select
+                      value={activeRunnerBackend}
+                      onChange={e => setActiveRunnerBackend(e.target.value as 'local' | 'huggingface')}
+                      style={selectStyle}
+                    >
+                      <option value="local">💻 Local PC Workstation</option>
+                      <option value="huggingface">☁️ Cloud (Hugging Face Spaces)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <span style={labelStyle}>Hugging Face Write Token</span>
+                    <input 
+                      type="password" 
+                      value={hfToken} 
+                      onChange={e => setHfToken(e.target.value)} 
+                      placeholder="hf_..." 
+                      style={inputStyle} 
+                    />
+                    <span style={hintStyle}>
+                      Create a token with <strong>Write</strong> permission in your Hugging Face account under Settings &gt; Access Tokens.
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <span style={labelStyle}>Space Name</span>
+                      <input 
+                        type="text" 
+                        value={spaceName} 
+                        onChange={e => setSpaceName(e.target.value)} 
+                        style={inputStyle} 
+                      />
+                      <span style={hintStyle}>Name of the Hugging Face Space. E.g. bethelmind-lead-engine</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <span style={labelStyle}>Space Visibility</span>
+                      <select 
+                        value={isPrivateSpace ? 'private' : 'public'} 
+                        onChange={e => setIsPrivateSpace(e.target.value === 'private')} 
+                        style={selectStyle}
+                      >
+                        <option value="private">Private Space (Recommended)</option>
+                        <option value="public">Public Space</option>
+                      </select>
+                      <span style={hintStyle}>Private spaces keep your Supabase and API key secrets hidden.</span>
+                    </div>
+                  </div>
+
+                  {deployStatus.message && (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '10px',
+                      padding: '12px',
+                      borderRadius: '12px',
+                      border: deployStatus.type === 'success' ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(239, 68, 68, 0.2)',
+                      backgroundColor: deployStatus.type === 'success' ? 'rgba(16, 185, 129, 0.04)' : 'rgba(239, 68, 68, 0.04)',
+                      color: deployStatus.type === 'success' ? '#34d399' : '#f87171',
+                      fontSize: '0.78rem',
+                      marginTop: '6px'
+                    }}>
+                      {deployStatus.type === 'success' ? (
+                        <>
+                          <CheckCircle style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }} />
+                          <span style={{ lineHeight: 1.4 }}>
+                            {deployStatus.message} 
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle style={{ width: '16px', height: '16px', flexShrink: 0, marginTop: '2px' }} />
+                          <span style={{ lineHeight: 1.4 }}>{deployStatus.message}</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+                    <button 
+                      type="button" 
+                      disabled={deploying} 
+                      onClick={handleHuggingFaceDeploy} 
+                      style={{
+                        background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                        border: 'none',
+                        borderRadius: '10px',
+                        color: '#fff',
+                        padding: '12px 24px',
+                        fontWeight: 600,
+                        fontSize: '0.8rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)'
+                      }}
+                    >
+                      {deploying ? (
+                        <>
+                          <Loader2 style={{ width: '14px', height: '14px', animation: 'spin 1.5s linear infinite' }} />
+                          <span>Pushing to Hugging Face...</span>
+                        </>
+                      ) : (
+                        <>
+                          <ExternalLink style={{ width: '14px', height: '14px' }} />
+                          <span>Trigger Cloud Space Build</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 

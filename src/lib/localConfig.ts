@@ -163,6 +163,9 @@ export interface LocalConfig {
   metaWebhookVerifyToken?: string;
   metaAppSecret?: string;
   autoQueueLagosDaily10k?: boolean;
+  activeRunnerBackend?: 'local' | 'huggingface';
+  hfToken?: string;
+  spaceName?: string;
 }
 
 export interface TeamMember {
@@ -314,6 +317,9 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   activeBrowserProvider: 'rotation',
   browserProviderRotation: 'round-robin',
   teamMembers: [],
+  activeRunnerBackend: 'local',
+  hfToken: '',
+  spaceName: '',
 };
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
@@ -493,6 +499,9 @@ export function getRuntimeConfig(): RuntimeConfig {
     activeBrowserProvider: (process.env.ACTIVE_BROWSER_PROVIDER as any) || fileConfig.activeBrowserProvider || DEFAULT_CONFIG.activeBrowserProvider,
     browserProviderRotation: (process.env.BROWSER_PROVIDER_ROTATION as any) || fileConfig.browserProviderRotation || DEFAULT_CONFIG.browserProviderRotation,
     teamMembers: fileConfig.teamMembers || DEFAULT_CONFIG.teamMembers,
+    activeRunnerBackend: (process.env.ACTIVE_RUNNER_BACKEND as any) || fileConfig.activeRunnerBackend || DEFAULT_CONFIG.activeRunnerBackend,
+    hfToken: process.env.HF_TOKEN || fileConfig.hfToken || DEFAULT_CONFIG.hfToken,
+    spaceName: process.env.SPACE_NAME || fileConfig.spaceName || DEFAULT_CONFIG.spaceName,
   };
 
   return merged;
@@ -649,6 +658,9 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       activeBrowserProvider: updated.activeBrowserProvider,
       browserProviderRotation: updated.browserProviderRotation,
       teamMembers: updated.teamMembers,
+      activeRunnerBackend: updated.activeRunnerBackend,
+      hfToken: updated.hfToken,
+      spaceName: updated.spaceName,
     };
     
     writeJsonFileSyncAtomic(writeablePath, fileData);

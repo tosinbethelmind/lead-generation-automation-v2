@@ -9,6 +9,62 @@ import { readJsonFileSyncWithRetry } from '@/lib/atomicIo';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import { getWorkerIndex } from '@/lib/requestContext';
 
+async function fetchHFUsername(token: string): Promise<string> {
+  const whoamiRes = await fetch('https://huggingface.co/api/whoami-v2', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!whoamiRes.ok) {
+    const text = await whoamiRes.text();
+    throw new Error(`Failed to resolve Hugging Face username: ${text}`);
+  }
+  const data = await whoamiRes.json();
+  if (!data?.name) {
+    throw new Error('Hugging Face token did not return a valid username.');
+  }
+  return data.name;
+}
+
+async function controlHFSpace(action: 'resume' | 'pause'): Promise<{ success: boolean; message: string }> {
+  const config = getRuntimeConfig();
+  let hfToken = config.hfToken || '';
+  let spaceName = config.spaceName || '';
+  
+  if (supabase) {
+    try {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'apexreach_runtime_config')
+        .maybeSingle();
+      if (data?.value) {
+        const parsed = JSON.parse(data.value);
+        if (parsed.hfToken) hfToken = parsed.hfToken;
+        if (parsed.spaceName) spaceName = parsed.spaceName;
+      }
+    } catch (_) {}
+  }
+  
+  if (!hfToken || !spaceName) {
+    throw new Error('Hugging Face write token and Space name must be configured in Settings.');
+  }
+
+  const username = await fetchHFUsername(hfToken);
+  const spaceId = `${username}/${spaceName}`;
+
+  const controlUrl = `https://huggingface.co/api/spaces/${spaceId}/${action}`;
+  const response = await fetch(controlUrl, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${hfToken}` }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Hugging Face Space ${action} error (HTTP ${response.status}): ${errorText}`);
+  }
+
+  return { success: true, message: `Space ${spaceId} successfully ${action}d.` };
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
@@ -61,8 +117,25 @@ export async function GET() {
     let currentJob = null;
     let port = null;
 
-    // 1. Try local filesystem heartbeat first (only if NOT on a serverless container like Vercel)
-    if (!isServerless) {
+    const config = getRuntimeConfig();
+    let activeRunner = config.activeRunnerBackend || 'local';
+
+    if (supabase) {
+      try {
+        const { data } = await supabase
+          .from('app_settings')
+          .select('value')
+          .eq('key', 'apexreach_runtime_config')
+          .maybeSingle();
+        if (data?.value) {
+          const parsed = JSON.parse(data.value);
+          if (parsed.activeRunnerBackend) activeRunner = parsed.activeRunnerBackend;
+        }
+      } catch (_) {}
+    }
+
+    // 1. Try local filesystem heartbeat first (only if NOT on a serverless container like Vercel and activeRunner is local)
+    if (!isServerless && activeRunner === 'local') {
       try {
         const heartbeatPath = path.resolve(getAppCwd(), 'local_runner_heartbeat.json');
         if (fs.existsSync(heartbeatPath)) {
@@ -80,13 +153,14 @@ export async function GET() {
       }
     }
 
-    // 2. If not running locally (or running on Vercel), fall back to querying the Supabase log heartbeat
+    // 2. If not running locally (or running on Vercel), query the corresponding Supabase log heartbeat
     if (!isRunning && supabase) {
       try {
+        const targetRunId = activeRunner === 'huggingface' ? 'huggingface_runner' : 'local_runner';
         const { data: dbLogs } = await supabase
           .from('logs')
           .select('*')
-          .eq('run_id', 'local_runner')
+          .eq('run_id', targetRunId)
           .eq('step', 'heartbeat')
           .order('created_at', { ascending: false })
           .limit(1);
@@ -113,7 +187,6 @@ export async function GET() {
     let activeJobs: any[] = [];
     let completedJobs: any[] = [];
 
-    const config = getRuntimeConfig();
     const useLocalDb = config.storageMode === 'local' || !supabase;
 
     if (!useLocalDb && supabase) {
@@ -183,12 +256,38 @@ export async function GET() {
  * Start the local job runner.
  */
 export async function POST(req: Request) {
-  // Prevent execution on Vercel production builds.
-  if (isServerless) {
+  const config = getRuntimeConfig();
+  let activeRunner = config.activeRunnerBackend || 'local';
+  
+  if (supabase) {
+    try {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'apexreach_runtime_config')
+        .maybeSingle();
+      if (data?.value) {
+        const parsed = JSON.parse(data.value);
+        if (parsed.activeRunnerBackend) activeRunner = parsed.activeRunnerBackend;
+      }
+    } catch (_) {}
+  }
+
+  // Prevent execution on Vercel production builds for local runner.
+  if (isServerless && activeRunner === 'local') {
     return corsResponse(
-      { error: 'Local runner cannot be started in production.' },
+      { error: 'Local runner cannot be started in production. Switch active runner platform to Cloud/Hugging Face to manage remotely.' },
       400
     );
+  }
+
+  if (activeRunner === 'huggingface') {
+    try {
+      const res = await controlHFSpace('resume');
+      return corsResponse({ message: 'Cloud runner (Hugging Face Space) has been resumed.', success: true, hf: res });
+    } catch (err: any) {
+      return corsResponse({ error: `Cloud runner control failed: ${err.message}` }, 500);
+    }
   }
 
   try {
@@ -252,11 +351,37 @@ export async function POST(req: Request) {
  * Stop the local job runner process tree.
  */
 export async function DELETE() {
-  if (isServerless) {
+  const config = getRuntimeConfig();
+  let activeRunner = config.activeRunnerBackend || 'local';
+  
+  if (supabase) {
+    try {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'apexreach_runtime_config')
+        .maybeSingle();
+      if (data?.value) {
+        const parsed = JSON.parse(data.value);
+        if (parsed.activeRunnerBackend) activeRunner = parsed.activeRunnerBackend;
+      }
+    } catch (_) {}
+  }
+
+  if (isServerless && activeRunner === 'local') {
     return corsResponse(
-      { error: 'Local runner cannot be managed in production.' },
+      { error: 'Local runner cannot be managed in production. Switch active runner platform to Cloud/Hugging Face to manage remotely.' },
       400
     );
+  }
+
+  if (activeRunner === 'huggingface') {
+    try {
+      const res = await controlHFSpace('pause');
+      return corsResponse({ message: 'Cloud runner (Hugging Face Space) has been paused.', success: true, hf: res });
+    } catch (err: any) {
+      return corsResponse({ error: `Cloud runner control failed: ${err.message}` }, 500);
+    }
   }
 
   try {

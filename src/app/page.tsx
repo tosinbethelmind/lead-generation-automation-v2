@@ -581,8 +581,12 @@ export default function Home() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 2000);
       try {
-        res = await fetch(`http://localhost:${localPort || '3006'}/api/local-trigger`, { signal: controller.signal });
-        clearTimeout(timeoutId);
+        if (config?.activeRunnerBackend === 'huggingface') {
+          res = await fetch('/api/local-trigger');
+        } else {
+          res = await fetch(`http://localhost:${localPort || '3006'}/api/local-trigger`, { signal: controller.signal });
+          clearTimeout(timeoutId);
+        }
       } catch (err) {
         clearTimeout(timeoutId);
         res = await fetch('/api/local-trigger');
@@ -628,7 +632,9 @@ export default function Home() {
   const handleLocalTrigger = async () => {
     setTriggerLoading(true);
     try {
-      const targetUrl = isProductionEnv ? `http://localhost:${localPort || '3006'}/api/local-trigger` : '/api/local-trigger';
+      const targetUrl = (config?.activeRunnerBackend === 'huggingface' || !isProductionEnv) 
+        ? '/api/local-trigger' 
+        : `http://localhost:${localPort || '3006'}/api/local-trigger`;
       const res = await fetch(targetUrl, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -651,7 +657,9 @@ export default function Home() {
   const handleStopLocalRunner = async () => {
     setTriggerLoading(true);
     try {
-      const targetUrl = isProductionEnv ? `http://localhost:${localPort || '3006'}/api/local-trigger` : '/api/local-trigger';
+      const targetUrl = (config?.activeRunnerBackend === 'huggingface' || !isProductionEnv) 
+        ? '/api/local-trigger' 
+        : `http://localhost:${localPort || '3006'}/api/local-trigger`;
       const res = await fetch(targetUrl, { 
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -5090,7 +5098,7 @@ export default function Home() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h4 style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Terminal size={18} color="var(--primary)" />
-                    Local Scraper Runner
+                    {config?.activeRunnerBackend === 'huggingface' ? 'Cloud Scraper Runner' : 'Local Scraper Runner'}
                   </h4>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ 
@@ -5113,10 +5121,53 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* Active Runner Target Switch */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Execution Backend</span>
+                  <select
+                    value={config?.activeRunnerBackend || 'local'}
+                    onChange={async (e) => {
+                      const target = e.target.value;
+                      try {
+                        addToast(`Switching active runner target to ${target === 'local' ? 'Local PC' : 'Cloud (Hugging Face)'}...`, 'info');
+                        const saveRes = await fetch('/api/config', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ activeRunnerBackend: target })
+                        });
+                        if (saveRes.ok) {
+                          addToast(`Runner target switched to ${target === 'local' ? 'Local PC' : 'Cloud Space'}!`, 'success');
+                          fetchConfig();
+                          setTimeout(checkRunnerStatus, 500);
+                        } else {
+                          addToast('Failed to save runner target configuration.', 'error');
+                        }
+                      } catch (err: any) {
+                        addToast(`Error updating runner target: ${err.message}`, 'error');
+                      }
+                    }}
+                    style={{
+                      background: 'var(--input-bg)',
+                      border: '1px solid var(--panel-border)',
+                      borderRadius: '6px',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.75rem',
+                      padding: '3px 8px',
+                      cursor: 'pointer',
+                      outline: 'none'
+                    }}
+                  >
+                    <option value="local">💻 Local PC Workstation</option>
+                    <option value="huggingface">☁️ Cloud (Hugging Face)</option>
+                  </select>
+                </div>
+
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.4' }}>
-                  {isProductionEnv 
-                    ? "Monitoring local worker via database heartbeat. You can start/stop the local worker directly using the buttons below if your local server is running on port 3006."
-                    : "Spawns and manages the local background queue worker process tree. It will automatically process queued scraper jobs in the background."}
+                  {config?.activeRunnerBackend === 'huggingface'
+                    ? "Persistent background queue execution running on Hugging Face Spaces. Automatically syncs with your Supabase queue."
+                    : isProductionEnv 
+                      ? "Monitoring local worker via database heartbeat. You can start/stop the local worker directly using the buttons below if your local server is running on port 3006."
+                      : "Spawns and manages the local background queue worker process tree. It will automatically process queued scraper jobs in the background."}
                 </p>
 
                 <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
@@ -5143,7 +5194,9 @@ export default function Home() {
                         transition: 'all 0.2s'
                       }}
                     >
-                      {triggerLoading ? <Loader2 size={16} className="spin-anim" /> : 'Stop Runner'}
+                      {triggerLoading 
+                        ? <Loader2 size={16} className="spin-anim" /> 
+                        : config?.activeRunnerBackend === 'huggingface' ? 'Pause Cloud Space' : 'Stop Runner'}
                     </button>
                   ) : (
                     <button
@@ -5168,7 +5221,9 @@ export default function Home() {
                         transition: 'all 0.2s'
                       }}
                     >
-                      {triggerLoading ? <Loader2 size={16} className="spin-anim" /> : 'Start Runner'}
+                      {triggerLoading 
+                        ? <Loader2 size={16} className="spin-anim" /> 
+                        : config?.activeRunnerBackend === 'huggingface' ? 'Start Cloud Space' : 'Start Runner'}
                     </button>
                   )}
                   

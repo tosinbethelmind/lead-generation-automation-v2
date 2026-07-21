@@ -66,3 +66,4 @@ services_output.log
 whatsapp_baileys.log
 startup_log.txt
 
+.env*.local
