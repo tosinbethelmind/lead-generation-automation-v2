@@ -238,9 +238,9 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
       const key = keys[idx];
       let url = `wss://chrome.browserless.io?token=${key}`;
       if (activeProxy) {
-        url += `&--proxy-server=${encodeURIComponent(activeProxy)}`;
+        wsUrls.push(`${url}&--proxy-server=${encodeURIComponent(activeProxy)}`);
       }
-      wsUrls.push(url);
+      wsUrls.push(url); // Fallback to direct connection
     }
   } else if (provider === 'browserbase') {
     const keys = savedConfig.browserbaseApiKeys || [];
@@ -251,9 +251,9 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
       const key = keys[idx];
       let url = `wss://connect.browserbase.com?apiKey=${key}`;
       if (activeProxy) {
-        url += `&--proxy-server=${encodeURIComponent(activeProxy)}`;
+        wsUrls.push(`${url}&--proxy-server=${encodeURIComponent(activeProxy)}`);
       }
-      wsUrls.push(url);
+      wsUrls.push(url); // Fallback to direct connection
     }
   } else if (provider === 'rotation') {
     const browserlessKeys = savedConfig.browserlessApiKeys || [];
@@ -261,14 +261,18 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
     
     browserlessKeys.forEach((key: string) => {
       let url = `wss://chrome.browserless.io?token=${key}`;
-      if (activeProxy) url += `&--proxy-server=${encodeURIComponent(activeProxy)}`;
-      wsUrls.push(url);
+      if (activeProxy) {
+        wsUrls.push(`${url}&--proxy-server=${encodeURIComponent(activeProxy)}`);
+      }
+      wsUrls.push(url); // Fallback to direct connection
     });
 
     browserbaseKeys.forEach((key: string) => {
       let url = `wss://connect.browserbase.com?apiKey=${key}`;
-      if (activeProxy) url += `&--proxy-server=${encodeURIComponent(activeProxy)}`;
-      wsUrls.push(url);
+      if (activeProxy) {
+        wsUrls.push(`${url}&--proxy-server=${encodeURIComponent(activeProxy)}`);
+      }
+      wsUrls.push(url); // Fallback to direct connection
     });
 
     if (wsUrls.length > 0) {
