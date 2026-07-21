@@ -56,7 +56,11 @@ async function extractSessionFromBrowser(): Promise<CfSession | null> {
     const { getNextUAProfile } = await import('@/lib/scraperHeaders');
     const ua = getNextUAProfile();
 
-    browser = await launchBrowser();
+    // Race browser launch against a 20s timeout to avoid hanging Vercel serverless functions
+    browser = await Promise.race([
+      launchBrowser(),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Browser launch timed out after 20s')), 20000))
+    ]);
     const page = await browser.newPage();
     await applyStealthToPage(page);
 

@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
         if (!resp.ok) {
           if (resp.status === 403 || resp.status === 429) {
-            throw new Error("⚠️ DuckDuckGo has blocked/rate-limited this request. Try again later.");
+            throw new Error(`RATE_LIMITED:${resp.status}`);
           }
           throw new Error(`HTTP Error: ${resp.status} - ${resp.statusText}`);
         }
@@ -80,9 +80,14 @@ export async function POST(req: NextRequest) {
         break; // Success!
       } catch (err: any) {
         lastError = err;
+        // If DDG is rate-limiting us, return gracefully with empty results instead of 500
+        if (err.message && err.message.startsWith('RATE_LIMITED:')) {
+          await addLog('DuckDuckGo Scraper', 'WARN', `DuckDuckGo rate-limited (${err.message.split(':')[1]}). Returning empty set to avoid crashing pipeline.`);
+          return NextResponse.json({ success: true, mode: 'live', added: 0, skipped: 0, leads: [], rateLimited: true });
+        }
         console.warn(`[DuckDuckGo Scraper] Search attempt ${attempt} failed: ${err.message}`);
         if (attempt < maxRetries) {
-          const delay = 3000 + attempt * 2000;
+          const delay = 1500 + attempt * 1000; // shorter delays so Vercel doesn't timeout
           console.log(`[DuckDuckGo Scraper] Sleeping ${delay}ms before retry...`);
           await sleep(delay);
         }
@@ -90,12 +95,10 @@ export async function POST(req: NextRequest) {
     }
 
     if (lastError) {
-      console.error("DDG fetch error after all attempts:", lastError);
-      await addLog('DuckDuckGo Scraper', 'ERROR', `Fetch failed after ${maxRetries} retries: ${lastError.message}`);
-      return NextResponse.json({
-        success: false,
-        error: lastError.message || 'Fetch failed during live DuckDuckGo scraping'
-      }, { status: 500 });
+      console.warn("DDG fetch error after all attempts:", lastError.message);
+      await addLog('DuckDuckGo Scraper', 'WARN', `Fetch failed after ${maxRetries} retries: ${lastError.message}. Returning empty result.`);
+      // Return graceful empty response so the 10K pipeline doesn't abort
+      return NextResponse.json({ success: true, mode: 'live', added: 0, skipped: 0, leads: [], fetchFailed: true });
     }
 
     // Parse DDG HTML output
