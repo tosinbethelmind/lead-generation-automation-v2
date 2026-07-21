@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createScrapeJob } from '@/lib/supabaseClient';
+import { triggerCloudRunnerIfNeeded } from '@/lib/cloudRunnerTrigger';
+
 
 // Default target niches
 const DEFAULT_NICHES = [
@@ -130,6 +132,12 @@ export async function POST(req: NextRequest) {
         }
       }
       if (jobsQueuedCount >= maxJobsToQueue) break;
+    }
+
+    if (jobsCreated.length > 0) {
+      triggerCloudRunnerIfNeeded().catch((err) => {
+        console.error('[BulkQueueTrigger] Failed to auto-trigger cloud runner:', err.message);
+      });
     }
 
     return NextResponse.json({

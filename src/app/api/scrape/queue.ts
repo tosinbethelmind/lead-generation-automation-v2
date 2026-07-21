@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createScrapeJob } from '@/lib/supabaseClient';
+import { triggerCloudRunnerIfNeeded } from '@/lib/cloudRunnerTrigger';
 
 export {
   createScrapeJob,
@@ -32,6 +33,12 @@ export async function handleQueueDelegation(
   if (executionMode === 'local' && !isBypassed) {
     try {
       const job = await createScrapeJob(scraperType as any, payload);
+      
+      // Async trigger cloud runner in the background if needed
+      triggerCloudRunnerIfNeeded().catch((err) => {
+        console.error('[QueueTrigger] Failed to auto-trigger cloud runner:', err.message);
+      });
+
       return NextResponse.json({
         success: true,
         mode: 'local',
@@ -48,4 +55,5 @@ export async function handleQueueDelegation(
 
   return null;
 }
+
 

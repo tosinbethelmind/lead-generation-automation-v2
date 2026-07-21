@@ -51,14 +51,41 @@ async function supabaseRequest(method, endpoint, body = null, headers = {}) {
     options.body = JSON.stringify(body);
   }
 
-  const res = await fetch(url, options);
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Supabase API error (${method} ${endpoint}): Status ${res.status} - ${text}`);
-  }
+  const maxRetries = 4;
+  let delay = 1000;
 
-  if (res.status === 204) return true;
-  return await res.json();
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        // If it's a server error/rate limit/gateway error, retry
+        if (res.status >= 500 || res.status === 429) {
+          if (attempt === maxRetries) {
+            const text = await res.text();
+            throw new Error(`Supabase API error (${method} ${endpoint}): Status ${res.status} - ${text}`);
+          }
+          console.warn(`[Network Retry] Supabase API returned status ${res.status}. Retrying in ${delay / 1000}s (Attempt ${attempt}/${maxRetries})...`);
+          await new Promise(r => setTimeout(r, delay));
+          delay *= 2;
+          continue;
+        } else {
+          // Client errors (400, 401, 403, 404, etc.) - do not retry
+          const text = await res.text();
+          throw new Error(`Supabase API error (${method} ${endpoint}): Status ${res.status} - ${text}`);
+        }
+      }
+
+      if (res.status === 204) return true;
+      return await res.json();
+    } catch (err) {
+      if (attempt === maxRetries) {
+        throw err;
+      }
+      console.warn(`[Network Retry] Supabase API request failed with error: "${err.message}". Retrying in ${delay / 1000}s (Attempt ${attempt}/${maxRetries})...`);
+      await new Promise(r => setTimeout(r, delay));
+      delay *= 2;
+    }
+  }
 }
 
 async function updateJobStatus(jobId, status, errorMessage = null, result = null) {
@@ -222,8 +249,8 @@ async function runCronChecks() {
     const runningJobs = await supabaseRequest('GET', 'scrape_jobs?status=eq.running');
     if (runningJobs && runningJobs.length > 0) {
       for (const j of runningJobs) {
-        const upStr = j.updated_at.replace('Z', '');
-        const diff = (Date.now() - new Date(upStr).getTime()) / 1000;
+        const updatedTime = new Date(j.updated_at).getTime();
+        const diff = (Date.now() - updatedTime) / 1000;
         if (diff > 900) {
           log(`Stuck job found: ${j.id} (running since ${j.updated_at}). Mark as failed.`);
           await updateJobStatus(j.id, 'failed', 'Job execution timed out (running > 15 minutes).');

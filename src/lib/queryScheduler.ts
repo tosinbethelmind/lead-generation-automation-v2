@@ -1,5 +1,7 @@
 import { supabase } from './supabaseClient';
 import { getRuntimeConfig, rotateKey } from './localConfig';
+import { triggerCloudRunnerIfNeeded } from './cloudRunnerTrigger';
+
 import { randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -517,6 +519,12 @@ export async function queueNextPendingQuery(force: boolean = false): Promise<Sch
     }
 
     const job = await createScrapeJob(nextQuery.scraper, payload);
+    
+    // Auto-trigger cloud runner if needed
+    triggerCloudRunnerIfNeeded().catch((err) => {
+      console.error('[SchedulerTrigger] Failed to auto-trigger cloud runner:', err.message);
+    });
+
     
     // Update query status
     nextQuery.status = 'queued';
