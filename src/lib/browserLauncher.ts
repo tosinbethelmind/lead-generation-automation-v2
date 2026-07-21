@@ -1,14 +1,12 @@
-import puppeteerExtra from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import puppeteerCore from 'puppeteer-core';
 import os from 'os';
 import fs from 'fs';
 import net from 'net';
 import { getRuntimeConfig } from '@/lib/localConfig';
 
-// Apply stealth plugin globally — patches fingerprinting, WebDriver flags,
-// navigator.plugins, canvas, WebGL, and 13+ other Cloudflare signals.
-puppeteerExtra.use(StealthPlugin());
+// NOTE: puppeteer-extra, puppeteer-extra-plugin-stealth, and puppeteer-core are
+// loaded lazily inside launchBrowserInstance() to avoid crashing Vercel serverless
+// functions that import this module transitively (e.g. proxyRotator -> browserLauncher)
+// but never actually launch a browser.
 
 export function getLocalChromePath(): string {
   const platform = os.platform();
@@ -310,6 +308,8 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
 
   // Attempt WebSocket connection if URLs are available
   if (wsUrls.length > 0) {
+    // Lazy-load puppeteer-core only when we actually need a remote browser
+    const puppeteerCore = (await import('puppeteer-core')).default;
     let lastError: any = null;
     for (let i = 0; i < wsUrls.length; i++) {
       const finalWs = wsUrls[i];
@@ -335,7 +335,11 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
     console.warn(`[browserLauncher] Active browser provider is "${provider}" but no API credentials or remote browser WebSocket endpoints were configured. Falling back to local Chromium browser.`);
   }
 
-  // Local launch
+  // Local Chromium launch — load puppeteer-extra and stealth plugin lazily
+  const puppeteerExtra = (await import('puppeteer-extra')).default;
+  const StealthPlugin = (await import('puppeteer-extra-plugin-stealth')).default;
+  puppeteerExtra.use(StealthPlugin());
+
   if (isServerless) {
     try {
       const chromium = (await import(/* webpackIgnore: true */ '@sparticuz/chromium')).default as any;
