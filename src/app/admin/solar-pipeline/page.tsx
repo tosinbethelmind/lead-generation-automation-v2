@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { 
   Sun, 
   Search, 
@@ -22,7 +23,8 @@ import {
   Home,
   MessageCircle,
   Database,
-  Zap
+  Zap,
+  ArrowRight
 } from 'lucide-react';
 
 interface SolarLead {
@@ -492,26 +494,6 @@ export default function SolarPipelineDashboard() {
             </button>
 
             <button 
-              onClick={handleHarvestLeads} 
-              disabled={harvesting}
-              className="btn-secondary"
-              style={{ padding: '8px 14px', fontSize: '12px', height: '36px' }}
-            >
-              <Building className={harvesting ? 'spin-anim' : ''} size={13} />
-              Harvest Leads
-            </button>
-
-            <button 
-              onClick={() => handleTriggerScrape('dry-run')} 
-              disabled={scrapingDryRun}
-              className="btn-secondary"
-              style={{ padding: '8px 14px', fontSize: '12px', height: '36px' }}
-            >
-              <Search className={scrapingDryRun ? 'spin-anim' : ''} size={13} />
-              Dry Run
-            </button>
-
-            <button 
               onClick={handlePurgeMockData}
               className="btn-secondary"
               style={{ padding: '8px 14px', fontSize: '12px', height: '36px', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}
@@ -519,6 +501,26 @@ export default function SolarPipelineDashboard() {
               <ShieldAlert size={13} />
               Purge Mock
             </button>
+
+            <Link 
+              href="/admin/solar-pipeline/advanced" 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '6px', 
+                background: 'rgba(255, 255, 255, 0.08)', 
+                border: '1px solid var(--panel-border)', 
+                borderRadius: '8px', 
+                padding: '8px 14px', 
+                fontSize: '12px', 
+                color: 'var(--text-primary)', 
+                textDecoration: 'none', 
+                fontWeight: '600',
+                height: '36px'
+              }}
+            >
+              Advanced Tools <ArrowRight size={13} />
+            </Link>
           </div>
 
         </div>
