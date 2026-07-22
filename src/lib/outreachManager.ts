@@ -192,11 +192,13 @@ export class OutreachManager {
       customMessage?: string;
       isDryRun?: boolean;
       channelsOverride?: string[];
+      simultaneousMultiTouch?: boolean;
     } = {}
   ): Promise<OutreachFallbackResult> {
     const config = getRuntimeConfig();
     const priorityStr = options.channelsOverride?.join(',') || config.failoverPriority || 'email,contact_form,sms,jiji,social_dm,whatsapp';
     const channels = priorityStr.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+    const simultaneous = options.simultaneousMultiTouch !== undefined ? options.simultaneousMultiTouch : true;
     
     const logs: string[] = [];
     const channelResults: ChannelResult[] = [];
@@ -210,7 +212,7 @@ export class OutreachManager {
     const previewUrl = `${origin}/preview/${leadId}`;
     const pitch = getPitchDetails(lead, origin, config.businessSignature || '');
 
-    logs.push(`[OutreachManager] Starting cascade for lead: ${lead.name} (${leadId})`);
+    logs.push(`[OutreachManager] Starting campaign for lead: ${lead.name} (${leadId}) [Simultaneous: ${simultaneous}]`);
     
     // Proactive health status pre-filtering
     let healthStatusMap: any = {};
@@ -242,13 +244,20 @@ export class OutreachManager {
       }
     }
 
-    logs.push(`[OutreachManager] Cascade path: ${activeChannels.join(' -> ')}`);
+    logs.push(`[OutreachManager] Target execution path: ${activeChannels.join(' -> ')}`);
 
     let success = false;
     let successfulChannel = '';
 
     for (const channel of activeChannels) {
-      if (success) break;
+      // In non-simultaneous mode, stop on first success
+      if (success && !simultaneous) break;
+      // In simultaneous mode, if WhatsApp is reached and we already had non-WhatsApp success, skip WhatsApp
+      if (channel === 'whatsapp' && success) {
+        logs.push(`[WhatsApp] Skipped: Lead already reached via safe primary multi-touch channels.`);
+        channelResults.push({ channel, status: 'skipped', error: 'Skipped WhatsApp because primary multi-touch outreach succeeded' });
+        continue;
+      }
 
       attemptedChannels.push(channel);
       logs.push(`[OutreachManager] Attempting channel: ${channel.toUpperCase()}`);
