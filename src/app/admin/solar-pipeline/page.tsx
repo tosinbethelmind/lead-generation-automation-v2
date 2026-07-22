@@ -573,9 +573,7 @@ export default function SolarPipelineDashboard() {
           }}
         >
           <Sun className={scrapingNigeria5k ? 'spin-anim' : ''} size={18} />
-          {scrapingNigeria5k ? 'Extracting 10K Leads...' : '⚡ START REAL LIVE 10K SOLAR EXTRACTION'}
         </button>
-      </div>
       </div>
 
       {/* Live Scraper Progress Monitor */}
