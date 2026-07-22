@@ -368,45 +368,45 @@ async function runCronChecks() {
 async function main() {
   log('🚀 GitHub Actions Cloud Runner Initiated.');
   
-  // Write initial heartbeat
+  // Write initial heartbeat and start background heartbeat interval
   await writeHeartbeat();
+  const heartbeatInterval = setInterval(async () => {
+    await writeHeartbeat();
+  }, 5000);
   
   // Run scheduled triggers immediately on startup
   log('🔄 Triggering background campaign and scheduled tasks...');
   await runCronChecks();
 
   let consecutiveEmptyPolls = 0;
-  let heartbeatCounter = 0;
 
-  while (Date.now() - startTime < MAX_RUN_TIME) {
-    // 1. Fetch next queued job
-    let jobs = [];
-    try {
-      jobs = await supabaseRequest('GET', 'scrape_jobs?status=eq.queued&order=created_at.asc&limit=1');
-    } catch (err) {
-      log(`Error polling queue: ${err.message}`);
-      await new Promise(r => setTimeout(r, 5000));
-      continue;
-    }
-
-    if (jobs && jobs.length > 0) {
-      consecutiveEmptyPolls = 0;
-      await processJob(jobs[0]);
-    } else {
-      consecutiveEmptyPolls++;
-      // If queue remains empty for 4 polls (~20 seconds), exit to save action minutes
-      if (consecutiveEmptyPolls >= 4) {
-        log(`💤 Queue empty after multiple checks. Gracefully exiting script.`);
-        break;
+  try {
+    while (Date.now() - startTime < MAX_RUN_TIME) {
+      // 1. Fetch next queued job
+      let jobs = [];
+      try {
+        jobs = await supabaseRequest('GET', 'scrape_jobs?status=eq.queued&order=created_at.asc&limit=1');
+      } catch (err) {
+        log(`Error polling queue: ${err.message}`);
+        await new Promise(r => setTimeout(r, 5000));
+        continue;
       }
-      await new Promise(r => setTimeout(r, 5000));
-    }
 
-    // 2. Emit heartbeat every 3rd iteration (~15s)
-    heartbeatCounter++;
-    if (heartbeatCounter % 3 === 0) {
-      await writeHeartbeat();
+      if (jobs && jobs.length > 0) {
+        consecutiveEmptyPolls = 0;
+        await processJob(jobs[0]);
+      } else {
+        consecutiveEmptyPolls++;
+        // If queue remains empty for 4 polls (~20 seconds), exit to save action minutes
+        if (consecutiveEmptyPolls >= 4) {
+          log(`💤 Queue empty after multiple checks. Gracefully exiting script.`);
+          break;
+        }
+        await new Promise(r => setTimeout(r, 5000));
+      }
     }
+  } finally {
+    clearInterval(heartbeatInterval);
   }
 
   // 3. Chain-trigger next run if queue is still populated

@@ -191,8 +191,8 @@ export async function GET() {
         if (dbLogs && dbLogs.length > 0) {
           const logEntry = dbLogs[0];
           const logTime = new Date(logEntry.created_at || logEntry.timestamp).getTime();
-          // 12 seconds threshold to allow minor database latency
-          if (Date.now() - logTime < 12000) {
+          // 30 seconds threshold to allow network latency and job processing
+          if (Date.now() - logTime < 30000) {
             const parsed = JSON.parse(logEntry.message);
             isRunning = true;
             pid = parsed.pid;
