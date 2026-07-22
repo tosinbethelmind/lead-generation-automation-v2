@@ -1546,18 +1546,19 @@ class SupabaseLogRepository implements ILogRepository {
       const { data, error } = await supabase
         .from('logs')
         .select('*')
-        .order('timestamp', { ascending: false })
+        .neq('step', 'heartbeat')
+        .order('created_at', { ascending: false })
         .limit(100);
       if (error) throw error;
       const formatted = (data || []).map((row: any) => [
-        row.run_id,
-        row.timestamp,
-        row.step,
+        row.run_id || 'WEB_APP',
+        row.created_at || row.timestamp || new Date().toISOString(),
+        row.step || 'Scraper',
         '',
-        row.status,
-        row.message
+        row.status || 'INFO',
+        row.message || ''
       ]);
-      return formatted.reverse();
+      return formatted;
     } catch (e: any) {
       console.warn('Supabase getLogs error, falling back to local JSON:', e.message);
       return this.fallback.getLogs();
