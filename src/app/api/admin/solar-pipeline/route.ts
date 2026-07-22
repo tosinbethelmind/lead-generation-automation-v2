@@ -234,6 +234,43 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
+// DELETE: Purge mock/test leads from database
+export async function DELETE(req: NextRequest) {
+  try {
+    const cookieValue = req.cookies.get('admin-token')?.value;
+    const session = await verifySessionToken(cookieValue);
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Delete mock homeowner leads
+    await solarQuoteProSupabase
+      .from('homeowner_leads')
+      .delete()
+      .or('email.ilike.%example.com%,email.ilike.%test%,name.ilike.%test%');
+
+    // Delete mock enterprise leads
+    await solarQuoteProSupabase
+      .from('enterprise_leads')
+      .delete()
+      .or('email.ilike.%example.com%,email.ilike.%test%,company_name.ilike.%test%');
+
+    // Delete mock leads in main leads table
+    await solarQuoteProSupabase
+      .from('leads')
+      .delete()
+      .or('email.ilike.%example.com%,email.ilike.%test%,name.ilike.%test%');
+
+    return NextResponse.json({
+      success: true,
+      message: 'Mock test data purged successfully from database!'
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
 // POST: Trigger Scrapers or Harvest Leads
 export async function POST(req: NextRequest) {
   try {

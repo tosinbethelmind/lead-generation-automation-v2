@@ -256,6 +256,24 @@ export default function SolarPipelineDashboard() {
     }
   };
 
+  const handlePurgeMockData = async () => {
+    if (!confirm('Are you sure you want to purge all mock/example.com test leads from the database?')) return;
+    try {
+      const res = await fetch('/api/admin/solar-pipeline', {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert(data.message || 'Mock test data purged successfully!');
+        await fetchLeads(true);
+      } else {
+        alert(data.error || 'Failed to purge mock data');
+      }
+    } catch (err) {
+      alert('Network error purging mock data.');
+    }
+  };
+
   const fetchLeads = async (silent = false) => {
     if (!silent) setLoading(true);
     else setRefreshing(true);
@@ -520,6 +538,26 @@ export default function SolarPipelineDashboard() {
           >
             <Building className={harvesting ? 'spin-anim' : ''} size={16} />
             {harvesting ? 'Harvesting...' : 'Harvest Scraped Solar Leads'}
+          </button>
+
+          <button 
+            onClick={handlePurgeMockData}
+            className="btn-secondary"
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              background: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid rgba(239, 68, 68, 0.4)',
+              borderRadius: '8px',
+              padding: '10px 16px',
+              cursor: 'pointer',
+              color: '#ef4444',
+              fontWeight: '600'
+            }}
+          >
+            <ShieldAlert size={16} />
+            Purge Mock Data
           </button>
 
           <button 
