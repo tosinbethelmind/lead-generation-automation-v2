@@ -425,155 +425,98 @@ export default function SolarPipelineDashboard() {
 
   return (
     <div className="solar-pipeline-container">
-      {/* Header Bento Card */}
-      <div className="bento-card header-card glass-panel">
-        <div className="header-content">
-          <div className="brand-badge-row">
-            <Sun className="sun-icon spin-slow" />
-            <span className="badge">Specialise Solar Pipeline</span>
+      {/* Compact Top Header & Global Action Control Bar */}
+      <div className="glass-panel" style={{ padding: '20px 24px', marginBottom: '16px', borderRadius: '14px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <Sun size={20} style={{ color: '#10B981' }} className="spin-slow" />
+              <span style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', color: '#10B981' }}>
+                SPECIALISE SOLAR PIPELINE
+              </span>
+            </div>
+            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>
+              SolarQuotePro Production Gateway
+            </h1>
+            <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
+              Nationwide Nigeria 10K Solar Extraction & Real-Time Outreach Engine
+            </p>
           </div>
-          <h1>SolarQuotePro Production Gateway</h1>
-          <p>
-            Real-time synchronization of residential (B2C) homeowner estimator funnels and commercial (B2B) enterprise lead requests. Launch outreach and update lead records instantly.
-          </p>
-        </div>
-        <div className="header-actions" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+
+          {/* Primary Action Button: Glowing Green 10K Live Button */}
           <button 
             onClick={() => handleTriggerScrape('live-nigeria-5k')} 
             disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || harvesting}
-            className="btn-secondary"
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              gap: '8px', 
+              gap: '10px', 
               background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
               border: 'none',
-              borderRadius: '8px',
-              padding: '12px 20px',
+              borderRadius: '10px',
+              padding: '14px 24px',
               cursor: 'pointer',
               color: '#FFFFFF',
-              fontWeight: '700',
-              fontSize: '14px',
-              boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
+              fontWeight: '800',
+              fontSize: '15px',
+              boxShadow: '0 4px 20px rgba(16, 185, 129, 0.45)',
+              transition: 'all 0.2s ease'
             }}
           >
-            <Sun className={scrapingNigeria5k ? 'spin-anim' : ''} size={18} />
-            {scrapingNigeria5k ? 'Scraping 10K Nigeria Live...' : '⚡ Harvest 10K Nigeria Solar Leads (Nationwide Live)'}
+            <Sun className={scrapingNigeria5k ? 'spin-anim' : ''} size={20} />
+            {scrapingNigeria5k ? 'EXTRACTING 10K NIGERIA SOLAR LEADS...' : '⚡ START 10K LIVE SOLAR SCRAPER (NATIONWIDE)'}
           </button>
+        </div>
 
+        {/* Compact Utility Toolbar */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '10px', 
+          marginTop: '16px', 
+          paddingTop: '16px', 
+          borderTop: '1px solid var(--panel-border)', 
+          flexWrap: 'wrap' 
+        }}>
           <button 
-            onClick={() => handleTriggerScrape('live-solar')} 
-            disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || harvesting}
-            className="btn-secondary"
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              background: 'linear-gradient(135deg, #FF9900 0%, #FF5E00 100%)',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '12px 18px',
-              cursor: 'pointer',
-              color: '#FFFFFF',
-              fontWeight: '600'
-            }}
+            onClick={() => fetchLeads(true)} 
+            disabled={refreshing}
+            className="btn-primary"
+            style={{ padding: '8px 16px', fontSize: '13px' }}
           >
-            <Zap className={scrapingLiveSolar ? 'spin-anim' : ''} size={16} />
-            {scrapingLiveSolar ? 'Scraping Live...' : 'Scrape Solar Companies'}
+            <RefreshCw className={refreshing ? 'spin-anim' : ''} size={14} />
+            {refreshing ? 'Syncing...' : 'Sync Database'}
           </button>
 
           <button 
             onClick={handleHarvestLeads} 
-            disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || harvesting}
+            disabled={harvesting}
             className="btn-secondary"
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              background: 'var(--toggle-bg)',
-              border: '1px solid var(--panel-border)',
-              borderRadius: '8px',
-              padding: '12px 16px',
-              cursor: 'pointer',
-              color: 'var(--text-primary)'
-            }}
+            style={{ padding: '8px 16px', fontSize: '13px' }}
           >
-            <Building className={harvesting ? 'spin-anim' : ''} size={16} />
-            {harvesting ? 'Harvesting...' : 'Harvest Scraped Solar Leads'}
+            <Building className={harvesting ? 'spin-anim' : ''} size={14} />
+            {harvesting ? 'Harvesting...' : 'Harvest Leads'}
+          </button>
+
+          <button 
+            onClick={() => handleTriggerScrape('dry-run')} 
+            disabled={scrapingDryRun}
+            className="btn-secondary"
+            style={{ padding: '8px 16px', fontSize: '13px' }}
+          >
+            <Search className={scrapingDryRun ? 'spin-anim' : ''} size={14} />
+            {scrapingDryRun ? 'Scraping...' : 'Dry Run Check'}
           </button>
 
           <button 
             onClick={handlePurgeMockData}
             className="btn-secondary"
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              background: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
-              borderRadius: '8px',
-              padding: '12px 16px',
-              cursor: 'pointer',
-              color: '#ef4444',
-              fontWeight: '600'
-            }}
+            style={{ padding: '8px 16px', fontSize: '13px', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.4)' }}
           >
-            <ShieldAlert size={16} />
+            <ShieldAlert size={14} />
             Purge Mock Data
           </button>
-
-          <button 
-            onClick={() => fetchLeads(true)} 
-            disabled={refreshing}
-            className="btn-primary refresh-btn"
-            style={{ padding: '12px 20px', fontWeight: '700' }}
-          >
-            <RefreshCw className={refreshing ? 'spin-anim' : ''} />
-            {refreshing ? 'Syncing...' : 'Sync Database'}
-          </button>
         </div>
-      </div>
-
-      {/* Prominent Floating Action Banner for Live Scraping */}
-      <div className="glass-panel" style={{ 
-        margin: '16px 0', 
-        padding: '16px 24px', 
-        borderRadius: '12px', 
-        background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.05) 100%)',
-        border: '1px solid rgba(16, 185, 129, 0.3)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '16px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Sun size={24} style={{ color: '#10B981' }} />
-          <div>
-            <h3 style={{ margin: 0, color: '#10B981', fontSize: '16px', fontWeight: '700' }}>Live 10K Nigeria Solar Pipeline Control</h3>
-            <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '13px' }}>Scrape & extract 10,000 verified solar installer leads across all 36 Nigerian states + FCT Abuja</p>
-          </div>
-        </div>
-        <button 
-          onClick={() => handleTriggerScrape('live-nigeria-5k')} 
-          disabled={scrapingNigeria5k}
-          style={{ 
-            background: '#10B981',
-            color: '#FFFFFF',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '12px 24px',
-            fontWeight: '700',
-            fontSize: '14px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 14px rgba(16, 185, 129, 0.5)'
-          }}
-        >
-          <Sun className={scrapingNigeria5k ? 'spin-anim' : ''} size={18} />
-        </button>
       </div>
 
       {/* Live Scraper Progress Monitor */}
