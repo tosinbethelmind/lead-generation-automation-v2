@@ -195,7 +195,7 @@ export class OutreachManager {
     } = {}
   ): Promise<OutreachFallbackResult> {
     const config = getRuntimeConfig();
-    const priorityStr = options.channelsOverride?.join(',') || config.failoverPriority || 'whatsapp,sms,email';
+    const priorityStr = options.channelsOverride?.join(',') || config.failoverPriority || 'email,contact_form,sms,jiji,social_dm,whatsapp';
     const channels = priorityStr.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
     
     const logs: string[] = [];
