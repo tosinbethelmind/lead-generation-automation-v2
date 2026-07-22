@@ -543,6 +543,7 @@ export default function Home() {
 
   const [latestLogs, setLatestLogs] = useState<any[]>([]);
   const [lastLeadsCount, setLastLeadsCount] = useState<number | null>(null);
+  const hasAutoStartedRef = React.useRef(false);
 
   const handleCopyText = (text: string, setCopiedState: (val: boolean) => void) => {
     navigator.clipboard.writeText(text);
@@ -1500,13 +1501,21 @@ export default function Home() {
     }
   }, [config.serviceHealthStatus]);
 
-  // Real-Time Automated Live Update Stream (syncs every 3 seconds)
+  // Real-Time Automated Live Update Stream (syncs every 3 seconds) + Auto-Start on App Load
   useEffect(() => {
     fetchConfig();
     fetchStats();
     fetchLeads();
     fetchLogs();
     checkRunnerStatus();
+
+    // Auto-Start Scraper Pipeline on App Load (Set & Forget Mode)
+    if (!hasAutoStartedRef.current) {
+      hasAutoStartedRef.current = true;
+      setTimeout(() => {
+        runLagos10KStandalone();
+      }, 1500);
+    }
 
     const liveSyncInterval = setInterval(async () => {
       checkRunnerStatus();
