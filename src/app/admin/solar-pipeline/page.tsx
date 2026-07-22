@@ -424,7 +424,16 @@ export default function SolarPipelineDashboard() {
   });
 
   return (
-    <div className="solar-pipeline-container">
+    <div className="solar-pipeline-container" style={{
+      height: 'calc(100vh - 30px)',
+      maxHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+      padding: '10px 14px',
+      gap: '8px',
+      boxSizing: 'border-box'
+    }}>
       {/* Ultra-Compact Single-Header Control Bar */}
       <div className="glass-panel" style={{ padding: '12px 18px', marginBottom: '12px', borderRadius: '10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
@@ -572,10 +581,10 @@ export default function SolarPipelineDashboard() {
         </div>
       </div>
 
-      <div className="dashboard-grid">
+      <div className="dashboard-grid" style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 380px', gap: '10px', overflow: 'hidden' }}>
         {/* Leads Table Card */}
-        <div className="bento-card list-card glass-panel">
-          <h2>Leads Stream ({filteredLeads.length})</h2>
+        <div className="bento-card list-card glass-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', padding: '14px' }}>
+          <h2 style={{ margin: '0 0 10px 0', fontSize: '15px' }}>Leads Stream ({filteredLeads.length})</h2>
           {loading ? (
             <div className="table-loader">
               <RefreshCw className="spin-anim big" />
@@ -587,7 +596,7 @@ export default function SolarPipelineDashboard() {
               <p>No leads match your filter parameters.</p>
             </div>
           ) : (
-            <div className="table-wrapper">
+            <div className="table-wrapper" style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
               <table className="leads-table">
                 <thead>
                   <tr>
@@ -656,7 +665,7 @@ export default function SolarPipelineDashboard() {
 
         {/* Selected Lead Details Sidebar */}
         {selectedLead && (
-          <div className="bento-card details-card glass-panel">
+          <div className="bento-card details-card glass-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto', padding: '14px' }}>
             <div className="details-header">
               <div className="name-badge-row">
                 <h2>{selectedLead.name}</h2>
