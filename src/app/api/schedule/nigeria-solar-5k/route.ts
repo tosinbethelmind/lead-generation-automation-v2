@@ -20,7 +20,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       pipeline: 'solar_nigeria_5k',
-      targetDailyQuota: config.nigeriaSolarDailyTarget || 5000,
+      targetDailyQuota: config.nigeriaSolarDailyTarget || 10000,
       leadSourceTag: 'solar_nigeria_5k',
       regionsCovered: 'All 36 States of Nigeria + FCT Abuja',
       activeRunnerBackend: config.activeRunnerBackend || 'github_actions',
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     const { action, mode, count } = body;
 
-    const targetCount = count || 5000;
+    const targetCount = count || 10000;
     const targetMode = mode || 'live-solar';
     const jobId = `solar_5k_${Date.now()}`;
 

@@ -327,7 +327,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   githubToken: '',
   githubRepo: '',
   lagosDailyLeadTarget: 10000,
-  nigeriaSolarDailyTarget: 5000,
+  nigeriaSolarDailyTarget: 10000,
 };
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);

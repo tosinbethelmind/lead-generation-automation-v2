@@ -267,12 +267,12 @@ async function runNigeriaSolar5kPipeline() {
   const isDryRun = args.includes('--dry-run');
   const isSynthetic = args.includes('--synthetic');
   const countIdx = args.indexOf('--count');
-  const targetCount = countIdx !== -1 && args[countIdx + 1] ? parseInt(args[countIdx + 1], 10) : 5000;
+  const targetCount = countIdx !== -1 && args[countIdx + 1] ? parseInt(args[countIdx + 1], 10) : 10000;
   const runIdIdx = args.indexOf('--run-id');
-  const runId = runIdIdx !== -1 ? args[runIdIdx + 1] : `solar_5k_${Date.now()}`;
+  const runId = runIdIdx !== -1 ? args[runIdIdx + 1] : `solar_10k_${Date.now()}`;
 
   console.log('===========================================================');
-  console.log('☀️  NIGERIA 5K DAILY SOLAR LEAD EXTRACTION PIPELINE STARTING');
+  console.log('☀️  NIGERIA NATIONWIDE 10K DAILY SOLAR LEAD EXTRACTION PIPELINE STARTING');
   console.log(`🎯 Target Daily Quota: ${targetCount.toLocaleString()} leads`);
   console.log(`📍 Regions Covered: All 36 States of Nigeria + FCT Abuja`);
   console.log(`🛡️ NDPA Compliance: Enforced`);

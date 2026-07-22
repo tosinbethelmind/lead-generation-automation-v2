@@ -212,7 +212,7 @@ export default function SolarPipelineDashboard() {
         body: JSON.stringify({
           action: 'scrape',
           mode,
-          count: mode === 'live-nigeria-5k' ? 5000 : (mode === 'synthetic' ? 1000 : undefined)
+          count: mode === 'live-nigeria-5k' ? 10000 : (mode === 'synthetic' ? 1000 : undefined)
         })
       });
       const data = await res.json();
@@ -478,7 +478,7 @@ export default function SolarPipelineDashboard() {
             }}
           >
             <Sun className={scrapingNigeria5k ? 'spin-anim' : ''} size={16} />
-            {scrapingNigeria5k ? 'Scraping 5K Nigeria...' : 'Harvest 5K Nigeria Solar Leads (Nationwide)'}
+            {scrapingNigeria5k ? 'Scraping 10K Nigeria...' : 'Harvest 10K Nigeria Solar Leads (Nationwide)'}
           </button>
 
           <button 
@@ -633,7 +633,7 @@ export default function SolarPipelineDashboard() {
           <span className="value">{leads.length}</span>
         </div>
         <div className="stat-box glass-panel" style={{ borderLeft: '4px solid #10b981' }}>
-          <span className="label">Nationwide 5K Solar</span>
+          <span className="label">Nationwide 10K Solar</span>
           <span className="value text-green">{leads.filter(l => l.type === 'nigeria_5k').length}</span>
         </div>
         <div className="stat-box glass-panel">
