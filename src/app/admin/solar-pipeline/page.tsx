@@ -42,7 +42,9 @@ interface SolarLead {
   status: string;
   notes: string;
   created_at: string;
-  type: 'homeowner' | 'enterprise';
+  type: 'homeowner' | 'enterprise' | 'nigeria_5k';
+  city?: string;
+  state?: string;
 }
 
 export default function SolarPipelineDashboard() {
@@ -76,6 +78,7 @@ export default function SolarPipelineDashboard() {
   const [scrapingDryRun, setScrapingDryRun] = useState(false);
   const [generatingSynthetic, setGeneratingSynthetic] = useState(false);
   const [scrapingLiveSolar, setScrapingLiveSolar] = useState(false);
+  const [scrapingNigeria5k, setScrapingNigeria5k] = useState(false);
 
   // Active Job states
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
@@ -191,9 +194,10 @@ export default function SolarPipelineDashboard() {
     return null;
   };
 
-  const handleTriggerScrape = async (mode: 'dry-run' | 'synthetic' | 'live-solar') => {
+  const handleTriggerScrape = async (mode: 'dry-run' | 'synthetic' | 'live-solar' | 'live-nigeria-5k') => {
     if (mode === 'dry-run') setScrapingDryRun(true);
     else if (mode === 'synthetic') setGeneratingSynthetic(true);
+    else if (mode === 'live-nigeria-5k') setScrapingNigeria5k(true);
     else setScrapingLiveSolar(true);
 
     setJobStatus('running');
@@ -208,7 +212,7 @@ export default function SolarPipelineDashboard() {
         body: JSON.stringify({
           action: 'scrape',
           mode,
-          count: mode === 'synthetic' ? 1000 : undefined
+          count: mode === 'live-nigeria-5k' ? 5000 : (mode === 'synthetic' ? 1000 : undefined)
         })
       });
       const data = await res.json();
@@ -219,12 +223,14 @@ export default function SolarPipelineDashboard() {
         alert(`Error starting scraper: ${data.error || 'Failed to trigger scraper'}`);
         if (mode === 'dry-run') setScrapingDryRun(false);
         else if (mode === 'synthetic') setGeneratingSynthetic(false);
+        else if (mode === 'live-nigeria-5k') setScrapingNigeria5k(false);
         else setScrapingLiveSolar(false);
       }
     } catch (err: any) {
       alert(`Network error triggering scraper: ${err.message}`);
       if (mode === 'dry-run') setScrapingDryRun(false);
       else if (mode === 'synthetic') setGeneratingSynthetic(false);
+      else if (mode === 'live-nigeria-5k') setScrapingNigeria5k(false);
       else setScrapingLiveSolar(false);
     }
   };
@@ -455,8 +461,29 @@ export default function SolarPipelineDashboard() {
           </button>
 
           <button 
+            onClick={() => handleTriggerScrape('live-nigeria-5k')} 
+            disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || harvesting}
+            className="btn-secondary"
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '10px 16px',
+              cursor: 'pointer',
+              color: '#FFFFFF',
+              fontWeight: '700'
+            }}
+          >
+            <Sun className={scrapingNigeria5k ? 'spin-anim' : ''} size={16} />
+            {scrapingNigeria5k ? 'Scraping 5K Nigeria...' : 'Harvest 5K Nigeria Solar Leads (Nationwide)'}
+          </button>
+
+          <button 
             onClick={() => handleTriggerScrape('live-solar')} 
-            disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || harvesting}
+            disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || harvesting}
             className="btn-secondary"
             style={{ 
               display: 'flex', 
@@ -477,7 +504,7 @@ export default function SolarPipelineDashboard() {
 
           <button 
             onClick={handleHarvestLeads} 
-            disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || harvesting}
+            disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || harvesting}
             className="btn-secondary"
             style={{ 
               display: 'flex', 
@@ -605,6 +632,10 @@ export default function SolarPipelineDashboard() {
           <span className="label">Total Solar Leads</span>
           <span className="value">{leads.length}</span>
         </div>
+        <div className="stat-box glass-panel" style={{ borderLeft: '4px solid #10b981' }}>
+          <span className="label">Nationwide 5K Solar</span>
+          <span className="value text-green">{leads.filter(l => l.type === 'nigeria_5k').length}</span>
+        </div>
         <div className="stat-box glass-panel">
           <span className="label">New / Inbox</span>
           <span className="value text-cyan">{leads.filter(l => l.status === 'new').length}</span>
@@ -635,6 +666,7 @@ export default function SolarPipelineDashboard() {
             <Filter className="icon" />
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
               <option value="all">All Segments</option>
+              <option value="nigeria_5k">Nationwide 5K Solar</option>
               <option value="homeowner">Residential B2C</option>
               <option value="enterprise">Commercial B2B</option>
             </select>
@@ -689,6 +721,8 @@ export default function SolarPipelineDashboard() {
                           <span className="lead-name">{lead.name}</span>
                           {lead.type === 'homeowner' ? (
                             <span className="type-badge homeowner">B2C</span>
+                          ) : lead.type === 'nigeria_5k' ? (
+                            <span className="type-badge" style={{ background: '#10b981', color: '#ffffff', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold' }}>NIGERIA 5K</span>
                           ) : (
                             <span className="type-badge enterprise">B2B</span>
                           )}

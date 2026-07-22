@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { solarQuoteProSupabase } from '@/lib/solarQuoteProClient';
 import { verifySessionToken } from '@/lib/session';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
-import path from 'path';
-import { spawn } from 'child_process';
 import crypto from 'crypto';
+import { triggerCloudRunnerIfNeeded } from '@/lib/cloudRunnerTrigger';
+import { getRuntimeConfig } from '@/lib/localConfig';
 
 export const dynamic = 'force-dynamic';
 
-// GET: Fetch all homeowner and enterprise leads from Supabase, or fetch active job status/logs
+// GET: Fetch all homeowner, enterprise, and 5k Nigeria nationwide solar leads, or check active jobs
 export async function GET(req: NextRequest) {
   try {
     const cookieValue = req.cookies.get('admin-token')?.value;
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Job not found' }, { status: 404 });
       }
 
-      const { data: logs, error: logsErr } = await solarQuoteProSupabase
+      const { data: logs } = await solarQuoteProSupabase
         .from('logs')
         .select('*')
         .eq('run_id', jobId)
@@ -54,12 +54,12 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // 2. Check if a solar scrape job is currently running and return it to reconnect the UI
+    // 2. Check if a solar scrape job (solar_scrape or solar_nigeria_5k) is active
     if (activeCheck) {
       const { data: activeJobs, error: activeErr } = await solarQuoteProSupabase
         .from('scrape_jobs')
         .select('*')
-        .eq('type', 'solar_scrape')
+        .in('type', ['solar_scrape', 'solar_nigeria_5k'])
         .in('status', ['running', 'queued'])
         .order('created_at', { ascending: false })
         .limit(1);
@@ -90,7 +90,32 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: true, active: false });
     }
 
-    // 3. Original functionality: Fetch B2C homeowner leads
+    // 3. Fetch 5K Nigeria Nationwide Solar leads from main `leads` table
+    const { data: nigeriaSolarData, error: nigeriaSolarErr } = await solarQuoteProSupabase
+      .from('leads')
+      .select('*')
+      .or('lead_source.eq.solar_nigeria_5k,niche.eq.solar_installer')
+      .order('created_at', { ascending: false });
+
+    if (nigeriaSolarErr) console.error('Error fetching 5k Nigeria solar leads:', nigeriaSolarErr);
+
+    const nigeriaSolarNormalized = (nigeriaSolarData || []).map((l: any) => ({
+      id: l.id,
+      name: l.company_name || l.name || 'Nigeria Solar Business',
+      phone: l.phone || '',
+      email: l.email || '',
+      location: l.address ? l.address : `${l.city || ''}, ${l.state || 'Nigeria'}`,
+      city: l.city || '',
+      state: l.state || '',
+      contact_person: l.contact_person ? `${l.contact_person} (${l.contact_role || 'Contact'})` : 'Solar Contractor',
+      project_scope: `[Nationwide 5K Solar] ${l.state || 'Nigeria'} State - ${l.city || ''}. Rating: ${l.rating || 4.5}. Source: ${l.lead_source || 'solar_nigeria_5k'}`,
+      status: l.status || 'new',
+      notes: l.notes || '',
+      created_at: l.created_at,
+      type: 'nigeria_5k' as const
+    }));
+
+    // Fetch B2C homeowner leads
     const { data: homeownerData, error: homeownerError } = await solarQuoteProSupabase
       .from('homeowner_leads')
       .select('*')
@@ -121,7 +146,7 @@ export async function GET(req: NextRequest) {
       status: l.status || 'new',
       notes: l.notes || '',
       created_at: l.created_at,
-      type: 'homeowner'
+      type: 'homeowner' as const
     }));
 
     // Normalize B2B leads
@@ -131,26 +156,31 @@ export async function GET(req: NextRequest) {
       contact_person: l.contact_person || 'Facility Manager',
       phone: l.phone || '',
       email: l.email || '',
-      location: '', // Enterprise doesn't have native location field, let's keep blank
+      location: '',
       project_scope: l.project_scope || '',
       status: l.status || 'new',
       created_at: l.created_at,
-      type: 'enterprise'
+      type: 'enterprise' as const
     }));
+
+    const allLeads = [
+      ...nigeriaSolarNormalized,
+      ...homeownerNormalized,
+      ...enterpriseNormalized,
+    ];
 
     return NextResponse.json({
       success: true,
-      leads: [
-        ...homeownerNormalized,
-        ...enterpriseNormalized,
-      ],
+      totalCount: allLeads.length,
+      nigeria5kCount: nigeriaSolarNormalized.length,
+      leads: allLeads,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// PATCH: Update lead status/notes in the respective homeowner/enterprise table
+// PATCH: Update lead status/notes
 export async function PATCH(req: NextRequest) {
   try {
     const cookieValue = req.cookies.get('admin-token')?.value;
@@ -167,7 +197,16 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'id, type, and status are required' }, { status: 400 });
     }
 
-    if (type === 'homeowner') {
+    if (type === 'nigeria_5k') {
+      const { data, error } = await solarQuoteProSupabase
+        .from('leads')
+        .update({ status, notes })
+        .eq('id', id)
+        .select('*')
+        .single();
+      if (error) throw error;
+      return NextResponse.json({ success: true, data });
+    } else if (type === 'homeowner') {
       const { data, error } = await solarQuoteProSupabase
         .from('homeowner_leads')
         .update({ status, notes })
@@ -195,7 +234,7 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-// POST: Harvest solar leads from local/active scraper database into SolarQuotePro enterprise_leads table
+// POST: Trigger Scrapers or Harvest Leads
 export async function POST(req: NextRequest) {
   try {
     const cookieValue = req.cookies.get('admin-token')?.value;
@@ -209,142 +248,58 @@ export async function POST(req: NextRequest) {
     const { action, mode, count } = body;
 
     if (action === 'scrape') {
-      const scriptPath = path.join(process.cwd(), 'scripts', 'mass_solar_scraper.js');
-      const args: string[] = [];
-      
-      if (mode === 'synthetic') {
-        args.push('--synthetic');
-        args.push('--count');
-        args.push(String(count || 1000));
-      } else if (mode === 'dry-run') {
-        args.push('--dry-run');
-      } else if (mode === 'live-solar') {
-        args.push('--solar-only');
-      }
-
-      // Generate background Job record in Supabase
       const jobId = crypto.randomUUID();
-      const { error: insertErr } = await solarQuoteProSupabase
-        .from('scrape_jobs')
-        .insert([
-          {
-            id: jobId,
-            type: 'solar_scrape',
-            status: 'running',
-            payload: { mode, count },
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }
-        ]);
+      const jobType = (mode === 'live-nigeria-5k' || mode === 'nigeria-5k') ? 'solar_nigeria_5k' : 'solar_scrape';
+      const targetCount = count || ((mode === 'live-nigeria-5k' || mode === 'nigeria-5k') ? 5000 : 1000);
 
-      if (insertErr) {
-        console.error('Failed to create background scrape job:', insertErr.message);
-        // Fallback: spawn anyway but notify in console
+      const appConfig = getRuntimeConfig();
+      const isLocalMode = appConfig.storageMode === 'local';
+
+      if (isLocalMode) {
+        try {
+          const { createScrapeJob } = await import('@/lib/supabaseClient');
+          await createScrapeJob(jobType, { mode, count: targetCount });
+        } catch (err: any) {
+          return NextResponse.json({ error: `Failed to create local scrape job: ${err.message}` }, { status: 500 });
+        }
+      } else {
+        const { error } = await solarQuoteProSupabase
+          .from('scrape_jobs')
+          .insert([
+            {
+              id: jobId,
+              type: jobType,
+              status: 'queued',
+              payload: { mode: mode === 'live-nigeria-5k' ? 'live-solar' : mode, count: targetCount },
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+          ]);
+
+        if (error) {
+          return NextResponse.json({ error: `Failed to create scrape job: ${error.message}` }, { status: 500 });
+        }
       }
 
-      // Spawn process asynchronously
-      const childArgs = [...args, '--run-id', jobId];
-      console.log(`Spawning mass scraper in background (Job: ${jobId}) with args: ${childArgs.join(' ')}`);
-      
-      const child = spawn(process.execPath, [scriptPath, ...childArgs], {
-        env: {
-          ...process.env,
-        },
-        detached: true,
-        stdio: ['ignore', 'pipe', 'pipe']
-      });
-
-      // Helper function to write to Logs table in Supabase
-      const appendJobLog = async (msg: string, status: 'INFO' | 'ERROR' | 'START' | 'SUCCESS') => {
-        try {
-          const { error } = await solarQuoteProSupabase.from('logs').insert({
-            run_id: jobId,
-            timestamp: new Date().toISOString(),
-            step: 'solar_scraper',
-            status: status,
-            message: msg
-          });
-          if (error) {
-            console.error('Failed to write log to DB (Supabase error):', error.message);
-          }
-        } catch (dbErr: any) {
-          console.error('Failed to write log to DB (exception):', dbErr.message);
-        }
-      };
-
-      await appendJobLog(`Mass scraper process initialized in mode: ${mode || 'production'} (count: ${count || 'default'})`, 'START');
-
-      let stdoutBuffer = '';
-      child.stdout.on('data', (data: any) => {
-        stdoutBuffer += data.toString();
-        const lines = stdoutBuffer.split(/[\r\n]+/);
-        stdoutBuffer = lines.pop() || '';
-        for (const line of lines) {
-          const cleanLine = line.trim();
-          if (cleanLine) {
-            appendJobLog(cleanLine, 'INFO');
-          }
-        }
-      });
-
-      let stderrBuffer = '';
-      child.stderr.on('data', (data: any) => {
-        stderrBuffer += data.toString();
-        const lines = stderrBuffer.split(/[\r\n]+/);
-        stderrBuffer = lines.pop() || '';
-        for (const line of lines) {
-          const cleanLine = line.trim();
-          if (cleanLine) {
-            appendJobLog(cleanLine, 'ERROR');
-          }
-        }
-      });
-
-      child.on('close', async (code: any) => {
-        if (stdoutBuffer.trim()) {
-          await appendJobLog(stdoutBuffer.trim(), 'INFO');
-        }
-        if (stderrBuffer.trim()) {
-          await appendJobLog(stderrBuffer.trim(), 'ERROR');
-        }
-
-        const isSuccess = code === 0;
-        const jobStatus = isSuccess ? 'completed' : 'failed';
-        const errMsg = isSuccess ? null : `Scraper process exited with non-zero code ${code}`;
-
-        await appendJobLog(
-          isSuccess ? 'Scraper completed successfully.' : `Scraper failed with exit code ${code}`,
-          isSuccess ? 'SUCCESS' : 'ERROR'
-        );
-
-        // Update Job status
-        try {
-          await solarQuoteProSupabase
-            .from('scrape_jobs')
-            .update({
-              status: jobStatus,
-              error_message: errMsg,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', jobId);
-        } catch (dbErr: any) {
-          console.error('Failed to update scraper job finish status:', dbErr.message);
-        }
-      });
-
-      child.unref();
+      try {
+        await triggerCloudRunnerIfNeeded();
+      } catch (err: any) {
+        console.error('Error triggering cloud runner:', err.message);
+      }
 
       return NextResponse.json({
         success: true,
         jobId,
-        message: 'Scraper started successfully. Monitor progress below.'
+        message: jobType === 'solar_nigeria_5k' 
+          ? 'Nationwide 5K Nigeria Solar Scraper job queued successfully!'
+          : 'Solar Scraper job queued successfully!'
       });
     }
 
+    // Default Harvest action
     const repo = getActiveLeadRepository();
     const allScrapedLeads = await repo.getLeads();
 
-    // Filter leads that are solar-related (category, name, or query contains "solar")
     const solarScraped = allScrapedLeads.filter((l: any) => {
       const cat = (l.category || '').toLowerCase();
       const name = (l.name || '').toLowerCase();
@@ -355,12 +310,11 @@ export async function POST(req: NextRequest) {
     if (solarScraped.length === 0) {
       return NextResponse.json({
         success: true,
-        message: 'No solar-related leads found in the local scraper database. Run the Maps Scraper with the query "solar" first!',
+        message: 'No solar-related leads found in the local scraper database.',
         imported: 0
       });
     }
 
-    // Fetch existing enterprise leads to avoid duplicates
     const { data: existingEnterprise, error: fetchErr } = await solarQuoteProSupabase
       .from('enterprise_leads')
       .select('company_name, phone, email');
@@ -387,7 +341,7 @@ export async function POST(req: NextRequest) {
         contact_person: 'Facility/Operations Manager',
         phone: lead.phone_e164 || lead.phone_raw || '',
         email: lead.email || '',
-        project_scope: `[Imported from ${lead.source} Scraper] Category: ${lead.category || 'N/A'}. Query: ${lead.source_query_or_seed || 'N/A'}.\nRating: ${lead.rating || 0} (${lead.reviews_count || 0} reviews).\nWebsite: ${lead.website || 'N/A'}. Address: ${lead.address || 'N/A'}.\nNotes: ${lead.notes || ''}`,
+        project_scope: `[Imported from ${lead.source} Scraper] Category: ${lead.category || 'N/A'}. Address: ${lead.address || 'N/A'}.`,
         status: 'new',
         created_at: new Date().toISOString()
       });
@@ -397,13 +351,12 @@ export async function POST(req: NextRequest) {
       const { error: insertErr } = await solarQuoteProSupabase
         .from('enterprise_leads')
         .insert(toInsert);
-
       if (insertErr) throw insertErr;
     }
 
     return NextResponse.json({
       success: true,
-      message: `Successfully harvested and imported ${toInsert.length} solar leads into the Enterprise Pipeline (Skipped ${skippedCount} duplicates).`,
+      message: `Successfully harvested and imported ${toInsert.length} solar leads into the Enterprise Pipeline.`,
       imported: toInsert.length,
       skipped: skippedCount
     });
