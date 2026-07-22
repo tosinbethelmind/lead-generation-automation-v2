@@ -533,6 +533,9 @@ export default function SolarPipelineDashboard() {
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Contacted</span>
           <span style={{ fontSize: '18px', fontWeight: '800', color: '#f59e0b' }}>{leads.filter(l => l.status === 'contacted').length}</span>
         </div>
+        <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Converted</span>
+          <span style={{ fontSize: '18px', fontWeight: '800', color: '#10b981' }}>{leads.filter(l => ['converted', 'won'].includes(l.status)).length}</span>
         </div>
       </div>
 
