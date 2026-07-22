@@ -95,7 +95,8 @@ export async function GET(req: NextRequest) {
       .from('leads')
       .select('*')
       .or('lead_source.eq.solar_nigeria_5k,niche.eq.solar_installer')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(0, 10000);
 
     if (nigeriaSolarErr) console.error('Error fetching 5k Nigeria solar leads:', nigeriaSolarErr);
 
@@ -119,13 +120,15 @@ export async function GET(req: NextRequest) {
     const { data: homeownerData, error: homeownerError } = await solarQuoteProSupabase
       .from('homeowner_leads')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(0, 10000);
 
     // Fetch B2B enterprise leads
     const { data: enterpriseData, error: enterpriseError } = await solarQuoteProSupabase
       .from('enterprise_leads')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(0, 10000);
 
     if (homeownerError) console.error('Error fetching homeowner leads:', homeownerError);
     if (enterpriseError) console.error('Error fetching enterprise leads:', enterpriseError);
