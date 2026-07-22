@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 import { getRuntimeConfig } from '@/lib/localConfig';
+import crypto from 'crypto';
 
 export async function GET() {
   try {
@@ -20,7 +21,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       pipeline: 'solar_nigeria_5k',
-      targetDailyQuota: config.nigeriaSolarDailyTarget || 10000,
+      targetDailyQuota: config.nigeriaSolarDailyTarget || 2500,
       leadSourceTag: 'solar_nigeria_5k',
       regionsCovered: 'All 36 States of Nigeria + FCT Abuja',
       activeRunnerBackend: config.activeRunnerBackend || 'github_actions',
@@ -36,9 +37,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     const { action, mode, count } = body;
 
-    const targetCount = count || 10000;
+    const targetCount = count || 2500;
     const targetMode = mode || 'live-solar';
-    const jobId = `solar_5k_${Date.now()}`;
+    const jobId = crypto.randomUUID();
 
     if (action === 'trigger-5k' || action === 'queue') {
       if (supabase) {

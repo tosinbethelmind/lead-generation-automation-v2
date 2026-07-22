@@ -1183,12 +1183,24 @@ class SupabaseLeadRepository implements ILeadRepository {
   async getLeads(): Promise<Lead[]> {
     try {
       const supabase = getSupabaseClient();
-      const { data, error } = await supabase
-        .from('leads')
-        .select('*')
-        .order('collected_at', { ascending: false });
-      if (error) throw error;
-      return (data || []).map(restoreLead) as Lead[];
+      let allData: any[] = [];
+      let from = 0;
+      const step = 1000;
+
+      while (true) {
+        const { data, error } = await supabase
+          .from('leads')
+          .select('*')
+          .range(from, from + step - 1)
+          .order('collected_at', { ascending: false });
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allData = allData.concat(data);
+        if (data.length < step) break;
+        from += step;
+      }
+
+      return allData.map(restoreLead) as Lead[];
     } catch (e: any) {
       console.warn('Supabase getLeads error, falling back to local JSON:', e.message);
       return this.fallback.getLeads();
@@ -1350,6 +1362,43 @@ class SupabaseLeadRepository implements ILeadRepository {
       if (toInsert.length > 0) {
         const { error } = await supabase.from('leads').insert(toInsert);
         if (error) throw error;
+
+        // Dual-write solar leads to SolarQuotePro DB asynchronously
+        const solarItems = toInsert.filter(item => {
+          const txt = `${item.category || ''} ${item.source_query_or_seed || ''} ${item.notes || ''} ${item.name || ''}`.toLowerCase();
+          return txt.includes('solar') || txt.includes('inverter') || txt.includes('clean energy');
+        }).map(item => ({
+          lead_id: item.lead_id,
+          source: item.source || 'GOOGLE',
+          name: item.name || 'Solar Business',
+          business_name: item.business_name || item.name || 'Solar Business',
+          category: item.category || 'solar_installer',
+          address: item.address || '',
+          city: item.city || '',
+          phone: item.phone_e164 || item.phone_raw || '',
+          phone_e164: item.phone_e164 || '',
+          email: item.email || '',
+          website: item.website || '',
+          rating: item.rating || 4.5,
+          reviews_count: item.reviews_count || 10,
+          verified: !!item.verified,
+          source_query_or_seed: item.source_query_or_seed || 'solar_nigeria_5k',
+          status: item.status || 'NEW',
+          notes: item.notes || ''
+        }));
+
+        if (solarItems.length > 0) {
+          try {
+            const sqUrl = process.env.SOLARQUOTEPRO_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
+            const sqKey = process.env.SOLARQUOTEPRO_SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
+            const { createClient } = await import('@supabase/supabase-js');
+            const sqClient = createClient(sqUrl, sqKey, { auth: { persistSession: false } });
+            const { error: sqErr } = await sqClient.from('leads').upsert(solarItems, { onConflict: 'lead_id', ignoreDuplicates: true });
+            if (sqErr) {
+              console.warn('[Dual-Write SolarQuotePro Warning]:', sqErr.message);
+            }
+          } catch (_) {}
+        }
       }
       return { added: toInsert.length, skipped };
     } catch (e: any) {

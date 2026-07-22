@@ -1,4 +1,4 @@
-name: ApexReach Nigeria 10K Solar Pipeline Runner
+name: ApexReach Nigeria 2.5K Real Solar Pipeline Runner
 
 on:
   schedule:
@@ -13,7 +13,7 @@ on:
       count:
         description: 'Target Lead Count'
         required: false
-        default: '10000'
+        default: '2500'
   repository_dispatch:
     types: [run-solar-5k]
 
@@ -38,7 +38,7 @@ jobs:
         run: |
           npx playwright install chromium --with-deps
 
-      - name: Execute Nigeria 10K Solar Pipeline Scraper
+      - name: Execute Nigeria 2.5K Real Solar Pipeline Scraper
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -46,9 +46,9 @@ jobs:
           BROWSERLESS_API_KEY: ${{ secrets.BROWSERLESS_API_KEY }}
           ACTIVE_BROWSER_PROVIDER: browserless
         run: |
-          echo "🚀 Executing Nigeria 10K Solar Pipeline Runner..."
+          echo "🚀 Executing Nigeria 2.5K Real Solar Pipeline Runner..."
           MODE="${{ github.event.inputs.mode || 'live-solar' }}"
-          COUNT="${{ github.event.inputs.count || '10000' }}"
+          COUNT="${{ github.event.inputs.count || '2500' }}"
           
           if [ "$MODE" = "synthetic" ]; then
             node scripts/nigeria_solar_5k_scraper.js --synthetic --count "$COUNT"

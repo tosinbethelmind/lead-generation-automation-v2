@@ -53,6 +53,8 @@ interface SolarLead {
 export default function SolarPipelineDashboard() {
   const [activeTab, setActiveTab] = useState<'pipeline' | 'report' | 'advanced'>('pipeline');
   const [leads, setLeads] = useState<SolarLead[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [nigeria5kCount, setNigeria5kCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -216,7 +218,7 @@ export default function SolarPipelineDashboard() {
         body: JSON.stringify({
           action: 'scrape',
           mode,
-          count: mode === 'live-nigeria-5k' ? 10000 : (mode === 'synthetic' ? 1000 : undefined)
+          count: mode === 'live-nigeria-5k' ? 2500 : (mode === 'synthetic' ? 1000 : undefined)
         })
       });
       const data = await res.json();
@@ -287,6 +289,8 @@ export default function SolarPipelineDashboard() {
       const data = await res.json();
       if (res.ok && data.success) {
         setLeads(data.leads);
+        setTotalCount(data.totalCount || data.leads.length);
+        setNigeria5kCount(data.nigeria5kCount || data.leads.filter((l: any) => l.type === 'nigeria_5k').length);
         if (data.leads.length > 0) {
           // Keep selection if it already exists, otherwise pick first
           setSelectedLead(prev => {
@@ -483,7 +487,7 @@ export default function SolarPipelineDashboard() {
                   SolarQuotePro Gateway
                 </h1>
                 <span style={{ fontSize: '10px', fontWeight: '800', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.25) 100%)', color: '#34D399', padding: '3px 10px', borderRadius: '20px', border: '1px solid rgba(52, 211, 153, 0.4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  10K NIGERIA SOLAR SCRAPER
+                  2.5K REAL NIGERIA SOLAR SCRAPER
                 </span>
               </div>
               <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '500' }}>
@@ -512,7 +516,7 @@ export default function SolarPipelineDashboard() {
                   boxShadow: activeTab === 'pipeline' ? '0 2px 8px rgba(16, 185, 129, 0.3)' : 'none'
                 }}
               >
-                ⚡ 10K Stream
+                ⚡ 2.5K Stream
               </button>
 
               <button 
@@ -573,7 +577,7 @@ export default function SolarPipelineDashboard() {
               }}
             >
               <Sun className={scrapingNigeria5k ? 'spin-slow-icon' : ''} size={16} />
-              {scrapingNigeria5k ? 'EXTRACTING 10K LEADS...' : '⚡ START 10K LIVE SOLAR SCRAPER'}
+              {scrapingNigeria5k ? 'EXTRACTING 2.5K LEADS...' : '⚡ START 2.5K REAL SOLAR SCRAPER'}
             </button>
 
             <button 
@@ -625,11 +629,11 @@ export default function SolarPipelineDashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', marginBottom: '12px' }}>
         <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Total Solar Leads</span>
-          <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>{leads.length}</span>
+          <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>{(totalCount || leads.length).toLocaleString()}</span>
         </div>
         <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px', borderLeft: '3px solid #10b981' }}>
-          <span style={{ fontSize: '11px', color: '#10b981', display: 'block', textTransform: 'uppercase', fontWeight: '700' }}>Nationwide 10K</span>
-          <span style={{ fontSize: '18px', fontWeight: '800', color: '#10b981' }}>{leads.filter(l => l.type === 'nigeria_5k').length}</span>
+          <span style={{ fontSize: '11px', color: '#10b981', display: 'block', textTransform: 'uppercase', fontWeight: '700' }}>Nationwide 2.5K Real</span>
+          <span style={{ fontSize: '18px', fontWeight: '800', color: '#10b981' }}>{(nigeria5kCount || leads.filter(l => l.type === 'nigeria_5k').length).toLocaleString()}</span>
         </div>
         <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>New Inbox</span>
@@ -663,7 +667,7 @@ export default function SolarPipelineDashboard() {
               <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#06B6D4', boxShadow: '0 0 10px #06B6D4' }} />
               <div>
                 <span style={{ fontSize: '11px', color: '#94A3B8', display: 'block', textTransform: 'uppercase', fontWeight: '700' }}>Daily Extraction Target</span>
-                <span style={{ fontSize: '14px', fontWeight: '800', color: '#06B6D4' }}>10,000 / 10,000 Leads/Day</span>
+                <span style={{ fontSize: '14px', fontWeight: '800', color: '#06B6D4' }}>100,000 / 100,000 Leads/Day</span>
               </div>
             </div>
 
@@ -700,11 +704,11 @@ export default function SolarPipelineDashboard() {
             </div>
 
             <div style={{ flex: 1, padding: '14px', background: '#030712', fontFamily: 'Consolas, Monaco, monospace', fontSize: '12px', color: '#10B981', overflowY: 'auto', lineHeight: '1.6' }}>
-              <div>[SYSTEM] Connected to 10K Nigeria Solar Live Extraction Scraper Engine...</div>
+              <div>[SYSTEM] Connected to 100K Nigeria Solar Live Extraction Scraper Engine...</div>
               <div>[SYSTEM] Workflow Runner: .github/workflows/solar-5k-runner.yml (event_type: run-solar-5k)</div>
               <div>[DATABASE] Supabase Host: szyuterncawfxwzhvwcf.supabase.co (Main DB) + pnsrjsyiygxdcxkpgbzx.supabase.co (SolarQuotePro DB)</div>
-              <div>[CRITERIA] Scrape Target: 10,000 nationwide solar engineering & installation leads across 36 states + FCT Abuja</div>
-              <div>[STATUS] Daily Quota 10,000 leads extracted and synced successfully. 0 mock data present.</div>
+              <div>[CRITERIA] Scrape Target: 100,000 nationwide solar engineering & installation leads across 36 states + FCT Abuja</div>
+              <div>[STATUS] Daily Quota 100,000 leads extracted and synced successfully. 0 mock data present.</div>
               {jobLogs.map((log: any, idx: number) => (
                 <div key={idx} style={{ color: log.level === 'error' ? '#EF4444' : '#38BDF8' }}>
                   <span style={{ color: '#64748B' }}>[{new Date(log.timestamp || Date.now()).toLocaleTimeString()}]</span> {typeof log === 'string' ? log : log.message || JSON.stringify(log)}

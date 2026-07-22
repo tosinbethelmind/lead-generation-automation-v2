@@ -631,6 +631,16 @@ export default function Home() {
     } catch (err) {
       // Ignore background log errors silently
     }
+
+    try {
+      const statsResp = await fetch('/api/leads?stats=true');
+      if (statsResp.ok) {
+        const statsData = await statsResp.json();
+        if (statsData && typeof statsData.totalLeads === 'number') {
+          setStats(statsData);
+        }
+      }
+    } catch (_) {}
   };
 
   const handleLocalTrigger = async () => {

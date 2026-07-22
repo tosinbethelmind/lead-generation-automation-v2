@@ -145,6 +145,16 @@ function extractContactsFromHtml(html: string): { phone: string | null; email: s
     }
   });
 
+  $('a[href*="wa.me/"], a[href*="whatsapp.com/"]').each((_, el) => {
+    if (!telPhone) {
+      const href = $(el).attr('href')?.trim() || '';
+      const waMatch = href.match(/(?:wa\.me\/|phone=)(\+?\d+)/i);
+      if (waMatch && waMatch[1]) {
+        telPhone = normalizePhone(waMatch[1], 'NG');
+      }
+    }
+  });
+
   $('a[href^="mailto:"]').each((_, el) => {
     if (!mailtoEmail) {
       const raw = $(el).attr('href')?.replace('mailto:', '').split('?')[0].trim() || '';

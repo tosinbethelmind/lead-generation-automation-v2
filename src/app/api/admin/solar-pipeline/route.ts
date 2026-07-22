@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabaseClient';
 import { solarQuoteProSupabase } from '@/lib/solarQuoteProClient';
 import { verifySessionToken } from '@/lib/session';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
 import crypto from 'crypto';
 import { triggerCloudRunnerIfNeeded } from '@/lib/cloudRunnerTrigger';
 import { getRuntimeConfig } from '@/lib/localConfig';
+
+const db = supabase || solarQuoteProSupabase;
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +27,7 @@ export async function GET(req: NextRequest) {
 
     // 1. Fetch details of a specific job
     if (jobId) {
-      const { data: job, error: jobErr } = await solarQuoteProSupabase
+      const { data: job, error: jobErr } = await db
         .from('scrape_jobs')
         .select('*')
         .eq('id', jobId)
@@ -38,7 +41,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Job not found' }, { status: 404 });
       }
 
-      const { data: logs } = await solarQuoteProSupabase
+      const { data: logs } = await db
         .from('logs')
         .select('*')
         .eq('run_id', jobId)
@@ -56,7 +59,7 @@ export async function GET(req: NextRequest) {
 
     // 2. Check if a solar scrape job (solar_scrape or solar_nigeria_5k) is active
     if (activeCheck) {
-      const { data: activeJobs, error: activeErr } = await solarQuoteProSupabase
+      const { data: activeJobs, error: activeErr } = await db
         .from('scrape_jobs')
         .select('*')
         .in('type', ['solar_scrape', 'solar_nigeria_5k'])
@@ -70,7 +73,7 @@ export async function GET(req: NextRequest) {
 
       if (activeJobs && activeJobs.length > 0) {
         const job = activeJobs[0];
-        const { data: logs } = await solarQuoteProSupabase
+        const { data: logs } = await db
           .from('logs')
           .select('*')
           .eq('run_id', job.id)
@@ -90,11 +93,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: true, active: false });
     }
 
-    // 3. Fetch 5K Nigeria Nationwide Solar leads from main `leads` table
-    const { data: nigeriaSolarData, error: nigeriaSolarErr } = await solarQuoteProSupabase
+    // 3. Fetch 5K/10K Nigeria Nationwide Solar leads from main `leads` table using schema columns
+    const { data: nigeriaSolarData, count: nigeriaSolarExactCount, error: nigeriaSolarErr } = await db
       .from('leads')
-      .select('*')
-      .or('lead_source.eq.solar_nigeria_5k,niche.eq.solar_installer')
+      .select('*', { count: 'exact' })
+      .or('source_query_or_seed.eq.solar_nigeria_5k,category.eq.solar_installer')
       .order('created_at', { ascending: false })
       .range(0, 10000);
 
@@ -102,36 +105,41 @@ export async function GET(req: NextRequest) {
 
     const nigeriaSolarNormalized = (nigeriaSolarData || []).map((l: any) => ({
       id: l.id,
-      name: l.company_name || l.name || 'Nigeria Solar Business',
-      phone: l.phone || '',
+      name: l.name || l.business_name || 'Nigeria Solar Business',
+      phone: l.phone_e164 || l.phone || '',
       email: l.email || '',
-      location: l.address ? l.address : `${l.city || ''}, ${l.state || 'Nigeria'}`,
+      location: l.address ? l.address : `${l.city || ''}, Nigeria`,
       city: l.city || '',
-      state: l.state || '',
-      contact_person: l.contact_person ? `${l.contact_person} (${l.contact_role || 'Contact'})` : 'Solar Contractor',
-      project_scope: `[Nationwide 5K Solar] ${l.state || 'Nigeria'} State - ${l.city || ''}. Rating: ${l.rating || 4.5}. Source: ${l.lead_source || 'solar_nigeria_5k'}`,
+      state: l.area || l.city || 'Nigeria',
+      contact_person: 'Solar Contractor',
+      project_scope: `[Nationwide Solar] ${l.city || 'Nigeria'}. Rating: ${l.rating || 4.5}. Source: ${l.source_query_or_seed || 'solar_nigeria_5k'}`,
       status: l.status || 'new',
       notes: l.notes || '',
       created_at: l.created_at,
       type: 'nigeria_5k' as const
     }));
 
-    // Fetch B2C homeowner leads
-    const { data: homeownerData, error: homeownerError } = await solarQuoteProSupabase
-      .from('homeowner_leads')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .range(0, 10000);
+    // Safely query optional legacy B2C homeowner leads table if it exists
+    let homeownerData: any[] = [];
+    try {
+      const { data } = await db
+        .from('homeowner_leads')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(0, 10000);
+      if (data) homeownerData = data;
+    } catch (_) {}
 
-    // Fetch B2B enterprise leads
-    const { data: enterpriseData, error: enterpriseError } = await solarQuoteProSupabase
-      .from('enterprise_leads')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .range(0, 10000);
-
-    if (homeownerError) console.error('Error fetching homeowner leads:', homeownerError);
-    if (enterpriseError) console.error('Error fetching enterprise leads:', enterpriseError);
+    // Safely query optional legacy B2B enterprise leads table if it exists
+    let enterpriseData: any[] = [];
+    try {
+      const { data } = await db
+        .from('enterprise_leads')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(0, 10000);
+      if (data) enterpriseData = data;
+    } catch (_) {}
 
     // Normalize B2C leads
     const homeownerNormalized = (homeownerData || []).map((l: any) => ({
@@ -172,10 +180,12 @@ export async function GET(req: NextRequest) {
       ...enterpriseNormalized,
     ];
 
+    const exactTotal = (nigeriaSolarExactCount || nigeriaSolarNormalized.length) + homeownerNormalized.length + enterpriseNormalized.length;
+
     return NextResponse.json({
       success: true,
-      totalCount: allLeads.length,
-      nigeria5kCount: nigeriaSolarNormalized.length,
+      totalCount: exactTotal,
+      nigeria5kCount: nigeriaSolarExactCount || nigeriaSolarNormalized.length,
       leads: allLeads,
     });
   } catch (error: any) {
@@ -201,7 +211,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     if (type === 'nigeria_5k') {
-      const { data, error } = await solarQuoteProSupabase
+      const { data, error } = await db
         .from('leads')
         .update({ status, notes })
         .eq('id', id)
@@ -210,7 +220,7 @@ export async function PATCH(req: NextRequest) {
       if (error) throw error;
       return NextResponse.json({ success: true, data });
     } else if (type === 'homeowner') {
-      const { data, error } = await solarQuoteProSupabase
+      const { data, error } = await db
         .from('homeowner_leads')
         .update({ status, notes })
         .eq('id', id)
@@ -220,7 +230,7 @@ export async function PATCH(req: NextRequest) {
       if (error) throw error;
       return NextResponse.json({ success: true, data });
     } else if (type === 'enterprise') {
-      const { data, error } = await solarQuoteProSupabase
+      const { data, error } = await db
         .from('enterprise_leads')
         .update({ status, project_scope: notes })
         .eq('id', id)
@@ -248,22 +258,26 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Delete mock homeowner leads
-    await solarQuoteProSupabase
-      .from('homeowner_leads')
-      .delete()
-      .or('email.ilike.%example.com%,email.ilike.%test%,name.ilike.%test%');
+    try {
+      await db
+        .from('homeowner_leads')
+        .delete()
+        .or('email.ilike.%example.com%,email.ilike.%test%,name.ilike.%test%');
+    } catch (_) {}
 
     // Delete mock enterprise leads
-    await solarQuoteProSupabase
-      .from('enterprise_leads')
-      .delete()
-      .or('email.ilike.%example.com%,email.ilike.%test%,company_name.ilike.%test%');
+    try {
+      await db
+        .from('enterprise_leads')
+        .delete()
+        .or('email.ilike.%example.com%,email.ilike.%test%,company_name.ilike.%test%');
+    } catch (_) {}
 
     // Delete mock leads in main leads table
-    await solarQuoteProSupabase
+    await db
       .from('leads')
       .delete()
-      .or('email.ilike.%example.com%,email.ilike.%test%,name.ilike.%test%');
+      .or('email.ilike.%example.com%,email.ilike.%test%,name.ilike.%test%,lead_id.ilike.%solar_10k_syn%');
 
     return NextResponse.json({
       success: true,
@@ -303,7 +317,7 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ error: `Failed to create local scrape job: ${err.message}` }, { status: 500 });
         }
       } else {
-        const { error } = await solarQuoteProSupabase
+        const { error } = await db
           .from('scrape_jobs')
           .insert([
             {
