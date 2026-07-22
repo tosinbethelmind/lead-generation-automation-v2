@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
                 'X-GitHub-Api-Version': '2022-11-28',
                 'User-Agent': 'ApexReach-App-Solar5k'
               },
-              body: JSON.stringify({ event_type: 'run-queue' })
+              body: JSON.stringify({ event_type: 'run-solar-5k' })
             });
           } catch (ghErr: any) {
             console.warn('GitHub dispatch trigger note:', ghErr.message);

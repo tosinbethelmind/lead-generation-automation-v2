@@ -355,16 +355,6 @@ async function runCronChecks() {
     });
   } catch (e) {}
 
-  // 2b. Trigger Nigeria 5K Solar Pipeline check
-  try {
-    const solarUrl = `${SCRAPER_API_BASE_URL.replace(/\/$/, '')}/api/schedule/nigeria-solar-5k`;
-    await fetch(solarUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'trigger-5k', mode: 'live-solar', count: 5000 })
-    });
-  } catch (e) {}
-
   // 3. Trigger Git batch synchronization trigger
   try {
     const cronSecret = process.env.CRON_SECRET || 'apexreach_sync_secret';

@@ -281,10 +281,31 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      try {
-        await triggerCloudRunnerIfNeeded();
-      } catch (err: any) {
-        console.error('Error triggering cloud runner:', err.message);
+      if (jobType === 'solar_nigeria_5k') {
+        try {
+          const { githubToken, githubRepo } = appConfig;
+          if (githubToken && githubRepo) {
+            const dispatchUrl = `https://api.github.com/repos/${githubRepo}/dispatches`;
+            await fetch(dispatchUrl, {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/vnd.github+json',
+                'Authorization': `Bearer ${githubToken}`,
+                'X-GitHub-Api-Version': '2022-11-28',
+                'User-Agent': 'ApexReach-App-Solar5k'
+              },
+              body: JSON.stringify({ event_type: 'run-solar-5k' })
+            });
+          }
+        } catch (err: any) {
+          console.error('Error dispatching solar 5k runner:', err.message);
+        }
+      } else {
+        try {
+          await triggerCloudRunnerIfNeeded();
+        } catch (err: any) {
+          console.error('Error triggering cloud runner:', err.message);
+        }
       }
 
       return NextResponse.json({

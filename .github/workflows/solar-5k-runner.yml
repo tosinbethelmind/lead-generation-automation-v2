@@ -2,10 +2,9 @@ name: ApexReach Nigeria 5K Solar Pipeline Runner
 
 on:
   schedule:
-    # Run daily at 4:00 AM UTC (5:00 AM WAT)
-    - cron: '0 4 * * *'
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
   workflow_dispatch:
-    # Allow manual trigger from GitHub UI with custom parameters
     inputs:
       mode:
         description: 'Execution Mode (live-solar | synthetic | dry-run)'
@@ -15,6 +14,8 @@ on:
         description: 'Target Lead Count'
         required: false
         default: '5000'
+  repository_dispatch:
+    types: [run-solar-5k]
 
 jobs:
   run-solar-5k-pipeline:
