@@ -425,214 +425,114 @@ export default function SolarPipelineDashboard() {
 
   return (
     <div className="solar-pipeline-container">
-      {/* Compact Top Header & Global Action Control Bar */}
-      <div className="glass-panel" style={{ padding: '20px 24px', marginBottom: '16px', borderRadius: '14px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <Sun size={20} style={{ color: '#10B981' }} className="spin-slow" />
-              <span style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', color: '#10B981' }}>
-                SPECIALISE SOLAR PIPELINE
+      {/* Ultra-Compact Single-Header Control Bar */}
+      <div className="glass-panel" style={{ padding: '12px 18px', marginBottom: '12px', borderRadius: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          
+          {/* Brand & Subtitle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Sun size={22} style={{ color: '#10B981' }} className="spin-slow" />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h1 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>
+                  SolarQuotePro Gateway
+                </h1>
+                <span style={{ fontSize: '10px', fontWeight: '700', background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', padding: '2px 8px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                  10K NIGERIA SOLAR PIPELINE
+                </span>
+              </div>
+              <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                36 States + FCT Abuja | 10,000 Daily Target Quota
               </span>
             </div>
-            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>
-              SolarQuotePro Production Gateway
-            </h1>
-            <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
-              Nationwide Nigeria 10K Solar Extraction & Real-Time Outreach Engine
-            </p>
           </div>
 
-          {/* Primary Action Button: Glowing Green 10K Live Button */}
-          <button 
-            onClick={() => handleTriggerScrape('live-nigeria-5k')} 
-            disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || harvesting}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '10px', 
-              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-              border: 'none',
-              borderRadius: '10px',
-              padding: '14px 24px',
-              cursor: 'pointer',
-              color: '#FFFFFF',
-              fontWeight: '800',
-              fontSize: '15px',
-              boxShadow: '0 4px 20px rgba(16, 185, 129, 0.45)',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <Sun className={scrapingNigeria5k ? 'spin-anim' : ''} size={20} />
-            {scrapingNigeria5k ? 'EXTRACTING 10K NIGERIA SOLAR LEADS...' : '⚡ START 10K LIVE SOLAR SCRAPER (NATIONWIDE)'}
-          </button>
-        </div>
+          {/* Action Buttons Toolbar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {/* BIG GREEN START BUTTON */}
+            <button 
+              onClick={() => handleTriggerScrape('live-nigeria-5k')} 
+              disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || harvesting}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '10px 18px',
+                cursor: 'pointer',
+                color: '#FFFFFF',
+                fontWeight: '800',
+                fontSize: '13px',
+                boxShadow: '0 3px 12px rgba(16, 185, 129, 0.4)'
+              }}
+            >
+              <Sun className={scrapingNigeria5k ? 'spin-anim' : ''} size={16} />
+              {scrapingNigeria5k ? 'EXTRACTING 10K LEADS...' : '⚡ START 10K LIVE SOLAR SCRAPER'}
+            </button>
 
-        {/* Compact Utility Toolbar */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '10px', 
-          marginTop: '16px', 
-          paddingTop: '16px', 
-          borderTop: '1px solid var(--panel-border)', 
-          flexWrap: 'wrap' 
-        }}>
-          <button 
-            onClick={() => fetchLeads(true)} 
-            disabled={refreshing}
-            className="btn-primary"
-            style={{ padding: '8px 16px', fontSize: '13px' }}
-          >
-            <RefreshCw className={refreshing ? 'spin-anim' : ''} size={14} />
-            {refreshing ? 'Syncing...' : 'Sync Database'}
-          </button>
+            <button 
+              onClick={() => fetchLeads(true)} 
+              disabled={refreshing}
+              className="btn-primary"
+              style={{ padding: '8px 14px', fontSize: '12px', height: '36px' }}
+            >
+              <RefreshCw className={refreshing ? 'spin-anim' : ''} size={13} />
+              {refreshing ? 'Syncing...' : 'Sync Database'}
+            </button>
 
-          <button 
-            onClick={handleHarvestLeads} 
-            disabled={harvesting}
-            className="btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '13px' }}
-          >
-            <Building className={harvesting ? 'spin-anim' : ''} size={14} />
-            {harvesting ? 'Harvesting...' : 'Harvest Leads'}
-          </button>
+            <button 
+              onClick={handleHarvestLeads} 
+              disabled={harvesting}
+              className="btn-secondary"
+              style={{ padding: '8px 14px', fontSize: '12px', height: '36px' }}
+            >
+              <Building className={harvesting ? 'spin-anim' : ''} size={13} />
+              Harvest Leads
+            </button>
 
-          <button 
-            onClick={() => handleTriggerScrape('dry-run')} 
-            disabled={scrapingDryRun}
-            className="btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '13px' }}
-          >
-            <Search className={scrapingDryRun ? 'spin-anim' : ''} size={14} />
-            {scrapingDryRun ? 'Scraping...' : 'Dry Run Check'}
-          </button>
+            <button 
+              onClick={() => handleTriggerScrape('dry-run')} 
+              disabled={scrapingDryRun}
+              className="btn-secondary"
+              style={{ padding: '8px 14px', fontSize: '12px', height: '36px' }}
+            >
+              <Search className={scrapingDryRun ? 'spin-anim' : ''} size={13} />
+              Dry Run
+            </button>
 
-          <button 
-            onClick={handlePurgeMockData}
-            className="btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '13px', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.4)' }}
-          >
-            <ShieldAlert size={14} />
-            Purge Mock Data
-          </button>
+            <button 
+              onClick={handlePurgeMockData}
+              className="btn-secondary"
+              style={{ padding: '8px 14px', fontSize: '12px', height: '36px', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+            >
+              <ShieldAlert size={13} />
+              Purge Mock
+            </button>
+          </div>
+
         </div>
       </div>
 
-      {/* Live Scraper Progress Monitor */}
-      {(jobStatus === 'running' || jobStatus === 'queued' || (jobLogs && jobLogs.length > 0)) && (
-        <div className="bento-card progress-monitor-card glass-panel" style={{
-          background: 'linear-gradient(135deg, rgba(8, 14, 24, 0.95) 0%, rgba(4, 8, 14, 0.9) 100%)',
-          border: '1px solid rgba(6, 182, 212, 0.15)',
-          boxShadow: '0 0 20px rgba(6, 182, 212, 0.05)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '16px',
-          padding: '24px'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span className={`status-dot ${jobStatus === 'running' ? 'pulse-green' : ''}`} style={{
-                height: '10px',
-                width: '10px',
-                borderRadius: '50%',
-                background: jobStatus === 'running' ? '#10b981' : jobStatus === 'completed' ? '#10b981' : jobStatus === 'failed' ? '#ef4444' : '#3b82f6',
-                boxShadow: jobStatus === 'running' ? '0 0 10px #10b981' : 'none'
-              }} />
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: '#fff', letterSpacing: '0.5px' }}>
-                Scraper Run Tracking: <span style={{ color: '#06b6d4', textTransform: 'uppercase' }}>{jobStatus}</span>
-              </h3>
-            </div>
-            {getProgressPercentage() !== null && (
-              <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#10b981' }}>
-                {getProgressPercentage()}% Synced
-              </span>
-            )}
-          </div>
-
-          {/* Progress Bar */}
-          <div style={{
-            width: '100%',
-            height: '6px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '3px',
-            overflow: 'hidden',
-            boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)'
-          }}>
-            <div style={{
-              width: getProgressPercentage() !== null ? `${getProgressPercentage()}%` : '100%',
-              height: '100%',
-              background: getProgressPercentage() !== null 
-                ? 'linear-gradient(90deg, #06b6d4 0%, #10b981 100%)' 
-                : 'linear-gradient(90deg, #1e293b 0%, #06b6d4 50%, #1e293b 100%)',
-              backgroundSize: getProgressPercentage() !== null ? 'auto' : '200% 100%',
-              borderRadius: '3px',
-              transition: 'width 0.4s ease-out',
-              animation: getProgressPercentage() === null ? 'pulse-bar 2s linear infinite' : 'none'
-            }} />
-          </div>
-
-          {/* Monospace terminal-style Log Monitor */}
-          <div className="terminal-log-console" style={{
-            background: '#020617',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
-            borderRadius: '8px',
-            padding: '12px 16px',
-            height: '160px',
-            overflowY: 'auto',
-            fontFamily: 'Consolas, Monaco, "Courier New", Courier, monospace',
-            fontSize: '0.8rem',
-            color: '#34d399',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '6px',
-            boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.5)'
-          }}>
-            {jobLogs.length === 0 ? (
-              <div style={{ color: '#64748b', fontStyle: 'italic' }}>Reading pipeline activity logs database...</div>
-            ) : (
-              jobLogs.map((log: any, idx: number) => {
-                let color = '#34d399'; // default info
-                if (log.status === 'ERROR') color = '#f87171'; // red for errors
-                else if (log.status === 'SUCCESS') color = '#60a5fa'; // blue for success
-                else if (log.status === 'START') color = '#fbbf24'; // amber for start
-                
-                return (
-                  <div key={log.id || idx} style={{ color, display: 'flex', gap: '8px' }}>
-                    <span style={{ color: '#64748b', userSelect: 'none' }}>
-                      [{new Date(log.timestamp).toLocaleTimeString()}]
-                    </span>
-                    <span>{log.message}</span>
-                  </div>
-                );
-              })
-            )}
-            <div ref={logEndRef} />
-          </div>
+      {/* Ultra-Compact Stats Strip */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', marginBottom: '12px' }}>
+        <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Total Solar Leads</span>
+          <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>{leads.length}</span>
         </div>
-      )}
-
-      {/* Stats Summary Panel */}
-      <div className="stats-row">
-        <div className="stat-box glass-panel">
-          <span className="label">Total Solar Leads</span>
-          <span className="value">{leads.length}</span>
+        <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px', borderLeft: '3px solid #10b981' }}>
+          <span style={{ fontSize: '11px', color: '#10b981', display: 'block', textTransform: 'uppercase', fontWeight: '700' }}>Nationwide 10K</span>
+          <span style={{ fontSize: '18px', fontWeight: '800', color: '#10b981' }}>{leads.filter(l => l.type === 'nigeria_5k').length}</span>
         </div>
-        <div className="stat-box glass-panel" style={{ borderLeft: '4px solid #10b981' }}>
-          <span className="label">Nationwide 10K Solar</span>
-          <span className="value text-green">{leads.filter(l => l.type === 'nigeria_5k').length}</span>
+        <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>New Inbox</span>
+          <span style={{ fontSize: '18px', fontWeight: '800', color: '#06b6d4' }}>{leads.filter(l => l.status === 'new').length}</span>
         </div>
-        <div className="stat-box glass-panel">
-          <span className="label">New / Inbox</span>
-          <span className="value text-cyan">{leads.filter(l => l.status === 'new').length}</span>
+        <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Contacted</span>
+          <span style={{ fontSize: '18px', fontWeight: '800', color: '#f59e0b' }}>{leads.filter(l => l.status === 'contacted').length}</span>
         </div>
-        <div className="stat-box glass-panel">
-          <span className="label">Contacted / Engaged</span>
-          <span className="value text-amber">{leads.filter(l => l.status === 'contacted').length}</span>
-        </div>
-        <div className="stat-box glass-panel">
-          <span className="label">Converted Contracts</span>
-          <span className="value text-green">{leads.filter(l => ['converted', 'won'].includes(l.status)).length}</span>
         </div>
       </div>
 
