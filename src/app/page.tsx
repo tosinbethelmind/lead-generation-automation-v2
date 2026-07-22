@@ -542,6 +542,7 @@ export default function Home() {
   const [localPort, setLocalPort] = useState<string>('3006');
 
   const [latestLogs, setLatestLogs] = useState<any[]>([]);
+  const [lastLeadsCount, setLastLeadsCount] = useState<number | null>(null);
 
   const handleCopyText = (text: string, setCopiedState: (val: boolean) => void) => {
     navigator.clipboard.writeText(text);
@@ -1498,6 +1499,40 @@ export default function Home() {
       setHealthStatus(null);
     }
   }, [config.serviceHealthStatus]);
+
+  // Real-Time Automated Live Update Stream (syncs every 3 seconds)
+  useEffect(() => {
+    fetchConfig();
+    fetchStats();
+    fetchLeads();
+    fetchLogs();
+    checkRunnerStatus();
+
+    const liveSyncInterval = setInterval(async () => {
+      checkRunnerStatus();
+      fetchStats();
+      fetchLogs();
+      
+      try {
+        const resp = await fetch('/api/leads');
+        if (resp.ok) {
+          const data = await resp.json();
+          if (Array.isArray(data)) {
+            setLeads(data);
+            setLastLeadsCount(prev => {
+              if (prev !== null && data.length > prev) {
+                const diff = data.length - prev;
+                addToast(`🎉 Live Update: +${diff} new leads extracted & added to CRM!`, 'success');
+              }
+              return data.length;
+            });
+          }
+        }
+      } catch (_) {}
+    }, 3000);
+
+    return () => clearInterval(liveSyncInterval);
+  }, []);
 
   const scrollToSectionAndFocus = (id: string, focusSelector?: string) => {
     const section = document.getElementById(id);
@@ -3067,8 +3102,11 @@ export default function Home() {
                 maxHeight: '280px',
                 overflowY: 'auto'
               }}>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.62rem', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8 }}>
-                  Live Pipeline Feed
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.62rem', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <span>Live Pipeline Feed</span>
+                  <span style={{ color: '#10B981', fontSize: '0.6rem', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10B981', boxShadow: '0 0 6px #10B981' }}></span> LIVE (3s)
+                  </span>
                 </div>
                 {latestLogs.map((log: any, idx: number) => {
                   const [runId, timestamp, step, _, logStatus, message] = log;
