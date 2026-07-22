@@ -7,6 +7,7 @@ export interface Lead {
   city?: string;
   phone_raw?: string;
   phone_e164?: string;
+  email?: string;
   rating?: number;
   reviews_count?: number;
   website?: string;
@@ -316,6 +317,28 @@ export function getPitchDetails(lead: Lead, origin: string, signature: string): 
         socialBody = `Hi! We built a modern website preview, cost calculator, and video walkthrough for ${name} in ${area}: ${previewUrl}`;
       }
       break;
+  }
+
+  // Cross-channel references — always keep the preview link in the message
+  const emailText = lead.email ? lead.email.trim() : '';
+  if (emailText) {
+    if (whatsappBody && !whatsappBody.includes(emailText)) {
+      whatsappBody += ` We have also sent detailed information to your email: ${emailText}.`;
+    }
+    if (socialBody && !socialBody.includes(emailText)) {
+      socialBody += ` (Detailed proposal also sent to your email: ${emailText}).`;
+    }
+  }
+
+  // Safety guard: ensure preview link is ALWAYS present in every outreach channel
+  if (whatsappBody && !whatsappBody.includes(previewUrl)) {
+    whatsappBody += ` View your free custom website here: ${previewUrl}`;
+  }
+  if (socialBody && !socialBody.includes(previewUrl)) {
+    socialBody += ` View it here: ${previewUrl}`;
+  }
+  if (emailBody && !emailBody.includes(previewUrl)) {
+    emailBody += `\n\nView your customised website preview here: ${previewUrl}`;
   }
 
   return {

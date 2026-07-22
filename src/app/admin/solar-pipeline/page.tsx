@@ -50,6 +50,7 @@ interface SolarLead {
 }
 
 export default function SolarPipelineDashboard() {
+  const [activeTab, setActiveTab] = useState<'pipeline' | 'advanced'>('pipeline');
   const [leads, setLeads] = useState<SolarLead[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -427,100 +428,174 @@ export default function SolarPipelineDashboard() {
 
   return (
     <div className="solar-pipeline-container" style={{
-      height: 'calc(100vh - 30px)',
+      height: 'calc(100vh - 20px)',
       maxHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
-      padding: '10px 14px',
-      gap: '8px',
-      boxSizing: 'border-box'
+      padding: '12px 18px',
+      gap: '10px',
+      boxSizing: 'border-box',
+      background: 'radial-gradient(ellipse at top, #0f172a 0%, #050811 100%)',
+      color: '#f8fafc',
+      fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
     }}>
-      {/* Ultra-Compact Single-Header Control Bar */}
-      <div className="glass-panel" style={{ padding: '12px 18px', marginBottom: '12px', borderRadius: '10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+      <style jsx>{`
+        @keyframes pulseGlow {
+          0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+          70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        @keyframes spinSlow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .start-btn-pulse {
+          animation: pulseGlow 2s infinite;
+        }
+        .spin-slow-icon {
+          animation: spinSlow 12s linear infinite;
+        }
+        .neon-card {
+          background: rgba(15, 23, 42, 0.65);
+          backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .neon-card:hover {
+          border-color: rgba(16, 185, 129, 0.4);
+        }
+      `}</style>
+
+      {/* Ultra-Compact WOW-Factor Control Header */}
+      <div className="neon-card" style={{ padding: '10px 18px', borderRadius: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
           
           {/* Brand & Subtitle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Sun size={22} style={{ color: '#10B981' }} className="spin-slow" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ background: 'rgba(16, 185, 129, 0.15)', padding: '8px', borderRadius: '10px', display: 'flex', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+              <Sun size={24} style={{ color: '#10B981' }} className="spin-slow-icon" />
+            </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h1 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h1 style={{ margin: 0, fontSize: '19px', fontWeight: '900', letterSpacing: '-0.02em', background: 'linear-gradient(135deg, #FFFFFF 0%, #94A3B8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   SolarQuotePro Gateway
                 </h1>
-                <span style={{ fontSize: '10px', fontWeight: '700', background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', padding: '2px 8px', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                  10K NIGERIA SOLAR PIPELINE
+                <span style={{ fontSize: '10px', fontWeight: '800', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.25) 100%)', color: '#34D399', padding: '3px 10px', borderRadius: '20px', border: '1px solid rgba(52, 211, 153, 0.4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  10K NIGERIA SOLAR SCRAPER
                 </span>
               </div>
-              <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-                36 States + FCT Abuja | 10,000 Daily Target Quota
+              <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '500' }}>
+                36 States + FCT Abuja | Daily Automated Extraction Engine
               </span>
             </div>
           </div>
 
-          {/* Action Buttons Toolbar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            {/* BIG GREEN START BUTTON */}
+          {/* Right Controls & Start Scraper Action */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            
+            {/* Tab Pill Switcher */}
+            <div style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.4)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <button 
+                onClick={() => setActiveTab('pipeline')}
+                style={{ 
+                  background: activeTab === 'pipeline' ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : 'transparent',
+                  color: activeTab === 'pipeline' ? '#FFFFFF' : '#94A3B8',
+                  border: 'none',
+                  borderRadius: '7px',
+                  padding: '7px 15px',
+                  fontWeight: '700',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: activeTab === 'pipeline' ? '0 2px 8px rgba(16, 185, 129, 0.3)' : 'none'
+                }}
+              >
+                ⚡ 10K Stream
+              </button>
+              <button 
+                onClick={() => setActiveTab('advanced')}
+                style={{ 
+                  background: activeTab === 'advanced' ? 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)' : 'transparent',
+                  color: activeTab === 'advanced' ? '#FFFFFF' : '#94A3B8',
+                  border: 'none',
+                  borderRadius: '7px',
+                  padding: '7px 15px',
+                  fontWeight: '700',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: activeTab === 'advanced' ? '0 2px 8px rgba(6, 182, 212, 0.3)' : 'none'
+                }}
+              >
+                ⚙️ Advanced Tools
+              </button>
+            </div>
+
+            {/* FRONT & CENTER BIG GREEN SCRAPER BUTTON */}
             <button 
               onClick={() => handleTriggerScrape('live-nigeria-5k')} 
               disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || harvesting}
+              className="start-btn-pulse"
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '8px', 
                 background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '10px 18px',
+                border: '1px solid #34D399',
+                borderRadius: '9px',
+                padding: '9px 18px',
                 cursor: 'pointer',
                 color: '#FFFFFF',
                 fontWeight: '800',
                 fontSize: '13px',
-                boxShadow: '0 3px 12px rgba(16, 185, 129, 0.4)'
+                letterSpacing: '0.02em'
               }}
             >
-              <Sun className={scrapingNigeria5k ? 'spin-anim' : ''} size={16} />
+              <Sun className={scrapingNigeria5k ? 'spin-slow-icon' : ''} size={16} />
               {scrapingNigeria5k ? 'EXTRACTING 10K LEADS...' : '⚡ START 10K LIVE SOLAR SCRAPER'}
             </button>
 
             <button 
               onClick={() => fetchLeads(true)} 
               disabled={refreshing}
-              className="btn-primary"
-              style={{ padding: '8px 14px', fontSize: '12px', height: '36px' }}
+              style={{ 
+                background: 'rgba(6, 182, 212, 0.15)', 
+                border: '1px solid rgba(6, 182, 212, 0.35)', 
+                color: '#38BDF8', 
+                padding: '7px 14px', 
+                fontSize: '12px', 
+                borderRadius: '8px', 
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
             >
-              <RefreshCw className={refreshing ? 'spin-anim' : ''} size={13} />
-              {refreshing ? 'Syncing...' : 'Sync Database'}
+              <RefreshCw className={refreshing ? 'spin-slow-icon' : ''} size={13} />
+              {refreshing ? 'Syncing...' : 'Sync DB'}
             </button>
 
             <button 
               onClick={handlePurgeMockData}
-              className="btn-secondary"
-              style={{ padding: '8px 14px', fontSize: '12px', height: '36px', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+              style={{ 
+                background: 'rgba(239, 68, 68, 0.12)', 
+                border: '1px solid rgba(239, 68, 68, 0.3)', 
+                color: '#F87171', 
+                padding: '7px 14px', 
+                fontSize: '12px', 
+                borderRadius: '8px', 
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
             >
               <ShieldAlert size={13} />
               Purge Mock
             </button>
-
-            <Link 
-              href="/admin/solar-pipeline/advanced" 
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '6px', 
-                background: 'rgba(255, 255, 255, 0.08)', 
-                border: '1px solid var(--panel-border)', 
-                borderRadius: '8px', 
-                padding: '8px 14px', 
-                fontSize: '12px', 
-                color: 'var(--text-primary)', 
-                textDecoration: 'none', 
-                fontWeight: '600',
-                height: '36px'
-              }}
-            >
-              Advanced Tools <ArrowRight size={13} />
-            </Link>
           </div>
 
         </div>
@@ -550,7 +625,87 @@ export default function SolarPipelineDashboard() {
         </div>
       </div>
 
-      {/* Filters Bar */}
+      {activeTab === 'advanced' ? (
+        /* Advanced Engine & Tools Tab View */
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px', flex: 1, overflowY: 'auto' }}>
+          
+          <div className="glass-panel" style={{ padding: '16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Building style={{ color: '#06b6d4' }} size={20} />
+              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700' }}>Harvest Scraped Leads</h3>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, flex: 1 }}>
+              Sync pending enterprise leads scraped from commercial registries into main outreach queue.
+            </p>
+            <button 
+              onClick={handleHarvestLeads}
+              disabled={harvesting}
+              className="btn-primary"
+              style={{ padding: '8px 14px', fontSize: '12px' }}
+            >
+              <Building size={14} /> {harvesting ? 'Harvesting...' : 'Harvest Scraped Leads'}
+            </button>
+          </div>
+
+          <div className="glass-panel" style={{ padding: '16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Zap style={{ color: '#f59e0b' }} size={20} />
+              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700' }}>Secondary Solar Scraper</h3>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, flex: 1 }}>
+              Trigger auxiliary directory extraction for commercial solar engineering contractors.
+            </p>
+            <button 
+              onClick={() => handleTriggerScrape('live-solar')}
+              disabled={scrapingLiveSolar}
+              className="btn-secondary"
+              style={{ padding: '8px 14px', fontSize: '12px', background: 'linear-gradient(135deg, #FF9900 0%, #FF5E00 100%)', border: 'none', color: '#fff', fontWeight: '700' }}
+            >
+              <Zap size={14} /> {scrapingLiveSolar ? 'Scraping...' : 'Scrape Solar Companies'}
+            </button>
+          </div>
+
+          <div className="glass-panel" style={{ padding: '16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Search style={{ color: '#8b5cf6' }} size={20} />
+              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700' }}>Dry Run Check</h3>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, flex: 1 }}>
+              Diagnostic query test across OpenStreetMap solar nodes without saving to database.
+            </p>
+            <button 
+              onClick={() => handleTriggerScrape('dry-run')}
+              disabled={scrapingDryRun}
+              className="btn-secondary"
+              style={{ padding: '8px 14px', fontSize: '12px' }}
+            >
+              <Search size={14} /> {scrapingDryRun ? 'Testing...' : 'Execute Dry Run Check'}
+            </button>
+          </div>
+
+          <div className="glass-panel" style={{ padding: '16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Database style={{ color: '#10b981' }} size={20} />
+              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700' }}>Generate 1K Synthetic Leads</h3>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, flex: 1 }}>
+              Generate 1,000 synthetic NDPA-compliant leads for system testing and load validation.
+            </p>
+            <button 
+              onClick={() => handleTriggerScrape('synthetic')}
+              disabled={generatingSynthetic}
+              className="btn-secondary"
+              style={{ padding: '8px 14px', fontSize: '12px' }}
+            >
+              <Database size={14} /> {generatingSynthetic ? 'Generating...' : 'Generate 1K Synthetic'}
+            </button>
+          </div>
+
+        </div>
+      ) : (
+        /* Tab 1: 10K Solar Pipeline View */
+        <>
+          {/* Filters Bar */}
       <div className="filters-bar glass-panel">
         <div className="search-wrapper">
           <Search className="search-icon" />
@@ -793,6 +948,8 @@ export default function SolarPipelineDashboard() {
           </div>
         )}
       </div>
+      </>
+      )}
 
       {/* Outreach Campaign Modal */}
       {outreachModalOpen && selectedLead && (

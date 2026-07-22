@@ -551,7 +551,12 @@ async function runScraper(options = { dryRun: false, synthetic: false, count: 10
       if (l.email) seenEmails.add(l.email.toLowerCase());
     }
 
-    const clustersToScrape = options.dryRun ? URBAN_CLUSTERS.slice(0, 1) : URBAN_CLUSTERS;
+    let clustersToScrape = options.dryRun ? URBAN_CLUSTERS.slice(0, 1) : URBAN_CLUSTERS;
+    if (options.solarOnly) {
+      clustersToScrape = [
+        { name: 'All Nigeria', state: 'Nigeria', bbox: '4.27,2.67,13.89,14.68' }
+      ];
+    }
     let totalSaved = 0;
     let totalSkipped = 0;
 

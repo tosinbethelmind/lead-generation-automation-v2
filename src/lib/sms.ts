@@ -22,7 +22,7 @@ export function replaceSmsPlaceholders(template: string, lead: any, previewUrl: 
   const signature = config.businessSignature || '';
   const phone = lead.phone_e164 || lead.phone_raw || '';
   
-  return template
+  let formatted = template
     .replace(/{{\s*lead\.name\s*}}/g, lead.name || '')
     .replace(/{{\s*lead\.company\s*}}/g, lead.company || '')
     .replace(/{{\s*lead\.email\s*}}/g, lead.email || '')
@@ -30,6 +30,19 @@ export function replaceSmsPlaceholders(template: string, lead: any, previewUrl: 
     .replace(/{{\s*previewUrl\s*}}/g, previewUrl)
     .replace(/{{\s*businessSignature\s*}}/g, signature)
     .replace(/{{\s*signature\s*}}/g, signature);
+
+  const emailText = lead.email ? lead.email.trim() : '';
+
+  // Safety guard: always include the preview URL in the SMS
+  if (previewUrl && !formatted.includes(previewUrl)) {
+    formatted += ` View your site: ${previewUrl}`;
+  }
+
+  // Cross-channel reference: nudge them to check their email inbox
+  if (emailText && !formatted.includes(emailText)) {
+    formatted += ` Details also sent to ${emailText}`;
+  }
+  return formatted;
 }
 
 /**

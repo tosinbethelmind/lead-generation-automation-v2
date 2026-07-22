@@ -49,6 +49,7 @@ export function hasValidCfSession(): boolean {
  */
 async function extractSessionFromBrowser(): Promise<CfSession | null> {
   let browser: any = null;
+  let timeoutId: NodeJS.Timeout | undefined;
   try {
     await addLog('Jiji CF Session', 'INFO', 'Extracting fresh Cloudflare session via stealth browser...');
 
@@ -56,10 +57,14 @@ async function extractSessionFromBrowser(): Promise<CfSession | null> {
     const { getNextUAProfile } = await import('@/lib/scraperHeaders');
     const ua = getNextUAProfile();
 
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => reject(new Error('Browser launch timed out after 20s')), 20000);
+    });
+
     // Race browser launch against a 20s timeout to avoid hanging Vercel serverless functions
     browser = await Promise.race([
       launchBrowser(),
-      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Browser launch timed out after 20s')), 20000))
+      timeoutPromise
     ]);
     const page = await browser.newPage();
     await applyStealthToPage(page);
@@ -112,6 +117,7 @@ async function extractSessionFromBrowser(): Promise<CfSession | null> {
     await addLog('Jiji CF Session', 'ERROR', `Session extraction failed: ${err.message}`).catch(() => {});
     return null;
   } finally {
+    if (timeoutId) clearTimeout(timeoutId);
     if (browser) {
       try { await browser.close(); } catch (_) {}
     }

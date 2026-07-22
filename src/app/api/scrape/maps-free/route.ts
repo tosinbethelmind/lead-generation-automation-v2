@@ -117,8 +117,13 @@ export async function POST(req: NextRequest) {
     // Hard 40 s cap: browser either succeeds quickly or we skip it
     const BROWSER_TIMEOUT_MS = 40_000;
 
+    let timeoutId: NodeJS.Timeout | undefined;
 
     try {
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error(`Browser session timed out after ${BROWSER_TIMEOUT_MS / 1000}s`)), BROWSER_TIMEOUT_MS);
+      });
+
       const browserResult = await Promise.race([
         (async () => {
           const { launchBrowser } = await import('@/lib/browserLauncher');
@@ -174,7 +179,10 @@ export async function POST(req: NextRequest) {
           if (isSinglePlace) {
             await page.waitForSelector('h1', { timeout: 6000 }).catch(() => {});
             const data = await Promise.race([
-              extractMapsLeadData(page, query, true),
+              extractMapsLeadData(page, query, true).catch(err => {
+                console.warn(`[Maps-Free] Background extractMapsLeadData error:`, err.message);
+                return null;
+              }),
               new Promise<null>(r => setTimeout(() => r(null), 12000))
             ]);
             if (data) {
@@ -213,7 +221,10 @@ export async function POST(req: NextRequest) {
                   await detailPage.goto(link, { waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {});
                   await detailPage.waitForSelector('h1', { timeout: 6000 }).catch(() => {});
                   const data = await Promise.race([
-                    extractMapsLeadData(detailPage, query, true),
+                    extractMapsLeadData(detailPage, query, true).catch(err => {
+                      console.warn(`[Maps-Free] Background chunk extractMapsLeadData error:`, err.message);
+                      return null;
+                    }),
                     new Promise<null>(r => setTimeout(() => r(null), 12000))
                   ]);
                   if (data) {
@@ -304,6 +315,7 @@ export async function POST(req: NextRequest) {
         error: `All fallbacks exhausted: Google Maps timed out, DuckDuckGo and OSM returned 0 results.`
       }, { status: 500 });
     } finally {
+      if (timeoutId) clearTimeout(timeoutId);
       if (browser) {
         try { await browser.close(); } catch (_) {}
       }

@@ -174,11 +174,12 @@ export async function POST(req: NextRequest) {
     }
 
     let currentBrowser: any = null;
+    let timeoutId: NodeJS.Timeout | undefined;
     try {
       const connectPromise = puppeteer.connect({ browserWSEndpoint: testWsUrl });
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Connection timed out after 10 seconds')), 10_000)
-      );
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error('Connection timed out after 10 seconds')), 10_000);
+      });
 
       currentBrowser = await Promise.race([connectPromise, timeoutPromise]);
       const page = await currentBrowser.newPage();
@@ -189,6 +190,7 @@ export async function POST(req: NextRequest) {
         error: `Connection failed: ${err.message || 'Unknown connection error'}`
       });
     } finally {
+      if (timeoutId) clearTimeout(timeoutId);
       if (currentBrowser) {
         try { currentBrowser.disconnect(); } catch (_) {}
       }

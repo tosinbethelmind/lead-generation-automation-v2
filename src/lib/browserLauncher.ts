@@ -316,18 +316,20 @@ async function launchBrowserInstance(savedConfig: any, activeProxy?: string) {
       const safeWsUrl = finalWs.split('?')[0];
       console.log(`[browserLauncher] Connecting to remote Chrome browser [endpoint ${i + 1}/${wsUrls.length}]: ${safeWsUrl}`);
       
+      let connectTimeoutId: NodeJS.Timeout | undefined;
       try {
-        const browser = await Promise.race([
-          puppeteerCore.connect({ browserWSEndpoint: finalWs }),
-          new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('Remote browser connect timed out after 10s')), 10000)
-          )
-        ]);
+        const connectPromise = puppeteerCore.connect({ browserWSEndpoint: finalWs });
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          connectTimeoutId = setTimeout(() => reject(new Error('Remote browser connect timed out after 10s')), 10000);
+        });
+        const browser = await Promise.race([connectPromise, timeoutPromise]);
         console.log(`[browserLauncher] Connected successfully to remote browser endpoint ${i + 1}/${wsUrls.length}`);
         return browser;
       } catch (err: any) {
         console.error(`[browserLauncher] Failed to connect to remote browser endpoint ${i + 1}/${wsUrls.length}:`, err.message);
         lastError = err;
+      } finally {
+        if (connectTimeoutId) clearTimeout(connectTimeoutId);
       }
     }
     console.warn('[browserLauncher] All configured remote browser WebSocket endpoints failed. Falling back to local Chromium.');

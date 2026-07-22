@@ -3,8 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 test.describe('Solar Pipeline CRM Dashboard E2E Verification', () => {
-  // Override baseURL to port 3006 where Next.js dev server runs
-  test.use({ baseURL: 'http://localhost:3006' });
+  // Override baseURL to port 3009 where Next.js dev server runs for tests
+  test.use({ baseURL: 'http://localhost:3009' });
 
   test.beforeEach(async ({ page }) => {
     // Inject the master admin session cookie to bypass login gate
