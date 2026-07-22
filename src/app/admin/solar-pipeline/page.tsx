@@ -24,7 +24,8 @@ import {
   MessageCircle,
   Database,
   Zap,
-  ArrowRight
+  ArrowRight,
+  Terminal
 } from 'lucide-react';
 
 interface SolarLead {
