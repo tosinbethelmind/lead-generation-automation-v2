@@ -136,10 +136,11 @@ async function processJob(job) {
       return;
     }
 
-    // 1.5. Direct execution for solar_scrape to avoid serverless HTTP timeout
-    if (jobType === 'solar_scrape') {
+    // 1.5. Direct execution for solar_scrape and solar_nigeria_5k to avoid serverless HTTP timeout
+    if (jobType === 'solar_scrape' || jobType === 'solar_nigeria_5k') {
       const { spawn } = require('child_process');
-      const scriptPath = path.resolve(process.cwd(), 'scripts', 'mass_solar_scraper.js');
+      const scriptName = jobType === 'solar_nigeria_5k' ? 'nigeria_solar_5k_scraper.js' : 'mass_solar_scraper.js';
+      const scriptPath = path.resolve(process.cwd(), 'scripts', scriptName);
       const args = [];
       const mode = payload.mode;
       const count = payload.count;
@@ -147,15 +148,27 @@ async function processJob(job) {
       if (mode === 'synthetic') {
         args.push('--synthetic');
         args.push('--count');
-        args.push(String(count || 1000));
+        args.push(String(count || (jobType === 'solar_nigeria_5k' ? 5000 : 1000)));
       } else if (mode === 'dry-run') {
         args.push('--dry-run');
+        if (count) {
+          args.push('--count');
+          args.push(String(count));
+        }
       } else if (mode === 'live-solar') {
-        args.push('--solar-only');
+        if (jobType === 'solar_scrape') {
+          args.push('--solar-only');
+        } else {
+          args.push('--count');
+          args.push(String(count || 5000));
+        }
+      } else if (count) {
+        args.push('--count');
+        args.push(String(count));
       }
       
       const childArgs = [...args, '--run-id', jobId];
-      log(`[github_actions_runner] Spawning direct mass scraper (Job: ${jobId}) with args: ${childArgs.join(' ')}`);
+      log(`[github_actions_runner] Spawning direct scraper (${scriptName}, Job: ${jobId}) with args: ${childArgs.join(' ')}`);
       
       const child = spawn(process.execPath, [scriptPath, ...childArgs], {
         env: {
@@ -339,6 +352,16 @@ async function runCronChecks() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ autoQueue: true })
+    });
+  } catch (e) {}
+
+  // 2b. Trigger Nigeria 5K Solar Pipeline check
+  try {
+    const solarUrl = `${SCRAPER_API_BASE_URL.replace(/\/$/, '')}/api/schedule/nigeria-solar-5k`;
+    await fetch(solarUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'trigger-5k', mode: 'live-solar', count: 5000 })
     });
   } catch (e) {}
 

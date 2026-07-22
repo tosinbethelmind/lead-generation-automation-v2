@@ -1,0 +1,58 @@
+name: ApexReach Nigeria 5K Solar Pipeline Runner
+
+on:
+  schedule:
+    # Run daily at 4:00 AM UTC (5:00 AM WAT)
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+    # Allow manual trigger from GitHub UI with custom parameters
+    inputs:
+      mode:
+        description: 'Execution Mode (live-solar | synthetic | dry-run)'
+        required: false
+        default: 'live-solar'
+      count:
+        description: 'Target Lead Count'
+        required: false
+        default: '5000'
+
+jobs:
+  run-solar-5k-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium & System Dependencies
+        run: |
+          npx playwright install chromium --with-deps
+
+      - name: Execute Nigeria 5K Solar Pipeline Scraper
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          BROWSERLESS_API_KEY: ${{ secrets.BROWSERLESS_API_KEY }}
+          ACTIVE_BROWSER_PROVIDER: browserless
+        run: |
+          echo "🚀 Executing Nigeria 5K Solar Pipeline Runner..."
+          MODE="${{ github.event.inputs.mode || 'live-solar' }}"
+          COUNT="${{ github.event.inputs.count || '5000' }}"
+          
+          if [ "$MODE" = "synthetic" ]; then
+            node scripts/nigeria_solar_5k_scraper.js --synthetic --count "$COUNT"
+          elif [ "$MODE" = "dry-run" ]; then
+            node scripts/nigeria_solar_5k_scraper.js --dry-run --count "$COUNT"
+          else
+            node scripts/nigeria_solar_5k_scraper.js --count "$COUNT"
+          fi

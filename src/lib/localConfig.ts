@@ -168,6 +168,8 @@ export interface LocalConfig {
   spaceName?: string;
   githubToken?: string;
   githubRepo?: string;
+  lagosDailyLeadTarget?: number;
+  nigeriaSolarDailyTarget?: number;
 }
 
 export interface TeamMember {
@@ -324,6 +326,8 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   spaceName: '',
   githubToken: '',
   githubRepo: '',
+  lagosDailyLeadTarget: 10000,
+  nigeriaSolarDailyTarget: 5000,
 };
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
