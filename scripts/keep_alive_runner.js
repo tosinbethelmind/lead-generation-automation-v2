@@ -72,6 +72,15 @@ process.on('SIGTERM', () => {
   process.exit(0);
 });
 
+// ── Global Error / Rejection Interceptors ─────────────────────────────────
+process.on('uncaughtException', (err) => {
+  console.error('[KeepAlive UncaughtException] Fatal error caught globally:', err.stack || err.message || err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[KeepAlive UnhandledRejection] Unhandled Promise rejection at:', promise, 'reason:', reason);
+});
+
 // ── Runner process management ─────────────────────────────────────────────
 function startRunner() {
   if (isIntentionallyStopped) return;
@@ -79,28 +88,36 @@ function startRunner() {
   console.log(`\n[KeepAlive] 🚀 Starting local_job_runner.ts... (restart #${restartCount})`);
   lastRestartTime = Date.now();
 
-  childProcess = spawn('npx', ['tsx', 'scripts/local_job_runner.ts'], {
-    stdio: 'inherit',
-    cwd: projectDir,
-    shell: true
-  });
+  try {
+    childProcess = spawn('npx', ['tsx', 'scripts/local_job_runner.ts'], {
+      stdio: 'inherit',
+      cwd: projectDir,
+      shell: true
+    });
 
-  childProcess.on('close', (code) => {
+    childProcess.on('close', (code) => {
+      if (isIntentionallyStopped) return;
+      restartCount++;
+      const delay = Math.min(5000 * restartCount, 30000); // exponential up to 30s max
+      console.log(`[KeepAlive] ⚠️ Runner exited with code ${code}. Restarting in ${delay / 1000}s...`);
+      setTimeout(startRunner, delay);
+    });
+
+    childProcess.on('error', (err) => {
+      if (isIntentionallyStopped) return;
+      restartCount++;
+      console.error(`[KeepAlive] ❌ Runner process error:`, err.message);
+      const delay = Math.min(5000 * restartCount, 30000);
+      console.log(`[KeepAlive] Retrying in ${delay / 1000}s...`);
+      setTimeout(startRunner, delay);
+    });
+  } catch (err) {
     if (isIntentionallyStopped) return;
     restartCount++;
-    const delay = Math.min(5000 * restartCount, 30000); // exponential up to 30s max
-    console.log(`[KeepAlive] ⚠️ Runner exited with code ${code}. Restarting in ${delay / 1000}s...`);
-    setTimeout(startRunner, delay);
-  });
-
-  childProcess.on('error', (err) => {
-    if (isIntentionallyStopped) return;
-    restartCount++;
-    console.error(`[KeepAlive] ❌ Runner process error:`, err.message);
+    console.error(`[KeepAlive] ❌ Direct spawn failed:`, err.message);
     const delay = Math.min(5000 * restartCount, 30000);
-    console.log(`[KeepAlive] Retrying in ${delay / 1000}s...`);
     setTimeout(startRunner, delay);
-  });
+  }
 }
 
 console.log('====================================================');

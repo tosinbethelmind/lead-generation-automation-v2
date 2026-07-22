@@ -58,30 +58,33 @@ async function supabaseRequest(method, endpoint, body = null, headers = {}) {
     try {
       const res = await fetch(url, options);
       if (!res.ok) {
-        // If it's a server error/rate limit/gateway error, retry
+        const text = await res.text();
         if (res.status >= 500 || res.status === 429) {
           if (attempt === maxRetries) {
-            const text = await res.text();
             throw new Error(`Supabase API error (${method} ${endpoint}): Status ${res.status} - ${text}`);
           }
-          console.warn(`[Network Retry] Supabase API returned status ${res.status}. Retrying in ${delay / 1000}s (Attempt ${attempt}/${maxRetries})...`);
+          console.warn(`[Network Retry] Supabase API returned status ${res.status} (${method} ${endpoint}). Retrying in ${delay / 1000}s (Attempt ${attempt}/${maxRetries})...`);
           await new Promise(r => setTimeout(r, delay));
           delay *= 2;
           continue;
         } else {
-          // Client errors (400, 401, 403, 404, etc.) - do not retry
-          const text = await res.text();
           throw new Error(`Supabase API error (${method} ${endpoint}): Status ${res.status} - ${text}`);
         }
       }
 
       if (res.status === 204) return true;
-      return await res.json();
+      const text = await res.text();
+      if (!text || text.trim() === '') return null;
+      try {
+        return JSON.parse(text);
+      } catch (jsonErr) {
+        throw new Error(`Failed to parse JSON response from ${method} ${endpoint} (Status ${res.status}): "${text.substring(0, 150)}". error: ${jsonErr.message}`);
+      }
     } catch (err) {
       if (attempt === maxRetries) {
         throw err;
       }
-      console.warn(`[Network Retry] Supabase API request failed with error: "${err.message}". Retrying in ${delay / 1000}s (Attempt ${attempt}/${maxRetries})...`);
+      console.warn(`[Network Retry] Supabase API request failed (${method} ${endpoint}) with error: "${err.message}". Retrying in ${delay / 1000}s (Attempt ${attempt}/${maxRetries})...`);
       await new Promise(r => setTimeout(r, delay));
       delay *= 2;
     }
@@ -130,6 +133,108 @@ async function processJob(job) {
     if (!res || res.length === 0) {
       log(`Job ${jobId} already claimed or running elsewhere. Skipping.`);
       currentJob = null;
+      return;
+    }
+
+    // 1.5. Direct execution for solar_scrape to avoid serverless HTTP timeout
+    if (jobType === 'solar_scrape') {
+      const { spawn } = require('child_process');
+      const scriptPath = path.resolve(process.cwd(), 'scripts', 'mass_solar_scraper.js');
+      const args = [];
+      const mode = payload.mode;
+      const count = payload.count;
+      
+      if (mode === 'synthetic') {
+        args.push('--synthetic');
+        args.push('--count');
+        args.push(String(count || 1000));
+      } else if (mode === 'dry-run') {
+        args.push('--dry-run');
+      } else if (mode === 'live-solar') {
+        args.push('--solar-only');
+      }
+      
+      const childArgs = [...args, '--run-id', jobId];
+      log(`[github_actions_runner] Spawning direct mass scraper (Job: ${jobId}) with args: ${childArgs.join(' ')}`);
+      
+      const child = spawn(process.execPath, [scriptPath, ...childArgs], {
+        env: {
+          ...process.env,
+        },
+        detached: true,
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
+
+      const appendJobLog = async (msg, status) => {
+        console.log(`[Job ${jobId}] [${status}] ${msg}`);
+        try {
+          await supabaseRequest('POST', 'logs', [{
+            run_id: jobId,
+            timestamp: new Date().toISOString(),
+            step: 'solar_scraper',
+            status: status,
+            message: msg
+          }]);
+        } catch (dbErr) {
+          console.error('Failed to write log to DB:', dbErr.message);
+        }
+      };
+
+      await appendJobLog(`Mass scraper runner process initialized in mode: ${mode || 'production'} (count: ${count || 'default'})`, 'START');
+
+      let stdoutBuffer = '';
+      child.stdout.on('data', (data) => {
+        stdoutBuffer += data.toString();
+        const lines = stdoutBuffer.split(/[\r\n]+/);
+        stdoutBuffer = lines.pop() || '';
+        for (const line of lines) {
+          const cleanLine = line.trim();
+          if (cleanLine) {
+            appendJobLog(cleanLine, 'INFO');
+          }
+        }
+      });
+
+      let stderrBuffer = '';
+      child.stderr.on('data', (data) => {
+        stderrBuffer += data.toString();
+        const lines = stderrBuffer.split(/[\r\n]+/);
+        stderrBuffer = lines.pop() || '';
+        for (const line of lines) {
+          const cleanLine = line.trim();
+          if (cleanLine) {
+            appendJobLog(cleanLine, 'ERROR');
+          }
+        }
+      });
+
+      await new Promise((resolve, reject) => {
+        child.on('close', async (code) => {
+          if (stdoutBuffer.trim()) {
+            await appendJobLog(stdoutBuffer.trim(), 'INFO');
+          }
+          if (stderrBuffer.trim()) {
+            await appendJobLog(stderrBuffer.trim(), 'ERROR');
+          }
+
+          const isSuccess = code === 0;
+          const jobStatus = isSuccess ? 'completed' : 'failed';
+          const errMsg = isSuccess ? null : `Scraper process exited with non-zero code ${code}`;
+
+          await appendJobLog(
+            isSuccess ? 'Scraper completed successfully.' : `Scraper failed with exit code ${code}`,
+            isSuccess ? 'SUCCESS' : 'ERROR'
+          );
+
+          try {
+            await updateJobStatus(jobId, jobStatus, errMsg);
+          } catch (dbErr) {
+            console.error('Failed to update scraper job finish status:', dbErr.message);
+          }
+          if (isSuccess) resolve();
+          else reject(new Error(errMsg || 'Scraper failed'));
+        });
+      });
       return;
     }
 
@@ -312,8 +417,8 @@ async function main() {
       const appSettings = await supabaseRequest('GET', 'app_settings?key=eq.apexreach_runtime_config');
       if (appSettings && appSettings.length > 0) {
         const parsed = JSON.parse(appSettings[0].value || '{}');
-        const token = parsed.githubToken;
-        const repo = parsed.githubRepo;
+        const token = parsed.githubToken || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+        const repo = parsed.githubRepo || process.env.GITHUB_REPOSITORY;
         if (token && repo) {
           log(`🔄 Triggering chain-execution run for ${repo}...`);
           const triggerUrl = `https://api.github.com/repos/${repo}/dispatches`;

@@ -2,11 +2,21 @@ import * as fs from 'fs';
 import * as path from 'path';
 import dns from 'dns';
 import { createClient } from '@supabase/supabase-js';
-import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from '../src/lib/atomicIo.ts';
+import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from '../src/lib/atomicIo';
+import { spawn } from 'child_process';
 
 if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder('ipv4first');
 }
+
+// Intercept all unhandled exceptions and promise rejections to prevent crashing the daemon
+process.on('uncaughtException', (err) => {
+  console.error('🔥 [Runner UncaughtException] Fatal error caught globally:', err.stack || err.message || err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('🔥 [Runner UnhandledRejection] Unhandled Promise rejection at:', promise, 'reason:', reason);
+});
 
 // Resolve environment configuration (from .env.local or config.json)
 function loadConfig() {
@@ -298,6 +308,131 @@ async function processJob(job: any, alreadyRunning: boolean = false) {
           return;
         }
       }
+    }
+
+    // 1.5. Direct execution for solar_scrape to avoid serverless HTTP timeout
+    if (job.type === 'solar_scrape') {
+      const scriptPath = path.resolve(process.cwd(), 'scripts', 'mass_solar_scraper.js');
+      const args: string[] = [];
+      const mode = job.payload?.mode;
+      const count = job.payload?.count;
+      
+      if (mode === 'synthetic') {
+        args.push('--synthetic');
+        args.push('--count');
+        args.push(String(count || 1000));
+      } else if (mode === 'dry-run') {
+        args.push('--dry-run');
+      } else if (mode === 'live-solar') {
+        args.push('--solar-only');
+      }
+      
+      const childArgs = [...args, '--run-id', job.id];
+      console.log(`[local_job_runner] Spawning direct mass scraper (Job: ${job.id}) with args: ${childArgs.join(' ')}`);
+      
+      const child = spawn(process.execPath, [scriptPath, ...childArgs], {
+        env: {
+          ...process.env,
+        },
+        detached: true,
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
+      
+      // Helper function to write to Logs table in Supabase
+      const appendJobLog = async (msg: string, status: 'INFO' | 'ERROR' | 'START' | 'SUCCESS') => {
+        console.log(`[Job ${job.id}] [${status}] ${msg}`);
+        if (!isLocalMode && supabase) {
+          try {
+            await supabaseWithRetry(() => supabase!
+              .from('logs')
+              .insert({
+                run_id: job.id,
+                timestamp: new Date().toISOString(),
+                step: 'solar_scraper',
+                status: status,
+                message: msg
+              })
+            );
+          } catch (dbErr: any) {
+            console.error('Failed to write log to DB:', dbErr.message);
+          }
+        }
+      };
+
+      await appendJobLog(`Mass scraper runner process initialized in mode: ${mode || 'production'} (count: ${count || 'default'})`, 'START');
+
+      let stdoutBuffer = '';
+      child.stdout.on('data', (data: any) => {
+        stdoutBuffer += data.toString();
+        const lines = stdoutBuffer.split(/[\r\n]+/);
+        stdoutBuffer = lines.pop() || '';
+        for (const line of lines) {
+          const cleanLine = line.trim();
+          if (cleanLine) {
+            appendJobLog(cleanLine, 'INFO');
+          }
+        }
+      });
+
+      let stderrBuffer = '';
+      child.stderr.on('data', (data: any) => {
+        stderrBuffer += data.toString();
+        const lines = stderrBuffer.split(/[\r\n]+/);
+        stderrBuffer = lines.pop() || '';
+        for (const line of lines) {
+          const cleanLine = line.trim();
+          if (cleanLine) {
+            appendJobLog(cleanLine, 'ERROR');
+          }
+        }
+      });
+
+      await new Promise<void>((resolve, reject) => {
+        child.on('close', async (code: any) => {
+          if (stdoutBuffer.trim()) {
+            await appendJobLog(stdoutBuffer.trim(), 'INFO');
+          }
+          if (stderrBuffer.trim()) {
+            await appendJobLog(stderrBuffer.trim(), 'ERROR');
+          }
+
+          const isSuccess = code === 0;
+          const jobStatus = isSuccess ? 'completed' : 'failed';
+          const errMsg = isSuccess ? null : `Scraper process exited with non-zero code ${code}`;
+
+          await appendJobLog(
+            isSuccess ? 'Scraper completed successfully.' : `Scraper failed with exit code ${code}`,
+            isSuccess ? 'SUCCESS' : 'ERROR'
+          );
+
+          if (isLocalMode) {
+            const jobs = readLocalJobs();
+            if (jobs[job.id]) {
+              jobs[job.id].status = jobStatus;
+              if (errMsg) jobs[job.id].error_message = errMsg;
+              jobs[job.id].updated_at = new Date().toISOString();
+              writeLocalJobs(jobs);
+            }
+          } else if (supabase) {
+            try {
+              await supabaseWithRetry(() => supabase!
+                .from('scrape_jobs')
+                .update({
+                  status: jobStatus,
+                  error_message: errMsg,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', job.id)
+              );
+            } catch (dbErr: any) {
+              console.error('Failed to update scraper job finish status:', dbErr.message);
+            }
+          }
+          if (isSuccess) resolve();
+          else reject(new Error(errMsg || 'Scraper failed'));
+        });
+      });
+      return;
     }
 
     // 2. Resolve endpoint url

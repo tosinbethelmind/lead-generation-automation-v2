@@ -2058,42 +2058,40 @@ export default function Home() {
   const runLagos10KStandalone = async () => {
     setBulkQueuing(true);
     try {
-      // Step 1: Auto-start the runner if it's not already online
-      if (runnerStatus !== 'online') {
-        const activeRunner = config?.activeRunnerBackend || 'local';
-        const isHF = activeRunner === 'huggingface';
-        const isCloud = activeRunner === 'huggingface' || activeRunner === 'github_actions';
-        const runnerLabel = activeRunner === 'github_actions' 
-          ? 'GitHub Actions Cloud Runner' 
-          : (activeRunner === 'huggingface' ? 'Cloud Space Runner' : 'Local Runner');
-        addToast(`🚀 Step 1/2: Starting ${runnerLabel}...`, 'info');
-        try {
-          const targetUrl = (isCloud || !isProductionEnv) 
-            ? '/api/local-trigger' 
-            : `http://localhost:${localPort || '3006'}/api/local-trigger`;
-          const runnerRes = await fetch(targetUrl, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' },
-            mode: 'cors'
-          });
-          if (runnerRes.ok) {
-            setRunnerStatus('online');
-            addToast(isHF ? '✅ Cloud Space Runner started successfully!' : '✅ Local Runner started successfully!', 'success');
-          } else {
-            const d = await runnerRes.json().catch(() => ({}));
-            addToast(`⚠️ Runner start issue: ${d.error || 'Unknown'}. Attempting to queue anyway...`, 'error');
-          }
-        } catch (err: any) {
-          addToast(isHF 
-            ? `⚠️ Could not reach cloud trigger endpoint. Attempting queue anyway...` 
-            : `⚠️ Could not reach runner on port ${localPort || '3006'}. Make sure your local server is running (npm run dev). Attempting queue anyway...`, 'error');
+      // Step 1: Ensure runner process is started automatically
+      const activeRunner = config?.activeRunnerBackend || 'local';
+      const isHF = activeRunner === 'huggingface';
+      const isCloud = activeRunner === 'huggingface' || activeRunner === 'github_actions';
+      const runnerLabel = activeRunner === 'github_actions' 
+        ? 'GitHub Actions Cloud Runner' 
+        : (activeRunner === 'huggingface' ? 'Cloud Space Runner' : 'Local Runner');
+      
+      addToast(`🚀 Step 1/2: Initializing ${runnerLabel}...`, 'info');
+      try {
+        const targetUrl = (isCloud || !isProductionEnv) 
+          ? '/api/local-trigger' 
+          : `http://localhost:${localPort || '3006'}/api/local-trigger`;
+        const runnerRes = await fetch(targetUrl, { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors'
+        });
+        if (runnerRes.ok) {
+          setRunnerStatus('online');
+          addToast(isHF ? '✅ Cloud Space Runner online!' : '✅ Local Runner process active!', 'success');
+        } else {
+          const d = await runnerRes.json().catch(() => ({}));
+          addToast(`⚠️ Runner start notice: ${d.error || 'Dispatching scrapers...'}. Queueing jobs...`, 'info');
         }
-        // Brief pause so runner has time to initialise
-        await new Promise(r => setTimeout(r, 1500));
+      } catch (err: any) {
+        addToast(`⚠️ Triggering scraper pipeline...`, 'info');
       }
 
+      // Brief pause so runner process binds
+      await new Promise(r => setTimeout(r, 1000));
+
       // Step 2: Queue all Lagos 10K scraper jobs
-      addToast('⚡ Step 2/2: Dispatching Lagos 10K Multi-Engine Lead Scrapers (Google Maps, Jiji, OSM, Social, DuckDuckGo)...', 'info');
+      addToast('⚡ Step 2/2: Dispatching 100 Multi-Engine Scraper Jobs (Google Maps, Jiji, OSM, Social, DuckDuckGo)...', 'info');
       const resp = await fetch('/api/scrape/bulk-queue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2107,7 +2105,7 @@ export default function Home() {
       const data = await resp.json();
       if (data.success) {
         setBulkQueuedCount(data.jobsCount);
-        addToast(`🎉 ${data.jobsCount} scraper jobs launched! Targeting 10,000 Lagos leads.`, 'success');
+        addToast(`🎉 ${data.jobsCount} scraper jobs active! Multi-engine pipeline targeting 10,000 Lagos leads.`, 'success');
         confetti({ particleCount: 200, spread: 120, origin: { y: 0.6 } });
         await checkRunnerStatus();
         handleRefreshAll();
@@ -5271,6 +5269,30 @@ export default function Home() {
                   >
                     <RefreshCw size={16} className={runnerStatus === 'loading' ? 'animate-spin' : ''} />
                   </button>
+
+                  <a
+                    href={`http://localhost:${localPort || '3006'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      padding: '8px 12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      background: 'rgba(6, 182, 212, 0.12)',
+                      border: '1px solid rgba(6, 182, 212, 0.3)',
+                      color: '#06B6D4',
+                      textDecoration: 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    title="Open Local Console on Port 3006"
+                  >
+                    <ExternalLink size={14} /> http://localhost:{localPort || '3006'}
+                  </a>
                 </div>
 
                 {/* Quick-access Lagos 10K shortcut button */}
@@ -5399,34 +5421,57 @@ export default function Home() {
                   </label>
                 </div>
 
-                <button
-                  type="button"
-                  id="bulk-queue-btn"
-                  onClick={runLagos10KStandalone}
-                  disabled={bulkQueuing}
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                    padding: '12px 20px',
-                    background: bulkQueuing
-                      ? 'rgba(6, 182, 212, 0.3)'
-                      : 'linear-gradient(135deg, #06B6D4 0%, #7C3AED 100%)',
-                    border: 'none', borderRadius: '10px',
-                    color: 'white', fontWeight: 700, fontSize: '0.9rem',
-                    cursor: bulkQueuing ? 'not-allowed' : 'pointer',
-                    opacity: bulkQueuing ? 0.7 : 1,
-                    transition: 'all 0.2s',
-                    boxShadow: '0 4px 15px rgba(6, 182, 212, 0.35)'
-                  }}
-                >
-                  {bulkQueuing
-                    ? <><Loader2 size={16} className="animate-spin" /> Starting Scrapers...</>
-                    : <><Sparkles size={16} /> ⚡ Start Lagos Scraper (10K Leads)</>
-                  }
-                </button>
+                <div style={{ display: 'flex', gap: '10px', width: '100%', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    id="bulk-queue-btn"
+                    onClick={runLagos10KStandalone}
+                    disabled={bulkQueuing}
+                    style={{
+                      flex: '1 1 200px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                      padding: '12px 20px',
+                      background: bulkQueuing
+                        ? 'rgba(6, 182, 212, 0.3)'
+                        : 'linear-gradient(135deg, #06B6D4 0%, #7C3AED 100%)',
+                      border: 'none', borderRadius: '10px',
+                      color: 'white', fontWeight: 700, fontSize: '0.9rem',
+                      cursor: bulkQueuing ? 'not-allowed' : 'pointer',
+                      opacity: bulkQueuing ? 0.7 : 1,
+                      transition: 'all 0.2s',
+                      boxShadow: '0 4px 15px rgba(6, 182, 212, 0.35)'
+                    }}
+                  >
+                    {bulkQueuing
+                      ? <><Loader2 size={16} className="animate-spin" /> Starting Scrapers...</>
+                      : <><Sparkles size={16} /> ⚡ Start Lagos Scraper (10K Leads)</>
+                    }
+                  </button>
+
+                  <a
+                    href={`http://localhost:${localPort || '3006'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                      padding: '12px 16px',
+                      background: 'rgba(6, 182, 212, 0.1)',
+                      border: '1px solid rgba(6, 182, 212, 0.3)',
+                      borderRadius: '10px',
+                      color: '#06B6D4',
+                      fontWeight: 600, fontSize: '0.85rem',
+                      textDecoration: 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    title="Open Console on localhost:3006"
+                  >
+                    <ExternalLink size={14} /> http://localhost:{localPort || '3006'}
+                  </a>
+                </div>
 
                 {runnerStatus !== 'online' && (
-                  <p style={{ fontSize: '0.75rem', color: '#F59E0B', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <AlertTriangle size={12} /> Start the Local Runner above before triggering the Lagos Scraper.
+                  <p style={{ fontSize: '0.75rem', color: '#10B981', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <Sparkles size={12} /> 1-Click Auto Run: Clicking will automatically start the background runner and launch 100 scraper jobs.
                   </p>
                 )}
 
