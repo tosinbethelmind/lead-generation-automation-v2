@@ -543,7 +543,7 @@ export default function SolarPipelineDashboard() {
         border: '1px solid rgba(16, 185, 129, 0.3)',
         display: 'flex',
         alignItems: 'center',
-        justify: 'space-between',
+        justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '16px'
       }}>
