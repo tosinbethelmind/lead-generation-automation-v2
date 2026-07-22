@@ -139,20 +139,22 @@ export default function AdminLayout({
       </aside>
 
       <main className="admin-content">
-        <header className="admin-header">
-          <div className="header-title">
-            <h1>
-              {navItems.find((n) => n.path === pathname)?.name || 'Admin Dashboard'}
-            </h1>
-            <p>Control visual themes, domain aliases and cloud deployments.</p>
-          </div>
-          <div className="header-status">
-            <span className="status-indicator"></span>
-            <span>Secure Console</span>
-          </div>
-        </header>
+        {pathname !== '/admin/solar-pipeline' && (
+          <header className="admin-header">
+            <div className="header-title">
+              <h1>
+                {navItems.find((n) => n.path === pathname)?.name || 'Admin Dashboard'}
+              </h1>
+              <p>Control visual themes, domain aliases and cloud deployments.</p>
+            </div>
+            <div className="header-status">
+              <span className="status-indicator"></span>
+              <span>Secure Console</span>
+            </div>
+          </header>
+        )}
 
-        <div className="content-body">
+        <div className="content-body" style={{ padding: pathname === '/admin/solar-pipeline' ? '0' : '40px', flex: 1, overflow: 'hidden' }}>
           {!hasPageAccess() ? (
             <div className="access-denied-container glass-panel">
               <ShieldAlert className="denied-icon" />
