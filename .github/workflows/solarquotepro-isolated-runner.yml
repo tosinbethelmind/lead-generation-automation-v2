@@ -1,0 +1,45 @@
+name: SolarQuotePro.ng 24/7 Isolated Outreach Pipeline Runner
+
+on:
+  schedule:
+    # Run every 4 hours automatically 24/7/365 in the cloud
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+    inputs:
+      count:
+        description: 'Target Lead Count'
+        required: false
+        default: '2500'
+  repository_dispatch:
+    types: [run-solarquotepro-pipeline]
+
+jobs:
+  run-solarquotepro-isolated-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium & System Dependencies
+        run: |
+          npx playwright install chromium --with-deps
+
+      - name: Execute SolarQuotePro Isolated 24/7 Pipeline
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        run: |
+          echo "🚀 Executing SolarQuotePro.ng Isolated 24/7 Pipeline..."
+          COUNT="${{ github.event.inputs.count || '2500' }}"
+          node scripts/solarquotepro_isolated_runner.js --once --count $COUNT
