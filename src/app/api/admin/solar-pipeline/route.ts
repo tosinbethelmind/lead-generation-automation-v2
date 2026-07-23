@@ -348,11 +348,38 @@ export async function POST(req: NextRequest) {
                 'X-GitHub-Api-Version': '2022-11-28',
                 'User-Agent': 'ApexReach-App-Solar5k'
               },
-              body: JSON.stringify({ event_type: 'run-solar-5k' })
+              body: JSON.stringify({ 
+                event_type: 'run-solar-5k',
+                client_payload: {
+                  job_id: jobId,
+                  count: targetCount,
+                  mode: mode
+                }
+              })
             });
           }
         } catch (err: any) {
           console.error('Error dispatching solar 5k runner:', err.message);
+        }
+
+        // Also trigger background process directly if local execution or non-production environment
+        if (process.env.NODE_ENV !== 'production' || appConfig.activeRunnerBackend === 'local') {
+          try {
+            const { spawn } = await import('child_process');
+            const path = await import('path');
+            const scriptPath = path.resolve(process.cwd(), 'scripts', 'nigeria_solar_5k_scraper.js');
+            const childArgs = ['--count', String(targetCount), '--run-id', jobId];
+            if (mode === 'synthetic') childArgs.push('--synthetic');
+            if (mode === 'dry-run') childArgs.push('--dry-run');
+
+            const child = spawn(process.execPath, [scriptPath, ...childArgs], {
+              detached: true,
+              stdio: 'ignore'
+            });
+            child.unref();
+          } catch (spawnErr: any) {
+            console.warn('Local direct spawn note:', spawnErr.message);
+          }
         }
       } else {
         try {

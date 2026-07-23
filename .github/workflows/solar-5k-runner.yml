@@ -47,13 +47,19 @@ jobs:
           ACTIVE_BROWSER_PROVIDER: browserless
         run: |
           echo "🚀 Executing Nigeria 2.5K Real Solar Pipeline Runner..."
-          MODE="${{ github.event.inputs.mode || 'live-solar' }}"
-          COUNT="${{ github.event.inputs.count || '2500' }}"
+          MODE="${{ github.event.inputs.mode || github.event.client_payload.mode || 'live-solar' }}"
+          COUNT="${{ github.event.inputs.count || github.event.client_payload.count || '2500' }}"
+          JOB_ID="${{ github.event.client_payload.job_id || '' }}"
+          
+          ARGS="--count $COUNT"
+          if [ -n "$JOB_ID" ]; then
+            ARGS="$ARGS --run-id $JOB_ID"
+          fi
           
           if [ "$MODE" = "synthetic" ]; then
-            node scripts/nigeria_solar_5k_scraper.js --synthetic --count "$COUNT"
+            node scripts/nigeria_solar_5k_scraper.js --synthetic $ARGS
           elif [ "$MODE" = "dry-run" ]; then
-            node scripts/nigeria_solar_5k_scraper.js --dry-run --count "$COUNT"
+            node scripts/nigeria_solar_5k_scraper.js --dry-run $ARGS
           else
-            node scripts/nigeria_solar_5k_scraper.js --count "$COUNT"
+            node scripts/nigeria_solar_5k_scraper.js $ARGS
           fi

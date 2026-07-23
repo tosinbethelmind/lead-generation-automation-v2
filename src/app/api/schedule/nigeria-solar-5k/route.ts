@@ -79,10 +79,37 @@ export async function POST(req: NextRequest) {
                 'X-GitHub-Api-Version': '2022-11-28',
                 'User-Agent': 'ApexReach-App-Solar5k'
               },
-              body: JSON.stringify({ event_type: 'run-solar-5k' })
+              body: JSON.stringify({ 
+                event_type: 'run-solar-5k',
+                client_payload: {
+                  job_id: jobId,
+                  count: targetCount,
+                  mode: targetMode
+                }
+              })
             });
           } catch (ghErr: any) {
             console.warn('GitHub dispatch trigger note:', ghErr.message);
+          }
+        }
+
+        // Also spawn background process directly if local execution or non-production environment
+        if (process.env.NODE_ENV !== 'production' || config.activeRunnerBackend === 'local') {
+          try {
+            const { spawn } = await import('child_process');
+            const path = await import('path');
+            const scriptPath = path.resolve(process.cwd(), 'scripts', 'nigeria_solar_5k_scraper.js');
+            const childArgs = ['--count', String(targetCount), '--run-id', jobId];
+            if (targetMode === 'synthetic') childArgs.push('--synthetic');
+            if (targetMode === 'dry-run') childArgs.push('--dry-run');
+
+            const child = spawn(process.execPath, [scriptPath, ...childArgs], {
+              detached: true,
+              stdio: 'ignore'
+            });
+            child.unref();
+          } catch (spawnErr: any) {
+            console.warn('Local direct spawn note:', spawnErr.message);
           }
         }
 
