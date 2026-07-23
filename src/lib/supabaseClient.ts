@@ -12,12 +12,20 @@ export const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, s
   },
 }) : null;
 
-// Backwards‑compatible helper (in case other modules still call it)
 export function getSupabaseClient() {
-  if (!supabase) {
+  if (supabase) return supabase;
+  const config = getRuntimeConfig();
+  const supabaseUrl = config.supabaseUrl || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co';
+  const supabaseKey = config.supabaseKey || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY';
+  
+  if (!supabaseUrl || !supabaseKey) {
     throw new Error('Supabase storage mode requires both supabaseUrl and supabaseKey parameters. Please configure them in your settings or environment.');
   }
-  return supabase;
+  return createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: false,
+    },
+  });
 }
 
 // ============================================================================
