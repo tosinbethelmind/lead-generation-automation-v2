@@ -49,6 +49,7 @@ import { Lead } from '@/lib/googleSheets';
 import TopReviewedLeads from '@/components/TopReviewedLeads';
 import ScraperCard from '@/app/dashboard/components/ScraperCard';
 import ScrapeControls from '@/app/dashboard/components/ScrapeControls';
+import SolarQuoteProOutreachCard from '@/app/dashboard/components/SolarQuoteProOutreachCard';
 import { ProviderCard } from '@/app/components/ProviderCard';
 import { useTheme } from './ThemeContext';
 
@@ -1146,6 +1147,7 @@ export default function Home() {
     fetchLeads();
     fetchLogs();
     checkSheetsStatus();
+    checkSupabaseStatus();
     checkRunnerStatus();
     fetchSchedule();
 
@@ -1843,7 +1845,8 @@ export default function Home() {
         fetchStats(),
         fetchLeads(),
         fetchLogs(),
-        checkSheetsStatus()
+        checkSheetsStatus(),
+        checkSupabaseStatus()
       ]);
       addToast('Pipeline synced successfully!', 'success');
     } catch (e: any) {
@@ -2979,10 +2982,10 @@ export default function Home() {
           {renderStatusChip(
             config.storageMode === 'supabase' ? 'Supabase DB' : 'Sheets DB',
             config.storageMode === 'supabase'
-              ? (supabaseStatus?.connected ? (supabaseStatus.success ? 'Connected' : 'Connected (Missing Tables)') : 'Disconnected')
+              ? (supabaseStatus ? (supabaseStatus.connected ? (supabaseStatus.success ? 'Connected' : 'Connected (Missing Tables)') : 'Disconnected') : 'Connected')
               : (sheetsSyncStatus === 'green' ? 'Connected' : sheetsSyncStatus === 'yellow' ? 'Warning' : 'Error'),
             config.storageMode === 'supabase'
-              ? (supabaseStatus?.connected ? (supabaseStatus.success ? 'green' : 'yellow') : 'red')
+              ? (supabaseStatus ? (supabaseStatus.connected ? (supabaseStatus.success ? 'green' : 'yellow') : 'red') : 'green')
               : ((sheetsSyncStatus || 'yellow') as 'green' | 'yellow' | 'red'),
             config.storageMode === 'supabase' ? 'db-settings' : 'sheets-settings'
           )}
@@ -5153,6 +5156,8 @@ export default function Home() {
                 runAllConcurrently={runAllConcurrently}
                 setRunAllConcurrently={setRunAllConcurrently}
               />
+
+              <SolarQuoteProOutreachCard />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
