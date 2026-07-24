@@ -288,13 +288,13 @@ export async function harvestLiveSolarLeads(): Promise<{ added: number; totalSol
       added = syncResult.added || 0;
     }
 
-    let totalSolar = 1431;
+    let totalSolar = 0;
     try {
       const { count } = await supabase
         .from('leads')
         .select('*', { count: 'exact', head: true })
         .or('category.ilike.*solar*,source_query_or_seed.ilike.*solar*');
-      if (count !== null && count > 0) totalSolar = count;
+      if (count !== null && count >= 0) totalSolar = count;
     } catch (_) {}
 
     console.log(`[LiveHarvester] Solar Multi-Source Matrix: parsed=${harvested.length}, added=${added}, total=${totalSolar}`);
@@ -360,13 +360,13 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
       added = syncResult.added || 0;
     }
 
-    let totalLagos = 2039;
+    let totalLagos = 0;
     try {
       const { count } = await supabase
         .from('leads')
         .select('*', { count: 'exact', head: true })
         .eq('source_query_or_seed', 'lagos_10k_b2b');
-      if (count !== null && count > 0) totalLagos = count;
+      if (count !== null && count >= 0) totalLagos = count;
     } catch (_) {}
 
     console.log(`[LiveHarvester] Lagos Multi-Source Matrix: parsed=${harvested.length}, added=${added}, total=${totalLagos}`);

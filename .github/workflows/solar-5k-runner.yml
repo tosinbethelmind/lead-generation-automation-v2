@@ -1,13 +1,13 @@
-name: ApexReach Nigeria 2.5K Real Solar Pipeline Runner
+name: ApexReach Nigeria Solar Pipeline Runner — 100% Real Leads
 
 on:
   schedule:
-    # Run every 6 hours
+    # Run every 6 hours for continuous lead generation
     - cron: '0 */6 * * *'
   workflow_dispatch:
     inputs:
       mode:
-        description: 'Execution Mode (live-solar | synthetic | dry-run)'
+        description: 'Execution Mode (live-solar | dry-run)'
         required: false
         default: 'live-solar'
       count:
@@ -32,13 +32,9 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
-      - name: Install Playwright Chromium & System Dependencies
-        run: |
-          npx playwright install chromium --with-deps
-
-      - name: Execute Nigeria 2.5K Real Solar Pipeline Scraper
+      - name: Execute Nigeria Real Solar Pipeline Scraper
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -46,20 +42,33 @@ jobs:
           BROWSERLESS_API_KEY: ${{ secrets.BROWSERLESS_API_KEY }}
           ACTIVE_BROWSER_PROVIDER: browserless
         run: |
-          echo "🚀 Executing Nigeria 2.5K Real Solar Pipeline Runner..."
+          echo "🚀 Executing Nigeria Real Solar Pipeline Runner (100% Live Leads)..."
           MODE="${{ github.event.inputs.mode || github.event.client_payload.mode || 'live-solar' }}"
           COUNT="${{ github.event.inputs.count || github.event.client_payload.count || '2500' }}"
           JOB_ID="${{ github.event.client_payload.job_id || '' }}"
-          
+
+          # Quality Gate: synthetic mode is permanently disabled
+          if [ "$MODE" = "synthetic" ]; then
+            echo "⚠️  [Quality Gate] Synthetic mode requested — overriding to live-solar extraction."
+            MODE="live-solar"
+          fi
+
           ARGS="--count $COUNT"
           if [ -n "$JOB_ID" ]; then
             ARGS="$ARGS --run-id $JOB_ID"
           fi
-          
-          if [ "$MODE" = "synthetic" ]; then
-            node scripts/nigeria_solar_5k_scraper.js --synthetic $ARGS
-          elif [ "$MODE" = "dry-run" ]; then
+
+          if [ "$MODE" = "dry-run" ]; then
             node scripts/nigeria_solar_5k_scraper.js --dry-run $ARGS
           else
             node scripts/nigeria_solar_5k_scraper.js $ARGS
           fi
+
+      - name: Run Async Solar Harvester (Secondary Pass)
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        run: |
+          echo "⚡ Running secondary solar harvester pass for maximum real leads..."
+          node scripts/async_solar_5k_scraper.js

@@ -368,9 +368,10 @@ export async function POST(req: NextRequest) {
             const { spawn } = await import('child_process');
             const path = await import('path');
             const scriptPath = path.resolve(process.cwd(), 'scripts', 'nigeria_solar_5k_scraper.js');
+            // Quality Gate: synthetic mode is permanently disabled — only live extraction is permitted
             const childArgs = ['--count', String(targetCount), '--run-id', jobId];
-            if (mode === 'synthetic') childArgs.push('--synthetic');
             if (mode === 'dry-run') childArgs.push('--dry-run');
+            // Note: --synthetic flag is intentionally omitted to enforce 100% real lead quality
 
             const child = spawn(process.execPath, [scriptPath, ...childArgs], {
               detached: true,

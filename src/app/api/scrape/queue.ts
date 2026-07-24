@@ -19,14 +19,14 @@ export type {
  * Creates a queued job in the database and returns a queued status response immediately.
  */
 export async function handleQueueDelegation(
-  req: NextRequest,
+  req: NextRequest | undefined,
   scraperType: string,
   payload: any
 ): Promise<NextResponse | null> {
   const executionMode = process.env.SCRAPER_EXECUTION_MODE || 'cloud';
 
   // Support bypassing queue if request explicitly specifies (e.g. from local runner calling locally)
-  const bypassHeader = req.headers.get('x-bypass-queue') === 'true';
+  const bypassHeader = req?.headers?.get('x-bypass-queue') === 'true';
   const bypassBody = payload?.bypassQueue === true;
   const isBypassed = bypassHeader || bypassBody;
 

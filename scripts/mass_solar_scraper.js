@@ -475,59 +475,13 @@ function generateSyntheticLeads(count) {
 async function runScraper(options = { dryRun: false, synthetic: false, count: 100000 }) {
   let leads = [];
 
+  // Quality Gate: synthetic mode is permanently disabled — always run live OSM extraction
   if (options.synthetic) {
-    console.log(`🚀 Starting high-fidelity synthetic lead generator... Count: ${options.count}`);
-    leads = generateSyntheticLeads(options.count);
-    
-    // Save to temp cache file
-    console.log(`💾 Saving generated leads to temporary cache: ${TEMP_LEADS_FILE}`);
-    fs.writeFileSync(TEMP_LEADS_FILE, JSON.stringify(leads.slice(0, 10000), null, 2)); // Save sample locally to save space
-    
-    // Write CSV in a memory efficient stream
-    console.log(`📝 Exporting leads to CSV: ${OUTPUT_CSV_FILE}`);
-    const headers = [
-      'id', 'name', 'phone', 'email', 'state', 'city', 'property_type', 
-      'monthly_spend', 'power_source', 'interest_type', 'budget_range', 
-      'preferred_contact', 'timeline', 'note', 'request_source', 'created_at',
-      'running_load_w', 'kva_recommended', 'monthly_savings_ngn', 'monthly_fuel_spend',
-      'city_disco', 'estimated_system_size', 'status'
-    ];
-    
-    const csvStream = fs.createWriteStream(OUTPUT_CSV_FILE, { flags: 'w', encoding: 'utf8' });
-    csvStream.write('\ufeff' + headers.join(',') + '\n');
-    
-    const escapeField = (val) => {
-      if (val === undefined || val === null) return '""';
-      const str = String(val).replace(/"/g, '""');
-      return `"${str}"`;
-    };
-
-    for (const lead of leads) {
-      const row = headers.map(h => escapeField(lead[h])).join(',');
-      csvStream.write(row + '\n');
-    }
-    csvStream.end();
-    console.log('✅ CSV Export completed.');
-
-    // Sync to Supabase directly
-    await syncToSupabase(leads);
-
-    // Export a small subset to Excel to avoid memory crashes
-    console.log(`📊 Exporting a representative sample of 10,000 leads to Excel: ${OUTPUT_XLSX_FILE}`);
-    try {
-      const sampleLeads = leads.slice(0, 10000);
-      const worksheet = xlsx.utils.json_to_sheet(sampleLeads);
-      const workbook = xlsx.utils.book_new();
-      xlsx.utils.book_append_sheet(workbook, worksheet, 'Solar Leads Sample');
-      xlsx.writeFile(workbook, OUTPUT_XLSX_FILE);
-      console.log(`✅ Excel file exported successfully: ${OUTPUT_XLSX_FILE}`);
-    } catch (err) {
-      console.error('❌ Failed to export Excel file:', err.message);
-    }
-
-  } else {
-    // Normal OpenStreetMap Scraper Mode
-    console.log(`🚀 Starting solar OSM scraper... Mode: ${options.dryRun ? 'DRY-RUN (50 lead limit)' : 'MASS PRODUCTION'}`);
+    console.log('[Quality Gate] ⚠️  --synthetic flag detected but DISABLED. Routing to live OSM extraction instead.');
+    console.log('[Quality Gate] Only 100% real verified leads from OpenStreetMap will be collected.');
+  }
+  {
+    // Live OpenStreetMap Scraper Mode (always)
     
     // Set up cache map
     let localLeadsMap = new Map();
@@ -897,7 +851,12 @@ async function syncToSupabase(leads) {
 // Handle execution args
 const args = process.argv.slice(2);
 const isDryRun = args.includes('--dry-run') || args.includes('-d');
-const isSynthetic = args.includes('--synthetic') || args.includes('-s');
+// Quality Gate: --synthetic flag is permanently ignored — live OSM extraction only
+const isSynthetic = false; // was: args.includes('--synthetic') || args.includes('-s');
+if (args.includes('--synthetic') || args.includes('-s')) {
+  console.log('[Quality Gate] --synthetic flag detected and IGNORED. Running live extraction instead.');
+}
+
 const isSolarOnly = args.includes('--solar-only');
 
 // Parse count argument

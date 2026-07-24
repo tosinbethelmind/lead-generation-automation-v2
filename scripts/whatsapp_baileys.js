@@ -118,6 +118,50 @@ app.get('/status', (req, res) => {
   });
 });
 
+// REST Endpoint to check if phone number has active WhatsApp account
+app.post('/check-whatsapp', async (req, res) => {
+  const { phone } = req.body;
+  if (!phone) {
+    return res.status(400).json({ error: "Missing phone in payload" });
+  }
+
+  if (connectionStatus !== 'connected' || !sock) {
+    // If not connected, return fallback estimation based on E.164 validity
+    const cleanDigits = phone.replace(/\D/g, '');
+    const isValidNg = cleanDigits.startsWith('234') && cleanDigits.length === 13;
+    return res.json({ 
+      phone: phone,
+      exists: isValidNg, 
+      verified_via: 'syntax_fallback',
+      message: 'Baileys client not connected, checked syntax.' 
+    });
+  }
+
+  try {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const jid = `${cleanPhone}@s.whatsapp.net`;
+    const results = await sock.onWhatsApp(jid);
+    
+    if (results && results.length > 0 && results[0].exists) {
+      return res.json({
+        phone: phone,
+        exists: true,
+        jid: results[0].jid,
+        verified_via: 'baileys_live'
+      });
+    } else {
+      return res.json({
+        phone: phone,
+        exists: false,
+        verified_via: 'baileys_live'
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: err.message, exists: false });
+  }
+});
+
+
 // Endpoint to force logout and reset session
 app.post('/logout', (req, res) => {
   try {

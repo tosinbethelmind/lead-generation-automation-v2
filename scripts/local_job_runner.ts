@@ -303,16 +303,20 @@ async function processJob(job: any, alreadyRunning: boolean = false) {
       }
     }
 
-    // 1.5. Direct execution for solar_scrape and solar_nigeria_5k to avoid serverless HTTP timeout
-    if (job.type === 'solar_scrape' || job.type === 'solar_nigeria_5k') {
-      const scriptName = job.type === 'solar_nigeria_5k' ? 'nigeria_solar_5k_scraper.js' : 'mass_solar_scraper.js';
+    // 1.5. Direct execution for solar/lagos scrapers to avoid serverless HTTP timeout
+    if (job.type === 'solar_scrape' || job.type === 'solar_nigeria_5k' || job.type === 'lagos_10k' || job.type === 'lagos_scrape') {
+      const scriptName = 
+        job.type === 'solar_nigeria_5k' ? 'nigeria_solar_5k_scraper.js' :
+        job.type === 'lagos_10k' || job.type === 'lagos_scrape' ? 'lagos_10k_master_harvester.js' :
+        'mass_solar_scraper.js';
       const scriptPath = path.resolve(process.cwd(), 'scripts', scriptName);
       const args: string[] = [];
       const mode = job.payload?.mode;
       const count = job.payload?.count;
       
       if (mode === 'synthetic') {
-        args.push('--synthetic');
+        // Quality Gate: synthetic mode is permanently disabled — route to live extraction instead
+        console.log(`[Quality Gate] Synthetic mode for job ${job.type} overridden to live extraction.`);
         args.push('--count');
         args.push(String(count || (job.type === 'solar_nigeria_5k' ? 5000 : 1000)));
       } else if (mode === 'dry-run') {

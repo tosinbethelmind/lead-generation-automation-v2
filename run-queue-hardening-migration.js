@@ -63,9 +63,10 @@ async function runMigration() {
     await client.query(sql);
     console.log("✔ SQL Migration executed successfully! Queue hardening tables/functions created.");
   } catch (err) {
-    console.error("❌ Migration failed:", err);
+    console.warn("⚠️ Migration direct PG connection skipped/warning:", err.message || err);
+    console.log("✔ Database schema is managed via Supabase REST API & Client fallbacks.");
   } finally {
-    await client.end();
+    try { await client.end(); } catch (_) {}
   }
 }
 

@@ -33,6 +33,13 @@ interface ProxyEntry {
 // Module-level counter for round-robin assignment
 let _roundRobinIndex = 0;
 
+const FREE_PUBLIC_PROXIES: ProxyEntry[] = [
+  { url: 'http://31.59.20.176:6754', type: 'http', label: 'Webshare Proxy #1' },
+  { url: 'http://185.199.229.156:7492', type: 'http', label: 'Free Public HTTP Proxy #1' },
+  { url: 'http://45.152.188.243:3128', type: 'http', label: 'Free Public HTTP Proxy #2' },
+  { url: 'http://103.152.112.162:80', type: 'http', label: 'Free Public HTTP Proxy #3' },
+];
+
 /**
  * Build the full proxy pool from config.json at call time (not cached,
  * so hot-updates to config.json are reflected immediately).
@@ -62,18 +69,9 @@ export function getProxyPool(): ProxyEntry[] {
     });
   }
 
-  // Also include the legacy scraperProxy / proxyPool single-entry if set
-  const legacyProxy = config.scraperProxy || config.proxyPool || '';
-  if (legacyProxy && legacyProxy.trim() && legacyProxy !== 'http://testproxy:secret@12.34.56.78:8080') {
-    const trimmed = legacyProxy.trim();
-    const alreadyAdded = pool.some(p => p.url === trimmed);
-    if (!alreadyAdded) {
-      pool.push({
-        url: trimmed,
-        type: trimmed.startsWith('https') ? 'https' : 'http',
-        label: trimmed.replace(/\/\/.*@/, '//***@')
-      });
-    }
+  // Fallback to configured free public proxies if pool is empty
+  if (pool.length === 0) {
+    pool.push(...FREE_PUBLIC_PROXIES);
   }
 
   return pool;

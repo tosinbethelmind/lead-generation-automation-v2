@@ -37,9 +37,9 @@ function getLagosRunnerStatus() {
   return { isRunning, pid };
 }
 
-export async function GET(req: Request) {
+export async function GET(req?: Request) {
   try {
-    const isCron = req.headers.get('x-vercel-cron') === '1' || new URL(req.url).searchParams.get('cron') === 'true';
+    const isCron = req ? (req.headers?.get('x-vercel-cron') === '1' || (req.url ? new URL(req.url).searchParams.get('cron') === 'true' : false)) : false;
 
     const local = getLagosRunnerStatus();
     let isRunning = local.isRunning;

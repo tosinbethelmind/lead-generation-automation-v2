@@ -1,9 +1,7 @@
 name: Run Supabase SQL Migration
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   migrate:

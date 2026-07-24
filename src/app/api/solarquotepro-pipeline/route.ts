@@ -45,9 +45,9 @@ function getLocalRunnerStatus() {
   return { isRunning, pid, heartbeat };
 }
 
-export async function GET(req: Request) {
+export async function GET(req?: Request) {
   try {
-    const isCron = req.headers.get('x-vercel-cron') === '1' || new URL(req.url).searchParams.get('cron') === 'true';
+    const isCron = req ? (req.headers?.get('x-vercel-cron') === '1' || (req.url ? new URL(req.url).searchParams.get('cron') === 'true' : false)) : false;
 
     const local = getLocalRunnerStatus();
     let isRunning = local.isRunning;
@@ -103,7 +103,7 @@ export async function GET(req: Request) {
         const { count } = await supabase
           .from('leads')
           .select('*', { count: 'exact', head: true })
-          .or('category.ilike.*solar*,source_query_or_seed.ilike.*solar*');
+          .or('category.ilike.%solar%,source_query_or_seed.ilike.%solar%,notes.ilike.%solar%,business_summary.ilike.%solar%');
 
         if (count !== null) {
           totalSolarInstallers = count;

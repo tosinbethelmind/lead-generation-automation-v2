@@ -1,8 +1,8 @@
-name: 10K Lagos B2B Engine Distributed Matrix Runner
+name: 10K Lagos B2B Engine — Distributed Matrix Runner
 
 on:
   schedule:
-    # Run every 6 hours automatically across 5 parallel nodes
+    # Run every 6 hours automatically across 5 parallel zones
     - cron: '0 */6 * * *'
   workflow_dispatch:
     inputs:
@@ -10,11 +10,18 @@ on:
         description: 'Execution Mode (live | dry-run)'
         required: false
         default: 'live'
+      count:
+        description: 'Target Lead Count per zone'
+        required: false
+        default: '2000'
+  repository_dispatch:
+    types: [run-lagos-10k]
 
 jobs:
   run-lagos-10k-matrix:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         zone: [ikeja_alausa, lekki_vi, yaba_surulere, ikorodu_oshodi, alimosho_apapa]
 
@@ -29,7 +36,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Execute Parallel Matrix Zone Harvester
         env:
@@ -38,9 +45,33 @@ jobs:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
         run: |
           echo "🚀 Executing 10K Lagos B2B Matrix Node: ${{ matrix.zone }}..."
-          MODE="${{ github.event.inputs.mode || 'live' }}"
-          if [ "$MODE" = "dry-run" ]; then
-            node scripts/async_lagos_10k_scraper.js --dry-run --zone ${{ matrix.zone }}
-          else
-            node scripts/async_lagos_10k_scraper.js --zone ${{ matrix.zone }}
+          MODE="${{ github.event.inputs.mode || github.event.client_payload.mode || 'live' }}"
+          COUNT="${{ github.event.inputs.count || github.event.client_payload.count || '2000' }}"
+          JOB_ID="${{ github.event.client_payload.job_id || '' }}"
+
+          ARGS="--zone ${{ matrix.zone }} --count $COUNT"
+          if [ -n "$JOB_ID" ]; then
+            ARGS="$ARGS --run-id $JOB_ID"
           fi
+
+          if [ "$MODE" = "dry-run" ]; then
+            node scripts/async_lagos_10k_scraper.js --dry-run $ARGS
+          else
+            node scripts/async_lagos_10k_scraper.js $ARGS
+          fi
+
+      - name: Run Master Lagos Harvester (Zone Aggregation)
+        if: matrix.zone == 'ikeja_alausa'
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        run: |
+          echo "📊 Running master Lagos harvester to aggregate OSM + Jiji leads..."
+          COUNT="${{ github.event.inputs.count || github.event.client_payload.count || '10000' }}"
+          JOB_ID="${{ github.event.client_payload.job_id || '' }}"
+          ARGS="--count $COUNT"
+          if [ -n "$JOB_ID" ]; then
+            ARGS="$ARGS --run-id $JOB_ID"
+          fi
+          node scripts/lagos_10k_master_harvester.js $ARGS
