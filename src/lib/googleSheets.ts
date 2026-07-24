@@ -341,6 +341,12 @@ export function normalizePhone(
   
   // Strip non-numeric digits
   let digits = trimmed.replace(/\D/g, '');
+
+  if (!digits || digits.length < 7) return null;
+  // Reject dummy repeated/sequential phone numbers (e.g. 08000000000, 08012345678, 08011111111)
+  if (/^(\d)\1+$/.test(digits) || '01234567890123456789'.includes(digits)) return null;
+  const tail = digits.substring(digits.length - 7);
+  if (/^(\d)\1+$/.test(tail)) return null;
   
   if (isExplicitIntl) {
     if (trimmed.startsWith('00')) {
@@ -379,6 +385,11 @@ export function extractPhonesFromText(text: string): string[] {
     // Strip everything except digits
     const digits = m.replace(/\D/g, '');
     
+    // Reject dummy repeated/sequential phone numbers
+    if (!digits || /^(\d)\1+$/.test(digits) || '01234567890123456789'.includes(digits)) continue;
+    const tail = digits.substring(digits.length - 7);
+    if (/^(\d)\1+$/.test(tail)) continue;
+
     // Check if m originally starts with a plus (or 00) for international formats
     const trimmed = m.trim();
     const isExplicitInternational = trimmed.startsWith('+') || trimmed.startsWith('00');
