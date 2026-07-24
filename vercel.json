@@ -16,11 +16,11 @@
   "crons": [
     {
       "path": "/api/solarquotepro-pipeline?cron=true",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 12 * * *"
     },
     {
       "path": "/api/outreach/lagos10k?cron=true",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 13 * * *"
     }
   ]
 }
