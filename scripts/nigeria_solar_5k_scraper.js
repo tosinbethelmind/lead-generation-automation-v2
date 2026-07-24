@@ -6,17 +6,17 @@
  * Synchronizes to main Supabase instance using valid UUIDs and updates scrape_jobs.
  */
 
+try {
+  const ws = require('ws');
+  if (typeof globalThis.WebSocket === 'undefined') globalThis.WebSocket = ws;
+  if (typeof global.WebSocket === 'undefined') global.WebSocket = ws;
+} catch (_) {}
+
 const fs = require('fs');
 const path = require('path');
 const { randomUUID } = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const cheerio = require('cheerio');
-
-try {
-  if (typeof globalThis.WebSocket === 'undefined') {
-    globalThis.WebSocket = require('ws');
-  }
-} catch (_) {}
 
 function parseEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return;

@@ -5,15 +5,15 @@
  * Automatically normalizes phone numbers to E.164 and syncs to Supabase.
  */
 
+try {
+  const ws = require('ws');
+  if (typeof globalThis.WebSocket === 'undefined') globalThis.WebSocket = ws;
+  if (typeof global.WebSocket === 'undefined') global.WebSocket = ws;
+} catch (_) {}
+
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
-
-try {
-  if (typeof globalThis.WebSocket === 'undefined') {
-    globalThis.WebSocket = require('ws');
-  }
-} catch (_) {}
 
 function parseEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return;
