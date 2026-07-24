@@ -58,8 +58,14 @@ const MAIN_SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_K
 const SOLARQUOTEPRO_URL = getCleanCredential(process.env.SOLARQUOTEPRO_SUPABASE_URL, null, 'https://pnsrjsyiygxdcxkpgbzx.supabase.co');
 const SOLARQUOTEPRO_KEY = getCleanCredential(process.env.SOLARQUOTEPRO_SUPABASE_KEY, null, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8');
 
-const supabaseMain = createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY, { auth: { persistSession: false } });
-const supabaseSolarQuotePro = createClient(SOLARQUOTEPRO_URL, SOLARQUOTEPRO_KEY, { auth: { persistSession: false } });
+const ws = require('ws');
+try {
+  if (typeof globalThis.WebSocket === 'undefined') globalThis.WebSocket = ws;
+  if (typeof global.WebSocket === 'undefined') global.WebSocket = ws;
+} catch (_) {}
+
+const supabaseMain = createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY, { auth: { persistSession: false }, realtime: { transport: ws } });
+const supabaseSolarQuotePro = createClient(SOLARQUOTEPRO_URL, SOLARQUOTEPRO_KEY, { auth: { persistSession: false }, realtime: { transport: ws } });
 
 async function logToSupabase(runId, message, level = 'info') {
   try {

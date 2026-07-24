@@ -62,7 +62,7 @@ function loadConfig() {
 const { supabaseUrl, supabaseKey, storageMode } = loadConfig();
 const isLocalMode = false; // Always connect to active Supabase database
 
-const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false }, realtime: { transport: ws } });
 
 const isHuggingFaceEnv = process.env.RUNNER_ENVIRONMENT === 'huggingface' || !!process.env.SPACE_ID;
 
