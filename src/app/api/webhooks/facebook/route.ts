@@ -154,6 +154,16 @@ export async function POST(req: NextRequest) {
             } else {
               console.log('[Meta Webhook] Successfully inserted lead:', data);
               await addLog('Meta Webhook', 'SUCCESS', `Ingested lead ${fullName} (${phone}) via Facebook Ad Webhook`);
+
+              // Auto-trigger VidRush AI Video Proposal Manufacturing
+              if (data && data[0]?.id) {
+                const insertedId = data[0].id;
+                import('@/lib/vidrushClient').then(({ triggerVidrushContentGeneration }) => {
+                  triggerVidrushContentGeneration({ id: insertedId, type: 'homeowner' }).catch(vErr => {
+                    console.error('[Meta Webhook -> VidRush Error]:', vErr);
+                  });
+                });
+              }
             }
           }
         }

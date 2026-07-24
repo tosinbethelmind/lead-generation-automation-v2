@@ -1309,14 +1309,16 @@ class SupabaseLeadRepository implements ILeadRepository {
           const mappedSource = ['JIJI', 'INSTAGRAM', 'FACEBOOK', 'TIKTOK', 'LINKEDIN'].includes(originalSource) ? 'JIJI' : 'GOOGLE';
           const prefixedNotes = `[source:${originalSource}]${lead.notes || ''}`;
 
-          const pluginSuggestionsStr = lead.plugin_suggestions 
-            ? (Array.isArray(lead.plugin_suggestions) ? JSON.stringify(lead.plugin_suggestions) : String(lead.plugin_suggestions))
-            : (lead.pluginSuggestions ? JSON.stringify(lead.pluginSuggestions) : '');
+          let extraNotes = prefixedNotes;
+          if (lead.cms_platform || lead.cmsPlatform) extraNotes += ` | CMS: ${lead.cms_platform || lead.cmsPlatform}`;
+          if (lead.upgrade_strategy || lead.upgradeStrategy) extraNotes += ` | Strategy: ${lead.upgrade_strategy || lead.upgradeStrategy}`;
+          if (lead.social_links) extraNotes += ` | Socials: ${lead.social_links}`;
+          if (lead.business_hours) extraNotes += ` | Hours: ${lead.business_hours}`;
 
           toInsert.push({
             lead_id: lead.lead_id,
             source: mappedSource,
-            name: lead.name || 'Business Owner',
+            name: lead.name,
             category: lead.category || '',
             address: lead.address || '',
             area: lead.area || '',
@@ -1336,21 +1338,7 @@ class SupabaseLeadRepository implements ILeadRepository {
             last_contacted_at: lead.last_contacted_at || null,
             duplicate_of_lead_id: lead.duplicate_of_lead_id || '',
             business_summary: lead.business_summary || '',
-            notes: prefixedNotes,
-            business_hours: lead.business_hours || '',
-            reviews_data: lead.reviews_data || '',
-            photos_data: lead.photos_data || '',
-            social_links: lead.social_links || '',
-            services_data: lead.services_data || '',
-            generated_copy: lead.generated_copy || null,
-            design_theme: lead.design_theme || null,
-            overrides: lead.overrides || null,
-            email_verified: !!lead.email_verified,
-            cms_platform: lead.cms_platform || lead.cmsPlatform || '',
-            upgrade_strategy: lead.upgrade_strategy || lead.upgradeStrategy || '',
-            cms_confidence: lead.cms_confidence || lead.cmsConfidence || '',
-            plugin_suggestions: pluginSuggestionsStr,
-            embed_note: lead.embed_note || lead.embedNote || ''
+            notes: extraNotes
           });
 
           existingIds.add(lead.lead_id);
