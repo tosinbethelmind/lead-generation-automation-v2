@@ -19,3 +19,5 @@ Jul 24 06:00:34.000 [notice] Bootstrapped 75% (enough_dirinfo): Loaded enough di
 Jul 24 06:00:34.000 [notice] Bootstrapped 90% (ap_handshake_done): Handshake finished with a relay to build circuits
 Jul 24 06:00:34.000 [notice] Bootstrapped 95% (circuit_create): Establishing a Tor circuit
 Jul 24 06:00:35.000 [notice] Bootstrapped 100% (done): Done
+Jul 24 12:00:33.000 [notice] Heartbeat: Tor's uptime is 6:00 hours, with 0 circuits open. I've sent 288 kB and received 1.27 MB. I've received 1 connections on IPv4 and 0 on IPv6. I've made 6 connections with IPv4 and 0 with IPv6.
+Jul 24 12:00:33.000 [notice] While not bootstrapping, fetched this many bytes: 84146 (consensus network-status fetch); 918197 (microdescriptor fetch)
