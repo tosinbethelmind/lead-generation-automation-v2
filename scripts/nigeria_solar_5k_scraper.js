@@ -467,22 +467,40 @@ async function runNigeriaSolar5kPipeline() {
     }));
 
     try {
-      const { data, error } = await supabaseMain
-        .from('leads')
-        .insert(leadsChunk);
+      let attempts = 0;
+      let syncSuccess = false;
+      while (attempts < 3 && !syncSuccess) {
+        attempts++;
+        try {
+          const { error } = await supabaseMain
+            .from('leads')
+            .upsert(leadsChunk, { onConflict: 'lead_id', ignoreDuplicates: true });
 
-      if (error) {
-        console.error(`   ❌ Database batch error: ${error.message}`);
-        await logToSupabase(runId, `❌ Database batch error: ${error.message}`, 'error');
-      } else {
-        const countSynced = leadsChunk.length;
-        totalInserted += countSynced;
-        const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
-        const totalBatches = Math.ceil(allLeads.length / BATCH_SIZE);
-        const batchLog = `✓ Batch ${currentBatch}/${totalBatches} synced: ${countSynced} rows (${totalInserted.toLocaleString()}/${allLeads.length.toLocaleString()})`;
-        console.log(`   ${batchLog}`);
-        if (currentBatch % 5 === 0 || currentBatch === totalBatches || currentBatch === 1) {
-          await logToSupabase(runId, batchLog);
+          if (error) {
+            if (attempts >= 3) {
+              console.error(`   ❌ Database batch error (Attempt ${attempts}): ${error.message}`);
+              await logToSupabase(runId, `❌ Database batch error: ${error.message}`, 'error');
+            } else {
+              await new Promise(r => setTimeout(r, 1000 * attempts));
+            }
+          } else {
+            syncSuccess = true;
+            const countSynced = leadsChunk.length;
+            totalInserted += countSynced;
+            const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
+            const totalBatches = Math.ceil(allLeads.length / BATCH_SIZE);
+            const batchLog = `✓ Batch ${currentBatch}/${totalBatches} synced: ${countSynced} rows (${totalInserted.toLocaleString()}/${allLeads.length.toLocaleString()})`;
+            console.log(`   ${batchLog}`);
+            if (currentBatch % 5 === 0 || currentBatch === totalBatches || currentBatch === 1) {
+              await logToSupabase(runId, batchLog);
+            }
+          }
+        } catch (fetchErr) {
+          if (attempts >= 3) {
+            console.error(`   ❌ Database batch error (Attempt ${attempts}): ${fetchErr.message}`);
+          } else {
+            await new Promise(r => setTimeout(r, 1000 * attempts));
+          }
         }
       }
 
@@ -497,7 +515,7 @@ async function runNigeriaSolar5kPipeline() {
           status: 'new',
           created_at: new Date().toISOString()
         }));
-        await supabaseSolarQuotePro.from('enterprise_leads').insert(enterpriseChunk);
+        await supabaseSolarQuotePro.from('enterprise_leads').upsert(enterpriseChunk, { ignoreDuplicates: true });
       } catch (_) {}
 
     } catch (dbErr) {

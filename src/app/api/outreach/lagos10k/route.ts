@@ -70,9 +70,9 @@ export async function GET(req?: Request) {
           isRunning = true;
           pid = pid || 8810;
 
-          // 24/7 Cloud Automated Execution: If Vercel cron triggers or engine active interval, harvest live
+          // 24/7 Cloud Automated Execution: Harvest live every minute
           const lastLogTime = cfg.lagos_last_log_time || 0;
-          if (isCron || (Date.now() - lastLogTime > 600000)) { // 10-minute cloud harvest loop
+          if (isCron || (Date.now() - lastLogTime > 60000)) { // 1-minute cloud harvest loop
             cfg.lagos_last_log_time = Date.now();
             await supabase.from('app_settings').upsert({ key: 'apexreach_runtime_config', value: JSON.stringify(cfg), updated_at: new Date().toISOString() }, { onConflict: 'key' });
             

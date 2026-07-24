@@ -2,8 +2,8 @@ name: ApexReach Cloud Queue Runner
 
 on:
   schedule:
-    # Fallback cron check runs every 20 minutes
-    - cron: '*/20 * * * *'
+    # High-frequency cloud queue runner runs every 5 minutes
+    - cron: '*/5 * * * *'
   repository_dispatch:
     types: [run-queue]
   workflow_dispatch:
