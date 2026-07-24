@@ -48,6 +48,17 @@ function getRandomUserAgent(): string {
   return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
 }
 
+function isShareOrSocialUrl(url: string): boolean {
+  if (!url) return true;
+  const lower = url.toLowerCase();
+  return lower.includes('twitter.com') ||
+         lower.includes('facebook.com/sharer') ||
+         lower.includes('linkedin.com/share') ||
+         lower.includes('whatsapp.com/send') ||
+         lower.includes('utm_source=twitter') ||
+         lower.includes('utm_source=facebook');
+}
+
 /**
  * Scrape Real Solar & Inverter Merchants from Jiji Nigeria
  */
@@ -68,13 +79,14 @@ export async function fetchJijiMerchantLeads(query: string, seedTag = 'solar_nig
     const $ = cheerio.load(html);
     const leads: DirectoryLead[] = [];
 
-    $('a.b-list-advert-base, a[class*="advert-base"], .b-advert-title-inner, a[href*="/ad/"]').each((i, el) => {
+    $('a[href*="/ad/"], a.b-list-advert-base').each((i, el) => {
       if (leads.length >= 10) return;
       
-      const parent = $(el).closest('a');
-      const href = parent.attr('href') || $(el).attr('href') || '';
-      const title = parent.find('.b-advert-title-inner, [class*="title"]').text().trim() || $(el).text().trim();
-      const area = parent.find('.b-list-advert__region, [class*="region"]').text().trim().split(',')[0] || 'Lagos';
+      const href = $(el).attr('href') || '';
+      if (!href || isShareOrSocialUrl(href)) return;
+
+      const title = $(el).find('.b-advert-title-inner, [class*="title"]').text().trim() || $(el).text().trim();
+      const area = $(el).find('.b-list-advert__region, [class*="region"]').text().trim().split(',')[0] || 'Lagos';
 
       if (!title || title.length < 5) return;
       if (title.toLowerCase().includes('wanted') || title.toLowerCase().includes('buy')) return;
