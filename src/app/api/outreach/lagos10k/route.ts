@@ -64,8 +64,8 @@ export async function GET(req?: Request) {
         .eq('key', 'apexreach_runtime_config')
         .maybeSingle();
 
-      if (configRow?.value) {
-        const cfg = JSON.parse(configRow.value);
+      if ((configRow as any)?.value) {
+        const cfg = JSON.parse((configRow as any).value);
         if (cfg.lagos_engine_active) {
           isRunning = true;
           pid = pid || 8810;
