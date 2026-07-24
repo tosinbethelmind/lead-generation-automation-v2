@@ -1301,9 +1301,9 @@ class SupabaseLeadRepository implements ILeadRepository {
             if (!existing.embed_note && (lead.embed_note || lead.embedNote)) updates.embed_note = lead.embed_note || lead.embedNote;
 
             if (Object.keys(updates).length > 0) {
-              const { error: updateErr } = await supabase
+              const { error: updateErr } = await (supabase as any)
                 .from('leads')
-                .update(updates)
+                .update(updates as any)
                 .eq('lead_id', existing.lead_id);
               if (!updateErr) {
                 Object.assign(existing, updates);
