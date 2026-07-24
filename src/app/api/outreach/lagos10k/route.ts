@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+import { spawn } from 'child_process';
+import { getSupabaseClient } from '@/lib/supabaseClient';
 
-const MAIN_SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
-const MAIN_SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
-
-const supabase = createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY, { auth: { persistSession: false } });
+const supabase = getSupabaseClient();
 
 const LOCAL_DB_DIR = path.join(process.cwd(), 'local_db');
 const PID_FILE = path.join(LOCAL_DB_DIR, 'lagos10k_runner.pid');
@@ -91,7 +88,7 @@ export async function GET() {
         .limit(8);
 
       if (dbLogs && dbLogs.length > 0) {
-        const cloudLogLines = dbLogs.map(l => `[${new Date(l.created_at).toLocaleTimeString()}] ${l.message}`);
+        const cloudLogLines = dbLogs.map((l: any) => `[${new Date(l.created_at).toLocaleTimeString()}] ${l.message}`);
         latestLogs = Array.from(new Set([...latestLogs, ...cloudLogLines]));
       }
     } catch (_) {}
