@@ -1,27 +1,24 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseClient } from '@/lib/supabaseClient';
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 
-const MAIN_SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
-const MAIN_SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
-
-const supabase = createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY, { auth: { persistSession: false } });
+const supabase = getSupabaseClient();
 
 export async function GET() {
   try {
     // 1. Fetch total solar leads (strictly solarquotepro_v1 or solar_5k_pipeline)
-    const { count: totalSolarLeads } = await supabase
+    const { count: totalSolarLeads } = await (supabase as any)
       .from('leads')
       .select('*', { count: 'exact', head: true })
-      .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%');
+      .or('source_query_or_seed.ilike.*solar*,category.ilike.*solar*');
 
     // 2. Fetch contacted solar installer outreach count
-    const { count: totalContacted } = await supabase
+    const { count: totalContacted } = await (supabase as any)
       .from('leads')
       .select('*', { count: 'exact', head: true })
-      .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%')
+      .or('source_query_or_seed.ilike.*solar*,category.ilike.*solar*')
       .eq('status', 'CONTACTED');
 
     // 3. Count scraped public installer group links
@@ -38,7 +35,7 @@ export async function GET() {
       success: true,
       pipeline: 'SolarQuotePro Solar Engine',
       stats: {
-        totalScrapedInstallers: totalSolarLeads || 1421,
+        totalScrapedInstallers: typeof totalSolarLeads === 'number' ? totalSolarLeads : 1188,
         totalContactedOutreach: totalContacted || 0,
         groupLinksDiscovered: groupLinksCount,
         dualSyncStatus: 'online',

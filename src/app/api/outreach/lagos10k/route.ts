@@ -94,7 +94,7 @@ export async function GET(req?: Request) {
       const { data: dbLogs } = await (supabase as any)
         .from('logs')
         .select('created_at, timestamp, step, message')
-        .or('step.ilike.%LAGOS%,message.ilike.%Lagos%')
+        .or('step.ilike.*lagos*,message.ilike.*lagos*')
         .order('created_at', { ascending: false })
         .limit(8);
 
