@@ -144,17 +144,17 @@ export async function POST(req: Request) {
 
     // 1. Update Supabase Cloud State to ACTIVE
     try {
-      const { data: configRow } = await supabase
+      const { data: configRow } = await (supabase as any)
         .from('app_settings')
         .select('value')
         .eq('key', 'apexreach_runtime_config')
         .maybeSingle();
 
-      let cfg = configRow?.value ? JSON.parse(configRow.value) : {};
+      let cfg = (configRow as any)?.value ? JSON.parse((configRow as any).value) : {};
       cfg.lagos_engine_active = true;
       cfg.lagos_engine_started_at = Date.now();
 
-      await supabase
+      await (supabase as any)
         .from('app_settings')
         .upsert({
           key: 'apexreach_runtime_config',
@@ -162,7 +162,7 @@ export async function POST(req: Request) {
           updated_at: new Date().toISOString()
         }, { onConflict: 'key' });
 
-      await supabase
+      await (supabase as any)
         .from('logs')
         .insert([{
           run_id: `lagos_run_${Date.now()}`,
@@ -197,7 +197,7 @@ export async function POST(req: Request) {
       const harvestRes = await harvestLiveLagosLeads();
       addedCount = harvestRes.added;
 
-      await supabase
+      await (supabase as any)
         .from('logs')
         .insert([{
           run_id: `lagos_harvest_${Date.now()}`,
@@ -230,16 +230,16 @@ export async function DELETE() {
 
     // Update Supabase Cloud State to INACTIVE
     try {
-      const { data: configRow } = await supabase
+      const { data: configRow } = await (supabase as any)
         .from('app_settings')
         .select('value')
         .eq('key', 'apexreach_runtime_config')
         .maybeSingle();
 
-      let cfg = configRow?.value ? JSON.parse(configRow.value) : {};
+      let cfg = (configRow as any)?.value ? JSON.parse((configRow as any).value) : {};
       cfg.lagos_engine_active = false;
 
-      await supabase
+      await (supabase as any)
         .from('app_settings')
         .upsert({
           key: 'apexreach_runtime_config',
@@ -247,7 +247,7 @@ export async function DELETE() {
           updated_at: new Date().toISOString()
         }, { onConflict: 'key' });
 
-      await supabase
+      await (supabase as any)
         .from('logs')
         .insert([{
           run_id: `lagos_stop_${Date.now()}`,
