@@ -39,7 +39,6 @@ export async function GET() {
     let isRunning = local.isRunning;
     let pid = local.pid;
     let latestLogs: string[] = [];
-    let liveLagosLeadsCount = 2017;
 
     // Local log file tail
     if (fs.existsSync(LOG_FILE)) {
@@ -50,7 +49,7 @@ export async function GET() {
       } catch (_) {}
     }
 
-    // Cloud / Vercel state check via Supabase
+    // Check Cloud runtime status from Supabase app_settings
     try {
       const { data: configRow } = await supabase
         .from('app_settings')
@@ -61,27 +60,8 @@ export async function GET() {
       if (configRow?.value) {
         const cfg = JSON.parse(configRow.value);
         if (cfg.lagos_engine_active) {
-          // NON-STOP MODE: Stays active continuously until user manually clicks Stop Engine!
           isRunning = true;
           pid = pid || 8810;
-
-          // Periodically harvest live leads and stream log telemetry
-          const lastLogTime = cfg.lagos_last_log_time || 0;
-          if (Date.now() - lastLogTime > 10000) {
-            cfg.lagos_last_log_time = Date.now();
-            await supabase.from('app_settings').upsert({ key: 'apexreach_runtime_config', value: JSON.stringify(cfg), updated_at: new Date().toISOString() }, { onConflict: 'key' });
-            
-            const harvestRes = await harvestLiveLagosLeads();
-            liveLagosLeadsCount = harvestRes.totalLagos;
-
-            await supabase.from('logs').insert([{
-              run_id: `lagos_daemon_${Date.now()}`,
-              timestamp: new Date().toISOString(),
-              step: 'LAGOS_NONSTOP_ACTIVE',
-              status: 'SUCCESS',
-              message: `🏢 [LAGOS-10K] Non-stop B2B harvester extracted +${harvestRes.added} verified commercial leads (Total: ${harvestRes.totalLagos})`
-            }]);
-          }
         }
       }
 
@@ -99,25 +79,16 @@ export async function GET() {
       }
     } catch (_) {}
 
-    // 1. Fetch total Lagos 10K leads (strictly lagos_10k_b2b pipeline)
-    const { count: totalLagosLeads } = await supabase
-      .from('leads')
-      .select('*', { count: 'exact', head: true })
-      .eq('source_query_or_seed', 'lagos_10k_b2b');
-
-    // 2. Fetch contacted Lagos outreach count
-    const { count: totalContacted } = await supabase
-      .from('leads')
-      .select('*', { count: 'exact', head: true })
-      .eq('source_query_or_seed', 'lagos_10k_b2b')
-      .eq('status', 'CONTACTED');
-
-    // 3. Count Lagos commercial categories
-    const { count: hotelsCount } = await supabase
-      .from('leads')
-      .select('*', { count: 'exact', head: true })
-      .eq('source_query_or_seed', 'lagos_10k_b2b')
-      .ilike('category', '%Hotel%');
+    // Efficient Parallel Counts
+    const [
+      { count: totalLagosLeads },
+      { count: totalContacted },
+      { count: hotelsCount }
+    ] = await Promise.all([
+      supabase.from('leads').select('*', { count: 'exact', head: true }).eq('source_query_or_seed', 'lagos_10k_b2b'),
+      supabase.from('leads').select('*', { count: 'exact', head: true }).eq('source_query_or_seed', 'lagos_10k_b2b').eq('status', 'CONTACTED'),
+      supabase.from('leads').select('*', { count: 'exact', head: true }).eq('source_query_or_seed', 'lagos_10k_b2b').ilike('category', '%Hotel%')
+    ]);
 
     return NextResponse.json({
       success: true,
@@ -126,9 +97,9 @@ export async function GET() {
       pid: isRunning ? (pid || 8810) : null,
       latestLogs,
       stats: {
-        totalLagosLeads: totalLagosLeads || 2015,
+        totalLagosLeads: totalLagosLeads || 0,
         totalContactedOutreach: totalContacted || 0,
-        commercialHotelsCount: hotelsCount || 200,
+        commercialHotelsCount: hotelsCount || 0,
         targetMarket: 'Lagos State (Ikeja, Lekki, VI, Yaba, Surulere, Oshodi, Ikorodu)',
         outreachChannel: 'Web Contact Form Auto-Submitter & B2B Email'
       }
@@ -163,7 +134,6 @@ export async function POST(req: Request) {
           updated_at: new Date().toISOString()
         }, { onConflict: 'key' });
 
-      // Log event to Supabase logs table
       await supabase
         .from('logs')
         .insert([{
@@ -175,7 +145,7 @@ export async function POST(req: Request) {
         }]);
     } catch (_) {}
 
-    // 2. Attempt local process spawn if local Node environment
+    // 2. Local Node Environment Process Spawn
     let spawnedPid: number | null = 8810;
     try {
       const scriptPath = path.join(process.cwd(), 'scripts', 'async_lagos_10k_scraper.js');
@@ -193,66 +163,28 @@ export async function POST(req: Request) {
       }
     } catch (_) {}
 
-    // 3. Perform immediate cloud lead harvesting sync if on Vercel
-    if (process.env.VERCEL) {
-      try {
-        const timestamp = Date.now();
-        const liveLagosLeads = [
-          {
-            lead_id: `lagos_b2b_live_${timestamp}_1`,
-            source: 'GOOGLE',
-            name: 'Grand Suites & Towers Ikeja',
-            category: 'Hospitality & Commercial Hotel',
-            address: 'Isaac John Street, Ikeja GRA, Lagos State',
-            city: 'Lagos',
-            phone_e164: '+2348031110099',
-            email: 'contact@grandsuitesikeja.ng',
-            website: 'https://www.grandsuitesikeja.ng',
-            rating: 4.7,
-            reviews_count: 54,
-            verified: true,
-            status: 'NEW',
-            source_query_or_seed: 'lagos_10k_b2b',
-            notes: 'Harvested via Vercel Active Lagos B2B Engine'
-          },
-          {
-            lead_id: `lagos_b2b_live_${timestamp}_2`,
-            source: 'GOOGLE',
-            name: 'Lekki Commercial Logistics Hub',
-            category: 'Logistics & Supply Chain',
-            address: 'Lekki-Epe Expressway, Lekki, Lagos',
-            city: 'Lagos',
-            phone_e164: '+2348032220088',
-            email: 'info@lekkilogistics.ng',
-            website: 'https://www.lekkilogistics.ng',
-            rating: 4.6,
-            reviews_count: 28,
-            verified: true,
-            status: 'NEW',
-            source_query_or_seed: 'lagos_10k_b2b',
-            notes: 'Harvested via Vercel Active Lagos B2B Engine'
-          }
-        ];
+    // 3. Real live lead harvest sync (works on both Vercel & Local)
+    let addedCount = 0;
+    try {
+      const harvestRes = await harvestLiveLagosLeads();
+      addedCount = harvestRes.added;
 
-        await supabase
-          .from('leads')
-          .upsert(liveLagosLeads, { onConflict: 'lead_id', ignoreDuplicates: true });
-
-        await supabase
-          .from('logs')
-          .insert([{
-            run_id: `lagos_harvest_${timestamp}`,
-            timestamp: new Date().toISOString(),
-            step: 'LAGOS_HARVEST_SUCCESS',
-            status: 'SUCCESS',
-            message: `🏢 [LAGOS-10K] Extracted & synced verified Lagos commercial leads to Supabase public.leads!`
-          }]);
-      } catch (_) {}
+      await supabase
+        .from('logs')
+        .insert([{
+          run_id: `lagos_harvest_${Date.now()}`,
+          timestamp: new Date().toISOString(),
+          step: 'LAGOS_HARVEST_SUCCESS',
+          status: 'SUCCESS',
+          message: `🏢 [LAGOS-10K] Harvested & synced +${harvestRes.added} verified commercial leads (Total: ${harvestRes.totalLagos})`
+        }]);
+    } catch (harvestErr: any) {
+      console.error('[LagosAPI] Harvest error during launch:', harvestErr.message);
     }
 
     return NextResponse.json({
       success: true,
-      message: '🏢 10K Lagos B2B Engine launched & active!',
+      message: `🏢 10K Lagos B2B Engine launched & active! (Harvested +${addedCount} real leads)`,
       pid: spawnedPid
     });
   } catch (error: any) {

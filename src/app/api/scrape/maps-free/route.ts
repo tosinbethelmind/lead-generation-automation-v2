@@ -41,7 +41,9 @@ export async function POST(req: NextRequest) {
 
     await addLog('Maps-Free Scraper', 'START', `Starting Maps-Free multi-source crawl for query: "${query}"`);
 
-    const origin = new URL(req.url).origin;
+    const origin = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : (process.env.NEXT_PUBLIC_APP_URL || (req.url.startsWith('http') ? new URL(req.url).origin : 'http://localhost:3000'));
 
     // ── Phase 1: Fast parallel fallback sources (OSM + DuckDuckGo) ──────────
     // These reliably return results in < 30s. Run them in parallel immediately.

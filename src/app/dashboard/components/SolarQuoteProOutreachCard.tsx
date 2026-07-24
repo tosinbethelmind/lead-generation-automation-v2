@@ -36,9 +36,10 @@ export default function SolarQuoteProOutreachCard() {
   const [dailyQuota, setDailyQuota] = useState(2500);
   const [message, setMessage] = useState<string | null>(null);
 
+  const [initialLoading, setInitialLoading] = useState(true);
+
   const fetchPipelineStatus = async () => {
     try {
-      setLoading(true);
       const res = await fetch('/api/solarquotepro-pipeline');
       if (res.ok) {
         const data = await res.json();
@@ -59,6 +60,7 @@ export default function SolarQuoteProOutreachCard() {
     } catch (_) {
     } finally {
       setLoading(false);
+      setInitialLoading(false);
     }
   };
 

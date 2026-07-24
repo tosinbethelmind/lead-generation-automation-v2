@@ -47,9 +47,9 @@ export async function GET() {
     let isRunning = local.isRunning;
     let pid = local.pid;
     let latestLogs: string[] = [];
-    let totalSolarInstallers = 1421;
+    let totalSolarInstallers = 0;
 
-    // Local log file tail
+    // Read local runner logs if present
     if (fs.existsSync(LOG_FILE)) {
       try {
         const rawLog = fs.readFileSync(LOG_FILE, 'utf8');
@@ -58,7 +58,7 @@ export async function GET() {
       } catch (_) {}
     }
 
-    // Cloud / Vercel state check via Supabase
+    // Check Cloud runtime status from Supabase app_settings
     try {
       const { data: configRow } = await supabase
         .from('app_settings')
@@ -69,31 +69,22 @@ export async function GET() {
       if (configRow?.value) {
         const cfg = JSON.parse(configRow.value);
         if (cfg.solar_engine_active) {
-          // NON-STOP MODE: Stays active continuously until user manually clicks Stop Engine!
           isRunning = true;
           pid = pid || 9421;
-
-          // Periodically harvest live leads and stream log telemetry
-          const lastLogTime = cfg.solar_last_log_time || 0;
-          if (Date.now() - lastLogTime > 10000) {
-            cfg.solar_last_log_time = Date.now();
-            await supabase.from('app_settings').upsert({ key: 'apexreach_runtime_config', value: JSON.stringify(cfg), updated_at: new Date().toISOString() }, { onConflict: 'key' });
-            
-            const harvestRes = await harvestLiveSolarLeads();
-            totalSolarInstallers = harvestRes.totalSolar;
-
-            await supabase.from('logs').insert([{
-              run_id: `solar_daemon_${Date.now()}`,
-              timestamp: new Date().toISOString(),
-              step: 'SOLAR_NONSTOP_ACTIVE',
-              status: 'SUCCESS',
-              message: `⚡ [SOLAR-ENGINE] Non-stop live extraction loop harvested +${harvestRes.added} verified leads (Total: ${harvestRes.totalSolar})`
-            }]);
-          }
         }
       }
 
-      // Fetch latest Solar logs from Supabase logs table
+      // Fetch actual lead count efficiently
+      const { count } = await supabase
+        .from('leads')
+        .select('*', { count: 'exact', head: true })
+        .or('category.ilike.%solar%,source_query_or_seed.ilike.%solar%');
+
+      if (count !== null) {
+        totalSolarInstallers = count;
+      }
+
+      // Fetch recent logs without triggering heavy harvesting in GET status
       const { data: dbLogs } = await supabase
         .from('logs')
         .select('created_at, step, message')
@@ -105,7 +96,9 @@ export async function GET() {
         const cloudLogLines = dbLogs.map((l: any) => `[${new Date(l.created_at).toLocaleTimeString()}] ${l.message}`);
         latestLogs = Array.from(new Set([...latestLogs, ...cloudLogLines]));
       }
-    } catch (_) {}
+    } catch (err: any) {
+      console.warn('[SolarAPI] Status fetch fallback warn:', err.message);
+    }
 
     return NextResponse.json({
       success: true,
@@ -151,7 +144,6 @@ export async function POST(req: Request) {
           updated_at: new Date().toISOString()
         }, { onConflict: 'key' });
 
-      // Log event to Supabase logs table
       await supabase
         .from('logs')
         .insert([{
@@ -163,7 +155,7 @@ export async function POST(req: Request) {
         }]);
     } catch (_) {}
 
-    // 2. Attempt local process spawn if local Node environment
+    // 2. Local Node Environment Process Spawn
     let spawnedPid: number | null = 9421;
     try {
       const scriptPath = path.join(process.cwd(), 'scripts', 'solarquotepro_isolated_runner.js');
@@ -182,66 +174,28 @@ export async function POST(req: Request) {
       }
     } catch (_) {}
 
-    // 3. Perform immediate cloud lead harvesting sync if on Vercel
-    if (process.env.VERCEL) {
-      try {
-        const timestamp = Date.now();
-        const liveSolarLeads = [
-          {
-            lead_id: `solar_install_live_${timestamp}_1`,
-            source: 'GOOGLE',
-            name: 'Apex Solar Energy Solutions Nigeria',
-            category: 'Solar Energy Equipment Supplier',
-            address: 'Plot 14 Commercial Avenue, Ikeja, Lagos State',
-            city: 'Lagos',
-            phone_e164: '+2348035550192',
-            email: 'info@apexsolar.ng',
-            website: 'https://www.solarquotepro.ng',
-            rating: 4.8,
-            reviews_count: 42,
-            verified: true,
-            status: 'NEW',
-            source_query_or_seed: 'solar_installer_nigeria',
-            notes: 'Harvested via Vercel Active Solar Engine'
-          },
-          {
-            lead_id: `solar_install_live_${timestamp}_2`,
-            source: 'GOOGLE',
-            name: 'GreenWatts Renewable Power Ltd',
-            category: 'Solar Inverter Installer',
-            address: '22 Admiralty Way, Lekki Phase 1, Lagos',
-            city: 'Lagos',
-            phone_e164: '+2348024440188',
-            email: 'sales@greenwatts.ng',
-            website: 'https://www.greenwatts.ng',
-            rating: 4.9,
-            reviews_count: 36,
-            verified: true,
-            status: 'NEW',
-            source_query_or_seed: 'solar_installer_nigeria',
-            notes: 'Harvested via Vercel Active Solar Engine'
-          }
-        ];
+    // 3. Real live lead harvest sync (works on both Vercel & Local)
+    let addedCount = 0;
+    try {
+      const harvestRes = await harvestLiveSolarLeads();
+      addedCount = harvestRes.added;
 
-        await supabase
-          .from('leads')
-          .upsert(liveSolarLeads, { onConflict: 'lead_id', ignoreDuplicates: true });
-
-        await supabase
-          .from('logs')
-          .insert([{
-            run_id: `solar_harvest_${timestamp}`,
-            timestamp: new Date().toISOString(),
-            step: 'SOLAR_HARVEST_SUCCESS',
-            status: 'SUCCESS',
-            message: `⚡ [SOLAR-ENGINE] Extracted & synced live verified solar installer leads to Supabase public.leads!`
-          }]);
-      } catch (_) {}
+      await supabase
+        .from('logs')
+        .insert([{
+          run_id: `solar_harvest_${Date.now()}`,
+          timestamp: new Date().toISOString(),
+          step: 'SOLAR_HARVEST_SUCCESS',
+          status: 'SUCCESS',
+          message: `⚡ [SOLAR-ENGINE] Harvested & synced +${harvestRes.added} verified solar leads (Total: ${harvestRes.totalSolar})`
+        }]);
+    } catch (harvestErr: any) {
+      console.error('[SolarAPI] Harvest error during launch:', harvestErr.message);
     }
 
     return NextResponse.json({
       success: true,
-      message: '⚡ SolarQuotePro.ng Dedicated Engine launched & active!',
+      message: `⚡ SolarQuotePro.ng Engine active! (Harvested +${addedCount} real leads)`,
       pid: spawnedPid,
       mode: isOnce ? 'Single Run' : 'Daemon Loop'
     });

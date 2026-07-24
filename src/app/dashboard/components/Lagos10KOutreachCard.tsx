@@ -25,9 +25,10 @@ export default function Lagos10KOutreachCard() {
   const [dailyQuota, setDailyQuota] = useState(2000);
   const [message, setMessage] = useState<string | null>(null);
 
+  const [initialLoading, setInitialLoading] = useState(true);
+
   const fetchLagosStatus = async () => {
     try {
-      setLoading(true);
       const res = await fetch('/api/outreach/lagos10k');
       if (res.ok) {
         const data = await res.json();
@@ -43,6 +44,7 @@ export default function Lagos10KOutreachCard() {
     } catch (_) {
     } finally {
       setLoading(false);
+      setInitialLoading(false);
     }
   };
 

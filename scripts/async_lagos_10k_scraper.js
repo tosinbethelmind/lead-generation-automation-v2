@@ -1,8 +1,7 @@
 /**
  * @file scripts/async_lagos_10k_scraper.js
  * High-Speed Resilient Multi-Endpoint Scraper for 10K Lagos B2B Engine.
- * Features automatic endpoint failover across 3 Overpass mirrors + Nominatim API.
- * Guarantees zero rate-limit blocks and high extraction throughput.
+ * Uses live Overpass real lead extraction via liveLeadHarvester.
  */
 
 const { createClient } = require('@supabase/supabase-js');
@@ -36,86 +35,6 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1N
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
 
-const LAGOS_SEARCH_TERMS = [
-  'hotel Ikeja Lagos Nigeria', 'hospital Lekki Lagos Nigeria', 'commercial Victoria Island Lagos',
-  'school Yaba Lagos Nigeria', 'petrol station Surulere Lagos', 'company Oshodi Lagos Nigeria',
-  'factory Ikorodu Lagos Nigeria', 'plaza Alimosho Lagos Nigeria', 'business Kosofe Lagos',
-  'logistics Apapa Lagos Nigeria'
-];
-
-const SEARCH_ENDPOINTS = [
-  'https://nominatim.openstreetmap.org/search',
-  'https://overpass-api.de/api/interpreter',
-  'https://overpass.khtml.org/api/interpreter'
-];
-
-async function fetchNominatimQuery(query, index) {
-  let endpointIdx = index % SEARCH_ENDPOINTS.length;
-  
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    const activeEndpoint = SEARCH_ENDPOINTS[endpointIdx];
-    const url = activeEndpoint.includes('nominatim')
-      ? `${activeEndpoint}?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=20`
-      : `${activeEndpoint}?data=[out:json];node[name~"${encodeURIComponent(query.split(' ')[0])}",i];out 20;`;
-
-    try {
-      const res = await fetch(url, {
-        headers: { 'User-Agent': `ApexReach-SelfHealingLagosEngine/${1.0 + (index % 5)} (contact@bethelmindanalytics.com)` }
-      });
-      
-      if (res.status === 429 || res.status === 403) {
-        logMessage(`[SELF-HEAL] Rate limit (${res.status}) on ${activeEndpoint}. Auto-switching endpoint mirror...`);
-        endpointIdx = (endpointIdx + 1) % SEARCH_ENDPOINTS.length;
-        await new Promise(r => setTimeout(r, 1000 * attempt));
-        continue;
-      }
-
-      if (!res.ok) {
-        endpointIdx = (endpointIdx + 1) % SEARCH_ENDPOINTS.length;
-        continue;
-      }
-
-      const data = await res.json();
-      const rawArray = Array.isArray(data) ? data : (data.elements || []);
-      if (!Array.isArray(rawArray) || rawArray.length === 0) {
-        endpointIdx = (endpointIdx + 1) % SEARCH_ENDPOINTS.length;
-        continue;
-      }
-
-      return rawArray.map((item, i) => {
-        const rawName = item.name || (item.tags ? item.tags.name : null) || (item.display_name ? item.display_name.split(',')[0] : `Lagos B2B Entity #${i + 1}`);
-        const cleanDomain = rawName.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 16);
-        const phone = `+234803${Math.floor(1000000 + Math.random() * 9000000)}`;
-        const city = item.address?.city || item.address?.state_district || 'Lagos';
-
-        return {
-          lead_id: `lagos_b2b_live_${Date.now()}_${index}_${i}`,
-          source: 'GOOGLE',
-          name: rawName,
-          category: 'Lagos Commercial Entity',
-          address: item.display_name || `${city}, Lagos, Nigeria`,
-          city: city.includes('Lagos') ? 'Lagos' : city,
-          phone_e164: phone,
-          phone_raw: phone,
-          email: `contact@${cleanDomain}.ng`,
-          website: `https://www.${cleanDomain}.ng`,
-          rating: 4.6,
-          reviews_count: 18,
-          verified: true,
-          status: 'NEW',
-          source_query_or_seed: 'lagos_10k_b2b',
-          notes: `Harvested via Self-Healing Lagos B2B Engine search: ${query}`
-        };
-      });
-    } catch (err) {
-      logMessage(`[SELF-HEAL] Endpoint error on ${activeEndpoint}: ${err.message}. Rotating mirror...`);
-      endpointIdx = (endpointIdx + 1) % SEARCH_ENDPOINTS.length;
-      await new Promise(r => setTimeout(r, 800));
-    }
-  }
-  return [];
-}
-
 const LOCAL_DB_DIR = path.join(__dirname, '../local_db');
 if (!fs.existsSync(LOCAL_DB_DIR)) {
   try { fs.mkdirSync(LOCAL_DB_DIR, { recursive: true }); } catch (_) {}
@@ -143,53 +62,18 @@ async function runResilientLagosHarvester(dryRun = false) {
   logMessage('==================================================');
 
   const startTime = Date.now();
-  logMessage('⚡ Launching parallel search stream extractions across Lagos LGAs...');
+  logMessage('⚡ Launching live Overpass Lagos B2B extraction...');
 
-  const results = await Promise.all(LAGOS_SEARCH_TERMS.map((term, i) => fetchNominatimQuery(term, i)));
-  const allLeads = results.flat();
-  const durationSec = ((Date.now() - startTime) / 1000).toFixed(2);
+  try {
+    const { harvestLiveLagosLeads } = await import('../src/lib/liveLeadHarvester');
+    const result = await harvestLiveLagosLeads();
+    const durationSec = ((Date.now() - startTime) / 1000).toFixed(2);
 
-  logMessage(`Extracted ${allLeads.length} Live Verified Lagos B2B Leads in ${durationSec} seconds!`);
-  logMessage(`Throughput Speed: ${(allLeads.length / Math.max(durationSec, 0.1)).toFixed(1)} leads/sec`);
-
-  if (dryRun) {
-    logMessage('DRY-RUN mode active. Database sync skipped.');
-    try { if (fs.existsSync(PID_FILE)) fs.unlinkSync(PID_FILE); } catch (_) {}
-    return;
+    logMessage(`Extracted & synced +${result.added} Verified Lagos Commercial Leads in ${durationSec} seconds!`);
+    logMessage(`Total Lagos B2B Leads in Database: ${result.totalLagos}`);
+  } catch (err) {
+    logMessage(`❌ Lagos Harvester Error: ${err.message}`);
   }
-
-  if (allLeads.length > 0) {
-    const chunkSize = 50;
-    let totalInserted = 0;
-
-    for (let i = 0; i < allLeads.length; i += chunkSize) {
-      const chunk = allLeads.slice(i, i + chunkSize);
-      let success = false;
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        const { error } = await supabase
-          .from('leads')
-          .upsert(chunk, { onConflict: 'lead_id', ignoreDuplicates: true });
-
-        if (!error) {
-          success = true;
-          totalInserted += chunk.length;
-          break;
-        } else {
-          await new Promise(r => setTimeout(r, 600));
-        }
-      }
-    }
-    logMessage(`✓ Successfully synced ${totalInserted} live Lagos leads to Supabase public.leads table.`);
-  }
-
-  const { count: finalLagosCount } = await supabase
-    .from('leads')
-    .select('*', { count: 'exact', head: true })
-    .eq('source_query_or_seed', 'lagos_10k_b2b');
-
-  logMessage('==================================================');
-  logMessage(`🎉 LAGOS 10K B2B HARVEST COMPLETE! Total Lagos Leads in DB: ${finalLagosCount || 2015}`);
-  logMessage('==================================================');
 
   try { if (fs.existsSync(PID_FILE)) fs.unlinkSync(PID_FILE); } catch (_) {}
 }
