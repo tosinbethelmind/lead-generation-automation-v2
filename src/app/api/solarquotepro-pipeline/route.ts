@@ -66,14 +66,14 @@ export async function GET(req?: Request) {
 
     // Check Cloud runtime status from Supabase app_settings
     try {
-      const { data: configRow } = await supabase
+      const { data: configRow } = await (supabase as any)
         .from('app_settings')
         .select('value')
         .eq('key', 'apexreach_runtime_config')
         .maybeSingle();
 
-      if (configRow?.value) {
-        const cfg = JSON.parse(configRow.value);
+      if ((configRow as any)?.value) {
+        const cfg = JSON.parse((configRow as any).value);
         if (cfg.solar_engine_active) {
           isRunning = true;
           pid = pid || 9421;
@@ -82,12 +82,12 @@ export async function GET(req?: Request) {
           const lastLogTime = cfg.solar_last_log_time || 0;
           if (isCron || (Date.now() - lastLogTime > 60000)) { // 1-minute cloud harvest loop
             cfg.solar_last_log_time = Date.now();
-            await supabase.from('app_settings').upsert({ key: 'apexreach_runtime_config', value: JSON.stringify(cfg), updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            await (supabase as any).from('app_settings').upsert({ key: 'apexreach_runtime_config', value: JSON.stringify(cfg), updated_at: new Date().toISOString() }, { onConflict: 'key' });
             
             const harvestRes = await harvestLiveSolarLeads();
             totalSolarInstallers = harvestRes.totalSolar;
 
-            await supabase.from('logs').insert([{
+            await (supabase as any).from('logs').insert([{
               run_id: `solar_cloud_${Date.now()}`,
               timestamp: new Date().toISOString(),
               step: 'SOLAR_NONSTOP_ACTIVE',
@@ -100,7 +100,7 @@ export async function GET(req?: Request) {
 
       // Fetch actual lead count efficiently
       if (!totalSolarInstallers) {
-        const { count } = await supabase
+        const { count } = await (supabase as any)
           .from('leads')
           .select('*', { count: 'exact', head: true })
           .or('category.ilike.%solar%,source_query_or_seed.ilike.%solar%,notes.ilike.%solar%,business_summary.ilike.%solar%');
@@ -111,7 +111,7 @@ export async function GET(req?: Request) {
       }
 
       // Fetch recent logs with Lagos WAT timestamp formatting
-      const { data: dbLogs } = await supabase
+      const { data: dbLogs } = await (supabase as any)
         .from('logs')
         .select('created_at, step, message')
         .or('step.ilike.%SOLAR%,message.ilike.%Solar%')
@@ -157,17 +157,17 @@ export async function POST(req: Request) {
 
     // 1. Update Supabase Cloud State to ACTIVE
     try {
-      const { data: configRow } = await supabase
+      const { data: configRow } = await (supabase as any)
         .from('app_settings')
         .select('value')
         .eq('key', 'apexreach_runtime_config')
         .maybeSingle();
 
-      let cfg = configRow?.value ? JSON.parse(configRow.value) : {};
+      let cfg = (configRow as any)?.value ? JSON.parse((configRow as any).value) : {};
       cfg.solar_engine_active = true;
       cfg.solar_engine_started_at = Date.now();
 
-      await supabase
+      await (supabase as any)
         .from('app_settings')
         .upsert({
           key: 'apexreach_runtime_config',
@@ -175,7 +175,7 @@ export async function POST(req: Request) {
           updated_at: new Date().toISOString()
         }, { onConflict: 'key' });
 
-      await supabase
+      await (supabase as any)
         .from('logs')
         .insert([{
           run_id: `solar_run_${Date.now()}`,
@@ -211,7 +211,7 @@ export async function POST(req: Request) {
       const harvestRes = await harvestLiveSolarLeads();
       addedCount = harvestRes.added;
 
-      await supabase
+      await (supabase as any)
         .from('logs')
         .insert([{
           run_id: `solar_harvest_${Date.now()}`,
@@ -245,16 +245,16 @@ export async function DELETE() {
 
     // Update Supabase Cloud State to INACTIVE
     try {
-      const { data: configRow } = await supabase
+      const { data: configRow } = await (supabase as any)
         .from('app_settings')
         .select('value')
         .eq('key', 'apexreach_runtime_config')
         .maybeSingle();
 
-      let cfg = configRow?.value ? JSON.parse(configRow.value) : {};
+      let cfg = (configRow as any)?.value ? JSON.parse((configRow as any).value) : {};
       cfg.solar_engine_active = false;
 
-      await supabase
+      await (supabase as any)
         .from('app_settings')
         .upsert({
           key: 'apexreach_runtime_config',
@@ -262,7 +262,7 @@ export async function DELETE() {
           updated_at: new Date().toISOString()
         }, { onConflict: 'key' });
 
-      await supabase
+      await (supabase as any)
         .from('logs')
         .insert([{
           run_id: `solar_stop_${Date.now()}`,
