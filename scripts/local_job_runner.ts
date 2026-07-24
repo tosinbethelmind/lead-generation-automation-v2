@@ -44,8 +44,11 @@ function isValidKey(key: string): boolean {
 
 // Resolve environment configuration
 function loadConfig() {
-  let supabaseUrl = HARDCODED_URL;
-  let supabaseKey = HARDCODED_KEY;
+  let envUrl = cleanEnvVal(process.env.SUPABASE_URL) || cleanEnvVal(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  let envKey = cleanEnvVal(process.env.SUPABASE_SERVICE_ROLE_KEY) || cleanEnvVal(process.env.SUPABASE_KEY);
+
+  let supabaseUrl = (envUrl && envUrl.length > 10) ? envUrl : HARDCODED_URL;
+  let supabaseKey = (envKey && envKey.length > 20) ? envKey : HARDCODED_KEY;
   let storageMode = cleanEnvVal(process.env.STORAGE_MODE) || 'supabase';
 
   return { supabaseUrl, supabaseKey, storageMode };

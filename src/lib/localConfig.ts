@@ -332,7 +332,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
 
-import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from './atomicIo';
+import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from './atomicIo.js';
 
 import { getWorkerIndex } from './requestContext';
 
