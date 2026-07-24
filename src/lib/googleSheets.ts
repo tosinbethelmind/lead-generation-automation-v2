@@ -1359,7 +1359,7 @@ class SupabaseLeadRepository implements ILeadRepository {
       }
 
       if (toInsert.length > 0) {
-        const { error } = await supabase.from('leads').insert(toInsert);
+        const { error } = await (supabase as any).from('leads').insert(toInsert);
         if (error) throw error;
 
         // Dual-write solar leads to SolarQuotePro DB asynchronously
@@ -1392,7 +1392,7 @@ class SupabaseLeadRepository implements ILeadRepository {
             const sqKey = process.env.SOLARQUOTEPRO_SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
             const { createClient } = await import('@supabase/supabase-js');
             const sqClient = createClient(sqUrl, sqKey, { auth: { persistSession: false } });
-            const { error: sqErr } = await sqClient.from('leads').upsert(solarItems, { onConflict: 'lead_id', ignoreDuplicates: true });
+            const { error: sqErr } = await (sqClient as any).from('leads').upsert(solarItems, { onConflict: 'lead_id', ignoreDuplicates: true });
             if (sqErr) {
               console.warn('[Dual-Write SolarQuotePro Warning]:', sqErr.message);
             }
@@ -1414,7 +1414,7 @@ class SupabaseLeadRepository implements ILeadRepository {
       if (notes !== undefined) {
         // Fetch current notes to see if there is a [source:...] prefix we need to preserve
         let prefix = '';
-        const { data: currentLead } = await supabase
+        const { data: currentLead } = await (supabase as any)
           .from('leads')
           .select('notes')
           .eq('lead_id', leadId)
@@ -1435,7 +1435,7 @@ class SupabaseLeadRepository implements ILeadRepository {
       
       if (lastContactedAt !== undefined) updates.last_contacted_at = lastContactedAt;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('leads')
         .update(updates)
         .eq('lead_id', leadId)
@@ -1484,7 +1484,7 @@ class SupabaseLeadRepository implements ILeadRepository {
       if (fields.embed_note !== undefined) updates.embed_note = fields.embed_note;
       if (fields.embedNote !== undefined) updates.embed_note = fields.embedNote;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('leads')
         .update(updates)
         .eq('lead_id', leadId)
@@ -1504,7 +1504,7 @@ class SupabaseDncRepository implements IDncRepository {
   async getDncList(): Promise<string[]> {
     try {
       const supabase = getSupabaseClient();
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('dnc')
         .select('phone_e164');
       if (error) throw error;
@@ -1521,7 +1521,7 @@ class SupabaseDncRepository implements IDncRepository {
       const norm = normalizePhone(phone);
       if (!norm) return false;
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('dnc')
         .upsert({
           phone_e164: norm,
@@ -1542,7 +1542,7 @@ class SupabaseLogRepository implements ILogRepository {
   async getLogs(): Promise<any[]> {
     try {
       const supabase = getSupabaseClient();
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('logs')
         .select('*')
         .neq('step', 'heartbeat')
@@ -1567,7 +1567,7 @@ class SupabaseLogRepository implements ILogRepository {
   async appendLog(step: string, status: string, msg: string, runId = 'WEB_APP'): Promise<void> {
     try {
       const supabase = getSupabaseClient();
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('logs')
         .insert({
           run_id: runId,
