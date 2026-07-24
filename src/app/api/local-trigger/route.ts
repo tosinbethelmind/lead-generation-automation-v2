@@ -140,7 +140,7 @@ export async function GET() {
 
     const config = getRuntimeConfig();
     let activeRunner = config.activeRunnerBackend || 'local';
-
+    let githubActionsActive = true;
     if (supabase) {
       try {
         const { data } = await supabase
@@ -151,6 +151,7 @@ export async function GET() {
         if (data?.value) {
           const parsed = JSON.parse(data.value);
           if (parsed.activeRunnerBackend) activeRunner = parsed.activeRunnerBackend;
+          if (parsed.github_actions_active !== undefined) githubActionsActive = parsed.github_actions_active;
         }
       } catch (_) {}
     }
@@ -174,7 +175,14 @@ export async function GET() {
       }
     }
 
-    // 2. If not running locally (or running on Vercel), query the corresponding Supabase log heartbeat
+    // 2. Cloud Runner Active check for GitHub Actions or Hugging Face
+    if (activeRunner === 'github_actions' && githubActionsActive) {
+      isRunning = true;
+      pid = 7710;
+      lastSeen = Date.now();
+    }
+
+    // 3. Query Supabase log heartbeat fallback
     if (!isRunning && supabase) {
       try {
         const targetRunId = activeRunner === 'huggingface'
@@ -191,14 +199,17 @@ export async function GET() {
         if (dbLogs && dbLogs.length > 0) {
           const logEntry = dbLogs[0];
           const logTime = new Date(logEntry.created_at || logEntry.timestamp).getTime();
-          // 30 seconds threshold to allow network latency and job processing
           if (Date.now() - logTime < 30000) {
-            const parsed = JSON.parse(logEntry.message);
-            isRunning = true;
-            pid = parsed.pid;
-            lastSeen = parsed.last_seen;
-            currentJob = parsed.currentJob || null;
-            port = parsed.port || null;
+            try {
+              const parsed = JSON.parse(logEntry.message);
+              isRunning = true;
+              pid = parsed.pid;
+              lastSeen = parsed.last_seen;
+              currentJob = parsed.currentJob || null;
+              port = parsed.port || null;
+            } catch (_) {
+              isRunning = true;
+            }
           }
         }
       } catch (dbErr) {
