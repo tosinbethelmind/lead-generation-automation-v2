@@ -49,7 +49,7 @@ async function run() {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_SERVICE_ROLE_KEY || '';
-  const scraperApiBaseUrl = process.env.SCRAPER_API_BASE_URL || 'https://lead-generation-automation-e0oitxcsi.vercel.app';
+  const scraperApiBaseUrl = process.env.SCRAPER_API_BASE_URL || 'https://lead-generation-automation-ecru.vercel.app';
 
   if (!supabaseUrl || !supabaseKey) {
     console.error('❌ Supabase URL or Service Role Key missing in .env.local.');

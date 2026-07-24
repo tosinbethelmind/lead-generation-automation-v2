@@ -2674,7 +2674,7 @@ export default function Home() {
 
   const renderTemplatePreview = (lead: Lead | null) => {
     if (!lead) return 'Select a lead to see custom outreach message variables';
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://lead-generation-automation-e0oitxcsi.vercel.app';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://lead-generation-automation-ecru.vercel.app';
     
     if (config.outreachChannel === 'sms') {
       const smsTemplate = config.smsMessageTemplate || 

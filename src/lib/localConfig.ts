@@ -201,7 +201,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   // Google data tools
   googleSpreadsheetId: '',
   googlePlacesApiKey: '',
-  liveLink: 'https://lead-generation-automation-e0oitxcsi.vercel.app',
+  liveLink: 'https://lead-generation-automation-ecru.vercel.app',
   // Outreach
   dryRun: true,
   businessSignature: 'Bethelmind Analytics & Strategy',
@@ -799,7 +799,7 @@ export function getOutreachOrigin(reqUrl?: string): string {
       return new URL(reqUrl).origin;
     } catch (_) {}
   }
-  return 'https://lead-generation-automation-e0oitxcsi.vercel.app';
+  return 'https://lead-generation-automation-ecru.vercel.app';
 }
 
 
