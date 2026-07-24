@@ -5,10 +5,11 @@
  * Automatically normalizes phone numbers to E.164 and syncs to Supabase.
  */
 
+let ws;
 try {
-  const ws = require('ws');
-  if (typeof globalThis.WebSocket === 'undefined') globalThis.WebSocket = ws;
-  if (typeof global.WebSocket === 'undefined') global.WebSocket = ws;
+  ws = require('ws');
+  globalThis.WebSocket = ws;
+  global.WebSocket = ws;
 } catch (_) {}
 
 const fs = require('fs');
@@ -45,12 +46,6 @@ function getCleanCredential(env1, env2, fallback) {
 
 const SUPABASE_URL = getCleanCredential(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL, 'https://pnsrjsyiygxdcxkpgbzx.supabase.co');
 const SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.SUPABASE_KEY, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8');
-
-const ws = require('ws');
-try {
-  if (typeof globalThis.WebSocket === 'undefined') globalThis.WebSocket = ws;
-  if (typeof global.WebSocket === 'undefined') global.WebSocket = ws;
-} catch (_) {}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false }, realtime: { transport: ws } });
 

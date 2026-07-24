@@ -39,7 +39,7 @@ export function logSelfHealingEvent(event: Omit<SelfHealingEvent, 'id' | 'timest
 
   // 2. Async sync to Supabase logs table (non-blocking)
   Promise.resolve(
-    supabase
+    (supabase as any)
       .from('logs')
       .insert([{
         run_id: fullEvent.id,
