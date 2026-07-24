@@ -12,6 +12,12 @@ const { randomUUID } = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const cheerio = require('cheerio');
 
+try {
+  if (typeof globalThis.WebSocket === 'undefined') {
+    globalThis.WebSocket = require('ws');
+  }
+} catch (_) {}
+
 function parseEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return;
   const content = fs.readFileSync(filePath, 'utf8');

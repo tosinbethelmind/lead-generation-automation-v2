@@ -59,9 +59,9 @@ jobs:
           fi
 
           if [ "$MODE" = "dry-run" ]; then
-            node scripts/nigeria_solar_5k_scraper.js --dry-run $ARGS
+            npx tsx scripts/nigeria_solar_5k_scraper.js --dry-run $ARGS
           else
-            node scripts/nigeria_solar_5k_scraper.js $ARGS
+            npx tsx scripts/nigeria_solar_5k_scraper.js $ARGS
           fi
 
       - name: Run Async Solar Harvester (Secondary Pass)
@@ -71,4 +71,4 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_KEY }}
         run: |
           echo "⚡ Running secondary solar harvester pass for maximum real leads..."
-          node scripts/async_solar_5k_scraper.js
+          npx tsx scripts/async_solar_5k_scraper.js

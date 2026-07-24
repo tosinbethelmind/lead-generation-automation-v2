@@ -1,9 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import dns from 'dns';
+import ws from 'ws';
 import { createClient } from '@supabase/supabase-js';
 import { spawn } from 'child_process';
 import { harvestLiveSolarLeads, harvestLiveLagosLeads } from '../src/lib/liveLeadHarvester';
+
+if (typeof (globalThis as any).WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = ws;
+}
 
 if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder('ipv4first');

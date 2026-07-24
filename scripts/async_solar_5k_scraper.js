@@ -9,6 +9,12 @@ const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
+try {
+  if (typeof globalThis.WebSocket === 'undefined') {
+    globalThis.WebSocket = require('ws');
+  }
+} catch (_) {}
+
 function parseEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return;
   const content = fs.readFileSync(filePath, 'utf8');

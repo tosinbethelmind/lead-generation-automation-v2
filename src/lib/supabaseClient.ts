@@ -1,5 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
+import ws from 'ws';
 import { getRuntimeConfig } from './localConfig';
+
+if (typeof globalThis.WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = ws;
+}
 
 const ACTIVE_SUPABASE_URL = 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
 const ACTIVE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
