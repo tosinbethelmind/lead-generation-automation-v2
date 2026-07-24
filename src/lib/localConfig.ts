@@ -472,8 +472,30 @@ export function getRuntimeConfig(): RuntimeConfig {
     facebookMessageTemplate: process.env.FACEBOOK_MESSAGE_TEMPLATE || fileConfig.facebookMessageTemplate || DEFAULT_CONFIG.facebookMessageTemplate,
     tiktokMessageTemplate: process.env.TIKTOK_MESSAGE_TEMPLATE || fileConfig.tiktokMessageTemplate || DEFAULT_CONFIG.tiktokMessageTemplate,
     linkedinMessageTemplate: process.env.LINKEDIN_MESSAGE_TEMPLATE || fileConfig.linkedinMessageTemplate || DEFAULT_CONFIG.linkedinMessageTemplate,
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || fileConfig.supabaseUrl || DEFAULT_CONFIG.supabaseUrl,
-    supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || fileConfig.supabaseKey || DEFAULT_CONFIG.supabaseKey,
+    supabaseUrl: (function() {
+      const candidates = [process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_URL, fileConfig.supabaseUrl, DEFAULT_CONFIG.supabaseUrl];
+      for (const c of candidates) {
+        if (c && typeof c === 'string' && c.trim().includes('pnsrjsyiygxdcxkpgbzx')) {
+          return c.trim();
+        }
+      }
+      return DEFAULT_CONFIG.supabaseUrl;
+    })(),
+    supabaseKey: (function() {
+      const candidates = [process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, fileConfig.supabaseKey, DEFAULT_CONFIG.supabaseKey];
+      for (const c of candidates) {
+        if (c && typeof c === 'string' && c.trim().length >= 20) {
+          try {
+            const parts = c.trim().split('.');
+            if (parts.length === 3) {
+              const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+              if (payload.ref === 'pnsrjsyiygxdcxkpgbzx') return c.trim();
+            }
+          } catch (e) {}
+        }
+      }
+      return DEFAULT_CONFIG.supabaseKey;
+    })(),
     geminiApiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || fileConfig.geminiApiKey || DEFAULT_CONFIG.geminiApiKey,
     geminiApiKeys: process.env.GEMINI_API_KEYS ? process.env.GEMINI_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.geminiApiKeys || DEFAULT_CONFIG.geminiApiKeys),
     antigravityApiKey: process.env.ANTIGRAVITY_API_KEY || fileConfig.antigravityApiKey || DEFAULT_CONFIG.antigravityApiKey,

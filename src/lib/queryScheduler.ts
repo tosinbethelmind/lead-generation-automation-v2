@@ -305,7 +305,7 @@ async function getDbStats(): Promise<{ niches: Record<string, number>; cities: R
     try {
       const { data } = await supabase.from('leads').select('category, city');
       if (data) {
-        data.forEach(row => {
+        data.forEach((row: any) => {
           if (row.category) stats.niches[row.category] = (stats.niches[row.category] || 0) + 1;
           if (row.city) stats.cities[row.city] = (stats.cities[row.city] || 0) + 1;
         });

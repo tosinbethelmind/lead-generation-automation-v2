@@ -1,0 +1,12 @@
+# Vercel ignore patterns for transient local runner files
+*.tmp*
+*.log
+local_db/
+scratch/
+test-results/
+local_runner_heartbeat.json*
+local_runner_parent_pid.json*
+local_runner.log
+services_output.log
+whatsapp_baileys.log
+startup_log.txt

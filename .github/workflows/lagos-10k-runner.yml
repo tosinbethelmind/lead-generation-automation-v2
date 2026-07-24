@@ -1,0 +1,46 @@
+name: 10K Lagos B2B Engine Distributed Matrix Runner
+
+on:
+  schedule:
+    # Run every 6 hours automatically across 5 parallel nodes
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Execution Mode (live | dry-run)'
+        required: false
+        default: 'live'
+
+jobs:
+  run-lagos-10k-matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        zone: [ikeja_alausa, lekki_vi, yaba_surulere, ikorodu_oshodi, alimosho_apapa]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Execute Parallel Matrix Zone Harvester
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        run: |
+          echo "🚀 Executing 10K Lagos B2B Matrix Node: ${{ matrix.zone }}..."
+          MODE="${{ github.event.inputs.mode || 'live' }}"
+          if [ "$MODE" = "dry-run" ]; then
+            node scripts/async_lagos_10k_scraper.js --dry-run --zone ${{ matrix.zone }}
+          else
+            node scripts/async_lagos_10k_scraper.js --zone ${{ matrix.zone }}
+          fi

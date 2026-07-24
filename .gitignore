@@ -61,6 +61,8 @@ next-env.d.ts
 # local runner logs and pids
 local_runner.log
 local_runner_heartbeat.json
+local_runner_heartbeat.json.tmp*
+tools/tor/
 local_runner_parent_pid.json
 services_output.log
 whatsapp_baileys.log

@@ -19,7 +19,9 @@
     "whatsapp-service": "node scripts/whatsapp_baileys.js",
     "setup-tor": "node scripts/setup_tor.js",
     "local-runner": "node scripts/keep_alive_runner.js",
-    "test-queue": "ts-node scripts/test_hybrid_queue.ts"
+    "test-queue": "ts-node scripts/test_hybrid_queue.ts",
+    "solarquotepro-outreach": "node scripts/solarquotepro_multi_channel_outreach.js",
+    "solarquotepro-pipeline": "node scripts/solarquotepro_isolated_runner.js"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",

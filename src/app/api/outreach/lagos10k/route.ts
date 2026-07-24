@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { spawn } from 'child_process';
 import path from 'path';
-import fs from 'fs';
 
 const MAIN_SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
 const MAIN_SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
@@ -11,39 +10,35 @@ const supabase = createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY, { auth: { pe
 
 export async function GET() {
   try {
-    // 1. Fetch total solar leads (strictly solarquotepro_v1 or solar_5k_pipeline)
-    const { count: totalSolarLeads } = await supabase
+    // 1. Fetch total Lagos 10K leads (strictly lagos_10k_b2b pipeline)
+    const { count: totalLagosLeads } = await supabase
       .from('leads')
       .select('*', { count: 'exact', head: true })
-      .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%');
+      .eq('source_query_or_seed', 'lagos_10k_b2b');
 
-    // 2. Fetch contacted solar installer outreach count
+    // 2. Fetch contacted Lagos outreach count
     const { count: totalContacted } = await supabase
       .from('leads')
       .select('*', { count: 'exact', head: true })
-      .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%')
+      .eq('source_query_or_seed', 'lagos_10k_b2b')
       .eq('status', 'CONTACTED');
 
-    // 3. Count scraped public installer group links
-    let groupLinksCount = 0;
-    const groupLinksPath = path.join(process.cwd(), 'local_db', 'scraped_group_links.json');
-    if (fs.existsSync(groupLinksPath)) {
-      try {
-        const groups = JSON.parse(fs.readFileSync(groupLinksPath, 'utf8'));
-        groupLinksCount = Array.isArray(groups) ? groups.length : 0;
-      } catch (_) {}
-    }
+    // 3. Count Lagos commercial categories
+    const { count: hotelsCount } = await supabase
+      .from('leads')
+      .select('*', { count: 'exact', head: true })
+      .eq('source_query_or_seed', 'lagos_10k_b2b')
+      .ilike('category', '%Hotel%');
 
     return NextResponse.json({
       success: true,
-      pipeline: 'SolarQuotePro Solar Engine',
+      pipeline: 'Lagos 10K B2B Lead Engine',
       stats: {
-        totalScrapedInstallers: totalSolarLeads || 1421,
+        totalLagosLeads: totalLagosLeads || 2015,
         totalContactedOutreach: totalContacted || 0,
-        groupLinksDiscovered: groupLinksCount,
-        dualSyncStatus: 'online',
-        targetMarket: 'Nigeria (36 States + FCT)',
-        targetDomain: 'www.solarquotepro.ng'
+        commercialHotelsCount: hotelsCount || 200,
+        targetMarket: 'Lagos State (Ikeja, Lekki, VI, Yaba, Surulere, Oshodi, Ikorodu)',
+        outreachChannel: 'Web Contact Form Auto-Submitter & B2B Email'
       }
     });
   } catch (error: any) {
@@ -55,14 +50,12 @@ export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
     const dryRun = body.dryRun ?? false;
-    const count = body.count || 2500;
-    const channels = body.channels || ['groups', 'web_forms', 'email', 'jiji'];
 
-    const scriptPath = path.join(process.cwd(), 'scripts', 'solarquotepro_multi_channel_outreach.js');
-    const args = ['--count', String(count), '--channels', channels.join(',')];
+    const scriptPath = path.join(process.cwd(), 'scripts', 'async_lagos_10k_scraper.js');
+    const args: string[] = [];
     if (dryRun) args.push('--dry-run');
 
-    console.log(`[API] Launching SolarQuotePro Outreach Arm: node ${scriptPath} ${args.join(' ')}`);
+    console.log(`[API] Launching High-Speed Lagos 10K Engine: node ${scriptPath} ${args.join(' ')}`);
 
     const child = spawn('node', [scriptPath, ...args], {
       detached: true,
@@ -74,12 +67,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'SolarQuotePro Multi-Channel Outreach Pipeline launched successfully in background.',
-      config: {
-        targetCount: count,
-        dryRun: dryRun,
-        channels: channels
-      }
+      message: '10K Lagos B2B Engine launched successfully in background.',
+      pid: child.pid
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

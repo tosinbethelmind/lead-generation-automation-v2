@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   }
 
   const password = process.env.DATABASE_PASSWORD || 'pHqrTQc2gpdSqnAx';
-  const projectRef = 'szyuterncawfxwzhvwcf';
+  const projectRef = 'pnsrjsyiygxdcxkpgbzx';
 
   const { getPgClient } = await import('@/lib/dbConnect');
   console.log("Connecting to Supabase...");
