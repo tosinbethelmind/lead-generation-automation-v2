@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import dns from 'dns';
 import { createClient } from '@supabase/supabase-js';
-import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from '../src/lib/atomicIo';
 import { spawn } from 'child_process';
+import { harvestLiveSolarLeads, harvestLiveLagosLeads } from '../src/lib/liveLeadHarvester';
 
 if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder('ipv4first');
@@ -1043,8 +1043,33 @@ async function checkLagosDailyScraper() {
   setInterval(checkLagosDailyScraper, 5 * 60 * 1000);
   console.log('⏰ Scheduled Lagos daily automated scraper checks every 5 minutes.');
 
+  // Autonomous 30-Second Continuous Multi-Source Lead Harvest Daemon
+  async function runAutonomousLeadHarvest() {
+    try {
+      const isActive = await isActiveRunner();
+      if (!isActive) return;
+      
+      const [solarRes, lagosRes] = await Promise.allSettled([
+        harvestLiveSolarLeads(),
+        harvestLiveLagosLeads()
+      ]);
+
+      if (solarRes.status === 'fulfilled' && solarRes.value.added > 0) {
+        console.log(`⚡ [Autonomous Daemon] Solar Engine harvested +${solarRes.value.added} leads (Total: ${solarRes.value.totalSolar})`);
+      }
+      if (lagosRes.status === 'fulfilled' && lagosRes.value.added > 0) {
+        console.log(`🏢 [Autonomous Daemon] Lagos Engine harvested +${lagosRes.value.added} leads (Total: ${lagosRes.value.totalLagos})`);
+      }
+    } catch (_) {}
+  }
+
   // Initial trigger on startup
+  runAutonomousLeadHarvest();
   await triggerBatchSync();
+
+  // Run Autonomous Harvest Daemon every 30 seconds
+  setInterval(runAutonomousLeadHarvest, 30 * 1000);
+  console.log('⚡ Scheduled autonomous 30-second continuous multi-source lead harvest daemon.');
 
   // Run Batch Sync check every 1 minute
   setInterval(triggerBatchSync, 60 * 1000);

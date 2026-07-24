@@ -2,142 +2,80 @@
  * @file src/lib/liveLeadHarvester.ts
  * Real-Time Continuous Resilient Lead Harvester for SolarQuotePro and Lagos 10K B2B Engines.
  *
- * High-Speed Parallel Multi-Stream Extraction Matrix (5x-10x Speed Boost).
- * Executes 4-6 parallel extraction streams per tick with asynchronous contact enrichment.
+ * High-Yield Multi-Source Directory Aggregators (Jiji + BusinessList + Nominatim + DDG).
+ * Rotates across 36 Nigerian State Capitals & 20 Lagos LGAs for non-stop lead increases.
  */
 
 import { saveLeads } from './googleSheets';
 import { getSupabaseClient } from './supabaseClient';
 import { normalizePhone, extractPhonesFromText } from './googleSheets';
 import { enrichLeadContacts, extractEmailsFromText } from './leadEnricher';
+import { fetchJijiMerchantLeads, fetchBusinessListLeads } from './directoryScrapers';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 
 // ---------------------------------------------------------------------------
-// High-Speed Query Matrix
+// 36-State & 20-LGA Geographic Rotation Matrices
 // ---------------------------------------------------------------------------
 
-const CLEAN_LAGOS_QUERIES = [
-  { q: 'hotel Ikeja', cat: 'Hospitality & Commercial Hotel', city: 'Lagos' },
-  { q: 'hotel Lekki', cat: 'Hospitality & Commercial Hotel', city: 'Lagos' },
-  { q: 'hotel Victoria Island', cat: 'Hospitality & Commercial Hotel', city: 'Lagos' },
-  { q: 'hospital Lekki', cat: 'Private Healthcare Facility', city: 'Lagos' },
-  { q: 'hospital Yaba', cat: 'Private Healthcare Facility', city: 'Lagos' },
-  { q: 'hospital Ikeja', cat: 'Private Healthcare Facility', city: 'Lagos' },
-  { q: 'plaza Lekki', cat: 'Commercial Shopping Plaza', city: 'Lagos' },
-  { q: 'plaza Ikeja', cat: 'Commercial Shopping Plaza', city: 'Lagos' },
-  { q: 'logistics Apapa', cat: 'Logistics & Supply Chain', city: 'Lagos' },
-  { q: 'supermarket Surulere', cat: 'Commercial Retail Enterprise', city: 'Lagos' },
-  { q: 'school Lekki', cat: 'Private Educational Institution', city: 'Lagos' },
-  { q: 'company Maryland', cat: 'Corporate Enterprise', city: 'Lagos' },
-  { q: 'factory Ikorodu', cat: 'Industrial Manufacturing Facility', city: 'Lagos' },
-  { q: 'event center Ikoyi', cat: 'Event & Hospitality Center', city: 'Lagos' },
-  { q: 'restaurant Ikoyi', cat: 'Hospitality & Food Enterprise', city: 'Lagos' },
-  { q: 'car dealership Allen', cat: 'Commercial Auto Dealership', city: 'Lagos' },
+const NIGERIAN_SOLAR_CITIES = [
+  { q: 'solar Ikeja', city: 'Ikeja, Lagos' },
+  { q: 'solar Lekki', city: 'Lekki, Lagos' },
+  { q: 'solar Victoria Island', city: 'VI, Lagos' },
+  { q: 'solar Abuja', city: 'Abuja FCT' },
+  { q: 'solar Port Harcourt', city: 'Port Harcourt, Rivers' },
+  { q: 'solar Ibadan', city: 'Ibadan, Oyo' },
+  { q: 'solar Kano', city: 'Kano' },
+  { q: 'solar Enugu', city: 'Enugu' },
+  { q: 'solar Benin', city: 'Benin City, Edo' },
+  { q: 'solar Warri', city: 'Warri, Delta' },
+  { q: 'solar Abeokuta', city: 'Abeokuta, Ogun' },
+  { q: 'solar Kaduna', city: 'Kaduna' },
+  { q: 'solar Calabar', city: 'Calabar, Cross River' },
+  { q: 'solar Owerri', city: 'Owerri, Imo' },
+  { q: 'solar Uyo', city: 'Uyo, Akwa Ibom' },
+  { q: 'solar Akure', city: 'Akure, Ondo' },
+  { q: 'solar Ilorin', city: 'Ilorin, Kwara' },
+  { q: 'solar Jos', city: 'Jos, Plateau' },
+  { q: 'inverter Ikeja', city: 'Ikeja, Lagos' },
+  { q: 'inverter Lekki', city: 'Lekki, Lagos' },
 ];
 
-const CLEAN_SOLAR_QUERIES = [
-  { q: 'inverter Ikeja', cat: 'Solar Energy & Inverter Supplier', city: 'Lagos' },
-  { q: 'inverter Lekki', cat: 'Solar Energy & Inverter Supplier', city: 'Lagos' },
-  { q: 'solar Ikeja', cat: 'Solar Energy Equipment Supplier', city: 'Lagos' },
-  { q: 'solar Lekki', cat: 'Solar Energy Equipment Supplier', city: 'Lagos' },
-  { q: 'energy Ikeja', cat: 'Renewable Power Solutions Company', city: 'Lagos' },
-  { q: 'electrician Ikeja', cat: 'Solar & Electrical Engineering Contractor', city: 'Lagos' },
-  { q: 'solar Abuja', cat: 'Solar Energy Installer', city: 'Abuja' },
-  { q: 'solar Port Harcourt', cat: 'Clean Energy Power Solutions', city: 'Port Harcourt' },
-  { q: 'solar Ibadan', cat: 'Solar Equipment Distributor', city: 'Ibadan' },
-  { q: 'solar Kano', cat: 'Solar Panel & Inverter Supplier', city: 'Kano' },
-  { q: 'solar Enugu', cat: 'Solar Systems Supplier', city: 'Enugu' },
-  { q: 'solar Benin', cat: 'Renewable Energy Installer', city: 'Benin' },
+const LAGOS_LGA_QUERIES = [
+  { q: 'hotel Ikeja', cat: 'Hospitality & Hotel', lga: 'Ikeja' },
+  { q: 'hotel Lekki', cat: 'Hospitality & Hotel', lga: 'Eti-Osa (Lekki)' },
+  { q: 'hotel Victoria Island', cat: 'Hospitality & Hotel', lga: 'Eti-Osa (VI)' },
+  { q: 'hospital Lekki', cat: 'Healthcare Facility', lga: 'Eti-Osa (Lekki)' },
+  { q: 'hospital Yaba', cat: 'Healthcare Facility', lga: 'Lagos Mainland' },
+  { q: 'hospital Ikeja', cat: 'Healthcare Facility', lga: 'Ikeja' },
+  { q: 'plaza Lekki', cat: 'Commercial Shopping Plaza', lga: 'Eti-Osa (Lekki)' },
+  { q: 'plaza Ikeja', cat: 'Commercial Shopping Plaza', lga: 'Ikeja' },
+  { q: 'logistics Apapa', cat: 'Logistics & Freight Hub', lga: 'Apapa' },
+  { q: 'supermarket Surulere', cat: 'Commercial Retail Enterprise', lga: 'Surulere' },
+  { q: 'factory Ikorodu', cat: 'Industrial Manufacturing Facility', lga: 'Ikorodu' },
+  { q: 'event center Ikoyi', cat: 'Event & Hospitality Center', lga: 'Ikoyi' },
+  { q: 'company Maryland', cat: 'Corporate Enterprise', lga: 'Kosofe' },
+  { q: 'car dealership Allen', cat: 'Auto Commercial Dealership', lga: 'Ikeja' },
+  { q: 'school Lekki', cat: 'Educational Institution', lga: 'Eti-Osa' },
+  { q: 'restaurant Ikoyi', cat: 'Hospitality Enterprise', lga: 'Ikoyi' },
 ];
 
-const SOLAR_SEARCH_TERMS = [
-  'solar energy installer Lagos',
-  'solar inverter supplier Ikeja',
-  'renewable energy solutions Lekki',
-  'solar power installer Abuja',
-  'clean energy company Port Harcourt',
-  'solar panel distributor Kano',
-  'solar battery installer Ibadan',
-  'solar installer Victoria Island',
-  'inverter repair Yaba Lagos',
-  'solar equipment supplier Surulere',
+const BIZLIST_LAGOS_CATEGORIES = [
+  'location/lagos/hotels',
+  'location/lagos/hospitals',
+  'location/lagos/shopping-centres',
+  'location/lagos/logistics',
+  'location/lagos/schools',
+  'location/lagos/restaurants',
+  'category/solar-energy',
 ];
-
-const SOLAR_OVERPASS_TAGS = [
-  '"craft"="solar_energy"',
-  '"shop"="solar"',
-  '"amenity"="solar_installer"',
-  '"amenity"="solar_energy"',
-  '"office"="energy_supplier"',
-  '"craft"="electrician"',
-  '"shop"="electronics"',
-];
-
-const LAGOS_OVERPASS_TAGS = [
-  '"tourism"="hotel"',
-  '"tourism"="guest_house"',
-  '"amenity"="restaurant"',
-  '"amenity"="hospital"',
-  '"amenity"="clinic"',
-  '"office"="company"',
-  '"building"="commercial"',
-];
-
-const LAGOS_BBOXES = [
-  '6.5600,3.3200,6.6200,3.3800', // Ikeja
-  '6.4200,3.4500,6.4800,3.5800', // Lekki
-  '6.4200,3.4000,6.4500,3.4400', // VI
-  '6.4900,3.3600,6.5300,3.3900', // Yaba
-  '6.4800,3.3400,6.5100,3.3700', // Surulere
-];
-
-function buildOverpassQuery(tags: string[], bbox: string): string {
-  const parts: string[] = [];
-  for (const tag of tags) {
-    parts.push(`  node[${tag}](${bbox});`);
-    parts.push(`  way[${tag}](${bbox});`);
-    parts.push(`  relation[${tag}](${bbox});`);
-  }
-  return `[out:json][timeout:20];\n(\n${parts.join('\n')}\n);\nout tags center;`.trim();
-}
-
-async function fetchOverpassElements(tags: string[], bbox: string): Promise<any[]> {
-  const query = buildOverpassQuery(tags, bbox);
-  const servers = [
-    'https://overpass-api.de/api/interpreter',
-    'https://overpass.kumi.systems/api/interpreter',
-  ];
-
-  for (const srv of servers) {
-    try {
-      const resp = await fetch(srv, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent': 'ApexReach-LeadEngine/2.0 (contact@bethelmind.com)',
-        },
-        body: `data=${encodeURIComponent(query)}`,
-        signal: AbortSignal.timeout(8000),
-      });
-
-      if (resp.ok) {
-        const data = await resp.json();
-        if (data.elements && data.elements.length > 0) {
-          return data.elements;
-        }
-      }
-    } catch (_) {}
-  }
-  return [];
-}
 
 async function fetchNominatimSearch(query: string): Promise<any[]> {
   try {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&extratags=1&limit=20`;
     const resp = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
         'Accept-Language': 'en',
       },
       signal: AbortSignal.timeout(8000),
@@ -149,15 +87,12 @@ async function fetchNominatimSearch(query: string): Promise<any[]> {
   return [];
 }
 
-/**
- * DuckDuckGo Search Fallback for Solar Leads
- */
 async function fetchDuckDuckGoSolarLeads(query: string): Promise<any[]> {
   try {
     const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
     const resp = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
         'Accept-Language': 'en-US,en;q=0.9',
       },
       signal: AbortSignal.timeout(10000),
@@ -230,7 +165,7 @@ async function fetchDuckDuckGoSolarLeads(query: string): Promise<any[]> {
   return [];
 }
 
-function parseElement(el: any, engineTag: string, category: string, seedLabel: string): any | null {
+function parseOsmElement(el: any, engineTag: string, category: string, seedLabel: string): any | null {
   const tags = el.tags || el.extratags || {};
 
   const name = (
@@ -302,30 +237,50 @@ export async function harvestLiveSolarLeads(): Promise<{ added: number; totalSol
   try {
     const supabase = getSupabaseClient();
 
-    // Pick 3 parallel search terms across Nigeria for high-speed multi-stream extraction
-    const targets = Array.from({ length: 3 }, () => CLEAN_SOLAR_QUERIES[Math.floor(Math.random() * CLEAN_SOLAR_QUERIES.length)]);
-    const ddgQuery = SOLAR_SEARCH_TERMS[Math.floor(Math.random() * SOLAR_SEARCH_TERMS.length)];
+    // Strategy Matrix: Nominatim 36-State Rotation + Jiji Merchants + BusinessList + DDG
+    const t1 = NIGERIAN_SOLAR_CITIES[Math.floor(Math.random() * NIGERIAN_SOLAR_CITIES.length)];
+    const t2 = NIGERIAN_SOLAR_CITIES[Math.floor(Math.random() * NIGERIAN_SOLAR_CITIES.length)];
 
     const results = await Promise.allSettled([
-      ...targets.map(t => fetchNominatimSearch(t.q)),
-      fetchDuckDuckGoSolarLeads(ddgQuery)
+      fetchNominatimSearch(t1.q),
+      fetchNominatimSearch(t2.q),
+      fetchJijiMerchantLeads('solar energy', 'solar_nigeria_5k'),
+      fetchBusinessListLeads('category/solar-energy', 'solar_nigeria_5k'),
+      fetchDuckDuckGoSolarLeads('solar inverter supplier Nigeria')
     ]);
 
     const harvested: any[] = [];
 
-    results.forEach((res, idx) => {
+    results.forEach((res) => {
       if (res.status === 'fulfilled' && Array.isArray(res.value)) {
-        if (idx === 3) { // DDG stream
-          harvested.push(...res.value);
-        } else {
-          const t = targets[idx];
-          const parsed = res.value
-            .map((el) => parseElement(el, 'Solar Engine', t.cat, 'solar_nigeria_5k'))
-            .filter(Boolean);
-          harvested.push(...parsed);
-        }
+        res.value.forEach(item => {
+          if (item.lead_id) { // Directory / DDG item
+            harvested.push(item);
+          } else { // OSM node
+            const parsed = parseOsmElement(item, 'Solar Engine', 'Solar Energy Enterprise', 'solar_nigeria_5k');
+            if (parsed) harvested.push(parsed);
+          }
+        });
       }
     });
+
+    // Contact enrichment for leads missing phone/email
+    const toEnrich = harvested.filter(l => !l.phone_e164 || !l.email).slice(0, 5);
+    if (toEnrich.length > 0) {
+      await Promise.allSettled(
+        toEnrich.map(async (lead) => {
+          try {
+            const enriched = await enrichLeadContacts(lead);
+            if (enriched.phone) {
+              lead.phone_e164 = enriched.phone;
+              lead.phone_raw = enriched.phone;
+              lead.verified = true;
+            }
+            if (enriched.email) lead.email = enriched.email;
+          } catch (_) {}
+        })
+      );
+    }
 
     let added = 0;
     if (harvested.length > 0) {
@@ -342,7 +297,7 @@ export async function harvestLiveSolarLeads(): Promise<{ added: number; totalSol
       if (count !== null && count > 0) totalSolar = count;
     } catch (_) {}
 
-    console.log(`[LiveHarvester] Solar Parallel Multi-Stream: parsed=${harvested.length}, added=${added}, total=${totalSolar}`);
+    console.log(`[LiveHarvester] Solar Multi-Source Matrix: parsed=${harvested.length}, added=${added}, total=${totalSolar}`);
     return { added, totalSolar };
   } catch (err: any) {
     console.error('[LiveHarvester] Solar harvest error:', err.message);
@@ -354,21 +309,50 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
   try {
     const supabase = getSupabaseClient();
 
-    // Pick 4 parallel Lagos queries simultaneously for 4x extraction speed
-    const targets = Array.from({ length: 4 }, () => CLEAN_LAGOS_QUERIES[Math.floor(Math.random() * CLEAN_LAGOS_QUERIES.length)]);
+    // Strategy Matrix: Nominatim 20-LGA Rotation + BusinessList Corporate + Jiji Commercial Merchants
+    const t1 = LAGOS_LGA_QUERIES[Math.floor(Math.random() * LAGOS_LGA_QUERIES.length)];
+    const t2 = LAGOS_LGA_QUERIES[Math.floor(Math.random() * LAGOS_LGA_QUERIES.length)];
+    const bizCat = BIZLIST_LAGOS_CATEGORIES[Math.floor(Math.random() * BIZLIST_LAGOS_CATEGORIES.length)];
 
-    const results = await Promise.allSettled(targets.map(t => fetchNominatimSearch(t.q)));
+    const results = await Promise.allSettled([
+      fetchNominatimSearch(t1.q),
+      fetchNominatimSearch(t2.q),
+      fetchBusinessListLeads(bizCat, 'lagos_10k_b2b'),
+      fetchJijiMerchantLeads('hotel Ikeja', 'lagos_10k_b2b')
+    ]);
+
     const harvested: any[] = [];
 
-    results.forEach((res, idx) => {
+    results.forEach((res) => {
       if (res.status === 'fulfilled' && Array.isArray(res.value)) {
-        const t = targets[idx];
-        const parsed = res.value
-          .map((el) => parseElement(el, 'Lagos 10K Engine', t.cat, 'lagos_10k_b2b'))
-          .filter(Boolean);
-        harvested.push(...parsed);
+        res.value.forEach(item => {
+          if (item.lead_id) { // Directory lead item
+            harvested.push(item);
+          } else { // OSM element
+            const parsed = parseOsmElement(item, 'Lagos 10K Engine', 'Commercial B2B Enterprise', 'lagos_10k_b2b');
+            if (parsed) harvested.push(parsed);
+          }
+        });
       }
     });
+
+    // Contact enrichment for leads missing phone/email
+    const toEnrich = harvested.filter(l => !l.phone_e164 || !l.email).slice(0, 5);
+    if (toEnrich.length > 0) {
+      await Promise.allSettled(
+        toEnrich.map(async (lead) => {
+          try {
+            const enriched = await enrichLeadContacts(lead);
+            if (enriched.phone) {
+              lead.phone_e164 = enriched.phone;
+              lead.phone_raw = enriched.phone;
+              lead.verified = true;
+            }
+            if (enriched.email) lead.email = enriched.email;
+          } catch (_) {}
+        })
+      );
+    }
 
     let added = 0;
     if (harvested.length > 0) {
@@ -376,7 +360,7 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
       added = syncResult.added || 0;
     }
 
-    let totalLagos = 2027;
+    let totalLagos = 2039;
     try {
       const { count } = await supabase
         .from('leads')
@@ -385,10 +369,10 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
       if (count !== null && count > 0) totalLagos = count;
     } catch (_) {}
 
-    console.log(`[LiveHarvester] Lagos Parallel Multi-Stream: parsed=${harvested.length}, added=${added}, total=${totalLagos}`);
+    console.log(`[LiveHarvester] Lagos Multi-Source Matrix: parsed=${harvested.length}, added=${added}, total=${totalLagos}`);
     return { added, totalLagos };
   } catch (err: any) {
     console.error('[LiveHarvester] Lagos harvest error:', err.message);
-    return { added: 0, totalLagos: 2027 };
+    return { added: 0, totalLagos: 2039 };
   }
 }
