@@ -92,7 +92,7 @@ export async function GET(req?: Request) {
               timestamp: new Date().toISOString(),
               step: 'SOLAR_NONSTOP_ACTIVE',
               status: 'SUCCESS',
-              message: `⚡ [SOLAR-ENGINE] 24/7 Cloud Harvester extracted +${harvestRes.added} verified leads at ${getLagosTimeString()} WAT (Total: ${harvestRes.totalSolar})`
+              message: `⚡ [SOLAR-ENGINE] 24/7 Cloud Harvester extracted +${harvestRes.added} verified leads (Total: ${harvestRes.totalSolar})`
             }]);
           }
         }
@@ -113,13 +113,20 @@ export async function GET(req?: Request) {
       // Fetch recent logs with Lagos WAT timestamp formatting
       const { data: dbLogs } = await (supabase as any)
         .from('logs')
-        .select('created_at, step, message')
+        .select('created_at, timestamp, step, message')
         .or('step.ilike.%SOLAR%,message.ilike.%Solar%')
         .order('created_at', { ascending: false })
         .limit(8);
 
       if (dbLogs && dbLogs.length > 0) {
-        const cloudLogLines = dbLogs.map((l: any) => `[${getLagosTimeString(new Date(l.created_at))} WAT] ${l.message}`);
+        const cloudLogLines = dbLogs.map((l: any) => {
+          const logDate = l.created_at || l.timestamp ? new Date(l.created_at || l.timestamp) : new Date();
+          const cleanMsg = (l.message || '')
+            .replace(/^\[.*?WAT\]\s*/i, '')
+            .replace(/at \d+:\d+:\d+\s*(?:am|pm)\s*WAT/i, '')
+            .trim();
+          return `[${getLagosTimeString(logDate)} WAT] ${cleanMsg}`;
+        });
         latestLogs = Array.from(new Set([...latestLogs, ...cloudLogLines]));
       }
     } catch (err: any) {
