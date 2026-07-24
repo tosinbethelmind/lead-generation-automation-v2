@@ -74,7 +74,7 @@ export async function GET(req?: Request) {
           const lastLogTime = cfg.lagos_last_log_time || 0;
           if (isCron || (Date.now() - lastLogTime > 60000)) { // 1-minute cloud harvest loop
             cfg.lagos_last_log_time = Date.now();
-            await supabase.from('app_settings').upsert({ key: 'apexreach_runtime_config', value: JSON.stringify(cfg), updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            await (supabase as any).from('app_settings').upsert({ key: 'apexreach_runtime_config', value: JSON.stringify(cfg), updated_at: new Date().toISOString() }, { onConflict: 'key' });
             
             const harvestRes = await harvestLiveLagosLeads();
             liveLagosLeadsCount = harvestRes.totalLagos;
