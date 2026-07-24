@@ -18,50 +18,43 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('🔥 [Runner UnhandledRejection] Unhandled Promise rejection at:', promise, 'reason:', reason);
 });
 
-// Resolve environment configuration (from .env.local or config.json)
-function loadConfig() {
-  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  let supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-  let storageMode = process.env.STORAGE_MODE || '';
+const HARDCODED_URL = 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
+const HARDCODED_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
 
-  // Attempt to parse .env.local
-  const envPath = path.resolve(process.cwd(), '.env.local');
-  if (fs.existsSync(envPath)) {
-    const content = fs.readFileSync(envPath, 'utf8');
-    const urlMatch = content.match(/NEXT_PUBLIC_SUPABASE_URL\s*=\s*["']?([^"'\r\n]+)/);
-    const keyMatch = content.match(/SUPABASE_SERVICE_ROLE_KEY\s*=\s*["']?([^"'\r\n]+)/);
-    const modeMatch = content.match(/STORAGE_MODE\s*=\s*["']?([^"'\r\n]+)/);
-    if (urlMatch && !supabaseUrl) supabaseUrl = urlMatch[1];
-    if (keyMatch && !supabaseKey) supabaseKey = keyMatch[1];
-    if (modeMatch && !storageMode) storageMode = modeMatch[1];
+function cleanEnvVal(val: string | undefined): string {
+  if (!val) return '';
+  let clean = val.trim();
+  if ((clean.startsWith('"') && clean.endsWith('"')) || (clean.startsWith("'") && clean.endsWith("'"))) {
+    clean = clean.substring(1, clean.length - 1).trim();
   }
+  return clean;
+}
 
-  // Attempt to fallback to config.json
-  const configPath = path.resolve(process.cwd(), 'config.json');
-  if (fs.existsSync(configPath)) {
-    try {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (!supabaseUrl) supabaseUrl = config.supabaseUrl || '';
-      if (!supabaseKey) supabaseKey = config.supabaseKey || '';
-      if (!storageMode) storageMode = config.storageMode || '';
-    } catch (e) {
-      console.warn('Error reading config.json:', e);
+function isValidKey(key: string): boolean {
+  if (!key || key.length < 50) return false;
+  try {
+    const parts = key.split('.');
+    if (parts.length === 3) {
+      const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+      return payload.ref === 'pnsrjsyiygxdcxkpgbzx';
     }
-  }
+  } catch (_) {}
+  return false;
+}
+
+// Resolve environment configuration
+function loadConfig() {
+  let supabaseUrl = HARDCODED_URL;
+  let supabaseKey = HARDCODED_KEY;
+  let storageMode = cleanEnvVal(process.env.STORAGE_MODE) || 'supabase';
 
   return { supabaseUrl, supabaseKey, storageMode };
 }
 
 const { supabaseUrl, supabaseKey, storageMode } = loadConfig();
-const isLocalMode = storageMode === 'local';
+const isLocalMode = false; // Always connect to active Supabase database
 
-if (!isLocalMode && (!supabaseUrl || !supabaseKey)) {
-  console.error('❌ Error: Supabase credentials missing.');
-  console.error('Please configure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local or config.json.');
-  process.exit(1);
-}
-
-const supabase = (!isLocalMode && supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
+const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
 const isHuggingFaceEnv = process.env.RUNNER_ENVIRONMENT === 'huggingface' || !!process.env.SPACE_ID;
 
