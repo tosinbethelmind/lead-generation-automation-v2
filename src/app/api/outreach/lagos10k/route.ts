@@ -121,12 +121,14 @@ export async function GET(req: Request) {
       isRunning,
       pid: isRunning ? (pid || 8810) : null,
       latestLogs,
+      lastUpdatedTime: getLagosTimeString() + ' WAT',
       stats: {
         totalLagosLeads: totalLagosLeads || liveLagosLeadsCount || 2027,
         totalContactedOutreach: totalContacted || 0,
         commercialHotelsCount: hotelsCount || 0,
         targetMarket: 'Lagos State (Ikeja, Lekki, VI, Yaba, Surulere, Oshodi, Ikorodu)',
-        outreachChannel: 'Web Contact Form Auto-Submitter & B2B Email'
+        outreachChannel: 'Web Contact Form Auto-Submitter & B2B Email',
+        lastUpdatedTime: getLagosTimeString() + ' WAT'
       },
       mode: '24/7 Non-Stop Cloud Engine + Local Hybrid Runner'
     });

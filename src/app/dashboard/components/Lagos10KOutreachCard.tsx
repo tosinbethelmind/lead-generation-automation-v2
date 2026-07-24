@@ -120,7 +120,7 @@ export default function Lagos10KOutreachCard() {
             <Building2 size={24} color="#ffffff" />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#f8fafc', letterSpacing: '-0.02em' }}>
                 10K Lagos B2B Engine
               </h2>
@@ -134,6 +134,17 @@ export default function Lagos10KOutreachCard() {
                 border: `1px solid ${pipelineStatus.isRunning ? 'rgba(59, 130, 246, 0.4)' : 'rgba(239, 68, 68, 0.3)'}`
               }}>
                 {pipelineStatus.isRunning ? `● RUNNING (PID ${pipelineStatus.pid})` : '○ STOPPED (ISOLATED)'}
+              </span>
+              <span style={{
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                padding: '2px 8px',
+                borderRadius: '12px',
+                background: 'rgba(59, 130, 246, 0.2)',
+                color: '#60a5fa',
+                border: '1px solid rgba(59, 130, 246, 0.4)'
+              }}>
+                🕒 Live WAT: {(stats as any).lastUpdatedTime || new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos', hour12: true }) + ' WAT'}
               </span>
             </div>
             <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: '2px 0 0 0' }}>

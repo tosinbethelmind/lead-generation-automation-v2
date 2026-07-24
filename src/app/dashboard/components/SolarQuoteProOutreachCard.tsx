@@ -142,7 +142,7 @@ export default function SolarQuoteProOutreachCard() {
             <Sparkles size={22} color="#fff" />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc' }}>
                 SolarQuotePro.ng Dedicated Isolated Pipeline
               </h3>
@@ -156,6 +156,17 @@ export default function SolarQuoteProOutreachCard() {
                 border: `1px solid ${pipelineStatus.isRunning ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
               }}>
                 {pipelineStatus.isRunning ? `● RUNNING (PID ${pipelineStatus.pid})` : '○ STOPPED (ISOLATED)'}
+              </span>
+              <span style={{
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                padding: '2px 8px',
+                borderRadius: '12px',
+                background: 'rgba(13, 148, 136, 0.2)',
+                color: '#2dd4bf',
+                border: '1px solid rgba(13, 148, 136, 0.4)'
+              }}>
+                🕒 Live WAT: {(stats as any).lastUpdatedTime || new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos', hour12: true }) + ' WAT'}
               </span>
             </div>
             <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: '#94a3b8' }}>
