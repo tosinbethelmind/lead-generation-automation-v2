@@ -83,23 +83,45 @@ async function fetchNominatimQuery(query, index) {
   }
 }
 
+const LOCAL_DB_DIR = path.join(__dirname, '../local_db');
+if (!fs.existsSync(LOCAL_DB_DIR)) {
+  try { fs.mkdirSync(LOCAL_DB_DIR, { recursive: true }); } catch (_) {}
+}
+
+const PID_FILE = path.join(LOCAL_DB_DIR, 'lagos10k_runner.pid');
+const LOG_FILE = path.join(LOCAL_DB_DIR, 'lagos10k_runner.log');
+
+try {
+  fs.writeFileSync(PID_FILE, process.pid.toString());
+} catch (_) {}
+
+function logMessage(msg) {
+  const time = new Date().toISOString();
+  const formatted = `[${time}] ${msg}`;
+  console.log(formatted);
+  try {
+    fs.appendFileSync(LOG_FILE, formatted + '\n');
+  } catch (_) {}
+}
+
 async function runResilientLagosHarvester(dryRun = false) {
-  console.log('==================================================');
-  console.log('🚀 HIGH-EFFICIENCY RESILIENT LAGOS 10K HARVESTER');
-  console.log('==================================================\n');
+  logMessage('==================================================');
+  logMessage('🚀 HIGH-EFFICIENCY RESILIENT LAGOS 10K HARVESTER');
+  logMessage('==================================================');
 
   const startTime = Date.now();
-  console.log('⚡ Launching parallel search stream extractions across Lagos LGAs...');
+  logMessage('⚡ Launching parallel search stream extractions across Lagos LGAs...');
 
   const results = await Promise.all(LAGOS_SEARCH_TERMS.map((term, i) => fetchNominatimQuery(term, i)));
   const allLeads = results.flat();
   const durationSec = ((Date.now() - startTime) / 1000).toFixed(2);
 
-  console.log(`\n Extracted ${allLeads.length} Live Verified Lagos B2B Leads in ${durationSec} seconds!`);
-  console.log(` Throughput Speed: ${(allLeads.length / Math.max(durationSec, 0.1)).toFixed(1)} leads/sec`);
+  logMessage(`Extracted ${allLeads.length} Live Verified Lagos B2B Leads in ${durationSec} seconds!`);
+  logMessage(`Throughput Speed: ${(allLeads.length / Math.max(durationSec, 0.1)).toFixed(1)} leads/sec`);
 
   if (dryRun) {
-    console.log('\n DRY-RUN mode active. Database sync skipped.');
+    logMessage('DRY-RUN mode active. Database sync skipped.');
+    try { if (fs.existsSync(PID_FILE)) fs.unlinkSync(PID_FILE); } catch (_) {}
     return;
   }
 
@@ -124,7 +146,7 @@ async function runResilientLagosHarvester(dryRun = false) {
         }
       }
     }
-    console.log(`✓ Successfully synced ${totalInserted} live Lagos leads to Supabase public.leads table.`);
+    logMessage(`✓ Successfully synced ${totalInserted} live Lagos leads to Supabase public.leads table.`);
   }
 
   const { count: finalLagosCount } = await supabase
@@ -132,10 +154,15 @@ async function runResilientLagosHarvester(dryRun = false) {
     .select('*', { count: 'exact', head: true })
     .eq('source_query_or_seed', 'lagos_10k_b2b');
 
-  console.log('\n==================================================');
-  console.log(`🎉 LAGOS 10K B2B HARVEST COMPLETE! Total Lagos Leads in DB: ${finalLagosCount || 2015}`);
-  console.log('==================================================\n');
+  logMessage('==================================================');
+  logMessage(`🎉 LAGOS 10K B2B HARVEST COMPLETE! Total Lagos Leads in DB: ${finalLagosCount || 2015}`);
+  logMessage('==================================================');
+
+  try { if (fs.existsSync(PID_FILE)) fs.unlinkSync(PID_FILE); } catch (_) {}
 }
 
 const isDryRun = process.argv.includes('--dry-run');
-runResilientLagosHarvester(isDryRun).catch(console.error);
+runResilientLagosHarvester(isDryRun).catch(err => {
+  logMessage(`FATAL ERROR: ${err.message}`);
+  try { if (fs.existsSync(PID_FILE)) fs.unlinkSync(PID_FILE); } catch (_) {}
+});

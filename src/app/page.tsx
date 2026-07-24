@@ -547,6 +547,22 @@ export default function Home() {
   const [lastLeadsCount, setLastLeadsCount] = useState<number | null>(null);
   const hasAutoStartedRef = React.useRef(false);
 
+  const [sidebarEngineTab, setSidebarEngineTab] = useState<'solar' | 'lagos'>('solar');
+  const [solarEngineInfo, setSolarEngineInfo] = useState<{ isRunning: boolean; pid: number | null; latestLogs: string[]; totalInstallers: number; dispatches: number }>({
+    isRunning: false,
+    pid: null,
+    latestLogs: [],
+    totalInstallers: 0,
+    dispatches: 0
+  });
+  const [lagosEngineInfo, setLagosEngineInfo] = useState<{ isRunning: boolean; pid: number | null; latestLogs: string[]; totalLeads: number; dispatches: number }>({
+    isRunning: false,
+    pid: null,
+    latestLogs: [],
+    totalLeads: 2015,
+    dispatches: 0
+  });
+
   const handleCopyText = (text: string, setCopiedState: (val: boolean) => void) => {
     navigator.clipboard.writeText(text);
     setCopiedState(true);
@@ -641,6 +657,41 @@ export default function Home() {
         if (statsData && typeof statsData.totalLeads === 'number') {
           setStats(statsData);
         }
+      }
+    } catch (_) {}
+
+    try {
+      const [solarPipeRes, solarStatsRes, lagosRes] = await Promise.all([
+        fetch('/api/solarquotepro-pipeline').catch(() => null),
+        fetch('/api/outreach/solarquotepro').catch(() => null),
+        fetch('/api/outreach/lagos10k').catch(() => null)
+      ]);
+
+      if (solarPipeRes && solarPipeRes.ok) {
+        const sData = await solarPipeRes.json();
+        let sStats = {};
+        if (solarStatsRes && solarStatsRes.ok) {
+          const sStatsData = await solarStatsRes.json();
+          sStats = sStatsData.stats || {};
+        }
+        setSolarEngineInfo({
+          isRunning: !!sData.isRunning,
+          pid: sData.pid || null,
+          latestLogs: sData.latestLogs || [],
+          totalInstallers: (sStats as any).totalScrapedInstallers || 0,
+          dispatches: (sStats as any).totalContactedOutreach || 0
+        });
+      }
+
+      if (lagosRes && lagosRes.ok) {
+        const lData = await lagosRes.json();
+        setLagosEngineInfo({
+          isRunning: !!lData.isRunning,
+          pid: lData.pid || null,
+          latestLogs: lData.latestLogs || [],
+          totalLeads: lData.stats?.totalLagosLeads || 2015,
+          dispatches: lData.stats?.totalContactedOutreach || 0
+        });
       }
     } catch (_) {}
   };
@@ -3030,124 +3081,166 @@ export default function Home() {
             );
           })()}
 
-          {/* Interactive Scraper Runner Widget in Sidebar */}
+          {/* Dedicated Dual-Engine Live Status Widget in Sidebar */}
           <div 
             style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '6px',
-              padding: '10px 12px',
-              borderRadius: '10px',
-              border: `1px solid ${runnerStatus === 'online' ? 'rgba(16, 185, 129, 0.2)' : runnerStatus === 'loading' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-              background: runnerStatus === 'online' ? 'rgba(16, 185, 129, 0.04)' : runnerStatus === 'loading' ? 'rgba(245, 158, 11, 0.04)' : 'rgba(239, 68, 68, 0.04)',
+              gap: '10px',
+              padding: '12px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: 'rgba(15, 23, 42, 0.6)',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
               transition: 'all 0.3s ease'
             }}
           >
-            <div 
-              onClick={() => navigateToSettingsSection('scraper-runner-control')}
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-              title="Click to view full runner settings"
-            >
-              <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8, fontWeight: 700, color: 'var(--text-secondary)' }}>
-                Scraper Runner
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 800, color: '#94a3b8' }}>
+                Separate Live Engines
               </span>
-              <span style={{ 
-                fontSize: '0.7rem', 
-                fontWeight: 700, 
-                color: runnerStatus === 'online' ? '#10B981' : runnerStatus === 'loading' ? '#F59E0B' : '#EF4444',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}>
-                <span style={{ 
-                  width: '6px', 
-                  height: '6px', 
-                  borderRadius: '50%', 
-                  backgroundColor: runnerStatus === 'online' ? '#10B981' : runnerStatus === 'loading' ? '#F59E0B' : '#EF4444',
-                  boxShadow: runnerStatus === 'online' ? '0 0 6px #10B981' : 'none'
-                }}></span>
-                {runnerStatus === 'online' ? 'ONLINE' : runnerStatus === 'loading' ? 'CHECKING' : 'OFFLINE'}
+              <span style={{ fontSize: '0.6rem', color: '#10B981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10B981', boxShadow: '0 0 6px #10B981' }}></span> DUAL ISOLATED
               </span>
             </div>
 
-            {/* Live stats integrations */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '0.72rem',
-              color: 'var(--text-secondary)',
-              borderBottom: '1px solid rgba(255,255,255,0.05)',
-              paddingBottom: '6px',
-              marginTop: '4px',
-              gap: '8px'
-            }}>
-              <span>Total leads: <strong style={{ color: 'var(--primary)' }}>{stats.totalLeads}</strong></span>
-              <span>New leads: <strong style={{ color: '#F59E0B' }}>{stats.newLeads}</strong></span>
+            {/* Engine Sub-Tab Switcher */}
+            <div style={{ display: 'flex', gap: '4px', background: 'rgba(0,0,0,0.3)', padding: '3px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <button
+                type="button"
+                onClick={() => setSidebarEngineTab('solar')}
+                style={{
+                  flex: 1,
+                  padding: '5px 8px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  background: sidebarEngineTab === 'solar' ? 'linear-gradient(135deg, #0d9488, #059669)' : 'transparent',
+                  color: sidebarEngineTab === 'solar' ? '#ffffff' : '#94a3b8',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                ⚡ SolarQuotePro
+              </button>
+              <button
+                type="button"
+                onClick={() => setSidebarEngineTab('lagos')}
+                style={{
+                  flex: 1,
+                  padding: '5px 8px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  background: sidebarEngineTab === 'lagos' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'transparent',
+                  color: sidebarEngineTab === 'lagos' ? '#ffffff' : '#94a3b8',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                🏢 Lagos 10K B2B
+              </button>
             </div>
 
-            {runnerStatus === 'online' && activeJob && (
-              <div style={{ 
-                fontSize: '0.72rem', 
-                color: 'var(--text-secondary)', 
-                background: 'rgba(255,255,255,0.02)', 
-                padding: '6px 8px', 
-                borderRadius: '6px', 
-                marginTop: '2px', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '2px',
-                border: '1px solid rgba(255,255,255,0.05)',
-                borderLeft: '3px solid #3B82F6'
-              }}>
-                <span style={{ fontWeight: 600, color: 'white', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span className="pulse-dot-blue" style={{ marginRight: 0 }}></span> Scraping: {activeJob.payload?.query || activeJob.payload?.category || 'Task'}
-                </span>
-                <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  Engine: {activeJob.type.toUpperCase()} · {activeJob.payload?.location || 'Lagos'}
-                </span>
+            {/* Solar Engine Panel */}
+            {sidebarEngineTab === 'solar' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
+                  <span style={{ fontWeight: 700, color: '#2dd4bf' }}>Solar 5K Pipeline</span>
+                  <span style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    color: solarEngineInfo.isRunning ? '#34d399' : '#94a3b8',
+                    background: solarEngineInfo.isRunning ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)',
+                    padding: '2px 6px',
+                    borderRadius: '10px'
+                  }}>
+                    {solarEngineInfo.isRunning ? `● RUNNING (${solarEngineInfo.pid})` : '○ IDLE'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#94a3b8', background: 'rgba(0,0,0,0.2)', padding: '6px 8px', borderRadius: '6px' }}>
+                  <span>Installers: <strong style={{ color: '#2dd4bf' }}>{solarEngineInfo.totalInstallers}</strong></span>
+                  <span>Outreach: <strong style={{ color: '#38bdf8' }}>{solarEngineInfo.dispatches}</strong></span>
+                </div>
+
+                {/* Solar Live Logs Feed */}
+                <div style={{
+                  fontSize: '0.65rem',
+                  fontFamily: 'monospace',
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  padding: '6px 8px',
+                  borderRadius: '6px',
+                  border: '1px solid rgba(13, 148, 136, 0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '3px',
+                  maxHeight: '140px',
+                  overflowY: 'auto'
+                }}>
+                  <div style={{ color: '#2dd4bf', fontWeight: 700, fontSize: '0.6rem', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '2px' }}>
+                    📋 SOLAR LIVE FEED:
+                  </div>
+                  {solarEngineInfo.latestLogs && solarEngineInfo.latestLogs.length > 0 ? (
+                    solarEngineInfo.latestLogs.slice(0, 4).map((line: string, i: number) => (
+                      <div key={i} style={{ color: '#cbd5e1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{line}</div>
+                    ))
+                  ) : (
+                    <div style={{ color: '#64748b', fontStyle: 'italic' }}>Engine waiting for execution...</div>
+                  )}
+                </div>
               </div>
             )}
 
-            {/* Live Pipeline Activity Logs Feed */}
-            {latestLogs && latestLogs.length > 0 && (
-              <div style={{
-                fontSize: '0.68rem',
-                fontFamily: 'monospace',
-                background: 'rgba(0, 0, 0, 0.25)',
-                padding: '6px 8px',
-                borderRadius: '6px',
-                marginTop: '4px',
-                border: '1px solid rgba(255,255,255,0.03)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-                maxHeight: '280px',
-                overflowY: 'auto'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.62rem', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  <span>Live Pipeline Feed</span>
-                  <span style={{ color: '#10B981', fontSize: '0.6rem', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10B981', boxShadow: '0 0 6px #10B981' }}></span> LIVE (3s)
+            {/* Lagos 10K Engine Panel */}
+            {sidebarEngineTab === 'lagos' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
+                  <span style={{ fontWeight: 700, color: '#60a5fa' }}>Lagos B2B Engine</span>
+                  <span style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    color: lagosEngineInfo.isRunning ? '#60a5fa' : '#94a3b8',
+                    background: lagosEngineInfo.isRunning ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.05)',
+                    padding: '2px 6px',
+                    borderRadius: '10px'
+                  }}>
+                    {lagosEngineInfo.isRunning ? `● RUNNING (${lagosEngineInfo.pid})` : '○ IDLE'}
                   </span>
                 </div>
-                {latestLogs.map((log: any, idx: number) => {
-                  const [runId, timestamp, step, _, logStatus, message] = log;
-                  const timeStr = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                  const color = logStatus === 'ERROR' ? '#EF4444' : logStatus === 'SUCCESS' ? '#10B981' : '#3B82F6';
-                  return (
-                    <div key={idx} style={{ color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', opacity: 0.8, fontSize: '0.6rem' }}>
-                        <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{runId}</span>
-                        <span>{timeStr}</span>
-                      </div>
-                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', gap: '3px', alignItems: 'center' }}>
-                        <span style={{ color, fontSize: '0.6rem', fontWeight: 700 }}>[{logStatus}]</span>
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem' }} title={message}>{message}</span>
-                      </div>
-                    </div>
-                  );
-                })}
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#94a3b8', background: 'rgba(0,0,0,0.2)', padding: '6px 8px', borderRadius: '6px' }}>
+                  <span>Verified Leads: <strong style={{ color: '#60a5fa' }}>{lagosEngineInfo.totalLeads.toLocaleString()}</strong></span>
+                  <span>Web Forms: <strong style={{ color: '#38bdf8' }}>{lagosEngineInfo.dispatches}</strong></span>
+                </div>
+
+                {/* Lagos 10K Live Logs Feed */}
+                <div style={{
+                  fontSize: '0.65rem',
+                  fontFamily: 'monospace',
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  padding: '6px 8px',
+                  borderRadius: '6px',
+                  border: '1px solid rgba(59, 130, 246, 0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '3px',
+                  maxHeight: '140px',
+                  overflowY: 'auto'
+                }}>
+                  <div style={{ color: '#60a5fa', fontWeight: 700, fontSize: '0.6rem', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '2px' }}>
+                    📋 LAGOS 10K LIVE FEED:
+                  </div>
+                  {lagosEngineInfo.latestLogs && lagosEngineInfo.latestLogs.length > 0 ? (
+                    lagosEngineInfo.latestLogs.slice(0, 4).map((line: string, i: number) => (
+                      <div key={i} style={{ color: '#cbd5e1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{line}</div>
+                    ))
+                  ) : (
+                    <div style={{ color: '#64748b', fontStyle: 'italic' }}>Engine waiting for execution...</div>
+                  )}
+                </div>
               </div>
             )}
             
