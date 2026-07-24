@@ -3,8 +3,24 @@
     "src/app/api/scrape/**/*.ts": {
       "maxDuration": 60
     },
+    "src/app/api/solarquotepro-pipeline/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/outreach/lagos10k/route.ts": {
+      "maxDuration": 60
+    },
     "src/app/api/jiji/route.ts": {
       "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/solarquotepro-pipeline?cron=true",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/outreach/lagos10k?cron=true",
+      "schedule": "*/15 * * * *"
+    }
+  ]
 }
