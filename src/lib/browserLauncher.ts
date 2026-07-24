@@ -480,3 +480,25 @@ export async function applyStealthToPage(page: any): Promise<void> {
   });
 }
 
+/**
+ * Self-Healing utility for cleaning zombie headless Chrome instances and repairing frozen contexts.
+ */
+export async function selfHealBrowserContext(): Promise<boolean> {
+  console.log('[browserLauncher] Executing self-healing browser context cleanup...');
+  try {
+    const { execSync } = await import('child_process');
+    if (process.platform === 'win32') {
+      try { execSync('taskkill /F /IM chrome.exe /T', { stdio: 'ignore' }); } catch (_) {}
+      try { execSync('taskkill /F /IM chromedriver.exe /T', { stdio: 'ignore' }); } catch (_) {}
+    } else {
+      try { execSync('pkill -f chrome', { stdio: 'ignore' }); } catch (_) {}
+    }
+    console.log('[browserLauncher] Self-healing completed: Zombie browser processes purged.');
+    return true;
+  } catch (err: any) {
+    console.error('[browserLauncher] Self-healing browser context purge failed:', err.message);
+    return false;
+  }
+}
+
+

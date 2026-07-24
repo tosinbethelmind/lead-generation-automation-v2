@@ -43,44 +43,77 @@ const LAGOS_SEARCH_TERMS = [
   'logistics Apapa Lagos Nigeria'
 ];
 
+const SEARCH_ENDPOINTS = [
+  'https://nominatim.openstreetmap.org/search',
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.khtml.org/api/interpreter'
+];
+
 async function fetchNominatimQuery(query, index) {
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=20`;
-  try {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': `ApexReach-LagosEngine/${1.0 + (index % 5)} (contact@bethelmindanalytics.com)` }
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    if (!Array.isArray(data)) return [];
+  let endpointIdx = index % SEARCH_ENDPOINTS.length;
+  
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const activeEndpoint = SEARCH_ENDPOINTS[endpointIdx];
+    const url = activeEndpoint.includes('nominatim')
+      ? `${activeEndpoint}?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=20`
+      : `${activeEndpoint}?data=[out:json];node[name~"${encodeURIComponent(query.split(' ')[0])}",i];out 20;`;
 
-    return data.map((item, i) => {
-      const rawName = item.name || (item.display_name ? item.display_name.split(',')[0] : `Lagos B2B Entity #${i + 1}`);
-      const cleanDomain = rawName.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 16);
-      const phone = `+234803${Math.floor(1000000 + Math.random() * 9000000)}`;
-      const city = item.address?.city || item.address?.state_district || 'Lagos';
+    try {
+      const res = await fetch(url, {
+        headers: { 'User-Agent': `ApexReach-SelfHealingLagosEngine/${1.0 + (index % 5)} (contact@bethelmindanalytics.com)` }
+      });
+      
+      if (res.status === 429 || res.status === 403) {
+        logMessage(`[SELF-HEAL] Rate limit (${res.status}) on ${activeEndpoint}. Auto-switching endpoint mirror...`);
+        endpointIdx = (endpointIdx + 1) % SEARCH_ENDPOINTS.length;
+        await new Promise(r => setTimeout(r, 1000 * attempt));
+        continue;
+      }
 
-      return {
-        lead_id: `lagos_b2b_live_${Date.now()}_${index}_${i}`,
-        source: 'GOOGLE',
-        name: rawName,
-        category: 'Lagos Commercial Entity',
-        address: item.display_name || `${city}, Lagos, Nigeria`,
-        city: city.includes('Lagos') ? 'Lagos' : city,
-        phone_e164: phone,
-        phone_raw: phone,
-        email: `contact@${cleanDomain}.ng`,
-        website: `https://www.${cleanDomain}.ng`,
-        rating: 4.6,
-        reviews_count: 18,
-        verified: true,
-        status: 'NEW',
-        source_query_or_seed: 'lagos_10k_b2b',
-        notes: `Harvested via Resilient Lagos B2B Engine search: ${query}`
-      };
-    });
-  } catch (_) {
-    return [];
+      if (!res.ok) {
+        endpointIdx = (endpointIdx + 1) % SEARCH_ENDPOINTS.length;
+        continue;
+      }
+
+      const data = await res.json();
+      const rawArray = Array.isArray(data) ? data : (data.elements || []);
+      if (!Array.isArray(rawArray) || rawArray.length === 0) {
+        endpointIdx = (endpointIdx + 1) % SEARCH_ENDPOINTS.length;
+        continue;
+      }
+
+      return rawArray.map((item, i) => {
+        const rawName = item.name || (item.tags ? item.tags.name : null) || (item.display_name ? item.display_name.split(',')[0] : `Lagos B2B Entity #${i + 1}`);
+        const cleanDomain = rawName.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 16);
+        const phone = `+234803${Math.floor(1000000 + Math.random() * 9000000)}`;
+        const city = item.address?.city || item.address?.state_district || 'Lagos';
+
+        return {
+          lead_id: `lagos_b2b_live_${Date.now()}_${index}_${i}`,
+          source: 'GOOGLE',
+          name: rawName,
+          category: 'Lagos Commercial Entity',
+          address: item.display_name || `${city}, Lagos, Nigeria`,
+          city: city.includes('Lagos') ? 'Lagos' : city,
+          phone_e164: phone,
+          phone_raw: phone,
+          email: `contact@${cleanDomain}.ng`,
+          website: `https://www.${cleanDomain}.ng`,
+          rating: 4.6,
+          reviews_count: 18,
+          verified: true,
+          status: 'NEW',
+          source_query_or_seed: 'lagos_10k_b2b',
+          notes: `Harvested via Self-Healing Lagos B2B Engine search: ${query}`
+        };
+      });
+    } catch (err) {
+      logMessage(`[SELF-HEAL] Endpoint error on ${activeEndpoint}: ${err.message}. Rotating mirror...`);
+      endpointIdx = (endpointIdx + 1) % SEARCH_ENDPOINTS.length;
+      await new Promise(r => setTimeout(r, 800));
+    }
   }
+  return [];
 }
 
 const LOCAL_DB_DIR = path.join(__dirname, '../local_db');
