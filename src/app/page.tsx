@@ -3245,61 +3245,149 @@ export default function Home() {
               </div>
             )}
             
-            <div style={{ display: 'flex', gap: '8px', marginTop: '2px' }}>
-              {runnerStatus === 'online' ? (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleStopLocalRunner();
-                  }}
-                  disabled={triggerLoading}
-                  style={{
-                    flexGrow: 1,
-                    background: 'rgba(239, 68, 68, 0.1)',
-                    border: '1px solid rgba(239, 68, 68, 0.3)',
-                    color: '#EF4444',
-                    padding: '5px 8px',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    borderRadius: '6px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '4px',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  {triggerLoading ? <Loader2 size={12} className="spin-anim" /> : 'Stop Runner'}
-                </button>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+              {sidebarEngineTab === 'solar' ? (
+                solarEngineInfo.isRunning ? (
+                  <button
+                    type="button"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      setTriggerLoading(true);
+                      try {
+                        const res = await fetch('/api/solarquotepro-pipeline', { method: 'DELETE' });
+                        const data = await res.json();
+                        addToast(data.message || 'Stopped SolarQuotePro engine.', 'info');
+                        checkRunnerStatus();
+                      } catch (_) {} finally { setTriggerLoading(false); }
+                    }}
+                    disabled={triggerLoading}
+                    style={{
+                      flexGrow: 1,
+                      background: 'rgba(239, 68, 68, 0.15)',
+                      border: '1px solid rgba(239, 68, 68, 0.4)',
+                      color: '#EF4444',
+                      padding: '6px 10px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    {triggerLoading ? <Loader2 size={12} className="spin-anim" /> : 'Stop Solar Engine'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      setTriggerLoading(true);
+                      try {
+                        const res = await fetch('/api/solarquotepro-pipeline', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ count: 2500 })
+                        });
+                        const data = await res.json();
+                        addToast(data.message || 'Launched SolarQuotePro engine!', 'success');
+                        checkRunnerStatus();
+                      } catch (_) {} finally { setTriggerLoading(false); }
+                    }}
+                    disabled={triggerLoading}
+                    style={{
+                      flexGrow: 1,
+                      background: 'linear-gradient(135deg, #0d9488 0%, #059669 100%)',
+                      border: 'none',
+                      color: 'white',
+                      padding: '6px 10px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      boxShadow: '0 2px 8px rgba(13, 148, 136, 0.4)'
+                    }}
+                  >
+                    {triggerLoading ? <Loader2 size={12} className="spin-anim" /> : '⚡ Start Solar Engine'}
+                  </button>
+                )
               ) : (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleLocalTrigger();
-                  }}
-                  disabled={triggerLoading || runnerStatus === 'loading'}
-                  style={{
-                    flexGrow: 1,
-                    background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)',
-                    border: 'none',
-                    color: 'white',
-                    padding: '5px 8px',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    borderRadius: '6px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '4px',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  {triggerLoading ? <Loader2 size={12} className="spin-anim" /> : 'Start Runner'}
-                </button>
+                lagosEngineInfo.isRunning ? (
+                  <button
+                    type="button"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      setTriggerLoading(true);
+                      try {
+                        const res = await fetch('/api/outreach/lagos10k', { method: 'DELETE' });
+                        const data = await res.json();
+                        addToast(data.message || 'Stopped Lagos 10K engine.', 'info');
+                        checkRunnerStatus();
+                      } catch (_) {} finally { setTriggerLoading(false); }
+                    }}
+                    disabled={triggerLoading}
+                    style={{
+                      flexGrow: 1,
+                      background: 'rgba(239, 68, 68, 0.15)',
+                      border: '1px solid rgba(239, 68, 68, 0.4)',
+                      color: '#EF4444',
+                      padding: '6px 10px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    {triggerLoading ? <Loader2 size={12} className="spin-anim" /> : 'Stop Lagos Engine'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      setTriggerLoading(true);
+                      try {
+                        const res = await fetch('/api/outreach/lagos10k', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ count: 2000 })
+                        });
+                        const data = await res.json();
+                        addToast(data.message || 'Launched Lagos 10K engine!', 'success');
+                        checkRunnerStatus();
+                      } catch (_) {} finally { setTriggerLoading(false); }
+                    }}
+                    disabled={triggerLoading}
+                    style={{
+                      flexGrow: 1,
+                      background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                      border: 'none',
+                      color: 'white',
+                      padding: '6px 10px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      boxShadow: '0 2px 8px rgba(37, 99, 235, 0.4)'
+                    }}
+                  >
+                    {triggerLoading ? <Loader2 size={12} className="spin-anim" /> : '🏢 Start Lagos Engine'}
+                  </button>
+                )
               )}
               
               <button
