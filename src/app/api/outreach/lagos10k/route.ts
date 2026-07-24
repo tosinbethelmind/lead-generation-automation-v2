@@ -58,7 +58,7 @@ export async function GET(req?: Request) {
 
     // Check Cloud runtime status from Supabase app_settings
     try {
-      const { data: configRow } = await supabase
+      const { data: configRow } = await (supabase as any)
         .from('app_settings')
         .select('value')
         .eq('key', 'apexreach_runtime_config')
@@ -79,7 +79,7 @@ export async function GET(req?: Request) {
             const harvestRes = await harvestLiveLagosLeads();
             liveLagosLeadsCount = harvestRes.totalLagos;
 
-            await supabase.from('logs').insert([{
+            await (supabase as any).from('logs').insert([{
               run_id: `lagos_cloud_${Date.now()}`,
               timestamp: new Date().toISOString(),
               step: 'LAGOS_NONSTOP_ACTIVE',
@@ -91,7 +91,7 @@ export async function GET(req?: Request) {
       }
 
       // Fetch latest Lagos logs from Supabase logs table with Lagos WAT timestamp formatting
-      const { data: dbLogs } = await supabase
+      const { data: dbLogs } = await (supabase as any)
         .from('logs')
         .select('created_at, step, message')
         .or('step.ilike.%LAGOS%,message.ilike.%Lagos%')
@@ -110,9 +110,9 @@ export async function GET(req?: Request) {
       { count: totalContacted },
       { count: hotelsCount }
     ] = await Promise.all([
-      supabase.from('leads').select('*', { count: 'exact', head: true }).eq('source_query_or_seed', 'lagos_10k_b2b'),
-      supabase.from('leads').select('*', { count: 'exact', head: true }).eq('source_query_or_seed', 'lagos_10k_b2b').eq('status', 'CONTACTED'),
-      supabase.from('leads').select('*', { count: 'exact', head: true }).eq('source_query_or_seed', 'lagos_10k_b2b').ilike('category', '%Hotel%')
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).eq('source_query_or_seed', 'lagos_10k_b2b'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).eq('source_query_or_seed', 'lagos_10k_b2b').eq('status', 'CONTACTED'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).eq('source_query_or_seed', 'lagos_10k_b2b').ilike('category', '%Hotel%')
     ]);
 
     return NextResponse.json({
