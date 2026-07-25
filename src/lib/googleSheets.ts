@@ -346,20 +346,42 @@ export function normalizePhone(
   if (!raw) return null;
   
   const trimmed = raw.trim();
+
+  // Handle multiple phone numbers separated by slashes, commas, semicolons, or "or"
+  if (/[\/;,|]|(?:\s+or\s+)/i.test(trimmed)) {
+    const parts = trimmed.split(/[\/;,|]|(?:\s+or\s+)/i);
+    for (const part of parts) {
+      const norm = normalizePhone(part, country, options);
+      if (norm) return norm;
+    }
+  }
+
   const isExplicitIntl = trimmed.startsWith('+') || trimmed.startsWith('00');
   
   // Strip non-numeric digits
   let digits = trimmed.replace(/\D/g, '');
 
   if (!digits || digits.length < 7) return null;
-  // Reject dummy repeated/sequential phone numbers (e.g. 08000000000, 08012345678, 08011111111)
+
+  // Cap Nigerian E.164 digits length to prevent concatenation bugs (234 + 10 digits = 13 digits)
+  if (country === 'NG' && digits.length > 13) {
+    if (digits.startsWith('234')) {
+      digits = digits.substring(0, 13);
+    } else if (digits.startsWith('0')) {
+      digits = '234' + digits.substring(1, 11);
+    } else {
+      digits = digits.substring(0, 13);
+    }
+  }
+
+  // Reject dummy repeated/sequential phone numbers (e.g. 08000000000, 08012345678)
   if (/^(\d)\1+$/.test(digits) || '01234567890123456789'.includes(digits)) return null;
   const tail = digits.substring(digits.length - 7);
   if (/^(\d)\1+$/.test(tail)) return null;
   
   if (isExplicitIntl) {
     if (trimmed.startsWith('00')) {
-      digits = digits.substring(2); // remove the leading '00'
+      digits = digits.substring(2); // remove leading '00'
     }
   } else if (country === 'NG') {
     if (digits.startsWith('2340')) {
@@ -376,7 +398,7 @@ export function normalizePhone(
       return null;
     }
   } else {
-    if (digits.length < 7) return null;
+    if (digits.length < 7 || digits.length > 15) return null;
   }
   
   return '+' + digits;
