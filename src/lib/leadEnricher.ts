@@ -254,17 +254,13 @@ async function scanSubpagesForContacts(html: string, baseUrlStr: string): Promis
     if (targetSubpages.length > 0) {
       const subpagePromises = targetSubpages.map(async (subUrl) => {
         try {
-          const subController = new AbortController();
-          const subTimeout = setTimeout(() => subController.abort(), 4000);
-
           const subResp = await fetch(subUrl, {
             headers: {
               'User-Agent': WEB_USER_AGENT,
               Accept: 'text/html',
             },
-            signal: subController.signal,
+            signal: AbortSignal.timeout(2500), // 2.5s max per subpage
           });
-          clearTimeout(subTimeout);
 
           if (subResp.ok) {
             const subHtml = await subResp.text();
@@ -313,17 +309,13 @@ export async function enrichFromWebsite(url: string, browser?: any): Promise<{
   let embedNote = '';
 
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000);
-
     const resp = await fetch(url, {
       headers: {
-        'User-Agent': WEB_USER_AGENT,
-        Accept: 'text/html',
+        'User-Agent': USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)],
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       },
-      signal: controller.signal,
+      signal: AbortSignal.timeout(3500), // 3.5s strict timeout to avoid queue stalls
     });
-    clearTimeout(timeout);
 
     if (resp.ok) {
       const html = await resp.text();

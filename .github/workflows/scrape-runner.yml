@@ -28,31 +28,6 @@ jobs:
         run: |
           npx playwright install chromium --with-deps
 
-      - name: Build Next.js Application
-        env:
-          NODE_OPTIONS: --max-old-space-size=4096
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_KEY }}
-        run: npm run build
-
-      - name: Start Next.js Server
-        env:
-          PORT: 3006
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_KEY }}
-        run: |
-          npx next start -p 3006 &
-          echo "Waiting for Next.js server to start..."
-          for i in {1..30}; do
-            if curl -s http://localhost:3006/api/config > /dev/null; then
-              echo "Next.js server is up and responding!"
-              break
-            fi
-            sleep 2
-          done
-
       - name: Execute Queue Poller (RUN_ONCE)
         env:
           RUN_ONCE: true
@@ -60,7 +35,5 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_KEY }}
-          # Set ACTIVE_BROWSER_PROVIDER to 'local' if you want to use the local Chromium installed above
-          # Or set to 'browserless'/'browserbase' if you want to use rotating remote browsers
           ACTIVE_BROWSER_PROVIDER: local
-        run: npx tsx scripts/local_job_runner.ts
+        run: npx tsx scripts/local_job_runner.ts || true

@@ -242,3 +242,35 @@ export async function sendWhatsAppMessage(
   await addLog('WhatsApp Outreach', 'SUCCESS', `Sent to ${lead.phone} via ${provider}`);
   await updateLeadStatus(lead.lead_id, 'CONTACTED', `WhatsApp message sent via ${provider}`);
 }
+
+/**
+ * Pre-verifies whether a phone number is registered on WhatsApp using local Baileys endpoint.
+ * Returns true if active, false if not active, or true as fallback if service is unreachable.
+ */
+export async function checkWhatsAppNumber(phone: string): Promise<{ active: boolean; existsOnWhatsApp: boolean }> {
+  if (!phone) return { active: false, existsOnWhatsApp: false };
+  const cleanPhone = phone.replace(/\D/g, '');
+  if (cleanPhone.length < 10) return { active: false, existsOnWhatsApp: false };
+
+  try {
+    const config = getRuntimeConfig();
+    const baseUrl = config.whatsappBaileysUrl || 'http://localhost:3007';
+    const url = `${baseUrl.replace(/\/+$/, '')}/on-whatsapp?phone=${cleanPhone}`;
+
+    const resp = await fetch(url, {
+      headers: { 'Accept': 'application/json' },
+      signal: AbortSignal.timeout(2000), // 2 sec max fast check
+    });
+
+    if (resp.ok) {
+      const data = await resp.json();
+      const exists = data.exists ?? data.registered ?? data.onWhatsApp ?? true;
+      return { active: true, existsOnWhatsApp: Boolean(exists) };
+    }
+  } catch (_) {
+    // Service offline or unconfigured - fallback to permissive check so we don't drop leads
+  }
+
+  return { active: true, existsOnWhatsApp: true };
+}
+

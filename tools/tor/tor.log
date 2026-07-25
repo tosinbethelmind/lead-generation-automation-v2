@@ -29,3 +29,8 @@ Jul 25 06:26:59.000 [notice] While not bootstrapping, fetched this many bytes: 2
 Jul 25 08:11:07.000 [notice] Tor has been idle for 4635 seconds; assuming established circuits no longer work.
 Jul 25 12:26:58.000 [notice] Heartbeat: Tor's uptime is 20:30 hours, with 0 circuits open. I've sent 334 kB and received 1.56 MB. I've received 1 connections on IPv4 and 0 on IPv6. I've made 17 connections with IPv4 and 0 with IPv6.
 Jul 25 12:26:58.000 [notice] While not bootstrapping, fetched this many bytes: 310223 (consensus network-status fetch); 918197 (microdescriptor fetch)
+Jul 25 16:01:07.000 [notice] No user activity in a long time: becoming dormant.
+Jul 25 20:31:21.000 [notice] Tor has been idle for 15614 seconds; assuming established circuits no longer work.
+Jul 25 20:31:21.000 [notice] Heartbeat: Tor's uptime is 1 day 0:05 hours, with 0 circuits open. I've sent 344 kB and received 1.63 MB. I've received 1 connections on IPv4 and 0 on IPv6. I've made 19 connections with IPv4 and 0 with IPv6.
+Jul 25 20:31:21.000 [notice] While not bootstrapping, fetched this many bytes: 368203 (consensus network-status fetch); 918197 (microdescriptor fetch)
+Jul 25 21:31:21.000 [notice] Tor has been idle for 3600 seconds; assuming established circuits no longer work.

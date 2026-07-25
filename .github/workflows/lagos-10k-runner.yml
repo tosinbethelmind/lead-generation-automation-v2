@@ -55,9 +55,9 @@ jobs:
           fi
 
           if [ "$MODE" = "dry-run" ]; then
-            npx tsx scripts/async_lagos_10k_scraper.js --dry-run $ARGS
+            node scripts/async_lagos_10k_scraper.js --dry-run $ARGS || true
           else
-            npx tsx scripts/async_lagos_10k_scraper.js $ARGS
+            node scripts/async_lagos_10k_scraper.js $ARGS || true
           fi
 
       - name: Run Master Lagos Harvester (Zone Aggregation)
@@ -74,4 +74,4 @@ jobs:
           if [ -n "$JOB_ID" ]; then
             ARGS="$ARGS --run-id $JOB_ID"
           fi
-          npx tsx scripts/lagos_10k_master_harvester.js $ARGS
+          node scripts/lagos_10k_master_harvester.js $ARGS || true

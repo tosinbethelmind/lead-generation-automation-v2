@@ -1,16 +1,13 @@
-const path = require('path');
-const fs = require('fs');
+import { fetchGoogleDorkLeads, fetchVConnectLeads, fetchCACBusinessLeads } from '../src/lib/directoryScrapers';
+import { fetchSocialGroupLeads } from '../src/lib/socialMultiChannelScraper';
+import { fetchGoogleMapsInternalJson, getSpatialBoundingBoxes } from '../src/lib/liveLeadHarvester';
+import { checkWhatsAppNumber } from '../src/lib/whatsapp';
+import { verifyEmailMxRecord, validateNigerianCarrier } from '../src/lib/leadEnricher';
 
 async function testOptimizedPipeline() {
   console.log('=== STARTING OPTIMIZED SCRAPERS E2E TEST ===');
 
   try {
-    const { fetchGoogleDorkLeads, fetchVConnectLeads, fetchCACBusinessLeads } = require('../src/lib/directoryScrapers');
-    const { fetchSocialGroupLeads } = require('../src/lib/socialMultiChannelScraper');
-    const { fetchGoogleMapsInternalJson, getSpatialBoundingBoxes } = require('../src/lib/liveLeadHarvester');
-    const { checkWhatsAppNumber } = require('../src/lib/whatsapp');
-    const { verifyEmailMxRecord, validateNigerianCarrier } = require('../src/lib/leadEnricher');
-
     console.log('\n1. Testing Option A & Data Source #3 (Google Maps Internal JSON Stream)...');
     const gmapsLeads = await fetchGoogleMapsInternalJson('dentist Ikeja Lagos', 5);
     console.log(`-> Fast Maps Stream extracted ${gmapsLeads.length} leads!`);
@@ -46,8 +43,8 @@ async function testOptimizedPipeline() {
     console.log('\n==================================================');
     console.log('✅ ALL 5 CORE OPTIONS & 4 NEW DATA SOURCES VERIFIED SUCCESSFULLY!');
     console.log('==================================================');
-  } catch (err) {
-    console.error('❌ Test failed with error:', err);
+  } catch (err: any) {
+    console.error('❌ Test failed with error:', err.message || err);
     process.exit(1);
   }
 }
