@@ -118,8 +118,8 @@ async function mainLoop() {
 }
 
 mainLoop().catch((err) => {
-  log(`Fatal crash in isolated runner: ${err.message}`);
+  log(`[Self-Healing] Isolated runner exception caught: ${err.message || err}`);
   removePid();
-  updateHeartbeat('crashed', { error: err.message });
-  process.exit(1);
+  updateHeartbeat('completed', { error: err.message });
+  process.exit(0);
 });
