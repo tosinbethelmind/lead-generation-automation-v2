@@ -109,6 +109,70 @@ app.post('/send', async (req, res) => {
   }
 });
 
+// Serve visual HTML Pairing Dashboard at GET /
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>ApexReach — Baileys WhatsApp Connection Console</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px; max-width: 480px; width: 100%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+        h1 { font-size: 1.5rem; color: #38bdf8; margin-bottom: 8px; }
+        p { color: #94a3b8; font-size: 0.95rem; margin-bottom: 24px; }
+        .status-badge { display: inline-block; padding: 6px 16px; border-radius: 9999px; font-weight: 600; font-size: 0.875rem; text-transform: uppercase; margin-bottom: 20px; }
+        .status-connected { background: #059669; color: #ecfdf5; }
+        .status-qr { background: #d97706; color: #fffbeb; }
+        .status-disconnected { background: #dc2626; color: #fef2f2; }
+        .qr-box { background: white; padding: 16px; border-radius: 12px; display: inline-block; margin-bottom: 20px; min-width: 200px; min-height: 200px; }
+        .qr-box img { width: 220px; height: 220px; display: block; }
+        .btn { background: #0284c7; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 12px; }
+        .btn:hover { background: #0369a1; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <h1>📱 WhatsApp Baileys Gateway</h1>
+        <p>ApexReach B2B Lead Outreach & Pre-Verification Engine</p>
+        <div id="statusBadge" class="status-badge status-disconnected">Checking...</div>
+        <div id="qrContainer" class="qr-box">Loading QR Code...</div>
+        <div>
+          <button class="btn" onclick="fetchStatus()">🔄 Refresh Status</button>
+        </div>
+      </div>
+      <script>
+        async function fetchStatus() {
+          try {
+            const res = await fetch('/status');
+            const data = await res.json();
+            const badge = document.getElementById('statusBadge');
+            const container = document.getElementById('qrContainer');
+            
+            badge.innerText = 'STATUS: ' + data.status;
+            badge.className = 'status-badge status-' + data.status;
+
+            if (data.status === 'connected') {
+              container.innerHTML = '<div style="color:#059669; font-weight:bold; font-size:1.2rem; padding: 40px 10px;">✅ WhatsApp Active & Connected!<br/><span style="font-size:0.85rem; color:#475569;">Ready for Lead Pre-Verification & Outreach</span></div>';
+            } else if (data.qrCodeUrl) {
+              container.innerHTML = '<img src="' + data.qrCodeUrl + '" alt="WhatsApp QR Code"/><p style="color:#334155; font-size:0.8rem; margin-top:8px;">Scan with WhatsApp on your phone</p>';
+            } else {
+              container.innerHTML = '<div style="color:#64748b; padding: 40px 10px;">Connecting to WhatsApp client...</div>';
+            }
+          } catch(e) {
+            document.getElementById('statusBadge').innerText = 'STATUS: UNREACHABLE';
+          }
+        }
+        fetchStatus();
+        setInterval(fetchStatus, 3000);
+      </script>
+    </body>
+    </html>
+  `);
+});
+
 // REST Endpoint to query connection status and get pairing QR code
 app.get('/status', (req, res) => {
   res.json({
@@ -116,6 +180,26 @@ app.get('/status', (req, res) => {
     qrCodeUrl: qrCodeBase64,
     qrRaw: qrCodeRaw
   });
+});
+
+// GET /on-whatsapp helper
+app.get('/on-whatsapp', async (req, res) => {
+  const phone = req.query.phone || '';
+  if (!phone) return res.json({ active: false, existsOnWhatsApp: false });
+
+  if (connectionStatus !== 'connected' || !sock) {
+    return res.json({ active: true, existsOnWhatsApp: true, fallback: true });
+  }
+
+  try {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const jid = `${cleanPhone}@s.whatsapp.net`;
+    const results = await sock.onWhatsApp(jid);
+    const exists = results && results.length > 0 && results[0].exists;
+    return res.json({ active: true, existsOnWhatsApp: Boolean(exists) });
+  } catch (_) {
+    return res.json({ active: true, existsOnWhatsApp: true, fallback: true });
+  }
 });
 
 // REST Endpoint to check if phone number has active WhatsApp account
