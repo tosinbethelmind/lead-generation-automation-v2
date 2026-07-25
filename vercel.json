@@ -16,7 +16,7 @@
   "crons": [
     {
       "path": "/api/cron/harvest",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 14 * * *"
     },
     {
       "path": "/api/solarquotepro-pipeline?cron=true",
