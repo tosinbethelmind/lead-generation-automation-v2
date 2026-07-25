@@ -72,7 +72,28 @@ const LAGOS_LGA_QUERIES = [
   { q: 'restaurant Ikoyi', cat: 'Hospitality Enterprise', lga: 'Ikoyi' },
   { q: 'event center Maryland', cat: 'Event & Hospitality Center', lga: 'Kosofe' },
   { q: 'factory Ikorodu', cat: 'Industrial Manufacturing Facility', lga: 'Ikorodu' },
-  { q: 'plaza Ikeja', cat: 'Commercial Shopping Plaza', lga: 'Ikeja' }
+  { q: 'plaza Ikeja', cat: 'Commercial Shopping Plaza', lga: 'Ikeja' },
+  // Expanded Nationwide B2B Categories
+  { q: 'catering services Ikeja', cat: 'Food & Catering Enterprise', lga: 'Ikeja' },
+  { q: 'dry cleaner Lekki', cat: 'Laundry & Cleaning Services', lga: 'Eti-Osa' },
+  { q: 'cold room storage Ojo', cat: 'Agro & Cold Chain Logistics', lga: 'Ojo' },
+  { q: 'printing press Shomolu', cat: 'Printing & Packaging Hub', lga: 'Shomolu' },
+  { q: 'interior designer Victoria Island', cat: 'Design & Architecture', lga: 'Eti-Osa (VI)' },
+  { q: 'furniture showroom Lekki', cat: 'Furniture & Home Decor', lga: 'Eti-Osa' },
+  { q: 'microfinance bank Ikeja', cat: 'Financial Institution', lga: 'Ikeja' },
+  { q: 'agro processing Ikorodu', cat: 'Agricultural Processing', lga: 'Ikorodu' },
+  { q: 'auto spare parts Ladipo', cat: 'Auto Commercial Merchant', lga: 'Oshodi' },
+  { q: 'hardware store Alaba', cat: 'Electronics & Hardware Hub', lga: 'Ojo' },
+  { q: 'hotel Abuja Central', cat: 'Hospitality & Hotel', lga: 'Abuja FCT' },
+  { q: 'real estate Port Harcourt', cat: 'Real Estate Developer', lga: 'Port Harcourt' },
+  { q: 'hospital Ibadan', cat: 'Healthcare Facility', lga: 'Ibadan' },
+  { q: 'school Kano', cat: 'Educational Institution', lga: 'Kano' },
+  { q: 'law firm Enugu', cat: 'Professional Legal Practice', lga: 'Enugu' },
+  { q: 'logistics Benin City', cat: 'Express Logistics Courier', lga: 'Benin City' },
+  { q: 'solar installer Abeokuta', cat: 'Solar Energy & Inverter Dealer', lga: 'Abeokuta' },
+  { q: 'boutique Warri', cat: 'Fashion Retail Enterprise', lga: 'Warri' },
+  { q: 'restaurant Calabar', cat: 'Hospitality & Dining', lga: 'Calabar' },
+  { q: 'supermarket Owerri', cat: 'Commercial Retail Enterprise', lga: 'Owerri' }
 ];
 
 const BIZLIST_LAGOS_CATEGORIES = [
