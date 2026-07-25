@@ -738,6 +738,24 @@ export async function enrichLeadContacts(
     }
   }
 
+  // Stage 5: Serper Deep Search API enrichment (if key available and missing details)
+  if (!currentEmail || !currentPhone) {
+    try {
+      const serperRes = await enrichViaSerperApi(lead.name || '', lead.city || 'Lagos');
+      if (serperRes.phone && !currentPhone) {
+        currentPhone = serperRes.phone;
+        enriched = true;
+      }
+      if (serperRes.email && !currentEmail) {
+        currentEmail = serperRes.email;
+        enriched = true;
+      }
+      if (serperRes.website && !lead.website) {
+        lead.website = serperRes.website;
+      }
+    } catch (_) {}
+  }
+
   // Generate outreach helper links for direct messaging and forms
   const dmLinks: string[] = [];
   if (lead.website && lead.website.startsWith('http')) {
@@ -1240,5 +1258,57 @@ export async function extractMapsLeadData(page: any, query: string, skipEnrichme
   } catch (err) {
     console.error('[leadEnricher] extractMapsLeadData error:', err);
     return null;
+  }
+}
+
+export async function enrichViaSerperApi(
+  businessName: string,
+  city: string
+): Promise<{ phone: string | null; email: string | null; website: string | null }> {
+  try {
+    const apiKey = process.env.SERPER_API_KEY || process.env.SERP_API_KEY || '';
+    if (!apiKey) return { phone: null, email: null, website: null };
+
+    const query = `"${businessName}" ${city} Nigeria contact phone email`;
+    const resp = await fetch('https://google.serper.dev/search', {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': apiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ q: query, gl: 'ng', hl: 'en' }),
+      signal: AbortSignal.timeout(6000)
+    });
+
+    if (!resp.ok) return { phone: null, email: null, website: null };
+    const data = await resp.json();
+
+    let phone: string | null = null;
+    let email: string | null = null;
+    let website: string | null = null;
+
+    if (data.knowledgeGraph?.phone) {
+      phone = normalizePhone(data.knowledgeGraph.phone, 'NG');
+    }
+    if (data.knowledgeGraph?.website) {
+      website = data.knowledgeGraph.website;
+    }
+
+    const textBlob = (data.organic || []).map((item: any) => `${item.title || ''} ${item.snippet || ''}`).join(' ');
+    if (!phone) {
+      const phones = extractPhonesFromText(textBlob);
+      if (phones.length > 0) phone = normalizePhone(phones[0], 'NG');
+    }
+    if (!email) {
+      const emails = extractEmailsFromText(textBlob);
+      if (emails.length > 0) email = emails[0];
+    }
+    if (!website && data.organic?.[0]?.link) {
+      website = data.organic[0].link;
+    }
+
+    return { phone, email, website };
+  } catch (_) {
+    return { phone: null, email: null, website: null };
   }
 }
