@@ -12,13 +12,13 @@ export async function GET() {
     const { count: totalSolarLeads } = await (supabase as any)
       .from('leads')
       .select('*', { count: 'exact', head: true })
-      .or('source_query_or_seed.ilike.*solar*,category.ilike.*solar*');
+      .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%,business_summary.ilike.%solar%,notes.ilike.%solar%');
 
     // 2. Fetch contacted solar installer outreach count
     const { count: totalContacted } = await (supabase as any)
       .from('leads')
       .select('*', { count: 'exact', head: true })
-      .or('source_query_or_seed.ilike.*solar*,category.ilike.*solar*')
+      .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%,business_summary.ilike.%solar%,notes.ilike.%solar%')
       .eq('status', 'CONTACTED');
 
     // 3. Count scraped public installer group links

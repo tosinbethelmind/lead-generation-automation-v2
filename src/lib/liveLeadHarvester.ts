@@ -58,6 +58,14 @@ const LAGOS_LGA_QUERIES = [
   { q: 'car dealership Allen', cat: 'Auto Commercial Dealership', lga: 'Ikeja' },
   { q: 'school Lekki', cat: 'Educational Institution', lga: 'Eti-Osa' },
   { q: 'restaurant Ikoyi', cat: 'Hospitality Enterprise', lga: 'Ikoyi' },
+  { q: 'pharmacy Ikeja', cat: 'Healthcare & Pharmacy', lga: 'Ikeja' },
+  { q: 'real estate Lekki', cat: 'Real Estate Enterprise', lga: 'Eti-Osa (Lekki)' },
+  { q: 'gym Victoria Island', cat: 'Fitness & Wellness Center', lga: 'Eti-Osa (VI)' },
+  { q: 'bank Ikeja', cat: 'Financial Institution', lga: 'Ikeja' },
+  { q: 'bakery Surulere', cat: 'Food Production Enterprise', lga: 'Surulere' },
+  { q: 'law firm Ikoyi', cat: 'Professional Services Enterprise', lga: 'Ikoyi' },
+  { q: 'tech hub Yaba', cat: 'Technology Innovation Hub', lga: 'Lagos Mainland' },
+  { q: 'furniture show room Lekki', cat: 'Commercial Retail Enterprise', lga: 'Eti-Osa (Lekki)' }
 ];
 
 const BIZLIST_LAGOS_CATEGORIES = [
