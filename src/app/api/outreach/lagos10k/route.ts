@@ -96,9 +96,9 @@ export async function GET(req?: Request) {
       { count: totalContacted },
       { count: hotelsCount }
     ] = await Promise.all([
-      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('source_query_or_seed.eq.lagos_10k_b2b,city.ilike.*lagos*,area.ilike.*lagos*,address.ilike.*lagos*'),
-      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('source_query_or_seed.eq.lagos_10k_b2b,city.ilike.*lagos*,area.ilike.*lagos*').eq('status', 'CONTACTED'),
-      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('source_query_or_seed.eq.lagos_10k_b2b,city.ilike.*lagos*,area.ilike.*lagos*').ilike('category', '%Hotel%')
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('source_query_or_seed.eq.lagos_10k_b2b,city.ilike.%lagos%,area.ilike.%lagos%'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('source_query_or_seed.eq.lagos_10k_b2b,city.ilike.%lagos%,area.ilike.%lagos%').eq('status', 'CONTACTED'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('source_query_or_seed.eq.lagos_10k_b2b,city.ilike.%lagos%,area.ilike.%lagos%').ilike('category', '%Hotel%')
     ]);
 
     return NextResponse.json({
