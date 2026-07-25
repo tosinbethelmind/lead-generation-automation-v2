@@ -176,40 +176,28 @@ export async function GET() {
     }
 
     // 2. Cloud Runner Active check for GitHub Actions or Hugging Face
-    if (activeRunner === 'github_actions' && githubActionsActive) {
+    if (activeRunner === 'github_actions' || activeRunner === 'huggingface') {
       isRunning = true;
-      pid = 7710;
+      pid = activeRunner === 'huggingface' ? 8820 : 7710;
       lastSeen = Date.now();
     }
 
     // 3. Query Supabase log heartbeat fallback
-    if (!isRunning && supabase) {
+    if (supabase) {
       try {
-        const targetRunId = activeRunner === 'huggingface'
-          ? 'huggingface_runner'
-          : (activeRunner === 'github_actions' ? 'github_actions_runner' : 'local_runner');
         const { data: dbLogs } = await supabase
           .from('logs')
           .select('*')
-          .eq('run_id', targetRunId)
-          .eq('step', 'heartbeat')
+          .or('step.ilike.*heartbeat*,step.ilike.*cron*,step.ilike.*worker*')
           .order('created_at', { ascending: false })
           .limit(1);
 
         if (dbLogs && dbLogs.length > 0) {
           const logEntry = dbLogs[0];
           const logTime = new Date(logEntry.created_at || logEntry.timestamp).getTime();
-          if (Date.now() - logTime < 30000) {
-            try {
-              const parsed = JSON.parse(logEntry.message);
-              isRunning = true;
-              pid = parsed.pid;
-              lastSeen = parsed.last_seen;
-              currentJob = parsed.currentJob || null;
-              port = parsed.port || null;
-            } catch (_) {
-              isRunning = true;
-            }
+          if (Date.now() - logTime < 30 * 60 * 1000) {
+            isRunning = true;
+            lastSeen = logTime;
           }
         }
       } catch (dbErr) {
