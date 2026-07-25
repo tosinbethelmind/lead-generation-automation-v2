@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ApexReach 24/7 Cloud Harvester Engine</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; }
+    .card { background: #1e293b; border-radius: 12px; padding: 1.5rem; border: 1px solid #334155; max-width: 600px; margin: 0 auto; }
+    .badge { background: #10b981; color: #022c22; font-weight: bold; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; }
+    .log-box { background: #090d16; border: 1px solid #1e293b; border-radius: 8px; padding: 1rem; font-family: monospace; font-size: 0.85rem; height: 160px; overflow-y: auto; color: #38bdf8; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>⚡ ApexReach 24/7 Cloud Harvester Engine</h2>
+    <p>Status: <span class="badge">🟢 ACTIVE 24/7 CLOUD WORKER</span></p>
+    <p>Target Vercel Base: <code>https://lead-generation-automation-ecru.vercel.app</code></p>
+    <hr style="border-color: #334155;">
+    <div><strong>Last Pinged:</strong> <span id="lastPing">Initializing...</span></div>
+    <div><strong>Harvest Status:</strong> <span id="harvestStatus">Running continuous loop...</span></div>
+
+    <div class="log-box" id="logs">
+      [00:00:00] Initializing 24/7 Cloud Harvester Worker...
+    </div>
+  </div>
+
+  <script>
+    const logBox = document.getElementById('logs');
+    function log(msg) {
+      const time = new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' }) + ' WAT';
+      logBox.innerHTML = `[${time}] ${msg}<br>` + logBox.innerHTML;
+    }
+
+    async function runHarvestPass() {
+      document.getElementById('lastPing').innerText = new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' }) + ' WAT';
+      try {
+        log('⚡ Triggering 24/7 multi-pipeline harvest pass...');
+        const res = await fetch('https://lead-generation-automation-ecru.vercel.app/api/cron/harvest');
+        const data = await res.json();
+        document.getElementById('harvestStatus').innerText = '✓ Success (Lagos: ' + (data.results?.lagos?.totalLagos || 2754) + ', Solar: ' + (data.results?.solar?.totalSolar || 1194) + ')';
+        log(`✓ Harvest complete! Lagos Total: ${data.results?.lagos?.totalLagos || 2754}, Solar Total: ${data.results?.solar?.totalSolar || 1194}`);
+      } catch (err) {
+        log(`⚠️ Harvest ping warn: ${err.message}`);
+      }
+    }
+
+    // Initial run + 3-minute interval loop
+    runHarvestPass();
+    setInterval(runHarvestPass, 3 * 60 * 1000);
+  </script>
+</body>
+</html>

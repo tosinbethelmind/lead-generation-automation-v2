@@ -83,7 +83,7 @@ async function run() {
     body: JSON.stringify({
       name: spaceName,
       type: 'space',
-      sdk: 'gradio',
+      sdk: 'static',
       private: false
     })
   });
@@ -126,26 +126,19 @@ async function run() {
   }
 
   // 6. Bundle and commit files (commit API)
-  const appPyPath = path.resolve(__dirname, '../huggingface/app.py');
-  const reqsTxtPath = path.resolve(__dirname, '../huggingface/requirements.txt');
+  const htmlPath = path.resolve(__dirname, '../huggingface/index.html');
   const readmeMdPath = path.resolve(__dirname, '../huggingface/README.md');
 
-  if (!fs.existsSync(appPyPath) || !fs.existsSync(reqsTxtPath) || !fs.existsSync(readmeMdPath)) {
-    console.error('❌ huggingface/ app.py, requirements.txt, or README.md is missing.');
+  if (!fs.existsSync(htmlPath) || !fs.existsSync(readmeMdPath)) {
+    console.error('❌ huggingface/ index.html or README.md is missing.');
     process.exit(1);
   }
 
   const actions = [
     {
       operation: 'add',
-      path: 'app.py',
-      content: fs.readFileSync(appPyPath).toString('base64'),
-      encoding: 'base64'
-    },
-    {
-      operation: 'add',
-      path: 'requirements.txt',
-      content: fs.readFileSync(reqsTxtPath).toString('base64'),
+      path: 'index.html',
+      content: fs.readFileSync(htmlPath).toString('base64'),
       encoding: 'base64'
     },
     {
@@ -165,6 +158,7 @@ async function run() {
     },
     body: JSON.stringify({
       commit_message: 'Automated deployment of Python Lead Gen Cloud Runner',
+      summary: 'ApexReach 24/7 Cloud Harvester Engine',
       actions
     })
   });

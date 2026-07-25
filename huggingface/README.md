@@ -1,16 +1,13 @@
 ---
-title: bethelmind-lead-engine
-emoji: 🚀
+title: Bethelmind Lead Engine
+emoji: ⚡
 colorFrom: blue
-colorTo: indigo
-sdk: gradio
-sdk_version: 4.36.1
-app_file: app.py
+colorTo: green
+sdk: static
+summary: ApexReach 24/7 Cloud Harvester Engine
 pinned: false
 ---
 
-# ApexReach Cloud Lead Generation Runner
+# ApexReach 24/7 Cloud Harvester Engine
 
-This HuggingFace space serves as the 24/7 background worker runner for the ApexReach lead generation app. 
-
-It polls the Supabase queue, schedules campaigns, and triggers execution.
+Continuous 24/7 background lead harvesting engine for Lagos 10K B2B and Nigeria Solar Pipelines.
