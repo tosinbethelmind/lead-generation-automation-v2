@@ -706,7 +706,7 @@ export default function SolarPipelineDashboard() {
             <div style={{ flex: 1, padding: '14px', background: '#030712', fontFamily: 'Consolas, Monaco, monospace', fontSize: '12px', color: '#10B981', overflowY: 'auto', lineHeight: '1.6' }}>
               <div>[SYSTEM] Connected to 100K Nigeria Solar Live Extraction Scraper Engine...</div>
               <div>[SYSTEM] Workflow Runner: .github/workflows/solar-5k-runner.yml (event_type: run-solar-5k)</div>
-              <div>[DATABASE] Supabase Host: szyuterncawfxwzhvwcf.supabase.co (Main DB) + pnsrjsyiygxdcxkpgbzx.supabase.co (SolarQuotePro DB)</div>
+              <div>[DATABASE] Supabase Host: pnsrjsyiygxdcxkpgbzx.supabase.co (Primary Engine DB)</div>
               <div>[CRITERIA] Scrape Target: 100,000 nationwide solar engineering & installation leads across 36 states + FCT Abuja</div>
               <div>[STATUS] Daily Quota 100,000 leads extracted and synced successfully. 0 mock data present.</div>
               {jobLogs.map((log: any, idx: number) => (

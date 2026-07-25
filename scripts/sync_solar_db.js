@@ -29,7 +29,7 @@ function parseEnvFile(filePath) {
 const localEnvPath = path.resolve(process.cwd(), '.env.local');
 parseEnvFile(localEnvPath);
 
-const MAIN_SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co';
+const MAIN_SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
 const MAIN_SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY';
 
 const SOLARQUOTEPRO_URL = process.env.SOLARQUOTEPRO_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';

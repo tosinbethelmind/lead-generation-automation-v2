@@ -21,5 +21,6 @@ jobs:
       - name: Run Migration Script
         env:
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD || 'pHqrTQc2gpdSqnAx' }}
-          NEXT_PUBLIC_SUPABASE_URL: 'https://szyuterncawfxwzhvwcf.supabase.co'
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co' }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co' }}
         run: node run-queue-hardening-migration.js
