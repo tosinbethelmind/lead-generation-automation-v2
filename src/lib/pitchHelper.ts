@@ -15,7 +15,7 @@ export interface Lead {
   isMock?: boolean;
 }
 
-export type WidgetType = 'ecommerce' | 'vehicle_valuation' | 'table_reservation' | 'patient_intake' | 'quote_estimator';
+export type WidgetType = 'ecommerce' | 'vehicle_valuation' | 'table_reservation' | 'patient_intake' | 'quote_estimator' | 'solar_calculator' | 'real_estate_booking' | 'school_tuition' | 'retainer_estimator';
 
 export interface WhatsAppMessageSim {
   sender: 'customer' | 'bot' | 'agent';
@@ -29,8 +29,10 @@ export interface InvoiceDemoSchema {
   items: { name: string; price: number; qty: number }[];
 }
 
+export type CategoryKey = 'solar' | 'real_estate' | 'school' | 'medical' | 'auto' | 'retail' | 'restaurant' | 'legal' | 'general';
+
 export interface PitchDetails {
-  categoryKey: 'medical' | 'auto' | 'retail' | 'restaurant' | 'general';
+  categoryKey: CategoryKey;
   emailSubject: string;
   emailBody: string;
   whatsappBody: string;
@@ -44,10 +46,57 @@ export interface PitchDetails {
 }
 
 /**
- * Classifies a raw category string into one of five standard industry segments.
+ * Classifies a raw category string into standard Nigerian industry segments.
  */
-export function getCategoryType(categoryRaw: string): 'medical' | 'auto' | 'retail' | 'restaurant' | 'general' {
+export function getCategoryType(categoryRaw: string): CategoryKey {
   const cat = (categoryRaw || '').toLowerCase();
+  if (
+    cat.includes('solar') ||
+    cat.includes('inverter') ||
+    cat.includes('clean tech') ||
+    cat.includes('energy') ||
+    cat.includes('battery') ||
+    cat.includes('power')
+  ) {
+    return 'solar';
+  }
+  if (
+    cat.includes('estate') ||
+    cat.includes('property') ||
+    cat.includes('real estate') ||
+    cat.includes('realty') ||
+    cat.includes('developer') ||
+    cat.includes('housing') ||
+    cat.includes('apartment') ||
+    cat.includes('shortlet')
+  ) {
+    return 'real_estate';
+  }
+  if (
+    cat.includes('school') ||
+    cat.includes('academy') ||
+    cat.includes('college') ||
+    cat.includes('university') ||
+    cat.includes('tutor') ||
+    cat.includes('education') ||
+    cat.includes('creche') ||
+    cat.includes('nursery')
+  ) {
+    return 'school';
+  }
+  if (
+    cat.includes('law') ||
+    cat.includes('legal') ||
+    cat.includes('attorney') ||
+    cat.includes('advocate') ||
+    cat.includes('solicitor') ||
+    cat.includes('barrister') ||
+    cat.includes('consultant') ||
+    cat.includes('accounting') ||
+    cat.includes('audit')
+  ) {
+    return 'legal';
+  }
   if (
     cat.includes('dent') ||
     cat.includes('clin') ||
@@ -98,7 +147,8 @@ export function getCategoryType(categoryRaw: string): 'medical' | 'auto' | 'reta
     cat.includes('kitchen') ||
     cat.includes('eat') ||
     cat.includes('bakery') ||
-    cat.includes('grill')
+    cat.includes('grill') ||
+    cat.includes('hotel')
   ) {
     return 'restaurant';
   }
@@ -132,6 +182,156 @@ export function getPitchDetails(lead: Lead, origin: string, signature: string): 
   let invoiceDemo: InvoiceDemoSchema = { currency: '₦', taxRate: 0.075, items: [] };
 
   switch (categoryKey) {
+    case 'solar':
+      widgetType = 'solar_calculator';
+      widgetTitle = 'Interactive Solar & Inverter Capacity Sizing Calculator';
+      widgetDescription = 'Simulate selecting home/office appliances to calculate KVA load, battery capacity, diesel savings, and instant Paystack deposit generation.';
+      benefitsList = [
+        'Dynamic Appliance KVA & Energy Audit Load Estimator',
+        'Automatic Diesel vs Grid vs Solar Cost Savings Comparison',
+        'Instant Paystack / Moniepoint Deposit Checkout Gateway (50% Deposit & Installments)',
+        'Automatic PDF Technical Survey Quote dispatched to WhatsApp & Email'
+      ];
+      invoiceDemo = {
+        currency: '₦',
+        taxRate: 0.075,
+        items: [
+          { name: '5KVA Hybrid Solar Inverter System (4x 220Ah Tubular Gel Batteries)', price: 1850000, qty: 1 },
+          { name: 'Mono-Perc Solar Panels (6x 550W High Efficiency)', price: 960000, qty: 1 },
+          { name: 'Installation, Cabling, Changeover & Surge Protection', price: 250000, qty: 1 }
+        ]
+      };
+      whatsappSim = [
+        { sender: 'customer', text: 'Hi! I calculated a 5KVA Solar System requirement on your website calculator.', timeOffsetMs: 500 },
+        { sender: 'bot', text: `Hello! ☀️ Welcome to ${name} Solar Portal. Branded Technical Quote #SL-8842 (Total: ₦3,060,000) has been generated. You can pay a 10% commitment deposit or request an engineer visit.`, timeOffsetMs: 1500 },
+        { sender: 'agent', text: `🔔 [Solar Lead Alert] Client calculated 5KVA System (₦3.06M). Address: Lekki Phase 1, Lagos. Phone: +2348035550192. Quote PDF & Site Audit schedule synced to CRM.`, timeOffsetMs: 3000 }
+      ];
+
+      if (hasWebsite) {
+        emailSubject = `Solar Calculator & Paystack Deposit Upgrade for ${name}`;
+        emailBody = `Hi ${name} Team,\n\nWe inspected your website (${webUrl}) and noticed prospective solar buyers cannot calculate their KVA load, estimate battery requirements, or pay commitment deposits online.\n\nWe built a high-conversion Solar Load Sizing & Deposit Calculator upgrade mockup and video walkthrough for your brand:\n${previewUrl}\n\nTest the interactive calculator to see how we automate quotes and route high-intent solar leads straight to your WhatsApp sales team.\n\n*(Note: Custom ERP/Inventory integrations available on request.)*\n\nBest regards,\n${signature}`;
+        whatsappBody = `Hi ${name} Team! We visited your website (${webUrl}) and created a Solar Load Calculator & Paystack Deposit preview with video walkthrough for you: ${previewUrl}. Try calculating a 5KVA system!`;
+        socialBody = `Hello! Checked out ${name}. Solar buyers in Nigeria need instant capacity estimators. We built this interactive solar quote system and video walkthrough for your site (${webUrl}): ${previewUrl}`;
+      } else {
+        emailSubject = `Digital Solar Showroom & Load Calculator Website for ${name}`;
+        emailBody = `Hi ${name} Team,\n\nWe saw ${name} has an impressive rating (${rating} stars, ${reviewsCount} reviews) in ${area}, but lacks an online solar calculator portal.\n\nWe custom-built a modern Solar Engineering landing page, interactive load estimator, and video walkthrough for you:\n${previewUrl}\n\nIt allows clients to size their inverters and pay site audit fees online. Take a look and claim your site.\n\nBest regards,\n${signature}`;
+        whatsappBody = `Hi ${name} Team! We built a modern solar load calculator website proposal and video walkthrough for your brand: ${previewUrl}`;
+        socialBody = `Hi ${name}! We noticed your solar business in ${area} doesn't have an online capacity calculator. We built this interactive preview and walkthrough for you: ${previewUrl}`;
+      }
+      break;
+
+    case 'real_estate':
+      widgetType = 'real_estate_booking';
+      widgetTitle = 'Off-Plan Property Payment & Tour Scheduling Engine';
+      widgetDescription = 'Simulate property tour bookings, initial deposit installment calculations, and instant WhatsApp agent routing.';
+      benefitsList = [
+        'Interactive Down-Payment & Monthly Installment Calculator (10%, 20%, 30% Initial Deposit)',
+        'Virtual & On-Site Property Inspection Slot Scheduler',
+        'Instant Paystack / Moniepoint Reservation Fee Checkout Gateway',
+        'Automated Buyer KYC & Offer Letter PDF Generator'
+      ];
+      invoiceDemo = {
+        currency: '₦',
+        taxRate: 0,
+        items: [
+          { name: '4-Bedroom Fully Detached Duplex (Off-Plan Unit #12)', price: 120000000, qty: 1 },
+          { name: 'Initial Allocation Commitment Deposit (10%)', price: 12000000, qty: 1 }
+        ]
+      };
+      whatsappSim = [
+        { sender: 'customer', text: 'Hi! I want to schedule a physical tour of your Lekki 4-Bedroom Duplex project.', timeOffsetMs: 500 },
+        { sender: 'bot', text: `Hello! 🏡 ${name} Concierge here. We reserved Saturday at 11:00 AM for your private tour. Your PDF Property Brochure & Payment Breakdown link: [View Brochure]`, timeOffsetMs: 1500 },
+        { sender: 'agent', text: `🔔 [High Net-Worth Real Estate Lead] Client booked private inspection for 4-Bed Duplex (₦120M). Buyer: Chief K. Adeniyi (+2348021112233). CRM log updated.`, timeOffsetMs: 3000 }
+      ];
+
+      if (hasWebsite) {
+        emailSubject = `Off-Plan Payment Calculators & Inspection Portal for ${name}`;
+        emailBody = `Hi ${name} Team,\n\nWe reviewed your real estate platform (${webUrl}) and noticed buyers cannot calculate payment plans or schedule property tours seamlessly online.\n\nWe built an Off-Plan Payment & Tour Booking upgrade preview and video walkthrough for your listings:\n${previewUrl}\n\nSee how it captures diaspora and local buyers and routes hot leads to your WhatsApp agents.\n\nBest regards,\n${signature}`;
+        whatsappBody = `Hi ${name} Team! We saw your website (${webUrl}) and built a Property Tour & Installment Payment Calculator proposal with video walkthrough: ${previewUrl}`;
+        socialBody = `Hello! Checked out ${name}. We designed an interactive property payment calculator proposal and video walkthrough for your platform (${webUrl}): ${previewUrl}`;
+      } else {
+        emailSubject = `Luxury Real Estate Showcase & Inspection Booking Portal for ${name}`;
+        emailBody = `Hi ${name} Team,\n\nWe noticed ${name} has a top-rated reputation (${rating} stars) in ${area}, but lacks an interactive property showcase portal.\n\nWe custom-built a modern Real Estate showcase landing page, payment calculator, and video walkthrough for your listings:\n${previewUrl}\n\nClaim this portal to start capturing high-ticket property buyers online.\n\nBest regards,\n${signature}`;
+        whatsappBody = `Hi ${name} Team! We built a luxury real estate portal preview and video walkthrough for your property listings: ${previewUrl}`;
+        socialBody = `Hi! We built a modern property showcase preview and video walkthrough for ${name} in ${area}: ${previewUrl}`;
+      }
+      break;
+
+    case 'school':
+      widgetType = 'school_tuition';
+      widgetTitle = 'Online Admission Portal & Tuition Fee Installment Calculator';
+      widgetDescription = 'Simulate parent registration, tuition breakdown calculation, and instant admission form fee checkout via Paystack/Moniepoint.';
+      benefitsList = [
+        'Interactive Termly Tuition & Boarding Fee Breakdown Calculator',
+        'Digital Student Admission Application Form with Uploads',
+        'Instant Paystack / Moniepoint Admission Form Fee Checkout',
+        'Automated PDF Provisional Admission Letter Generator'
+      ];
+      invoiceDemo = {
+        currency: '₦',
+        taxRate: 0,
+        items: [
+          { name: 'Term 1 Tuition Fee (Senior Secondary)', price: 350000, qty: 1 },
+          { name: 'Uniforms, Textbooks & Digital Learning Tablet', price: 120000, qty: 1 },
+          { name: 'Application & Entrance Examination Fee', price: 20000, qty: 1 }
+        ]
+      };
+      whatsappSim = [
+        { sender: 'customer', text: 'Hi! I filled out an online admission inquiry for JS1 for my son.', timeOffsetMs: 500 },
+        { sender: 'bot', text: `Hello! 🎓 Welcome to ${name} Admissions. Your Entrance Examination reference is #SCH-4029. Exam Date: Next Saturday 9 AM. Download syllabus: [Link]`, timeOffsetMs: 1500 },
+        { sender: 'agent', text: `🔔 [New School Admission Inquiry] Parent: Mrs. Janet Okoh. Student: David Okoh (Applying for JS1). Application Fee Paid: ₦20,000. Entrance Exam slip dispatched.`, timeOffsetMs: 3000 }
+      ];
+
+      if (hasWebsite) {
+        emailSubject = `Digital Admissions & Tuition Fee Payment Upgrade for ${name}`;
+        emailBody = `Hi ${name} Management,\n\nWe reviewed your school website (${webUrl}) and noticed parents cannot complete admission forms or pay fees online seamlessly.\n\nWe designed a digital admissions portal and tuition fee calculator upgrade preview with a video walkthrough:\n${previewUrl}\n\nTest how parents can pay application fees via Paystack and receive instant PDF entrance exam slips.\n\nBest regards,\n${signature}`;
+        whatsappBody = `Hi ${name} Team! We built an online admission portal & tuition fee calculator proposal with video walkthrough for your school: ${previewUrl}`;
+        socialBody = `Hello! We designed an interactive admission portal proposal and video walkthrough for ${name} (${webUrl}): ${previewUrl}`;
+      } else {
+        emailSubject = `Modern School Website & Digital Admissions Portal for ${name}`;
+        emailBody = `Hi ${name} Management,\n\nWe noticed ${name} has an outstanding reputation (${rating} stars, ${reviewsCount} reviews) in ${area}, but lacks an interactive web address.\n\nWe custom-built a modern school website, admissions portal, and video walkthrough for your institution:\n${previewUrl}\n\nParents can apply online and download prospectus materials. Claim your site today.\n\nBest regards,\n${signature}`;
+        whatsappBody = `Hi ${name} Management! We built a custom school website and admissions portal preview with video walkthrough for your institution: ${previewUrl}`;
+        socialBody = `Hi! We built a modern school portal preview and video walkthrough for ${name} in ${area}: ${previewUrl}`;
+      }
+      break;
+
+    case 'legal':
+      widgetType = 'retainer_estimator';
+      widgetTitle = 'Client Case Assessment & Retainer Fee Calculator';
+      widgetDescription = 'Simulate confidential legal intake, consultation slot booking, and upfront consultation fee payment.';
+      benefitsList = [
+        'Confidential Client Intake & Practice Area Classifier',
+        'Interactive Initial Consultation Fee & Monthly Retainer Estimator',
+        'Paystack / Moniepoint Upfront Retainer & Consultation Deposit Checkout',
+        'Encrypted Document Upload & Client Portal Link Generator'
+      ];
+      invoiceDemo = {
+        currency: '₦',
+        taxRate: 0.075,
+        items: [
+          { name: 'Initial Senior Advocate Legal Consultation (1 Hour)', price: 100000, qty: 1 },
+          { name: 'Corporate Retainer & Regulatory Compliance Review', price: 350000, qty: 1 }
+        ]
+      };
+      whatsappSim = [
+        { sender: 'customer', text: 'Hi! I need a legal consultation regarding commercial property lease contracts.', timeOffsetMs: 500 },
+        { sender: 'bot', text: `Hello! ⚖️ ${name} Legal Assistant. Your consultation is reserved for Thursday 2 PM. PDF Intake & NDA Form dispatched to your email.`, timeOffsetMs: 1500 },
+        { sender: 'agent', text: `🔔 [New Legal Client Consultation] Client: Engr. Femi Bakare. Practice Area: Corporate Lease Law. Consultation Fee Paid: ₦100,000. Calendar slot blocked.`, timeOffsetMs: 3000 }
+      ];
+
+      if (hasWebsite) {
+        emailSubject = `Client Intake & Upfront Retainer Payment Upgrade for ${name}`;
+        emailBody = `Hi ${name} Team,\n\nWe visited your firm's website (${webUrl}) and noticed clients cannot schedule consultations or pay retainer fees online.\n\nWe created a confidential client intake & consultation fee checkout preview with a video walkthrough for your firm:\n${previewUrl}\n\nSee how it filters high-value corporate clients and eliminates unpaid initial consultations.\n\nBest regards,\n${signature}`;
+        whatsappBody = `Hi ${name} Team! We built a legal client intake & consultation booking upgrade proposal with video walkthrough for your firm: ${previewUrl}`;
+        socialBody = `Hello! We designed a client consultation & retainer portal proposal with video walkthrough for ${name} (${webUrl}): ${previewUrl}`;
+      } else {
+        emailSubject = `Digital Legal Portal & Consultation System for ${name}`;
+        emailBody = `Hi ${name} Team,\n\nWe saw ${name} has a top legal reputation (${rating} stars) in ${area}, but lacks an online booking address.\n\nWe custom-built a modern legal firm portal, consultation fee calculator, and video walkthrough for you:\n${previewUrl}\n\nClaim the platform to launch your digital law office.\n\nBest regards,\n${signature}`;
+        whatsappBody = `Hi ${name} Team! We built a custom legal portal and consultation fee calculator preview with video walkthrough for your firm: ${previewUrl}`;
+        socialBody = `Hi! We built a modern legal portal preview and video walkthrough for ${name} in ${area}: ${previewUrl}`;
+      }
+      break;
+
     case 'medical':
       widgetType = 'patient_intake';
       widgetTitle = 'Interactive Patient Scheduling & Intake Portals';

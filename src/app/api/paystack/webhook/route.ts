@@ -271,6 +271,25 @@ Bethelmind Analytics & Strategy Lead Engine`;
             console.warn('[Webhook] Failed to send admin alert email:', adminMailErr.message);
           }
         }
+
+        // 8. Zero-Touch Auto-Provisioning Engine (triggered on webhook payment confirmation)
+        try {
+          const { autoProvisionClientSite } = await import('@/lib/autoProvision');
+          await autoProvisionClientSite({
+            leadId,
+            clientName: clientName || lead.name,
+            clientEmail: clientEmail || '',
+            clientPhone: lead.phone_raw || lead.phone_e164,
+            selectedStrategy: lead.upgradeStrategy || 'basic_presence',
+            selectedFeatures: lead.pluginSuggestions || [],
+            claimFeeNGN: amountPaid,
+            paymentMethod: 'paystack',
+            paymentReference: reference
+          });
+          console.log(`[Webhook] ✅ Auto-provisioned site for lead ${leadId}`);
+        } catch (pErr: any) {
+          console.warn('[Webhook] Auto-provision warning:', pErr.message);
+        }
       }
     }
 

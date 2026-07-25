@@ -200,8 +200,29 @@ Bethelmind Analytics & Strategy Lead Engine`;
       }
     }
 
+    // 7. Zero-Touch Auto-Provisioning Engine
+    let provisionedUrl = '';
+    try {
+      const { autoProvisionClientSite } = await import('@/lib/autoProvision');
+      const provisionRes = await autoProvisionClientSite({
+        leadId,
+        clientName,
+        clientEmail,
+        clientPhone: lead.phone_raw || lead.phone_e164,
+        selectedStrategy: scaling.mode || 'basic_presence',
+        selectedFeatures: selectedFeatures || [],
+        claimFeeNGN: 150000,
+        paymentMethod: paymentMethod || 'paystack'
+      });
+      provisionedUrl = provisionRes.liveUrl;
+    } catch (pErr: any) {
+      console.warn('[ClaimRoute] Auto-provision warning:', pErr.message);
+    }
+
     let userMessage = 'Website claimed successfully!';
-    if (githubCommitStatus === 'SUCCESS') {
+    if (provisionedUrl) {
+      userMessage = `Website claimed & provisioned live! Access your site at: ${provisionedUrl}`;
+    } else if (githubCommitStatus === 'SUCCESS') {
       userMessage = 'Website claimed! Live files committed to GitHub. Vercel is deploying the updates.';
     } else if (githubCommitStatus === 'QUEUED') {
       userMessage = 'Website claimed successfully! Your site is live dynamically, and static deployment is queued.';
@@ -215,6 +236,7 @@ Bethelmind Analytics & Strategy Lead Engine`;
       success: true,
       githubCommitStatus,
       localWriteSuccess,
+      provisionedUrl,
       message: userMessage,
       lead
     });

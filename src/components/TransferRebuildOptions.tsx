@@ -6,13 +6,20 @@ interface TransferRebuildOptionsProps {
   onSuccess?: (previewUrl: string) => void;
 }
 
-// Features aligned with LandingPage's interactive automation demos
+// Features aligned with LandingPage's interactive automation demos & Nigerian market demand
 const FEATURE_CATALOG = [
   { id: 'quote_estimator', label: 'Smart Project Estimator & Invoicing', cost: 35000, desc: 'Clients calculate service price quotes in real-time and generate branded invoices.' },
   { id: 'patient_intake', label: 'Appointment Booking & Intake Portal', cost: 35000, desc: 'Clients self-schedule appointments and fill out digital intake forms.' },
   { id: 'ecommerce', label: 'Paystack Shopping Checkout Integration', cost: 50000, desc: 'Sell products online with shopping cart checkout and secure payments.' },
   { id: 'vehicle_valuation', label: 'Smart Asset Valuation Calculator', cost: 30000, desc: 'Offer prospective clients instant asset appraisals to capture high-value sales leads.' },
-  { id: 'table_reservation', label: 'Table & Seat Reservation System', cost: 25000, desc: 'Allow guests to reserve dining tables, pick time slots, and pre-order food.' }
+  { id: 'table_reservation', label: 'Table & Seat Reservation System', cost: 25000, desc: 'Allow guests to reserve dining tables, pick time slots, and pre-order food.' },
+  { id: 'whatsapp_floating_button', label: 'Sticky Floating WhatsApp Chat Button', cost: 15000, desc: 'Direct 1-click WhatsApp instant chat button with pre-filled lead message.' },
+  { id: 'google_maps_embed', label: 'Interactive Google Maps Location Embed', cost: 10000, desc: 'Embedded Google Maps iframe showing physical address for local trust.' },
+  { id: 'ai_chatbot', label: '24/7 AI-Powered FAQ Assistant', cost: 45000, desc: 'Automated AI chatbot answering client inquiries on pricing & hours around the clock.' },
+  { id: 'social_proof_counters', label: 'Animated Social Proof Counters', cost: 15000, desc: 'Live counters showing clients served, average star rating, and verified status.' },
+  { id: 'sms_whatsapp_reminders', label: 'Automated SMS & WhatsApp Reminders', cost: 25000, desc: 'Automated appointment and payment reminders sent 24h before scheduled slots.' },
+  { id: 'parent_portal', label: 'Parent Attendance & CBT Portal Access', cost: 40000, desc: 'Digital portal for parents to track attendance, report cards, and CBT scores.' },
+  { id: 'fleet_tracker', label: 'Real-Time GPS Fleet & Delivery Tracker', cost: 55000, desc: 'Live tracking map for logistics packages, delivery riders, and school buses.' }
 ];
 
 export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ lead, onSuccess }) => {

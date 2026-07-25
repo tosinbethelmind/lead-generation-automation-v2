@@ -45,27 +45,34 @@ const LAGOS_LGA_QUERIES = [
   { q: 'hotel Ikeja', cat: 'Hospitality & Hotel', lga: 'Ikeja' },
   { q: 'hotel Lekki', cat: 'Hospitality & Hotel', lga: 'Eti-Osa (Lekki)' },
   { q: 'hotel Victoria Island', cat: 'Hospitality & Hotel', lga: 'Eti-Osa (VI)' },
+  { q: 'shortlet apartment Lekki', cat: 'Hospitality & Shortlet', lga: 'Eti-Osa (Lekki)' },
   { q: 'hospital Lekki', cat: 'Healthcare Facility', lga: 'Eti-Osa (Lekki)' },
   { q: 'hospital Yaba', cat: 'Healthcare Facility', lga: 'Lagos Mainland' },
   { q: 'hospital Ikeja', cat: 'Healthcare Facility', lga: 'Ikeja' },
-  { q: 'plaza Lekki', cat: 'Commercial Shopping Plaza', lga: 'Eti-Osa (Lekki)' },
-  { q: 'plaza Ikeja', cat: 'Commercial Shopping Plaza', lga: 'Ikeja' },
-  { q: 'logistics Apapa', cat: 'Logistics & Freight Hub', lga: 'Apapa' },
-  { q: 'supermarket Surulere', cat: 'Commercial Retail Enterprise', lga: 'Surulere' },
-  { q: 'factory Ikorodu', cat: 'Industrial Manufacturing Facility', lga: 'Ikorodu' },
-  { q: 'event center Ikoyi', cat: 'Event & Hospitality Center', lga: 'Ikoyi' },
-  { q: 'company Maryland', cat: 'Corporate Enterprise', lga: 'Kosofe' },
-  { q: 'car dealership Allen', cat: 'Auto Commercial Dealership', lga: 'Ikeja' },
-  { q: 'school Lekki', cat: 'Educational Institution', lga: 'Eti-Osa' },
-  { q: 'restaurant Ikoyi', cat: 'Hospitality Enterprise', lga: 'Ikoyi' },
-  { q: 'pharmacy Ikeja', cat: 'Healthcare & Pharmacy', lga: 'Ikeja' },
-  { q: 'real estate Lekki', cat: 'Real Estate Enterprise', lga: 'Eti-Osa (Lekki)' },
-  { q: 'gym Victoria Island', cat: 'Fitness & Wellness Center', lga: 'Eti-Osa (VI)' },
-  { q: 'bank Ikeja', cat: 'Financial Institution', lga: 'Ikeja' },
-  { q: 'bakery Surulere', cat: 'Food Production Enterprise', lga: 'Surulere' },
+  { q: 'dental clinic Ikeja', cat: 'Healthcare & Dental Specialist', lga: 'Ikeja' },
+  { q: 'eye clinic Victoria Island', cat: 'Healthcare & Eye Specialist', lga: 'Eti-Osa (VI)' },
+  { q: 'private school Lekki', cat: 'Educational Institution', lga: 'Eti-Osa' },
+  { q: 'college Ikeja', cat: 'Educational Institution', lga: 'Ikeja' },
+  { q: 'academy Gbagada', cat: 'Educational Institution', lga: 'Kosofe' },
   { q: 'law firm Ikoyi', cat: 'Professional Services Enterprise', lga: 'Ikoyi' },
-  { q: 'tech hub Yaba', cat: 'Technology Innovation Hub', lga: 'Lagos Mainland' },
-  { q: 'furniture show room Lekki', cat: 'Commercial Retail Enterprise', lga: 'Eti-Osa (Lekki)' }
+  { q: 'law chambers Ikeja', cat: 'Professional Legal Practice', lga: 'Ikeja' },
+  { q: 'tax consultant Victoria Island', cat: 'Financial & Tax Advisory', lga: 'Eti-Osa (VI)' },
+  { q: 'real estate developer Lekki', cat: 'Real Estate Developer', lga: 'Eti-Osa (Lekki)' },
+  { q: 'property consultant Ikoyi', cat: 'Real Estate Agency', lga: 'Ikoyi' },
+  { q: 'estate agent Ajah', cat: 'Real Estate Commercial', lga: 'Eti-Osa (Ajah)' },
+  { q: 'car dealership Allen', cat: 'Auto Commercial Dealership', lga: 'Ikeja' },
+  { q: 'auto workshop Festac', cat: 'Auto Repair & Maintenance', lga: 'Amuwo-Odofin' },
+  { q: 'logistics company Apapa', cat: 'Logistics & Freight Hub', lga: 'Apapa' },
+  { q: 'courier delivery Ikeja', cat: 'Express Logistics Courier', lga: 'Ikeja' },
+  { q: 'boutique store Surulere', cat: 'Fashion Retail Enterprise', lga: 'Surulere' },
+  { q: 'supermarket Alimosho', cat: 'Commercial Retail Enterprise', lga: 'Alimosho' },
+  { q: 'beauty spa Lekki', cat: 'Wellness & Spa Center', lga: 'Eti-Osa' },
+  { q: 'salon Ikeja GRA', cat: 'Beauty & Hair Salon', lga: 'Ikeja' },
+  { q: 'lounge Victoria Island', cat: 'Hospitality & Dining', lga: 'Eti-Osa (VI)' },
+  { q: 'restaurant Ikoyi', cat: 'Hospitality Enterprise', lga: 'Ikoyi' },
+  { q: 'event center Maryland', cat: 'Event & Hospitality Center', lga: 'Kosofe' },
+  { q: 'factory Ikorodu', cat: 'Industrial Manufacturing Facility', lga: 'Ikorodu' },
+  { q: 'plaza Ikeja', cat: 'Commercial Shopping Plaza', lga: 'Ikeja' }
 ];
 
 const BIZLIST_LAGOS_CATEGORIES = [
@@ -173,7 +180,7 @@ async function fetchDuckDuckGoSolarLeads(query: string): Promise<any[]> {
   return [];
 }
 
-function parseOsmElement(el: any, engineTag: string, category: string, seedLabel: string): any | null {
+export function parseOsmElement(el: any, engineTag: string, category: string, seedLabel: string): any | null {
   const tags = el.tags || el.extratags || {};
 
   const name = (
@@ -360,6 +367,19 @@ export async function harvestLiveSolarLeads(): Promise<{ added: number; totalSol
       ).catch(() => {});
     }
 
+    // Async Non-Blocking Pre-Generation Worker: Pre-cache AI copy & design assets for solar leads
+    const toPreGen = harvested.filter(l => !l.generated_copy && !l.design_theme).slice(0, 5);
+    if (toPreGen.length > 0) {
+      import('./preGenWorker').then(({ preGenerateLeadAssets }) => {
+        Promise.allSettled(
+          toPreGen.map(lead => preGenerateLeadAssets(lead))
+        ).then(results => {
+          const preCached = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
+          console.log(`[LiveHarvester] Pre-generated copy & theme for ${preCached}/${toPreGen.length} new solar leads`);
+        }).catch(() => {});
+      }).catch(() => {});
+    }
+
     let totalSolar = 0;
     try {
       const { count } = await supabase
@@ -389,7 +409,10 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
     const bizCat1 = shuffledBizCats[0];
     const bizCat2 = shuffledBizCats[1];
 
+    const { fetchOverpassLagosBulkLeads } = await import('./overpassScraper');
+
     const parallelTasks: Promise<any[]>[] = [
+      fetchOverpassLagosBulkLeads(),
       ...selectedLgas.map(l => fetchNominatimSearch(l.q)),
       fetchBusinessListLeads(bizCat1, 'lagos_10k_b2b'),
       fetchBusinessListLeads(bizCat2, 'lagos_10k_b2b'),
@@ -445,6 +468,20 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
           } catch (_) {}
         })
       ).catch(() => {});
+    }
+
+    // Async Non-Blocking Pre-Generation Worker: Pre-cache AI copy & design assets
+    // so the first preview page load is <15ms instead of 2.5s LLM wait
+    const toPreGen = harvested.filter(l => !l.generated_copy && !l.design_theme).slice(0, 5);
+    if (toPreGen.length > 0) {
+      import('./preGenWorker').then(({ preGenerateLeadAssets }) => {
+        Promise.allSettled(
+          toPreGen.map(lead => preGenerateLeadAssets(lead))
+        ).then(results => {
+          const preCached = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
+          console.log(`[LiveHarvester] Pre-generated copy & theme for ${preCached}/${toPreGen.length} new leads`);
+        }).catch(() => {});
+      }).catch(() => {});
     }
 
     let totalLagos = 0;

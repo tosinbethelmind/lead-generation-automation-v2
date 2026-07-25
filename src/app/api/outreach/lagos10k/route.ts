@@ -89,20 +89,30 @@ export async function GET(req?: Request) {
       console.warn('[LagosAPI] Log fetch warn:', err.message);
     }
 
-    // Parallel Live Lead Counts
+    // Parallel Live Lead Counts — Exclude solar leads for strict pipeline separation
     const [
       { count: totalLagosLeads },
       { count: totalContacted },
-      { count: hotelsCount }
+      { count: realEstateCount },
+      { count: schoolsCount },
+      { count: clinicsCount },
+      { count: hotelsCount },
+      { count: retailCount },
+      { count: autoCount }
     ] = await Promise.all([
-      (supabase as any).from('leads').select('*', { count: 'exact', head: true }),
-      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).eq('status', 'CONTACTED'),
-      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).ilike('category', '%Hotel%')
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).not('category', 'ilike', '%solar%'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).eq('status', 'CONTACTED').not('category', 'ilike', '%solar%'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%estate%,category.ilike.%property%'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%school%,category.ilike.%academy%,category.ilike.%college%'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%clinic%,category.ilike.%hospital%,category.ilike.%dental%'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%hotel%,category.ilike.%restaurant%,category.ilike.%lounge%'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%boutique%,category.ilike.%store%,category.ilike.%retail%'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%car%,category.ilike.%auto%,category.ilike.%motor%')
     ]);
 
     return NextResponse.json({
       success: true,
-      pipeline: 'Lagos 10K B2B Lead Engine',
+      pipeline: 'Lagos 10K Multi-Sector B2B Engine',
       isRunning,
       pid: isRunning ? (pid || 8810) : null,
       latestLogs,
@@ -110,9 +120,16 @@ export async function GET(req?: Request) {
       stats: {
         totalLagosLeads: totalLagosLeads || liveLagosLeadsCount || 2754,
         totalContactedOutreach: totalContacted || 0,
-        commercialHotelsCount: hotelsCount || 0,
-        targetMarket: 'Lagos State (Ikeja, Lekki, VI, Yaba, Surulere, Oshodi, Ikorodu)',
-        outreachChannel: 'Web Contact Form Auto-Submitter & B2B Email',
+        sectorBreakdown: {
+          realEstate: realEstateCount || 0,
+          schools: schoolsCount || 0,
+          clinics: clinicsCount || 0,
+          hotelsAndDining: hotelsCount || 0,
+          retailAndBoutiques: retailCount || 0,
+          autoAndLogistics: autoCount || 0
+        },
+        targetMarket: 'Lagos State (Ikeja, Lekki, VI, Yaba, Surulere, Ikoyi, Oshodi, Ikorodu)',
+        outreachChannel: 'Web Contact Form Auto-Submitter, WhatsApp & B2B Email',
         lastUpdatedTime: getLagosTimeString() + ' WAT'
       },
       mode: '24/7 Non-Stop Cloud Engine + Local Hybrid Runner'

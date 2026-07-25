@@ -277,6 +277,40 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   const [demoLoading, setDemoLoading] = useState(false);
   const [demoStatus, setDemoStatus] = useState<string | null>(null);
 
+  // Fail-Proof WhatsApp Phone Number Formatter for Nigerian Mobile Numbers
+  const formatWhatsAppNumber = (phone?: string): string => {
+    if (!phone) return '';
+    let cleaned = phone.replace(/[^0-9]/g, '');
+    if (cleaned.startsWith('0') && cleaned.length === 11) {
+      cleaned = '234' + cleaned.substring(1);
+    } else if (cleaned.length === 10) {
+      cleaned = '234' + cleaned;
+    }
+    return cleaned;
+  };
+
+  // NDPR Privacy Banner State with Safe LocalStorage Access
+  const [ndprDismissed, setNdprDismissed] = useState(false);
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const dismissed = localStorage.getItem('ndpr_accepted');
+        if (dismissed === 'true') setNdprDismissed(true);
+      } catch (e) {
+        console.warn('LocalStorage access warning:', e);
+      }
+    }
+  }, []);
+
+  const acceptNdpr = () => { 
+    setNdprDismissed(true); 
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('ndpr_accepted', 'true');
+      } catch (e) {}
+    }
+  };
+
   // Business features selection states
   const [activeWidget, setActiveWidget] = useState<string>(
     data.selectedFeatures && data.selectedFeatures.length > 0 
@@ -903,6 +937,336 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     );
   };
 
+  // Solar Calculator Widget Renderer
+  const renderSolarCalculator = () => {
+    const defaultName = demoForm.name || '';
+    const defaultEmail = demoForm.email || '';
+    const defaultPhone = demoForm.phone || '';
+
+    // Solar load pricing math
+    const [solarKva, setSolarKva] = useState(5);
+    const [solarBatteryType, setSolarBatteryType] = useState<'Tubular Gel' | 'Lithium-Ion'>('Tubular Gel');
+    const [solarPanelsCount, setSolarPanelsCount] = useState(6);
+
+    const baseInverterPrice = solarKva === 3.5 ? 850000 : solarKva === 5 ? 1850000 : solarKva === 10 ? 3400000 : 5500000;
+    const batteryUnitPrice = solarBatteryType === 'Tubular Gel' ? 240000 : 850000;
+    const batteriesNeeded = solarKva === 3.5 ? 2 : solarKva === 5 ? 4 : 8;
+    const batteryTotal = batteryUnitPrice * batteriesNeeded;
+    const panelsTotal = solarPanelsCount * 160000; // ₦160k per 550W panel
+    const installationFee = 250000;
+    const totalSolarQuote = baseInverterPrice + batteryTotal + panelsTotal + installationFee;
+
+    const handleSolarSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      const items = [
+        { name: `${solarKva}KVA Hybrid Solar Inverter Unit`, price: baseInverterPrice, qty: 1 },
+        { name: `${batteriesNeeded}x ${solarBatteryType} Deep-Cycle Batteries`, price: batteryTotal, qty: 1 },
+        { name: `${solarPanelsCount}x 550W Mono-Perc Solar Panels`, price: panelsTotal, qty: 1 },
+        { name: `Installation, Cabling, Changeover & Surge Protection`, price: installationFee, qty: 1 }
+      ];
+      const details = `Solar Sizing Calculator request. System: ${solarKva}KVA, Battery: ${batteriesNeeded}x ${solarBatteryType}, Panels: ${solarPanelsCount}x 550W. Calculated Total: ₦${totalSolarQuote.toLocaleString()}`;
+      handleWidgetSubmit(defaultName, defaultEmail, defaultPhone, details, items);
+    };
+
+    return (
+      <form onSubmit={handleSolarSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Your Name</label>
+            <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({...demoForm, name: e.target.value})} placeholder="e.g. Chief K. Adebayo" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Email Address</label>
+            <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({...demoForm, email: e.target.value})} placeholder="adebayo@example.com" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Phone Number</label>
+            <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({...demoForm, phone: e.target.value})} placeholder="+234 803 555 0192" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Inverter System Capacity</label>
+            <select value={solarKva} onChange={(e) => setSolarKva(Number(e.target.value))} style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}>
+              <option value="3.5">3.5KVA System (Lighting, TV, Fridge, Fans)</option>
+              <option value="5">5KVA System (1x AC, Fridge, TV, Freezer, Pumping Machine)</option>
+              <option value="10">10KVA System (3x ACs, Full Duplex / Commercial Office)</option>
+              <option value="15">15KVA+ Heavy Duty Industrial System</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Battery Technology</label>
+            <select value={solarBatteryType} onChange={(e) => setSolarBatteryType(e.target.value as any)} style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}>
+              <option value="Tubular Gel">Tubular Gel Deep-Cycle (Standard)</option>
+              <option value="Lithium-Ion">Lithium Wall-Mounted LiFePO4 (Premium / 10-Yr Lifespan)</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Solar Panels Count ({solarPanelsCount}x 550W)</label>
+            <input type="range" min="2" max="24" step="2" value={solarPanelsCount} onChange={(e) => setSolarPanelsCount(Number(e.target.value))} style={{ width: '100%', accentColor: theme.primary }} />
+          </div>
+        </div>
+
+        <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px dashed #cbd5e1', textAlign: 'center' }}>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>CALCULATED SOLAR INSTALLATION QUOTE</span>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#059669', marginTop: '4px' }}>
+            ₦{totalSolarQuote.toLocaleString()}
+          </div>
+          <span style={{ fontSize: '0.78rem', color: '#475569', marginTop: '2px', display: 'block' }}>Includes Paystack 10% Commitment Deposit Option & Free Engineer Site Survey</span>
+        </div>
+
+        <button type="submit" disabled={demoLoading} style={{ background: theme.primary, color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, cursor: demoLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          {demoLoading ? 'Calculating Technical Specs...' : 'Generate PDF Solar Quote & Book Engineer Visit'} <ArrowRight size={18} />
+        </button>
+      </form>
+    );
+  };
+
+  // Real Estate Booking Widget Renderer
+  const renderRealEstateBooking = () => {
+    const defaultName = demoForm.name || '';
+    const defaultEmail = demoForm.email || '';
+    const defaultPhone = demoForm.phone || '';
+
+    const [estatePropertyType, setEstatePropertyType] = useState('4-Bedroom Detached Duplex');
+    const [estateDownPaymentPct, setEstateDownPaymentPct] = useState(20);
+    const [estateMonths, setEstateMonths] = useState(12);
+
+    const basePropertyPrice = estatePropertyType.includes('Flat') ? 45000000 : estatePropertyType.includes('Terrace') ? 75000000 : estatePropertyType.includes('Penthouse') ? 220000000 : 120000000;
+    const initialDeposit = Math.floor(basePropertyPrice * (estateDownPaymentPct / 100));
+    const remainingBalance = basePropertyPrice - initialDeposit;
+    const monthlyInstallment = Math.floor(remainingBalance / estateMonths);
+
+    const handleEstateSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      const items = [
+        { name: `${estatePropertyType} Listing (Total: ₦${basePropertyPrice.toLocaleString()})`, price: basePropertyPrice, qty: 1 },
+        { name: `Initial Allocation Commitment Deposit (${estateDownPaymentPct}%)`, price: initialDeposit, qty: 1 }
+      ];
+      const details = `Real estate inspection & payment plan request. Property: ${estatePropertyType}, Price: ₦${basePropertyPrice.toLocaleString()}, Down payment: ${estateDownPaymentPct}% (₦${initialDeposit.toLocaleString()}), Monthly: ₦${monthlyInstallment.toLocaleString()}/mo for ${estateMonths} months.`;
+      handleWidgetSubmit(defaultName, defaultEmail, defaultPhone, details, items);
+    };
+
+    return (
+      <form onSubmit={handleEstateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Buyer Full Name</label>
+            <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({...demoForm, name: e.target.value})} placeholder="e.g. Dr. Folake Solanke" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Email Address</label>
+            <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({...demoForm, email: e.target.value})} placeholder="folake@example.com" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Phone Number</label>
+            <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({...demoForm, phone: e.target.value})} placeholder="+234 802 111 2233" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Property Unit Type</label>
+            <select value={estatePropertyType} onChange={(e) => setEstatePropertyType(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}>
+              <option value="2-Bedroom Luxury Apartment Flat">2-Bedroom Luxury Apartment Flat (₦45M)</option>
+              <option value="3-Bedroom Smart Terrace House">3-Bedroom Smart Terrace House (₦75M)</option>
+              <option value="4-Bedroom Detached Duplex">4-Bedroom Fully Detached Duplex (₦120M)</option>
+              <option value="5-Bedroom Oceanview Penthouse">5-Bedroom Oceanview Penthouse (₦220M)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Initial Down Payment ({estateDownPaymentPct}%)</label>
+            <input type="range" min="10" max="50" step="10" value={estateDownPaymentPct} onChange={(e) => setEstateDownPaymentPct(Number(e.target.value))} style={{ width: '100%', accentColor: theme.primary }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Installment Period ({estateMonths} Months)</label>
+            <input type="range" min="6" max="24" step="6" value={estateMonths} onChange={(e) => setEstateMonths(Number(e.target.value))} style={{ width: '100%', accentColor: theme.primary }} />
+          </div>
+        </div>
+
+        <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px dashed #cbd5e1', textAlign: 'center' }}>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>INITIAL RESERVATION DEPOSIT REQUIRED</span>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#d97706', marginTop: '4px' }}>
+            ₦{initialDeposit.toLocaleString()}
+          </div>
+          <span style={{ fontSize: '0.8rem', color: '#475569', marginTop: '2px', display: 'block' }}>Monthly Installments: ₦{monthlyInstallment.toLocaleString()} / month for {estateMonths} months</span>
+        </div>
+
+        <button type="submit" disabled={demoLoading} style={{ background: theme.primary, color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, cursor: demoLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          {demoLoading ? 'Processing Booking...' : 'Schedule Private Inspection & Generate Offer Letter'} <ArrowRight size={18} />
+        </button>
+      </form>
+    );
+  };
+
+  // School Tuition & CBT Admissions Widget Renderer
+  const renderSchoolTuition = () => {
+    const defaultName = demoForm.name || '';
+    const defaultEmail = demoForm.email || '';
+    const defaultPhone = demoForm.phone || '';
+
+    const [schoolClass, setSchoolClass] = useState('Senior Secondary (SS1 - SS3)');
+    const [schoolBoarding, setSchoolBoarding] = useState(true);
+    const [includeCbtExam, setIncludeCbtExam] = useState(true);
+    const [includeResultCheckerPin, setIncludeResultCheckerPin] = useState(true);
+
+    const tuitionFee = schoolClass.includes('Creche') ? 180000 : schoolClass.includes('Primary') ? 250000 : 350000;
+    const boardingFee = schoolBoarding ? 200000 : 0;
+    const booksUniforms = 120000;
+    const totalTermFee = tuitionFee + boardingFee + booksUniforms;
+    const applicationFormFee = 20000;
+    const cbtFee = includeCbtExam ? 5000 : 0;
+    const resultPinFee = includeResultCheckerPin ? 3000 : 0;
+    const totalCheckoutFee = applicationFormFee + cbtFee + resultPinFee;
+
+    const handleSchoolSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      const items = [
+        { name: `Online Admission Application Form Fee`, price: applicationFormFee, qty: 1 }
+      ];
+      if (includeCbtExam) {
+        items.push({ name: 'Computer-Based Test (CBT) Entrance Exam Access & Photo Verification', price: cbtFee, qty: 1 });
+      }
+      if (includeResultCheckerPin) {
+        items.push({ name: 'Digital Student Result Checker Scratch Pin Access', price: resultPinFee, qty: 1 });
+      }
+      items.push({ name: `Term 1 Tuition Fee (${schoolClass})`, price: tuitionFee, qty: 1 });
+      items.push({ name: `Textbooks, School Uniforms & Digital Tablet`, price: booksUniforms, qty: 1 });
+      if (schoolBoarding) {
+        items.push({ name: 'Boarding House & Catering Accommodation', price: boardingFee, qty: 1 });
+      }
+
+      const details = `School admission & CBT Portal request. Class: ${schoolClass}, Boarding: ${schoolBoarding ? 'Yes' : 'No'}, CBT Exam: ${includeCbtExam ? 'Enabled' : 'Disabled'}, Result Checker PIN: ${includeResultCheckerPin ? 'Enabled' : 'Disabled'}, Checkout Fee Paid: ₦${totalCheckoutFee.toLocaleString()}, Termly Fee Total: ₦${totalTermFee.toLocaleString()}`;
+      handleWidgetSubmit(defaultName, defaultEmail, defaultPhone, details, items);
+    };
+
+    return (
+      <form onSubmit={handleSchoolSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Parent Full Name</label>
+            <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({...demoForm, name: e.target.value})} placeholder="e.g. Mrs. Janet Okoh" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Parent Email Address</label>
+            <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({...demoForm, email: e.target.value})} placeholder="janet@example.com" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Phone Number</label>
+            <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({...demoForm, phone: e.target.value})} placeholder="+234 803 444 5566" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Academic Class Applying For</label>
+            <select value={schoolClass} onChange={(e) => setSchoolClass(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}>
+              <option value="Creche & Nursery">Creche & Nursery (₦180,000 / term)</option>
+              <option value="Primary 1 - Primary 6">Primary 1 - Primary 6 (₦250,000 / term)</option>
+              <option value="Junior Secondary (JS1 - JS3)">Junior Secondary JS1 - JS3 (₦320,000 / term)</option>
+              <option value="Senior Secondary (SS1 - SS3)">Senior Secondary SS1 - SS3 (₦350,000 / term)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '14px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 600, color: '#334155', cursor: 'pointer' }}>
+            <input type="checkbox" checked={schoolBoarding} onChange={(e) => setSchoolBoarding(e.target.checked)} style={{ accentColor: theme.primary }} />
+            Include Boarding House Accommodation (+₦200,000 / term)
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 600, color: '#334155', cursor: 'pointer' }}>
+            <input type="checkbox" checked={includeCbtExam} onChange={(e) => setIncludeCbtExam(e.target.checked)} style={{ accentColor: theme.primary }} />
+            Online Computer-Based Test (CBT) Entrance Exam Access & Photo Slip (+₦5,000)
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 600, color: '#334155', cursor: 'pointer' }}>
+            <input type="checkbox" checked={includeResultCheckerPin} onChange={(e) => setIncludeResultCheckerPin(e.target.checked)} style={{ accentColor: theme.primary }} />
+            Digital Student Result Checker Scratch PIN Access (+₦3,000)
+          </label>
+        </div>
+
+        <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px dashed #cbd5e1', textAlign: 'center' }}>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>ONLINE ADMISSION & CBT EXAM CHECKOUT</span>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1e3a8a', marginTop: '4px' }}>
+            ₦{totalCheckoutFee.toLocaleString()}
+          </div>
+          <span style={{ fontSize: '0.8rem', color: '#475569', marginTop: '2px', display: 'block' }}>Estimated Total Termly Fee: ₦{totalTermFee.toLocaleString()}</span>
+        </div>
+
+        <button type="submit" disabled={demoLoading} style={{ background: theme.primary, color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, cursor: demoLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          {demoLoading ? 'Submitting Application...' : 'Pay Application & CBT Fee to Access Online Exam'} <ArrowRight size={18} />
+        </button>
+      </form>
+    );
+  };
+
+  // Retainer / Legal Estimator Widget Renderer
+  const renderRetainerEstimator = () => {
+    const defaultName = demoForm.name || '';
+    const defaultEmail = demoForm.email || '';
+    const defaultPhone = demoForm.phone || '';
+
+    const [legalPractice, setLegalPractice] = useState('Corporate & Commercial Law');
+    const consultationFee = legalPractice.includes('Corporate') ? 100000 : legalPractice.includes('Litigation') ? 150000 : 75000;
+
+    const handleLegalSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      const items = [
+        { name: `Senior Advocate Initial Consultation (1 Hour) - ${legalPractice}`, price: consultationFee, qty: 1 }
+      ];
+      const details = `Legal consultation booking. Practice Area: ${legalPractice}, Upfront Consultation Fee: ₦${consultationFee.toLocaleString()}`;
+      handleWidgetSubmit(defaultName, defaultEmail, defaultPhone, details, items);
+    };
+
+    return (
+      <form onSubmit={handleLegalSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Client Full Name / Company</label>
+            <input type="text" required value={demoForm.name} onChange={(e) => setDemoForm({...demoForm, name: e.target.value})} placeholder="e.g. Engr. Femi Bakare" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Email Address</label>
+            <input type="email" required value={demoForm.email} onChange={(e) => setDemoForm({...demoForm, email: e.target.value})} placeholder="femi@example.com" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Phone Number</label>
+            <input type="tel" required value={demoForm.phone} onChange={(e) => setDemoForm({...demoForm, phone: e.target.value})} placeholder="+234 803 777 8899" style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Practice Area</label>
+            <select value={legalPractice} onChange={(e) => setLegalPractice(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}>
+              <option value="Corporate & Commercial Law">Corporate & Commercial Law (₦100,000)</option>
+              <option value="Real Estate & Property Lease">Real Estate & Property Lease (₦75,000)</option>
+              <option value="Commercial Litigation & Arbitration">Commercial Litigation & Arbitration (₦150,000)</option>
+              <option value="Tax & Regulatory Compliance">Tax & Regulatory Compliance (₦100,000)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px dashed #cbd5e1', textAlign: 'center' }}>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>INITIAL CONSULTATION FEE DEPOSIT</span>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#ca8a04', marginTop: '4px' }}>
+            ₦{consultationFee.toLocaleString()}
+          </div>
+        </div>
+
+        <button type="submit" disabled={demoLoading} style={{ background: theme.primary, color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, cursor: demoLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          {demoLoading ? 'Booking Consultation...' : 'Pay Consultation Deposit & Lock Calendar Slot'} <ArrowRight size={18} />
+        </button>
+      </form>
+    );
+  };
+
   const renderActiveWidget = () => {
     if (demoStatus && activeWidget !== 'ecommerce') {
       return (
@@ -926,6 +1290,14 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     }
 
     switch (activeWidget) {
+      case 'solar_calculator':
+        return renderSolarCalculator();
+      case 'real_estate_booking':
+        return renderRealEstateBooking();
+      case 'school_tuition':
+        return renderSchoolTuition();
+      case 'retainer_estimator':
+        return renderRetainerEstimator();
       case 'patient_intake':
         return renderPatientIntake();
       case 'vehicle_valuation':
@@ -965,7 +1337,14 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       { id: 'patient_intake', cost: 35000 },
       { id: 'ecommerce', cost: 50000 },
       { id: 'vehicle_valuation', cost: 30000 },
-      { id: 'table_reservation', cost: 25000 }
+      { id: 'table_reservation', cost: 25000 },
+      { id: 'whatsapp_floating_button', cost: 15000 },
+      { id: 'google_maps_embed', cost: 10000 },
+      { id: 'ai_chatbot', cost: 45000 },
+      { id: 'social_proof_counters', cost: 15000 },
+      { id: 'sms_whatsapp_reminders', cost: 25000 },
+      { id: 'parent_portal', cost: 40000 },
+      { id: 'fleet_tracker', cost: 55000 }
     ];
 
     let featuresCost = 0;
@@ -1452,29 +1831,55 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         </div>
       </section>
 
-      {/* Social-Proof Reputation Bar */}
+      {/* Social-Proof Reputation Bar with Animated Counters */}
       <section style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '40px 24px' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap', gap: '30px' }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center', color: '#fbbf24', fontSize: '2rem', fontWeight: 700 }}>
+            <div className="counter-animate" style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center', color: '#fbbf24', fontSize: '2rem', fontWeight: 700 }}>
               {lead.rating} <Star style={{ fill: '#fbbf24' }} size={24} />
             </div>
             <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.9rem', fontWeight: 500 }}>Average Google Rating</p>
           </div>
           <div style={{ width: '1px', height: '40px', background: '#e2e8f0' }} className="hide-mobile"></div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: theme.primary }}>{lead.reviews_count}+</div>
+            <div className="counter-animate" style={{ fontSize: '2rem', fontWeight: 700, color: theme.primary }}>{lead.reviews_count}+</div>
             <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.9rem', fontWeight: 500 }}>Customer Reviews Verified</p>
           </div>
           <div style={{ width: '1px', height: '40px', background: '#e2e8f0' }} className="hide-mobile"></div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+            <div className="counter-animate" style={{ fontSize: '2rem', fontWeight: 700, color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
               100% <CheckCircle size={24} />
             </div>
             <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.9rem', fontWeight: 500 }}>Locally Verified Service</p>
           </div>
+          <div style={{ width: '1px', height: '40px', background: '#e2e8f0' }} className="hide-mobile"></div>
+          <div style={{ textAlign: 'center' }}>
+            <div className="counter-animate" style={{ fontSize: '2rem', fontWeight: 700, color: '#6366f1' }}>250+</div>
+            <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.9rem', fontWeight: 500 }}>Clients Served Locally</p>
+          </div>
         </div>
       </section>
+
+      {/* Google Maps Location Embed */}
+      {(lead.area || lead.city || lead.name) && (
+        <section className="reveal" style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', padding: '48px 24px' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+            <h2 className="font-heading" style={{ fontFamily: headingFontFamily, fontSize: '1.6rem', fontWeight: 700, color: '#1f2937', marginBottom: '8px' }}>📍 Find Us on the Map</h2>
+            <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '24px' }}>Visit {lead.name} at our location in {lead.area || lead.city || 'Lagos, Nigeria'}.</p>
+            <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+              <iframe
+                title={`Map for ${lead.name}`}
+                width="100%"
+                height="300"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps?q=${encodeURIComponent(lead.name + ' ' + (lead.area || lead.city || 'Lagos Nigeria'))}&output=embed`}
+              />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* What Happens Next — 3-step process (preview only) */}
       {isPreview && (
@@ -3561,7 +3966,116 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         @keyframes fadeIn {
           to { opacity: 1; }
         }
+
+        @keyframes counterPulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.08); }
+          100% { transform: scale(1); }
+        }
+
+        .counter-animate {
+          animation: counterPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes whatsappPulse {
+          0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
+          70% { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        .whatsapp-float {
+          animation: whatsappPulse 2s infinite;
+        }
+
+        .whatsapp-float:hover {
+          transform: scale(1.1);
+          box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+        }
+
+        .ndpr-banner {
+          animation: fadeInUp 0.4s ease-out;
+        }
       `}</style>
+
+      {/* Sticky Floating WhatsApp Chat Button */}
+      {(lead.phone_raw || lead.phone_e164) && (
+        <a
+          href={`https://wa.me/${formatWhatsAppNumber(lead.phone_e164 || lead.phone_raw)}?text=${encodeURIComponent(`Hello ${lead.name}! I visited your website and would like to inquire about your services.`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="whatsapp-float"
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 9999,
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: '#25D366',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 14px rgba(37, 211, 102, 0.4)',
+            cursor: 'pointer',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            textDecoration: 'none'
+          }}
+          aria-label="Chat on WhatsApp"
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+          </svg>
+        </a>
+      )}
+
+      {/* NDPR Privacy Compliance Banner */}
+      {!ndprDismissed && (
+        <div className="ndpr-banner" style={{
+          position: 'fixed',
+          bottom: lead.phone_raw ? '96px' : '24px',
+          left: '24px',
+          right: '24px',
+          maxWidth: '480px',
+          zIndex: 9998,
+          background: 'rgba(15, 23, 42, 0.95)',
+          backdropFilter: 'blur(12px)',
+          color: '#e2e8f0',
+          borderRadius: '12px',
+          padding: '16px 20px',
+          boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '12px',
+          fontSize: '0.82rem',
+          lineHeight: 1.5
+        }}>
+          <div style={{ flex: 1 }}>
+            <strong style={{ color: '#fff', fontSize: '0.85rem' }}>🔒 Your Privacy Matters</strong>
+            <p style={{ margin: '6px 0 0', color: '#94a3b8' }}>
+              This website processes data in compliance with the Nigeria Data Protection Act (NDPA). By continuing to browse, you consent to our use of essential cookies for site functionality.
+            </p>
+          </div>
+          <button
+            onClick={acceptNdpr}
+            style={{
+              background: theme.primary,
+              color: '#fff',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '0.8rem',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              flexShrink: 0
+            }}
+          >
+            Accept
+          </button>
+        </div>
+      )}
     </div>
   );
 }

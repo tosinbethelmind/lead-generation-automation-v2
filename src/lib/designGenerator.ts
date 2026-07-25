@@ -13,6 +13,58 @@ export interface DesignTheme {
 export function getDesignTheme(category: string): DesignTheme {
   const cat = category.toLowerCase();
 
+  if (/solar|inverter|clean tech|energy|battery|power/.test(cat)) {
+    return {
+      primary: '#059669',
+      accent: '#f59e0b',
+      bg: '#064e3b',
+      text: '#f0fdf4',
+      font: 'Outfit',
+      headingFont: 'Space Grotesk',
+      bodyFont: 'Plus Jakarta Sans',
+      heroImage: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1400&q=80',
+      gradient: 'linear-gradient(135deg, #059669 0%, #f59e0b 100%)',
+    };
+  }
+  if (/estate|property|real estate|realty|developer|housing|apartment|shortlet/.test(cat)) {
+    return {
+      primary: '#0f172a',
+      accent: '#d97706',
+      bg: '#020617',
+      text: '#f8fafc',
+      font: 'Outfit',
+      headingFont: 'Playfair Display',
+      bodyFont: 'Plus Jakarta Sans',
+      heroImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&q=80',
+      gradient: 'linear-gradient(135deg, #0f172a 0%, #d97706 100%)',
+    };
+  }
+  if (/school|academy|college|university|tutor|education|creche|nursery/.test(cat)) {
+    return {
+      primary: '#1e3a8a',
+      accent: '#b91c1c',
+      bg: '#eff6ff',
+      text: '#1e3a8a',
+      font: 'Plus Jakarta Sans',
+      headingFont: 'Outfit',
+      bodyFont: 'Inter',
+      heroImage: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1400&q=80',
+      gradient: 'linear-gradient(135deg, #1e3a8a 0%, #b91c1c 100%)',
+    };
+  }
+  if (/law|legal|attorney|advocate|solicitor|barrister|consultant|accounting|audit/.test(cat)) {
+    return {
+      primary: '#1e293b',
+      accent: '#ca8a04',
+      bg: '#0f172a',
+      text: '#f8fafc',
+      font: 'Outfit',
+      headingFont: 'Playfair Display',
+      bodyFont: 'Inter',
+      heroImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1400&q=80',
+      gradient: 'linear-gradient(135deg, #1e293b 0%, #ca8a04 100%)',
+    };
+  }
   if (/dental|medical|clinic|hospital|doctor|health|pharma|wellness/.test(cat)) {
     return {
       primary: '#0284c7',

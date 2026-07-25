@@ -188,5 +188,26 @@ async function runMasterLagosHarvester(dryRun = false) {
   console.log('==================================================\n');
 }
 
-const isDryRun = process.argv.includes('--dry-run');
-runMasterLagosHarvester(isDryRun).catch(console.error);
+async function startNonStopMasterHarvester() {
+  const isDryRun = process.argv.includes('--dry-run');
+  console.log('🚀 Launching 24/7 Non-Stop High-Velocity Lagos B2B Master Harvester Engine...');
+  
+  let cycle = 1;
+  while (true) {
+    console.log(`\n==================================================`);
+    console.log(`⚡ STARTING HARVEST CYCLE #${cycle} [${new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' })} WAT]`);
+    console.log(`==================================================`);
+    
+    try {
+      await runMasterLagosHarvester(isDryRun);
+    } catch (err) {
+      console.error(`❌ Harvest cycle #${cycle} error:`, err.message);
+    }
+
+    console.log(`\n⏳ Cycle #${cycle} finished. Waiting 30 seconds before next high-speed harvest pass...`);
+    await new Promise(resolve => setTimeout(resolve, 30000));
+    cycle++;
+  }
+}
+
+startNonStopMasterHarvester().catch(console.error);
