@@ -210,4 +210,16 @@ async function startNonStopMasterHarvester() {
   }
 }
 
-startNonStopMasterHarvester().catch(console.error);
+const isNonStop = process.argv.includes('--non-stop');
+const isDryRun = process.argv.includes('--dry-run');
+
+if (isNonStop) {
+  startNonStopMasterHarvester().catch(console.error);
+} else {
+  runMasterLagosHarvester(isDryRun)
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error('Harvester error:', err.message || err);
+      process.exit(1);
+    });
+}

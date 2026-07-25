@@ -96,7 +96,10 @@ async function runResilientLagosHarvester(dryRun = false) {
 }
 
 const isDryRun = process.argv.includes('--dry-run');
-runResilientLagosHarvester(isDryRun).catch(err => {
-  logMessage(`FATAL ERROR: ${err.message}`);
-  try { if (fs.existsSync(PID_FILE)) fs.unlinkSync(PID_FILE); } catch (_) {}
-});
+runResilientLagosHarvester(isDryRun)
+  .then(() => process.exit(0))
+  .catch(err => {
+    logMessage(`FATAL ERROR: ${err.message}`);
+    try { if (fs.existsSync(PID_FILE)) fs.unlinkSync(PID_FILE); } catch (_) {}
+    process.exit(1);
+  });
