@@ -452,7 +452,7 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
       const { count } = await supabase
         .from('leads')
         .select('*', { count: 'exact', head: true })
-        .or('source_query_or_seed.eq.lagos_10k_b2b,city.ilike.%lagos%,area.ilike.%lagos%');
+        .or('source_query_or_seed.ilike.*lagos*,city.ilike.%lagos%,city.ilike.%ikeja%,city.ilike.%lekki%,city.ilike.%yaba%,city.ilike.%surulere%,city.ilike.%apapa%,city.ilike.%ikorodu%,area.ilike.%lagos%,area.ilike.%ikeja%,area.ilike.%lekki%');
       if (count !== null && count >= 0) totalLagos = count;
     } catch (_) {}
 
