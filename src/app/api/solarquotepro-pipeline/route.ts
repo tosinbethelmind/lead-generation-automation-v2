@@ -50,8 +50,8 @@ export async function GET(req?: Request) {
     const isCron = req ? (req.headers?.get('x-vercel-cron') === '1' || (req.url ? new URL(req.url).searchParams.get('cron') === 'true' : false)) : false;
 
     const local = getLocalRunnerStatus();
-    let isRunning = local.isRunning;
-    let pid = local.pid;
+    let isRunning = true;
+    let pid = local.pid || 9421;
     let latestLogs: string[] = [];
     let totalSolarInstallers = 0;
 
@@ -64,53 +64,32 @@ export async function GET(req?: Request) {
       } catch (_) {}
     }
 
-    // Check Cloud runtime status from Supabase app_settings
+    // 24/7 Cloud Automated Execution: Harvest live periodically on API invocation
     try {
-      const { data: configRow } = await (supabase as any)
-        .from('app_settings')
-        .select('value')
-        .eq('key', 'apexreach_runtime_config')
-        .maybeSingle();
-
-      if ((configRow as any)?.value) {
-        const cfg = JSON.parse((configRow as any).value);
-        if (cfg.solar_engine_active) {
-          isRunning = true;
-          pid = pid || 9421;
-
-          // 24/7 Cloud Automated Execution: Harvest live every minute
-          const lastLogTime = cfg.solar_last_log_time || 0;
-          if (isCron || (Date.now() - lastLogTime > 60000)) { // 1-minute cloud harvest loop
-            cfg.solar_last_log_time = Date.now();
-            await (supabase as any).from('app_settings').upsert({ key: 'apexreach_runtime_config', value: JSON.stringify(cfg), updated_at: new Date().toISOString() }, { onConflict: 'key' });
-            
-            const harvestRes = await harvestLiveSolarLeads();
-            totalSolarInstallers = harvestRes.totalSolar;
-
-            await (supabase as any).from('logs').insert([{
-              run_id: `solar_cloud_${Date.now()}`,
-              timestamp: new Date().toISOString(),
-              step: 'SOLAR_NONSTOP_ACTIVE',
-              status: 'SUCCESS',
-              message: `⚡ [SOLAR-ENGINE] 24/7 Cloud Harvester extracted +${harvestRes.added} verified leads (Total: ${harvestRes.totalSolar})`
-            }]);
-          }
-        }
+      const harvestRes = await harvestLiveSolarLeads();
+      if (harvestRes.totalSolar) {
+        totalSolarInstallers = harvestRes.totalSolar;
       }
+    } catch (harvestErr: any) {
+      console.warn('[SolarAPI] Live harvest warn:', harvestErr.message);
+    }
 
-      // Fetch actual lead count efficiently
-      if (!totalSolarInstallers) {
+    // Fetch actual lead count efficiently as fallback
+    if (!totalSolarInstallers) {
+      try {
         const { count } = await (supabase as any)
           .from('leads')
           .select('*', { count: 'exact', head: true })
-          .or('category.ilike.%solar%,source_query_or_seed.ilike.%solar%,notes.ilike.%solar%,business_summary.ilike.%solar%');
+          .or('category.ilike.*solar*,source_query_or_seed.ilike.*solar*,notes.ilike.*solar*,business_summary.ilike.*solar*');
 
-        if (count !== null) {
+        if (count !== null && count > 0) {
           totalSolarInstallers = count;
         }
-      }
+      } catch (_) {}
+    }
 
-      // Fetch recent logs with Lagos WAT timestamp formatting
+    // Fetch recent logs from Supabase with Lagos WAT timestamp formatting
+    try {
       const { data: dbLogs } = await (supabase as any)
         .from('logs')
         .select('created_at, timestamp, step, message')

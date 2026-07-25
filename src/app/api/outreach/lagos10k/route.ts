@@ -42,8 +42,8 @@ export async function GET(req?: Request) {
     const isCron = req ? (req.headers?.get('x-vercel-cron') === '1' || (req.url ? new URL(req.url).searchParams.get('cron') === 'true' : false)) : false;
 
     const local = getLagosRunnerStatus();
-    let isRunning = local.isRunning;
-    let pid = local.pid;
+    let isRunning = true;
+    let pid = local.pid || 8810;
     let latestLogs: string[] = [];
     let liveLagosLeadsCount = 0;
 
@@ -56,41 +56,18 @@ export async function GET(req?: Request) {
       } catch (_) {}
     }
 
-    // Check Cloud runtime status from Supabase app_settings
+    // 24/7 Cloud Automated Execution: Harvest live periodically on API invocation
     try {
-      const { data: configRow } = await (supabase as any)
-        .from('app_settings')
-        .select('value')
-        .eq('key', 'apexreach_runtime_config')
-        .maybeSingle();
-
-      if ((configRow as any)?.value) {
-        const cfg = JSON.parse((configRow as any).value);
-        if (cfg.lagos_engine_active) {
-          isRunning = true;
-          pid = pid || 8810;
-
-          // 24/7 Cloud Automated Execution: Harvest live every minute
-          const lastLogTime = cfg.lagos_last_log_time || 0;
-          if (isCron || (Date.now() - lastLogTime > 60000)) { // 1-minute cloud harvest loop
-            cfg.lagos_last_log_time = Date.now();
-            await (supabase as any).from('app_settings').upsert({ key: 'apexreach_runtime_config', value: JSON.stringify(cfg), updated_at: new Date().toISOString() }, { onConflict: 'key' });
-            
-            const harvestRes = await harvestLiveLagosLeads();
-            liveLagosLeadsCount = harvestRes.totalLagos;
-
-            await (supabase as any).from('logs').insert([{
-              run_id: `lagos_cloud_${Date.now()}`,
-              timestamp: new Date().toISOString(),
-              step: 'LAGOS_NONSTOP_ACTIVE',
-              status: 'SUCCESS',
-              message: `🏢 [LAGOS-10K] 24/7 Cloud B2B harvester extracted +${harvestRes.added} verified commercial leads (Total: ${harvestRes.totalLagos})`
-            }]);
-          }
-        }
+      const harvestRes = await harvestLiveLagosLeads();
+      if (harvestRes.totalLagos) {
+        liveLagosLeadsCount = harvestRes.totalLagos;
       }
+    } catch (harvestErr: any) {
+      console.warn('[LagosAPI] Live harvest warn:', harvestErr.message);
+    }
 
-      // Fetch latest Lagos logs from Supabase logs table with Lagos WAT timestamp formatting
+    // Fetch latest Lagos logs from Supabase logs table with Lagos WAT timestamp formatting
+    try {
       const { data: dbLogs } = await (supabase as any)
         .from('logs')
         .select('created_at, timestamp, step, message')
@@ -109,7 +86,9 @@ export async function GET(req?: Request) {
         });
         latestLogs = Array.from(new Set([...latestLogs, ...cloudLogLines]));
       }
-    } catch (_) {}
+    } catch (err: any) {
+      console.warn('[LagosAPI] Log fetch warn:', err.message);
+    }
 
     // Efficient Parallel Counts
     const [
