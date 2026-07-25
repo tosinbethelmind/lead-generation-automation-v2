@@ -5,6 +5,9 @@ import { spawn } from 'child_process';
 import { getSupabaseClient } from '@/lib/supabaseClient';
 import { harvestLiveLagosLeads } from '@/lib/liveLeadHarvester';
 
+export const maxDuration = 30;
+export const dynamic = 'force-dynamic';
+
 const supabase = getSupabaseClient();
 
 const LOCAL_DB_DIR = path.join(process.cwd(), 'local_db');
@@ -56,14 +59,10 @@ export async function GET(req?: Request) {
       } catch (_) {}
     }
 
-    // 24/7 Cloud Automated Execution: Harvest live periodically on API invocation
-    try {
-      const harvestRes = await harvestLiveLagosLeads();
-      if (harvestRes.totalLagos) {
-        liveLagosLeadsCount = harvestRes.totalLagos;
-      }
-    } catch (harvestErr: any) {
-      console.warn('[LagosAPI] Live harvest warn:', harvestErr.message);
+    // Export 30-second max duration for Vercel Serverless
+    // 24/7 Cloud Automated Execution: Harvest live on Cron or background trigger
+    if (isCron) {
+      harvestLiveLagosLeads().catch((err) => console.warn('[LagosAPI] Background harvest error:', err.message));
     }
 
     // Fetch latest Lagos logs from Supabase logs table with Lagos WAT timestamp formatting

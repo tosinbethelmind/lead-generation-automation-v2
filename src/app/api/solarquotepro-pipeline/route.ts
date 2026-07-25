@@ -5,6 +5,9 @@ import fs from 'fs';
 import { getSupabaseClient } from '@/lib/supabaseClient';
 import { harvestLiveSolarLeads } from '@/lib/liveLeadHarvester';
 
+export const maxDuration = 30;
+export const dynamic = 'force-dynamic';
+
 const supabase = getSupabaseClient();
 
 const LOCAL_DB_DIR = path.join(process.cwd(), 'local_db');
@@ -64,14 +67,9 @@ export async function GET(req?: Request) {
       } catch (_) {}
     }
 
-    // 24/7 Cloud Automated Execution: Harvest live periodically on API invocation
-    try {
-      const harvestRes = await harvestLiveSolarLeads();
-      if (harvestRes.totalSolar) {
-        totalSolarInstallers = harvestRes.totalSolar;
-      }
-    } catch (harvestErr: any) {
-      console.warn('[SolarAPI] Live harvest warn:', harvestErr.message);
+    // 24/7 Cloud Automated Execution: Harvest live on Cron
+    if (isCron) {
+      harvestLiveSolarLeads().catch((err) => console.warn('[SolarAPI] Live harvest warn:', err.message));
     }
 
     // Fetch actual lead count efficiently as fallback
