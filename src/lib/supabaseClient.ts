@@ -1,3 +1,8 @@
+import dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
+
 // @ts-ignore
 import ws from 'ws';
 if (typeof globalThis.WebSocket === 'undefined') {

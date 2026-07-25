@@ -1359,8 +1359,28 @@ class SupabaseLeadRepository implements ILeadRepository {
       }
 
       if (toInsert.length > 0) {
-        const { error } = await (supabase as any).from('leads').insert(toInsert);
-        if (error) throw error;
+        // Deduplicate toInsert array by lead_id first to prevent duplicate key errors in a single batch
+        const uniqueToInsertMap = new Map<string, any>();
+        for (const item of toInsert) {
+          if (item.lead_id && !uniqueToInsertMap.has(item.lead_id)) {
+            uniqueToInsertMap.set(item.lead_id, item);
+          }
+        }
+        const uniqueToInsert = Array.from(uniqueToInsertMap.values());
+
+        if (uniqueToInsert.length > 0) {
+          const { error } = await (supabase as any)
+            .from('leads')
+            .upsert(uniqueToInsert, { onConflict: 'lead_id', ignoreDuplicates: true });
+          if (error) {
+            console.warn('[Supabase saveLeads Warning]: Batch upsert failed, attempting individual upserts:', error.message);
+            for (const item of uniqueToInsert) {
+              try {
+                await (supabase as any).from('leads').upsert([item], { onConflict: 'lead_id', ignoreDuplicates: true });
+              } catch (_) {}
+            }
+          }
+        }
 
         // Dual-write solar leads to SolarQuotePro DB asynchronously
         const solarItems = toInsert.filter(item => {
