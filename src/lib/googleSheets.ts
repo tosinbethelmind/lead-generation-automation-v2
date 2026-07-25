@@ -59,13 +59,22 @@ export interface Lead {
 }
 
 export function isMockLead(lead: Partial<Lead>): boolean {
-  if (!lead.lead_id) return false;
-  const id = lead.lead_id.toLowerCase();
+  if (!lead) return false;
+  const id = (lead.lead_id || '').toLowerCase();
+  const name = (lead.name || '').toLowerCase();
+  const email = (lead.email || '').toLowerCase();
   const notes = (lead.notes || '').toLowerCase();
   return (
     id.startsWith('mock_') ||
     id.startsWith('osm_mock_') ||
     id.startsWith('apify_mock_') ||
+    id.includes('syn_') ||
+    name.includes('sample of solar') ||
+    name.includes('test lead') ||
+    name.includes('mock lead') ||
+    name.includes('synthetic') ||
+    email.includes('example.com') ||
+    email.includes('test.com') ||
     notes.includes('sandbox') ||
     notes.includes('mock') ||
     notes.includes('real scraper failed')
@@ -1250,8 +1259,8 @@ class SupabaseLeadRepository implements ILeadRepository {
       for (const lead of newLeads) {
         if (!lead.lead_id) continue;
 
-        // Filter out invalid names
-        if (!isValidLeadName(lead.name)) {
+        // Filter out mock or invalid leads
+        if (isMockLead(lead) || !isValidLeadName(lead.name)) {
           skipped++;
           continue;
         }

@@ -241,59 +241,123 @@ function parseOsmElement(el: any, engineTag: string, category: string, seedLabel
   };
 }
 
+// Quality Gate Pre-Filter Scoring
+const BLACKLISTED_GENERIC_NAMES = new Set([
+  'shop', 'store', 'solar', 'company', 'unknown', 'n/a', 'test', 'business', 'none',
+  'building', 'office', 'house', 'plaza', 'mall', 'market', 'center', 'centre'
+]);
+
+const CLASSIFIED_PRODUCT_TERMS = [
+  'sell your', 'sold your', 'scrap', 'used battery', 'weak scrap', 'tubular battery',
+  '12v/', '24v/', '3kw', '5kwh', '7.5kwh', 'battery and', 'wanted', 'buying',
+  'screening center', 'cervical', 'cervical screening'
+];
+
+export function validateLeadQuality(lead: any): boolean {
+  if (!lead || !lead.name || typeof lead.name !== 'string') return false;
+  
+  // Clean repeating title patterns (e.g. "TitleTitleTitle")
+  let nameTrimmed = lead.name.trim();
+  const halfLen = Math.floor(nameTrimmed.length / 2);
+  if (halfLen > 5 && nameTrimmed.substring(0, halfLen) === nameTrimmed.substring(halfLen, halfLen * 2)) {
+    nameTrimmed = nameTrimmed.substring(0, halfLen).trim();
+    lead.name = nameTrimmed;
+  }
+
+  if (nameTrimmed.length < 3 || nameTrimmed.length > 90) return false;
+
+  const lowerName = nameTrimmed.toLowerCase();
+  if (BLACKLISTED_GENERIC_NAMES.has(lowerName)) return false;
+  if (/^\d+$/.test(nameTrimmed)) return false;
+
+  // Filter out product ads / scrap listings
+  for (const term of CLASSIFIED_PRODUCT_TERMS) {
+    if (lowerName.includes(term)) return false;
+  }
+
+  if (lead.phone_raw && !lead.phone_e164) {
+    lead.phone_e164 = normalizePhone(lead.phone_raw, 'NG') || '';
+  }
+
+  // Mandatory Reachability Gate: Must have valid phone, email, OR verified website URL
+  const hasPhone = !!lead.phone_e164 || !!lead.phone_raw;
+  const hasEmail = !!lead.email && lead.email.includes('@');
+  const hasWebsite = !!lead.website && lead.website.startsWith('http') && !lead.website.includes('google.com/search');
+
+  if (!hasPhone && !hasEmail && !hasWebsite) {
+    return false;
+  }
+
+  return true;
+}
+
+import { fetchSocialMultiChannelLeads } from './socialMultiChannelScraper';
+
 export async function harvestLiveSolarLeads(): Promise<{ added: number; totalSolar: number }> {
   try {
     const supabase = getSupabaseClient();
 
-    // Strategy Matrix: Nominatim 36-State Rotation + Jiji Merchants + BusinessList + DDG
-    const t1 = NIGERIAN_SOLAR_CITIES[Math.floor(Math.random() * NIGERIAN_SOLAR_CITIES.length)];
-    const t2 = NIGERIAN_SOLAR_CITIES[Math.floor(Math.random() * NIGERIAN_SOLAR_CITIES.length)];
+    // Accelerated Parallel Matrix: State Queries + Jiji + BusinessList + DDG + Multi-Channel Social (IG, FB, LI, TT)
+    const shuffled = [...NIGERIAN_SOLAR_CITIES].sort(() => Math.random() - 0.5);
+    const selectedCities = shuffled.slice(0, 4);
 
-    const results = await Promise.allSettled([
-      fetchNominatimSearch(t1.q),
-      fetchNominatimSearch(t2.q),
+    const parallelTasks: Promise<any[]>[] = [
+      ...selectedCities.map(c => fetchNominatimSearch(c.q)),
       fetchJijiMerchantLeads('solar energy', 'solar_nigeria_5k'),
+      fetchJijiMerchantLeads('inverter battery', 'solar_nigeria_5k'),
       fetchBusinessListLeads('category/solar-energy', 'solar_nigeria_5k'),
-      fetchDuckDuckGoSolarLeads('solar inverter supplier Nigeria')
-    ]);
+      fetchDuckDuckGoSolarLeads('solar inverter supplier Nigeria'),
+      fetchDuckDuckGoSolarLeads('solar panel installer Lagos Nigeria'),
+      fetchSocialMultiChannelLeads('INSTAGRAM', 'solar energy Lagos', 'solar_nigeria_5k'),
+      fetchSocialMultiChannelLeads('FACEBOOK', 'solar installer Nigeria', 'solar_nigeria_5k'),
+      fetchSocialMultiChannelLeads('LINKEDIN', 'solar energy company', 'solar_nigeria_5k'),
+      fetchSocialMultiChannelLeads('TIKTOK', 'solar inverter vendor', 'solar_nigeria_5k')
+    ];
 
-    const harvested: any[] = [];
+    const results = await Promise.allSettled(parallelTasks);
+    const harvestedRaw: any[] = [];
 
     results.forEach((res) => {
       if (res.status === 'fulfilled' && Array.isArray(res.value)) {
         res.value.forEach(item => {
           if (item.lead_id) { // Directory / DDG item
-            harvested.push(item);
+            harvestedRaw.push(item);
           } else { // OSM node
             const parsed = parseOsmElement(item, 'Solar Engine', 'Solar Energy Enterprise', 'solar_nigeria_5k');
-            if (parsed) harvested.push(parsed);
+            if (parsed) harvestedRaw.push(parsed);
           }
         });
       }
     });
 
-    // Contact enrichment for leads missing phone/email
-    const toEnrich = harvested.filter(l => !l.phone_e164 || !l.email).slice(0, 5);
-    if (toEnrich.length > 0) {
-      await Promise.allSettled(
-        toEnrich.map(async (lead) => {
-          try {
-            const enriched = await enrichLeadContacts(lead);
-            if (enriched.phone) {
-              lead.phone_e164 = enriched.phone;
-              lead.phone_raw = enriched.phone;
-              lead.verified = true;
-            }
-            if (enriched.email) lead.email = enriched.email;
-          } catch (_) {}
-        })
-      );
-    }
+    // Apply Quality Gate Pre-Filter
+    const harvested = harvestedRaw.filter(validateLeadQuality);
 
     let added = 0;
     if (harvested.length > 0) {
       const syncResult = await saveLeads(harvested);
       added = syncResult.added || 0;
+    }
+
+    // Async Non-Blocking Micro-Enrichment for saved leads
+    const toEnrich = harvested.filter(l => (!l.phone_e164 || !l.email) && l.website).slice(0, 8);
+    if (toEnrich.length > 0) {
+      Promise.allSettled(
+        toEnrich.map(async (lead) => {
+          try {
+            const enriched = await enrichLeadContacts(lead);
+            if (enriched.phone || enriched.email) {
+              await saveLeads([{
+                ...lead,
+                phone_e164: enriched.phone || lead.phone_e164,
+                phone_raw: enriched.phone || lead.phone_raw,
+                email: enriched.email || lead.email,
+                verified: true
+              }]);
+            }
+          } catch (_) {}
+        })
+      ).catch(() => {});
     }
 
     let totalSolar = 0;
@@ -305,7 +369,7 @@ export async function harvestLiveSolarLeads(): Promise<{ added: number; totalSol
       if (count !== null && count >= 0) totalSolar = count;
     } catch (_) {}
 
-    console.log(`[LiveHarvester] Solar Multi-Source Matrix: parsed=${harvested.length}, added=${added}, total=${totalSolar}`);
+    console.log(`[LiveHarvester] Accelerated Solar Matrix: parsed=${harvestedRaw.length}, validated=${harvested.length}, added=${added}, total=${totalSolar}`);
     return { added, totalSolar };
   } catch (err: any) {
     console.error('[LiveHarvester] Solar harvest error:', err.message);
@@ -317,55 +381,70 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
   try {
     const supabase = getSupabaseClient();
 
-    // Strategy Matrix: Nominatim 20-LGA Rotation + BusinessList Corporate + Jiji Commercial Merchants
-    const t1 = LAGOS_LGA_QUERIES[Math.floor(Math.random() * LAGOS_LGA_QUERIES.length)];
-    const t2 = LAGOS_LGA_QUERIES[Math.floor(Math.random() * LAGOS_LGA_QUERIES.length)];
-    const bizCat = BIZLIST_LAGOS_CATEGORIES[Math.floor(Math.random() * BIZLIST_LAGOS_CATEGORIES.length)];
+    // Accelerated Parallel Matrix: 6 Random LGA Queries + BusinessList + Jiji Commercial Merchants
+    const shuffledLgas = [...LAGOS_LGA_QUERIES].sort(() => Math.random() - 0.5);
+    const selectedLgas = shuffledLgas.slice(0, 6);
 
-    const results = await Promise.allSettled([
-      fetchNominatimSearch(t1.q),
-      fetchNominatimSearch(t2.q),
-      fetchBusinessListLeads(bizCat, 'lagos_10k_b2b'),
-      fetchJijiMerchantLeads('hotel Ikeja', 'lagos_10k_b2b')
-    ]);
+    const shuffledBizCats = [...BIZLIST_LAGOS_CATEGORIES].sort(() => Math.random() - 0.5);
+    const bizCat1 = shuffledBizCats[0];
+    const bizCat2 = shuffledBizCats[1];
 
-    const harvested: any[] = [];
+    const parallelTasks: Promise<any[]>[] = [
+      ...selectedLgas.map(l => fetchNominatimSearch(l.q)),
+      fetchBusinessListLeads(bizCat1, 'lagos_10k_b2b'),
+      fetchBusinessListLeads(bizCat2, 'lagos_10k_b2b'),
+      fetchJijiMerchantLeads('hotel Ikeja', 'lagos_10k_b2b'),
+      fetchJijiMerchantLeads('company Lekki', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('INSTAGRAM', 'hotel Lekki', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('FACEBOOK', 'company Ikeja', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('LINKEDIN', 'logistics company Lagos', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('TIKTOK', 'boutique store Lagos', 'lagos_10k_b2b')
+    ];
+
+    const results = await Promise.allSettled(parallelTasks);
+    const harvestedRaw: any[] = [];
 
     results.forEach((res) => {
       if (res.status === 'fulfilled' && Array.isArray(res.value)) {
         res.value.forEach(item => {
           if (item.lead_id) { // Directory lead item
-            harvested.push(item);
+            harvestedRaw.push(item);
           } else { // OSM element
             const parsed = parseOsmElement(item, 'Lagos 10K Engine', 'Commercial B2B Enterprise', 'lagos_10k_b2b');
-            if (parsed) harvested.push(parsed);
+            if (parsed) harvestedRaw.push(parsed);
           }
         });
       }
     });
 
-    // Contact enrichment for leads missing phone/email
-    const toEnrich = harvested.filter(l => !l.phone_e164 || !l.email).slice(0, 5);
-    if (toEnrich.length > 0) {
-      await Promise.allSettled(
-        toEnrich.map(async (lead) => {
-          try {
-            const enriched = await enrichLeadContacts(lead);
-            if (enriched.phone) {
-              lead.phone_e164 = enriched.phone;
-              lead.phone_raw = enriched.phone;
-              lead.verified = true;
-            }
-            if (enriched.email) lead.email = enriched.email;
-          } catch (_) {}
-        })
-      );
-    }
+    // Apply Quality Gate Pre-Filter
+    const harvested = harvestedRaw.filter(validateLeadQuality);
 
     let added = 0;
     if (harvested.length > 0) {
       const syncResult = await saveLeads(harvested);
       added = syncResult.added || 0;
+    }
+
+    // Async Non-Blocking Micro-Enrichment for saved leads
+    const toEnrich = harvested.filter(l => (!l.phone_e164 || !l.email) && l.website).slice(0, 8);
+    if (toEnrich.length > 0) {
+      Promise.allSettled(
+        toEnrich.map(async (lead) => {
+          try {
+            const enriched = await enrichLeadContacts(lead);
+            if (enriched.phone || enriched.email) {
+              await saveLeads([{
+                ...lead,
+                phone_e164: enriched.phone || lead.phone_e164,
+                phone_raw: enriched.phone || lead.phone_raw,
+                email: enriched.email || lead.email,
+                verified: true
+              }]);
+            }
+          } catch (_) {}
+        })
+      ).catch(() => {});
     }
 
     let totalLagos = 0;
@@ -377,10 +456,11 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
       if (count !== null && count >= 0) totalLagos = count;
     } catch (_) {}
 
-    console.log(`[LiveHarvester] Lagos Multi-Source Matrix: parsed=${harvested.length}, added=${added}, total=${totalLagos}`);
+    console.log(`[LiveHarvester] Accelerated Lagos Matrix: parsed=${harvestedRaw.length}, validated=${harvested.length}, added=${added}, total=${totalLagos}`);
     return { added, totalLagos };
   } catch (err: any) {
     console.error('[LiveHarvester] Lagos harvest error:', err.message);
     return { added: 0, totalLagos: 2754 };
   }
 }
+
