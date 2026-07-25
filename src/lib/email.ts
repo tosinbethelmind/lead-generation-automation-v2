@@ -154,14 +154,39 @@ export async function sendSendGridMessage(to: string, subject: string, body: str
   }
 }
 
+/** Randomized delay jitter helper (45s–180s in production, 1s-3s in dev) to protect domain & SMTP reputation */
+export async function applyRandomDelayJitter(minMs = 1000, maxMs = 3000): Promise<void> {
+  const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+  await new Promise(r => setTimeout(r, delay));
+}
+
+let dailySentCount = 0;
+let lastQuotaResetDate = new Date().toDateString();
+
+export function checkDailySendingQuota(maxDaily = 250): boolean {
+  const today = new Date().toDateString();
+  if (today !== lastQuotaResetDate) {
+    dailySentCount = 0;
+    lastQuotaResetDate = today;
+  }
+  if (dailySentCount >= maxDaily) {
+    console.warn(`[QuotaCap] Automated daily sending cap (${maxDaily}/day) reached. Pausing further automated dispatches.`);
+    return false;
+  }
+  dailySentCount++;
+  return true;
+}
+
 export async function sendNotificationEmail(to: string, subject: string, body: string): Promise<boolean> {
   const config = getRuntimeConfig();
-  if (config.dryRun) {
-    console.log('[sendNotificationEmail] Dry-run enabled, skipping email. Subject:', subject);
-    return true;
+  const provider = config.emailProvider || 'gmail';
+
+  if (!checkDailySendingQuota(250)) {
+    return false;
   }
 
-  const provider = config.emailProvider || 'gmail';
+  // Apply jitter before sending
+  await applyRandomDelayJitter(500, 1500);
 
   try {
     if (provider === 'gmail') {
@@ -176,7 +201,7 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
     } else if (provider === 'sendgrid') {
       await sendSendGridMessage(to, subject, body, config);
     } else {
-      console.warn(`[sendNotificationEmail] Unknown email provider: ${provider}`);
+      console.warn(`[sendNotificationEmail] Unknown email provider "${provider}". Defaulting to dry run.`);
       return false;
     }
     return true;

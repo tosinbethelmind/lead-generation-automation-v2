@@ -19,6 +19,8 @@ import { detectCMS, resolveUpgradeStrategy } from './websiteAnalysis';
 /** Nigerian email regex — matches common patterns in snippets */
 const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
+import dns from 'dns';
+
 export function verifyEmailAddress(email: string): boolean {
   if (!email) return false;
   const clean = email.trim().toLowerCase();
@@ -45,6 +47,52 @@ export function verifyEmailAddress(email: string): boolean {
   }
 
   return true;
+}
+
+/** Automated DNS/MX Record Verification to eliminate bounces upfront */
+export async function verifyEmailMxRecord(email: string): Promise<boolean> {
+  if (!verifyEmailAddress(email)) return false;
+  const domain = email.split('@')[1];
+  if (!domain) return false;
+
+  return new Promise((resolve) => {
+    dns.resolveMx(domain, (err, addresses) => {
+      if (err || !addresses || addresses.length === 0) {
+        dns.resolve4(domain, (err2, addrs2) => {
+          if (err2 || !addrs2 || addrs2.length === 0) {
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        });
+      } else {
+        resolve(true);
+      }
+    });
+  });
+}
+
+/** Phone Carrier Validation for Nigerian Networks (MTN, Airtel, Glo, 9mobile) */
+export function validateNigerianCarrier(phone: string): { valid: boolean; carrier?: string } {
+  if (!phone) return { valid: false };
+  let digits = phone.replace(/[^0-9]/g, '');
+  if (digits.startsWith('234')) {
+    digits = '0' + digits.substring(3);
+  }
+  if (digits.length !== 11) return { valid: false };
+
+  const prefix = digits.substring(0, 4);
+  const mtn = new Set(['0803', '0806', '0813', '0816', '0810', '0814', '0903', '0906', '0913', '0916', '0703', '0706']);
+  const airtel = new Set(['0802', '0808', '0812', '0708', '0701', '0902', '0907', '0901', '0912']);
+  const glo = new Set(['0805', '0807', '0811', '0815', '0705', '0905', '0915']);
+  const nineMobile = new Set(['0809', '0817', '0818', '0909', '0908']);
+
+  if (mtn.has(prefix)) return { valid: true, carrier: 'MTN Nigeria' };
+  if (airtel.has(prefix)) return { valid: true, carrier: 'Airtel Nigeria' };
+  if (glo.has(prefix)) return { valid: true, carrier: 'Glo Nigeria' };
+  if (nineMobile.has(prefix)) return { valid: true, carrier: '9mobile' };
+
+  return { valid: true, carrier: 'Landline/Other' };
 }
 
 /**
