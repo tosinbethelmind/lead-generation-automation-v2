@@ -411,15 +411,20 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
 
     const { fetchOverpassLagosBulkLeads } = await import('./overpassScraper');
 
+    const jijiQuery1 = selectedLgas[0] ? selectedLgas[0].q : 'hotel Ikeja';
+    const jijiQuery2 = selectedLgas[1] ? selectedLgas[1].q : 'company Lekki';
+    const socialQuery1 = selectedLgas[2] ? selectedLgas[2].q : 'hospital Lekki';
+    const socialQuery2 = selectedLgas[3] ? selectedLgas[3].q : 'school Yaba';
+
     const parallelTasks: Promise<any[]>[] = [
       fetchOverpassLagosBulkLeads(),
       ...selectedLgas.map(l => fetchNominatimSearch(l.q)),
       fetchBusinessListLeads(bizCat1, 'lagos_10k_b2b'),
       fetchBusinessListLeads(bizCat2, 'lagos_10k_b2b'),
-      fetchJijiMerchantLeads('hotel Ikeja', 'lagos_10k_b2b'),
-      fetchJijiMerchantLeads('company Lekki', 'lagos_10k_b2b'),
-      fetchSocialMultiChannelLeads('INSTAGRAM', 'hotel Lekki', 'lagos_10k_b2b'),
-      fetchSocialMultiChannelLeads('FACEBOOK', 'company Ikeja', 'lagos_10k_b2b'),
+      fetchJijiMerchantLeads(jijiQuery1, 'lagos_10k_b2b'),
+      fetchJijiMerchantLeads(jijiQuery2, 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('INSTAGRAM', socialQuery1, 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('FACEBOOK', socialQuery2, 'lagos_10k_b2b'),
       fetchSocialMultiChannelLeads('LINKEDIN', 'logistics company Lagos', 'lagos_10k_b2b'),
       fetchSocialMultiChannelLeads('TIKTOK', 'boutique store Lagos', 'lagos_10k_b2b')
     ];
