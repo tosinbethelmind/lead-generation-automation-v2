@@ -89,17 +89,15 @@ export async function GET(req?: Request) {
       console.warn('[LagosAPI] Log fetch warn:', err.message);
     }
 
-    // Efficient Parallel Counts across all Lagos LGAs and seeds (PostgREST wildcard uses *)
-    const lagosFilter = 'source_query_or_seed.ilike.*lagos*,city.ilike.*lagos*,city.ilike.*ikeja*,city.ilike.*lekki*,city.ilike.*yaba*,city.ilike.*surulere*,city.ilike.*apapa*,city.ilike.*ikorodu*,area.ilike.*lagos*,area.ilike.*ikeja*,area.ilike.*lekki*';
-
+    // Parallel Live Lead Counts
     const [
       { count: totalLagosLeads },
       { count: totalContacted },
       { count: hotelsCount }
     ] = await Promise.all([
-      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or(lagosFilter),
-      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or(lagosFilter).eq('status', 'CONTACTED'),
-      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or(lagosFilter).ilike('category', '%Hotel%')
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).eq('status', 'CONTACTED'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).ilike('category', '%Hotel%')
     ]);
 
     return NextResponse.json({
