@@ -53,8 +53,9 @@ export async function generateCopyWithMistral(lead: any, apiKey: string): Promis
  * Call Antigravity/Google Cloud Assist API via cloudcode-pa.googleapis.com using OAuth credentials.
  */
 export async function generateCopyWithAntigravityModel(lead: any, model: string, apiKey: string): Promise<GeneratedSiteResponse> {
-  const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID || '';
-  const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET || '';
+  const config: RuntimeConfig = getRuntimeConfig();
+  const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || config.googleClientId || '';
+  const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET || config.googleClientSecret || '';
 
   // Normalize model
   let targetModel = model || 'gemini-2.5-flash';

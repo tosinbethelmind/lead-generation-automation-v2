@@ -55,8 +55,9 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Otherwise treat it as an Antigravity Google Cloud Assist refresh token
-    const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID || '';
-    const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET || '';
+    const config = getRuntimeConfig();
+    const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || config.googleClientId || '';
+    const CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET || config.googleClientSecret || '';
     
     // Normalize model
     let targetModel = model || 'gemini-2.5-flash';
