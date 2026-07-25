@@ -5,8 +5,19 @@ import { parseOsmElement, validateLeadQuality } from '@/lib/liveLeadHarvester';
  * Uses HTTP GET with rotate-failover mirrors to fetch 400+ commercial business nodes
  * across Lagos State in under 400ms, bypassing rate limits for 20x scraping velocity.
  */
+const BOUNDING_BOX_ROTATION = [
+  { name: 'Ikeja & Mainland', bbox: '6.55,3.30,6.65,3.40' },
+  { name: 'Lekki & Eti-Osa', bbox: '6.40,3.45,6.55,3.65' },
+  { name: 'Victoria Island & Ikoyi', bbox: '6.41,3.39,6.46,3.46' },
+  { name: 'Surulere & Yaba', bbox: '6.47,3.34,6.53,3.39' },
+  { name: 'Abuja FCT Central', bbox: '8.95,7.35,9.15,7.55' },
+  { name: 'Port Harcourt Commercial', bbox: '4.75,6.95,4.90,7.10' },
+  { name: 'Ibadan Business Hub', bbox: '7.30,3.80,7.45,3.95' }
+];
+
 export async function fetchOverpassLagosBulkLeads(): Promise<any[]> {
-  const query = `[out:json][timeout:25];(node["amenity"~"hospital|clinic|dentist|pharmacy|school|college|university|hotel|restaurant|cafe|fast_food|bank"](6.35,3.10,6.70,3.65);node["shop"~"supermarket|boutique|clothes|electronics|car|car_repair|furniture|beauty|hairdresser"](6.35,3.10,6.70,3.65);node["office"~"lawyer|estate_agent|company|financial|telecommunication|logistics"](6.35,3.10,6.70,3.65););out body 300;`;
+  const selectedZone = BOUNDING_BOX_ROTATION[Math.floor(Math.random() * BOUNDING_BOX_ROTATION.length)];
+  const query = `[out:json][timeout:25];(node["amenity"~"hospital|clinic|dentist|pharmacy|school|college|university|hotel|restaurant|cafe|fast_food|bank"](${selectedZone.bbox});node["shop"~"supermarket|boutique|clothes|electronics|car|car_repair|furniture|beauty|hairdresser"](${selectedZone.bbox});node["office"~"lawyer|estate_agent|company|financial|telecommunication|logistics"](${selectedZone.bbox}););out body 300;`;
 
   const mirrors = [
     `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`,

@@ -60,11 +60,12 @@ function isShareOrSocialUrl(url: string): boolean {
 }
 
 /**
- * Scrape Real Solar & Inverter Merchants from Jiji Nigeria
+ * Scrape Real Solar & Inverter Merchants from Jiji Nigeria (with Page Pagination)
  */
 export async function fetchJijiMerchantLeads(query: string, seedTag = 'solar_nigeria_5k'): Promise<DirectoryLead[]> {
   try {
-    const url = `https://jiji.ng/lagos/search?query=${encodeURIComponent(query)}`;
+    const page = Math.floor(Math.random() * 5) + 1;
+    const url = `https://jiji.ng/lagos/search?query=${encodeURIComponent(query)}&page=${page}`;
     const resp = await fetch(url, {
       headers: {
         'User-Agent': getRandomUserAgent(),
@@ -80,7 +81,7 @@ export async function fetchJijiMerchantLeads(query: string, seedTag = 'solar_nig
     const leads: DirectoryLead[] = [];
 
     $('a[href*="/ad/"], a.b-list-advert-base').each((i, el) => {
-      if (leads.length >= 10) return;
+      if (leads.length >= 15) return;
       
       const href = $(el).attr('href') || '';
       if (!href || isShareOrSocialUrl(href)) return;
@@ -95,7 +96,7 @@ export async function fetchJijiMerchantLeads(query: string, seedTag = 'solar_nig
       const normPhone = phones.length > 0 ? normalizePhone(phones[0], 'NG') : null;
 
       const cleanName = title.split('-')[0].split('|')[0].trim();
-      const hash = crypto.createHash('sha256').update(`jiji_${cleanName.toLowerCase()}`).digest('hex').substring(0, 16);
+      const hash = crypto.createHash('sha256').update(`jiji_p${page}_${cleanName.toLowerCase()}`).digest('hex').substring(0, 16);
       const profileUrl = href.startsWith('http') ? href : `https://jiji.ng${href.startsWith('/') ? '' : '/'}${href}`;
 
       leads.push({
@@ -121,7 +122,7 @@ export async function fetchJijiMerchantLeads(query: string, seedTag = 'solar_nig
         last_contacted_at: '',
         duplicate_of_lead_id: '',
         business_summary: `${cleanName} — Active Jiji Nigeria Merchant (${query}).`,
-        notes: `Harvested via Jiji Merchant Scraper (${query}) [${new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' })} WAT]`,
+        notes: `Harvested via Jiji Merchant Scraper (${query} - p${page}) [${new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' })} WAT]`,
       });
     });
 
@@ -131,11 +132,13 @@ export async function fetchJijiMerchantLeads(query: string, seedTag = 'solar_nig
 }
 
 /**
- * Scrape Verified Corporate Listings from BusinessList.com.ng
+ * Scrape Verified Corporate Listings from BusinessList.com.ng (with Page Pagination)
  */
 export async function fetchBusinessListLeads(categoryPath: string, seedTag = 'lagos_10k_b2b'): Promise<DirectoryLead[]> {
   try {
-    const url = `https://www.businesslist.com.ng/${categoryPath}`;
+    const page = Math.floor(Math.random() * 4) + 1;
+    const pageSuffix = page > 1 ? `/${page}` : '';
+    const url = `https://www.businesslist.com.ng/${categoryPath}${pageSuffix}`;
     const resp = await fetch(url, {
       headers: {
         'User-Agent': getRandomUserAgent(),
