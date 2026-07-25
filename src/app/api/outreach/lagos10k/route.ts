@@ -89,8 +89,8 @@ export async function GET(req?: Request) {
       console.warn('[LagosAPI] Log fetch warn:', err.message);
     }
 
-    // Efficient Parallel Counts across all Lagos LGAs and seeds
-    const lagosFilter = 'source_query_or_seed.ilike.*lagos*,city.ilike.%lagos%,city.ilike.%ikeja%,city.ilike.%lekki%,city.ilike.%yaba%,city.ilike.%surulere%,city.ilike.%apapa%,city.ilike.%ikorodu%,area.ilike.%lagos%,area.ilike.%ikeja%,area.ilike.%lekki%';
+    // Efficient Parallel Counts across all Lagos LGAs and seeds (PostgREST wildcard uses *)
+    const lagosFilter = 'source_query_or_seed.ilike.*lagos*,city.ilike.*lagos*,city.ilike.*ikeja*,city.ilike.*lekki*,city.ilike.*yaba*,city.ilike.*surulere*,city.ilike.*apapa*,city.ilike.*ikorodu*,area.ilike.*lagos*,area.ilike.*ikeja*,area.ilike.*lekki*';
 
     const [
       { count: totalLagosLeads },
