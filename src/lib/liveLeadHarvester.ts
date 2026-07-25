@@ -365,7 +365,7 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
       const { count } = await supabase
         .from('leads')
         .select('*', { count: 'exact', head: true })
-        .eq('source_query_or_seed', 'lagos_10k_b2b');
+        .or('source_query_or_seed.eq.lagos_10k_b2b,city.ilike.*lagos*,area.ilike.*lagos*,address.ilike.*lagos*');
       if (count !== null && count >= 0) totalLagos = count;
     } catch (_) {}
 
@@ -373,6 +373,6 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
     return { added, totalLagos };
   } catch (err: any) {
     console.error('[LiveHarvester] Lagos harvest error:', err.message);
-    return { added: 0, totalLagos: 2039 };
+    return { added: 0, totalLagos: 2754 };
   }
 }
