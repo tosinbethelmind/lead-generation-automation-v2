@@ -27,9 +27,10 @@ export default function Lagos10KOutreachCard() {
 
   const [initialLoading, setInitialLoading] = useState(true);
 
-  const fetchLagosStatus = async () => {
+  const fetchLagosStatus = async (triggerHarvest = false) => {
     try {
-      const res = await fetch('/api/outreach/lagos10k');
+      const url = triggerHarvest ? '/api/outreach/lagos10k?refresh=true' : '/api/outreach/lagos10k';
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         if (data.stats) {
@@ -49,8 +50,8 @@ export default function Lagos10KOutreachCard() {
   };
 
   useEffect(() => {
-    fetchLagosStatus();
-    const interval = setInterval(fetchLagosStatus, 5000);
+    fetchLagosStatus(true);
+    const interval = setInterval(() => fetchLagosStatus(false), 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -154,7 +155,7 @@ export default function Lagos10KOutreachCard() {
         </div>
 
         <button
-          onClick={fetchLagosStatus}
+          onClick={() => fetchLagosStatus(true)}
           disabled={loading}
           style={{
             background: 'rgba(255,255,255,0.05)',

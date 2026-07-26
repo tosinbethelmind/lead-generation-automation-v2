@@ -50,7 +50,9 @@ function getLocalRunnerStatus() {
 
 export async function GET(req?: Request) {
   try {
-    const isCron = req ? (req.headers?.get('x-vercel-cron') === '1' || (req.url ? new URL(req.url).searchParams.get('cron') === 'true' : false)) : false;
+    const urlObj = req?.url ? new URL(req.url) : null;
+    const isCron = req ? (req.headers?.get('x-vercel-cron') === '1' || (urlObj ? urlObj.searchParams.get('cron') === 'true' : false)) : false;
+    const shouldHarvest = isCron || (urlObj ? urlObj.searchParams.get('harvest') === 'true' || urlObj.searchParams.get('refresh') === 'true' : false);
 
     const local = getLocalRunnerStatus();
     let isRunning = true;
@@ -67,8 +69,8 @@ export async function GET(req?: Request) {
       } catch (_) {}
     }
 
-    // 24/7 Cloud Automated Execution: Harvest live on Cron
-    if (isCron) {
+    // 24/7 Cloud Automated Execution: Harvest live on Cron or Manual Refresh
+    if (shouldHarvest) {
       harvestLiveSolarLeads().catch((err) => console.warn('[SolarAPI] Live harvest warn:', err.message));
     }
 
