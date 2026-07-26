@@ -3463,7 +3463,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 boxShadow: selectedStrategy === 'zero_risk_staging' ? '0 12px 30px rgba(16,185,129,0.15)' : '0 4px 12px rgba(0,0,0,0.03)',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between'
+                justifyContent: 'space-between'
               }}>
                 <span style={{ position: 'absolute', top: '-14px', left: '28px', background: '#10b981', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '4px 12px', borderRadius: '99px', textTransform: 'uppercase' }}>
                   MOST POPULAR (ZERO RISK)
@@ -3509,7 +3509,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 boxShadow: selectedStrategy === 'plugin' ? '0 12px 30px rgba(0,0,0,0.1)' : '0 4px 12px rgba(0,0,0,0.03)',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between'
+                justifyContent: 'space-between'
               }}>
                 <div>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>2. Growth Engine</h3>
@@ -3551,7 +3551,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 boxShadow: selectedStrategy === 'full_rebuild' ? '0 12px 30px rgba(212,175,55,0.15)' : '0 4px 12px rgba(0,0,0,0.03)',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between'
+                justifyContent: 'space-between'
               }}>
                 <div>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>3. Enterprise VIP Portal</h3>
