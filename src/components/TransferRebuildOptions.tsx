@@ -8,22 +8,22 @@ interface TransferRebuildOptionsProps {
 
 // Features aligned with LandingPage's interactive automation demos & Nigerian market demand
 const FEATURE_CATALOG = [
-  { id: 'quote_estimator', label: 'Smart Project Estimator & Invoicing', cost: 35000, desc: 'Clients calculate service price quotes in real-time and generate branded invoices.' },
-  { id: 'patient_intake', label: 'Appointment Booking & Intake Portal', cost: 35000, desc: 'Clients self-schedule appointments and fill out digital intake forms.' },
-  { id: 'ecommerce', label: 'Paystack Shopping Checkout Integration', cost: 50000, desc: 'Sell products online with shopping cart checkout and secure payments.' },
-  { id: 'vehicle_valuation', label: 'Smart Asset Valuation Calculator', cost: 30000, desc: 'Offer prospective clients instant asset appraisals to capture high-value sales leads.' },
-  { id: 'table_reservation', label: 'Table & Seat Reservation System', cost: 25000, desc: 'Allow guests to reserve dining tables, pick time slots, and pre-order food.' },
-  { id: 'whatsapp_floating_button', label: 'Sticky Floating WhatsApp Chat Button', cost: 15000, desc: 'Direct 1-click WhatsApp instant chat button with pre-filled lead message.' },
-  { id: 'google_maps_embed', label: 'Interactive Google Maps Location Embed', cost: 10000, desc: 'Embedded Google Maps iframe showing physical address for local trust.' },
-  { id: 'ai_chatbot', label: '24/7 AI-Powered FAQ Assistant', cost: 45000, desc: 'Automated AI chatbot answering client inquiries on pricing & hours around the clock.' },
-  { id: 'social_proof_counters', label: 'Animated Social Proof Counters', cost: 15000, desc: 'Live counters showing clients served, average star rating, and verified status.' },
-  { id: 'sms_whatsapp_reminders', label: 'Automated SMS & WhatsApp Reminders', cost: 25000, desc: 'Automated appointment and payment reminders sent 24h before scheduled slots.' },
-  { id: 'parent_portal', label: 'Parent Attendance & CBT Portal Access', cost: 40000, desc: 'Digital portal for parents to track attendance, report cards, and CBT scores.' },
-  { id: 'fleet_tracker', label: 'Real-Time GPS Fleet & Delivery Tracker', cost: 55000, desc: 'Live tracking map for logistics packages, delivery riders, and school buses.' }
+  { id: 'quote_estimator', label: 'Smart Project Estimator & Invoicing', cost: 35000, roi: '+40% Conversions', desc: 'Clients calculate service price quotes in real-time and generate branded invoices.' },
+  { id: 'patient_intake', label: 'Appointment Booking & Intake Portal', cost: 35000, roi: '-85% No-Shows', desc: 'Clients self-schedule appointments and fill out digital intake forms.' },
+  { id: 'ecommerce', label: 'Paystack Shopping Checkout Integration', cost: 50000, roi: '+60% Online Sales', desc: 'Sell products online with shopping cart checkout and secure payments.' },
+  { id: 'vehicle_valuation', label: 'Smart Asset Valuation Calculator', cost: 30000, roi: 'High-Ticket Leads', desc: 'Offer prospective clients instant asset appraisals to capture high-value sales leads.' },
+  { id: 'table_reservation', label: 'Table & Seat Reservation System', cost: 25000, roi: 'Automated Seating', desc: 'Allow guests to reserve dining tables, pick time slots, and pre-order food.' },
+  { id: 'whatsapp_floating_button', label: 'Sticky Floating WhatsApp Chat Button', cost: 15000, roi: 'Instant Enquiries', desc: 'Direct 1-click WhatsApp instant chat button with pre-filled lead message.' },
+  { id: 'google_maps_embed', label: 'Interactive Google Maps Location Embed', cost: 10000, roi: 'Local Trust', desc: 'Embedded Google Maps iframe showing physical address for local trust.' },
+  { id: 'ai_chatbot', label: '24/7 AI-Powered FAQ Assistant', cost: 45000, roi: '24/7 Lead Capture', desc: 'Automated AI chatbot answering client inquiries on pricing & hours around the clock.' },
+  { id: 'social_proof_counters', label: 'Animated Social Proof Counters', cost: 15000, roi: 'Trust Builder', desc: 'Live counters showing clients served, average star rating, and verified status.' },
+  { id: 'sms_whatsapp_reminders', label: 'Automated SMS & WhatsApp Reminders', cost: 25000, roi: '+95% Attendance', desc: 'Automated appointment and payment reminders sent 24h before scheduled slots.' },
+  { id: 'parent_portal', label: 'Parent Attendance & CBT Portal Access', cost: 40000, roi: 'Parent Retention', desc: 'Digital portal for parents to track attendance, report cards, and CBT scores.' },
+  { id: 'fleet_tracker', label: 'Real-Time GPS Fleet & Delivery Tracker', cost: 55000, roi: 'Logistics Control', desc: 'Live tracking map for logistics packages, delivery riders, and school buses.' }
 ];
 
 export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ lead, onSuccess }) => {
-  const [strategy, setStrategy] = useState<'full_rebuild' | 'plugin' | 'basic_presence' | 'script_embed'>('full_rebuild');
+  const [strategy, setStrategy] = useState<'zero_risk_staging' | 'full_rebuild' | 'plugin' | 'basic_presence' | 'script_embed'>('zero_risk_staging');
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [cost, setCost] = useState<number>(0);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -58,15 +58,16 @@ export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ 
 
   // Set initial strategy based on lead recommendation
   useEffect(() => {
-    if (lead?.upgradeStrategy && ['full_rebuild', 'plugin', 'basic_presence', 'script_embed'].includes(lead.upgradeStrategy)) {
-      setStrategy(lead.upgradeStrategy);
+    if (lead?.upgradeStrategy && ['zero_risk_staging', 'full_rebuild', 'plugin', 'basic_presence', 'script_embed'].includes(lead.upgradeStrategy)) {
+      setStrategy(lead.upgradeStrategy as any);
     }
   }, [lead]);
 
   // Re-calculate cost whenever strategy or features change
   useEffect(() => {
     let base = 0;
-    if (strategy === 'full_rebuild') base = 600000;
+    if (strategy === 'zero_risk_staging') base = 0; // Pay ₦150k only on approval
+    else if (strategy === 'full_rebuild') base = 600000;
     else if (strategy === 'plugin') base = 250000;
     else if (strategy === 'basic_presence') base = 150000;
     else base = 65000; // script_embed
@@ -140,6 +141,13 @@ export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ 
         marginBottom: '28px'
       }}>
         {[
+          {
+            value: 'zero_risk_staging',
+            label: 'Fast-Track Staging',
+            price: '₦0 Upfront',
+            desc: 'Zero risk. Pay ₦150,000 only AFTER staging preview approval.',
+            icon: <ShieldCheck size={20} />
+          },
           {
             value: 'full_rebuild',
             label: 'Full Rebuild',
@@ -251,7 +259,14 @@ export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ 
                 />
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1f2937' }}>{f.label}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1f2937' }}>{f.label}</span>
+                      {f.roi && (
+                        <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '2px 6px', background: '#dcfce7', color: '#166534', borderRadius: '4px' }}>
+                          {f.roi}
+                        </span>
+                      )}
+                    </div>
                     <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0ea5e9' }}>+₦{f.cost.toLocaleString()}</span>
                   </div>
                   <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '4px 0 0 0', lineHeight: 1.3 }}>

@@ -37,6 +37,9 @@ export interface PitchDetails {
   emailBody: string;
   whatsappBody: string;
   socialBody: string;
+  voiceNoteScript?: string;
+  estimatedMonthlyLeads?: string;
+  estimatedRevenueIncrease?: string;
   widgetType: WidgetType;
   widgetTitle: string;
   widgetDescription: string;
