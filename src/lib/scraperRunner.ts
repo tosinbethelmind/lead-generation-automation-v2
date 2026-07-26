@@ -16,8 +16,8 @@ class ScraperRateLimiter {
   private minuteReset: NodeJS.Timeout;
 
   constructor() {
-    this.maxConcurrent = Number(process.env.SCRAPER_CONCURRENCY_LIMIT) || 3;
-    this.maxPerMinute = Number(process.env.SCRAPER_RATE_PER_MIN) || 30;
+    this.maxConcurrent = Number(process.env.SCRAPER_CONCURRENCY_LIMIT) || 15;
+    this.maxPerMinute = Number(process.env.SCRAPER_RATE_PER_MIN) || 120;
     // reset counter every minute
     this.minuteReset = setInterval(() => {
       this.startsThisMinute = 0;
