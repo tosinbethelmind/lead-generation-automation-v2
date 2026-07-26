@@ -89,7 +89,7 @@ export async function GET(req?: Request) {
       console.warn('[LagosAPI] Log fetch warn:', err.message);
     }
 
-    // Parallel Live Lead Counts — Exclude solar leads for strict pipeline separation
+    // Parallel Live Lead Counts — Query exact Lagos B2B matching leads
     const [
       { count: totalLagosLeads },
       { count: totalContacted },
@@ -100,7 +100,7 @@ export async function GET(req?: Request) {
       { count: retailCount },
       { count: autoCount }
     ] = await Promise.all([
-      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).not('category', 'ilike', '%solar%'),
+      (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('source_query_or_seed.ilike.*lagos*,city.ilike.*lagos*,city.ilike.*ikeja*,city.ilike.*lekki*,city.ilike.*yaba*,city.ilike.*surulere*,city.ilike.*apapa*,city.ilike.*ikorodu*,area.ilike.*lagos*,area.ilike.*ikeja*,area.ilike.*lekki*,address.ilike.*lagos*'),
       (supabase as any).from('leads').select('*', { count: 'exact', head: true }).eq('status', 'CONTACTED').not('category', 'ilike', '%solar%'),
       (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%estate%,category.ilike.%property%'),
       (supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%school%,category.ilike.%academy%,category.ilike.%college%'),
@@ -125,7 +125,7 @@ export async function GET(req?: Request) {
       }
     } catch (_) {}
 
-    const resolvedLagosCount = Math.max(totalLagosLeads || 0, localLagosCount, liveLagosLeadsCount || 0, 2754);
+    const resolvedLagosCount = Math.max(totalLagosLeads || 0, localLagosCount, liveLagosLeadsCount || 0);
 
     return NextResponse.json({
       success: true,
