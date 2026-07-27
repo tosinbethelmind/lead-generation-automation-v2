@@ -132,9 +132,44 @@ export default function DbHealthCheck() {
 
           {/* Error Message */}
           {health.error && (
-            <div className="db-health-error-alert">
-              <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
-              <span>{health.error}</span>
+            <div className="db-health-error-alert" style={{ flexDirection: 'column', gap: '8px', alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>{health.error}</span>
+              </div>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+                <button
+                  onClick={checkHealth}
+                  style={{
+                    background: 'rgba(59, 130, 246, 0.2)',
+                    border: '1px solid rgba(59, 130, 246, 0.4)',
+                    color: '#60a5fa',
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  <RefreshCw size={12} className={checking ? 'spin-anim' : ''} /> Retry Connection
+                </button>
+                <button
+                  onClick={handleBypass}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#cbd5e1',
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Dismiss & Continue to App
+                </button>
+              </div>
             </div>
           )}
 
