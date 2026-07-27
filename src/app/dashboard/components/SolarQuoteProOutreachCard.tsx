@@ -66,8 +66,33 @@ export default function SolarQuoteProOutreachCard() {
 
   useEffect(() => {
     fetchPipelineStatus();
-    const interval = setInterval(fetchPipelineStatus, 6000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchPipelineStatus, 3000);
+
+    // Live Stream SSE Connection for Real-Time Updates
+    let eventSource: EventSource | null = null;
+    try {
+      eventSource = new EventSource('/api/logs/stream?live=true');
+      eventSource.addEventListener('log', (event: MessageEvent) => {
+        try {
+          const newLogs = JSON.parse(event.data);
+          if (Array.isArray(newLogs) && newLogs.length > 0) {
+            const formatted = newLogs.map((l: any) => 
+              typeof l === 'string' ? l : `[${l.step || l.level || 'LIVE'}] ${l.message || l.details || JSON.stringify(l)}`
+            );
+            setPipelineStatus(prev => ({
+              ...prev,
+              latestLogs: [...formatted, ...prev.latestLogs].slice(0, 50)
+            }));
+            fetchPipelineStatus();
+          }
+        } catch (_) {}
+      });
+    } catch (_) {}
+
+    return () => {
+      clearInterval(interval);
+      if (eventSource) eventSource.close();
+    };
   }, []);
 
   const handleToggleChannel = (key: keyof typeof channels) => {

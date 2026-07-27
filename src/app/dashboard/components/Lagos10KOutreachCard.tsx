@@ -52,7 +52,32 @@ export default function Lagos10KOutreachCard() {
   useEffect(() => {
     fetchLagosStatus(true);
     const interval = setInterval(() => fetchLagosStatus(false), 3000);
-    return () => clearInterval(interval);
+
+    // Live Stream SSE Connection for Real-Time Updates
+    let eventSource: EventSource | null = null;
+    try {
+      eventSource = new EventSource('/api/logs/stream?live=true');
+      eventSource.addEventListener('log', (event: MessageEvent) => {
+        try {
+          const newLogs = JSON.parse(event.data);
+          if (Array.isArray(newLogs) && newLogs.length > 0) {
+            const formatted = newLogs.map((l: any) => 
+              typeof l === 'string' ? l : `[${l.step || l.level || 'LIVE'}] ${l.message || l.details || JSON.stringify(l)}`
+            );
+            setPipelineStatus(prev => ({
+              ...prev,
+              latestLogs: [...formatted, ...prev.latestLogs].slice(0, 50)
+            }));
+            fetchLagosStatus(false);
+          }
+        } catch (_) {}
+      });
+    } catch (_) {}
+
+    return () => {
+      clearInterval(interval);
+      if (eventSource) eventSource.close();
+    };
   }, []);
 
   const handleStartLagosOutreach = async () => {

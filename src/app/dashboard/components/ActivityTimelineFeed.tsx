@@ -24,7 +24,7 @@ export default function ActivityTimelineFeed() {
 
   useEffect(() => {
     loadActivities();
-    const interval = setInterval(loadActivities, 15000); // Poll every 15s
+    const interval = setInterval(loadActivities, 3000); // Live poll every 3s
     return () => clearInterval(interval);
   }, []);
 
