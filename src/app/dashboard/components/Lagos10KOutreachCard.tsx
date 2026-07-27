@@ -14,7 +14,7 @@ export default function Lagos10KOutreachCard() {
   });
 
   const [stats, setStats] = useState({
-    totalLagosLeads: 5240,
+    totalLagosLeads: 0,
     totalContactedOutreach: 0,
     commercialHotelsCount: 200,
     targetMarket: 'Lagos State (Ikeja, Lekki, VI, Yaba, Surulere, Oshodi, Ikorodu)',
