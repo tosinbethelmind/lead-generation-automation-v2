@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun } from 'lucide-react';
+import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun, Bot, Zap } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -51,6 +51,18 @@ export default function AdminLayout({
       visible: true,
     },
     {
+      name: 'Customer AI Agent',
+      path: '/admin/ai-agent',
+      icon: Bot,
+      visible: true,
+    },
+    {
+      name: 'Autoresponders',
+      path: '/admin/autoresponders',
+      icon: Zap,
+      visible: true,
+    },
+    {
       name: 'Specialise Solar Pipeline',
       path: '/admin/solar-pipeline',
       icon: Sun,
@@ -78,6 +90,7 @@ export default function AdminLayout({
 
   const hasPageAccess = () => {
     if (pathname === '/admin' || pathname === '/admin/login' || loading) return true;
+    if (pathname === '/admin/ai-agent' || pathname === '/admin/autoresponders') return true;
     if (pathname === '/admin/solar-pipeline') return true;
     if (pathname === '/admin/design') return hasPermission('edit_design');
     if (pathname === '/admin/domain') return hasPermission('manage_domains');

@@ -3,6 +3,7 @@
 console.log('Redeploy check - latest build');
 
 import React, { useState, useEffect } from 'react';
+import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 import { 
   LayoutDashboard, 
   Users, 
@@ -9590,6 +9591,7 @@ export default function Home() {
             </div>
           </div>
         )}
+      <CustomerAiAgentWidget sector="Solar & B2B Lead Generation" />
     </div>
   );
 }

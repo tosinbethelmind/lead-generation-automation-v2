@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Rocket, ExternalLink, Server, Settings, Shield, RefreshCw } from 'lucide-react';
+import Link from 'next/link';
+import { Rocket, ExternalLink, Server, Settings, Shield, RefreshCw, Bot, Zap } from 'lucide-react';
 
 export default function AdminDashboardHome() {
   const [deploying, setDeploying] = useState(false);
@@ -98,6 +99,38 @@ export default function AdminDashboardHome() {
               https://lead-generation-automation-ecru.vercel.app/
               <ExternalLink className="inline-icon" />
             </a>
+          </div>
+        </div>
+
+        {/* Customer AI Agent Card */}
+        <div className="bento-card glass-panel">
+          <div className="card-header">
+            <div className="header-icon-wrapper" style={{ color: '#06b6d4' }}>
+              <Bot />
+            </div>
+            <h3>Customer AI Agent</h3>
+          </div>
+          <div className="card-body">
+            <p>Configure persona, train system prompt, test live in sandbox, and monitor customer chats.</p>
+            <Link href="/admin/ai-agent" className="btn-primary" style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              Launch AI Control <Bot size={16} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Autoresponders Card */}
+        <div className="bento-card glass-panel">
+          <div className="card-header">
+            <div className="header-icon-wrapper" style={{ color: '#f59e0b' }}>
+              <Zap />
+            </div>
+            <h3>Autoresponders</h3>
+          </div>
+          <div className="card-body">
+            <p>Multi-channel automated trigger rules for WhatsApp, SMS, Email, and Web Chat.</p>
+            <Link href="/admin/autoresponders" className="btn-primary" style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              Manage Autoresponders <Zap size={16} />
+            </Link>
           </div>
         </div>
 
