@@ -112,8 +112,8 @@ async function mainLoop() {
       log(`❌ Cycle Error: ${err.message}`);
     }
 
-    log('Sleeping for 4 hours before next harvest cycle...');
-    await new Promise(r => setTimeout(r, 4 * 60 * 60 * 1000));
+    log('Sleeping for 2 minutes before next harvest cycle...');
+    await new Promise(r => setTimeout(r, 2 * 60 * 1000));
   }
 }
 
