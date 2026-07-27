@@ -35,7 +35,7 @@ export async function GET() {
       success: true,
       pipeline: 'SolarQuotePro Solar Engine',
       stats: {
-        totalScrapedInstallers: Math.max(typeof totalSolarLeads === 'number' ? totalSolarLeads : 0, 1431),
+        totalScrapedInstallers: typeof totalSolarLeads === 'number' ? totalSolarLeads : 0,
         totalContactedOutreach: totalContacted || 0,
         groupLinksDiscovered: groupLinksCount,
         dualSyncStatus: 'online',

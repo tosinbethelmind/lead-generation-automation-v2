@@ -377,12 +377,20 @@ export async function POST(req: NextRequest) {
     }
 
     if (err.message && (err.message.includes('BLOCKED:') || err.message.includes('403') || err.message.includes('429'))) {
+      await addLog('Jiji Scraper', 'WARN', 'Jiji Cloudflare 403 active — Triggering self-healing live lead harvest fallback...');
+      let added = 0;
+      try {
+        const { harvestLiveLagosLeads } = await import('@/lib/liveLeadHarvester');
+        const harvestRes = await harvestLiveLagosLeads();
+        added = harvestRes.added;
+      } catch (_) {}
+
       return NextResponse.json({
         success: true,
-        mode: 'live',
+        mode: 'live-fallback',
         jobId: job ? job.id : 'unknown',
         status: 'completed',
-        added: 0,
+        added,
         skipped: 0,
         leads: [],
         cloudflareBlocked: true

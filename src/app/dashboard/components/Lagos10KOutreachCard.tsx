@@ -204,7 +204,7 @@ export default function Lagos10KOutreachCard() {
         <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
           <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Verified Lagos Leads</span>
           <span style={{ fontSize: '1.6rem', fontWeight: 800, color: '#60a5fa' }}>
-            {loading ? '...' : Math.max(stats.totalLagosLeads || 0, 5240).toLocaleString()}
+            {loading ? '...' : (stats.totalLagosLeads || 0).toLocaleString()}
           </span>
           <span style={{ fontSize: '0.7rem', color: '#10b981', display: 'block', marginTop: '2px' }}>✓ 5,000+ Target Achieved</span>
         </div>

@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
     const { data: nigeriaSolarData, count: nigeriaSolarExactCount, error: nigeriaSolarErr } = await db
       .from('leads')
       .select('*', { count: 'exact' })
-      .or('source_query_or_seed.eq.solar_nigeria_5k,category.eq.solar_installer')
+      .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%,name.ilike.%solar%,business_summary.ilike.%solar%')
       .order('created_at', { ascending: false })
       .range(0, 10000);
 

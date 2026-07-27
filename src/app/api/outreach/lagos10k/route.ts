@@ -128,7 +128,7 @@ export async function GET(req?: Request) {
       }
     } catch (_) {}
 
-    const resolvedLagosCount = Math.max(totalLagosLeads || 0, localLagosCount, liveLagosLeadsCount || 0, 5240);
+    const resolvedLagosCount = (totalLagosLeads || 0) > 0 ? totalLagosLeads! : Math.max(localLagosCount, liveLagosLeadsCount || 0);
 
     return NextResponse.json({
       success: true,
