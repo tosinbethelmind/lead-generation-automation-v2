@@ -54,7 +54,14 @@ const DEFAULT_NICHES = [
   'veterinary clinic',
   'hardware store',
   'water factory',
-  'sound engineer'
+  'sound engineer',
+  'microfinance bank',
+  'cooperative society',
+  'agro processing company',
+  'cold storage logistics',
+  'fumigation & pest control',
+  'event center & hall',
+  'luxury car rental'
 ];
 
 // 45 High-Density Commercial Suburbs & Markets across Lagos
@@ -131,7 +138,7 @@ export async function POST(req: NextRequest) {
     const maxJobsToQueue = typeof body.maxJobsToQueue === 'number' ? body.maxJobsToQueue : defaultMaxJobs;
 
     // Supported scraper engines for Lagos 10k execution
-    const defaultScrapers = ['maps-free', 'jiji', 'osm', 'social', 'duckduckgo'];
+    const defaultScrapers = ['maps-free', 'jiji', 'osm', 'social', 'duckduckgo', 'apify'];
     const scrapers: string[] = Array.isArray(body.scrapers) && body.scrapers.length > 0 
       ? body.scrapers 
       : defaultScrapers;

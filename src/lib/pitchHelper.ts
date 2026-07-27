@@ -29,7 +29,7 @@ export interface InvoiceDemoSchema {
   items: { name: string; price: number; qty: number }[];
 }
 
-export type CategoryKey = 'solar' | 'real_estate' | 'school' | 'medical' | 'auto' | 'retail' | 'restaurant' | 'legal' | 'general';
+export type CategoryKey = 'solar' | 'real_estate' | 'school' | 'medical' | 'auto' | 'retail' | 'restaurant' | 'legal' | 'agro_logistics' | 'microfinance' | 'interior_decor' | 'cleaning_security' | 'event_venue' | 'printing_packaging' | 'car_rental' | 'general';
 
 export interface PitchDetails {
   categoryKey: CategoryKey;
@@ -112,6 +112,76 @@ export function getCategoryType(categoryRaw: string): CategoryKey {
     cat.includes('therapy')
   ) {
     return 'medical';
+  }
+  if (
+    cat.includes('agro') ||
+    cat.includes('farm') ||
+    cat.includes('cold room') ||
+    cat.includes('cold storage') ||
+    cat.includes('produce') ||
+    cat.includes('poultry')
+  ) {
+    return 'agro_logistics';
+  }
+  if (
+    cat.includes('microfinance') ||
+    cat.includes('cooperative') ||
+    cat.includes('thrift') ||
+    cat.includes('savings') ||
+    cat.includes('credit')
+  ) {
+    return 'microfinance';
+  }
+  if (
+    cat.includes('interior') ||
+    cat.includes('furniture') ||
+    cat.includes('architect') ||
+    cat.includes('decor') ||
+    cat.includes('cabinet') ||
+    cat.includes('aluminum')
+  ) {
+    return 'interior_decor';
+  }
+  if (
+    cat.includes('clean') ||
+    cat.includes('fumigation') ||
+    cat.includes('pest') ||
+    cat.includes('security') ||
+    cat.includes('cctv') ||
+    cat.includes('guard') ||
+    cat.includes('janitorial')
+  ) {
+    return 'cleaning_security';
+  }
+  if (
+    cat.includes('event') ||
+    cat.includes('hall') ||
+    cat.includes('party') ||
+    cat.includes('venue') ||
+    cat.includes('plaza') ||
+    cat.includes('marquee')
+  ) {
+    return 'event_venue';
+  }
+  if (
+    cat.includes('print') ||
+    cat.includes('packaging') ||
+    cat.includes('press') ||
+    cat.includes('souvenir') ||
+    cat.includes('banner') ||
+    cat.includes('flex')
+  ) {
+    return 'printing_packaging';
+  }
+  if (
+    cat.includes('rental') ||
+    cat.includes('chauffeur') ||
+    cat.includes('shuttle') ||
+    cat.includes('prado') ||
+    cat.includes('hire') ||
+    cat.includes('car rental')
+  ) {
+    return 'car_rental';
   }
   if (
     cat.includes('car') ||

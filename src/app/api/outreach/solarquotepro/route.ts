@@ -6,6 +6,10 @@ import fs from 'fs';
 
 const supabase = getSupabaseClient();
 
+export function getLagosTimeString(date: Date = new Date()): string {
+  return date.toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos', hour12: true });
+}
+
 export async function GET() {
   try {
     // 1. Fetch total solar leads (strictly solarquotepro_v1 or solar_5k_pipeline)
@@ -40,7 +44,8 @@ export async function GET() {
         groupLinksDiscovered: groupLinksCount,
         dualSyncStatus: 'online',
         targetMarket: 'Nigeria (36 States + FCT)',
-        targetDomain: 'www.solarquotepro.ng'
+        targetDomain: 'www.solarquotepro.ng',
+        lastUpdatedTime: getLagosTimeString() + ' WAT'
       }
     });
   } catch (error: any) {

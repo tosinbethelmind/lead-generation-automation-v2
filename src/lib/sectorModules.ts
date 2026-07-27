@@ -824,3 +824,222 @@ export function formatNigerianAiOutreachTone(
     messageBodyText: `Hello ${lName}, hope your week is going smoothly!\n\nI came across ${bName} and put together a customized digital ordering system that lets your customers book and pay directly via WhatsApp and online transfer.\n\nKindly check out your live demo here and let me know your thoughts!`,
   };
 }
+
+// ============================================================================
+// 14. EXPANDED SECTOR MODULES (Agro, Microfinance, Interior, Facility, Events, Print, Car Rental)
+// ============================================================================
+
+export function calculateColdRoomSpoilageAndPowerCost(
+  coldRoomCapacityTons = 10,
+  dailyGenHours = 14,
+  dieselPricePerLiter = 1350
+): {
+  coldRoomCapacityTons: number;
+  monthlyDieselExpenseNgn: number;
+  monthlySolarHybridSavingsNgn: number;
+  estimatedSpoilageRiskValueNgn: number;
+} {
+  const dailyLiters = coldRoomCapacityTons * 4.5 * (dailyGenHours / 12);
+  const monthlyDieselExpenseNgn = Math.round(dailyLiters * 30 * dieselPricePerLiter);
+  const monthlySolarHybridSavingsNgn = Math.round(monthlyDieselExpenseNgn * 0.65);
+  const estimatedSpoilageRiskValueNgn = Math.round(coldRoomCapacityTons * 850000);
+
+  return {
+    coldRoomCapacityTons,
+    monthlyDieselExpenseNgn,
+    monthlySolarHybridSavingsNgn,
+    estimatedSpoilageRiskValueNgn,
+  };
+}
+
+export function calculateMicrofinanceLoanAndThrift(
+  loanAmountNgn = 250000,
+  tenureMonths = 6,
+  monthlyInterestRatePercent = 4.5
+): {
+  loanAmountNgn: number;
+  monthlyRepaymentNgn: number;
+  totalInterestPayableNgn: number;
+  dailyThriftContributionNgn: number;
+} {
+  const monthlyInterest = (loanAmountNgn * monthlyInterestRatePercent) / 100;
+  const monthlyPrincipal = loanAmountNgn / tenureMonths;
+  const monthlyRepaymentNgn = Math.round(monthlyPrincipal + monthlyInterest);
+  const totalInterestPayableNgn = Math.round(monthlyInterest * tenureMonths);
+  const dailyThriftContributionNgn = Math.round(monthlyRepaymentNgn / 26);
+
+  return {
+    loanAmountNgn,
+    monthlyRepaymentNgn,
+    totalInterestPayableNgn,
+    dailyThriftContributionNgn,
+  };
+}
+
+export function calculateInteriorRenovationQuote(
+  roomType: 'living_room' | 'bedroom' | 'office' | 'full_duplex' = 'living_room',
+  squareMeters = 40,
+  decorTier: 'standard' | 'executive' | 'luxury' = 'executive'
+): {
+  roomType: string;
+  squareMeters: number;
+  decorTier: string;
+  estimatedMaterialCostNgn: number;
+  workmanshipFeeNgn: number;
+  totalEstimateNgn: number;
+  deposit50PercentNgn: number;
+} {
+  const baseRatePerSqM = decorTier === 'luxury' ? 85000 : decorTier === 'executive' ? 45000 : 25000;
+  const estimatedMaterialCostNgn = Math.round(squareMeters * baseRatePerSqM);
+  const workmanshipFeeNgn = Math.round(estimatedMaterialCostNgn * 0.20);
+  const totalEstimateNgn = estimatedMaterialCostNgn + workmanshipFeeNgn;
+  const deposit50PercentNgn = Math.round(totalEstimateNgn * 0.5);
+
+  return {
+    roomType,
+    squareMeters,
+    decorTier,
+    estimatedMaterialCostNgn,
+    workmanshipFeeNgn,
+    totalEstimateNgn,
+    deposit50PercentNgn,
+  };
+}
+
+export function calculateCleaningAndSecurityPackage(
+  serviceType: 'cleaning' | 'fumigation' | 'security_guards' | 'cctv',
+  sizeOrStaffCount = 2,
+  squareMeters = 150
+): {
+  serviceType: string;
+  totalPackageCostNgn: number;
+  monthlySubscriptionNgn: number;
+  breakdownSummary: string;
+} {
+  let totalPackageCostNgn = 45000;
+  let monthlySubscriptionNgn = 35000;
+  let breakdownSummary = 'Standard deep cleaning & sanitization package';
+
+  if (serviceType === 'fumigation') {
+    totalPackageCostNgn = Math.round(squareMeters * 250);
+    monthlySubscriptionNgn = Math.round(totalPackageCostNgn * 0.6);
+    breakdownSummary = `Comprehensive pest eradication & barrier spray for ${squareMeters} sq. meters`;
+  } else if (serviceType === 'security_guards') {
+    monthlySubscriptionNgn = sizeOrStaffCount * 85000;
+    totalPackageCostNgn = monthlySubscriptionNgn;
+    breakdownSummary = `Deployment of ${sizeOrStaffCount} trained uniform security guards (24/7 Shift)`;
+  } else if (serviceType === 'cctv') {
+    totalPackageCostNgn = sizeOrStaffCount * 65000 + 45000; // per camera + NVR base
+    monthlySubscriptionNgn = 15000; // Cloud backup
+    breakdownSummary = `${sizeOrStaffCount}-Camera 4K HD CCTV System with remote mobile app monitoring`;
+  } else {
+    totalPackageCostNgn = Math.round(squareMeters * 350);
+    monthlySubscriptionNgn = Math.round(totalPackageCostNgn * 0.7);
+    breakdownSummary = `Post-construction & routine janitorial cleaning for ${squareMeters} sq. meters`;
+  }
+
+  return {
+    serviceType,
+    totalPackageCostNgn,
+    monthlySubscriptionNgn,
+    breakdownSummary,
+  };
+}
+
+export function calculateEventHallBookingAndDecor(
+  guestCapacity = 300,
+  includeDecorAndCatering = true,
+  hallTier: 'budget' | 'standard' | 'luxury' = 'standard'
+): {
+  guestCapacity: number;
+  hallRentalFeeNgn: number;
+  decorAndSoundFeeNgn: number;
+  cateringFeeNgn: number;
+  grandTotalNgn: number;
+  deposit50PercentNgn: number;
+} {
+  const hallRentalFeeNgn = hallTier === 'luxury' ? 3500000 : hallTier === 'standard' ? 1500000 : 650000;
+  const decorAndSoundFeeNgn = includeDecorAndCatering ? Math.round(hallRentalFeeNgn * 0.4) : 0;
+  const cateringFeeNgn = includeDecorAndCatering ? guestCapacity * 5500 : 0;
+  const grandTotalNgn = hallRentalFeeNgn + decorAndSoundFeeNgn + cateringFeeNgn;
+
+  return {
+    guestCapacity,
+    hallRentalFeeNgn,
+    decorAndSoundFeeNgn,
+    cateringFeeNgn,
+    grandTotalNgn,
+    deposit50PercentNgn: Math.round(grandTotalNgn * 0.5),
+  };
+}
+
+export function calculatePrintingAndPackagingQuote(
+  itemType: 'flyers' | 'souvenirs' | 'packaging_boxes' | 'flex_banner',
+  quantity = 1000,
+  paperGsm = 150
+): {
+  itemType: string;
+  quantity: number;
+  unitPriceNgn: number;
+  totalCostNgn: number;
+  estimatedProductionDays: number;
+} {
+  let unitPriceNgn = 45;
+  let estimatedProductionDays = 3;
+
+  if (itemType === 'packaging_boxes') {
+    unitPriceNgn = 280;
+    estimatedProductionDays = 5;
+  } else if (itemType === 'flex_banner') {
+    unitPriceNgn = 1800; // per sq yard
+    estimatedProductionDays = 1;
+  } else if (itemType === 'souvenirs') {
+    unitPriceNgn = 650;
+    estimatedProductionDays = 4;
+  } else {
+    unitPriceNgn = paperGsm >= 250 ? 85 : 45;
+    estimatedProductionDays = 2;
+  }
+
+  const totalCostNgn = Math.round(unitPriceNgn * quantity);
+
+  return {
+    itemType,
+    quantity,
+    unitPriceNgn,
+    totalCostNgn,
+    estimatedProductionDays,
+  };
+}
+
+export function calculateCarRentalAndEscortRate(
+  vehicleType: 'sedan' | 'suv' | 'luxury_prado' | 'hiace_bus',
+  durationDays = 2,
+  includePoliceEscort = false
+): {
+  vehicleType: string;
+  durationDays: number;
+  dailyRateNgn: number;
+  policeEscortFeeNgn: number;
+  totalRentalFeeNgn: number;
+} {
+  const rates: Record<string, number> = {
+    sedan: 35000,
+    suv: 65000,
+    luxury_prado: 140000,
+    hiace_bus: 85000,
+  };
+
+  const dailyRateNgn = rates[vehicleType] || 45000;
+  const policeEscortFeeNgn = includePoliceEscort ? durationDays * 45000 : 0;
+  const totalRentalFeeNgn = (dailyRateNgn * durationDays) + policeEscortFeeNgn;
+
+  return {
+    vehicleType,
+    durationDays,
+    dailyRateNgn,
+    policeEscortFeeNgn,
+    totalRentalFeeNgn,
+  };
+}
+

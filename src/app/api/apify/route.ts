@@ -89,7 +89,24 @@ async function performApifyImport(query: string, limit: number) {
     };
   }
   
-  // Fetch live dataset from Apify Platform API
+  // If no static datasetId is configured or if query is dynamic, execute live Apify Google Maps Actor via 8-Token rotator
+  if (!datasetId || datasetId.trim() === '') {
+    await addLog('Apify Importer', 'START', `Triggering live 8-Token Apify Cloud Actor crawl for query: "${query}" (limit: ${limit})`);
+    const { fetchApifyLiveLeads } = await import('@/lib/directoryScrapers');
+    const apifyLeads = await fetchApifyLiveLeads(query, 'apify_cloud_8token', limit);
+    const dbResult = await saveLeads(apifyLeads as any);
+
+    await addLog('Apify Importer', 'SUCCESS', `Live Apify cloud import complete. Added: ${dbResult.added}, Skipped: ${dbResult.skipped}`);
+    return {
+      success: true,
+      mode: 'cloud-8token',
+      added: dbResult.added,
+      skipped: dbResult.skipped,
+      leads: apifyLeads
+    };
+  }
+
+  // Fetch live static dataset from Apify Platform API if explicit datasetId is set
   await addLog('Apify Importer', 'START', `Triggering live Apify dataset import (ID: ${datasetId})`);
   
   const url = `https://api.apify.com/v2/datasets/${datasetId}/items?token=${activeToken}`;

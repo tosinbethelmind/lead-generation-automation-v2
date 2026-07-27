@@ -982,7 +982,7 @@ export default function Home() {
   const metaIntervalRef = React.useRef<any>(null);
   
   // Scraper Forms
-  const [selectedScraper, setSelectedScraper] = useState<'google' | 'jiji' | 'osm' | 'apify' | 'maps-free' | 'duckduckgo' | 'instagram' | 'facebook' | 'tiktok' | 'linkedin'>('google');
+  const [selectedScraper, setSelectedScraper] = useState<'google' | 'jiji' | 'osm' | 'apify' | 'maps-free' | 'duckduckgo' | 'instagram' | 'facebook' | 'tiktok' | 'linkedin'>('maps-free');
   const [gMapsQuery, setGMapsQuery] = useState('Car Dealers Lagos');
   const [gMapsLimit, setGMapsLimit] = useState(10);
   const [runAllConcurrently, setRunAllConcurrently] = useState<boolean>(false);
@@ -2152,7 +2152,7 @@ export default function Home() {
           limit: 100, 
           maxJobsToQueue: 100, 
           targetLagosDaily10k: true,
-          scrapers: ['maps-free', 'jiji', 'osm', 'social', 'duckduckgo']
+          scrapers: ['maps-free', 'jiji', 'osm', 'social', 'duckduckgo', 'apify']
         })
       });
       const data = await resp.json();
@@ -2216,7 +2216,7 @@ export default function Home() {
           limit: 100, 
           maxJobsToQueue: 100, 
           targetLagosDaily10k: true,
-          scrapers: ['maps-free', 'jiji', 'osm', 'social', 'duckduckgo']
+          scrapers: ['maps-free', 'jiji', 'osm', 'social', 'duckduckgo', 'apify']
         })
       });
       const data = await resp.json();

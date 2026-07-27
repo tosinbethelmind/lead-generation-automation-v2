@@ -26,7 +26,15 @@ export async function POST(req: NextRequest) {
     const config = getRuntimeConfig();
     const apiKey = rotateKey(config.googlePlacesApiKey);
     
-    const isSandbox = query.toLowerCase().includes('sandbox') || query.toLowerCase().includes('mock') || !apiKey || apiKey.trim() === '';
+    const isSandbox = query.toLowerCase().includes('sandbox') || query.toLowerCase().includes('mock');
+    const hasApiKey = apiKey && apiKey.trim() !== '' && !apiKey.includes('mock') && !apiKey.includes('placeholder');
+    
+    // If no Google Places API Key is present, delegate directly to the zero-cost maps-free route for live SERP leads
+    if (!hasApiKey && !isSandbox) {
+      await addLog('Google Maps Scraper', 'INFO', `No Google Places API key found. Seamlessly delegating to Maps-Free engine for query: "${query}"`);
+      const { POST: mapsFreePOST } = await import('../maps-free/route');
+      return mapsFreePOST(req);
+    }
     
     if (isSandbox) {
       await addLog('Google Maps Scraper', 'START', `Running in sandbox mode for query: "${query}"`);

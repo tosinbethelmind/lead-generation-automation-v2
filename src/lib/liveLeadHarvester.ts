@@ -10,7 +10,7 @@ import { saveLeads } from './googleSheets';
 import { getSupabaseClient } from './supabaseClient';
 import { normalizePhone, extractPhonesFromText } from './googleSheets';
 import { enrichLeadContacts, extractEmailsFromText } from './leadEnricher';
-import { fetchJijiMerchantLeads, fetchBusinessListLeads, fetchGoogleDorkLeads, fetchVConnectLeads, fetchCACBusinessLeads, fetchFinelibLeads, fetchBingSerpLeads, fetchOutscraperLeads } from './directoryScrapers';
+import { fetchJijiMerchantLeads, fetchBusinessListLeads, fetchGoogleDorkLeads, fetchVConnectLeads, fetchCACBusinessLeads, fetchFinelibLeads, fetchBingSerpLeads, fetchOutscraperLeads, fetchApifyLiveLeads } from './directoryScrapers';
 
 import { fetchSocialMultiChannelLeads, fetchSocialGroupLeads } from './socialMultiChannelScraper';
 import * as cheerio from 'cheerio';
@@ -95,7 +95,19 @@ const LAGOS_LGA_QUERIES = [
   { q: 'solar installer Abeokuta', cat: 'Solar Energy & Inverter Dealer', lga: 'Abeokuta' },
   { q: 'boutique Warri', cat: 'Fashion Retail Enterprise', lga: 'Warri' },
   { q: 'restaurant Calabar', cat: 'Hospitality & Dining', lga: 'Calabar' },
-  { q: 'supermarket Owerri', cat: 'Commercial Retail Enterprise', lga: 'Owerri' }
+  { q: 'supermarket Owerri', cat: 'Commercial Retail Enterprise', lga: 'Owerri' },
+  // High-Demand 7-Sector Expansion Queries
+  { q: 'event hall Lekki Phase 1', cat: 'Event Center & Marquee', lga: 'Eti-Osa (Lekki)' },
+  { q: 'party venue Victoria Island', cat: 'Event Venue & Plaza', lga: 'Eti-Osa (VI)' },
+  { q: 'packaging manufacturer Ikeja', cat: 'Packaging & Box Printing', lga: 'Ikeja' },
+  { q: 'flex banner printer Yaba', cat: 'Flex & Banner Printing', lga: 'Lagos Mainland' },
+  { q: 'car rental Lekki', cat: 'Executive Car Hire & Chauffeur', lga: 'Eti-Osa (Lekki)' },
+  { q: 'luxury car hire Ikoyi', cat: 'VIP Car Rental & Escort', lga: 'Ikoyi' },
+  { q: 'cooperative society Yaba', cat: 'Cooperative & Thrift Society', lga: 'Lagos Mainland' },
+  { q: 'savings and loan Ikeja', cat: 'Microfinance Institution', lga: 'Ikeja' },
+  { q: 'fumigation services Ikeja', cat: 'Fumigation & Pest Control', lga: 'Ikeja' },
+  { q: 'security company Ikoyi', cat: 'Security Guard Enterprise', lga: 'Ikoyi' },
+  { q: 'cctv installer Lekki', cat: 'CCTV & Access Control', lga: 'Eti-Osa (Lekki)' }
 ];
 
 const BIZLIST_LAGOS_CATEGORIES = [
@@ -415,6 +427,7 @@ export async function harvestLiveSolarLeads(): Promise<{ added: number; totalSol
     const selectedCities = shuffled.slice(0, 4);
 
     const parallelTasks: Promise<any[]>[] = [
+      fetchApifyLiveLeads(selectedCities[0] ? selectedCities[0].q : 'solar installer Lagos', 'solar_nigeria_5k'),
       ...selectedCities.map(c => fetchNominatimSearch(c.q)),
       fetchGoogleMapsInternalJson('solar installer Lagos', 8),
       fetchGoogleDorkLeads('solar installer', 'Solar Energy Enterprise'),
@@ -549,6 +562,7 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
     const socialQuery2 = selectedLgas[3] ? selectedLgas[3].q : 'school Yaba';
 
     const parallelTasks: Promise<any[]>[] = [
+      fetchApifyLiveLeads(jijiQuery1, 'lagos_10k_b2b'),
       fetchOverpassLagosBulkLeads(),
       ...selectedLgas.map(l => fetchNominatimSearch(l.q)),
       fetchGoogleMapsInternalJson('dentist Ikeja Lagos', 8),
