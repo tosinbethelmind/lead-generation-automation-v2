@@ -33,6 +33,12 @@ import {
   Sparkles,
   Loader2,
   X,
+  Zap,
+  Plug,
+  Layers,
+  Cpu,
+  Key,
+  Globe,
   AlertTriangle,
   AlertCircle,
   Menu,
@@ -242,7 +248,7 @@ const WEBSITE_STYLE_PRESETS = [
   }
 ];
 
-type Tab = 'dashboard' | 'crm' | 'scrapers' | 'scheduler' | 'settings' | 'logs';
+type Tab = 'dashboard' | 'crm' | 'scrapers' | 'scheduler' | 'settings' | 'logs' | 'integrations';
 
 function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
   const [status, setStatus] = useState<string>('offline');
@@ -644,7 +650,7 @@ export default function Home() {
         const logsData = await logsResp.json();
         setLatestLogs(logsData.slice(0, 3));
         if (Array.isArray(logsData)) {
-          setLogs([...logsData].reverse());
+          setLogs(logsData);
         }
       }
     } catch (err) {
@@ -1855,7 +1861,7 @@ export default function Home() {
       const resp = await fetch('/api/logs');
       const data = await resp.json();
       if (Array.isArray(data)) {
-        setLogs(data.reverse()); // show newest first
+        setLogs(data); // show newest first (Supabase/DB returns newest first)
       }
     } catch (e) {
       console.error(e);
@@ -2823,14 +2829,41 @@ export default function Home() {
         style={{ width: '280px', flexShrink: 0, borderRight: '1px solid var(--panel-border)', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', maxHeight: '100vh' }}
       >
         <div>
-          <h2 style={{ fontFamily: 'var(--font-title)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary)', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.2' }}>
-            <Database size={24} /> Bethelmind Analytics & Strategy
-          </h2>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600 }}>B2B Lead Engine</span>
+          {/* Brand badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+            <div style={{
+              width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0,
+              background: 'linear-gradient(135deg, #06b6d4 0%, #6366f1 100%)',
+              boxShadow: '0 0 20px rgba(6,182,212,0.5)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              <Database size={20} color="#fff" />
+            </div>
+            <div>
+              <h2 style={{
+                fontFamily: 'var(--font-title)', fontSize: '1rem', fontWeight: 800,
+                background: 'linear-gradient(135deg, #f8fafc 0%, #06b6d4 60%)',
+                WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                lineHeight: '1.2', margin: 0
+              }}>Bethelmind</h2>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>Analytics &amp; Strategy</span>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', paddingLeft: '2px' }}>
+            <span style={{
+              fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', fontWeight: 700,
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              background: 'rgba(16,185,129,0.12)', color: '#34d399',
+              border: '1px solid rgba(16,185,129,0.3)', boxShadow: '0 0 10px rgba(16,185,129,0.15)'
+            }}>● LIVE</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>B2B Lead Engine</span>
+          </div>
         </div>
 
+        <div className="luxury-divider" />
+
         {/* Dynamic Sign-In / Account block */}
-        <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ padding: '14px 16px', borderRadius: '12px', background: 'rgba(99,102,241,0.07)', border: '1px solid rgba(99,102,241,0.18)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)' }}>
           {config.googleUserEmail ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2924,27 +2957,53 @@ export default function Home() {
           )}
         </div>
         
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1 }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexGrow: 1 }}>
+          <span style={{ fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--text-muted)', paddingLeft: '4px', paddingBottom: '4px' }}>Navigation</span>
           <button 
             onClick={() => setActiveTab('dashboard')} 
             className={`btn-secondary ${activeTab === 'dashboard' ? 'active' : ''}`}
-            style={{ justifyContent: 'flex-start', background: activeTab === 'dashboard' ? 'var(--primary-glow)' : 'transparent', borderColor: activeTab === 'dashboard' ? 'var(--primary)' : 'transparent', width: '100%' }}
+            style={{ justifyContent: 'flex-start', width: '100%' }}
           >
-            <LayoutDashboard size={18} color={activeTab === 'dashboard' ? 'var(--primary)' : 'var(--text-secondary)'} /> Console
+            <LayoutDashboard size={18} color={activeTab === 'dashboard' ? '#06b6d4' : 'var(--text-secondary)'} /> Console
           </button>
           
           <button 
             onClick={() => setActiveTab('crm')} 
             className={`btn-secondary ${activeTab === 'crm' ? 'active' : ''}`}
-            style={{ justifyContent: 'flex-start', background: activeTab === 'crm' ? 'var(--primary-glow)' : 'transparent', borderColor: activeTab === 'crm' ? 'var(--primary)' : 'transparent', width: '100%' }}
+            style={{ justifyContent: 'flex-start', width: '100%' }}
           >
-            <Users size={18} color={activeTab === 'crm' ? 'var(--primary)' : 'var(--text-secondary)'} /> Leads CRM
+            <Users size={18} color={activeTab === 'crm' ? '#06b6d4' : 'var(--text-secondary)'} /> Leads CRM
+          </button>
+
+          {/* DEDICATED LUXURY INTEGRATIONS & SETUP BUTTON */}
+          <button 
+            onClick={() => setActiveTab('integrations')} 
+            className={`btn-secondary ${activeTab === 'integrations' ? 'btn-integration-active' : ''}`}
+            style={{ 
+              display: 'flex',
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              background: activeTab === 'integrations' 
+                ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(6, 182, 212, 0.25) 100%)' 
+                : 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%)', 
+              borderColor: activeTab === 'integrations' ? '#06b6d4' : 'rgba(99, 102, 241, 0.35)', 
+              boxShadow: activeTab === 'integrations' ? '0 0 20px rgba(6, 182, 212, 0.3)' : '0 4px 15px rgba(0,0,0,0.15)',
+              width: '100%',
+              padding: '10px 12px',
+              borderRadius: '10px'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Zap size={18} color={activeTab === 'integrations' ? '#06b6d4' : '#6366f1'} className={activeTab === 'integrations' ? 'animate-pulse-glow' : ''} />
+              <span style={{ fontWeight: 700, color: activeTab === 'integrations' ? '#f8fafc' : 'var(--text-primary)', fontSize: '0.88rem' }}>Integrations Hub</span>
+            </div>
+            <span className="badge-luxury-cyan" style={{ fontSize: '0.62rem', padding: '2px 6px', borderRadius: '4px', letterSpacing: '0.05em' }}>SETUPS</span>
           </button>
 
           <button 
             onClick={() => window.location.href = '/admin/solar-pipeline'} 
             className="btn-secondary"
-            style={{ justifyContent: 'flex-start', background: 'transparent', borderColor: 'transparent', width: '100%' }}
+            style={{ justifyContent: 'flex-start', width: '100%' }}
           >
             <Sun size={18} color="var(--text-secondary)" /> Specialise Solar Pipeline
           </button>
@@ -2952,33 +3011,33 @@ export default function Home() {
           <button 
             onClick={() => setActiveTab('scrapers')} 
             className={`btn-secondary ${activeTab === 'scrapers' ? 'active' : ''}`}
-            style={{ justifyContent: 'flex-start', background: activeTab === 'scrapers' ? 'var(--primary-glow)' : 'transparent', borderColor: activeTab === 'scrapers' ? 'var(--primary)' : 'transparent', width: '100%' }}
+            style={{ justifyContent: 'flex-start', width: '100%' }}
           >
-            <Compass size={18} color={activeTab === 'scrapers' ? 'var(--primary)' : 'var(--text-secondary)'} /> Maps Scraper
+            <Compass size={18} color={activeTab === 'scrapers' ? '#06b6d4' : 'var(--text-secondary)'} /> Maps Scraper
           </button>
           
           <button 
             onClick={() => setActiveTab('scheduler')} 
             className={`btn-secondary ${activeTab === 'scheduler' ? 'active' : ''}`}
-            style={{ justifyContent: 'flex-start', background: activeTab === 'scheduler' ? 'var(--primary-glow)' : 'transparent', borderColor: activeTab === 'scheduler' ? 'var(--primary)' : 'transparent', width: '100%' }}
+            style={{ justifyContent: 'flex-start', width: '100%' }}
           >
-            <Calendar size={18} color={activeTab === 'scheduler' ? 'var(--primary)' : 'var(--text-secondary)'} /> Campaign Scheduler
+            <Calendar size={18} color={activeTab === 'scheduler' ? '#06b6d4' : 'var(--text-secondary)'} /> Campaign Scheduler
           </button>
           
           <button 
             onClick={() => setActiveTab('logs')} 
             className={`btn-secondary ${activeTab === 'logs' ? 'active' : ''}`}
-            style={{ justifyContent: 'flex-start', background: activeTab === 'logs' ? 'var(--primary-glow)' : 'transparent', borderColor: activeTab === 'logs' ? 'var(--primary)' : 'transparent', width: '100%' }}
+            style={{ justifyContent: 'flex-start', width: '100%' }}
           >
-            <FileText size={18} color={activeTab === 'logs' ? 'var(--primary)' : 'var(--text-secondary)'} /> Sync Logs
+            <FileText size={18} color={activeTab === 'logs' ? '#06b6d4' : 'var(--text-secondary)'} /> Sync Logs
           </button>
           
           <button data-testid="settings-tab" 
             onClick={() => setActiveTab('settings')} 
             className={`btn-secondary ${activeTab === 'settings' ? 'active' : ''}`}
-            style={{ justifyContent: 'flex-start', background: activeTab === 'settings' ? 'var(--primary-glow)' : 'transparent', borderColor: activeTab === 'settings' ? 'var(--primary)' : 'transparent', width: '100%' }}
+            style={{ justifyContent: 'flex-start', width: '100%' }}
           >
-            <Settings size={18} color={activeTab === 'settings' ? 'var(--primary)' : 'var(--text-secondary)'} /> Settings
+            <Settings size={18} color={activeTab === 'settings' ? '#06b6d4' : 'var(--text-secondary)'} /> Settings
           </button>
         </nav>
         
@@ -3481,7 +3540,7 @@ export default function Home() {
             </button>
           </div>
         )}
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <header className="luxury-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-title)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               Lead Generation & Website Builder Console
@@ -3510,7 +3569,22 @@ export default function Home() {
             </p>
           </div>
           
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button 
+              onClick={() => setActiveTab('integrations')} 
+              className="btn-gold-glow" 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                padding: '8px 16px', 
+                borderRadius: '10px', 
+                fontSize: '0.85rem',
+                cursor: 'pointer' 
+              }}
+            >
+              <Zap size={16} color="#ffffff" className="animate-pulse-glow" /> Integrations & Setup Hub
+            </button>
             <button onClick={() => setShowSyncConfirm(true)} disabled={loadingLeads} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               {loadingLeads ? <Loader2 size={16} className="spin-anim" /> : <RefreshCw size={16} />} {loadingLeads ? 'Syncing...' : 'Sync Pipeline'}
             </button>
@@ -3726,7 +3800,7 @@ export default function Home() {
         {activeTab === 'dashboard' && (
           <>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-              <div className="glass-panel" style={{ padding: '20px' }}>
+              <div className="glass-panel stat-card-violet" style={{ padding: '20px' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>Total Leads Ingested</span>
                 <h3 style={{ fontSize: '2.2rem', marginTop: '10px', fontWeight: 700 }}>{stats.totalLeads}</h3>
                 <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', marginTop: '12px', paddingTop: '8px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -3734,25 +3808,25 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="glass-panel" style={{ padding: '20px' }}>
+              <div className="glass-panel stat-card-cyan" style={{ padding: '20px' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>Ready for Proposal</span>
-                <h3 style={{ fontSize: '2.2rem', marginTop: '10px', color: 'var(--primary)', fontWeight: 700 }}>{stats.newLeads}</h3>
+                <h3 style={{ fontSize: '2.2rem', marginTop: '10px', fontWeight: 700 }}>{stats.newLeads}</h3>
                 <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', marginTop: '12px', paddingTop: '8px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   Businesses with no website listed
                 </div>
               </div>
               
-              <div className="glass-panel" style={{ padding: '20px' }}>
+              <div className="glass-panel stat-card-emerald" style={{ padding: '20px' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>Outreach Sent</span>
-                <h3 style={{ fontSize: '2.2rem', marginTop: '10px', color: 'var(--success)', fontWeight: 700 }}>{stats.contactedLeads}</h3>
+                <h3 style={{ fontSize: '2.2rem', marginTop: '10px', fontWeight: 700 }}>{stats.contactedLeads}</h3>
                 <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', marginTop: '12px', paddingTop: '8px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   Proposals successfully emailed
                 </div>
               </div>
 
-              <div className="glass-panel" style={{ padding: '20px' }}>
+              <div className="glass-panel stat-card-gold" style={{ padding: '20px' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>Highly Rated Leads</span>
-                <h3 style={{ fontSize: '2.2rem', marginTop: '10px', color: 'var(--warning)', fontWeight: 700 }}>{stats.highRatingLeads || leads.filter(l => l.rating >= 4.0).length}</h3>
+                <h3 style={{ fontSize: '2.2rem', marginTop: '10px', fontWeight: 700 }}>{stats.highRatingLeads || leads.filter(l => l.rating >= 4.0).length}</h3>
                 <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', marginTop: '12px', paddingTop: '8px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   Google rating floor threshold &gt;= 4.0
                 </div>
@@ -8195,6 +8269,260 @@ export default function Home() {
               </button>
             </div>
           </form>
+        )}
+
+        {/* TAB 6: DEDICATED LUXURY INTEGRATIONS & SETUP HUB */}
+        {activeTab === 'integrations' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Header Banner */}
+            <div className="glass-panel animate-pulse-glow" style={{ 
+              padding: '28px 32px', 
+              background: 'linear-gradient(135deg, rgba(13, 19, 33, 0.9) 0%, rgba(99, 102, 241, 0.15) 50%, rgba(6, 182, 212, 0.15) 100%)', 
+              border: '1px solid rgba(6, 182, 212, 0.4)',
+              borderRadius: '20px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '20px'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                  <Zap size={28} color="#06b6d4" className="animate-pulse-glow" />
+                  <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
+                    Master Integrations & Setup Hub
+                  </h2>
+                  <span className="badge-luxury-cyan" style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '20px' }}>
+                    CENTRAL CONTROL
+                  </span>
+                </div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', margin: 0, maxWidth: '750px', lineHeight: 1.5 }}>
+                  Configure, pair, and verify all 5 platform integration tiers — AI models, web scrapers, outreach gateways, cloud databases, and deployment runners.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => window.location.href = '/setup'}
+                  className="btn-gold-glow"
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '10px',
+                    fontSize: '0.85rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <ExternalLink size={16} /> Open Fullscreen Setup Console (/setup)
+                </button>
+              </div>
+            </div>
+
+            {/* 5 Integration Category Cards Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '24px' }}>
+              
+              {/* CATEGORY 1: AI MODELS & LLMS */}
+              <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px', borderRadius: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Cpu size={22} color="#06b6d4" />
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'white' }}>1. AI Engine & LLMs</h3>
+                  </div>
+                  <span className={config.geminiApiKey || (config as any).antigravityApiKeys?.length ? "badge-luxury-emerald" : "badge-luxury-amber"} style={{ fontSize: '0.7rem', padding: '3px 8px', borderRadius: '6px' }}>
+                    {config.geminiApiKey || (config as any).antigravityApiKeys?.length ? "ACTIVE 🟢" : "KEY MISSING ⚠️"}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Google Gemini API Key(s)</label>
+                    <input 
+                      type="password" 
+                      value={config.geminiApiKey || ''} 
+                      onChange={(e) => setConfig({ ...config, geminiApiKey: e.target.value })}
+                      placeholder="AIzaSy... (Supports rotation)"
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.82rem' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Antigravity / Claude API Key(s)</label>
+                    <input 
+                      type="password" 
+                      value={Array.isArray((config as any).antigravityApiKeys) ? (config as any).antigravityApiKeys.join(', ') : ''} 
+                      onChange={(e) => setConfig({ ...config, antigravityApiKeys: e.target.value.split(',').map(s => s.trim()).filter(Boolean) } as any)}
+                      placeholder="sk-ant-... (Supports rotation)"
+                      style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '8px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.82rem' }}
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  type="button" 
+                  onClick={() => scrollToSectionAndFocus('ai-credentials', 'input')}
+                  className="btn-secondary" 
+                  style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem', padding: '8px' }}
+                >
+                  Configure AI Settings & Models →
+                </button>
+              </div>
+
+              {/* CATEGORY 2: SCRAPERS & PROXIES */}
+              <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px', borderRadius: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Compass size={22} color="#6366f1" />
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'white' }}>2. Scrapers & Proxies</h3>
+                  </div>
+                  <span className="badge-luxury-cyan" style={{ fontSize: '0.7rem', padding: '3px 8px', borderRadius: '6px' }}>
+                    ENGINES READY 🌐
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.82rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Google Maps Scraper:</span>
+                    <strong style={{ color: '#10b981' }}>Free Internal / Apify</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Jiji Colab Engine:</span>
+                    <strong style={{ color: '#6366f1' }}>Python Headless</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Proxy Provider:</span>
+                    <strong style={{ color: '#06b6d4' }}>{config.webshareProxies ? 'Webshare Pool' : 'Direct IP / Tor'}</strong>
+                  </div>
+                </div>
+
+                <button 
+                  type="button" 
+                  onClick={() => scrollToSectionAndFocus('proxy-settings', 'textarea')}
+                  className="btn-secondary" 
+                  style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem', padding: '8px' }}
+                >
+                  Manage Proxy Pool & Scraper Keys →
+                </button>
+              </div>
+
+              {/* CATEGORY 3: OUTREACH & MESSAGING */}
+              <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px', borderRadius: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Send size={22} color="#ec4899" />
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'white' }}>3. Outreach Channels</h3>
+                  </div>
+                  <span className="badge-luxury-emerald" style={{ fontSize: '0.7rem', padding: '3px 8px', borderRadius: '6px' }}>
+                    OMNICHANNEL 💬
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.82rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>WhatsApp Service:</span>
+                    <strong style={{ color: '#10b981' }}>Baileys Daemon / Evolution API</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>SMS Gateway:</span>
+                    <strong style={{ color: '#f59e0b' }}>Termii / AfricasTalking / Twilio</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Email Provider:</span>
+                    <strong style={{ color: '#ec4899' }}>{config.emailProvider || 'Gmail SMTP'}</strong>
+                  </div>
+                </div>
+
+                <button 
+                  type="button" 
+                  onClick={runDiagnostics}
+                  disabled={checkingHealth}
+                  className="btn-primary" 
+                  style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem', padding: '8px' }}
+                >
+                  {checkingHealth ? <Loader2 size={14} className="spin-anim" /> : <RefreshCw size={14} />} Run Connectivity Diagnostics
+                </button>
+              </div>
+
+              {/* CATEGORY 4: CRM & DATA SYNC */}
+              <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px', borderRadius: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Database size={22} color="#10b981" />
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'white' }}>4. CRM & Data Sync</h3>
+                  </div>
+                  <span className={config.storageMode === 'supabase' ? "badge-luxury-emerald" : "badge-luxury-cyan"} style={{ fontSize: '0.7rem', padding: '3px 8px', borderRadius: '6px' }}>
+                    {config.storageMode === 'supabase' ? 'SUPABASE DB' : 'SHEETS DB'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.82rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Active Storage Backend:</span>
+                    <strong style={{ color: '#10b981' }}>{config.storageMode?.toUpperCase()}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Google Spreadsheet ID:</span>
+                    <strong style={{ color: '#6366f1', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>{config.googleSpreadsheetId ? 'Configured' : 'Missing'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>n8n Webhook Sync:</span>
+                    <strong style={{ color: '#06b6d4' }}>Active Sync</strong>
+                  </div>
+                </div>
+
+                <button 
+                  type="button" 
+                  onClick={() => scrollToSectionAndFocus('db-settings', 'select')}
+                  className="btn-secondary" 
+                  style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem', padding: '8px' }}
+                >
+                  Configure Database & Sync →
+                </button>
+              </div>
+
+              {/* CATEGORY 5: CLOUD RUNNERS & INFRASTRUCTURE */}
+              <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px', borderRadius: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Layers size={22} color="#f59e0b" />
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'white' }}>5. Cloud Runners</h3>
+                  </div>
+                  <span className="badge-luxury-amber" style={{ fontSize: '0.7rem', padding: '3px 8px', borderRadius: '6px' }}>
+                    RUNNER READY 🚀
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.82rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Local Runner Daemon:</span>
+                    <strong style={{ color: runnerStatus === 'online' ? '#10b981' : '#f59e0b' }}>
+                      {runnerStatus?.toUpperCase()}
+                    </strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Hugging Face Space:</span>
+                    <strong style={{ color: '#06b6d4' }}>bethelmind-lead-engine</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>GitHub Actions Cron:</span>
+                    <strong style={{ color: '#6366f1' }}>Workflow Ready</strong>
+                  </div>
+                </div>
+
+                <button 
+                  type="button" 
+                  onClick={() => window.location.href = '/setup'}
+                  className="btn-gold-glow" 
+                  style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem', padding: '8px', borderRadius: '8px' }}
+                >
+                  Deploy Cloud Runner →
+                </button>
+              </div>
+
+            </div>
+          </div>
         )}
 
       </main>

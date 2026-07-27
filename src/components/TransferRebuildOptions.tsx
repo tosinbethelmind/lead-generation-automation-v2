@@ -66,11 +66,11 @@ export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ 
   // Re-calculate cost whenever strategy or features change
   useEffect(() => {
     let base = 0;
-    if (strategy === 'zero_risk_staging') base = 0; // Pay ₦150k only on approval
-    else if (strategy === 'full_rebuild') base = 600000;
+    if (strategy === 'zero_risk_staging') base = 0; // Pay ₦185,000 only on approval
+    else if (strategy === 'full_rebuild') base = 480000;
     else if (strategy === 'plugin') base = 250000;
-    else if (strategy === 'basic_presence') base = 150000;
-    else base = 65000; // script_embed
+    else if (strategy === 'basic_presence') base = 185000;
+    else base = 75000; // script_embed
 
     const featuresCost = selectedFeatures.reduce((sum, fid) => {
       const f = FEATURE_CATALOG.find((x) => x.id === fid);
@@ -145,13 +145,13 @@ export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ 
             value: 'zero_risk_staging',
             label: 'Fast-Track Staging',
             price: '₦0 Upfront',
-            desc: 'Zero risk. Pay ₦150,000 only AFTER staging preview approval.',
+            desc: 'Zero risk. Pay ₦185,000 only AFTER staging preview approval.',
             icon: <ShieldCheck size={20} />
           },
           {
             value: 'full_rebuild',
             label: 'Full Rebuild',
-            price: '₦600,000',
+            price: '₦480,000',
             desc: 'Complete static Next.js rebuild. Ultra-fast speeds & modern design.',
             icon: <Globe size={20} />
           },
@@ -165,14 +165,14 @@ export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ 
           {
             value: 'basic_presence',
             label: 'Basic Presence',
-            price: '₦150,000',
+            price: '₦185,000',
             desc: 'Essential landing page to get online, get found, and build local credibility.',
             icon: <Globe size={20} />
           },
           {
             value: 'script_embed',
             label: 'Script Embed',
-            price: '₦65,000',
+            price: '₦75,000',
             desc: 'Lightweight JavaScript embed code. Fits any custom HTML/JS site.',
             icon: <Code size={20} />
           }

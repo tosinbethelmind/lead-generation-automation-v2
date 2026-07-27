@@ -26,67 +26,65 @@ export default function ScraperCard({
       id={`scraper-card-${id}`}
       data-testid={`scraper-card-${id}`}
       onClick={onSelect}
+      className={isSelected ? 'animate-pulse-glow' : ''}
       style={{
         background: isSelected
-          ? 'linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, rgba(15, 22, 36, 0.7) 100%)'
-          : 'rgba(15, 22, 36, 0.4)',
+          ? 'linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%)'
+          : 'rgba(13, 19, 33, 0.5)',
         backdropFilter: 'blur(16px)',
         border: '1px solid',
-        borderColor: isSelected ? 'var(--primary)' : 'var(--panel-border)',
-        borderRadius: '12px',
-        padding: '16px',
+        borderColor: isSelected ? '#06b6d4' : 'rgba(99, 102, 241, 0.2)',
+        boxShadow: isSelected ? '0 0 25px rgba(6, 182, 212, 0.3)' : '0 4px 20px rgba(0,0,0,0.2)',
+        borderRadius: '14px',
+        padding: '18px',
         cursor: 'pointer',
         transition: 'var(--transition-smooth)',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px'
+        gap: '12px'
       }}
       onMouseEnter={(e) => {
         if (!isSelected) {
-          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+          e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.5)';
           e.currentTarget.style.transform = 'translateY(-2px)';
         }
       }}
       onMouseLeave={(e) => {
         if (!isSelected) {
-          e.currentTarget.style.borderColor = 'var(--panel-border)';
+          e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.2)';
           e.currentTarget.style.transform = 'translateY(0)';
         }
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff' }}>{name}</h4>
+        <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>{name}</h4>
         
         {/* Status badges */}
-        <span style={{
-          fontSize: '0.65rem',
-          fontWeight: 600,
-          padding: '2px 6px',
-          borderRadius: '4px',
-          background: status === 'free' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-          color: status === 'free' ? 'var(--success)' : 'var(--warning)',
-          border: '1px solid',
-          borderColor: status === 'free' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(245, 158, 11, 0.3)'
+        <span className={status === 'free' ? 'badge-luxury-emerald' : 'badge-luxury-amber'} style={{
+          fontSize: '0.68rem',
+          fontWeight: 700,
+          padding: '3px 8px',
+          borderRadius: '6px'
         }}>
-          {status === 'free' ? 'Free' : 'API Required'}
+          {status === 'free' ? 'FREE 🟢' : 'API REQUIRED 🔑'}
         </span>
       </div>
 
-      <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.4', flexGrow: 1 }}>
+      <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: '1.45', flexGrow: 1 }}>
         {description}
       </p>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem' }}>
         {status === 'free' || isConfigured ? (
           <>
-            <CheckCircle size={12} color="var(--success)" />
-            <span style={{ color: 'var(--text-secondary)' }}>Ready to Run</span>
+            <CheckCircle size={14} color="var(--success)" />
+            <span style={{ color: '#10b981', fontWeight: 600 }}>Ready to Run</span>
           </>
         ) : (
           <>
-            <AlertTriangle size={12} color="var(--warning)" />
-            <span style={{ color: 'var(--text-muted)' }}>Sandbox Mode Only</span>
+            <AlertTriangle size={14} color="var(--warning)" />
+            <span style={{ color: '#f59e0b', fontWeight: 600 }}>Sandbox Mode Only</span>
           </>
         )}
       </div>

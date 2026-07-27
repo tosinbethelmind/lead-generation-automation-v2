@@ -2,8 +2,8 @@ name: SolarQuotePro.ng 24/7 Isolated Outreach Pipeline Runner
 
 on:
   schedule:
-    # Run every 4 hours automatically 24/7/365 in the cloud
-    - cron: '0 */4 * * *'
+    # Run every 1 hour automatically 24/7/365 in the cloud
+    - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
       count:

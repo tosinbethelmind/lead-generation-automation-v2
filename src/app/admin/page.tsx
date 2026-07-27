@@ -31,6 +31,47 @@ export default function AdminDashboardHome() {
     }
   };
 
+  // State for Phase 1 & 2 Automation Control
+  const [startingPhase1, setStartingPhase1] = useState(false);
+  const [runningTests, setRunningTests] = useState(false);
+  const [runningChatbotTests, setRunningChatbotTests] = useState(false);
+  const [autoMessage, setAutoMessage] = useState('');
+  const [autoError, setAutoError] = useState('');
+  const [testOutput, setTestOutput] = useState('');
+
+  const triggerAutomation = async (action: 'start-phase1' | 'run-test' | 'run-chatbot-test') => {
+    if (action === 'start-phase1') setStartingPhase1(true);
+    if (action === 'run-test') setRunningTests(true);
+    if (action === 'run-chatbot-test') setRunningChatbotTests(true);
+    setAutoMessage('');
+    setAutoError('');
+    if (action === 'run-test' || action === 'run-chatbot-test') setTestOutput('');
+
+    try {
+      const res = await fetch('/api/admin/automation-runner', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setAutoMessage(data.message);
+        if (data.testResults && data.testResults.output) {
+          setTestOutput(data.testResults.output);
+        }
+      } else {
+        setAutoError(data.error || 'Failed to execute automation command.');
+      }
+    } catch (err: any) {
+      setAutoError('Network error occurred while calling automation controller.');
+    } finally {
+      setStartingPhase1(false);
+      setRunningTests(false);
+      setRunningChatbotTests(false);
+    }
+  };
+
   const systemStats = [
     { name: 'Database Status', value: 'Connected', status: 'ready', icon: Server },
     { name: 'Storage Provider', value: 'Supabase Buckets', status: 'ready', icon: Shield },
@@ -89,6 +130,103 @@ export default function AdminDashboardHome() {
                 </>
               )}
             </button>
+          </div>
+        </div>
+
+        {/* Phase 1 & 2 Automation Control Card */}
+        <div className="bento-card deploy-card glass-panel col-span-3">
+          <div className="card-header">
+            <div className="header-icon-wrapper" style={{ color: '#10b981' }}>
+              <Server />
+            </div>
+            <h3>Phase 1 & 2 Automation & Scaling Control Center (500 – 5,000 Users)</h3>
+          </div>
+          <div className="card-body">
+            <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '14px' }}>
+              Launch automated lead harvesting, drip outreach workers, WhatsApp daemons, and run automated scaling pipeline tests with 1 click.
+            </p>
+
+            {autoMessage && <div className="status-banner success">{autoMessage}</div>}
+            {autoError && <div className="status-banner error">{autoError}</div>}
+
+            {testOutput && (
+              <pre style={{
+                background: 'rgba(0,0,0,0.5)',
+                color: '#34d399',
+                padding: '12px',
+                borderRadius: '8px',
+                fontSize: '0.78rem',
+                maxHeight: '160px',
+                overflowY: 'auto',
+                marginBottom: '14px',
+                whiteSpace: 'pre-wrap'
+              }}>
+                {testOutput}
+              </pre>
+            )}
+
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => triggerAutomation('start-phase1')}
+                disabled={startingPhase1}
+                className="btn-primary"
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  border: 'none',
+                  color: '#fff',
+                  fontWeight: 700,
+                  padding: '12px 20px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                {startingPhase1 ? <RefreshCw className="spin-anim" /> : <Rocket size={18} />}
+                Start Phase 1 Automation (500 Users)
+              </button>
+
+              <button
+                onClick={() => triggerAutomation('run-test')}
+                disabled={runningTests || runningChatbotTests}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: '#38bdf8',
+                  fontWeight: 600,
+                  padding: '12px 20px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                {runningTests ? <RefreshCw className="spin-anim" /> : <Server size={18} />}
+                Run Automated Scaling Tests
+              </button>
+
+              <button
+                onClick={() => triggerAutomation('run-chatbot-test')}
+                disabled={runningTests || runningChatbotTests}
+                style={{
+                  background: 'rgba(168, 85, 247, 0.15)',
+                  border: '1px solid rgba(168, 85, 247, 0.3)',
+                  color: '#c084fc',
+                  fontWeight: 600,
+                  padding: '12px 20px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                {runningChatbotTests ? <RefreshCw className="spin-anim" /> : <Settings size={18} />}
+                Run Chatbot AI Tests 🤖
+              </button>
+            </div>
           </div>
         </div>
 

@@ -1,0 +1,8 @@
+{$DOMAIN_NAME:localhost} {
+    reverse_proxy app:3006 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}

@@ -21,7 +21,13 @@
     "local-runner": "node scripts/keep_alive_runner.js",
     "test-queue": "ts-node scripts/test_hybrid_queue.ts",
     "solarquotepro-outreach": "node scripts/solarquotepro_multi_channel_outreach.js",
-    "solarquotepro-pipeline": "node scripts/solarquotepro_isolated_runner.js"
+    "solarquotepro-pipeline": "node scripts/solarquotepro_isolated_runner.js",
+    "setup:lean": "node scripts/lean_stack_setup.js",
+    "deploy:lean": "bash scripts/deploy_lean_stack.sh",
+    "phase1:start": "node scripts/phase1_runner.js",
+    "test:scaling": "node scripts/test_scaling_pipeline.js",
+    "test:chatbot": "node scripts/test_chatbot_automation.js",
+    "test:master": "node scripts/master_system_audit.js"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",

@@ -72,6 +72,54 @@ async function connectToWhatsApp() {
   });
 
   sock.ev.on('creds.update', saveCreds);
+
+  // ── WhatsApp AI Auto-Reply Listener ──────────────────────────────────────
+  sock.ev.on('messages.upsert', async (m) => {
+    try {
+      if (m.type !== 'notify') return;
+      for (const msg of m.messages) {
+        if (!msg.message || msg.key.fromMe) continue; // Ignore own messages
+
+        const senderJid = msg.key.remoteJid;
+        if (!senderJid || senderJid.endsWith('@g.us')) continue; // Ignore group messages for now
+
+        const textMessage = msg.message.conversation || 
+                           msg.message.extendedTextMessage?.text || 
+                           msg.message.buttonsResponseMessage?.selectedButtonId || '';
+
+        if (!textMessage.trim()) continue;
+
+        const senderPhone = senderJid.replace('@s.whatsapp.net', '');
+        console.log(`\n📩 [WhatsApp AutoReply] Received message from ${senderPhone}: "${textMessage}"`);
+
+        // Show typing indicator
+        try {
+          await sock.sendPresenceUpdate('composing', senderJid);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          await sock.sendPresenceUpdate('paused', senderJid);
+        } catch (_) {}
+
+        // Simple Smart Auto-Reply AI Logic
+        let replyText = '';
+        const lowerMsg = textMessage.toLowerCase();
+
+        if (lowerMsg.includes('price') || lowerMsg.includes('cost') || lowerMsg.includes('how much') || lowerMsg.includes('plan')) {
+          replyText = `Hello! 👋 Thanks for reaching out to ApexReach.\n\nOur Growth Packages start at ₦75,000 for Starter WhatsApp Catalogs and ₦185,000 for full Business Portals with virtual bank transfer. Would you like to view a live preview for your business?`;
+        } else if (lowerMsg.includes('preview') || lowerMsg.includes('site') || lowerMsg.includes('website') || lowerMsg.includes('link')) {
+          replyText = `Great! 🌐 You can view your business preview live at: https://lead-generation-automation-ecru.vercel.app/\n\nReply with 'CLAIM' when you are ready to launch!`;
+        } else if (lowerMsg.includes('claim') || lowerMsg.includes('buy') || lowerMsg.includes('pay') || lowerMsg.includes('start')) {
+          replyText = `Awesome! 🚀 To claim your site and setup your domain, choose your preferred payment option:\n1️⃣ Bank Transfer (Moniepoint)\n2️⃣ Paystack Card Payment\n\nVisit your portal or call us directly to finalize setup!`;
+        } else {
+          replyText = `Hello! 👋 Thank you for contacting ApexReach B2B Growth Engine.\nHow can we assist your business today? (Reply 'PRICE' for packages, 'PREVIEW' for website samples, or 'CLAIM' to activate your portal).`;
+        }
+
+        await sock.sendMessage(senderJid, { text: replyText });
+        console.log(`📤 [WhatsApp AutoReply] Auto-replied to ${senderPhone}`);
+      }
+    } catch (err) {
+      console.error('[WhatsApp AutoReply Error]:', err.message);
+    }
+  });
 }
 
 // REST Endpoint to send message with human-like typing simulation

@@ -230,6 +230,21 @@ export function isValidLeadName(name: string | undefined | null): boolean {
   return true;
 }
 
+export function cleanLeadTitle(name: string | undefined | null): string {
+  if (!name) return '';
+  let clean = name.trim();
+  // Detect and collapse repeating string patterns (e.g. "Property for LeaseProperty for LeaseProperty for Lease")
+  for (let len = 4; len <= Math.floor(clean.length / 2); len++) {
+    const sub = clean.substring(0, len);
+    const repeated = clean.split(sub).join('');
+    if (repeated === '' && clean.length > len) {
+      clean = sub;
+      break;
+    }
+  }
+  return clean.trim();
+}
+
 // ============================================================================
 // Asynchronous Dev-Safe JSON File Database & Safe Locks
 // ============================================================================
@@ -1692,8 +1707,14 @@ export async function getLeads(): Promise<Lead[]> {
 }
 
 export async function saveLeads(leads: Partial<Lead>[]): Promise<{ added: number; skipped: number }> {
-  // BUG 3: Filter out leads with invalid business names before saving
-  const validLeads = leads.filter(l => isValidLeadName(l.name));
+  // Sanitize lead titles (remove DOM duplicate concatenation)
+  const sanitized = leads.map(l => ({
+    ...l,
+    name: l.name ? cleanLeadTitle(l.name) : l.name
+  }));
+
+  // Filter out leads with invalid business names before saving
+  const validLeads = sanitized.filter(l => isValidLeadName(l.name));
   const rejected = leads.length - validLeads.length;
   if (rejected > 0) {
     console.log(`[saveLeads] Rejected ${rejected} leads with invalid names`);

@@ -11,7 +11,7 @@ export interface LeadPayload {
 
 export async function triggerVidrushContentGeneration(payload: LeadPayload): Promise<{ success: boolean; jobId?: string; error?: string }> {
   try {
-    const vidrushUrl = process.env.VIDRUSH_API_URL || 'https://vidrush-video-automation.vercel.app';
+    const vidrushUrl = process.env.VIDRUSH_API_URL || 'https://vidrush-video-automation-betelmindrecruit-9250s-projects.vercel.app';
     const adminSecret = process.env.ADMIN_SECRET || '';
 
     const endpoint = `${vidrushUrl.replace(/\/$/, '')}/api/solar-leads`;

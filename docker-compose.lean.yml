@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: apexreach-db
+    restart: always
+    environment:
+      POSTGRES_DB: apexreach
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-LeanStackPassword123!}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: apexreach-redis
+    restart: always
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tor:
+    image: dperson/torproxy
+    container_name: apexreach-tor
+    restart: always
+    ports:
+      - "127.0.0.1:9050:9050"
+    environment:
+      - TOR_MaxCircuitDirtiness=30
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apexreach-app
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3006
+      STORAGE_MODE: supabase
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-LeanStackPassword123!}@postgres:5432/apexreach?sslmode=disable
+      REDIS_URL: redis://redis:6379
+      TOR_PROXY_HOST: tor
+      TOR_PROXY_PORT: 9050
+      SUPABASE_URL: ${SUPABASE_URL:-https://pnsrjsyiygxdcxkpgbzx.supabase.co}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+    ports:
+      - "127.0.0.1:3006:3006"
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: apexreach-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  postgres_data:
+  redis_data:
+  caddy_data:
+  caddy_config:
