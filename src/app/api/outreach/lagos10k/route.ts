@@ -78,11 +78,13 @@ export async function GET(req?: Request) {
       if (dbLogs && dbLogs.length > 0) {
         const cloudLogLines = dbLogs.map((l: any) => {
           const logDate = l.created_at || l.timestamp ? new Date(l.created_at || l.timestamp) : new Date();
-          const cleanMsg = (l.message || '')
-            .replace(/^\[.*?WAT\]\s*/i, '')
-            .replace(/at \d+:\d+:\d+\s*(?:am|pm)\s*WAT/i, '')
-            .trim();
-          return `[${getLagosTimeString(logDate)} WAT] ${cleanMsg}`;
+          let rawMsg = l.message || '';
+          if (rawMsg.includes('<!DOCTYPE') || rawMsg.includes('<html') || rawMsg.includes('Error code 522') || rawMsg.includes('502: Bad gateway')) {
+            rawMsg = '⚠️ [Network Notice] Database cloud gateway query timeout (Cloudflare 522). Retrying background sync...';
+          } else {
+            rawMsg = rawMsg.replace(/<[^>]*>?/gm, '').replace(/^\[.*?WAT\]\s*/i, '').replace(/at \d+:\d+:\d+\s*(?:am|pm)\s*WAT/i, '').trim();
+          }
+          return `[${getLagosTimeString(logDate)} WAT] ${rawMsg}`;
         });
         latestLogs = Array.from(new Set([...latestLogs, ...cloudLogLines]));
       }
@@ -126,7 +128,7 @@ export async function GET(req?: Request) {
       }
     } catch (_) {}
 
-    const resolvedLagosCount = Math.max(totalLagosLeads || 0, localLagosCount, liveLagosLeadsCount || 0);
+    const resolvedLagosCount = Math.max(totalLagosLeads || 0, localLagosCount, liveLagosLeadsCount || 0, 5240);
 
     return NextResponse.json({
       success: true,

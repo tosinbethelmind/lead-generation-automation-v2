@@ -53,11 +53,11 @@ function getCleanCredential(env1, env2, fallback) {
   return v1 || v2 || fallback;
 }
 
-const MAIN_SUPABASE_URL = getCleanCredential(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL, 'https://pnsrjsyiygxdcxkpgbzx.supabase.co');
-const MAIN_SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.SUPABASE_KEY, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8');
+const MAIN_SUPABASE_URL = getCleanCredential(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL, 'https://szyuterncawfxwzhvwcf.supabase.co');
+const MAIN_SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.SUPABASE_KEY, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY');
 
-const SOLARQUOTEPRO_URL = getCleanCredential(process.env.SOLARQUOTEPRO_SUPABASE_URL, null, 'https://pnsrjsyiygxdcxkpgbzx.supabase.co');
-const SOLARQUOTEPRO_KEY = getCleanCredential(process.env.SOLARQUOTEPRO_SUPABASE_KEY, null, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8');
+const SOLARQUOTEPRO_URL = getCleanCredential(process.env.SOLARQUOTEPRO_SUPABASE_URL, null, 'https://szyuterncawfxwzhvwcf.supabase.co');
+const SOLARQUOTEPRO_KEY = getCleanCredential(process.env.SOLARQUOTEPRO_SUPABASE_KEY, null, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY');
 
 const supabaseMain = createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY, { auth: { persistSession: false }, realtime: { transport: ws } });
 const supabaseSolarQuotePro = createClient(SOLARQUOTEPRO_URL, SOLARQUOTEPRO_KEY, { auth: { persistSession: false }, realtime: { transport: ws } });
@@ -388,51 +388,42 @@ async function runNigeriaSolar5kPipeline() {
   const allLeads = [];
   
   if (!isSynthetic) {
-    console.log('🌐 Polling geospatial & live web directory sources (DuckDuckGo & OpenStreetMap)...');
+    console.log('🌐 Polling geospatial & live web directory sources across 36 states + FCT Abuja (Bounded Concurrency Pool)...');
     await logToSupabase(runId, `🌐 Polling geospatial & live web directory sources across 36 states + FCT Abuja...`);
-    for (let i = 0; i < NIGERIAN_STATES.length; i++) {
-      const st = NIGERIAN_STATES[i];
-      const msg = `[Live Web Crawl] Polling real solar leads for state: ${st.state} (${st.capital})...`;
-      console.log(`   ${msg}`);
-      await logToSupabase(runId, msg);
-      
-      const realLeads = await fetchDuckDuckGoSolarLeads(st, allLeads.length);
-      if (realLeads.length > 0) {
-        const foundMsg = `✓ Found ${realLeads.length} direct web search solar listings in ${st.state}`;
-        console.log(`   ${foundMsg}`);
-        await logToSupabase(runId, foundMsg);
-        allLeads.push(...realLeads);
-      }
+    
+    const BATCH_SIZE_STATE = 6;
+    for (let i = 0; i < NIGERIAN_STATES.length; i += BATCH_SIZE_STATE) {
+      const stateBatch = NIGERIAN_STATES.slice(i, i + BATCH_SIZE_STATE);
+      const batchNames = stateBatch.map(s => s.state).join(', ');
+      console.log(`   [Live Parallel Sweep] Polling state batch ${Math.floor(i / BATCH_SIZE_STATE) + 1}: ${batchNames}...`);
 
-      const osmLeads = await fetchOSMSolarLeads(st, allLeads.length);
-      if (osmLeads.length > 0) {
-        const osmMsg = `✓ Found ${osmLeads.length} OSM geospatial solar nodes in ${st.state}`;
-        console.log(`   ${osmMsg}`);
-        await logToSupabase(runId, osmMsg);
-        allLeads.push(...osmLeads);
-      }
+      const batchResults = await Promise.allSettled(stateBatch.map(async (st) => {
+        const ddgLeads = await fetchDuckDuckGoSolarLeads(st, allLeads.length);
+        const osmLeads = await fetchOSMSolarLeads(st, allLeads.length);
+        return [...ddgLeads, ...osmLeads];
+      }));
 
-      await new Promise(r => setTimeout(r, 200));
+      batchResults.forEach((res, idx) => {
+        if (res.status === 'fulfilled' && Array.isArray(res.value) && res.value.length > 0) {
+          const stName = stateBatch[idx]?.state || 'State';
+          console.log(`   ✓ Found ${res.value.length} real solar leads in ${stName}`);
+          allLeads.push(...res.value);
+        }
+      });
+
+      await new Promise(r => setTimeout(r, 150));
     }
   }
 
-  // Quality Gate: No synthetic backfill — only 100% real verified leads saved
-  if (allLeads.length < targetCount) {
-    const gapMsg = `🛡️ [Quality Gate] Live extraction yielded ${allLeads.length.toLocaleString()} real leads. Target was ${targetCount.toLocaleString()}. No synthetic backfill — running additional OSM + DDG passes for more states...`;
-    console.log(`\n${gapMsg}`);
-    await logToSupabase(runId, gapMsg);
+  // Enforce Deterministic Lead ID Hashing for 100% Zero-Duplicate Rows
+  const crypto = require('crypto');
+  allLeads.forEach((lead) => {
+    const normPhone = lead.phone_e164 || lead.phone || '';
+    const cleanName = (lead.name || lead.company_name || '').toLowerCase().trim();
+    const hashKey = `${cleanName}_${normPhone || lead.city || 'solar_ng'}`;
+    lead.lead_id = `solar_det_${crypto.createHash('sha256').update(hashKey).digest('hex').substring(0, 16)}`;
+  });
 
-    // Extra pass: loop remaining unprocessed states for more real leads
-    for (let i = NIGERIAN_STATES.length - 1; i >= 0 && allLeads.length < targetCount; i--) {
-      const st = NIGERIAN_STATES[i];
-      const extraLeads = await fetchDuckDuckGoSolarLeads(st, allLeads.length);
-      if (extraLeads.length > 0) {
-        allLeads.push(...extraLeads);
-        await logToSupabase(runId, `✓ Extra pass: +${extraLeads.length} real leads from ${st.state}`);
-      }
-      await new Promise(r => setTimeout(r, 300));
-    }
-  }
 
   const totMsg = `📊 Total Collected Leads: ${allLeads.length.toLocaleString()}`;
   console.log(`\n${totMsg}`);
@@ -517,18 +508,25 @@ async function runNigeriaSolar5kPipeline() {
       }
 
       try {
-        const enterpriseChunk = chunk.map((l) => ({
-          id: randomUUID(),
-          company_name: l.company_name || l.name,
-          contact_person: l.contact_person || 'Managing Director',
-          phone: l.phone_e164 || l.phone,
-          email: l.email,
-          project_scope: l.project_scope || `[Nationwide Solar Lead] ${l.address || ''}`,
-          status: 'new',
-          created_at: new Date().toISOString()
-        }));
-        await supabaseSolarQuotePro.from('enterprise_leads').upsert(enterpriseChunk, { ignoreDuplicates: true });
+        const enterpriseChunk = chunk.map((l) => {
+          const cName = (l.company_name || l.name || 'solar').toLowerCase().trim();
+          const pNum = l.phone_e164 || l.phone || '';
+          const hashHex = crypto.createHash('sha256').update(`ent_${cName}_${pNum}`).digest('hex');
+          const detUuid = `${hashHex.substring(0, 8)}-${hashHex.substring(8, 12)}-4${hashHex.substring(13, 16)}-a${hashHex.substring(17, 20)}-${hashHex.substring(20, 32)}`;
+          return {
+            id: detUuid,
+            company_name: l.company_name || l.name,
+            contact_person: l.contact_person || 'Managing Director',
+            phone: l.phone_e164 || l.phone,
+            email: l.email,
+            project_scope: l.project_scope || `[Nationwide Solar Lead] ${l.address || ''}`,
+            status: 'new',
+            created_at: new Date().toISOString()
+          };
+        });
+        await supabaseSolarQuotePro.from('enterprise_leads').upsert(enterpriseChunk, { onConflict: 'id', ignoreDuplicates: true });
       } catch (_) {}
+
 
     } catch (dbErr) {
       console.error(`   ❌ Database batch error: ${dbErr.message}`);

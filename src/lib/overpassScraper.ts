@@ -57,39 +57,44 @@ export async function fetchOverpassLagosBulkLeads(): Promise<any[]> {
     `https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=${encodeURIComponent(query)}`
   ];
 
-  for (const url of mirrors) {
-    try {
-      const resp = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-          'Accept': 'application/json, text/plain, */*'
-        },
-        signal: AbortSignal.timeout(15000)
-      });
-
-      if (!resp.ok) continue;
-
-      const data = await resp.json();
-      const elements = data.elements || [];
-      console.log(`[OverpassScraper] 🚀 Dynamic Sub-Tile GET (${selectedZone.name}) returned ${elements.length} commercial nodes!`);
-
-      const leads: any[] = [];
-      elements.forEach((item: any) => {
-        const parsed = parseOsmElement(item, 'Overpass Bulk Engine', 'Commercial B2B Enterprise', 'lagos_10k_b2b');
-        if (parsed && validateLeadQuality(parsed)) {
-          leads.push(parsed);
-        }
-      });
-
-      if (leads.length > 0) {
-        console.log(`[OverpassScraper] ✅ Quality validated ${leads.length} high-grade B2B leads from ${selectedZone.name}.`);
-        return leads;
-      }
-    } catch (err: any) {
-      console.warn(`[OverpassScraper] Mirror attempt failed (${url.substring(0, 40)}):`, err.message);
+  // Parallel mirror racing: Fire all 3 mirrors concurrently and take the first successful response
+  const mirrorPromises = mirrors.map(async (url) => {
+    const resp = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*'
+      },
+      signal: AbortSignal.timeout(6000)
+    });
+    if (!resp.ok) throw new Error(`Mirror HTTP ${resp.status}`);
+    const data = await resp.json();
+    if (!data.elements || !Array.isArray(data.elements) || data.elements.length === 0) {
+      throw new Error('Empty elements payload');
     }
+    return data.elements;
+  });
+
+  try {
+    const elements = await Promise.any(mirrorPromises);
+    console.log(`[OverpassScraper] 🚀 Parallel Mirror Race (${selectedZone.name}) returned ${elements.length} commercial nodes!`);
+
+    const leads: any[] = [];
+    elements.forEach((item: any) => {
+      const parsed = parseOsmElement(item, 'Overpass Bulk Engine', 'Commercial B2B Enterprise', 'lagos_10k_b2b');
+      if (parsed && validateLeadQuality(parsed)) {
+        leads.push(parsed);
+      }
+    });
+
+    if (leads.length > 0) {
+      console.log(`[OverpassScraper] ✅ Quality validated ${leads.length} high-grade B2B leads from ${selectedZone.name}.`);
+      return leads;
+    }
+  } catch (err: any) {
+    console.warn(`[OverpassScraper] All parallel mirrors failed (${selectedZone.name}):`, err.message);
   }
+
 
   // Fallback to high-speed Nominatim OSM query if Overpass mirrors hit rate-limits
   try {

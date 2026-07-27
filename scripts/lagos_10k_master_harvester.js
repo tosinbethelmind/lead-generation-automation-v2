@@ -44,8 +44,8 @@ function getCleanCredential(env1, env2, fallback) {
   return v1 || v2 || fallback;
 }
 
-const SUPABASE_URL = getCleanCredential(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL, 'https://pnsrjsyiygxdcxkpgbzx.supabase.co');
-const SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.SUPABASE_KEY, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8');
+const SUPABASE_URL = getCleanCredential(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL, 'https://szyuterncawfxwzhvwcf.supabase.co');
+const SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.SUPABASE_KEY, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY');
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false }, realtime: { transport: ws } });
 
@@ -76,7 +76,7 @@ function normalizePhone(raw) {
 
 async function harvestLagosOSMZone(zoneInfo) {
   const [minLat, minLon, maxLat, maxLon] = zoneInfo.boundingBox;
-  const query = `[out:json][timeout:15];
+  const query = `[out:json][timeout:10];
   (
     node["tourism"="hotel"](${minLat},${minLon},${maxLat},${maxLon});
     node["amenity"="fuel"](${minLat},${minLon},${maxLat},${maxLon});
@@ -86,16 +86,27 @@ async function harvestLagosOSMZone(zoneInfo) {
   );
   out body 35;`;
 
-  const endpoint = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+  const mirrors = [
+    `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`,
+    `https://overpass.kumi.systems/api/interpreter?data=${encodeURIComponent(query)}`,
+    `https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=${encodeURIComponent(query)}`
+  ];
 
   try {
-    const res = await fetch(endpoint);
-    if (!res.ok) return [];
-    const data = await res.json();
-    if (!data.elements || !Array.isArray(data.elements)) return [];
+    const mirrorPromises = mirrors.map(async (url) => {
+      const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.elements || !Array.isArray(data.elements)) throw new Error('Invalid payload');
+      return data.elements;
+    });
 
+    const elements = await Promise.any(mirrorPromises);
     const realLeads = [];
-    data.elements.forEach((el, i) => {
+
+    const crypto = require('crypto');
+
+    elements.forEach((el, i) => {
       const tags = el.tags || {};
       const rawName = tags.name;
       if (!rawName || rawName.length < 3) return;
@@ -103,17 +114,18 @@ async function harvestLagosOSMZone(zoneInfo) {
       const category = tags.tourism || tags.amenity || tags.building || 'Lagos Commercial Entity';
       const street = tags['addr:street'] || `${zoneInfo.lga} Main Rd`;
       
-      // REAL contact extraction only — NO synthetic/fake numbers or fake emails
       const rawPhone = tags.phone || tags['contact:phone'] || tags.mobile || '';
       const phone = normalizePhone(rawPhone);
       const email = tags.email || tags['contact:email'] || '';
       const website = tags.website || tags['contact:website'] || '';
 
-      // Skip entries that do NOT have a real phone number or real website/email
       if (!phone && !email && !website) return;
 
+      const hashKey = `${rawName.toLowerCase()}_${phone || zoneInfo.lga.toLowerCase()}`;
+      const detId = `lagos_10k_det_${crypto.createHash('sha256').update(hashKey).digest('hex').substring(0, 16)}`;
+
       realLeads.push({
-        lead_id: `lagos_10k_osm_${Date.now()}_${zoneInfo.lga.toLowerCase().replace(/[^a-z0-9]/g, '')}_${i}`,
+        lead_id: detId,
         source: 'OSM',
         name: rawName,
         category: `Lagos ${category}`,
@@ -146,13 +158,24 @@ async function runMasterLagosHarvester(dryRun = false) {
   let totalHarvested = 0;
   const allLeads = [];
 
-  for (const zone of LAGOS_LGAS) {
-    console.log(`🔎 Harvesting Lagos LGA: ${zone.lga}...`);
-    const leads = await harvestLagosOSMZone(zone);
-    console.log(`   └─ Found ${leads.length} verified commercial leads in ${zone.lga}.`);
-    allLeads.push(...leads);
-    await new Promise(r => setTimeout(r, 1000));
+  // Bounded Concurrency Worker Pool: Harvest 5 LGAs concurrently
+  const BATCH_SIZE_LGA = 5;
+  for (let i = 0; i < LAGOS_LGAS.length; i += BATCH_SIZE_LGA) {
+    const chunk = LAGOS_LGAS.slice(i, i + BATCH_SIZE_LGA);
+    console.log(`🔎 Harvesting LGA Batch ${Math.floor(i / BATCH_SIZE_LGA) + 1} (${chunk.map(z => z.lga).join(', ')})...`);
+    
+    const results = await Promise.allSettled(chunk.map(zone => harvestLagosOSMZone(zone)));
+    results.forEach((res, idx) => {
+      if (res.status === 'fulfilled' && Array.isArray(res.value)) {
+        const zoneName = chunk[idx]?.lga || 'Zone';
+        console.log(`   └─ Found ${res.value.length} verified commercial leads in ${zoneName}.`);
+        allLeads.push(...res.value);
+      }
+    });
+
+    await new Promise(r => setTimeout(r, 200));
   }
+
 
   console.log(`\nTotal Live Lagos Leads Harvested: ${allLeads.length}`);
 

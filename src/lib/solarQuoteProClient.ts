@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const ACTIVE_SUPABASE_URL = 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
-const ACTIVE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
+const ACTIVE_SUPABASE_URL = 'https://szyuterncawfxwzhvwcf.supabase.co';
+const ACTIVE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY';
 
 function isValidKeyForProject(keyStr: string | undefined): boolean {
   if (!keyStr || typeof keyStr !== 'string') return false;
@@ -11,7 +11,7 @@ function isValidKeyForProject(keyStr: string | undefined): boolean {
     const parts = trimmed.split('.');
     if (parts.length === 3) {
       const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-      return payload.ref === 'pnsrjsyiygxdcxkpgbzx';
+      return payload.ref === 'szyuterncawfxwzhvwcf';
     }
   } catch (e) {}
   return false;
@@ -20,7 +20,7 @@ function isValidKeyForProject(keyStr: string | undefined): boolean {
 function getValidUrl(): string {
   const candidates = [process.env.SOLARQUOTEPRO_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_URL];
   for (const c of candidates) {
-    if (c && typeof c === 'string' && c.trim().includes('pnsrjsyiygxdcxkpgbzx')) {
+    if (c && typeof c === 'string' && c.trim().includes('szyuterncawfxwzhvwcf')) {
       return c.trim();
     }
   }

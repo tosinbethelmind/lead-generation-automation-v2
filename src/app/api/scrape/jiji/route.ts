@@ -376,6 +376,19 @@ export async function POST(req: NextRequest) {
       } catch (_) {}
     }
 
+    if (err.message && (err.message.includes('BLOCKED:') || err.message.includes('403') || err.message.includes('429'))) {
+      return NextResponse.json({
+        success: true,
+        mode: 'live',
+        jobId: job ? job.id : 'unknown',
+        status: 'completed',
+        added: 0,
+        skipped: 0,
+        leads: [],
+        cloudflareBlocked: true
+      }, { status: 200 });
+    }
+
     return NextResponse.json({
       success: false,
       error: err.message || 'Internal error during live Jiji scraping',

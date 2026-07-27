@@ -13,6 +13,7 @@ if (typeof (global as any).WebSocket === 'undefined') {
 import { createClient } from '@supabase/supabase-js';
 import { spawn } from 'child_process';
 import { harvestLiveSolarLeads, harvestLiveLagosLeads } from '../src/lib/liveLeadHarvester';
+import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from '../src/lib/atomicIo';
 
 if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder('ipv4first');
@@ -27,8 +28,8 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('🔥 [Runner UnhandledRejection] Unhandled Promise rejection at:', promise, 'reason:', reason);
 });
 
-const HARDCODED_URL = 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
-const HARDCODED_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
+const HARDCODED_URL = 'https://szyuterncawfxwzhvwcf.supabase.co';
+const HARDCODED_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY';
 
 function cleanEnvVal(val: string | undefined): string {
   if (!val) return '';
@@ -45,7 +46,7 @@ function isValidKey(key: string): boolean {
     const parts = key.split('.');
     if (parts.length === 3) {
       const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-      return payload.ref === 'pnsrjsyiygxdcxkpgbzx';
+      return payload.ref === 'szyuterncawfxwzhvwcf';
     }
   } catch (_) {}
   return false;
@@ -259,10 +260,26 @@ function readLocalJobs(): Record<string, any> {
   return {};
 }
 
+function safeWriteJsonAtomic(filePath: string, data: any) {
+  try {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    const tempPath = `${filePath}.tmp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), 'utf-8');
+    fs.renameSync(tempPath, filePath);
+  } catch (_) {
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (_) {}
+  }
+}
+
 function writeLocalJobs(jobs: Record<string, any>) {
   try {
     const filePath = getJobsFilePath('scrape_jobs.json');
-    writeJsonFileSyncAtomic(filePath, jobs);
+    safeWriteJsonAtomic(filePath, jobs);
   } catch (e) {
     console.error('Error writing local jobs:', e);
   }
@@ -1014,7 +1031,7 @@ async function checkLagosDailyScraper() {
     // 1. Local file write
     try {
       const heartbeatPath = path.resolve(process.cwd(), 'local_runner_heartbeat.json');
-      writeJsonFileSyncAtomic(heartbeatPath, heartbeatData);
+      safeWriteJsonAtomic(heartbeatPath, heartbeatData);
     } catch (err: any) {
       console.error('❌ Heartbeat file write error:', err.message);
     }

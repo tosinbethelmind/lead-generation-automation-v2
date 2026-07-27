@@ -69,9 +69,9 @@ export function getProxyPool(): ProxyEntry[] {
     });
   }
 
-  // Fallback to configured free public proxies if pool is empty
+  // Fallback: return empty pool so scrapers perform fast direct requests unless proxies are explicitly configured
   if (pool.length === 0) {
-    pool.push(...FREE_PUBLIC_PROXIES);
+    return [];
   }
 
   return pool;
@@ -192,19 +192,12 @@ export async function proxyFetch(
   if (proxy) {
     console.log(`[ProxyRotator] ${engine} → ${proxy.label} → ${url.substring(0, 80)}`);
     try {
-      const res = await fetch(url, { ...opts, signal });
+      // Cap proxy fetch attempts at 4000ms so dead proxies fall back fast
+      const proxySignal = AbortSignal.timeout(4000);
+      const res = await fetch(url, { ...opts, signal: proxySignal });
       if (res.status === 403 || res.status === 407 || res.status === 502 || res.status === 503 || res.status === 504) {
-        console.warn(`[ProxyRotator] Proxy ${proxy.label} returned status ${res.status}. Retrying with fresh UA in 2s...`);
+        console.warn(`[ProxyRotator] Proxy ${proxy.label} returned status ${res.status}. Retrying direct...`);
         reportProxyFailure(proxy.url);
-        await new Promise(r => setTimeout(r, 2000));
-        // Retry once with a fresh User-Agent before giving up on the proxy
-        const retryOpts = await buildProxyFetchOptions(proxy, extraHeaders);
-        const retry = await fetch(url, { ...retryOpts, signal });
-        if (retry.ok) {
-          reportProxySuccess(proxy.url);
-          return retry;
-        }
-        console.warn(`[ProxyRotator] Retry also failed (${retry.status}). Falling back to direct fetch...`);
         const directOpts = await buildProxyFetchOptions(null, extraHeaders);
         return await fetch(url, { ...directOpts, signal });
       }

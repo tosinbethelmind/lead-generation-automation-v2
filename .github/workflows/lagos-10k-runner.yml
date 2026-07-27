@@ -2,8 +2,8 @@ name: 10K Lagos B2B Engine — Distributed Matrix Runner
 
 on:
   schedule:
-    # Run every 1 hour automatically across 5 parallel zones
-    - cron: '0 * * * *'
+    # Run every 6 hours automatically across 5 parallel zones
+    - cron: '0 */6 * * *'
   workflow_dispatch:
     inputs:
       mode:

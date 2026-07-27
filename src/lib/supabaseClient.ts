@@ -15,8 +15,8 @@ if (typeof (global as any).WebSocket === 'undefined') {
 import { createClient } from '@supabase/supabase-js';
 import { getRuntimeConfig } from './localConfig';
 
-const ACTIVE_SUPABASE_URL = 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
-const ACTIVE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
+const ACTIVE_SUPABASE_URL = 'https://szyuterncawfxwzhvwcf.supabase.co';
+const ACTIVE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY';
 
 function isValidKeyForProject(keyStr: string | undefined): boolean {
   if (!keyStr || typeof keyStr !== 'string') return false;
@@ -26,7 +26,7 @@ function isValidKeyForProject(keyStr: string | undefined): boolean {
     const parts = trimmed.split('.');
     if (parts.length === 3) {
       const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-      return payload.ref === 'pnsrjsyiygxdcxkpgbzx';
+      return payload.ref === 'szyuterncawfxwzhvwcf';
     }
   } catch (e) {}
   return false;
@@ -35,7 +35,7 @@ function isValidKeyForProject(keyStr: string | undefined): boolean {
 function getValidUrl(): string {
   const candidates = [process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_URL];
   for (const c of candidates) {
-    if (c && typeof c === 'string' && c.trim().includes('pnsrjsyiygxdcxkpgbzx')) {
+    if (c && typeof c === 'string' && c.trim().includes('szyuterncawfxwzhvwcf')) {
       return c.trim();
     }
   }
@@ -219,7 +219,7 @@ export async function createScrapeJob(
         payload,
         user_id: userId || null,
       },
-    ]).select().single();
+    ]).select();
 
     if (error) {
       if (isTableMissingError(error)) {
@@ -229,9 +229,10 @@ export async function createScrapeJob(
       }
       throw error;
     }
-    return data as ScrapeJob;
+    const created = data && data.length > 0 ? data[0] : newJob;
+    return created as ScrapeJob;
   } catch (err: any) {
-    if (isTableMissingError(err)) {
+    if (isTableMissingError(err) || err.code === 'PGRST116') {
       saveFallbackJob(newJob);
       return newJob;
     }
@@ -250,15 +251,15 @@ export async function getScrapeJob(id: string): Promise<ScrapeJob | null> {
     const { data, error } = await supabase
       .from('scrape_jobs')
       .select('*')
-      .eq('id', id)
-      .single();
+      .eq('id', id);
     if (error) {
       if (isTableMissingError(error)) {
         return getFallbackJob(id);
       }
-      if (error.code !== 'PGRST116') throw error; // row not found is ok
+      if (error.code !== 'PGRST116') throw error;
     }
-    return data as ScrapeJob | null;
+    const job = data && data.length > 0 ? data[0] : getFallbackJob(id);
+    return job as ScrapeJob | null;
   } catch (err: any) {
     if (isTableMissingError(err)) {
       return getFallbackJob(id);
@@ -289,8 +290,7 @@ export async function updateScrapeJobStatus(
       .from('scrape_jobs')
       .update(updatePayload)
       .eq('id', id)
-      .select()
-      .single();
+      .select();
     if (error) {
       if (isTableMissingError(error)) {
         const job = getFallbackJob(id);
@@ -301,14 +301,14 @@ export async function updateScrapeJobStatus(
       }
       throw error;
     }
-    return data as ScrapeJob;
+    const updated = data && data.length > 0 ? data[0] : ({ id, ...updatePayload } as any);
+    return updated as ScrapeJob;
   } catch (err: any) {
-    if (isTableMissingError(err)) {
+    if (isTableMissingError(err) || err.code === 'PGRST116') {
       const job = getFallbackJob(id);
-      if (!job) throw new Error(`Job not found: ${id}`);
-      const updatedJob = { ...job, ...updatePayload };
-      saveFallbackJob(updatedJob);
-      return updatedJob;
+      const updatedJob = { ...(job || { id, type: 'unknown', created_at: new Date().toISOString() }), ...updatePayload };
+      saveFallbackJob(updatedJob as ScrapeJob);
+      return updatedJob as ScrapeJob;
     }
     throw err;
   }

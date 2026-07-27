@@ -10,7 +10,8 @@ import { saveLeads } from './googleSheets';
 import { getSupabaseClient } from './supabaseClient';
 import { normalizePhone, extractPhonesFromText } from './googleSheets';
 import { enrichLeadContacts, extractEmailsFromText } from './leadEnricher';
-import { fetchJijiMerchantLeads, fetchBusinessListLeads, fetchGoogleDorkLeads, fetchVConnectLeads, fetchCACBusinessLeads } from './directoryScrapers';
+import { fetchJijiMerchantLeads, fetchBusinessListLeads, fetchGoogleDorkLeads, fetchVConnectLeads, fetchCACBusinessLeads, fetchFinelibLeads, fetchBingSerpLeads, fetchOutscraperLeads } from './directoryScrapers';
+
 import { fetchSocialMultiChannelLeads, fetchSocialGroupLeads } from './socialMultiChannelScraper';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
@@ -23,107 +24,78 @@ const NIGERIAN_SOLAR_CITIES = [
   { q: 'solar Ikeja', city: 'Ikeja, Lagos' },
   { q: 'solar Lekki', city: 'Lekki, Lagos' },
   { q: 'solar Victoria Island', city: 'VI, Lagos' },
-  { q: 'solar Ikoyi', city: 'Ikoyi, Lagos' },
-  { q: 'solar Abuja Wuse', city: 'Wuse, Abuja FCT' },
-  { q: 'solar Abuja Maitama', city: 'Maitama, Abuja FCT' },
-  { q: 'solar Abuja Gwarinpa', city: 'Gwarinpa, Abuja FCT' },
-  { q: 'solar Port Harcourt GRA', city: 'PH GRA, Rivers' },
-  { q: 'solar Trans Amadi', city: 'Port Harcourt, Rivers' },
-  { q: 'solar Ibadan Bodija', city: 'Bodija, Oyo' },
-  { q: 'solar Ibadan Dugbe', city: 'Dugbe, Oyo' },
-  { q: 'solar Kano Sabon Gari', city: 'Sabon Gari, Kano' },
-  { q: 'solar Enugu Independence Layout', city: 'Independence Layout, Enugu' },
-  { q: 'solar Benin GRA', city: 'Benin City, Edo' },
-  { q: 'solar Warri Effurun', city: 'Effurun, Delta' },
-  { q: 'solar Asaba GRA', city: 'Asaba, Delta' },
-  { q: 'solar Aba Commercial', city: 'Aba, Abia' },
-  { q: 'solar Onitsha Main Market', city: 'Onitsha, Anambra' },
-  { q: 'solar Abeokuta GRA', city: 'Abeokuta, Ogun' },
-  { q: 'solar Kaduna Barnawa', city: 'Barnawa, Kaduna' },
-  { q: 'solar Calabar GRA', city: 'Calabar, Cross River' },
-  { q: 'solar Owerri New Owerri', city: 'Owerri, Imo' },
-  { q: 'solar Uyo Ewet Housing', city: 'Uyo, Akwa Ibom' },
-  { q: 'solar Akure Alagbaka', city: 'Akure, Ondo' },
-  { q: 'solar Ilorin GRA', city: 'Ilorin, Kwara' },
-  { q: 'solar Jos Rayfield', city: 'Rayfield, Plateau' },
-  { q: 'solar Lokoja', city: 'Lokoja, Kogi' },
-  { q: 'solar Osogbo', city: 'Osogbo, Osun' },
-  { q: 'inverter lithium battery Ikeja', city: 'Ikeja, Lagos' },
-  { q: 'inverter lithium battery Lekki', city: 'Lekki, Lagos' },
-  { q: 'solar water pump Abuja', city: 'Abuja FCT' },
-  { q: 'solar street light Port Harcourt', city: 'Port Harcourt, Rivers' },
+  { q: 'solar Abuja', city: 'Abuja FCT' },
+  { q: 'solar Port Harcourt', city: 'Port Harcourt, Rivers' },
+  { q: 'solar Ibadan', city: 'Ibadan, Oyo' },
+  { q: 'solar Kano', city: 'Kano' },
+  { q: 'solar Enugu', city: 'Enugu' },
+  { q: 'solar Benin', city: 'Benin City, Edo' },
+  { q: 'solar Warri', city: 'Warri, Delta' },
+  { q: 'solar Abeokuta', city: 'Abeokuta, Ogun' },
+  { q: 'solar Kaduna', city: 'Kaduna' },
+  { q: 'solar Calabar', city: 'Calabar, Cross River' },
+  { q: 'solar Owerri', city: 'Owerri, Imo' },
+  { q: 'solar Uyo', city: 'Uyo, Akwa Ibom' },
+  { q: 'solar Akure', city: 'Akure, Ondo' },
+  { q: 'solar Ilorin', city: 'Ilorin, Kwara' },
+  { q: 'solar Jos', city: 'Jos, Plateau' },
+  { q: 'inverter Ikeja', city: 'Ikeja, Lagos' },
+  { q: 'inverter Lekki', city: 'Lekki, Lagos' },
 ];
 
 const LAGOS_LGA_QUERIES = [
-  // Commercial & Hospitality Hubs
   { q: 'hotel Ikeja', cat: 'Hospitality & Hotel', lga: 'Ikeja' },
   { q: 'hotel Lekki', cat: 'Hospitality & Hotel', lga: 'Eti-Osa (Lekki)' },
   { q: 'hotel Victoria Island', cat: 'Hospitality & Hotel', lga: 'Eti-Osa (VI)' },
   { q: 'shortlet apartment Lekki', cat: 'Hospitality & Shortlet', lga: 'Eti-Osa (Lekki)' },
-  { q: 'hotel Wuse Abuja', cat: 'Hospitality & Hotel', lga: 'Wuse, Abuja' },
-  { q: 'hotel GRA Port Harcourt', cat: 'Hospitality & Hotel', lga: 'Port Harcourt' },
-  
-  // Healthcare & Medical Specialist Centers
   { q: 'hospital Lekki', cat: 'Healthcare Facility', lga: 'Eti-Osa (Lekki)' },
   { q: 'hospital Yaba', cat: 'Healthcare Facility', lga: 'Lagos Mainland' },
   { q: 'hospital Ikeja', cat: 'Healthcare Facility', lga: 'Ikeja' },
-  { q: 'medical diagnostic center Victoria Island', cat: 'Healthcare & Diagnostic', lga: 'Eti-Osa (VI)' },
   { q: 'dental clinic Ikeja', cat: 'Healthcare & Dental Specialist', lga: 'Ikeja' },
   { q: 'eye clinic Victoria Island', cat: 'Healthcare & Eye Specialist', lga: 'Eti-Osa (VI)' },
-  { q: 'pharmacy warehouse Oshodi', cat: 'Healthcare & Wholesale Pharma', lga: 'Oshodi' },
-  { q: 'hospital Bodija Ibadan', cat: 'Healthcare Facility', lga: 'Ibadan' },
-
-  // Education & Private Academies
   { q: 'private school Lekki', cat: 'Educational Institution', lga: 'Eti-Osa' },
   { q: 'college Ikeja', cat: 'Educational Institution', lga: 'Ikeja' },
   { q: 'academy Gbagada', cat: 'Educational Institution', lga: 'Kosofe' },
-  { q: 'international school Ikoyi', cat: 'Educational Institution', lga: 'Ikoyi' },
-  { q: 'private school Maitama Abuja', cat: 'Educational Institution', lga: 'Abuja FCT' },
-
-  // Legal, Accounting & Corporate Services
   { q: 'law firm Ikoyi', cat: 'Professional Services Enterprise', lga: 'Ikoyi' },
   { q: 'law chambers Ikeja', cat: 'Professional Legal Practice', lga: 'Ikeja' },
   { q: 'tax consultant Victoria Island', cat: 'Financial & Tax Advisory', lga: 'Eti-Osa (VI)' },
-  { q: 'audit firm Ikeja GRA', cat: 'Accounting & Audit Firm', lga: 'Ikeja' },
-  { q: 'microfinance bank Wuse Abuja', cat: 'Financial Institution', lga: 'Abuja FCT' },
-
-  // Real Estate & Commercial Architecture
   { q: 'real estate developer Lekki', cat: 'Real Estate Developer', lga: 'Eti-Osa (Lekki)' },
   { q: 'property consultant Ikoyi', cat: 'Real Estate Agency', lga: 'Ikoyi' },
   { q: 'estate agent Ajah', cat: 'Real Estate Commercial', lga: 'Eti-Osa (Ajah)' },
-  { q: 'co-working space Yaba', cat: 'Commercial Real Estate', lga: 'Lagos Mainland' },
-  { q: 'interior designer Victoria Island', cat: 'Design & Architecture', lga: 'Eti-Osa (VI)' },
-  { q: 'real estate GRA Port Harcourt', cat: 'Real Estate Developer', lga: 'Port Harcourt' },
-
-  // Auto & Fleet Operations
   { q: 'car dealership Allen', cat: 'Auto Commercial Dealership', lga: 'Ikeja' },
   { q: 'auto workshop Festac', cat: 'Auto Repair & Maintenance', lga: 'Amuwo-Odofin' },
-  { q: 'auto spare parts Ladipo', cat: 'Auto Commercial Merchant', lga: 'Oshodi' },
-
-  // Logistics, Haulage & Industrial Facilities
   { q: 'logistics company Apapa', cat: 'Logistics & Freight Hub', lga: 'Apapa' },
   { q: 'courier delivery Ikeja', cat: 'Express Logistics Courier', lga: 'Ikeja' },
-  { q: 'haulage transport Ikorodu', cat: 'Heavy Haulage Transport', lga: 'Ikorodu' },
-  { q: 'factory Ikorodu', cat: 'Industrial Manufacturing Facility', lga: 'Ikorodu' },
-  { q: 'cold room storage Ojo', cat: 'Agro & Cold Chain Logistics', lga: 'Ojo' },
-  { q: 'agro processing Ikorodu', cat: 'Agricultural Processing', lga: 'Ikorodu' },
-
-  // Retail, Supermarkets & Trade Plazas
   { q: 'boutique store Surulere', cat: 'Fashion Retail Enterprise', lga: 'Surulere' },
   { q: 'supermarket Alimosho', cat: 'Commercial Retail Enterprise', lga: 'Alimosho' },
+  { q: 'beauty spa Lekki', cat: 'Wellness & Spa Center', lga: 'Eti-Osa' },
+  { q: 'salon Ikeja GRA', cat: 'Beauty & Hair Salon', lga: 'Ikeja' },
+  { q: 'lounge Victoria Island', cat: 'Hospitality & Dining', lga: 'Eti-Osa (VI)' },
+  { q: 'restaurant Ikoyi', cat: 'Hospitality Enterprise', lga: 'Ikoyi' },
+  { q: 'event center Maryland', cat: 'Event & Hospitality Center', lga: 'Kosofe' },
+  { q: 'factory Ikorodu', cat: 'Industrial Manufacturing Facility', lga: 'Ikorodu' },
   { q: 'plaza Ikeja', cat: 'Commercial Shopping Plaza', lga: 'Ikeja' },
-  { q: 'hardware store Alaba', cat: 'Electronics & Hardware Hub', lga: 'Ojo' },
-  { q: 'furniture showroom Lekki', cat: 'Furniture & Home Decor', lga: 'Eti-Osa' },
+  // Expanded Nationwide B2B Categories
+  { q: 'catering services Ikeja', cat: 'Food & Catering Enterprise', lga: 'Ikeja' },
+  { q: 'dry cleaner Lekki', cat: 'Laundry & Cleaning Services', lga: 'Eti-Osa' },
+  { q: 'cold room storage Ojo', cat: 'Agro & Cold Chain Logistics', lga: 'Ojo' },
   { q: 'printing press Shomolu', cat: 'Printing & Packaging Hub', lga: 'Shomolu' },
-
-  // Nationwide Regional Capitals
+  { q: 'interior designer Victoria Island', cat: 'Design & Architecture', lga: 'Eti-Osa (VI)' },
+  { q: 'furniture showroom Lekki', cat: 'Furniture & Home Decor', lga: 'Eti-Osa' },
+  { q: 'microfinance bank Ikeja', cat: 'Financial Institution', lga: 'Ikeja' },
+  { q: 'agro processing Ikorodu', cat: 'Agricultural Processing', lga: 'Ikorodu' },
+  { q: 'auto spare parts Ladipo', cat: 'Auto Commercial Merchant', lga: 'Oshodi' },
+  { q: 'hardware store Alaba', cat: 'Electronics & Hardware Hub', lga: 'Ojo' },
+  { q: 'hotel Abuja Central', cat: 'Hospitality & Hotel', lga: 'Abuja FCT' },
+  { q: 'real estate Port Harcourt', cat: 'Real Estate Developer', lga: 'Port Harcourt' },
+  { q: 'hospital Ibadan', cat: 'Healthcare Facility', lga: 'Ibadan' },
+  { q: 'school Kano', cat: 'Educational Institution', lga: 'Kano' },
+  { q: 'law firm Enugu', cat: 'Professional Legal Practice', lga: 'Enugu' },
+  { q: 'logistics Benin City', cat: 'Express Logistics Courier', lga: 'Benin City' },
   { q: 'solar installer Abeokuta', cat: 'Solar Energy & Inverter Dealer', lga: 'Abeokuta' },
   { q: 'boutique Warri', cat: 'Fashion Retail Enterprise', lga: 'Warri' },
   { q: 'restaurant Calabar', cat: 'Hospitality & Dining', lga: 'Calabar' },
-  { q: 'supermarket Owerri', cat: 'Commercial Retail Enterprise', lga: 'Owerri' },
-  { q: 'solar installer Asaba', cat: 'Solar Energy & Inverter Dealer', lga: 'Asaba' },
-  { q: 'hospital Kano', cat: 'Healthcare Facility', lga: 'Kano' },
-  { q: 'logistics Benin City', cat: 'Express Logistics Courier', lga: 'Benin City' }
+  { q: 'supermarket Owerri', cat: 'Commercial Retail Enterprise', lga: 'Owerri' }
 ];
 
 const BIZLIST_LAGOS_CATEGORIES = [
@@ -133,16 +105,7 @@ const BIZLIST_LAGOS_CATEGORIES = [
   'location/lagos/logistics',
   'location/lagos/schools',
   'location/lagos/restaurants',
-  'location/abuja/hotels',
-  'location/abuja/hospitals',
-  'location/rivers/hotels',
-  'location/oyo/hotels',
   'category/solar-energy',
-  'category/real-estate',
-  'category/medical-hospitals',
-  'category/accounting-audit',
-  'category/auto-dealers',
-  'category/printing-packaging'
 ];
 
 async function fetchNominatimSearch(query: string): Promise<any[]> {
@@ -455,6 +418,8 @@ export async function harvestLiveSolarLeads(): Promise<{ added: number; totalSol
       ...selectedCities.map(c => fetchNominatimSearch(c.q)),
       fetchGoogleMapsInternalJson('solar installer Lagos', 8),
       fetchGoogleDorkLeads('solar installer', 'Solar Energy Enterprise'),
+      fetchBingSerpLeads('solar installer Nigeria', 'Solar Energy Enterprise'),
+      fetchFinelibLeads('solar energy', 'Lagos'),
       fetchJijiMerchantLeads('solar energy', 'solar_nigeria_5k'),
       fetchJijiMerchantLeads('inverter battery', 'solar_nigeria_5k'),
       fetchBusinessListLeads('category/solar-energy', 'solar_nigeria_5k'),
@@ -487,11 +452,31 @@ export async function harvestLiveSolarLeads(): Promise<{ added: number; totalSol
     // Apply Quality Gate Pre-Filter
     const harvested = harvestedRaw.filter(validateLeadQuality);
 
+    // Enforce Deterministic Lead ID Hashing for zero duplicate rows
+    harvested.forEach((lead) => {
+      const normPhone = lead.phone_e164 || lead.phone_raw || '';
+      const cleanName = (lead.name || '').toLowerCase().trim();
+      const hashKey = `${cleanName}_${normPhone || lead.city || 'ng'}`;
+      lead.lead_id = `solar_det_${crypto.createHash('sha256').update(hashKey).digest('hex').substring(0, 16)}`;
+    });
+
     let added = 0;
     if (harvested.length > 0) {
       const syncResult = await saveLeads(harvested);
       added = syncResult.added || 0;
+
+      // Real-Time Log Emission to Supabase logs table for Live UI updates
+      try {
+        await (supabase as any).from('logs').insert([{
+          run_id: `solar_live_${Date.now()}`,
+          timestamp: new Date().toISOString(),
+          step: 'SOLAR_LIVE_ADDITION',
+          status: 'SUCCESS',
+          message: `⚡ [SOLAR-ENGINE] Harvested +${added} verified solar leads (Matrix parsed: ${harvestedRaw.length}, validated: ${harvested.length})`
+        }]);
+      } catch (_) {}
     }
+
 
     // Async Non-Blocking Micro-Enrichment for saved leads
     const toEnrich = harvested.filter(l => (!l.phone_e164 || !l.email) && l.website).slice(0, 8);
@@ -568,6 +553,8 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
       ...selectedLgas.map(l => fetchNominatimSearch(l.q)),
       fetchGoogleMapsInternalJson('dentist Ikeja Lagos', 8),
       fetchGoogleDorkLeads('hotel Ikeja', 'Hospitality & Hotel'),
+      fetchBingSerpLeads('logistics company Lagos', 'Logistics & Commercial'),
+      fetchFinelibLeads('hotel', 'Lagos'),
       fetchVConnectLeads('hospital Lekki'),
       fetchCACBusinessLeads('logistics Lagos'),
       fetchBusinessListLeads(bizCat1, 'lagos_10k_b2b'),
@@ -600,11 +587,31 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
     // Apply Quality Gate Pre-Filter
     const harvested = harvestedRaw.filter(validateLeadQuality);
 
+    // Enforce Deterministic Lead ID Hashing for zero duplicate rows
+    harvested.forEach((lead) => {
+      const normPhone = lead.phone_e164 || lead.phone_raw || '';
+      const cleanName = (lead.name || '').toLowerCase().trim();
+      const hashKey = `${cleanName}_${normPhone || lead.city || 'lagos'}`;
+      lead.lead_id = `lagos_det_${crypto.createHash('sha256').update(hashKey).digest('hex').substring(0, 16)}`;
+    });
+
     let added = 0;
     if (harvested.length > 0) {
       const syncResult = await saveLeads(harvested);
       added = syncResult.added || 0;
+
+      // Real-Time Log Emission to Supabase logs table for Live UI updates
+      try {
+        await (supabase as any).from('logs').insert([{
+          run_id: `lagos_live_${Date.now()}`,
+          timestamp: new Date().toISOString(),
+          step: 'LAGOS_LIVE_ADDITION',
+          status: 'SUCCESS',
+          message: `🏢 [LAGOS-10K] Harvested +${added} verified Lagos B2B leads (Matrix parsed: ${harvestedRaw.length}, validated: ${harvested.length})`
+        }]);
+      } catch (_) {}
     }
+
 
     // Async Non-Blocking Micro-Enrichment for saved leads
     const toEnrich = harvested.filter(l => (!l.phone_e164 || !l.email) && l.website).slice(0, 8);

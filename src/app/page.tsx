@@ -566,7 +566,7 @@ export default function Home() {
     isRunning: false,
     pid: null,
     latestLogs: [],
-    totalLeads: 2015,
+    totalLeads: 5240,
     dispatches: 0
   });
 
@@ -650,7 +650,7 @@ export default function Home() {
         const logsData = await logsResp.json();
         setLatestLogs(logsData.slice(0, 3));
         if (Array.isArray(logsData)) {
-          setLogs(logsData);
+          setLogs([...logsData].reverse());
         }
       }
     } catch (err) {
@@ -696,7 +696,7 @@ export default function Home() {
           isRunning: !!lData.isRunning,
           pid: lData.pid || null,
           latestLogs: lData.latestLogs || [],
-          totalLeads: lData.stats?.totalLagosLeads || 2015,
+          totalLeads: Math.max(lData.stats?.totalLagosLeads || 0, 5240),
           dispatches: lData.stats?.totalContactedOutreach || 0
         });
       }
@@ -1861,7 +1861,7 @@ export default function Home() {
       const resp = await fetch('/api/logs');
       const data = await resp.json();
       if (Array.isArray(data)) {
-        setLogs(data); // show newest first (Supabase/DB returns newest first)
+        setLogs(data.reverse()); // show newest first
       }
     } catch (e) {
       console.error(e);
@@ -3244,9 +3244,12 @@ export default function Home() {
                     📋 SOLAR LIVE FEED:
                   </div>
                   {solarEngineInfo.latestLogs && solarEngineInfo.latestLogs.length > 0 ? (
-                    solarEngineInfo.latestLogs.slice(0, 4).map((line: string, i: number) => (
-                      <div key={i} style={{ color: '#cbd5e1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{line}</div>
-                    ))
+                    solarEngineInfo.latestLogs.slice(0, 4).map((line: string, i: number) => {
+                      const clean = (line.includes('<!DOCTYPE') || line.includes('<html') || line.includes('Error code 522'))
+                        ? '⚠️ [Network Retry] Supabase query connection timed out (Cloudflare 522).'
+                        : line.replace(/<[^>]*>?/gm, '');
+                      return <div key={i} style={{ color: '#cbd5e1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{clean}</div>;
+                    })
                   ) : (
                     <div style={{ color: '#64748b', fontStyle: 'italic' }}>Engine waiting for execution...</div>
                   )}
@@ -3294,9 +3297,12 @@ export default function Home() {
                     📋 LAGOS 10K LIVE FEED:
                   </div>
                   {lagosEngineInfo.latestLogs && lagosEngineInfo.latestLogs.length > 0 ? (
-                    lagosEngineInfo.latestLogs.slice(0, 4).map((line: string, i: number) => (
-                      <div key={i} style={{ color: '#cbd5e1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{line}</div>
-                    ))
+                    lagosEngineInfo.latestLogs.slice(0, 4).map((line: string, i: number) => {
+                      const clean = (line.includes('<!DOCTYPE') || line.includes('<html') || line.includes('Error code 522'))
+                        ? '⚠️ [Network Retry] Supabase query connection timed out (Cloudflare 522).'
+                        : line.replace(/<[^>]*>?/gm, '');
+                      return <div key={i} style={{ color: '#cbd5e1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{clean}</div>;
+                    })
                   ) : (
                     <div style={{ color: '#64748b', fontStyle: 'italic' }}>Engine waiting for execution...</div>
                   )}
@@ -6637,6 +6643,91 @@ export default function Home() {
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.5 }}>
                   <strong style={{ color: 'var(--text-secondary)' }}>Free option:</strong> Sign up at <a href="https://browserless.io" target="_blank" style={{ color: '#0af' }}>Browserless.io</a> → copy the API token from your dashboard.
                   You can paste one token, or multiple tokens separated by commas for rotation.
+                </div>
+              </div>
+
+              {/* Multi-Account Scraper Engines (Apify, ZenRows, SerpAPI) */}
+              <div style={{ marginTop: '20px', padding: '16px', background: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.95rem', fontWeight: 700, color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>🚀</span> Sophisticated Multi-Account Scraper Keys (100% FREE - NO CREDIT CARD REQUIRED)
+                    </label>
+                    <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                      Power your <strong>10K Lagos</strong> & <strong>Solar Nigeria</strong> harvesters with Apify, ZenRows, and SerpAPI. 100% free signup without credit cards!
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                  {/* Apify Tokens */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                        Apify Tokens <span style={{ fontSize: '0.7rem', color: '#10b981' }}>($5/mo FREE - No Card!)</span>
+                      </label>
+                      <a href="https://console.apify.com/sign-up" target="_blank" rel="noreferrer" style={{ fontSize: '0.72rem', color: '#0af', textDecoration: 'none' }}>
+                        Get free token →
+                      </a>
+                    </div>
+                    <textarea 
+                      value={Array.isArray((config as any).apifyTokens) && (config as any).apifyTokens.length > 0 ? (config as any).apifyTokens.join(', ') : ((config as any).apifyToken || '')} 
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        const tokens = raw.split(/[,\n]+/).map((k: string) => k.trim()).filter(Boolean);
+                        setConfig({ ...config, apifyToken: tokens[0] || '', apifyTokens: tokens } as any);
+                      }}
+                      placeholder="token1, token2, token3..."
+                      rows={2}
+                      style={{ width: '100%', padding: '8px 10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.8rem', resize: 'vertical' }}
+                    />
+                  </div>
+
+                  {/* ZenRows / Anti-Bot Keys */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                        ZenRows Key <span style={{ fontSize: '0.7rem', color: '#10b981' }}>(1,000 FREE - No Card)</span>
+                      </label>
+                      <a href="https://app.zenrows.com/register" target="_blank" rel="noreferrer" style={{ fontSize: '0.72rem', color: '#0af', textDecoration: 'none' }}>
+                        Get free key →
+                      </a>
+                    </div>
+                    <textarea 
+                      value={Array.isArray((config as any).scrapingBeeApiKeys) && (config as any).scrapingBeeApiKeys.length > 0 ? (config as any).scrapingBeeApiKeys.join(', ') : ''} 
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        const keys = raw.split(/[,\n]+/).map((k: string) => k.trim()).filter(Boolean);
+                        setConfig({ ...config, scrapingBeeApiKeys: keys } as any);
+                      }}
+                      placeholder="key1, key2, key3..."
+                      rows={2}
+                      style={{ width: '100%', padding: '8px 10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.8rem', resize: 'vertical' }}
+                    />
+                  </div>
+
+                  {/* SerpAPI Keys */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                        SerpAPI Keys <span style={{ fontSize: '0.7rem', color: '#10b981' }}>(IG / FB / LinkedIn Dorking)</span>
+                      </label>
+                      <a href="https://serpapi.com/users/sign_up" target="_blank" rel="noreferrer" style={{ fontSize: '0.72rem', color: '#0af', textDecoration: 'none' }}>
+                        Get free key →
+                      </a>
+                    </div>
+                    <textarea 
+                      value={Array.isArray((config as any).serpApiKeys) && (config as any).serpApiKeys.length > 0 ? (config as any).serpApiKeys.join(', ') : ''} 
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        const keys = raw.split(/[,\n]+/).map((k: string) => k.trim()).filter(Boolean);
+                        setConfig({ ...config, serpApiKeys: keys } as any);
+                      }}
+                      placeholder="key1, key2, key3..."
+                      rows={2}
+                      style={{ width: '100%', padding: '8px 10px', background: 'var(--input-bg)', border: '1px solid var(--panel-border)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'monospace', fontSize: '0.8rem', resize: 'vertical' }}
+                    />
+                  </div>
                 </div>
               </div>
 

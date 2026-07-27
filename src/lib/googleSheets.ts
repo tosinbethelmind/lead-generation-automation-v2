@@ -230,21 +230,6 @@ export function isValidLeadName(name: string | undefined | null): boolean {
   return true;
 }
 
-export function cleanLeadTitle(name: string | undefined | null): string {
-  if (!name) return '';
-  let clean = name.trim();
-  // Detect and collapse repeating string patterns (e.g. "Property for LeaseProperty for LeaseProperty for Lease")
-  for (let len = 4; len <= Math.floor(clean.length / 2); len++) {
-    const sub = clean.substring(0, len);
-    const repeated = clean.split(sub).join('');
-    if (repeated === '' && clean.length > len) {
-      clean = sub;
-      break;
-    }
-  }
-  return clean.trim();
-}
-
 // ============================================================================
 // Asynchronous Dev-Safe JSON File Database & Safe Locks
 // ============================================================================
@@ -1221,16 +1206,14 @@ class SupabaseLeadRepository implements ILeadRepository {
       const supabase = getSupabaseClient();
       const { data, error } = await supabase
         .from('leads')
-        .select('*');
+        .select('*')
+        .order('rating', { ascending: false, nullsFirst: false })
+        .order('reviews_count', { ascending: false, nullsFirst: false })
+        .limit(limit * 3);
       if (error) throw error;
       const leads = (data || []).map(restoreLead) as Lead[];
       const uniqueLeads = deduplicateLeads(leads);
-      return uniqueLeads
-        .sort((a, b) => {
-          if (b.rating !== a.rating) return b.rating - a.rating;
-          return b.reviews_count - a.reviews_count;
-        })
-        .slice(0, limit);
+      return uniqueLeads.slice(0, limit);
     } catch (e: any) {
       console.warn('Supabase getTopReviewedLeads error, falling back to local JSON:', e.message);
       return this.fallback.getTopReviewedLeads(limit);
@@ -1245,15 +1228,32 @@ class SupabaseLeadRepository implements ILeadRepository {
       const step = 1000;
 
       while (true) {
-        const { data, error } = await supabase
-          .from('leads')
-          .select('*')
-          .range(from, from + step - 1)
-          .order('collected_at', { ascending: false });
-        if (error) throw error;
-        if (!data || data.length === 0) break;
-        allData = allData.concat(data);
-        if (data.length < step) break;
+        let pageData: any[] | null = null;
+        let lastError: any = null;
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            const { data, error } = await supabase
+              .from('leads')
+              .select('*')
+              .range(from, from + step - 1)
+              .order('collected_at', { ascending: false });
+            if (error) throw error;
+            pageData = data || [];
+            break;
+          } catch (err) {
+            lastError = err;
+            if (attempt < 3) {
+              await new Promise(r => setTimeout(r, 1000 * attempt));
+            }
+          }
+        }
+
+        if (pageData === null) throw lastError || new Error('Failed to fetch leads page');
+        if (pageData.length === 0) break;
+
+        allData = allData.concat(pageData);
+        if (pageData.length < step) break;
         from += step;
       }
 
@@ -1454,8 +1454,8 @@ class SupabaseLeadRepository implements ILeadRepository {
 
         if (solarItems.length > 0) {
           try {
-            const sqUrl = process.env.SOLARQUOTEPRO_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
-            const sqKey = process.env.SOLARQUOTEPRO_SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
+            const sqUrl = process.env.SOLARQUOTEPRO_SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co';
+            const sqKey = process.env.SOLARQUOTEPRO_SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY';
             const { createClient } = await import('@supabase/supabase-js');
             const sqClient = createClient(sqUrl, sqKey, { auth: { persistSession: false } });
             const { error: sqErr } = await (sqClient as any).from('leads').upsert(solarItems, { onConflict: 'lead_id', ignoreDuplicates: true });
@@ -1550,11 +1550,24 @@ class SupabaseLeadRepository implements ILeadRepository {
       if (fields.embed_note !== undefined) updates.embed_note = fields.embed_note;
       if (fields.embedNote !== undefined) updates.embed_note = fields.embedNote;
 
-      const { data, error } = await (supabase as any)
+      let { data, error } = await (supabase as any)
         .from('leads')
         .update(updates)
         .eq('lead_id', leadId)
         .select();
+
+      if (error && error.message && error.message.includes('design_theme')) {
+        const copyUpdates = { ...updates };
+        delete copyUpdates.design_theme;
+        const retryRes = await (supabase as any)
+          .from('leads')
+          .update(copyUpdates)
+          .eq('lead_id', leadId)
+          .select();
+        error = retryRes.error;
+        data = retryRes.data;
+      }
+
       if (error) throw error;
       return true;
     } catch (e: any) {
@@ -1707,14 +1720,8 @@ export async function getLeads(): Promise<Lead[]> {
 }
 
 export async function saveLeads(leads: Partial<Lead>[]): Promise<{ added: number; skipped: number }> {
-  // Sanitize lead titles (remove DOM duplicate concatenation)
-  const sanitized = leads.map(l => ({
-    ...l,
-    name: l.name ? cleanLeadTitle(l.name) : l.name
-  }));
-
-  // Filter out leads with invalid business names before saving
-  const validLeads = sanitized.filter(l => isValidLeadName(l.name));
+  // BUG 3: Filter out leads with invalid business names before saving
+  const validLeads = leads.filter(l => isValidLeadName(l.name));
   const rejected = leads.length - validLeads.length;
   if (rejected > 0) {
     console.log(`[saveLeads] Rejected ${rejected} leads with invalid names`);

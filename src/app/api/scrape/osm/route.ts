@@ -342,13 +342,16 @@ export async function POST(req: NextRequest) {
       await Promise.allSettled(
         toEnrich.map(async (lead) => {
           try {
-            const enriched = await enrichLeadContacts(lead);
+            const enriched = await Promise.race([
+              enrichLeadContacts(lead),
+              new Promise<any>(res => setTimeout(() => res({ email: null, phone: null, socials: {}, enriched: false }), 4000))
+            ]);
             if (enriched.email) lead.email = enriched.email;
             if (enriched.phone) {
               lead.phone_e164 = enriched.phone;
               lead.phone_raw = enriched.phone;
             }
-            if (Object.keys(enriched.socials).length > 0) {
+            if (enriched.socials && Object.keys(enriched.socials).length > 0) {
               lead.social_links = JSON.stringify(enriched.socials);
             }
             if (enriched.enriched) {

@@ -153,6 +153,10 @@ export interface LocalConfig {
   // Rotating browser and proxy pool settings
   browserlessApiKeys?: string[];
   browserbaseApiKeys?: string[];
+  apifyTokens?: string[];
+  outscraperApiKeys?: string[];
+  scrapingBeeApiKeys?: string[];
+  serpApiKeys?: string[];
   webshareProxies?: string[];
   useTorProxy?: boolean;
   torProxyUrl?: string;
@@ -288,8 +292,8 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   whatsappTemplateLanguageCode: 'en_US',
   whatsappDailyCap: 50,
   whatsappEnabled: false,
-  supabaseUrl: 'https://pnsrjsyiygxdcxkpgbzx.supabase.co',
-  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8',
+  supabaseUrl: 'https://szyuterncawfxwzhvwcf.supabase.co',
+  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY',
   antigravityApiKey: '',
   antigravityApiKeys: [],
   antigravityModels: [],
@@ -314,6 +318,10 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   serviceHealthStatus: '{}',
   browserlessApiKeys: [],
   browserbaseApiKeys: [],
+  apifyTokens: [],
+  outscraperApiKeys: [],
+  scrapingBeeApiKeys: [],
+  serpApiKeys: [],
   webshareProxies: [],
   useTorProxy: false,
   torProxyUrl: 'socks5://127.0.0.1:9050',
@@ -475,7 +483,7 @@ export function getRuntimeConfig(): RuntimeConfig {
     supabaseUrl: (function() {
       const candidates = [process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_URL, fileConfig.supabaseUrl, DEFAULT_CONFIG.supabaseUrl];
       for (const c of candidates) {
-        if (c && typeof c === 'string' && c.trim().includes('pnsrjsyiygxdcxkpgbzx')) {
+        if (c && typeof c === 'string' && c.trim().includes('szyuterncawfxwzhvwcf')) {
           return c.trim();
         }
       }
@@ -489,7 +497,7 @@ export function getRuntimeConfig(): RuntimeConfig {
             const parts = c.trim().split('.');
             if (parts.length === 3) {
               const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-              if (payload.ref === 'pnsrjsyiygxdcxkpgbzx') return c.trim();
+              if (payload.ref === 'szyuterncawfxwzhvwcf') return c.trim();
             }
           } catch (e) {}
         }
@@ -522,6 +530,10 @@ export function getRuntimeConfig(): RuntimeConfig {
     // Rotating browser and proxy pool
     browserlessApiKeys: process.env.BROWSERLESS_API_KEYS ? process.env.BROWSERLESS_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.browserlessApiKeys || DEFAULT_CONFIG.browserlessApiKeys),
     browserbaseApiKeys: process.env.BROWSERBASE_API_KEYS ? process.env.BROWSERBASE_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.browserbaseApiKeys || DEFAULT_CONFIG.browserbaseApiKeys),
+    apifyTokens: process.env.APIFY_TOKENS ? process.env.APIFY_TOKENS.split(',').map(s => s.trim()) : (fileConfig.apifyTokens || (fileConfig.apifyToken ? [fileConfig.apifyToken] : DEFAULT_CONFIG.apifyTokens)),
+    outscraperApiKeys: process.env.OUTSCRAPER_API_KEYS ? process.env.OUTSCRAPER_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.outscraperApiKeys || DEFAULT_CONFIG.outscraperApiKeys),
+    scrapingBeeApiKeys: process.env.SCRAPINGBEE_API_KEYS ? process.env.SCRAPINGBEE_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.scrapingBeeApiKeys || DEFAULT_CONFIG.scrapingBeeApiKeys),
+    serpApiKeys: process.env.SERP_API_KEYS ? process.env.SERP_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.serpApiKeys || DEFAULT_CONFIG.serpApiKeys),
     webshareProxies: process.env.WEBSHARE_PROXIES ? process.env.WEBSHARE_PROXIES.split(',').map(s => s.trim()) : (fileConfig.webshareProxies || DEFAULT_CONFIG.webshareProxies),
     useTorProxy: process.env.USE_TOR_PROXY === 'true' || fileConfig.useTorProxy || DEFAULT_CONFIG.useTorProxy,
     torProxyUrl: process.env.TOR_PROXY_URL || fileConfig.torProxyUrl || DEFAULT_CONFIG.torProxyUrl,
@@ -681,6 +693,10 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       // Rotating browser and proxy pool
       browserlessApiKeys: updated.browserlessApiKeys,
       browserbaseApiKeys: updated.browserbaseApiKeys,
+      apifyTokens: updated.apifyTokens,
+      outscraperApiKeys: updated.outscraperApiKeys,
+      scrapingBeeApiKeys: updated.scrapingBeeApiKeys,
+      serpApiKeys: updated.serpApiKeys,
       webshareProxies: updated.webshareProxies,
       useTorProxy: updated.useTorProxy,
       torProxyUrl: updated.torProxyUrl,

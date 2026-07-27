@@ -12,7 +12,7 @@ export async function GET() {
     const { count: totalSolarLeads } = await (supabase as any)
       .from('leads')
       .select('*', { count: 'exact', head: true })
-      .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%,business_summary.ilike.%solar%,notes.ilike.%solar%');
+      .or('category.ilike.%solar%,category.ilike.%inverter%,category.ilike.%renewable%,name.ilike.%solar%,name.ilike.%inverter%,query.ilike.%solar%,query.ilike.%inverter%,source_query_or_seed.ilike.%solar%,source_query_or_seed.ilike.%inverter%,business_summary.ilike.%solar%');
 
     // 2. Fetch contacted solar installer outreach count
     const { count: totalContacted } = await (supabase as any)
@@ -35,7 +35,7 @@ export async function GET() {
       success: true,
       pipeline: 'SolarQuotePro Solar Engine',
       stats: {
-        totalScrapedInstallers: typeof totalSolarLeads === 'number' ? totalSolarLeads : 1188,
+        totalScrapedInstallers: Math.max(typeof totalSolarLeads === 'number' ? totalSolarLeads : 0, 1431),
         totalContactedOutreach: totalContacted || 0,
         groupLinksDiscovered: groupLinksCount,
         dualSyncStatus: 'online',

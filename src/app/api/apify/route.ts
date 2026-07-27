@@ -64,19 +64,14 @@ function generateMockApifyLeads(query: string, limit: number): Partial<Lead>[] {
 // Next.js Route Handler
 // ============================================================================
 
+import { providerRotator } from '@/lib/multiProviderRotator';
+
 async function performApifyImport(query: string, limit: number) {
   const config = getRuntimeConfig();
-  const apifyToken = config.apifyToken;
-  let activeToken = apifyToken;
-  if (apifyToken && apifyToken.includes(',')) {
-    const tokens = apifyToken.split(',').map(t => t.trim()).filter(Boolean);
-    if (tokens.length > 0) {
-      activeToken = tokens[Math.floor(Math.random() * tokens.length)];
-    }
-  }
+  const activeToken = providerRotator.getApifyToken() || config.apifyToken;
   const datasetId = config.apifyDatasetId;
   
-  const isSandbox = !activeToken || activeToken === '' || activeToken === 'local-sandbox' || config.storageMode === 'local';
+  const isSandbox = !activeToken || activeToken === '' || activeToken === 'local-sandbox';
   
   if (isSandbox) {
     await addLog('Apify Importer', 'START', `Triggering Apify sandbox import for query: "${query}" (limit: ${limit})`);

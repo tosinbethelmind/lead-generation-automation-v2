@@ -73,14 +73,11 @@ export async function POST(req: NextRequest) {
 
     const searchQuery = `site:${siteDomain} ${query} (ecommerce OR shop OR boutique OR store OR brand OR wholesale OR supplier OR trading)`;
     
-    // Add a 2-3 second delay to avoid rate limiting
-    await sleep(2000 + Math.random() * 1000);
-    
     const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(searchQuery)}`;
 
     let htmlText = '';
     let lastError: any = null;
-    const maxRetries = 3;
+    const maxRetries = 2;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
@@ -89,7 +86,7 @@ export async function POST(req: NextRequest) {
           'User-Agent': userAgent,
           'Referer': 'https://duckduckgo.com/',
           'Cache-Control': 'max-age=0'
-        });
+        }, AbortSignal.timeout(5000));
 
         if (!resp.ok) {
           if (resp.status === 403 || resp.status === 429) {
@@ -224,13 +221,16 @@ export async function POST(req: NextRequest) {
       await Promise.allSettled(
         toEnrich.map(async (lead) => {
           try {
-            const enriched = await enrichLeadContacts(lead);
+            const enriched = await Promise.race([
+              enrichLeadContacts(lead),
+              new Promise<any>(res => setTimeout(() => res({ email: null, phone: null, socials: {}, enriched: false }), 4000))
+            ]);
             if (enriched.email) lead.email = enriched.email;
             if (enriched.phone) {
               lead.phone_e164 = enriched.phone;
               lead.phone_raw = enriched.phone;
             }
-            if (Object.keys(enriched.socials).length > 0) {
+            if (enriched.socials && Object.keys(enriched.socials).length > 0) {
               lead.social_links = JSON.stringify(enriched.socials);
             }
             if (enriched.enriched) {

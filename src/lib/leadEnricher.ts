@@ -72,6 +72,24 @@ export async function verifyEmailMxRecord(email: string): Promise<boolean> {
   });
 }
 
+export const verifyEmailDomainMx = verifyEmailMxRecord;
+
+/** Fast 3-second HTML crawler extracting hidden tel:, mailto:, wa.me/ links from website homepage & contact page */
+export async function crawlWebsiteContactInfo(websiteUrl: string): Promise<{ phone: string | null; email: string | null; socials: Record<string, string> }> {
+  if (!websiteUrl || !websiteUrl.startsWith('http')) return { phone: null, email: null, socials: {} };
+  try {
+    const res = await enrichFromWebsite(websiteUrl);
+    return {
+      phone: res.phone || null,
+      email: res.email || null,
+      socials: res.socials || {}
+    };
+  } catch (_) {
+    return { phone: null, email: null, socials: {} };
+  }
+}
+
+
 /** Phone Carrier Validation for Nigerian Networks (MTN, Airtel, Glo, 9mobile) */
 export function validateNigerianCarrier(phone: string): { valid: boolean; carrier?: string } {
   if (!phone) return { valid: false };
@@ -445,7 +463,7 @@ export async function enrichContactsViaSearch(name: string, city: string): Promi
     const userAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
     
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000);
+    const timeout = setTimeout(() => controller.abort(), 2500);
 
     const resp = await fetch(url, {
       headers: {
@@ -532,7 +550,7 @@ export async function enrichFromNigerianDirectories(name: string, city: string):
   try {
     const vconnectUrl = `https://www.vconnect.com/search?kwd=${encodeURIComponent(name)}&location=${encodeURIComponent(city)}`;
     const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 7000);
+    const t = setTimeout(() => ctrl.abort(), 2000);
     const resp = await fetch(vconnectUrl, {
       headers: { 'User-Agent': userAgent, Accept: 'text/html' },
       signal: ctrl.signal
@@ -564,7 +582,7 @@ export async function enrichFromNigerianDirectories(name: string, city: string):
     try {
       const blUrl = `https://www.businesslist.com.ng/search/${encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-'))}`;
       const ctrl2 = new AbortController();
-      const t2 = setTimeout(() => ctrl2.abort(), 7000);
+      const t2 = setTimeout(() => ctrl2.abort(), 2000);
       const resp2 = await fetch(blUrl, {
         headers: { 'User-Agent': userAgent, Accept: 'text/html' },
         signal: ctrl2.signal
@@ -597,7 +615,7 @@ export async function enrichFromNigerianDirectories(name: string, city: string):
     try {
       const infobelUrl = `https://www.infobel.com/en/nigeria/search?q=${encodeURIComponent(name + ' ' + city)}`;
       const ctrl3 = new AbortController();
-      const t3 = setTimeout(() => ctrl3.abort(), 7000);
+      const t3 = setTimeout(() => ctrl3.abort(), 2000);
       const resp3 = await fetch(infobelUrl, {
         headers: { 'User-Agent': userAgent, Accept: 'text/html' },
         signal: ctrl3.signal

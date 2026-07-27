@@ -58,7 +58,7 @@ services:
       REDIS_URL: redis://redis:6379
       TOR_PROXY_HOST: tor
       TOR_PROXY_PORT: 9050
-      SUPABASE_URL: ${SUPABASE_URL:-https://pnsrjsyiygxdcxkpgbzx.supabase.co}
+      SUPABASE_URL: ${SUPABASE_URL:-https://szyuterncawfxwzhvwcf.supabase.co}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
     ports:
       - "127.0.0.1:3006:3006"

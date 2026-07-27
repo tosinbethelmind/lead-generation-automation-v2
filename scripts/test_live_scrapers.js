@@ -39,10 +39,14 @@ async function runScraper({ name, endpoint, body }) {
   const start = Date.now();
   try {
     console.log(CYAN(`  → POST ${url}`));
+    const payload = { ...body, bypassQueue: true };
     const res = await fetchWithTimeout(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-bypass-queue': 'true'
+      },
+      body: JSON.stringify(payload),
     });
 
     const elapsed = ((Date.now() - start) / 1000).toFixed(1);

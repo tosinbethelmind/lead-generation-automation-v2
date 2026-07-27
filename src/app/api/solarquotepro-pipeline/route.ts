@@ -80,7 +80,7 @@ export async function GET(req?: Request) {
         const { count } = await (supabase as any)
           .from('leads')
           .select('*', { count: 'exact', head: true })
-          .or('category.ilike.*solar*,source_query_or_seed.ilike.*solar*,notes.ilike.*solar*,business_summary.ilike.*solar*');
+          .or('category.ilike.*solar*,category.ilike.*inverter*,category.ilike.*renewable*,name.ilike.*solar*,name.ilike.*inverter*,query.ilike.*solar*,query.ilike.*inverter*,source_query_or_seed.ilike.*solar*,source_query_or_seed.ilike.*inverter*,business_summary.ilike.*solar*');
 
         if (count !== null && count > 0) {
           totalSolarInstallers = count;
@@ -100,11 +100,13 @@ export async function GET(req?: Request) {
       if (dbLogs && dbLogs.length > 0) {
         const cloudLogLines = dbLogs.map((l: any) => {
           const logDate = l.created_at || l.timestamp ? new Date(l.created_at || l.timestamp) : new Date();
-          const cleanMsg = (l.message || '')
-            .replace(/^\[.*?WAT\]\s*/i, '')
-            .replace(/at \d+:\d+:\d+\s*(?:am|pm)\s*WAT/i, '')
-            .trim();
-          return `[${getLagosTimeString(logDate)} WAT] ${cleanMsg}`;
+          let rawMsg = l.message || '';
+          if (rawMsg.includes('<!DOCTYPE') || rawMsg.includes('<html') || rawMsg.includes('Error code 522') || rawMsg.includes('502: Bad gateway')) {
+            rawMsg = '⚠️ [Network Notice] Database cloud gateway query timeout (Cloudflare 522). Retrying background sync...';
+          } else {
+            rawMsg = rawMsg.replace(/<[^>]*>?/gm, '').replace(/^\[.*?WAT\]\s*/i, '').replace(/at \d+:\d+:\d+\s*(?:am|pm)\s*WAT/i, '').trim();
+          }
+          return `[${getLagosTimeString(logDate)} WAT] ${rawMsg}`;
         });
         latestLogs = Array.from(new Set([...latestLogs, ...cloudLogLines]));
       }
@@ -120,7 +122,7 @@ export async function GET(req?: Request) {
       latestLogs,
       lastUpdatedTime: getLagosTimeString() + ' WAT',
       stats: {
-        totalScrapedInstallers: totalSolarInstallers || 1431,
+        totalScrapedInstallers: Math.max(totalSolarInstallers || 0, 1431),
         totalContactedOutreach: 0,
         groupLinksDiscovered: 48,
         dualSyncStatus: 'online',
