@@ -2,7 +2,7 @@ name: 10K Lagos B2B Engine — Distributed Matrix Runner
 
 on:
   schedule:
-    # Run every 20 minutes automatically across parallel zones
+    # Run every 20 minutes for real-time lead extraction
     - cron: '*/20 * * * *'
   workflow_dispatch:
     inputs:
