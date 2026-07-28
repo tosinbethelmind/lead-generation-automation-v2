@@ -174,6 +174,7 @@ export interface LocalConfig {
   githubRepo?: string;
   lagosDailyLeadTarget?: number;
   nigeriaSolarDailyTarget?: number;
+  backendHosts?: string[];
 }
 
 export interface TeamMember {
@@ -336,6 +337,12 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   githubRepo: '',
   lagosDailyLeadTarget: 10000,
   nigeriaSolarDailyTarget: 2500,
+  backendHosts: [
+    'https://bethelmind-lead-engine.fly.dev',
+    'https://huggingface.co/spaces/bethelmind/lead-engine',
+    'https://apexreach-247-worker.onrender.com',
+    'http://localhost:3000'
+  ],
 };
 
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
@@ -818,5 +825,17 @@ export function getOutreachOrigin(reqUrl?: string): string {
   return 'https://lead-generation-automation-ecru.vercel.app';
 }
 
+import { getOptimalHostUrl } from './adaptiveHostManager';
 
+/**
+ * Resolves the optimal backend host using the Adaptive Efficiency Router.
+ * Automatically selects the highest efficiency available host (Fly.io -> GitHub Actions -> Hugging Face -> Render -> Local).
+ */
+export function getRotatedBackendHost(): string {
+  try {
+    return getOptimalHostUrl();
+  } catch (_) {
+    return 'https://bethelmind-lead-engine.fly.dev';
+  }
+}
 

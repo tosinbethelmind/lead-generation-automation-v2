@@ -1419,12 +1419,19 @@ class SupabaseLeadRepository implements ILeadRepository {
             .from('leads')
             .upsert(uniqueToInsert, { onConflict: 'lead_id', ignoreDuplicates: true });
           if (error) {
-            console.warn('[Supabase saveLeads Warning]: Batch upsert failed, attempting individual upserts:', error.message);
-            for (const item of uniqueToInsert) {
-              try {
-                await (supabase as any).from('leads').upsert([item], { onConflict: 'lead_id', ignoreDuplicates: true });
-              } catch (_) {}
+            console.warn('[Supabase saveLeads Warning]: Batch upsert failed or Supabase network timeout. Saving to Local JSON DB fallback:', error.message);
+            try {
+              const localRepo = new LocalJsonLeadRepository();
+              await localRepo.saveLeads(newLeads);
+            } catch (fallbackErr) {
+              console.error('[Supabase Fallback Error]: Local DB save failed:', fallbackErr);
             }
+          } else {
+            // Also mirror to local JSON DB for redundancy
+            try {
+              const localRepo = new LocalJsonLeadRepository();
+              await localRepo.saveLeads(newLeads);
+            } catch (_) {}
           }
         }
 

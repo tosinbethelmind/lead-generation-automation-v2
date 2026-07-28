@@ -2,8 +2,8 @@ name: 10K Lagos B2B Engine — Distributed Matrix Runner
 
 on:
   schedule:
-    # Run every 6 hours automatically across 5 parallel zones
-    - cron: '0 */6 * * *'
+    # Run every 20 minutes automatically across parallel zones
+    - cron: '*/20 * * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -38,11 +38,14 @@ jobs:
       - name: Install Dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Install Playwright Chromium & System Dependencies
+        run: npx playwright install chromium --with-deps || true
+
       - name: Execute Parallel Matrix Zone Harvester
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co' }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY' }}
         run: |
           echo "🚀 Executing 10K Lagos B2B Matrix Node: ${{ matrix.zone }}..."
           MODE="${{ github.event.inputs.mode || github.event.client_payload.mode || 'live' }}"
@@ -63,9 +66,9 @@ jobs:
       - name: Run Master Lagos Harvester (Zone Aggregation)
         if: matrix.zone == 'ikeja_alausa'
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co' }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY' }}
         run: |
           echo "📊 Running master Lagos harvester to aggregate OSM + Jiji leads..."
           COUNT="${{ github.event.inputs.count || github.event.client_payload.count || '10000' }}"
@@ -75,3 +78,4 @@ jobs:
             ARGS="$ARGS --run-id $JOB_ID"
           fi
           node scripts/lagos_10k_master_harvester.js $ARGS || true
+
