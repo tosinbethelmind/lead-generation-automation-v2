@@ -909,7 +909,7 @@ export default function Home() {
     supabaseUrl: '',
     supabaseKey: '',
     geminiApiKey: '',
-    storageMode: 'hybrid',
+    storageMode: 'local',
     emailProvider: 'gmail',
     resendApiKey: '',
     resendFromEmail: '',
@@ -3577,7 +3577,7 @@ export default function Home() {
             </button>
           </div>
         )}
-        {config.storageMode === 'supabase' && supabaseStatus && !supabaseStatus.success && (
+        {config.storageMode === 'supabase' && supabaseStatus && !supabaseStatus.success && !(supabaseStatus.error && (supabaseStatus.error.includes('<!DOCTYPE') || supabaseStatus.error.includes('<html') || supabaseStatus.error.includes('522') || supabaseStatus.error.includes('timed out'))) && (
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -3594,7 +3594,13 @@ export default function Home() {
               <div style={{ textAlign: 'left' }}>
                 <strong style={{ color: '#f87171', fontSize: '0.9rem' }}>Supabase Schema/Connection Check Failed</strong>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '2px 0 0 0' }}>
-                  {supabaseStatus.error || "Some required tables (leads, dnc, logs, scrape_jobs) are missing from your database."} Please verify your Supabase credentials or DB schema.
+                  {(() => {
+                    const errStr = String(supabaseStatus.error || '');
+                    if (errStr.includes('<!DOCTYPE') || errStr.includes('<html') || errStr.includes('522') || errStr.includes('timed out')) {
+                      return 'Cloud database connection timed out (Cloudflare 522). Self-healing Local JSON DB is active.';
+                    }
+                    return errStr.replace(/<[^>]*>?/gm, '') || "Some required tables (leads, dnc, logs, scrape_jobs) are missing from your database.";
+                  })()} Please verify your Supabase credentials or DB schema.
                 </p>
               </div>
             </div>
