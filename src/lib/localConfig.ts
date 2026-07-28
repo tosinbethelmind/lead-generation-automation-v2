@@ -307,7 +307,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   n8nWebhookUrl: '',
   minReviews: 1,
   minRating: 3.0,
-  storageMode: 'supabase',
+  storageMode: 'local',
   cloudflareToken: '',
   cloudflareZoneId: '',
   vercelToken: '',
