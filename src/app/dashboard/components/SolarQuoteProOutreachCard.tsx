@@ -76,9 +76,14 @@ export default function SolarQuoteProOutreachCard() {
         try {
           const newLogs = JSON.parse(event.data);
           if (Array.isArray(newLogs) && newLogs.length > 0) {
-            const formatted = newLogs.map((l: any) => 
-              typeof l === 'string' ? l : `[${l.step || l.level || 'LIVE'}] ${l.message || l.details || JSON.stringify(l)}`
-            );
+            const formatted = newLogs.map((l: any) => {
+              if (typeof l === 'string') return l;
+              if (Array.isArray(l)) {
+                const [runId, ts, step, , status, msg] = l;
+                return `[${step || status || 'LIVE'}] ${msg || ''}`;
+              }
+              return `[${l.step || l.level || 'LIVE'}] ${l.message || l.details || JSON.stringify(l)}`;
+            });
             setPipelineStatus(prev => ({
               ...prev,
               latestLogs: [...formatted, ...prev.latestLogs].slice(0, 50)

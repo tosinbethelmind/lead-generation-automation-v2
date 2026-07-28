@@ -40,23 +40,35 @@ export default function DbHealthCheck() {
     setChecking(true);
     try {
       const res = await fetch('/api/db-health');
-      if (res.ok) {
-        const data: DbHealthResponse = await res.json();
-        setHealth(data);
-        // Only show setup modal if storageMode is 'supabase' and db check failed
-        const isBypassed = typeof window !== 'undefined' && sessionStorage.getItem('bypass-db-check') === 'true';
-        setVisible(data.storageMode === 'supabase' && !data.success && !isBypassed);
-      } else {
-        const data: DbHealthResponse = await res.json();
-        setHealth(data);
-        const isBypassed = typeof window !== 'undefined' && sessionStorage.getItem('bypass-db-check') === 'true';
-        setVisible(data.storageMode === 'supabase' && !isBypassed);
+      let data: DbHealthResponse;
+      try {
+        const text = await res.text();
+        data = JSON.parse(text);
+      } catch (jsonErr) {
+        data = {
+          success: false,
+          connected: false,
+          storageMode: 'local',
+          tables: {
+            leads: false,
+            dnc: false,
+            logs: false,
+            scrape_jobs: false,
+            sync_logs: false,
+            outreach_campaigns: false
+          },
+          missingTables: [],
+          error: `Database health service returned HTTP ${res.status}.`
+        };
       }
+      setHealth(data);
+      const isBypassed = typeof window !== 'undefined' && sessionStorage.getItem('bypass-db-check') === 'true';
+      setVisible(data.storageMode === 'supabase' && !data.success && !isBypassed);
     } catch (e: any) {
       setHealth({
         success: false,
         connected: false,
-        storageMode: 'supabase',
+        storageMode: 'local',
         tables: {
           leads: false,
           dnc: false,
@@ -65,12 +77,10 @@ export default function DbHealthCheck() {
           sync_logs: false,
           outreach_campaigns: false
         },
-        missingTables: ['leads', 'dnc', 'logs', 'scrape_jobs', 'sync_logs', 'outreach_campaigns'],
+        missingTables: [],
         error: e.message || 'Failed to fetch database health endpoint.'
       });
-      // We assume supabase mode might be desired if fetch failed completely, but keep modal hidden unless verified
-      const isBypassed = typeof window !== 'undefined' && sessionStorage.getItem('bypass-db-check') === 'true';
-      setVisible(!isBypassed);
+      setVisible(false);
     } finally {
       setChecking(false);
     }

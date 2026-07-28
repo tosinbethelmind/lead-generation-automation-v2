@@ -666,6 +666,10 @@ export default function Home() {
           setStats(statsData);
         }
       }
+      // If scraping is currently active or jobs are in progress, refresh leads table live
+      if (scraping || activeJobs.length > 0) {
+        fetchLeads();
+      }
     } catch (_) {}
 
     try {
@@ -2044,6 +2048,8 @@ export default function Home() {
                   } else if (job.status === 'running') {
                     const completedCount = queuedJobIds.length - activeJobs.size;
                     setStatusMessage(`Scraping progress: ${completedCount}/${queuedJobIds.length} completed. (Running job ${jobId.substring(0, 8)}...)`);
+                    fetchLeads();
+                    fetchStats();
                   }
                 }
               }
@@ -2083,6 +2089,8 @@ export default function Home() {
               } else if (status === 'running') {
                 const completedCount = queuedJobIds.length - activeJobs.size;
                 setStatusMessage(`Scraping progress: ${completedCount}/${queuedJobIds.length} completed. (Running job ${jobId.substring(0, 8)}...)`);
+                fetchLeads();
+                fetchStats();
               }
             } catch (_) {}
           });
@@ -2092,11 +2100,13 @@ export default function Home() {
               const newLines: any[] = JSON.parse(e.data);
               if (newLines.length > 0) {
                 const last = newLines[newLines.length - 1];
-                const [runId, , step, , status, message] = last;
+                const [runId, , step, , status, message] = Array.isArray(last) ? last : ['', '', last.step, '', last.status, last.message];
                 const completedCount = queuedJobIds.length - activeJobs.size;
                 setStatusMessage(
                   `Scraping (${completedCount}/${queuedJobIds.length} done) | [${runId ?? ''}] [${step ?? ''}/${status ?? ''}] ${message ?? ''}`
                 );
+                fetchLeads();
+                fetchStats();
               }
             } catch (_) {}
           });

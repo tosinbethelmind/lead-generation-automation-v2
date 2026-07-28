@@ -193,7 +193,22 @@ async function runMasterLagosHarvester(dryRun = false) {
         .upsert(chunk, { onConflict: 'lead_id', ignoreDuplicates: true });
 
       if (error) {
-        console.error('Batch insert error:', error.message);
+        console.error('Batch insert error:', error.message, 'Saving to Local JSON DB fallback...');
+        try {
+          const localDbPath = path.join(process.cwd(), 'local_db', 'leads_db.json');
+          let existingLeads = [];
+          if (fs.existsSync(localDbPath)) {
+            existingLeads = JSON.parse(fs.readFileSync(localDbPath, 'utf8') || '[]');
+          }
+          const existingIds = new Set(existingLeads.map(l => l.lead_id));
+          const uniqueLeads = chunk.filter(l => !existingIds.has(l.lead_id));
+          existingLeads.push(...uniqueLeads);
+          fs.writeFileSync(localDbPath, JSON.stringify(existingLeads, null, 2), 'utf8');
+          totalHarvested += uniqueLeads.length;
+          console.log(`✓ Inserted batch of ${uniqueLeads.length} leads into local JSON DB fallback.`);
+        } catch (localErr) {
+          console.error('Local JSON fallback error:', localErr.message);
+        }
       } else {
         totalHarvested += chunk.length;
         console.log(`✓ Inserted batch ${Math.floor(i / chunkSize) + 1} (${chunk.length} leads).`);

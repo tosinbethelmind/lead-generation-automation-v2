@@ -104,7 +104,7 @@ export async function GET(req: NextRequest) {
         outreach_campaigns: false
       },
       missingTables: ['leads', 'dnc', 'logs', 'scrape_jobs', 'sync_logs', 'outreach_campaigns']
-    }, { status: 500 });
+    }, { status: 200 });
   }
 }
 

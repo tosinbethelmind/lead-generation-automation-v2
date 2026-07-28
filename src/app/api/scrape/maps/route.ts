@@ -32,8 +32,13 @@ export async function POST(req: NextRequest) {
     // If no Google Places API Key is present, delegate directly to the zero-cost maps-free route for live SERP leads
     if (!hasApiKey && !isSandbox) {
       await addLog('Google Maps Scraper', 'INFO', `No Google Places API key found. Seamlessly delegating to Maps-Free engine for query: "${query}"`);
+      const forwardReq = new NextRequest(req.url, {
+        method: 'POST',
+        headers: req.headers,
+        body: JSON.stringify(body)
+      });
       const { POST: mapsFreePOST } = await import('../maps-free/route');
-      return mapsFreePOST(req);
+      return mapsFreePOST(forwardReq);
     }
     
     if (isSandbox) {

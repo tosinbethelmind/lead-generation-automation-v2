@@ -391,11 +391,11 @@ async function runNigeriaSolar5kPipeline() {
     console.log('🌐 Polling geospatial & live web directory sources across 36 states + FCT Abuja (Bounded Concurrency Pool)...');
     await logToSupabase(runId, `🌐 Polling geospatial & live web directory sources across 36 states + FCT Abuja...`);
     
-    const BATCH_SIZE_STATE = 6;
+    const BATCH_SIZE_STATE = 12;
     for (let i = 0; i < NIGERIAN_STATES.length; i += BATCH_SIZE_STATE) {
       const stateBatch = NIGERIAN_STATES.slice(i, i + BATCH_SIZE_STATE);
       const batchNames = stateBatch.map(s => s.state).join(', ');
-      console.log(`   [Live Parallel Sweep] Polling state batch ${Math.floor(i / BATCH_SIZE_STATE) + 1}: ${batchNames}...`);
+      console.log(`   [Live Parallel Sweep] Polling high-speed state batch ${Math.floor(i / BATCH_SIZE_STATE) + 1}: ${batchNames}...`);
 
       const batchResults = await Promise.allSettled(stateBatch.map(async (st) => {
         const ddgLeads = await fetchDuckDuckGoSolarLeads(st, allLeads.length);
@@ -411,7 +411,7 @@ async function runNigeriaSolar5kPipeline() {
         }
       });
 
-      await new Promise(r => setTimeout(r, 150));
+      await new Promise(r => setTimeout(r, 20));
     }
   }
 
@@ -481,8 +481,23 @@ async function runNigeriaSolar5kPipeline() {
 
           if (error) {
             if (attempts >= 3) {
-              console.error(`   ❌ Database batch error (Attempt ${attempts}): ${error.message}`);
+              console.error(`   ❌ Database batch error (Attempt ${attempts}): ${error.message}. Saving to Local JSON DB fallback...`);
               await logToSupabase(runId, `❌ Database batch error: ${error.message}`, 'error');
+              try {
+                const localDbPath = path.join(process.cwd(), 'local_db', 'leads_db.json');
+                let existingLeads = [];
+                if (fs.existsSync(localDbPath)) {
+                  existingLeads = JSON.parse(fs.readFileSync(localDbPath, 'utf8') || '[]');
+                }
+                const newIds = new Set(existingLeads.map(l => l.lead_id));
+                const uniqueLeads = leadsChunk.filter(l => !newIds.has(l.lead_id));
+                existingLeads.push(...uniqueLeads);
+                fs.writeFileSync(localDbPath, JSON.stringify(existingLeads, null, 2), 'utf8');
+                totalInserted += uniqueLeads.length;
+                console.log(`   ✓ Saved ${uniqueLeads.length} leads to local JSON DB fallback.`);
+              } catch (localErr) {
+                console.error(`   ❌ Local fallback save failed: ${localErr.message}`);
+              }
             } else {
               await new Promise(r => setTimeout(r, 1000 * attempts));
             }

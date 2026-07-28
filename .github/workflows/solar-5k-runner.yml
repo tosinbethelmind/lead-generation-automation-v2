@@ -2,8 +2,8 @@ name: ApexReach Nigeria Solar Pipeline Runner — 100% Real Leads
 
 on:
   schedule:
-    # Run every 20 minutes for continuous solar lead generation
-    - cron: '*/20 * * * *'
+    # Run every 6 hours for continuous lead generation
+    - cron: '0 */6 * * *'
   workflow_dispatch:
     inputs:
       mode:

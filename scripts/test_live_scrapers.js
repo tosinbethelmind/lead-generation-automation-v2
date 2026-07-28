@@ -11,8 +11,8 @@
  *   BASE_URL=http://localhost:3005 node scripts/test_live_scrapers.js
  */
 
-let BASE_URL = 'https://lead-generation-automation-ecru.vercel.app';
-const TIMEOUT_MS = 90000; // allow up to 90s for comprehensive Puppeteer runs
+let BASE_URL = process.env.BASE_URL || 'https://lead-generation-automation-v2-sigma.vercel.app';
+const TIMEOUT_MS = 90000; // allow up to 90s for comprehensive runs
 
 // ANSI colour helpers
 const GREEN  = (s) => `\x1b[32m${s}\x1b[0m`;
