@@ -3507,7 +3507,7 @@ export default function Home() {
                   if (data.success) {
                     addToast(data.message || `⚡ Turbo harvest added +${data.added} leads!`, 'success');
                   } else {
-                    addToast(data.error || 'Turbo harvest cycle finished.', 'warning');
+                    addToast(data.error || 'Turbo harvest cycle finished.', 'info');
                   }
                   checkRunnerStatus();
                 } catch (err: any) {
