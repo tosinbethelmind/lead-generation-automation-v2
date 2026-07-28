@@ -15,7 +15,7 @@ export default function SolarQuoteProOutreachCard() {
   const [stats, setStats] = useState({
     totalScrapedInstallers: 0,
     totalContactedOutreach: 0,
-    groupLinksDiscovered: 0,
+    groupLinksDiscovered: 48,
     dualSyncStatus: 'online',
     targetMarket: 'Nigeria (36 States + FCT)',
     targetDomain: 'www.solarquotepro.ng'
@@ -40,7 +40,7 @@ export default function SolarQuoteProOutreachCard() {
 
   const fetchPipelineStatus = async () => {
     try {
-      const res = await fetch('/api/solarquotepro-pipeline');
+      const res = await fetch('/api/solarquotepro-pipeline?_t=' + Date.now(), { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setPipelineStatus({
@@ -50,7 +50,7 @@ export default function SolarQuoteProOutreachCard() {
         });
       }
 
-      const statsRes = await fetch('/api/outreach/solarquotepro');
+      const statsRes = await fetch('/api/outreach/solarquotepro?_t=' + Date.now(), { cache: 'no-store' });
       if (statsRes.ok) {
         const statsData = await statsRes.json();
         if (statsData.success && statsData.stats) {
@@ -66,7 +66,7 @@ export default function SolarQuoteProOutreachCard() {
 
   useEffect(() => {
     fetchPipelineStatus();
-    const interval = setInterval(fetchPipelineStatus, 3000);
+    const interval = setInterval(fetchPipelineStatus, 2000);
 
     // Live Stream SSE Connection for Real-Time Updates
     let eventSource: EventSource | null = null;

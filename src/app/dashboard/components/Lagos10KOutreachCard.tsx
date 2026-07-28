@@ -25,12 +25,14 @@ export default function Lagos10KOutreachCard() {
   const [dailyQuota, setDailyQuota] = useState(2000);
   const [message, setMessage] = useState<string | null>(null);
 
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(false);
 
   const fetchLagosStatus = async (triggerHarvest = false) => {
     try {
-      const url = triggerHarvest ? '/api/outreach/lagos10k?refresh=true' : '/api/outreach/lagos10k';
-      const res = await fetch(url);
+      const url = triggerHarvest 
+        ? '/api/outreach/lagos10k?refresh=true&_t=' + Date.now() 
+        : '/api/outreach/lagos10k?_t=' + Date.now();
+      const res = await fetch(url, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (data.stats) {
@@ -50,8 +52,8 @@ export default function Lagos10KOutreachCard() {
   };
 
   useEffect(() => {
-    fetchLagosStatus(true);
-    const interval = setInterval(() => fetchLagosStatus(false), 3000);
+    fetchLagosStatus(false);
+    const interval = setInterval(() => fetchLagosStatus(false), 2000);
 
     // Live Stream SSE Connection for Real-Time Updates
     let eventSource: EventSource | null = null;

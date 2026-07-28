@@ -424,7 +424,7 @@ export async function harvestLiveSolarLeads(): Promise<{ added: number; totalSol
 
     // Accelerated Parallel Matrix: State Queries + Jiji + BusinessList + DDG + Multi-Channel Social (IG, FB, LI, TT)
     const shuffled = [...NIGERIAN_SOLAR_CITIES].sort(() => Math.random() - 0.5);
-    const selectedCities = shuffled.slice(0, 4);
+    const selectedCities = shuffled.slice(0, 12);
 
     const parallelTasks: Promise<any[]>[] = [
       fetchApifyLiveLeads(selectedCities[0] ? selectedCities[0].q : 'solar installer Lagos', 'solar_nigeria_5k'),
@@ -546,9 +546,9 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
   try {
     const supabase = getSupabaseClient();
 
-    // Accelerated Parallel Matrix: 6 Random LGA Queries + BusinessList + Jiji Commercial Merchants
+    // Accelerated Parallel Matrix: 12 Random LGA Queries + Outscraper + BusinessList + Jiji Commercial Merchants
     const shuffledLgas = [...LAGOS_LGA_QUERIES].sort(() => Math.random() - 0.5);
-    const selectedLgas = shuffledLgas.slice(0, 6);
+    const selectedLgas = shuffledLgas.slice(0, 24);
 
     const shuffledBizCats = [...BIZLIST_LAGOS_CATEGORIES].sort(() => Math.random() - 0.5);
     const bizCat1 = shuffledBizCats[0];
@@ -563,9 +563,10 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
 
     const parallelTasks: Promise<any[]>[] = [
       fetchApifyLiveLeads(jijiQuery1, 'lagos_10k_b2b'),
+      fetchOutscraperLeads(jijiQuery1, 'lagos_10k_b2b', 15),
       fetchOverpassLagosBulkLeads(),
       ...selectedLgas.map(l => fetchNominatimSearch(l.q)),
-      fetchGoogleMapsInternalJson('dentist Ikeja Lagos', 8),
+      fetchGoogleMapsInternalJson('dentist Ikeja Lagos', 12),
       fetchGoogleDorkLeads('hotel Ikeja', 'Hospitality & Hotel'),
       fetchBingSerpLeads('logistics company Lagos', 'Logistics & Commercial'),
       fetchFinelibLeads('hotel', 'Lagos'),

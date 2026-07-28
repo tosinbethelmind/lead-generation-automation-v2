@@ -7,6 +7,7 @@ import { harvestLiveSolarLeads } from '@/lib/liveLeadHarvester';
 
 export const maxDuration = 30;
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const supabase = getSupabaseClient();
 
@@ -114,9 +115,11 @@ export async function GET(req?: Request) {
       console.warn('[SolarAPI] Status fetch fallback warn:', err.message);
     }
 
+    const headers = { 'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0' };
+
     return NextResponse.json({
       success: true,
-      pipeline: 'SolarQuotePro Dedicated Isolated Pipeline',
+      pipeline: 'SolarQuotePro Solar Engine',
       isRunning,
       pid: isRunning ? (pid || 9421) : null,
       latestLogs,
@@ -131,7 +134,7 @@ export async function GET(req?: Request) {
         lastUpdatedTime: getLagosTimeString() + ' WAT'
       },
       mode: '24/7 Non-Stop Cloud Engine + Local Hybrid Runner'
-    });
+    }, { headers });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

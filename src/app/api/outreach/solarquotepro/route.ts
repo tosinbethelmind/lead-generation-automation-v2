@@ -10,20 +10,59 @@ export function getLagosTimeString(date: Date = new Date()): string {
   return date.toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos', hour12: true });
 }
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
-    // 1. Fetch total solar leads (strictly solarquotepro_v1 or solar_5k_pipeline)
-    const { count: totalSolarLeads } = await (supabase as any)
-      .from('leads')
-      .select('*', { count: 'exact', head: true })
-      .or('category.ilike.%solar%,category.ilike.%inverter%,category.ilike.%renewable%,name.ilike.%solar%,name.ilike.%inverter%,query.ilike.%solar%,query.ilike.%inverter%,source_query_or_seed.ilike.%solar%,source_query_or_seed.ilike.%inverter%,business_summary.ilike.%solar%');
+    const headers = { 'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0' };
+
+    const withTimeout = (promise: Promise<any>, timeoutMs = 1000) => 
+      Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs))
+      ]);
+
+    // 1. Fetch total solar leads
+    let totalSolarLeadsCount = 0;
+    try {
+      const res: any = await withTimeout((supabase as any)
+        .from('leads')
+        .select('*', { count: 'exact', head: true })
+        .or('category.ilike.%solar%,category.ilike.%inverter%,category.ilike.%renewable%,name.ilike.%solar%,name.ilike.%inverter%,query.ilike.%solar%,query.ilike.%inverter%,source_query_or_seed.ilike.%solar%,source_query_or_seed.ilike.%inverter%,business_summary.ilike.%solar%'));
+      if (typeof res?.count === 'number') totalSolarLeadsCount = res.count;
+    } catch (_) {}
+
+    // Read local_db/leads_db.json as fallback
+    let localSolarCount = 0;
+    try {
+      const localDbPath = path.join(process.cwd(), 'local_db', 'leads_db.json');
+      const tmpDbPath = path.join('/tmp', 'leads_db.json');
+      const targetPath = fs.existsSync(localDbPath) ? localDbPath : (fs.existsSync(tmpDbPath) ? tmpDbPath : null);
+      if (targetPath) {
+        const raw = fs.readFileSync(targetPath, 'utf8');
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          localSolarCount = parsed.filter((l: any) => {
+            const blob = `${l.category || ''} ${l.name || ''} ${l.source_query_or_seed || ''} ${l.business_summary || ''}`.toLowerCase();
+            return blob.includes('solar') || blob.includes('inverter') || blob.includes('renewable');
+          }).length;
+        }
+      }
+    } catch (_) {}
+
+    const resolvedSolarCount = Math.max(totalSolarLeadsCount, localSolarCount);
 
     // 2. Fetch contacted solar installer outreach count
-    const { count: totalContacted } = await (supabase as any)
-      .from('leads')
-      .select('*', { count: 'exact', head: true })
-      .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%,business_summary.ilike.%solar%,notes.ilike.%solar%')
-      .eq('status', 'CONTACTED');
+    let totalContacted = 0;
+    try {
+      const res: any = await withTimeout((supabase as any)
+        .from('leads')
+        .select('*', { count: 'exact', head: true })
+        .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%,business_summary.ilike.%solar%,notes.ilike.%solar%')
+        .eq('status', 'CONTACTED'));
+      if (typeof res?.count === 'number') totalContacted = res.count;
+    } catch (_) {}
 
     // 3. Count scraped public installer group links
     let groupLinksCount = 0;
@@ -39,7 +78,7 @@ export async function GET() {
       success: true,
       pipeline: 'SolarQuotePro Solar Engine',
       stats: {
-        totalScrapedInstallers: typeof totalSolarLeads === 'number' ? totalSolarLeads : 0,
+        totalScrapedInstallers: resolvedSolarCount,
         totalContactedOutreach: totalContacted || 0,
         groupLinksDiscovered: groupLinksCount,
         dualSyncStatus: 'online',
@@ -47,7 +86,7 @@ export async function GET() {
         targetDomain: 'www.solarquotepro.ng',
         lastUpdatedTime: getLagosTimeString() + ' WAT'
       }
-    });
+    }, { headers });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

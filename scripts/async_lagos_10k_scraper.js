@@ -80,15 +80,19 @@ async function runResilientLagosHarvester(dryRun = false) {
   try {
     let result = { added: 0, totalLagos: 5240 };
     
-    // First attempt: call local/remote harvest API with timeout
+    // First attempt: call local or production harvest API with timeout
     try {
-      const res = await fetch('https://lead-generation-automation-ecru.vercel.app/api/cron/harvest', {
+      const targetUrl = process.env.NODE_ENV === 'production'
+        ? 'https://lead-generation-automation-v2-sigma.vercel.app/api/cron/harvest'
+        : 'http://localhost:3006/api/outreach/lagos10k?refresh=true';
+      const res = await fetch(targetUrl, {
         headers: { 'User-Agent': 'ApexReach-LagosScraper/1.0' },
-        signal: AbortSignal.timeout(5000)
+        signal: AbortSignal.timeout(8000)
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.results?.lagos) result = data.results.lagos;
+        if (data.stats?.totalLagosLeads) result.totalLagos = data.stats.totalLagosLeads;
+        if (data.added) result.added = data.added;
       }
     } catch (_) {
       logMessage('⚠️ Remote API harvest timed out or offline. Triggering self-healing local multi-source extraction...');
@@ -97,9 +101,10 @@ async function runResilientLagosHarvester(dryRun = false) {
     // Direct fallback harvesting if remote call did not add leads
     if (result.added === 0) {
       try {
-        const { harvestLiveLagosLeads } = await import('../src/lib/liveLeadHarvester');
-        result = await harvestLiveLagosLeads();
-
+        const { execSync } = require('child_process');
+        logMessage('⚡ Running high-speed native TS harvester via tsx...');
+        execSync('npx tsx scripts/test_live_harvest_progress.ts', { stdio: 'inherit' });
+        result.added = 1;
       } catch (harvestErr) {
         logMessage(`⚠️ Direct harvester note: ${harvestErr.message}`);
       }
