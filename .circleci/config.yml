@@ -11,9 +11,17 @@ jobs:
     executor: node-browser-executor
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-leadgen-deps-{{ checksum "package-lock.json" }}
+            - v1-leadgen-deps-
       - run:
-          name: Install Dependencies
-          command: npm install --no-audit --no-fund
+          name: Install Dependencies (Cached)
+          command: npm install --no-audit --no-fund --prefer-offline
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-leadgen-deps-{{ checksum "package-lock.json" }}
       - run:
           name: Install Playwright Chromium
           command: npx playwright install chromium || true
@@ -35,9 +43,17 @@ jobs:
     executor: node-browser-executor
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-leadgen-deps-{{ checksum "package-lock.json" }}
+            - v1-leadgen-deps-
       - run:
-          name: Install Dependencies
-          command: npm install --no-audit --no-fund
+          name: Install Dependencies (Cached)
+          command: npm install --no-audit --no-fund --prefer-offline
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-leadgen-deps-{{ checksum "package-lock.json" }}
       - run:
           name: Install Playwright Chromium
           command: npx playwright install chromium || true
@@ -49,11 +65,10 @@ jobs:
 
 workflows:
   version: 2
-  # Run Lagos 10K Harvester every 6 hours automatically
   lagos-harvester-schedule:
     triggers:
       - schedule:
-          cron: "0 */6 * * *"
+          cron: "0 8,20 * * *" # Optimized: 2x daily
           filters:
             branches:
               only:
@@ -61,11 +76,10 @@ workflows:
     jobs:
       - lagos-10k-harvester
 
-  # Run Solar 5K Harvester every 12 hours automatically
   solar-harvester-schedule:
     triggers:
       - schedule:
-          cron: "0 */12 * * *"
+          cron: "0 14 * * *" # Optimized: 1x daily
           filters:
             branches:
               only:
