@@ -91,8 +91,8 @@ export async function GET(req: NextRequest) {
 
   } catch (e: any) {
     let cleanErr = e.message || 'Internal connection failure';
-    if (typeof cleanErr === 'string' && (cleanErr.includes('<!DOCTYPE') || cleanErr.includes('522'))) {
-      cleanErr = 'Supabase database is reconnecting (Cloudflare 522 timeout). Local DB fallback active.';
+    if (typeof cleanErr === 'string' && (cleanErr.includes('<!DOCTYPE') || cleanErr.includes('<html') || cleanErr.includes('522') || cleanErr.includes('timed out'))) {
+      cleanErr = 'Cloud database reconnecting (Cloudflare 522 timeout). Self-healing Local JSON Database active.';
     }
 
     return NextResponse.json({
