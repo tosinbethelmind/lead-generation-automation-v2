@@ -101,6 +101,14 @@ export async function GET(req?: Request) {
 
     // Read local_db/leads_db.json dynamically as instant high-speed count
     let localLagosCount = 0;
+    let localContactedCount = 0;
+    let localRealEstate = 42;
+    let localSchools = 47;
+    let localClinics = 101;
+    let localHotels = 163;
+    let localRetail = 119;
+    let localAuto = 60;
+
     try {
       const localDbPath = path.join(process.cwd(), 'local_db', 'leads_db.json');
       const tmpDbPath = path.join('/tmp', 'leads_db.json');
@@ -109,20 +117,38 @@ export async function GET(req?: Request) {
         const raw = fs.readFileSync(targetPath, 'utf8');
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          localLagosCount = parsed.filter((l: any) => !(l.category || '').toLowerCase().includes('solar')).length;
+          const lagosLeads = parsed.filter((l: any) => !(l.category || '').toLowerCase().includes('solar'));
+          localLagosCount = lagosLeads.length;
+          localContactedCount = parsed.filter((l: any) => l.status === 'CONTACTED' || l.last_contacted_at).length;
+          
+          localRealEstate = lagosLeads.filter((l: any) => /estate|property/i.test(l.category || '')).length;
+          localSchools = lagosLeads.filter((l: any) => /school|academy|college/i.test(l.category || '')).length;
+          localClinics = lagosLeads.filter((l: any) => /clinic|hospital|dental|health/i.test(l.category || '')).length;
+          localHotels = lagosLeads.filter((l: any) => /hotel|restaurant|lounge|dining/i.test(l.category || '')).length;
+          localRetail = lagosLeads.filter((l: any) => /boutique|store|retail|shop/i.test(l.category || '')).length;
+          localAuto = lagosLeads.filter((l: any) => /car|auto|motor|repair/i.test(l.category || '')).length;
+        }
+      }
+      
+      const logsDbPath = path.join(process.cwd(), 'local_db', 'logs_db.json');
+      if (fs.existsSync(logsDbPath) && localContactedCount === 0) {
+        const rawLogs = fs.readFileSync(logsDbPath, 'utf8');
+        const parsedLogs = JSON.parse(rawLogs);
+        if (Array.isArray(parsedLogs)) {
+          localContactedCount = parsedLogs.filter((l: any) => /outreach|contact|submitted/i.test(`${l.message || ''} ${l.step || ''}`)).length;
         }
       }
     } catch (_) {}
 
     // Parallel Live Lead Counts — Query exact Lagos B2B matching leads safely with 10s timeout
-    let totalLagosLeads = localLagosCount || 5240;
-    let totalContacted = 142;
-    let realEstateCount = 450;
-    let schoolsCount = 380;
-    let clinicsCount = 310;
-    let hotelsCount = 520;
-    let retailCount = 680;
-    let autoCount = 410;
+    let totalLagosLeads = localLagosCount;
+    let totalContacted = localContactedCount;
+    let realEstateCount = localRealEstate;
+    let schoolsCount = localSchools;
+    let clinicsCount = localClinics;
+    let hotelsCount = localHotels;
+    let retailCount = localRetail;
+    let autoCount = localAuto;
 
     try {
       const results = await Promise.allSettled([
@@ -146,7 +172,7 @@ export async function GET(req?: Request) {
       if (results[7].status === 'fulfilled' && typeof results[7].value?.count === 'number' && results[7].value.count > 0) autoCount = results[7].value.count;
     } catch (_) {}
 
-    const resolvedLagosCount = Math.max(totalLagosLeads, localLagosCount, liveLagosLeadsCount || 0, 5240);
+    const resolvedLagosCount = Math.max(totalLagosLeads, localLagosCount, liveLagosLeadsCount || 0);
 
     const headers = { 'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0' };
 
