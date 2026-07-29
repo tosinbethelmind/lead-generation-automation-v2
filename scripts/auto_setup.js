@@ -130,7 +130,7 @@ async function runAutoSetup() {
 
   // Update .env.local
   const envContent = `# Auto-generated Environment Variables by Setup Script
-STORAGE_MODE=supabase
+STORAGE_MODE=local
 NEXT_PUBLIC_SUPABASE_URL=${supabaseUrl}
 NEXT_PUBLIC_SUPABASE_ANON_KEY=${supabaseAnonKey}
 SUPABASE_SERVICE_ROLE_KEY=${supabaseServiceKey}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 import { getRuntimeConfig } from '@/lib/localConfig';
+import { isHtmlOrTimeoutError, cleanErrorMessage } from '@/lib/validation';
 
 export async function GET(req: NextRequest) {
   const config = getRuntimeConfig();
@@ -52,10 +53,7 @@ export async function GET(req: NextRequest) {
             break;
           }
 
-          const isTimeout = error.message?.includes('timeout') || 
-                            error.message?.includes('522') || 
-                            error.message?.includes('504') || 
-                            !error.code;
+          const isTimeout = isHtmlOrTimeoutError(error);
 
           if (isTimeout && attempt === 1) {
             // Small wait before retry
@@ -90,8 +88,8 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (e: any) {
-    let cleanErr = e.message || 'Internal connection failure';
-    if (typeof cleanErr === 'string' && (cleanErr.includes('<!DOCTYPE') || cleanErr.includes('<html') || cleanErr.includes('522') || cleanErr.includes('timed out'))) {
+    let cleanErr = cleanErrorMessage(e);
+    if (isHtmlOrTimeoutError(e)) {
       cleanErr = 'Cloud database reconnecting (Cloudflare 522 timeout). Self-healing Local JSON Database active.';
     }
 
@@ -112,4 +110,5 @@ export async function GET(req: NextRequest) {
     }, { status: 200 });
   }
 }
+
 

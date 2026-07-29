@@ -11,6 +11,7 @@ import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 import { normalizePhone, extractPhonesFromText } from './googleSheets';
 import { extractEmailsFromText, verifyEmailAddress } from './leadEnricher';
+import { fetchSERPWithFallback, fetchWithAntiBotProxy, providerRotator } from './multiProviderRotator';
 
 export interface DirectoryLead {
   lead_id: string;
@@ -59,7 +60,6 @@ function isShareOrSocialUrl(url: string): boolean {
          lower.includes('utm_source=facebook');
 }
 
-import { providerRotator, fetchWithAntiBotProxy } from './multiProviderRotator';
 
 /**
  * Scrape High-Fidelity Business Leads via Outscraper Google Maps API (Rotated Keys)
@@ -291,28 +291,15 @@ export async function fetchGoogleDorkLeads(query: string, category = 'General B2
       `site:ng.linkedin.com/in "${query}" "Lagos"`,
     ];
     const selectedDork = dorks[Math.floor(Math.random() * dorks.length)];
-    const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(selectedDork)}`;
+    const serpResults = await fetchSERPWithFallback(selectedDork, 10);
 
-    const resp = await fetch(searchUrl, {
-      headers: {
-        'User-Agent': getRandomUserAgent(),
-        'Accept': 'text/html',
-      },
-      signal: AbortSignal.timeout(4000),
-    });
-
-    if (!resp.ok) return [];
-    const html = await resp.text();
-    const $ = cheerio.load(html);
     const leads: DirectoryLead[] = [];
+    for (const item of serpResults) {
+      const title = item.title || '';
+      const snippet = item.snippet || '';
+      const href = item.link || '';
 
-    $('.result').each((i, el) => {
-      if (leads.length >= 10) return;
-      const title = $(el).find('.result__title').text().trim();
-      const snippet = $(el).find('.result__snippet').text().trim();
-      const href = $(el).find('.result__url').attr('href') || '';
-
-      if (!title || title.length < 4) return;
+      if (!title || title.length < 4) continue;
 
       const phones = extractPhonesFromText(`${title} ${snippet}`);
       const emails = extractEmailsFromText(`${title} ${snippet}`);
@@ -346,7 +333,7 @@ export async function fetchGoogleDorkLeads(query: string, category = 'General B2
         business_summary: `${cleanName} — Direct intent B2B prospect from Google Dork search.`,
         notes: `Extracted via Google Dorking search (${selectedDork})`,
       });
-    });
+    }
 
     return leads;
   } catch (_) {

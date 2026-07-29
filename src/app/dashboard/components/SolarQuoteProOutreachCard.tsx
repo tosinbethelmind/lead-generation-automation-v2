@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Send, CheckCircle, RefreshCw, Layers, ShieldCheck, Globe, Users, ShoppingBag, Mail, Play, Square } from 'lucide-react';
+import { cleanErrorMessage } from '@/lib/validation';
 
 export default function SolarQuoteProOutreachCard() {
+
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
   const [pipelineStatus, setPipelineStatus] = useState<{ isRunning: boolean; pid: number | null; latestLogs: string[] }>({
@@ -375,7 +377,7 @@ export default function SolarQuoteProOutreachCard() {
 
         {message && (
           <span style={{ fontSize: '0.85rem', fontWeight: 600, color: message.startsWith('🚀') || message.startsWith('⏹️') ? '#34d399' : '#f87171' }}>
-            {message.includes('<!DOCTYPE') || message.includes('<html') || message.includes('Error code 522') ? '❌ Execution Error: Database query connection timed out (Cloudflare 522)' : message.replace(/<[^>]*>?/gm, '')}
+            {cleanErrorMessage(message)}
           </span>
         )}
       </div>
@@ -385,9 +387,7 @@ export default function SolarQuoteProOutreachCard() {
         <div style={{ marginTop: '16px', background: 'rgba(0,0,0,0.4)', borderRadius: '8px', padding: '10px 14px', fontSize: '0.75rem', fontFamily: 'monospace', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.05)' }}>
           <div style={{ fontWeight: 700, color: '#cbd5e1', marginBottom: '6px' }}>📋 Isolated Process Log Tail:</div>
           {pipelineStatus.latestLogs.slice(0, 4).map((logLine, idx) => {
-            const cleanLine = (logLine.includes('<!DOCTYPE') || logLine.includes('<html') || logLine.includes('Error code 522'))
-              ? '⚠️ [Network Retry] Supabase query connection timed out (Cloudflare 522).'
-              : logLine.replace(/<[^>]*>?/gm, '');
+            const cleanLine = cleanErrorMessage(logLine);
             return (
               <div key={idx} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cleanLine}</div>
             );

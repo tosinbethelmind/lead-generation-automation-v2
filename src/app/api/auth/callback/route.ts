@@ -72,22 +72,36 @@ export async function GET(req: NextRequest) {
     }
 
     // Persist Antigravity key alongside Google tokens
-    const isNewAccount = !!(config.googleUserEmail && userData.email && userData.email !== config.googleUserEmail);
-    const finalRefreshToken = tokenData.refresh_token || (isNewAccount ? '' : config.googleRefreshToken);
+    const finalRefreshToken = tokenData.refresh_token || config.googleRefreshToken || '';
 
-    if (!finalRefreshToken) {
-      console.error('[OAuth Callback] Missing refresh token for account:', userData.email);
-      return handleError('missing_refresh_token_reauth_required');
-    }
-
-    saveLocalConfig({
+    const newTokens: Record<string, any> = {
       googleAccessToken: tokenData.access_token,
-      googleRefreshToken: finalRefreshToken,
       googleTokenExpiry: tokenData.expires_in ? Date.now() + tokenData.expires_in * 1000 : 0,
       googleUserEmail: userData.email || '',
       antigravityApiKey: antigravityKey || config.antigravityApiKey,
       ...(projectId ? { googleProjectId: projectId } : {}),
-    });
+    };
+    if (finalRefreshToken) {
+      newTokens.googleRefreshToken = finalRefreshToken;
+    }
+
+    const updatedConfig = saveLocalConfig(newTokens);
+
+    // Sync to Supabase app_settings for cloud deployments & serverless resilience
+    try {
+      const { supabase } = await import('@/lib/supabaseClient');
+      if (supabase) {
+        await supabase
+          .from('app_settings')
+          .upsert({
+            key: 'apexreach_runtime_config',
+            value: JSON.stringify(updatedConfig),
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'key' });
+      }
+    } catch (syncErr: any) {
+      console.warn('[OAuth Callback] Note: Cloud settings sync warning:', syncErr.message);
+    }
 
     if (useClaspRedirect) {
       return NextResponse.json({ success: true, email: userData.email });

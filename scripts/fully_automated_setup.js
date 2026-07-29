@@ -66,7 +66,7 @@ async function runFullyAutomatedSetup() {
   });
 
   // Ensure default environment values are set to prevent errors
-  process.env.STORAGE_MODE = process.env.STORAGE_MODE || envVars.STORAGE_MODE || 'supabase';
+  process.env.STORAGE_MODE = process.env.STORAGE_MODE || envVars.STORAGE_MODE || 'local';
   process.env.DRY_RUN = process.env.DRY_RUN || envVars.DRY_RUN || 'true';
   process.env.BUSINESS_SIGNATURE = process.env.BUSINESS_SIGNATURE || envVars.BUSINESS_SIGNATURE || 'ApexReach';
 

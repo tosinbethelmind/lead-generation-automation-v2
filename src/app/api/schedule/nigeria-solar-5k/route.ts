@@ -24,7 +24,7 @@ export async function GET() {
       targetDailyQuota: config.nigeriaSolarDailyTarget || 2500,
       leadSourceTag: 'solar_nigeria_5k',
       regionsCovered: 'All 36 States of Nigeria + FCT Abuja',
-      activeRunnerBackend: config.activeRunnerBackend || 'github_actions',
+      activeRunnerBackend: config.activeRunnerBackend || 'huggingface',
       recentJobs
     });
   } catch (err: any) {

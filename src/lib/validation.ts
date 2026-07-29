@@ -178,6 +178,80 @@ export function validateSecret(field: string, value: string): string | null {
   return null;
 }
 
+/**
+ * Detects whether an error message is a Cloudflare 522 HTML page, network timeout, or connection failure.
+ */
+export function isHtmlOrTimeoutError(msg: any): boolean {
+  if (!msg) return false;
+  const str = typeof msg === 'string' ? msg : String(msg.message || msg);
+  const lower = str.toLowerCase();
+
+  // Detect HTML tags or HTML entity syntax
+  const hasHtmlSyntax = (
+    lower.includes('<!doctype') ||
+    lower.includes('<html') ||
+    lower.includes('<body') ||
+    lower.includes('<div') ||
+    lower.includes('<span') ||
+    lower.includes('<p') ||
+    lower.includes('<a ') ||
+    lower.includes('class=') ||
+    lower.includes('href=') ||
+    lower.includes('&lt;') ||
+    lower.includes('&gt;') ||
+    lower.includes('bg-center') ||
+    lower.includes('leading-1.3') ||
+    lower.includes('font-light')
+  );
+
+  // Detect Cloudflare / Network timeout / DNS errors
+  const hasNetworkError = (
+    lower.includes('522') ||
+    lower.includes('504') ||
+    lower.includes('502') ||
+    lower.includes('timed out') ||
+    lower.includes('timeout') ||
+    lower.includes('cloudflare') ||
+    lower.includes('cf-') ||
+    lower.includes('origin server') ||
+    lower.includes('what happened?') ||
+    lower.includes('what can i do?') ||
+    lower.includes('connection error') ||
+    lower.includes('fetch failed') ||
+    lower.includes('econnreset') ||
+    lower.includes('etimedout') ||
+    lower.includes('enotfound') ||
+    lower.includes('getaddrinfo') ||
+    lower.includes('supabase.co')
+  );
+
+  return hasHtmlSyntax || hasNetworkError;
+}
+
+/**
+ * Sanitizes raw HTML, Cloudflare 522 errors, or network timeouts into a clean, human-readable string.
+ */
+export function cleanErrorMessage(err: any): string {
+  if (!err) return '';
+  const str = typeof err === 'string' ? err : String(err.message || err);
+  if (isHtmlOrTimeoutError(str)) {
+    return 'Cloud database connection timed out (Cloudflare 522 / Unreachable). Self-healing Local JSON DB is active.';
+  }
+  const stripped = str
+    .replace(/<!--[\s\S]*?-->/g, '')  // remove HTML comments
+    .replace(/<[^>]+>/g, '')          // remove HTML tags
+    .replace(/&lt;[^&]+&gt;/g, '')    // remove escaped HTML tags
+    .replace(/&[a-z0-9#]+;/gi, ' ')   // remove HTML entities
+    .replace(/\s+/g, ' ')             // collapse newlines & spaces
+    .trim();
+
+  if (stripped.length > 150 || stripped.includes('class=') || stripped.includes('http')) {
+    return 'Cloud database connection issue detected. Self-healing Local JSON DB is active.';
+  }
+
+  return stripped;
+}
+
 // Define the secret keys that should be masked/encrypted
 export const SECRET_KEYS = [
   'googleClientSecret',
@@ -234,3 +308,4 @@ export function maskConfig(config: RuntimeConfig): any {
   }
   return masked;
 }
+

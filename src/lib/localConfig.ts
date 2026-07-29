@@ -157,6 +157,13 @@ export interface LocalConfig {
   outscraperApiKeys?: string[];
   scrapingBeeApiKeys?: string[];
   serpApiKeys?: string[];
+  serperApiKeys?: string[];
+  googleCseApiKeys?: string[];
+  googleCseEngineId?: string;
+  scrapingAntApiKeys?: string[];
+  scraperApiKeys?: string[];
+  scrapeOpsApiKeys?: string[];
+  firecrawlApiKeys?: string[];
   webshareProxies?: string[];
   useTorProxy?: boolean;
   torProxyUrl?: string;
@@ -330,7 +337,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   activeBrowserProvider: 'rotation',
   browserProviderRotation: 'round-robin',
   teamMembers: [],
-  activeRunnerBackend: 'github_actions',
+  activeRunnerBackend: 'huggingface',
   hfToken: '',
   spaceName: '',
   githubToken: '',
@@ -541,6 +548,13 @@ export function getRuntimeConfig(): RuntimeConfig {
     outscraperApiKeys: process.env.OUTSCRAPER_API_KEYS ? process.env.OUTSCRAPER_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.outscraperApiKeys || DEFAULT_CONFIG.outscraperApiKeys),
     scrapingBeeApiKeys: process.env.SCRAPINGBEE_API_KEYS ? process.env.SCRAPINGBEE_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.scrapingBeeApiKeys || DEFAULT_CONFIG.scrapingBeeApiKeys),
     serpApiKeys: process.env.SERP_API_KEYS ? process.env.SERP_API_KEYS.split(',').map(s => s.trim()) : (fileConfig.serpApiKeys || DEFAULT_CONFIG.serpApiKeys),
+    serperApiKeys: process.env.SERPER_API_KEYS ? process.env.SERPER_API_KEYS.split(',').map(s => s.trim()) : (process.env.SERPER_API_KEY ? [process.env.SERPER_API_KEY.trim()] : (fileConfig.serperApiKeys || DEFAULT_CONFIG.serperApiKeys)),
+    googleCseApiKeys: process.env.GOOGLE_CSE_API_KEYS ? process.env.GOOGLE_CSE_API_KEYS.split(',').map(s => s.trim()) : (process.env.GOOGLE_CSE_API_KEY ? [process.env.GOOGLE_CSE_API_KEY.trim()] : (fileConfig.googleCseApiKeys || DEFAULT_CONFIG.googleCseApiKeys)),
+    googleCseEngineId: process.env.GOOGLE_CSE_ENGINE_ID || fileConfig.googleCseEngineId || DEFAULT_CONFIG.googleCseEngineId,
+    scrapingAntApiKeys: process.env.SCRAPINGANT_API_KEYS ? process.env.SCRAPINGANT_API_KEYS.split(',').map(s => s.trim()) : (process.env.SCRAPINGANT_API_KEY ? [process.env.SCRAPINGANT_API_KEY.trim()] : (fileConfig.scrapingAntApiKeys || DEFAULT_CONFIG.scrapingAntApiKeys)),
+    scraperApiKeys: process.env.SCRAPER_API_KEYS ? process.env.SCRAPER_API_KEYS.split(',').map(s => s.trim()) : (process.env.SCRAPER_API_KEY ? [process.env.SCRAPER_API_KEY.trim()] : (fileConfig.scraperApiKeys || DEFAULT_CONFIG.scraperApiKeys)),
+    scrapeOpsApiKeys: process.env.SCRAPEOPS_API_KEYS ? process.env.SCRAPEOPS_API_KEYS.split(',').map(s => s.trim()) : (process.env.SCRAPEOPS_API_KEY ? [process.env.SCRAPEOPS_API_KEY.trim()] : (fileConfig.scrapeOpsApiKeys || DEFAULT_CONFIG.scrapeOpsApiKeys)),
+    firecrawlApiKeys: process.env.FIRECRAWL_API_KEYS ? process.env.FIRECRAWL_API_KEYS.split(',').map(s => s.trim()) : (process.env.FIRECRAWL_API_KEY ? [process.env.FIRECRAWL_API_KEY.trim()] : (fileConfig.firecrawlApiKeys || DEFAULT_CONFIG.firecrawlApiKeys)),
     webshareProxies: process.env.WEBSHARE_PROXIES ? process.env.WEBSHARE_PROXIES.split(',').map(s => s.trim()) : (fileConfig.webshareProxies || DEFAULT_CONFIG.webshareProxies),
     useTorProxy: process.env.USE_TOR_PROXY === 'true' || fileConfig.useTorProxy || DEFAULT_CONFIG.useTorProxy,
     torProxyUrl: process.env.TOR_PROXY_URL || fileConfig.torProxyUrl || DEFAULT_CONFIG.torProxyUrl,

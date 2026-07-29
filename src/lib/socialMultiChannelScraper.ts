@@ -14,7 +14,7 @@ import crypto from 'crypto';
 import { normalizePhone, extractPhonesFromText } from './googleSheets';
 import { extractEmailsFromText } from './leadEnricher';
 import { validateLeadQuality } from './liveLeadHarvester';
-import { providerRotator, fetchWithAntiBotProxy } from './multiProviderRotator';
+import { providerRotator, fetchWithAntiBotProxy, fetchSERPWithFallback } from './multiProviderRotator';
 
 export type SocialPlatform = 'INSTAGRAM' | 'FACEBOOK' | 'LINKEDIN' | 'TIKTOK';
 
@@ -81,63 +81,54 @@ export async function fetchSocialMultiChannelLeads(
     // Zero-Cost Public Index Search Query
     const searchQuery = `site:${siteDomain} ${query} Nigeria (phone OR whatsapp OR contact OR email OR address OR store)`;
 
-    // Check SerpAPI multi-key rotator first
-    const serpKey = providerRotator.getSerpApiKey();
-    if (serpKey) {
-      try {
-        const serpUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(searchQuery)}&api_key=${serpKey}`;
-        const serpResp = await fetch(serpUrl, { signal: AbortSignal.timeout(10000) });
-        if (serpResp.ok) {
-          const serpData = await serpResp.json();
-          const organicResults = serpData.organic_results || [];
-          const leads: any[] = [];
+    // Multi-Provider Resilient SERP Search (Serper.dev -> Google Custom Search -> SerpAPI -> DuckDuckGo)
+    const organicResults = await fetchSERPWithFallback(searchQuery, 15);
+    if (organicResults && organicResults.length > 0) {
+      const leads: any[] = [];
+      for (const item of organicResults) {
+        const title = item.title || '';
+        const snippet = item.snippet || '';
+        const link = item.link || '';
+        const combinedText = `${title} ${snippet}`;
 
-          for (const item of organicResults) {
-            const title = item.title || '';
-            const snippet = item.snippet || '';
-            const link = item.link || '';
-            const combinedText = `${title} ${snippet}`;
+        const phones = extractPhonesFromText(combinedText);
+        const waInfo = extractWhatsAppLinks(combinedText);
+        const emails = extractEmailsFromText(combinedText);
+        const normPhone = waInfo.phone || (phones.length > 0 ? normalizePhone(phones[0], 'NG') : null);
 
-            const phones = extractPhonesFromText(combinedText);
-            const waInfo = extractWhatsAppLinks(combinedText);
-            const emails = extractEmailsFromText(combinedText);
-            const normPhone = waInfo.phone || (phones.length > 0 ? normalizePhone(phones[0], 'NG') : null);
+        if (!normPhone && emails.length === 0 && !waInfo.waUrl) continue;
 
-            if (!normPhone && emails.length === 0 && !waInfo.waUrl) continue;
+        const cleanHandle = link.split('/').pop() || title;
+        const hash = crypto.createHash('sha256').update(`social_serp_${platform}_${cleanHandle}`).digest('hex').substring(0, 16);
 
-            const cleanHandle = link.split('/').pop() || title;
-            const hash = crypto.createHash('sha256').update(`social_serp_${platform}_${cleanHandle}`).digest('hex').substring(0, 16);
+        leads.push({
+          lead_id: `social_${platform.toLowerCase()}_${hash}`,
+          source: platform === 'INSTAGRAM' ? 'INSTAGRAM' : (platform === 'FACEBOOK' ? 'FACEBOOK' : 'OTHER'),
+          name: title.replace(/\|.*/, '').replace(/-.*/, '').trim() || cleanHandle,
+          category: targetCategory,
+          address: 'Lagos, Nigeria',
+          area: 'Lagos',
+          city: 'Lagos',
+          phone_e164: normPhone || '',
+          phone_raw: phones[0] || '',
+          email: emails[0] || '',
+          website: waInfo.waUrl || link,
+          rating: 4.9,
+          reviews_count: 20,
+          verified: true,
+          listings_count: 1,
+          profile_url: link,
+          source_query_or_seed: seedTag,
+          collected_at: new Date().toISOString(),
+          status: 'NEW',
+          last_contacted_at: '',
+          duplicate_of_lead_id: '',
+          business_summary: snippet || `${platform} social merchant (${query}).`,
+          notes: `Enriched via Multi-Provider ${platform} SERP Dorker [${new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' })} WAT]`,
+        });
+      }
 
-            leads.push({
-              lead_id: `social_${platform.toLowerCase()}_${hash}`,
-              source: platform === 'INSTAGRAM' ? 'INSTAGRAM' : (platform === 'FACEBOOK' ? 'FACEBOOK' : 'OTHER'),
-              name: title.replace(/\|.*/, '').replace(/-.*/, '').trim() || cleanHandle,
-              category: targetCategory,
-              address: 'Lagos, Nigeria',
-              area: 'Lagos',
-              city: 'Lagos',
-              phone_e164: normPhone || '',
-              phone_raw: phones[0] || '',
-              email: emails[0] || '',
-              website: waInfo.waUrl || link,
-              rating: 4.9,
-              reviews_count: 20,
-              verified: true,
-              listings_count: 1,
-              profile_url: link,
-              source_query_or_seed: seedTag,
-              collected_at: new Date().toISOString(),
-              status: 'NEW',
-              last_contacted_at: '',
-              duplicate_of_lead_id: '',
-              business_summary: snippet || `${platform} social merchant (${query}).`,
-              notes: `Enriched via SerpAPI ${platform} Dorker [${new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' })} WAT]`,
-            });
-          }
-
-          if (leads.length > 0) return leads;
-        }
-      } catch (_) {}
+      if (leads.length > 0) return leads;
     }
 
     const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(searchQuery)}`;

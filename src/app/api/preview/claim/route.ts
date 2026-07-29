@@ -202,6 +202,9 @@ Bethelmind Analytics & Strategy Lead Engine`;
 
     // 7. Zero-Touch Auto-Provisioning Engine
     let provisionedUrl = '';
+    let subdomainUrl = '';
+    let handoverPortalUrl = '';
+    let dnsInstructions: any[] = [];
     try {
       const { autoProvisionClientSite } = await import('@/lib/autoProvision');
       const provisionRes = await autoProvisionClientSite({
@@ -215,12 +218,17 @@ Bethelmind Analytics & Strategy Lead Engine`;
         paymentMethod: paymentMethod || 'paystack'
       });
       provisionedUrl = provisionRes.liveUrl;
+      subdomainUrl = provisionRes.subdomainUrl;
+      handoverPortalUrl = provisionRes.handoverPortalUrl;
+      dnsInstructions = provisionRes.dnsInstructions || [];
     } catch (pErr: any) {
       console.warn('[ClaimRoute] Auto-provision warning:', pErr.message);
     }
 
     let userMessage = 'Website claimed successfully!';
-    if (provisionedUrl) {
+    if (subdomainUrl) {
+      userMessage = `Website claimed & provisioned live! Access your site at: ${subdomainUrl}`;
+    } else if (provisionedUrl) {
       userMessage = `Website claimed & provisioned live! Access your site at: ${provisionedUrl}`;
     } else if (githubCommitStatus === 'SUCCESS') {
       userMessage = 'Website claimed! Live files committed to GitHub. Vercel is deploying the updates.';
@@ -236,7 +244,10 @@ Bethelmind Analytics & Strategy Lead Engine`;
       success: true,
       githubCommitStatus,
       localWriteSuccess,
-      provisionedUrl,
+      provisionedUrl: subdomainUrl || provisionedUrl,
+      subdomainUrl,
+      handoverPortalUrl,
+      dnsInstructions,
       message: userMessage,
       lead
     });

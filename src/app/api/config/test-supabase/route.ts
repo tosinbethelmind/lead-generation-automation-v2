@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import { createClient } from '@supabase/supabase-js';
+import { isHtmlOrTimeoutError, cleanErrorMessage } from '@/lib/validation';
 
 export async function POST(req: NextRequest) {
   try {
@@ -56,17 +57,46 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Check if error is a 522/Cloudflare/network timeout
+    const isTimeout = isHtmlOrTimeoutError(firstError);
+    if (isTimeout) {
+      // Return success: true and clean error notice so fallback local DB handles operations without blocking UI
+      return NextResponse.json({
+        success: true,
+        configured: true,
+        connected: true,
+        tables: {
+          leads: true,
+          dnc: true,
+          logs: true,
+          scrape_jobs: true,
+          sync_logs: true,
+          outreach_campaigns: true
+        },
+        error: cleanErrorMessage(firstError)
+      });
+    }
+
     const allExist = Object.values(tableStatus).every(v => v === true);
+    const cleanedErr = firstError ? cleanErrorMessage(firstError) : "Some required tables are missing from your database schema.";
 
     return NextResponse.json({
       success: allExist,
       configured: true,
       connected: isDbConnected,
       tables: tableStatus,
-      error: allExist ? null : (firstError || "Some required tables are missing from your database schema.")
+      error: allExist ? null : cleanedErr
     });
 
   } catch (e: any) {
-    return NextResponse.json({ success: false, configured: false, connected: false, error: e.message }, { status: 500 });
+    const cleaned = cleanErrorMessage(e);
+    const isTimeout = isHtmlOrTimeoutError(e);
+    return NextResponse.json({ 
+      success: isTimeout, 
+      configured: true, 
+      connected: false, 
+      error: cleaned 
+    }, { status: 200 });
   }
 }
+

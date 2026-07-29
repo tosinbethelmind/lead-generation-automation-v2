@@ -40,7 +40,10 @@ export async function createSessionToken(
   role: string,
   name: string
 ): Promise<string> {
-  const masterSecret = process.env.ADMIN_TOKEN || 'admin_secret_token_123';
+  const masterSecret = process.env.ADMIN_TOKEN;
+  if (!masterSecret || masterSecret === 'admin_secret_token_123') {
+    throw new Error('ADMIN_TOKEN is missing or using default secret in environment config');
+  }
   const payload = [
     encodeURIComponent(token),
     encodeURIComponent(role),
@@ -60,7 +63,10 @@ export async function verifySessionToken(
 ): Promise<SessionUser | null> {
   if (!cookieValue) return null;
 
-  const masterSecret = process.env.ADMIN_TOKEN || 'admin_secret_token_123';
+  const masterSecret = process.env.ADMIN_TOKEN;
+  if (!masterSecret || masterSecret === 'admin_secret_token_123') {
+    return null;
+  }
 
   // 1. Direct/raw fallback for master admin token (backward compatibility / one-click login)
   if (cookieValue === masterSecret) {

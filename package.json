@@ -27,7 +27,8 @@
     "phase1:start": "node scripts/phase1_runner.js",
     "test:scaling": "node scripts/test_scaling_pipeline.js",
     "test:chatbot": "node scripts/test_chatbot_automation.js",
-    "test:master": "node scripts/master_system_audit.js"
+    "test:master": "node scripts/master_system_audit.js",
+    "handover": "node scripts/automated_handover.js"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",

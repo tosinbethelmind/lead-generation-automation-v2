@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Building2, Send, CheckCircle, RefreshCw, Layers, ShieldCheck, MapPin, Globe, Users, Mail, Play, Square } from 'lucide-react';
+import { cleanErrorMessage } from '@/lib/validation';
 
 export default function Lagos10KOutreachCard() {
+
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
 
@@ -302,7 +304,7 @@ export default function Lagos10KOutreachCard() {
 
         {message && (
           <div style={{ marginTop: '12px', padding: '10px', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px', fontSize: '0.8rem', color: message.includes('Launched') || message.includes('Stopped') ? '#93c5fd' : '#f87171' }}>
-            {message.includes('<!DOCTYPE') || message.includes('<html') || message.includes('Error code 522') ? '❌ Execution Error: Database query connection timed out (Cloudflare 522)' : message.replace(/<[^>]*>?/gm, '')}
+            {cleanErrorMessage(message)}
           </div>
         )}
       </div>
@@ -315,9 +317,7 @@ export default function Lagos10KOutreachCard() {
             <span style={{ fontSize: '0.65rem', color: '#10b981' }}>● LIVE UPDATES</span>
           </div>
           {pipelineStatus.latestLogs.slice(0, 4).map((logLine, idx) => {
-            const cleanLine = (logLine.includes('<!DOCTYPE') || logLine.includes('<html') || logLine.includes('Error code 522'))
-              ? '⚠️ [Network Retry] Supabase query connection timed out (Cloudflare 522).'
-              : logLine.replace(/<[^>]*>?/gm, '');
+            const cleanLine = cleanErrorMessage(logLine);
             return (
               <div key={idx} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cleanLine}</div>
             );

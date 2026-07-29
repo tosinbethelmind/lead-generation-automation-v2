@@ -57,8 +57,13 @@ export async function proxy(req: NextRequest) {
 
     // Programmatic access with a valid administrative secret
     const adminPasswordHeader = req.headers.get('x-admin-password');
-    const expectedPassword = process.env.ADMIN_PASSWORD || 'admin123';
-    if (adminPasswordHeader && adminPasswordHeader === expectedPassword) {
+    const expectedPassword = process.env.ADMIN_PASSWORD;
+    if (
+      expectedPassword &&
+      expectedPassword !== 'admin123' &&
+      adminPasswordHeader &&
+      adminPasswordHeader === expectedPassword
+    ) {
       return NextResponse.next();
     }
 

@@ -59,7 +59,7 @@ function loadConfig() {
 
   let supabaseUrl = (envUrl && envUrl.length > 10) ? envUrl : HARDCODED_URL;
   let supabaseKey = (envKey && envKey.length > 20) ? envKey : HARDCODED_KEY;
-  let storageMode = cleanEnvVal(process.env.STORAGE_MODE) || 'supabase';
+  let storageMode = cleanEnvVal(process.env.STORAGE_MODE) || 'local';
 
   return { supabaseUrl, supabaseKey, storageMode };
 }

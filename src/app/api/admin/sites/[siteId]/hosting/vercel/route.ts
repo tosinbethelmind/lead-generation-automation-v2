@@ -4,7 +4,8 @@ const VERCEL_API = 'https://api.vercel.com/v10/projects';
 
 function verifyPassword(req: NextRequest): boolean {
   const password = req.headers.get('x-admin-password');
-  const expected = process.env.ADMIN_PASSWORD || 'admin123';
+  const expected = process.env.ADMIN_PASSWORD;
+  if (!expected || expected === 'admin123' || !password) return false;
   return password === expected;
 }
 

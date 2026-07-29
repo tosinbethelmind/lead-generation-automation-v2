@@ -11,7 +11,8 @@ const SITES_DIR = path.join(process.cwd(), 'src', 'data', 'sites');
 // Password verification helper
 function verifyPassword(req: NextRequest): boolean {
   const password = req.headers.get('x-admin-password');
-  const expectedPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const expectedPassword = process.env.ADMIN_PASSWORD;
+  if (!expectedPassword || expectedPassword === 'admin123' || !password) return false;
   return password === expectedPassword;
 }
 

@@ -14,6 +14,7 @@ import {
   ExternalLink,
   X
 } from 'lucide-react';
+import { isHtmlOrTimeoutError, cleanErrorMessage } from '@/lib/validation';
 
 interface DbHealthResponse {
   success: boolean;
@@ -44,10 +45,12 @@ export default function DbHealthCheck() {
       try {
         const text = await res.text();
         data = JSON.parse(text);
-        if (data.error && (data.error.includes('<!DOCTYPE') || data.error.includes('<html') || data.error.includes('522') || data.error.includes('timed out'))) {
+        if (data.error && isHtmlOrTimeoutError(data.error)) {
           data.error = '⚠️ Cloud Supabase gateway reconnecting (Cloudflare 522 timeout). Self-healing Local JSON Database is active.';
           data.success = true; // Prevent blocking overlay from appearing on transient 522
           data.connected = true;
+        } else if (data.error) {
+          data.error = cleanErrorMessage(data.error);
         }
       } catch (jsonErr) {
         data = {
@@ -68,8 +71,9 @@ export default function DbHealthCheck() {
       }
       setHealth(data);
       const isBypassed = typeof window !== 'undefined' && sessionStorage.getItem('bypass-db-check') === 'true';
-      const isHtmlErr = data.error && (data.error.includes('<!DOCTYPE') || data.error.includes('<html') || data.error.includes('522') || data.error.includes('reconnecting'));
+      const isHtmlErr = data.error && isHtmlOrTimeoutError(data.error);
       setVisible(data.storageMode === 'supabase' && !data.success && !isBypassed && !isHtmlErr);
+
     } catch (e: any) {
       setHealth({
         success: false,

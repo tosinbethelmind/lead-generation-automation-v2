@@ -5,6 +5,8 @@ import { useParams } from 'next/navigation';
 import { ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import LandingPage from '@/components/LandingPage';
+import { ZeroAgentSandboxingWidget } from '@/components/ZeroAgentSandboxingWidget';
+import { LiveSocialProofTicker } from '@/components/LiveSocialProofTicker';
 
 interface PreviewData {
   lead: {
@@ -66,6 +68,13 @@ export default function PreviewPage() {
   useEffect(() => {
     if (!leadId) return;
 
+    // Trigger drip follow-up visit logger
+    fetch('/api/preview/drip-trigger', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ leadId, userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '' }),
+    }).catch(() => {});
+
     fetch(`/api/preview/generate?leadId=${encodeURIComponent(leadId)}`)
       .then((res) => {
         if (!res.ok) {
@@ -112,5 +121,20 @@ export default function PreviewPage() {
     );
   }
 
-  return <LandingPage data={data} leadId={leadId} isPreview={true} />;
+  return (
+    <div style={{ minHeight: '100vh', background: '#090d16', position: 'relative' }}>
+      {/* Top Floating Zero-Agent Sandboxing Banner */}
+      <ZeroAgentSandboxingWidget
+        businessName={data.lead.name}
+        leadId={leadId}
+        category={data.lead.category}
+      />
+
+      {/* Main Interactive Landing Page */}
+      <LandingPage data={data} leadId={leadId} isPreview={true} />
+
+      {/* Bottom Floating Social Proof Ticker & CAC Shield */}
+      <LiveSocialProofTicker />
+    </div>
+  );
 }

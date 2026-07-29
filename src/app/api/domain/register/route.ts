@@ -21,13 +21,12 @@ async function registerWithNamecheap(payload: DomainRegisterPayload) {
 
 export async function POST(req: NextRequest) {
   // Check authorization cookie
-  const adminToken = process.env.ADMIN_TOKEN || 'admin_secret_token_123';
   const tokenCookie = req.cookies.get('admin-token')?.value;
+  const { verifySessionToken } = await import('@/lib/session');
+  const session = await verifySessionToken(tokenCookie);
 
-  if (tokenCookie !== adminToken) {
-    if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {

@@ -20,23 +20,23 @@ export interface HostMetric {
 
 const DEFAULT_HOSTS: HostMetric[] = [
   {
-    id: 'github_actions',
-    name: 'GitHub Actions (Batch Cloud Workflows — 100% Free)',
-    url: 'https://api.github.com',
+    id: 'huggingface',
+    name: 'Hugging Face Spaces (24/7 Cloud Worker — 100% Free)',
+    url: 'https://huggingface.co/spaces/bethelmind/lead-engine',
     priority: 1,
     status: 'ONLINE',
-    latencyMs: 180,
+    latencyMs: 150,
     successCount: 0,
     errorCount: 0,
     lastChecked: Date.now()
   },
   {
-    id: 'huggingface',
-    name: 'Hugging Face Spaces (24/7 Cloud Worker — 100% Free)',
-    url: 'https://huggingface.co/spaces/bethelmind/lead-engine',
+    id: 'circleci',
+    name: 'CircleCI (Scheduled Harvester Matrix — 6,000 Free Mins)',
+    url: 'https://circleci.com',
     priority: 2,
     status: 'ONLINE',
-    latencyMs: 250,
+    latencyMs: 180,
     successCount: 0,
     errorCount: 0,
     lastChecked: Date.now()
@@ -66,10 +66,21 @@ const DEFAULT_HOSTS: HostMetric[] = [
   {
     id: 'local',
     name: 'Local Machine (Background Runner)',
-    url: 'http://localhost:3000',
+    url: 'http://localhost:3006',
     priority: 5,
     status: 'ONLINE',
     latencyMs: 10,
+    successCount: 0,
+    errorCount: 0,
+    lastChecked: Date.now()
+  },
+  {
+    id: 'github_actions',
+    name: 'GitHub Actions (On-Demand Backup — Quota Limited)',
+    url: 'https://api.github.com',
+    priority: 6,
+    status: 'ONLINE',
+    latencyMs: 250,
     successCount: 0,
     errorCount: 0,
     lastChecked: Date.now()

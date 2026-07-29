@@ -53,7 +53,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3006
-      STORAGE_MODE: supabase
+      STORAGE_MODE: local
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-LeanStackPassword123!}@postgres:5432/apexreach?sslmode=disable
       REDIS_URL: redis://redis:6379
       TOR_PROXY_HOST: tor

@@ -1,11 +1,13 @@
 import { sendNotificationEmail } from '@/lib/email';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
+import { getLocalConfig } from '@/lib/localConfig';
 
 export interface ProvisionPayload {
   leadId: string;
   clientName: string;
   clientEmail: string;
   clientPhone?: string;
+  customDomain?: string;
   selectedStrategy: string;
   selectedFeatures: string[];
   claimFeeNGN: number;
@@ -16,17 +18,64 @@ export interface ProvisionPayload {
 export interface ProvisionResult {
   success: boolean;
   liveUrl: string;
+  subdomainUrl: string;
+  handoverPortalUrl: string;
   deploymentId?: string;
+  customDomainBindingStatus: 'BOUND' | 'PENDING_DNS' | 'NOT_REQUESTED';
+  dnsInstructions?: {
+    type: string;
+    host: string;
+    target: string;
+  }[];
   message: string;
+}
+
+/**
+ * Cloudflare API helper to register custom domain CNAME record
+ */
+export async function bindCustomDomainToCloudflare(domainName: string): Promise<boolean> {
+  const config = getLocalConfig();
+  const token = config.cloudflareToken || process.env.CLOUDFLARE_TOKEN;
+  const zoneId = config.cloudflareZoneId || process.env.CLOUDFLARE_ZONE_ID;
+
+  if (!token || !zoneId) {
+    console.log('[Cloudflare AutoBind] Skipped: Cloudflare token or zoneId missing.');
+    return false;
+  }
+
+  try {
+    const cleanDomain = domainName.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+    const resp = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        type: 'CNAME',
+        name: cleanDomain,
+        content: 'apexreach.site',
+        ttl: 1, // Automatic TTL
+        proxied: true
+      })
+    });
+    if (resp.ok) {
+      console.log(`[Cloudflare AutoBind] ✅ CNAME created for ${cleanDomain} -> apexreach.site`);
+      return true;
+    }
+  } catch (err: any) {
+    console.warn('[Cloudflare AutoBind] Error:', err.message);
+  }
+  return false;
 }
 
 /**
  * Zero-Touch Client Website Provisioning Engine.
  * Called upon Paystack / Moniepoint payment verification to trigger instant automated deployment,
- * bind custom sub-domains, and send automated WhatsApp & Email onboarding credentials to the client.
+ * bind custom sub-domains, Cloudflare Pages hosting, and send automated onboarding credentials.
  */
 export async function autoProvisionClientSite(payload: ProvisionPayload): Promise<ProvisionResult> {
-  const { leadId, clientName, clientEmail, clientPhone, selectedStrategy, selectedFeatures, claimFeeNGN, paymentMethod, paymentReference } = payload;
+  const { leadId, clientName, clientEmail, clientPhone, customDomain, selectedStrategy, selectedFeatures, claimFeeNGN, paymentMethod, paymentReference } = payload;
 
   console.log(`[AutoProvision] Initiating zero-touch deployment for lead ${leadId} (${clientName}). Payment: ₦${claimFeeNGN.toLocaleString()} via ${paymentMethod}`);
 
@@ -37,15 +86,26 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
     throw new Error(`Lead ${leadId} not found during auto-provisioning.`);
   }
 
-  const vercelToken = process.env.VERCEL_AUTH_TOKEN;
+  const vercelToken = process.env.VERCEL_AUTH_TOKEN || process.env.VERCEL_TOKEN;
   const projectId = process.env.VERCEL_PROJECT_ID;
+  const appOrigin = process.env.NEXT_PUBLIC_APP_URL || 'https://apexreach.site';
+  
   const sanitizedName = lead.name ? lead.name.toLowerCase().replace(/[^a-z0-9]/g, '') : 'client';
-  const domainSlug = `${sanitizedName}.apexreach.site`;
+  const subdomainUrl = `https://${sanitizedName}.apexreach.site`;
+  const handoverPortalUrl = `${appOrigin}/handover/${leadId}`;
 
-  let liveUrl = `https://${domainSlug}`;
+  let liveUrl = subdomainUrl;
   let deploymentId: string | undefined;
+  let customDomainBindingStatus: 'BOUND' | 'PENDING_DNS' | 'NOT_REQUESTED' = 'NOT_REQUESTED';
 
-  // 1. Attempt Vercel API Instant Production Deployment if token exists
+  // 1. If client provided custom domain, bind via Cloudflare API
+  if (customDomain && customDomain.trim()) {
+    const bound = await bindCustomDomainToCloudflare(customDomain);
+    customDomainBindingStatus = bound ? 'BOUND' : 'PENDING_DNS';
+    liveUrl = customDomain.startsWith('http') ? customDomain : `https://${customDomain.trim()}`;
+  }
+
+  // 2. Attempt Vercel API Instant Production Deployment if token exists
   if (vercelToken && projectId) {
     try {
       const deployResp = await fetch(`https://api.vercel.com/v13/deployments`, {
@@ -74,22 +134,27 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
 
       if (deployResp.ok) {
         const deployData = await deployResp.json();
-        liveUrl = `https://${deployData.url || domainSlug}`;
         deploymentId = deployData.id;
-        console.log(`[AutoProvision] ✅ Vercel deployment triggered successfully: ${liveUrl}`);
+        console.log(`[AutoProvision] ✅ Vercel deployment triggered: ${deployData.url}`);
       }
     } catch (err: any) {
       console.warn('[AutoProvision] Vercel deploy API notice:', err.message);
     }
-  } else {
-    // Fallback: Default live URL to hosted site route
-    const appOrigin = process.env.NEXT_PUBLIC_APP_URL || 'https://apexreach.site';
+  }
+
+  // If liveUrl wasn't customized, fallback to site route
+  if (!liveUrl || liveUrl === subdomainUrl) {
     liveUrl = `${appOrigin}/site/${leadId}`;
   }
 
-  // 2. Mark lead status as CONTACTED / CLAIMED with Payment Ref in DB
+  const dnsInstructions = [
+    { type: 'CNAME', host: '@', target: 'apexreach.site' },
+    { type: 'CNAME', host: 'www', target: 'apexreach.site' },
+  ];
+
+  // 3. Mark lead status as CONTACTED / CLAIMED with Payment Ref in DB
   const timestamp = new Date().toISOString();
-  const notesUpdate = `${lead.notes || ''}\n[PROVISIONED_SUCCESS] Website deployed to ${liveUrl} on ${timestamp}. Ref: ${paymentReference || 'N/A'}. Features: ${selectedFeatures.join(', ')}`;
+  const notesUpdate = `${lead.notes || ''}\n[PROVISIONED_SUCCESS] Deployed to ${liveUrl} (Subdomain: ${subdomainUrl}) on ${timestamp}. Ref: ${paymentReference || 'N/A'}. Features: ${selectedFeatures.join(', ')}`;
   
   await repo.updateLeadStatus(leadId, 'CONTACTED', notesUpdate, timestamp);
 
@@ -99,10 +164,22 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
     `Website auto-provisioned for ${clientName} (${lead.name}) -> ${liveUrl}`
   );
 
-  // 3. Dispatch automated Email Welcome Credentials
+  // 4. Dispatch automated Email Welcome Credentials
   try {
-    const emailSubject = `🎉 Your Website is Live! Access Your Portal for ${lead.name}`;
-    const emailBody = `Hello ${clientName},\n\nCongratulations! Your website for ${lead.name} has been successfully deployed and is live at:\n${liveUrl}\n\nSelected Package: ${selectedStrategy}\nPayment Ref: ${paymentReference || 'N/A'}\n\nOur team will contact you shortly on WhatsApp to assist with custom domain DNS setup.\n\nBest regards,\nApexReach Engineering Team`;
+    const emailSubject = `🎉 Your Website is Live! Access Your Handover Portal for ${lead.name}`;
+    const emailBody = `Hello ${clientName},\n\n` +
+      `Congratulations! Your website for ${lead.name} has been successfully provisioned and is live at:\n` +
+      `${subdomainUrl}\n\n` +
+      `🔑 Your Client Handover Portal:\n${handoverPortalUrl}\n\n` +
+      `🌐 Custom Domain Setup (Optional):\n` +
+      `To point your own domain (e.g. www.yourbusiness.com) to your site, add these 2 DNS CNAME records at your domain provider:\n` +
+      `- CNAME @ -> apexreach.site\n` +
+      `- CNAME www -> apexreach.site\n\n` +
+      `Selected Package: ${selectedStrategy}\n` +
+      `Payment Ref: ${paymentReference || 'N/A'}\n\n` +
+      `Our engineering team is on standby to assist with DNS setup.\n\n` +
+      `Best regards,\n` +
+      `ApexReach Engineering Team`;
     
     await sendNotificationEmail(clientEmail, emailSubject, emailBody);
   } catch (e: any) {
@@ -112,7 +189,11 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
   return {
     success: true,
     liveUrl,
+    subdomainUrl,
+    handoverPortalUrl,
     deploymentId,
-    message: `Website successfully provisioned and live at ${liveUrl}`
+    customDomainBindingStatus,
+    dnsInstructions,
+    message: `Website successfully provisioned and live at ${subdomainUrl}`
   };
 }

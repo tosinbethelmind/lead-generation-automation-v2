@@ -77,7 +77,9 @@ export async function POST(req: NextRequest) {
     }
 
     const config = getRuntimeConfig();
-    const secretKeys = (config.paystackSecretKey || '').split(',').map(k => k.trim()).filter(Boolean);
+    const envSecret = process.env.PAYSTACK_SECRET_KEY || '';
+    const rawKeys = `${config.paystackSecretKey || ''},${envSecret}`;
+    const secretKeys = Array.from(new Set(rawKeys.split(',').map(k => k.trim()).filter(Boolean)));
     if (secretKeys.length === 0) {
       return NextResponse.json({ error: 'Paystack Secret Key is not configured' }, { status: 500 });
     }

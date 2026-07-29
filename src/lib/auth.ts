@@ -47,9 +47,9 @@ export const ALL_PERMISSIONS = [
 export function getAdminUser(token: string | undefined): AdminUser | null {
   if (!token) return null;
 
-  const masterToken = process.env.ADMIN_TOKEN || 'admin_secret_token_123';
+  const masterToken = process.env.ADMIN_TOKEN;
 
-  if (token === masterToken) {
+  if (masterToken && masterToken !== 'admin_secret_token_123' && token === masterToken) {
     return {
       id: 'admin',
       name: 'Master Admin',

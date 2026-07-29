@@ -10,6 +10,15 @@ export interface DesignTheme {
   gradient: string;
 }
 
+export function sanitizeGeneratedContent(str: string | undefined): string {
+  if (!str) return '';
+  return str
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/on\w+="[^"]*"/gi, '')
+    .replace(/on\w+='[^']*'/gi, '')
+    .replace(/javascript:/gi, '');
+}
+
 export function getDesignTheme(category: string): DesignTheme {
   const cat = category.toLowerCase();
 

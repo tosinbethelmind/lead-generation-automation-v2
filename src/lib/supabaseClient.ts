@@ -180,12 +180,16 @@ function removeFallbackJob(id: string) {
   }
 }
 
+import { isHtmlOrTimeoutError } from './validation';
+
 function isTableMissingError(error: any): boolean {
   if (!error) return false;
+  if (isHtmlOrTimeoutError(error)) return true;
   const msg = String(error.message || '').toLowerCase();
   const code = String(error.code || '');
   return code === '42P01' || msg.includes('schema cache') || msg.includes('does not exist') || msg.includes('api key') || msg.includes('invalid') || msg.includes('unauthorized') || msg.includes('apikey');
 }
+
 
 /** Create a new scraper job */
 export async function createScrapeJob(
