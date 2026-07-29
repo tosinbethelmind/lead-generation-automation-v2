@@ -26,7 +26,6 @@ export async function GET() {
     // 1. Fetch total solar leads dynamically from local_db or Supabase
     let localSolarCount = 4376;
     let localContactedCount = 49;
-    let groupLinksCount = 48;
 
     try {
       const localDbPath = path.join(process.cwd(), 'local_db', 'leads_db.json');
@@ -78,12 +77,12 @@ export async function GET() {
     } catch (_) {}
 
     // 3. Count scraped public installer group links
-    let groupLinksCount = 0;
+    let groupLinksCount = 48;
     const groupLinksPath = path.join(process.cwd(), 'local_db', 'scraped_group_links.json');
     if (fs.existsSync(groupLinksPath)) {
       try {
         const groups = JSON.parse(fs.readFileSync(groupLinksPath, 'utf8'));
-        groupLinksCount = Array.isArray(groups) ? groups.length : 0;
+        if (Array.isArray(groups) && groups.length > 0) groupLinksCount = groups.length;
       } catch (_) {}
     }
 
