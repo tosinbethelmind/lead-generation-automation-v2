@@ -58,6 +58,9 @@ import ScraperCard from '@/app/dashboard/components/ScraperCard';
 import ScrapeControls from '@/app/dashboard/components/ScrapeControls';
 import SolarQuoteProOutreachCard from '@/app/dashboard/components/SolarQuoteProOutreachCard';
 import Lagos10KOutreachCard from '@/app/dashboard/components/Lagos10KOutreachCard';
+import LeadJourneyTrackerCard from '@/app/dashboard/components/LeadJourneyTrackerCard';
+import RevenueAnalyticsCard from '@/app/dashboard/components/RevenueAnalyticsCard';
+import MultiWhatsAppConnectionCard from '@/app/dashboard/components/MultiWhatsAppConnectionCard';
 import SelfHealingDiagnosticsCard from '@/app/dashboard/components/SelfHealingDiagnosticsCard';
 import { ProviderCard } from '@/app/components/ProviderCard';
 import { useTheme } from './ThemeContext';
@@ -3800,20 +3803,31 @@ export default function Home() {
           </div>
         )}
 
-        {/* VIDEO DEMO SECTION */}
+        {/* VIDEO DEMO SECTION - COLLAPSIBLE */}
         {activeTab === 'dashboard' && (
-          <section className="glass-panel" style={{ padding: '24px', marginBottom: '0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
-              <div>
-                <h3 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                  Platform Walkthrough Demo
-                </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>
-                  Watch a complete voiced tour of every feature in the Bethelmind Analytics & Strategy Lead Engine
-                </p>
+          <section className="glass-panel" style={{ padding: '16px 20px', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ background: 'rgba(99, 102, 241, 0.15)', padding: '8px 12px', borderRadius: '8px', color: '#6366f1', fontWeight: 800, fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Zap size={16} /> QUICK HELP
+                </div>
+                <div>
+                  <strong style={{ fontSize: '0.92rem', color: 'var(--text-primary)' }}>Platform Walkthrough & Setup Guide</strong>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '2px 0 0 0' }}>
+                    Voiced walkthrough tour of Bethelmind Analytics & Strategy Lead Engine features.
+                  </p>
+                </div>
               </div>
+
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setVideoPlaying(prev => !prev)}
+                  className="btn-secondary"
+                  style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  {videoPlaying ? 'Hide Video Tour ▲' : 'Watch Video Tour ▶'}
+                </button>
                 <a
                   href="/assets/bethelmind-demo.webm"
                   download="Bethelmind-Platform-Demo.webm"
@@ -3832,48 +3846,44 @@ export default function Home() {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                   Download Video
                 </a>
-                <span className="badge badge-new">VOICED DEMO</span>
               </div>
             </div>
-            <div
-              className="video-demo-wrapper"
-              onClick={() => {
-                const vid = document.getElementById('demoVideo') as HTMLVideoElement;
-                if (vid) {
-                  if (vid.paused) {
-                    vid.play();
-                    setVideoPlaying(true);
-                  } else {
-                    vid.pause();
-                    setVideoPlaying(false);
+
+            {videoPlaying && (
+              <div
+                className="video-demo-wrapper"
+                style={{ marginTop: '16px' }}
+                onClick={() => {
+                  const vid = document.getElementById('demoVideo') as HTMLVideoElement;
+                  if (vid) {
+                    if (vid.paused) {
+                      vid.play();
+                    } else {
+                      vid.pause();
+                    }
                   }
-                }
-              }}
-            >
-              <video
-                id="demoVideo"
-                poster="/assets/video-thumbnail.png"
-                preload="metadata"
-                controls={videoPlaying}
-                onPlay={() => setVideoPlaying(true)}
-                onPause={() => setVideoPlaying(false)}
-                onEnded={() => setVideoPlaying(false)}
-                style={{ background: '#000', width: '100%', height: '100%' }}
+                }}
               >
-                <source src="/assets/bethelmind-demo.webm" type="video/webm" />
-              </video>
-              <div className={`video-play-overlay ${videoPlaying ? 'hidden' : ''}`}>
-                <div className="video-play-btn">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" stroke="none"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
-                </div>
+                <video
+                  id="demoVideo"
+                  poster="/assets/video-thumbnail.png"
+                  preload="metadata"
+                  controls
+                  style={{ background: '#000', width: '100%', height: '100%', borderRadius: '8px' }}
+                >
+                  <source src="/assets/bethelmind-demo.webm" type="video/webm" />
+                </video>
               </div>
-            </div>
+            )}
           </section>
         )}
 
-        {/* TAB 1: CONSOLE */}
+        {/* TAB 1: EXECUTIVE DASHBOARD */}
         {activeTab === 'dashboard' && (
           <>
+            {/* PROMINENT DETAILED TOTAL LEAD JOURNEY ANALYTICS */}
+            <LeadJourneyTrackerCard />
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
               <div className="glass-panel stat-card-violet" style={{ padding: '20px' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>Total Leads Ingested</span>
@@ -5492,6 +5502,12 @@ export default function Home() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px', marginTop: '16px' }}>
                 <Lagos10KOutreachCard />
                 <SolarQuoteProOutreachCard />
+              </div>
+
+              <div style={{ marginTop: '20px' }}>
+                <MultiWhatsAppConnectionCard />
+                <RevenueAnalyticsCard />
+                <LeadJourneyTrackerCard />
               </div>
 
               <SelfHealingDiagnosticsCard />

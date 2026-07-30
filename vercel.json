@@ -11,6 +11,15 @@
     },
     "src/app/api/jiji/route.ts": {
       "maxDuration": 60
+    },
+    "src/app/api/webhooks/payment/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/outreach/solar-hybrid/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/outreach/regular-business/route.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [
@@ -25,6 +34,14 @@
     {
       "path": "/api/outreach/lagos10k?cron=true",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/outreach/solar-hybrid?cron=true",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/outreach/regular-business?cron=true",
+      "schedule": "0 10 * * *"
     }
   ]
 }

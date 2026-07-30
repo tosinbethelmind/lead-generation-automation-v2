@@ -1,4 +1,4 @@
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const qrcodeTerminal = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const pino = require('pino');
@@ -23,11 +23,14 @@ async function connectToWhatsApp() {
   }
 
   const { state, saveCreds } = await useMultiFileAuthState(authDir);
+  const { version } = await fetchLatestBaileysVersion();
 
   sock = makeWASocket({
+    version,
     logger: pino({ level: 'silent' }),
     auth: state,
-    printQRInTerminal: false
+    printQRInTerminal: true,
+    browser: ['Ubuntu', 'Chrome', '20.0.04']
   });
 
   sock.ev.on('connection.update', async (update) => {

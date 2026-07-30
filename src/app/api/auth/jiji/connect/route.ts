@@ -4,6 +4,8 @@ import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
 import { getLocalChromePath } from '@/lib/browserLauncher';
 import puppeteer from 'puppeteer-core';
 
+export const dynamic = 'force-dynamic';
+
 // Global variables persisting in the dev server process
 let activeBrowser: any = null;
 let statusMessage = 'Ready';
@@ -115,8 +117,8 @@ async function cleanup() {
   }
 }
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
   const action = searchParams.get('action') || 'ui';
 
   if (action === 'status') {
@@ -376,8 +378,8 @@ export async function GET(req: NextRequest) {
   });
 }
 
-export async function POST(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
+export async function POST(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
   const action = searchParams.get('action');
 
   if (action === 'start') {

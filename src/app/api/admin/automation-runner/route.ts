@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import path from 'path';
 import net from 'net';
+import { getAppCwd } from '@/lib/getCwd';
 
 let activeRunnerPid: number | null = null;
 let lastTestResults: any = null;
@@ -43,9 +44,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const action = body.action || 'status';
 
+    if (process.env.VERCEL) {
+      return NextResponse.json({ success: false, error: 'Background automation runner process cannot be spawned directly in Vercel serverless environment.' }, { status: 400 });
+    }
+
     if (action === 'start-phase1') {
-      const projectDir = process.cwd();
-      const child = spawn('node', ['scripts/phase1_runner.js'], {
+      const projectDir = getAppCwd();
+      const runnerScript = path.join(projectDir, 'scripts', 'phase1_runner.js');
+      const child = spawn('node', [runnerScript], {
         cwd: projectDir,
         detached: true,
         stdio: 'ignore'
@@ -61,10 +67,11 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === 'run-test') {
-      const projectDir = process.cwd();
+      const projectDir = getAppCwd();
       const { exec } = require('child_process');
+      const testScript = path.join(projectDir, 'scripts', 'test_scaling_pipeline.js');
       const testResult = await new Promise<{ success: boolean; output: string }>((resolve) => {
-        exec('node scripts/test_scaling_pipeline.js', { cwd: projectDir }, (error: any, stdout: string, stderr: string) => {
+        exec(`node "${testScript}"`, { cwd: projectDir }, (error: any, stdout: string, stderr: string) => {
           if (error) {
             resolve({ success: false, output: stdout + '\n' + stderr });
           } else {
@@ -87,10 +94,11 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === 'run-chatbot-test') {
-      const projectDir = process.cwd();
+      const projectDir = getAppCwd();
       const { exec } = require('child_process');
+      const testScript = path.join(projectDir, 'scripts', 'test_chatbot_automation.js');
       const testResult = await new Promise<{ success: boolean; output: string }>((resolve) => {
-        exec('node scripts/test_chatbot_automation.js', { cwd: projectDir }, (error: any, stdout: string, stderr: string) => {
+        exec(`node "${testScript}"`, { cwd: projectDir }, (error: any, stdout: string, stderr: string) => {
           if (error) {
             resolve({ success: false, output: stdout + '\n' + stderr });
           } else {

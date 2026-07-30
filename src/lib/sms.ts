@@ -81,11 +81,17 @@ export async function sendSmsMessage(
       text: messageText
     };
 
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    const token = config.smsGatewayToken || config.smsGatewayKey || config.smsGatewayAuth;
+    if (token) {
+      headers['Authorization'] = token;
+    }
+
     const response = await fetch(gatewayUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(payload),
     });
 

@@ -172,6 +172,20 @@ export async function GET(req?: Request) {
       if (results[7].status === 'fulfilled' && typeof results[7].value?.count === 'number' && results[7].value.count > 0) autoCount = results[7].value.count;
     } catch (_) {}
 
+    // Fetch active strategy from app_settings
+    let activeStrategy = 'alpha';
+    try {
+      const { data: configRow } = await (supabase as any)
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'apexreach_runtime_config')
+        .maybeSingle();
+      if (configRow?.value) {
+        const parsed = JSON.parse(configRow.value);
+        if (parsed.lagos_active_strategy) activeStrategy = parsed.lagos_active_strategy;
+      }
+    } catch (_) {}
+
     const resolvedLagosCount = Math.max(totalLagosLeads, localLagosCount, liveLagosLeadsCount || 0);
 
     const headers = { 'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0' };
@@ -183,6 +197,7 @@ export async function GET(req?: Request) {
       pid: isRunning ? (pid || 8810) : null,
       latestLogs,
       lastUpdatedTime: getLagosTimeString() + ' WAT',
+      activeStrategy,
       stats: {
         totalLagosLeads: resolvedLagosCount,
         totalContactedOutreach: totalContacted || 0,
@@ -195,7 +210,7 @@ export async function GET(req?: Request) {
           autoAndLogistics: autoCount || 0
         },
         targetMarket: 'Lagos State (Ikeja, Lekki, VI, Yaba, Surulere, Ikoyi, Oshodi, Ikorodu)',
-        outreachChannel: 'Web Contact Form Auto-Submitter, WhatsApp & B2B Email',
+        outreachChannel: activeStrategy === 'alpha' ? 'Strategy Alpha: Web Contact Form Submitter & Cold Email (Inbound WA Magnet)' : 'Strategy Beta: Secondary WhatsApp Direct & SMS Teaser',
         lastUpdatedTime: getLagosTimeString() + ' WAT'
       },
       mode: '24/7 Non-Stop Cloud Engine + Local Hybrid Runner'
@@ -209,8 +224,9 @@ export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
     const dryRun = body.dryRun ?? false;
+    const strategy = body.strategy || 'alpha'; // 'alpha' | 'beta'
 
-    // 1. Update Supabase Cloud State to ACTIVE
+    // 1. Update Supabase Cloud State to ACTIVE with selected strategy
     try {
       const { data: configRow } = await (supabase as any)
         .from('app_settings')
@@ -221,6 +237,7 @@ export async function POST(req: Request) {
       let cfg = (configRow as any)?.value ? JSON.parse((configRow as any).value) : {};
       cfg.lagos_engine_active = true;
       cfg.lagos_engine_started_at = Date.now();
+      cfg.lagos_active_strategy = strategy;
 
       await (supabase as any)
         .from('app_settings')
@@ -237,7 +254,7 @@ export async function POST(req: Request) {
           timestamp: new Date().toISOString(),
           step: 'LAGOS_10K_LAUNCH',
           status: 'SUCCESS',
-          message: `🏢 [LAGOS-10K] 🚀 Launched 24/7 Non-Stop High-Speed Lagos 10K B2B Engine (${getLagosTimeString()} WAT)`
+          message: `🏢 [LAGOS-10K] 🚀 Launched 24/7 Engine using ${strategy === 'alpha' ? 'STRATEGY ALPHA (Zero-Risk Inbound Magnet: Web Form + Email)' : 'STRATEGY BETA (Direct Outbound Blitz: Secondary WhatsApp + SMS)'} (${getLagosTimeString()} WAT)`
         }]);
     } catch (_) {}
 
@@ -246,7 +263,7 @@ export async function POST(req: Request) {
     try {
       const scriptPath = path.join(process.cwd(), 'scripts', 'async_lagos_10k_scraper.js');
       if (fs.existsSync(scriptPath)) {
-        const args: string[] = [];
+        const args: string[] = [`--strategy=${strategy}`];
         if (dryRun) args.push('--dry-run');
 
         const child = spawn('node', [scriptPath, ...args], {
@@ -280,8 +297,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `🏢 10K Lagos B2B 24/7 Engine active! (Harvested +${addedCount} real leads at ${getLagosTimeString()} WAT)`,
-      pid: spawnedPid
+      message: `🏢 10K Lagos B2B Engine Active! Using ${strategy === 'alpha' ? 'Strategy Alpha (Zero-Risk Inbound Magnet)' : 'Strategy Beta (Direct Outbound Blitz)'}. Harvested +${addedCount} leads at ${getLagosTimeString()} WAT.`,
+      pid: spawnedPid,
+      activeStrategy: strategy
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

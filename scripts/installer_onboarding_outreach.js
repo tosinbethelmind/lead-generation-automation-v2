@@ -1,8 +1,21 @@
 /**
  * @file installer_onboarding_outreach.js
- * Automates NDPA-compliant B2B solar installer onboarding outreach.
- * Reads leads from the database, filters for new solar-related installers,
- * and dispatches personalized invitations with opt-out mechanisms.
+ * Smart B2B Solar Installer Onboarding Outreach for the Nationwide Solar Scraper Engine.
+ *
+ * Routing Logic:
+ * ─────────────────────────────────────────────────────────────────────
+ * NO WEBSITE DETECTED   → 4-in-1 Power Package:
+ *   1. Custom Solar Website Preview
+ *   2. SolarQuotePro.ng Directory Enlistment
+ *   3. 60-Second PDF Proposal Builder
+ *   4. Direct Access to Platform Solar Leads
+ *
+ * HAS EXISTING WEBSITE  → SolarQuotePro-Only Enlistment:
+ *   1. SolarQuotePro.ng Directory Enlistment
+ *   2. 60-Second PDF Proposal Builder
+ *   3. Direct Access to Platform Solar Leads
+ * ─────────────────────────────────────────────────────────────────────
+ * NDPA-compliant: All messages include opt-out (Reply STOP).
  */
 
 const fs = require('fs');
@@ -77,16 +90,103 @@ function parseSpintax(text) {
   return processedText;
 }
 
-// Spintax message template matching the Legitimate Interest basis
-const MESSAGE_TEMPLATE = `{Hi|Hello} {{name}},
+// ─────────────────────────────────────────────────────────────────────────────
+// MESSAGE TEMPLATES
+// ─────────────────────────────────────────────────────────────────────────────
 
-We noticed your solar/inverter listing on {{source}} in {{city}}. We operate SolarQuotePro.ng, a leading platform connecting high-intent B2C homeowners with vetted local installers. We would love to onboard your business to receive residential installation leads.
+/**
+ * Template A: Solar company with NO existing website.
+ * Pitches the full 4-in-1 Power Package.
+ */
+const NO_WEBSITE_HYBRID_TEMPLATE = `{Hi|Hello|Good day} [NAME],
 
-Learn more & sign up here: https://lead-generation-automation-e0oitxcsi.vercel.app/signup
+We {noticed|found} your solar installation work in [CITY] on [SOURCE].
 
-Best,
-The SolarQuotePro Team
-(If you do not wish to receive further messages, reply STOP)`;
+We have generated a {custom|tailored} solar website preview specifically for [NAME]:
+
+🌐 View & Claim Your Custom Solar Website:
+https://solarquotepro.ng/preview/[SLUG]?src=10k_ng
+
+⚡ BONUS — Claim your website to instantly unlock your full SolarQuotePro.ng Installer Account:
+
+1. 📍 Official Enlistment as a Verified Solar Installer on SolarQuotePro.ng
+   https://solarquotepro.ng/installers/enlist?biz=[BIZ_ENC]&city=[CITY_ENC]
+
+2. 📄 60-Second PDF Proposal Builder — generate branded quotes for clients in under a minute
+   https://solarquotepro.ng/proposals/instant-builder
+
+3. 🎯 Direct Access to verified commercial & residential solar leads in [CITY]
+   https://solarquotepro.ng/marketplace/leads
+
+{Best regards|To your growth|Warm regards},
+The SolarQuotePro Installer Desk
+(Reply STOP to unsubscribe)`;
+
+/**
+ * Template B: Solar company WITH an existing website.
+ * Skips website pitch — focuses 100% on SolarQuotePro.ng enlistment.
+ */
+const HAS_WEBSITE_ENLIST_ONLY_TEMPLATE = `{Hi|Hello|Good day} [NAME],
+
+We {came across|noticed|found} your solar installation business in [CITY] on [SOURCE] — impressive work!
+
+We operate SolarQuotePro.ng, Nigeria's leading platform connecting {vetted|verified} solar installers with high-intent commercial and residential customers across all 36 States.
+
+Here is what enlisting [NAME] on SolarQuotePro.ng gets you {immediately|right away}:
+
+1. 📍 Official Listing as a Verified Installer in our National Directory
+   https://solarquotepro.ng/installers/enlist?biz=[BIZ_ENC]&city=[CITY_ENC]
+
+2. 📄 60-Second PDF Proposal Builder — create professional branded quotes for any client in under a minute
+   https://solarquotepro.ng/proposals/instant-builder
+
+3. 🎯 Qualified Solar Lead Access — receive direct commercial & residential enquiries from your area
+   https://solarquotepro.ng/marketplace/leads
+
+{Best regards|To your growth|Warm regards},
+The SolarQuotePro Installer Desk
+(Reply STOP to unsubscribe)`;
+
+/**
+ * Determines whether a lead already has an active website.
+ * Returns true only if website is a non-empty, valid-looking URL.
+ */
+function hasActiveWebsite(lead) {
+  const website = (lead.website || lead.web || '').trim();
+  if (!website) return false;
+  try {
+    const parsed = new URL(website.startsWith('http') ? website : `https://${website}`);
+    return parsed.hostname.length > 4; // Exclude garbage like "n/a" or short placeholders
+  } catch (_) {
+    return false;
+  }
+}
+
+/**
+ * Builds a personalized message for a lead using the correct template.
+ */
+function buildOutreachMessage(lead) {
+  const name = lead.name || lead.company_name || 'Solar Business';
+  const city = lead.city || 'your city';
+  const source = lead.source || 'Public Directory';
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const bizEnc = encodeURIComponent(name);
+  const cityEnc = encodeURIComponent(city);
+
+  const template = hasActiveWebsite(lead)
+    ? HAS_WEBSITE_ENLIST_ONLY_TEMPLATE
+    : NO_WEBSITE_HYBRID_TEMPLATE;
+
+  let msg = template
+    .replace(/\[NAME\]/g, name)
+    .replace(/\[CITY\]/g, city)
+    .replace(/\[SOURCE\]/g, source)
+    .replace(/\[SLUG\]/g, slug)
+    .replace(/\[BIZ_ENC\]/g, bizEnc)
+    .replace(/\[CITY_ENC\]/g, cityEnc);
+
+  return parseSpintax(msg);
+}
 
 async function runOnboarding() {
   console.log('\n\x1b[36m============================================================\x1b[0m');
@@ -189,19 +289,16 @@ async function runOnboarding() {
 
   for (const lead of targets) {
     const phone = lead.phone_e164 || lead.phone_raw;
-    const city = lead.city || 'Lagos';
-    const source = lead.source || 'Public Directory';
 
-    // Construct personalized spintax message
-    const resolvedSpintax = parseSpintax(MESSAGE_TEMPLATE);
-    const message = resolvedSpintax
-      .replace(/\{\{\s*name\s*\}\}/g, lead.name)
-      .replace(/\{\{\s*source\s*\}\}/g, source)
-      .replace(/\{\{\s*city\s*\}\}/g, city);
+    // Smart routing: choose correct template based on website presence
+    const websiteStatus = hasActiveWebsite(lead) ? '✅ Has Website' : '🌐 No Website (Full 4-in-1 Package)';
+    const message = buildOutreachMessage(lead);
 
     console.log(`\n\x1b[33m------------------------------------------------------------\x1b[0m`);
-    console.log(`[Target] Name:  ${lead.name}`);
-    console.log(`[Target] Phone: ${phone}`);
+    console.log(`[Target] Name:     ${lead.name}`);
+    console.log(`[Target] Phone:    ${phone}`);
+    console.log(`[Target] Website:  ${websiteStatus}`);
+    console.log(`[Target] Track:    ${hasActiveWebsite(lead) ? 'ENLIST_ONLY' : 'FULL_4IN1_HYBRID'}`);
     console.log(`[Target] Msg:\n${message}`);
 
     if (isDryRun) {

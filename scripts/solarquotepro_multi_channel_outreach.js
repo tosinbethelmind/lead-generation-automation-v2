@@ -80,6 +80,13 @@ async function runMasterOutreachPipeline() {
     await runChildScript('installer_onboarding_outreach.js', outreachArgs);
   }
 
+  // Step 5: Dual-Track Classification & Execution (Track A & Track B)
+  console.log('\nStep 5: Executing Lead Classification & Dual-Track Outreach (Track A Solar & Track B Regular Business)...');
+  const trackArgs = [];
+  if (isDryRun) trackArgs.push('--dry-run');
+  await runChildScript('solar_company_hybrid_outreach.js', trackArgs);
+  await runChildScript('regular_business_outreach.js', trackArgs);
+
   console.log('\n===========================================================');
   console.log('🎉 SOLARQUOTEPRO MULTI-CHANNEL OUTREACH PIPELINE COMPLETE!');
   console.log('===========================================================\n');

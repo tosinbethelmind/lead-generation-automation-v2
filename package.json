@@ -6,7 +6,7 @@
     "start-all": "concurrently \"npm run dev\" \"npm run local-runner\"",
     "start-all-with-outreach": "concurrently \"npm run dev\" \"npm run local-runner\" \"npm run whatsapp-service\"",
     "dev": "next dev -p 3006",
-    "build": "next build",
+    "build": "npx cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
     "start": "next start -p 3005",
     "lint": "eslint",
     "redeploy": "npx vercel --prod --yes",
@@ -28,7 +28,13 @@
     "test:scaling": "node scripts/test_scaling_pipeline.js",
     "test:chatbot": "node scripts/test_chatbot_automation.js",
     "test:master": "node scripts/master_system_audit.js",
-    "handover": "node scripts/automated_handover.js"
+    "handover": "node scripts/automated_handover.js",
+    "outreach:all": "node scripts/unified_outreach_master.js",
+    "outreach:all:dry": "node scripts/unified_outreach_master.js --dry-run",
+    "outreach:lagos": "node scripts/unified_outreach_master.js --engine=1",
+    "outreach:lagos:dry": "node scripts/unified_outreach_master.js --engine=1 --dry-run",
+    "outreach:nigeria": "node scripts/unified_outreach_master.js --engine=2",
+    "outreach:nigeria:dry": "node scripts/unified_outreach_master.js --engine=2 --dry-run"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",
