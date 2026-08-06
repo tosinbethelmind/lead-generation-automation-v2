@@ -121,6 +121,16 @@ const SHOWCASE_FEATURES: FeatureItem[] = [
     isDefaultActive: true,
   },
   {
+    id: 'recruitment_engine',
+    name: '⚡ 24-Hour Instant AI Recruitment Engine',
+    priceFormatted: '+₦95,000',
+    priceNumeric: 95000,
+    narration: 'Hire vetted, top 5% professional candidates in under 24 hours. Features WhatsApp audio voice note screening, 1-ms AI CV grading (0-100%), and 1-tap interview booking.',
+    icon: '⚡',
+    badge: '⚡ 24H Instant Hire',
+    isDefaultActive: true,
+  },
+  {
     id: 'ad_automation',
     name: 'AI Meta & Google Ad Campaign Launcher',
     priceFormatted: '+₦195,000/mo',

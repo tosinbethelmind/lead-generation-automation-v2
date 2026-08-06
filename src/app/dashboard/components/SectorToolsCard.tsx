@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import { SolarBoqResult, CustomsDutyResult, CacRegistrationResult } from '@/lib/sectorModules';
+import { RecruitmentEngineWidget } from '@/components/RecruitmentEngineWidget';
+import { WebappToolActionBar } from '@/components/WebappToolActionBar';
 
 export default function SectorToolsCard() {
-  const [activeTool, setActiveTool] = useState<'solar' | 'auto' | 'legal' | 'retail'>('solar');
+  const [activeTool, setActiveTool] = useState<'solar' | 'auto' | 'legal' | 'retail' | 'recruitment'>('recruitment');
 
   // Solar State
   const [kvaInput, setKvaInput] = useState<number>(5);
@@ -84,7 +86,9 @@ export default function SectorToolsCard() {
   };
 
   return (
-    <div className="glassmorphism p-6 rounded-2xl border border-white/10 text-white space-y-6">
+    <>
+      <WebappToolActionBar currentTool={activeTool} />
+      <div className="glassmorphism p-6 rounded-2xl border border-white/10 text-white space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2">
@@ -94,7 +98,13 @@ export default function SectorToolsCard() {
         </div>
 
         {/* Sector Switcher Tabs */}
-        <div className="flex gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs">
+        <div className="flex gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs flex-wrap">
+          <button
+            onClick={() => setActiveTool('recruitment')}
+            className={`px-3 py-1.5 rounded-lg font-semibold transition ${activeTool === 'recruitment' ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
+          >
+            💼 AI Recruitment & Talent Engine
+          </button>
           <button
             onClick={() => setActiveTool('solar')}
             className={`px-3 py-1.5 rounded-lg font-semibold transition ${activeTool === 'solar' ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
@@ -115,6 +125,9 @@ export default function SectorToolsCard() {
           </button>
         </div>
       </div>
+
+      {/* RECRUITMENT ENGINE */}
+      {activeTool === 'recruitment' && <RecruitmentEngineWidget />}
 
       {/* SOLAR ENGINE */}
       {activeTool === 'solar' && (
@@ -316,5 +329,6 @@ export default function SectorToolsCard() {
         </div>
       )}
     </div>
+    </>
   );
 }

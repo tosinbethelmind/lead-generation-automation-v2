@@ -3,7 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun, Bot, Zap } from 'lucide-react';
+import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun, Bot, Zap, Briefcase, Building2, CreditCard, Crown } from 'lucide-react';
+import { WebappToolActionBar } from '@/components/WebappToolActionBar';
 
 export default function AdminLayout({
   children,
@@ -13,6 +14,7 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = React.useState<{ name: string; email: string; role: string; permissions: string[] } | null>(null);
+  const [tenantInfo, setTenantInfo] = React.useState<{ business_name: string; package_tier: string; days_remaining: number; is_active: boolean } | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -30,6 +32,15 @@ export default function AdminLayout({
       .catch(() => {
         setLoading(false);
       });
+
+    // Also load tenant context if logged in as a tenant
+    const tenantTokenCookie = document.cookie.split(';').find(c => c.trim().startsWith('tenant-token='))?.split('=')[1];
+    if (tenantTokenCookie) {
+      fetch('/api/tenants/list?mode=me', { headers: { 'x-tenant-token': tenantTokenCookie } })
+        .then(r => r.json())
+        .then(d => { if (d.success && d.tenant) setTenantInfo(d.tenant); })
+        .catch(() => {});
+    }
   }, [pathname]);
 
   // Simple client-side logout
@@ -86,6 +97,18 @@ export default function AdminLayout({
       icon: Users,
       visible: loading || hasPermission('manage_team'),
     },
+    {
+      name: 'All Tenants',
+      path: '/admin/tenants',
+      icon: Building2,
+      visible: loading || hasPermission('manage_team'),
+    },
+    {
+      name: 'My Subscription',
+      path: '/admin/subscription',
+      icon: CreditCard,
+      visible: true,
+    },
   ].filter(item => item.visible);
 
   const hasPageAccess = () => {
@@ -111,10 +134,29 @@ export default function AdminLayout({
             <ShieldAlert />
           </div>
           <div>
-            <h3 style={{ fontSize: '0.85rem', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.2' }}>Bethelmind Analytics & Strategy</h3>
+            <h3 style={{ fontSize: '0.85rem', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.2' }}>ApexReach Platform</h3>
             <span className="brand-badge">Admin</span>
           </div>
         </div>
+
+        {/* Tenant subscription badge */}
+        {tenantInfo && (
+          <div style={{ marginBottom: 12, padding: '10px 12px', borderRadius: 10, background: tenantInfo.is_active ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)', border: `1px solid ${tenantInfo.is_active ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Crown style={{ width: 14, height: 14, color: tenantInfo.is_active ? '#10b981' : '#ef4444' }} />
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: tenantInfo.is_active ? '#10b981' : '#ef4444', textTransform: 'capitalize' }}>
+                {tenantInfo.package_tier} Plan
+              </span>
+            </div>
+            <p style={{ margin: '4px 0 0', fontSize: '0.7rem', color: '#64748b' }}>
+              {tenantInfo.is_active
+                ? tenantInfo.days_remaining > 9000
+                  ? '♾️ Lifetime Access'
+                  : `${tenantInfo.days_remaining}d remaining`
+                : '⚠️ Subscription expired'}
+            </p>
+          </div>
+        )}
 
         {user && (
           <div className="user-profile-badge">
@@ -153,18 +195,24 @@ export default function AdminLayout({
 
       <main className="admin-content">
         {pathname !== '/admin/solar-pipeline' && (
-          <header className="admin-header">
-            <div className="header-title">
-              <h1>
-                {navItems.find((n) => n.path === pathname)?.name || 'Admin Dashboard'}
-              </h1>
-              <p>Control visual themes, domain aliases and cloud deployments.</p>
+          <>
+            <header className="admin-header">
+              <div className="header-title">
+                <h1>
+                  {navItems.find((n) => n.path === pathname)?.name || 'Admin Dashboard'}
+                </h1>
+                <p>Control visual themes, domain aliases and cloud deployments.</p>
+              </div>
+              <div className="header-status">
+                <span className="status-indicator"></span>
+                <span>Secure Console</span>
+              </div>
+            </header>
+
+            <div className="px-8 pt-4">
+              <WebappToolActionBar currentTool={navItems.find((n) => n.path === pathname)?.name || 'Admin Tool'} />
             </div>
-            <div className="header-status">
-              <span className="status-indicator"></span>
-              <span>Secure Console</span>
-            </div>
-          </header>
+          </>
         )}
 
         <div className="content-body" style={{ padding: pathname === '/admin/solar-pipeline' ? '0' : '40px', flex: 1, overflow: 'hidden' }}>

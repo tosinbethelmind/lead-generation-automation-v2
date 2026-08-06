@@ -62,6 +62,15 @@ export const MODULAR_FEATURES_CATALOG: ModularFeature[] = [
     description: 'Displays dedicated bank transfer details with 1-second instant receipt verification.',
     icon: '🏦',
   },
+  {
+    id: 'feature_recruitment_engine',
+    name: '⚡ 24-Hour Instant AI Recruitment & Talent Engine',
+    category: 'ai_care',
+    setupPriceNGN: 95000,
+    monthlyRenewalNGN: 25000,
+    description: 'Instant job advertising, WhatsApp audio voice note screening, 1-ms AI CV grading (0-100%), Google X-Ray search, and 24-hour candidate hiring.',
+    icon: '⚡',
+  },
 ];
 
 /** Calculates total setup fee, monthly renewal, and bundle discounts */

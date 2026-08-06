@@ -44,7 +44,7 @@ export function SelectiveFeaturePickerModal({
   };
 
   const handleCopyAccount = () => {
-    navigator.clipboard.writeText('7012345678');
+    navigator.clipboard.writeText('7034297995');
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -210,9 +210,9 @@ export function SelectiveFeaturePickerModal({
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <span style={{ fontSize: '11px', color: '#64748b' }}>OPay Microfinance Bank</span>
-              <div style={{ fontSize: '18px', fontWeight: 900, color: '#10b981' }}>7012345678</div>
-              <span style={{ fontSize: '11px', color: '#94a3b8' }}>ApexReach Digital / Bethelmind</span>
+              <span style={{ fontSize: '11px', color: '#64748b' }}>OPay Digital Services</span>
+              <div style={{ fontSize: '18px', fontWeight: 900, color: '#10b981' }}>7034297995</div>
+              <span style={{ fontSize: '11px', color: '#94a3b8' }}>Oyelakin Tosin Matthew</span>
             </div>
             <button
               onClick={handleCopyAccount}

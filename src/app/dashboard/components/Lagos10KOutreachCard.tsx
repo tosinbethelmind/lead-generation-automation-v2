@@ -156,7 +156,7 @@ export default function Lagos10KOutreachCard() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#f8fafc', letterSpacing: '-0.02em' }}>
-                10K Lagos B2B Outreach Engine
+                20K Lagos B2B Outreach Engine
               </h2>
               <span style={{
                 fontSize: '0.7rem',

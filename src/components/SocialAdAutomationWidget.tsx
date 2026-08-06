@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { WebappToolActionBar } from './WebappToolActionBar';
 import {
   generateSocialContentCalendar,
   generateAiAdCampaign,
@@ -60,7 +61,9 @@ export function SocialAdAutomationWidget({
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto my-8 bg-slate-950 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden font-sans text-slate-100">
+    <div className="w-full space-y-4">
+      <WebappToolActionBar currentTool="AI Social Ad Launcher" />
+      <div className="w-full max-w-5xl mx-auto my-8 bg-slate-950 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden font-sans text-slate-100">
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 p-6 md:p-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

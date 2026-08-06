@@ -2,11 +2,54 @@
 
 import React, { useState } from 'react';
 import { SocialAdAutomationWidget } from './SocialAdAutomationWidget';
+import { RecruitmentEngineWidget } from './RecruitmentEngineWidget';
+import { WebappToolActionBar } from './WebappToolActionBar';
 
 interface SectorToolsWidgetProps {
   businessCategory?: string;
   businessName?: string;
   merchantPhone?: string;
+}
+
+export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitle: string; toolSlug: string; description: string }) {
+  const [copied, setCopied] = useState(false);
+  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/tools/${toolSlug}` : `https://apexreach.app/tools/${toolSlug}`;
+  const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out this free 24-Hour ${toolTitle} Tool (${description}): ${shareUrl}`)}`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="bg-slate-950/80 border border-slate-800 p-3 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs mb-4">
+      <div className="flex items-center space-x-2">
+        <span className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg font-bold">🔗</span>
+        <div>
+          <span className="font-bold text-white">Direct Tool & Bookmark Link: </span>
+          <span className="text-slate-400 font-mono text-[11px]">{shareUrl}</span>
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-2 w-full sm:w-auto">
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-600/50 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1"
+        >
+          <span>📲 Share on WhatsApp</span>
+        </a>
+        <button
+          onClick={handleCopy}
+          className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-600/30 border border-blue-500/40 text-blue-300 hover:bg-blue-600/50 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1"
+        >
+          <span>{copied ? 'Copied Link! 🔗' : 'Copy Shareable Link'}</span>
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export function SectorToolsWidget({
@@ -15,8 +58,8 @@ export function SectorToolsWidget({
   merchantPhone = '08012345678',
 }: SectorToolsWidgetProps) {
   const [activeTab, setActiveTab] = useState<
-    'solar' | 'auto' | 'legal' | 'dva' | 'logistics' | 'mortgage' | 'pidgin' | 'social_ads'
-  >('social_ads');
+    'solar' | 'auto' | 'legal' | 'dva' | 'logistics' | 'mortgage' | 'pidgin' | 'social_ads' | 'recruitment'
+  >('recruitment');
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -59,7 +102,9 @@ export function SectorToolsWidget({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto my-8 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden text-slate-100 font-sans">
+    <div className="w-full space-y-4">
+      <WebappToolActionBar currentTool={activeTab} />
+      <div className="w-full max-w-4xl mx-auto my-8 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden text-slate-100 font-sans">
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6">
         <div className="flex items-center justify-between">
@@ -81,6 +126,17 @@ export function SectorToolsWidget({
 
       {/* Navigation Tabs */}
       <div className="flex overflow-x-auto border-b border-slate-800 bg-slate-950 p-2 gap-1 scrollbar-none">
+        <button
+          onClick={() => {
+            setActiveTab('recruitment');
+            setResult(null);
+          }}
+          className={`px-4 py-2.5 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
+            activeTab === 'recruitment' ? 'bg-cyan-600/30 border border-cyan-500/50 text-cyan-300 shadow-md' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          💼 AI Recruitment & Talent Engine
+        </button>
         <button
           onClick={() => {
             setActiveTab('social_ads');
@@ -162,9 +218,17 @@ export function SectorToolsWidget({
 
       {/* Tab Panels */}
       <div className="p-6 space-y-6">
+        {/* RECRUITMENT TAB */}
+        {activeTab === 'recruitment' && (
+          <div className="space-y-4">
+            <FeatureShareBar toolTitle="24-Hour AI Recruitment Engine" toolSlug="recruitment" description="24-Hour Fast Hiring, WhatsApp Voice Note Screening & AI CV Grader" />
+            <RecruitmentEngineWidget />
+          </div>
+        )}
         {/* SOLAR TAB */}
         {activeTab === 'solar' && (
           <div className="space-y-4">
+            <FeatureShareBar toolTitle="Solar BOQ & DISCO ROI Calculator" toolSlug="solar-boq" description="BOQ Sizing & Diesel vs Solar Savings Estimator" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-medium text-slate-400 mb-1">Appliance Load (kVA)</label>

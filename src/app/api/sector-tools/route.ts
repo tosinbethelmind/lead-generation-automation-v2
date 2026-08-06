@@ -175,6 +175,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, url });
     }
 
+    if (action === 'recruitment_grade_cv') {
+      const { evaluateCvGrade } = await import('@/lib/recruitmentEngine');
+      const { jobRequirements, candidate } = body;
+      const result = evaluateCvGrade(
+        jobRequirements || { requiredSkills: ['Solar Inverter Sizing', 'Lithium Battery Storage'], minYearsExp: 3, title: 'Senior Solar Installer' },
+        candidate || { yearsExperience: 4, skills: ['Solar Inverter Sizing', 'Lithium Battery Storage', 'High Voltage Wiring'], cvText: '5 years managing 10kVA solar inverter systems in Lekki Lagos.' }
+      );
+      return NextResponse.json({ success: true, result });
+    }
+
+    if (action === 'recruitment_sourcing_help') {
+      const { generateSourcingRecommendations } = await import('@/lib/recruitmentEngine');
+      const { roleTitle, location, experienceLevel } = body;
+      const result = generateSourcingRecommendations(roleTitle || 'Senior Solar Engineer', location || 'Lagos', experienceLevel || 'Senior');
+      return NextResponse.json({ success: true, result });
+    }
+
     return NextResponse.json({ success: false, error: 'Unknown action parameter' }, { status: 400 });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

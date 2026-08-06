@@ -20,9 +20,9 @@ export function OpayTransferBox({
 }: OpayTransferBoxProps) {
   const [copied, setCopied] = useState(false);
   const opayAccount = {
-    bankName: 'OPay Microfinance Bank',
-    accountNumber: process.env.NEXT_PUBLIC_OPAY_ACCOUNT_NUMBER || '7012345678',
-    accountName: process.env.NEXT_PUBLIC_OPAY_ACCOUNT_NAME || 'ApexReach Digital / Bethelmind',
+    bankName: 'OPay Digital Services',
+    accountNumber: '7034297995',
+    accountName: 'Oyelakin Tosin Matthew',
   };
 
   const handleCopy = () => {

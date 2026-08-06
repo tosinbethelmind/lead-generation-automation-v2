@@ -63,13 +63,33 @@ export function writeSubscriptions(subs: Record<string, ClientSubscription>) {
   }
 }
 
-/** Configured OPay Payment Details (Manual Transfer Only) */
+/** Configured OPay Payment Details (Manual Transfer Only) — NO FALLBACKS: missing env vars will throw */
 export function getOpayBankTransferDetails() {
+  const accountNumber = process.env.OPAY_ACCOUNT_NUMBER;
+  const accountName = process.env.OPAY_ACCOUNT_NAME;
+  if (!accountNumber || !accountName) {
+    throw new Error('[CRITICAL] OPAY_ACCOUNT_NUMBER or OPAY_ACCOUNT_NAME env var is not set. Refusing to serve payment details to prevent wrong-account transfers.');
+  }
   return {
-    bankName: 'OPay Microfinance Bank',
-    accountNumber: process.env.OPAY_ACCOUNT_NUMBER || '7012345678',
-    accountName: process.env.OPAY_ACCOUNT_NAME || 'ApexReach Digital / Bethelmind',
+    bankName: 'OPay Digital Services',
+    accountNumber,
+    accountName,
     instructions: 'Make bank transfer to OPay account above. Send receipt screenshot to Admin WhatsApp for instant 1-second reactivation!'
+  };
+}
+
+/** Configured Moniepoint Payment Details (Manual Transfer Only) — NO FALLBACKS */
+export function getMoniepointBankTransferDetails() {
+  const accountNumber = process.env.MONIEPOINT_ACCOUNT_NUMBER;
+  const accountName = process.env.MONIEPOINT_ACCOUNT_NAME;
+  if (!accountNumber || !accountName) {
+    throw new Error('[CRITICAL] MONIEPOINT_ACCOUNT_NUMBER or MONIEPOINT_ACCOUNT_NAME env var is not set. Refusing to serve payment details to prevent wrong-account transfers.');
+  }
+  return {
+    bankName: 'Moniepoint Microfinance Bank',
+    accountNumber,
+    accountName,
+    instructions: 'Make bank transfer to Moniepoint account above. Send receipt screenshot to Admin WhatsApp for instant 1-second reactivation!'
   };
 }
 

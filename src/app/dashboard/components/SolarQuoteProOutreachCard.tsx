@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Send, CheckCircle, RefreshCw, Layers, ShieldCheck, Globe, Users, ShoppingBag, Mail, Play, Square } from 'lucide-react';
 import { cleanErrorMessage } from '@/lib/validation';
+import { WebappToolActionBar } from '@/components/WebappToolActionBar';
 
 export default function SolarQuoteProOutreachCard() {
 
@@ -149,7 +150,9 @@ export default function SolarQuoteProOutreachCard() {
   };
 
   return (
-    <div style={{
+    <>
+      <WebappToolActionBar currentTool="SolarQuotePro Outreach Engine" />
+      <div style={{
       background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%)',
       border: '1px solid rgba(13, 148, 136, 0.3)',
       borderRadius: '16px',
