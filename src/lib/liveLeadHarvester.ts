@@ -13,6 +13,7 @@ import { enrichLeadContacts, extractEmailsFromText } from './leadEnricher';
 import { fetchJijiMerchantLeads, fetchBusinessListLeads, fetchGoogleDorkLeads, fetchVConnectLeads, fetchCACBusinessLeads, fetchFinelibLeads, fetchBingSerpLeads, fetchOutscraperLeads, fetchApifyLiveLeads } from './directoryScrapers';
 
 import { fetchSocialMultiChannelLeads, fetchSocialGroupLeads } from './socialMultiChannelScraper';
+import { runConcurrentTasks } from './batchConcurrency';
 import * as cheerio from 'cheerio';
 import crypto from 'crypto';
 
@@ -107,7 +108,39 @@ const LAGOS_LGA_QUERIES = [
   { q: 'savings and loan Ikeja', cat: 'Microfinance Institution', lga: 'Ikeja' },
   { q: 'fumigation services Ikeja', cat: 'Fumigation & Pest Control', lga: 'Ikeja' },
   { q: 'security company Ikoyi', cat: 'Security Guard Enterprise', lga: 'Ikoyi' },
-  { q: 'cctv installer Lekki', cat: 'CCTV & Access Control', lga: 'Eti-Osa (Lekki)' }
+  { q: 'cctv installer Lekki', cat: 'CCTV & Access Control', lga: 'Eti-Osa (Lekki)' },
+  // ─── NEW: Small Business & Informal Sector Queries ───────────────────────
+  { q: 'tutorial center Lagos', cat: 'Tutorial & Coaching Center', lga: 'Lagos' },
+  { q: 'lesson center Ikeja', cat: 'Lesson & After-School Center', lga: 'Ikeja' },
+  { q: 'nursery school Lagos', cat: 'Nursery & Primary School', lga: 'Lagos' },
+  { q: 'creche daycare Lagos', cat: 'Creche & Daycare', lga: 'Lagos' },
+  { q: 'music school Lagos', cat: 'Music Academy', lga: 'Lagos' },
+  { q: 'fashion designer Lagos', cat: 'Fashion Designer & Tailor', lga: 'Lagos' },
+  { q: 'thrift store Lagos', cat: 'Thrift & Okrika Vendor', lga: 'Lagos' },
+  { q: 'hair vendor Lagos', cat: 'Hair Extension Vendor', lga: 'Lagos' },
+  { q: 'makeup artist Lagos', cat: 'Makeup Artist & Beauty Studio', lga: 'Lagos' },
+  { q: 'skincare brand Lagos', cat: 'Skincare & Beauty Brand', lga: 'Lagos' },
+  { q: 'wig vendor Lagos', cat: 'Wig & Hair Vendor', lga: 'Lagos' },
+  { q: 'nail technician Lagos', cat: 'Nail Technician & Spa', lga: 'Lagos' },
+  { q: 'small chops catering Lagos', cat: 'Catering & Small Chops', lga: 'Lagos' },
+  { q: 'cake baker Lagos', cat: 'Cake Baker & Confectionery', lga: 'Lagos' },
+  { q: 'food vendor Lagos', cat: 'Food Vendor & Restaurant', lga: 'Lagos' },
+  { q: 'shawarma restaurant Lagos', cat: 'Fast Food & Restaurant', lga: 'Lagos' },
+  { q: 'pastries bakery Lagos', cat: 'Bakery & Pastry Shop', lga: 'Lagos' },
+  { q: 'phone accessories vendor Lagos', cat: 'Phone Accessories Vendor', lga: 'Lagos' },
+  { q: 'laptop repair Lagos', cat: 'Laptop & Computer Repair', lga: 'Lagos' },
+  { q: 'gadget store Lagos', cat: 'Gadget & Electronics Store', lga: 'Lagos' },
+  { q: 'phone repair Lagos', cat: 'Phone Repair Technician', lga: 'Lagos' },
+  { q: 'interior decorator Lagos', cat: 'Interior Decorator', lga: 'Lagos' },
+  { q: 'cleaning services Lagos', cat: 'Cleaning & Housekeeping Service', lga: 'Lagos' },
+  { q: 'event planner Lagos', cat: 'Event Planner & Decorator', lga: 'Lagos' },
+  { q: 'photographer Lagos', cat: 'Photography Studio', lga: 'Lagos' },
+  { q: 'videographer Lagos', cat: 'Videographer & Media Production', lga: 'Lagos' },
+  { q: 'dj Lagos', cat: 'DJ & Entertainment', lga: 'Lagos' },
+  { q: 'dispatch rider Lagos', cat: 'Dispatch & Courier Rider', lga: 'Lagos' },
+  { q: 'moving company Lagos', cat: 'Movers & Relocations', lga: 'Lagos' },
+  { q: 'barbing salon Ikeja', cat: 'Barbing Salon', lga: 'Ikeja' },
+  { q: 'ankara fabric Yaba', cat: 'Fabric & Ankara Vendor', lga: 'Yaba' },
 ];
 
 const BIZLIST_LAGOS_CATEGORIES = [
@@ -580,7 +613,18 @@ export async function harvestLiveLagosLeads(): Promise<{ added: number; totalLag
       fetchSocialMultiChannelLeads('INSTAGRAM', socialQuery1, 'lagos_10k_b2b'),
       fetchSocialMultiChannelLeads('FACEBOOK', socialQuery2, 'lagos_10k_b2b'),
       fetchSocialMultiChannelLeads('LINKEDIN', 'logistics company Lagos', 'lagos_10k_b2b'),
-      fetchSocialMultiChannelLeads('TIKTOK', 'boutique store Lagos', 'lagos_10k_b2b')
+      fetchSocialMultiChannelLeads('TIKTOK', 'boutique store Lagos', 'lagos_10k_b2b'),
+      // NEW: Small Business & Informal Sector Social Searches
+      fetchSocialMultiChannelLeads('INSTAGRAM', 'tutorial center Lagos', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('INSTAGRAM', 'private school Lagos', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('INSTAGRAM', 'hair vendor Lagos', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('INSTAGRAM', 'makeup artist Lagos', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('INSTAGRAM', 'cake baker Lagos', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('FACEBOOK', 'nursery school Lagos', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('FACEBOOK', 'fashion designer Lagos', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('TIKTOK', 'wig vendor Lagos', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('INSTAGRAM', 'event planner Lagos', 'lagos_10k_b2b'),
+      fetchSocialMultiChannelLeads('INSTAGRAM', 'catering services Lagos', 'lagos_10k_b2b'),
     ];
 
     const results = await Promise.allSettled(parallelTasks);
