@@ -811,7 +811,25 @@ export function RecruitmentEngineWidget() {
                     className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-blue-600/20"
                   >
                     <ExternalLink className="w-3 h-3" />
-                    <span>Run Google X-Ray Search</span>
+                    <span>Run Google X-Ray</span>
+                  </a>
+
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:drive.google.com "curriculum vitae" OR "resume" "${sourcingRecs.roleTitle}" "Lagos" filetype:pdf`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-red-950 border border-red-500/40 hover:bg-red-900/60 text-red-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  >
+                    <span>📄 Public Google Drive CVs</span>
+                  </a>
+
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:t.me "NYSC" OR "Job Vacancies" "Lagos" "${sourcingRecs.roleTitle}"`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-sky-950 border border-sky-500/40 hover:bg-sky-900/60 text-sky-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  >
+                    <span>📱 NYSC Telegram Channels</span>
                   </a>
 
                   <a
@@ -821,6 +839,15 @@ export function RecruitmentEngineWidget() {
                     className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
                   >
                     <span>🐙 GitHub Devs</span>
+                  </a>
+
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:behance.net/ "${sourcingRecs.roleTitle}" "Lagos"`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-indigo-950 border border-indigo-500/40 hover:bg-indigo-900/60 text-indigo-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  >
+                    <span>🎨 Behance Portfolios</span>
                   </a>
 
                   <a
@@ -842,6 +869,7 @@ export function RecruitmentEngineWidget() {
                     <span>WhatsApp Broadcast</span>
                   </a>
                 </div>
+
 
                 <p className="text-[10px] text-slate-400 mt-2">
                   💡 <strong>How to use:</strong> Click any button above to immediately run live candidate searches across Google, GitHub, Nairaland, and WhatsApp.
