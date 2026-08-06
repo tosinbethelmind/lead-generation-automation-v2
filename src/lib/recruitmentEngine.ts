@@ -700,7 +700,10 @@ export async function batchGradeCvsParallel(
     const chunk = applicants.slice(i, i + chunkSize);
     const chunkResults = await Promise.all(
       chunk.map(async (applicant) => {
-        const gradeResult = evaluateCvGrade(applicant.cvText, job);
+        const gradeResult = evaluateCvGrade(
+          { requiredSkills: job.requiredSkills || [], minYearsExp: job.minYearsExp || 1, title: job.title || 'Specialist' },
+          { yearsExperience: applicant.yearsExperience || 2, skills: applicant.skills || [], cvText: applicant.cvText || '', coverNote: applicant.coverNote }
+        );
         return {
           ...applicant,
           gradeResult,
@@ -708,6 +711,7 @@ export async function batchGradeCvsParallel(
         };
       })
     );
+
     processed.push(...chunkResults);
   }
 
