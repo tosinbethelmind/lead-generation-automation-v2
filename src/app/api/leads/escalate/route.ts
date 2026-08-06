@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import { sendNotificationEmail } from '@/lib/email';
+import { sanitizeInputString } from '@/lib/validation';
 
 // ============================================================================
 // POST /api/leads/escalate
@@ -10,8 +11,15 @@ import { sendNotificationEmail } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { leadId, clientName, clientEmail, reason, urgency } = body;
+    let body: any = {};
+    try {
+      body = await req.json();
+    } catch (_) {}
+    const leadId = sanitizeInputString(body?.leadId);
+    const clientName = sanitizeInputString(body?.clientName);
+    const clientEmail = sanitizeInputString(body?.clientEmail);
+    const reason = sanitizeInputString(body?.reason);
+    const urgency = sanitizeInputString(body?.urgency);
 
     if (!leadId) {
       return NextResponse.json(

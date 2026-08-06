@@ -31,9 +31,9 @@ async function main() {
   if (await runTest('Create High-Stakes Decision Approval Ticket', async () => {
     testTicket = await createApprovalTicket({
       actionType: 'EXECUTE_REDESIGN',
-      title: 'Major Site Layout Overhaul for SolarQuotePro',
-      summary: 'AI proposed changing primary branding color to Dark Navy and adding interactive solar ROI calculator.',
-      proposedData: { theme: 'dark_navy', widgets: ['solar_calculator'] }
+      title: 'Major Site Layout Overhaul for Client B2B Portal',
+      summary: 'AI proposed updating primary branding theme to Modern Dark Mode and adding interactive Paystack checkout widget.',
+      proposedData: { theme: 'dark_mode', widgets: ['paystack_checkout'] }
     });
     if (!testTicket || testTicket.status !== 'PENDING_HUMAN_APPROVAL') {
       throw new Error('Failed to create pending ticket');
@@ -62,15 +62,15 @@ async function main() {
   if (await runTest('Simulate Telegram Text Reply with Custom Prompt Modifier', async () => {
     promptTicket = await createApprovalTicket({
       actionType: 'LAUNCH_CAMPAIGN',
-      title: 'Bulk WhatsApp Outreach Dispatch (150 Leads)',
-      summary: 'AI proposed sending high-value solar ROI proposal to 150 leads in Lagos region.',
+      title: 'Bulk WhatsApp Outreach Dispatch (150 Business Leads)',
+      summary: 'AI proposed sending high-value B2B Web Portal proposal to 150 business leads in Lagos region.',
       proposedData: { leadsCount: 150, channel: 'WHATSAPP' }
     });
 
     const simulatedReplyUpdate = {
       message: {
         chat: { id: 987654 },
-        text: `Approve, but change daily cap to 50 leads and add signature "Best Regards, Solar Team"`,
+        text: `Approve, but change daily cap to 50 leads and add signature "Best Regards, Web Growth Team"`,
         reply_to_message: {
           text: `🚨 HUMAN APPROVAL REQUIRED 🚨\nTicket ID: ${promptTicket.id}`
         }

@@ -49,16 +49,20 @@ async function supabaseRequest(method, endpoint, body = null, headers = {}) {
       const res = await fetch(url, options);
       if (!res.ok) {
         const text = await res.text();
+        const cleanMsg = (text.includes('522') || text.includes('cf-error') || text.includes('<html'))
+          ? 'Cloudflare 522 Timeout (Supabase Unreachable)'
+          : text.replace(/<[^>]*>?/gm, '').slice(0, 150);
+
         if (res.status >= 500 || res.status === 429) {
           if (attempt === maxRetries) {
-            throw new Error(`Supabase API error (${method} ${endpoint}): Status ${res.status} - ${text}`);
+            throw new Error(`Supabase API error (${method} ${endpoint}): Status ${res.status} - ${cleanMsg}`);
           }
-          console.warn(`[Network Retry] Supabase API returned status ${res.status} (${method} ${endpoint}). Retrying in ${delay / 1000}s (Attempt ${attempt}/${maxRetries})...`);
+          console.warn(`[Network Retry] Supabase API returned status ${res.status} (${method} ${endpoint}). Reason: "${cleanMsg}". Retrying in ${delay / 1000}s (Attempt ${attempt}/${maxRetries})...`);
           await new Promise(r => setTimeout(r, delay));
           delay *= 2;
           continue;
         } else {
-          throw new Error(`Supabase API error (${method} ${endpoint}): Status ${res.status} - ${text}`);
+          throw new Error(`Supabase API error (${method} ${endpoint}): Status ${res.status} - ${cleanMsg}`);
         }
       }
 
@@ -68,13 +72,19 @@ async function supabaseRequest(method, endpoint, body = null, headers = {}) {
       try {
         return JSON.parse(text);
       } catch (jsonErr) {
-        throw new Error(`Failed to parse JSON response from ${method} ${endpoint} (Status ${res.status}): "${text.substring(0, 150)}". error: ${jsonErr.message}`);
+        const cleanMsg = (text.includes('522') || text.includes('cf-error') || text.includes('<html'))
+          ? 'Cloudflare 522 Timeout HTML response'
+          : text.replace(/<[^>]*>?/gm, '').slice(0, 150);
+        throw new Error(`Failed to parse JSON response from ${method} ${endpoint} (Status ${res.status}): "${cleanMsg}". error: ${jsonErr.message}`);
       }
     } catch (err) {
       if (attempt === maxRetries) {
         throw err;
       }
-      console.warn(`[Network Retry] Supabase API request failed (${method} ${endpoint}) with error: "${err.message}". Retrying in ${delay / 1000}s (Attempt ${attempt}/${maxRetries})...`);
+      const cleanMsg = (err.message.includes('522') || err.message.includes('cf-error') || err.message.includes('<html'))
+        ? 'Cloudflare 522 Timeout (Supabase Unreachable)'
+        : err.message.replace(/<[^>]*>?/gm, '').slice(0, 150);
+      console.warn(`[Network Retry] Supabase API request failed (${method} ${endpoint}) with error: "${cleanMsg}". Retrying in ${delay / 1000}s (Attempt ${attempt}/${maxRetries})...`);
       await new Promise(r => setTimeout(r, delay));
       delay *= 2;
     }

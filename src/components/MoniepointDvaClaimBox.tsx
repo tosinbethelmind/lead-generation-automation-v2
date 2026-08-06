@@ -214,7 +214,7 @@ export function MoniepointDvaClaimBox({
       {/* Money-Back Seal */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#94a3b8', justifyContent: 'center' }}>
         <ShieldCheck size={18} style={{ color: '#22c55e' }} />
-        <span>100% Money-Back Guarantee & CAC/FIRS Verified Business Seal</span>
+        <span>100% Money-Back Guarantee & Verified Business Seal</span>
       </div>
     </div>
   );

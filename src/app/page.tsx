@@ -1,7 +1,5 @@
 'use client';
 
-console.log('Redeploy check - latest build');
-
 import React, { useState, useEffect } from 'react';
 import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 import { 
@@ -269,7 +267,8 @@ function BaileysPairingPanel({ baseUrl }: { baseUrl: string }) {
     window.location.hostname !== '127.0.0.1';
 
   const handleProductionRedirect = () => {
-    window.open('http://localhost:3006/#whatsapp-settings', '_blank');
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3006';
+    window.open(`${origin}/#whatsapp-settings`, '_blank');
   };
 
   const fetchStatus = async () => {

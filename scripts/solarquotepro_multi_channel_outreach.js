@@ -4,6 +4,11 @@
  * Combines 10K Nigeria Scraper, Dual-DB Sync, Web Contact Forms, Group Hunter, Jiji Messaging, & B2B Emails.
  */
 
+const dns = require('dns');
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
+
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');

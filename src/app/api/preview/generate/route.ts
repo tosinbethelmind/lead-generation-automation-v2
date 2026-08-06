@@ -47,11 +47,15 @@ export async function GET(req: NextRequest) {
       lead.embedNote = lead.embed_note || lead.embedNote || '';
 
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
         const analysisResp = await fetch(`${origin}/api/analysis/website`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url: lead.website }),
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
         if (analysisResp.ok) {
           websiteInfo = await analysisResp.json();
           // Attach basic metadata
@@ -66,7 +70,7 @@ export async function GET(req: NextRequest) {
           lead.embedNote = websiteInfo.embedNote || lead.embedNote || '';
         }
       } catch (e) {
-        console.warn('Website analysis failed:', e);
+        console.warn('Website analysis timed out or failed:', e);
       }
     } else {
       lead.upgradeStrategy = lead.upgrade_strategy || lead.upgradeStrategy || 'basic_presence';

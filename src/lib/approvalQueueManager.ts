@@ -65,7 +65,8 @@ export async function getApprovalTicketById(id: string): Promise<ApprovalTicket 
 }
 
 /**
- * Approves a decision ticket, optionally attaching a custom prompt modifier
+ * Approves a decision ticket, optionally attaching a custom prompt modifier,
+ * and dispatches the execution action to downstream service endpoints (Baileys :3007 or Command Center :3008).
  */
 export async function approveTicket(id: string, adminPromptModifier?: string): Promise<ApprovalTicket> {
   const ticket = inMemoryQueue.find(t => t.id === id);
@@ -78,11 +79,52 @@ export async function approveTicket(id: string, adminPromptModifier?: string): P
   }
 
   console.log(`[Approval Gate] Ticket ${id} APPROVED by Admin.${adminPromptModifier ? ` Prompt Modifier: "${adminPromptModifier}"` : ''}`);
+
+  // ── Dispatch Execution to External Services ─────────────────────────────────
+  const targetId = ticket.proposedData?.ticketId || ticket.id;
+
+  // 1. WhatsApp Auto-Reply Ticket (Baileys service on port 3007)
+  if (targetId.startsWith('WA-APPR-') || ticket.actionType === 'OTHER') {
+    try {
+      const baileysUrl = process.env.WHATSAPP_BAILEYS_URL || 'http://localhost:3007';
+      await fetch(`${baileysUrl}/approve-reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId: targetId,
+          modifiedReplyText: adminPromptModifier || ticket.proposedData?.replyText,
+        }),
+        signal: AbortSignal.timeout(4000),
+      }).catch(() => {});
+    } catch (_) {}
+  }
+
+  // 2. Multi-Channel Command Center Ticket (Email/Web/SMS on port 3008)
+  if (
+    targetId.startsWith('EM-APPR-') ||
+    targetId.startsWith('WEB-APPR-') ||
+    targetId.startsWith('SMS-APPR-') ||
+    targetId.startsWith('GEN-APPR-')
+  ) {
+    try {
+      const commandCenterUrl = process.env.UNIFIED_COMMAND_URL || 'http://localhost:3008';
+      await fetch(`${commandCenterUrl}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId: targetId,
+          customReply: adminPromptModifier,
+        }),
+        signal: AbortSignal.timeout(4000),
+      }).catch(() => {});
+    } catch (_) {}
+  }
+
   return ticket;
 }
 
 /**
- * Rejects a decision ticket
+ * Rejects a decision ticket and dispatches rejection status to downstream service endpoints.
  */
 export async function rejectTicket(id: string, reason?: string): Promise<ApprovalTicket> {
   const ticket = inMemoryQueue.find(t => t.id === id);
@@ -95,6 +137,39 @@ export async function rejectTicket(id: string, reason?: string): Promise<Approva
   }
 
   console.log(`[Approval Gate] Ticket ${id} REJECTED by Admin. Reason: ${reason || 'None specified'}`);
+
+  // ── Dispatch Rejection to External Services ──────────────────────────────────
+  const targetId = ticket.proposedData?.ticketId || ticket.id;
+
+  if (targetId.startsWith('WA-APPR-')) {
+    try {
+      const baileysUrl = process.env.WHATSAPP_BAILEYS_URL || 'http://localhost:3007';
+      await fetch(`${baileysUrl}/reject-reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketId: targetId, reason }),
+        signal: AbortSignal.timeout(4000),
+      }).catch(() => {});
+    } catch (_) {}
+  }
+
+  if (
+    targetId.startsWith('EM-APPR-') ||
+    targetId.startsWith('WEB-APPR-') ||
+    targetId.startsWith('SMS-APPR-') ||
+    targetId.startsWith('GEN-APPR-')
+  ) {
+    try {
+      const commandCenterUrl = process.env.UNIFIED_COMMAND_URL || 'http://localhost:3008';
+      await fetch(`${commandCenterUrl}/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketId: targetId, reason }),
+        signal: AbortSignal.timeout(4000),
+      }).catch(() => {});
+    } catch (_) {}
+  }
+
   return ticket;
 }
 
@@ -107,3 +182,4 @@ export async function setTicketTelegramMessageId(id: string, telegramMessageId: 
     ticket.telegramMessageId = telegramMessageId;
   }
 }
+

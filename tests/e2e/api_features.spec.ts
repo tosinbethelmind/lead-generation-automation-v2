@@ -129,7 +129,8 @@ test.describe('API Endpoints Verification', () => {
       data: {
         domain: 'test-custom-domain.com',
         proxied: true
-      }
+      },
+      timeout: 60000
     });
 
     console.log('CLOUDFLARE RESPONSE:', response.status(), await response.text());
@@ -146,7 +147,8 @@ test.describe('API Endpoints Verification', () => {
       },
       data: {
         domain: 'test-custom-domain.com'
-      }
+      },
+      timeout: 60000
     });
 
     console.log('VERCEL RESPONSE:', response.status(), await response.text());

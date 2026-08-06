@@ -28,9 +28,6 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('🔥 [Runner UnhandledRejection] Unhandled Promise rejection at:', promise, 'reason:', reason);
 });
 
-const HARDCODED_URL = 'https://szyuterncawfxwzhvwcf.supabase.co';
-const HARDCODED_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY';
-
 function cleanEnvVal(val: string | undefined): string {
   if (!val) return '';
   let clean = val.trim();
@@ -41,25 +38,35 @@ function cleanEnvVal(val: string | undefined): string {
 }
 
 function isValidKey(key: string): boolean {
-  if (!key || key.length < 50) return false;
+  if (!key || key.length < 20) return false;
   try {
     const parts = key.split('.');
     if (parts.length === 3) {
       const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-      return payload.ref === 'szyuterncawfxwzhvwcf';
+      // Accept either the active project or any valid-looking JWT
+      return payload.ref === 'pnsrjsyiygxdcxkpgbzx' || payload.ref === 'szyuterncawfxwzhvwcf' || !!payload.ref;
     }
   } catch (_) {}
-  return false;
+  return key.length > 30;
 }
+
+// Active Supabase project fallback credentials (pnsrjsyiygxdcxkpgbzx)
+const FALLBACK_SUPABASE_URL = 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
+const FALLBACK_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
 
 // Resolve environment configuration
 function loadConfig() {
   let envUrl = cleanEnvVal(process.env.SUPABASE_URL) || cleanEnvVal(process.env.NEXT_PUBLIC_SUPABASE_URL);
-  let envKey = cleanEnvVal(process.env.SUPABASE_SERVICE_ROLE_KEY) || cleanEnvVal(process.env.SUPABASE_KEY);
+  let envKey = cleanEnvVal(process.env.SUPABASE_SERVICE_ROLE_KEY) || cleanEnvVal(process.env.SUPABASE_KEY) || cleanEnvVal(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
-  let supabaseUrl = (envUrl && envUrl.length > 10) ? envUrl : HARDCODED_URL;
-  let supabaseKey = (envKey && envKey.length > 20) ? envKey : HARDCODED_KEY;
+  // Filter out the old offline project URL
+  if (envUrl && envUrl.includes('szyuterncawfxwzhvwcf')) envUrl = '';
+
+  let supabaseUrl = (envUrl && envUrl.length > 10) ? envUrl : FALLBACK_SUPABASE_URL;
+  let supabaseKey = (envKey && isValidKey(envKey)) ? envKey : FALLBACK_SUPABASE_KEY;
   let storageMode = cleanEnvVal(process.env.STORAGE_MODE) || 'local';
+
+  console.log(`[Config] Using Supabase: ${supabaseUrl.replace('https://', '').split('.')[0]}`);
 
   return { supabaseUrl, supabaseKey, storageMode };
 }
@@ -166,6 +173,14 @@ async function isActiveRunner(): Promise<boolean> {
 }
 
 // Helper to wrap Supabase operations with automatic retry logic with exponential backoff
+function formatCleanErrorMessage(rawMsg: any): string {
+  const str = String(rawMsg || '').trim();
+  if (str.includes('cf-error') || str.includes('522') || str.includes('<html') || str.includes('Cloudflare')) {
+    return 'Cloudflare Error 522 (Connection Timed Out - Supabase Backend Unreachable)';
+  }
+  return str.replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').slice(0, 150);
+}
+
 async function supabaseWithRetry<T>(queryPromiseFn: () => Promise<{ data: T | null; error: any }>, retries = 5, initialDelay = 1000): Promise<{ data: T | null; error: any }> {
   let delay = initialDelay;
   for (let i = 0; i < retries; i++) {
@@ -175,7 +190,8 @@ async function supabaseWithRetry<T>(queryPromiseFn: () => Promise<{ data: T | nu
         return result;
       }
       
-      const errMsg = String(result.error.message || '').toLowerCase();
+      const rawMsg = String(result.error.message || '');
+      const errMsg = rawMsg.toLowerCase();
       const errCode = String(result.error.code || '');
       const isNetworkError = 
         errMsg.includes('fetch') || 
@@ -185,13 +201,18 @@ async function supabaseWithRetry<T>(queryPromiseFn: () => Promise<{ data: T | nu
         errCode === 'PGRST' || 
         errMsg.includes('socket') ||
         errMsg.includes('bad gateway') ||
-        errMsg.includes('service unavailable');
+        errMsg.includes('service unavailable') ||
+        errMsg.includes('522') ||
+        errMsg.includes('cf-error') ||
+        errMsg.includes('cloudflare') ||
+        errMsg.includes('<html');
         
       if (isNetworkError) {
         if (i === retries - 1) {
           return result;
         }
-        console.warn(`⚠️ [Network Retry] Supabase query returned network error: "${result.error.message}". Retrying in ${delay / 1000}s (Attempt ${i + 1}/${retries})...`);
+        const cleanMsg = formatCleanErrorMessage(rawMsg);
+        console.warn(`⚠️ [Network Retry] Supabase query returned network error: "${cleanMsg}". Retrying in ${delay / 1000}s (Attempt ${i + 1}/${retries})...`);
         await new Promise(resolve => setTimeout(resolve, delay));
         delay *= 2;
         continue;
@@ -201,7 +222,8 @@ async function supabaseWithRetry<T>(queryPromiseFn: () => Promise<{ data: T | nu
       if (i === retries - 1) {
         return { data: null, error: err };
       }
-      console.warn(`⚠️ [Network Retry] Supabase query threw exception: "${err.message}". Retrying in ${delay / 1000}s (Attempt ${i + 1}/${retries})...`);
+      const cleanMsg = formatCleanErrorMessage(err?.message);
+      console.warn(`⚠️ [Network Retry] Supabase query threw exception: "${cleanMsg}". Retrying in ${delay / 1000}s (Attempt ${i + 1}/${retries})...`);
       await new Promise(resolve => setTimeout(resolve, delay));
       delay *= 2;
     }
@@ -285,16 +307,10 @@ function writeLocalJobs(jobs: Record<string, any>) {
   }
 }
 
-// Type mapping from job type to API endpoint path
-const endpointMap: Record<string, string> = {
-  jiji: 'jiji',
-  osm: 'osm',
-  'maps-free': 'maps-free',
-  social: 'social',
-  duckduckgo: 'duckduckgo',
-  maps: 'maps',
-  google: 'maps'
-};
+// High-speed worker concurrency settings
+const MAX_CONCURRENT_JOBS = parseInt(process.env.MAX_CONCURRENT_JOBS || '5', 10);
+let activeJobCount = 0;
+let currentJob: any = null;
 
 async function processJob(job: any, alreadyRunning: boolean = false) {
   currentJob = {
@@ -559,6 +575,7 @@ async function processJob(job: any, alreadyRunning: boolean = false) {
       await failJob(job.id, err.message);
     }
   } finally {
+    activeJobCount = Math.max(0, activeJobCount - 1);
     currentJob = null;
   }
 }
@@ -597,61 +614,64 @@ async function pollQueue() {
     const isActive = await isActiveRunner();
     if (!isActive) return;
 
-    if (isLocalMode) {
-      const jobs = readLocalJobs();
-      const nextJobId = Object.keys(jobs)
-        .filter(id => jobs[id].status === 'queued')
-        .sort((a, b) => new Date(jobs[a].created_at).getTime() - new Date(jobs[b].created_at).getTime())[0];
-      
-      if (nextJobId) {
-        const job = jobs[nextJobId];
-        console.log(`[Queue] Dequeued local job ${job.id} from filesystem.`);
-        job.status = 'running';
-        job.updated_at = new Date().toISOString();
-        writeLocalJobs(jobs);
+    while (activeJobCount < MAX_CONCURRENT_JOBS) {
+      if (isLocalMode) {
+        const jobs = readLocalJobs();
+        const nextJobId = Object.keys(jobs)
+          .filter(id => jobs[id].status === 'queued')
+          .sort((a, b) => new Date(jobs[a].created_at).getTime() - new Date(jobs[b].created_at).getTime())[0];
         
-        await processJob(job, true);
-      }
-      return;
-    }
-
-    if (supabase) {
-      // Try to dequeue atomically via RPC
-      const { data: job, error: rpcError } = await supabaseWithRetry(() => supabase!.rpc('dequeue_next_scrape_job'));
-
-      if (!rpcError && job) {
-        const jobRow = Array.isArray(job) ? job[0] : job;
-        if (jobRow && jobRow.id) {
-          console.log(`[Queue] Atomically dequeued job ${jobRow.id} via RPC.`);
-          await processJob(jobRow, true);
-          return;
-        }
-      }
-
-      if (rpcError) {
-        if (rpcError.message?.includes('does not exist')) {
-          console.warn('⚠️ dequeue_next_scrape_job RPC not found. Falling back to non-atomic queue polling...');
+        if (nextJobId) {
+          const job = jobs[nextJobId];
+          console.log(`[Queue] Dequeued local job ${job.id} from filesystem (${activeJobCount + 1}/${MAX_CONCURRENT_JOBS} active).`);
+          job.status = 'running';
+          job.updated_at = new Date().toISOString();
+          writeLocalJobs(jobs);
+          
+          processJob(job, true);
         } else {
-          console.error('Error calling dequeue_next_scrape_job RPC:', rpcError.message);
+          break; // No more local queued jobs
         }
-      }
+      } else if (supabase) {
+        // Try to dequeue atomically via RPC
+        const { data: job, error: rpcError } = await supabaseWithRetry(() => supabase!.rpc('dequeue_next_scrape_job'));
 
-      // Fallback: standard non-atomic queue check
-      const { data: jobs, error } = await supabaseWithRetry(() => supabase!
-        .from('scrape_jobs')
-        .select('*')
-        .eq('status', 'queued')
-        .order('created_at', { ascending: true })
-        .limit(1)
-      );
+        if (!rpcError && job) {
+          const jobRow = Array.isArray(job) ? job[0] : job;
+          if (jobRow && jobRow.id) {
+            console.log(`[Queue] Atomically dequeued job ${jobRow.id} via RPC (${activeJobCount + 1}/${MAX_CONCURRENT_JOBS} active).`);
+            processJob(jobRow, true);
+            continue;
+          }
+        }
 
-      if (error) {
-        console.error('Error polling queue from Supabase (fallback):', error.message);
-        return;
-      }
+        if (rpcError) {
+          if (rpcError.message?.includes('does not exist')) {
+            console.warn('⚠️ dequeue_next_scrape_job RPC not found. Falling back to non-atomic queue polling...');
+          } else {
+            console.error('Error calling dequeue_next_scrape_job RPC:', rpcError.message);
+          }
+        }
 
-      if (jobs && jobs.length > 0) {
-        await processJob(jobs[0]);
+        // Fallback: standard non-atomic queue check
+        const { data: jobs, error } = await supabaseWithRetry(() => supabase!
+          .from('scrape_jobs')
+          .select('*')
+          .eq('status', 'queued')
+          .order('created_at', { ascending: true })
+          .limit(1)
+        );
+
+        if (error) {
+          console.error('Error polling queue from Supabase (fallback):', error.message);
+          break;
+        }
+
+        if (jobs && jobs.length > 0) {
+          processJob(jobs[0]);
+        } else {
+          break; // No more queued jobs
+        }
       }
     }
   } catch (err: any) {
@@ -1015,9 +1035,9 @@ async function checkLagosDailyScraper() {
   await checkScheduledCampaigns();
   await checkLagosDailyScraper();
   
-  // Poll queue for new jobs every 3 seconds
-  setInterval(pollQueue, 3000);
-  console.log('🔍 Polling queue every 3 seconds...');
+  // Poll queue for new jobs rapidly (every 500ms) with multi-worker parallel execution
+  setInterval(pollQueue, 500);
+  console.log(`🔍 Polling queue every 500ms (High-Speed Multi-Worker Mode: ${MAX_CONCURRENT_JOBS} parallel threads)...`);
 
   // Write heartbeat file and database entry every 3 seconds to let Next.js dashboard know we are alive
   setInterval(async () => {

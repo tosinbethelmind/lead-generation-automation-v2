@@ -21,6 +21,7 @@ import { getRuntimeConfig, saveLocalConfig, rotateKey } from '@/lib/localConfig'
 import fs from 'fs';
 import path from 'path';
 import { getValidAccessToken } from '@/lib/googleAuth';
+import { sendAdminPaymentWhatsAppAlert } from '@/lib/whatsapp';
 
 // ============================================================================
 // Email Sender Helpers
@@ -257,12 +258,25 @@ export async function GET(req: NextRequest) {
     }
 
 
-    // Extract metadata from the initialized transaction
+const processedPaystackReferences = new Set<string>();
+
+// Extract metadata from the initialized transaction
     const { leadId, clientName, clientEmail, theme, copy, selectedFeatures, customInstructions, upgradeStrategy } = transaction.metadata || {};
 
     if (!leadId || !clientEmail || !clientName) {
       return NextResponse.json({ error: 'Transaction succeeded, but required metadata was not found.' }, { status: 400 });
     }
+
+    if (processedPaystackReferences.has(reference)) {
+      console.log(`[PaystackVerify] Reference ${reference} already verified and processed. Returning idempotent response.`);
+      return NextResponse.json({
+        success: true,
+        idempotent: true,
+        message: 'Transaction already verified and processed successfully.'
+      });
+    }
+    processedPaystackReferences.add(reference);
+
 
     const repo = getActiveLeadRepository();
     const lead = await repo.getLeadById(leadId);
@@ -443,6 +457,19 @@ Bethelmind Analytics & Strategy Lead Engine`;
       } catch (sendErr: any) {
         console.warn('Failed to send paid claim notification email:', sendErr.message);
       }
+    }
+
+    try {
+      await sendAdminPaymentWhatsAppAlert({
+        leadName: lead.name,
+        clientName,
+        clientEmail,
+        amountNGN: transaction.amount / 100,
+        paymentMethod: 'paystack',
+        reference
+      });
+    } catch (waErr: any) {
+      console.warn('Failed to send WhatsApp payment alert:', waErr.message);
     }
 
     // 8. Zero-Touch Auto-Provisioning Engine

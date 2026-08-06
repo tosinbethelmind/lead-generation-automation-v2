@@ -309,3 +309,29 @@ export function maskConfig(config: RuntimeConfig): any {
   return masked;
 }
 
+/**
+ * Strips dangerous HTML tags and script injection from input strings.
+ */
+export function sanitizeInputString(input: any): string {
+  if (input === null || input === undefined) return '';
+  const str = String(input);
+  return str
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .trim();
+}
+
+/**
+ * Safely parses JSON string with fallback default value without throwing exceptions.
+ */
+export function safeJsonParse<T>(jsonStr: any, fallback: T): T {
+  if (!jsonStr) return fallback;
+  if (typeof jsonStr === 'object') return jsonStr as T;
+  try {
+    return JSON.parse(jsonStr) as T;
+  } catch (_) {
+    return fallback;
+  }
+}
+
+

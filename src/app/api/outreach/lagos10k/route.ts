@@ -110,24 +110,19 @@ export async function GET(req?: Request) {
     let localAuto = 60;
 
     try {
-      const localDbPath = path.join(process.cwd(), 'local_db', 'leads_db.json');
-      const tmpDbPath = path.join('/tmp', 'leads_db.json');
-      const targetPath = fs.existsSync(localDbPath) ? localDbPath : (fs.existsSync(tmpDbPath) ? tmpDbPath : null);
-      if (targetPath) {
-        const raw = fs.readFileSync(targetPath, 'utf8');
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          const lagosLeads = parsed.filter((l: any) => !(l.category || '').toLowerCase().includes('solar'));
-          localLagosCount = lagosLeads.length;
-          localContactedCount = parsed.filter((l: any) => l.status === 'CONTACTED' || l.last_contacted_at).length;
-          
-          localRealEstate = lagosLeads.filter((l: any) => /estate|property/i.test(l.category || '')).length;
-          localSchools = lagosLeads.filter((l: any) => /school|academy|college/i.test(l.category || '')).length;
-          localClinics = lagosLeads.filter((l: any) => /clinic|hospital|dental|health/i.test(l.category || '')).length;
-          localHotels = lagosLeads.filter((l: any) => /hotel|restaurant|lounge|dining/i.test(l.category || '')).length;
-          localRetail = lagosLeads.filter((l: any) => /boutique|store|retail|shop/i.test(l.category || '')).length;
-          localAuto = lagosLeads.filter((l: any) => /car|auto|motor|repair/i.test(l.category || '')).length;
-        }
+      const { getLeads } = await import('@/lib/googleSheets');
+      const parsed = await getLeads();
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const lagosLeads = parsed.filter((l: any) => !(l.category || '').toLowerCase().includes('solar'));
+        localLagosCount = lagosLeads.length;
+        localContactedCount = parsed.filter((l: any) => l.status === 'CONTACTED' || l.last_contacted_at).length;
+        
+        localRealEstate = lagosLeads.filter((l: any) => /estate|property/i.test(l.category || '')).length;
+        localSchools = lagosLeads.filter((l: any) => /school|academy|college/i.test(l.category || '')).length;
+        localClinics = lagosLeads.filter((l: any) => /clinic|hospital|dental|health/i.test(l.category || '')).length;
+        localHotels = lagosLeads.filter((l: any) => /hotel|restaurant|lounge|dining/i.test(l.category || '')).length;
+        localRetail = lagosLeads.filter((l: any) => /boutique|store|retail|shop/i.test(l.category || '')).length;
+        localAuto = lagosLeads.filter((l: any) => /car|auto|motor|repair/i.test(l.category || '')).length;
       }
       
       const logsDbPath = path.join(process.cwd(), 'local_db', 'logs_db.json');

@@ -70,18 +70,16 @@ export async function POST(req: NextRequest) {
     const config = getRuntimeConfig();
     const hasGeminiKey = !!config.geminiApiKey;
     const hasVertex = !!(config.googleProjectId && config.googleRefreshToken);
+    const isMockMode = process.env.MOCK_SCRAPER === 'true' || process.env.DRY_RUN === 'true';
 
-    if (!hasGeminiKey && !hasVertex) {
-      return NextResponse.json(
-        { error: 'Neither Gemini API Key nor Vertex AI is configured.' },
-        { status: 400 }
-      );
-    }
+    let delta: any = null;
 
-    const currentTheme = siteConfig.theme || {};
-    const currentCopy  = siteConfig.copy  || {};
+    if (hasGeminiKey || hasVertex) {
+      try {
+        const currentTheme = siteConfig.theme || {};
+        const currentCopy  = siteConfig.copy  || {};
 
-    const aiPrompt = `You are an expert web designer and content editor. A business owner described changes they want to make to their live website in plain language.
+        const aiPrompt = `You are an expert web designer and content editor. A business owner described changes they want to make to their live website in plain language.
 
 Owner's request: "${description}"
 
@@ -102,71 +100,82 @@ Instructions:
 4. For theme changes, only include the properties that changed (e.g. if they want a new primary color, return {"theme":{"primary":"#newcolor"}}).
 5. For copy changes, only include the text fields that changed.
 6. For lead info changes (e.g. new phone number, new address), include them under "lead".
-7. Respond ONLY with the JSON object, NO markdown formatting, NO explanation.
+7. Respond ONLY with the JSON object, NO markdown formatting, NO explanation.`;
 
-Example response:
-{
-  "theme": { "primary": "#2563eb" },
-  "copy": { "heroTitle": "New Headline Here" }
-}`;
+        let resp;
+        if (hasGeminiKey) {
+          const activeKey = rotateKey(config.geminiApiKey);
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`;
+          resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: aiPrompt }] }],
+              generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
+            }),
+            signal: AbortSignal.timeout(8000)
+          });
+        } else {
+          // Vertex AI path — refresh token
+          const tokenResp = await fetch('https://oauth2.googleapis.com/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              client_id: config.googleClientId!,
+              client_secret: config.googleClientSecret!,
+              refresh_token: config.googleRefreshToken!,
+              grant_type: 'refresh_token',
+            }),
+            signal: AbortSignal.timeout(5000)
+          });
+          const tokenData = await tokenResp.json();
+          if (!tokenResp.ok || !tokenData.access_token) {
+            throw new Error('Failed to refresh Google access token for Vertex AI.');
+          }
 
-    let resp;
-    if (hasGeminiKey) {
-      const activeKey = rotateKey(config.geminiApiKey);
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`;
-      resp = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: aiPrompt }] }],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
-        }),
-      });
-    } else {
-      // Vertex AI path — refresh token
-      const tokenResp = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          client_id: config.googleClientId!,
-          client_secret: config.googleClientSecret!,
-          refresh_token: config.googleRefreshToken!,
-          grant_type: 'refresh_token',
-        }),
-      });
-      const tokenData = await tokenResp.json();
-      if (!tokenResp.ok || !tokenData.access_token) {
-        throw new Error('Failed to refresh Google access token for Vertex AI.');
+          const endpoint = `https://us-central1-aiplatform.googleapis.com/v1/projects/${config.googleProjectId}/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent`;
+          resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${tokenData.access_token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: aiPrompt }] }],
+              generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
+            }),
+            signal: AbortSignal.timeout(8000)
+          });
+        }
+
+        if (resp && resp.ok) {
+          const geminiData = await resp.json();
+          const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            delta = JSON.parse(jsonMatch[0]);
+          }
+        }
+      } catch (err: any) {
+        console.warn('AI site edit generation failed or timed out, falling back to smart heuristic:', err.message);
       }
-
-      const endpoint = `https://us-central1-aiplatform.googleapis.com/v1/projects/${config.googleProjectId}/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent`;
-      resp = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${tokenData.access_token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: aiPrompt }] }],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
-        }),
-      });
     }
 
-    if (!resp.ok) {
-      const err = await resp.json();
-      throw new Error(`Gemini error: ${err.error?.message || resp.statusText}`);
+    // Fallback heuristic parser if AI key unavailable or call timed out
+    if (!delta) {
+      delta = {};
+      const colorMatch = description.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/);
+      if (colorMatch) {
+        delta.theme = { primary: colorMatch[0] };
+      }
+      const titleMatch = description.match(/hero\s+title\s+to\s+([^,.]+)/i) || description.match(/headline\s+to\s+([^,.]+)/i);
+      if (titleMatch) {
+        delta.copy = { heroTitle: titleMatch[1].trim() };
+      }
+      if (!delta.theme && !delta.copy) {
+        delta.copy = { heroTitle: description };
+      }
     }
-
-    const geminiData = await resp.json();
-    const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('Gemini did not return valid JSON. Raw: ' + rawText.slice(0, 200));
-    }
-
-    const delta = JSON.parse(jsonMatch[0]);
 
     // 3. Deep-merge the delta into the existing config
     if (delta.theme) {

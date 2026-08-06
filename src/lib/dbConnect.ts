@@ -76,7 +76,8 @@ export async function getPgClient(projectRef: string, password: string): Promise
     console.log(`[DB Connect] Strategy ${i + 1} (${strategy.label}): Trying connection...`);
     
     const clientOptions: any = {
-      ssl: { rejectUnauthorized: false }
+      ssl: { rejectUnauthorized: false },
+      connectionTimeoutMillis: 3000, // 3-second fast-fail to prevent Vercel 504 Gateway Timeouts
     };
     if (strategy.connectionString) {
       clientOptions.connectionString = strategy.connectionString;

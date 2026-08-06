@@ -259,32 +259,47 @@ export async function fetchSERPWithFallback(query: string, limit: number = 10): 
     const resp = await fetch(ddgUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
       },
       signal: AbortSignal.timeout(8000),
     });
     if (resp.ok) {
       const html = await resp.text();
       const results: SerpSearchResultItem[] = [];
-      const linkRegex = /<a class="result__url" href="([^"]+)".*?>(.*?)<\/a>/g;
-      const snippetRegex = /<a class="result__snippet".*?>(.*?)<\/a>/g;
-      
-      let match;
-      const links: string[] = [];
-      while ((match = linkRegex.exec(html)) !== null && links.length < limit) {
-        let rawUrl = match[1];
-        if (rawUrl.includes('uddg=')) {
-          const parsed = new URLSearchParams(rawUrl.split('?')[1]);
-          rawUrl = parsed.get('uddg') || rawUrl;
-        }
-        links.push(rawUrl);
-      }
+      const linkMatches = Array.from(html.matchAll(/<a\s+[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gi));
+      const snippets = Array.from(html.matchAll(/<a\s+class="result__snippet"[^>]*>(.*?)<\/a>/gi)).map(m => m[1].replace(/<[^>]*>?/gm, '').trim());
 
-      for (let i = 0; i < links.length; i++) {
+      const seenUrls = new Set<string>();
+      let snippetIdx = 0;
+
+      for (const m of linkMatches) {
+        let rawUrl = m[1];
+        if (!rawUrl || rawUrl.startsWith('#') || rawUrl.includes('duckduckgo.com/html')) continue;
+
+        if (rawUrl.includes('uddg=')) {
+          try {
+            const urlObj = new URL(rawUrl.startsWith('http') ? rawUrl : `https://duckduckgo.com${rawUrl}`);
+            rawUrl = urlObj.searchParams.get('uddg') || rawUrl;
+          } catch (_) {
+            const matchUddg = rawUrl.match(/uddg=([^&]+)/);
+            if (matchUddg) rawUrl = decodeURIComponent(matchUddg[1]);
+          }
+        }
+        if (!rawUrl.startsWith('http') || rawUrl.includes('duckduckgo.com')) continue;
+        if (seenUrls.has(rawUrl)) continue;
+        seenUrls.add(rawUrl);
+
+        const cleanTitle = m[2].replace(/<[^>]*>?/gm, '').trim() || `SearchResult #${results.length + 1}`;
+        const cleanSnippet = snippets[snippetIdx++] || `Found via DuckDuckGo fallback for ${query}`;
+
         results.push({
-          title: `SearchResult #${i + 1}`,
-          link: links[i],
-          snippet: `Found via DuckDuckGo fallback for ${query}`,
+          title: cleanTitle,
+          link: rawUrl,
+          snippet: cleanSnippet,
         });
+
+        if (results.length >= limit) break;
       }
       if (results.length > 0) return results;
     }

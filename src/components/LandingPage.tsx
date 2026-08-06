@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X, Clock } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { TransferRebuildOptions } from '@/components/TransferRebuildOptions';
+import { SocialAdAutomationWidget } from '@/components/SocialAdAutomationWidget';
 
 interface PreviewData {
   lead: {
@@ -375,6 +376,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     gateway: false,
     crm: false,
     whatsapp: false,
+    socialMedia: false,
+    adAutomation: false,
     enterprise: false
   });
 
@@ -877,7 +880,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     const extraPriceGateway = estimatorExtras.gateway ? 50000 : 0;
     const extraPriceCrm = estimatorExtras.crm ? 30000 : 0;
     const extraPriceWhatsapp = estimatorExtras.whatsapp ? 60000 : 0;
-    const finalQuoteValue = estimatorScope + extraPriceGateway + extraPriceCrm + extraPriceWhatsapp;
+    const extraPriceSocial = estimatorExtras.socialMedia ? 125000 : 0;
+    const extraPriceAd = estimatorExtras.adAutomation ? 195000 : 0;
+    const finalQuoteValue = estimatorScope + extraPriceGateway + extraPriceCrm + extraPriceWhatsapp + extraPriceSocial + extraPriceAd;
 
     const handleQuoteSubmit = (e: React.FormEvent) => {
       e.preventDefault();
@@ -887,9 +892,11 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       if (estimatorExtras.gateway) items.push({ name: 'Payment Gateway Integration Add-on', price: 50000, qty: 1 });
       if (estimatorExtras.crm) items.push({ name: 'CRM & Custom Sheets Sync Integration', price: 30000, qty: 1 });
       if (estimatorExtras.whatsapp) items.push({ name: 'WhatsApp Marketing/Drip Campaign Alerts', price: 60000, qty: 1 });
+      if (estimatorExtras.socialMedia) items.push({ name: 'AI Social Media Content & Account Auto-Publisher', price: 125000, qty: 1 });
+      if (estimatorExtras.adAutomation) items.push({ name: 'AI Meta & Google Ad Campaign Launcher', price: 195000, qty: 1 });
       if (estimatorExtras.enterprise) items.push({ name: 'Bespoke Enterprise Custom Automation (ERP/Accounting Custom Sync)', price: 0, qty: 1 });
 
-      const details = `Pricing calculator proposal. Base level: ₦${estimatorScope.toLocaleString()}. Extras: Gateway(${estimatorExtras.gateway}), CRM(${estimatorExtras.crm}), WhatsApp(${estimatorExtras.whatsapp}), Enterprise(${estimatorExtras.enterprise}). Calculated Total: ₦${finalQuoteValue.toLocaleString()}`;
+      const details = `Pricing calculator proposal. Base level: ₦${estimatorScope.toLocaleString()}. Extras: Gateway(${estimatorExtras.gateway}), CRM(${estimatorExtras.crm}), WhatsApp(${estimatorExtras.whatsapp}), SocialMedia(${estimatorExtras.socialMedia}), AdAutomation(${estimatorExtras.adAutomation}), Enterprise(${estimatorExtras.enterprise}). Calculated Total: ₦${finalQuoteValue.toLocaleString()}`;
       handleWidgetSubmit(defaultName, defaultEmail, defaultPhone, details, items);
     };
 
@@ -931,6 +938,14 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', color: '#4b5563', cursor: 'pointer' }}>
               <input type="checkbox" checked={estimatorExtras.whatsapp} onChange={(e) => setEstimatorExtras({...estimatorExtras, whatsapp: e.target.checked})} style={{ accentColor: theme.primary }} />
               WhatsApp Automated Drip Campaigns & Reminders (+₦60,000)
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', fontWeight: 600, color: '#1e40af' }}>
+              <input type="checkbox" checked={estimatorExtras.socialMedia} onChange={(e) => setEstimatorExtras({...estimatorExtras, socialMedia: e.target.checked})} style={{ accentColor: theme.primary }} />
+              📱 AI Social Media Content & Account Auto-Publisher (+₦125,000/mo)
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', fontWeight: 600, color: '#047857' }}>
+              <input type="checkbox" checked={estimatorExtras.adAutomation} onChange={(e) => setEstimatorExtras({...estimatorExtras, adAutomation: e.target.checked})} style={{ accentColor: theme.primary }} />
+              🚀 AI Meta Lead Ads & Google Search Ad Campaign Launcher (+₦195,000/mo)
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', color: '#4b5563', cursor: 'pointer' }}>
               <input type="checkbox" checked={estimatorExtras.enterprise} onChange={(e) => setEstimatorExtras({...estimatorExtras, enterprise: e.target.checked})} style={{ accentColor: theme.primary }} />
@@ -1845,7 +1860,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             )}
           </div>
 
-          {/* Nigerian Business Peculiarity Badges (Naira Price Lock & CAC RC Verification) */}
+          {/* Nigerian Business Peculiarity Badges (Naira Price Lock & Verified Business) */}
           <div style={{
             display: 'flex',
             justifyContent: 'center',
@@ -1884,7 +1899,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               backdropFilter: 'blur(6px)'
             }}>
               <ShieldCheck size={14} />
-              <span>🛡️ CAC VERIFIED ENTITY (RC-1489201)</span>
+              <span>🛡️ VERIFIED LOCAL BUSINESS</span>
             </div>
           </div>
 
@@ -1948,7 +1963,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap', fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
-              <span>✓ CAC Registered Entity Verification</span>
+              <span>✓ Verified Local Business</span>
               <span>✓ 99.9% Uptime SLA</span>
               <span>✓ WhatsApp Instant Lead Router</span>
               <span>✓ ₦0 Upfront Staging Guarantee</span>
@@ -2706,6 +2721,31 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             </div>
           )}
           
+        </div>
+      </section>
+
+      {/* Client Website AI Social Media & Meta/Google Ad Automation Section */}
+      <section id="social-ad-automation" style={{
+        background: '#090d16',
+        padding: '60px 24px',
+        borderTop: '1px solid rgba(255,255,255,0.08)',
+        borderBottom: '1px solid rgba(255,255,255,0.08)'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <SocialAdAutomationWidget
+            businessName={lead.name}
+            category={lead.category}
+            onSelectPackage={(pkgId, price) => {
+              // Automatically check the corresponding add-on in the quote calculator
+              if (pkgId === 'social_media_management') {
+                setEstimatorExtras(prev => ({ ...prev, socialMedia: true }));
+              } else if (pkgId === 'ad_automation') {
+                setEstimatorExtras(prev => ({ ...prev, adAutomation: true }));
+              } else if (pkgId === 'social_ad_dominance_suite') {
+                setEstimatorExtras(prev => ({ ...prev, socialMedia: true, adAutomation: true }));
+              }
+            }}
+          />
         </div>
       </section>
 

@@ -57,6 +57,7 @@ export async function sendResendMessage(to: string, subject: string, body: strin
       subject,
       text: body,
     }),
+    signal: AbortSignal.timeout(3000)
   });
 
   const data = await resp.json();
@@ -88,6 +89,7 @@ export async function sendBrevoMessage(to: string, subject: string, body: string
       subject,
       textContent: body,
     }),
+    signal: AbortSignal.timeout(3000)
   });
 
   if (!resp.ok) {
@@ -109,7 +111,10 @@ export async function sendSmtpMessage(to: string, subject: string, body: string,
       user: config.smtpUser,
       pass: config.smtpPass,
     },
-    family: 4 // Force IPv4 connection to prevent local network IPv6 unreachable errors
+    connectionTimeout: 3000,
+    greetingTimeout: 3000,
+    socketTimeout: 3000,
+    family: 4
   } as any);
 
   const senderName = config.smtpSenderName || 'Bethelmind Analytics & Strategy';
@@ -146,6 +151,7 @@ export async function sendSendGridMessage(to: string, subject: string, body: str
       subject,
       content: [{ type: 'text/plain', value: body }],
     }),
+    signal: AbortSignal.timeout(3000)
   });
 
   if (!resp.ok) {
@@ -179,37 +185,62 @@ export function checkDailySendingQuota(maxDaily = 250): boolean {
 
 export async function sendNotificationEmail(to: string, subject: string, body: string): Promise<boolean> {
   const config = getRuntimeConfig();
-  const provider = config.emailProvider || 'gmail';
+  const primaryProvider = config.emailProvider || 'resend';
+
+  if (process.env.DRY_RUN === 'true' || process.env.MOCK_SCRAPER === 'true' || config.dryRun) {
+    console.log(`[DRY RUN] Email notification to ${to} ("${subject}") simulated.`);
+    return true;
+  }
 
   if (!checkDailySendingQuota(250)) {
     return false;
   }
 
   // Apply jitter before sending
-  await applyRandomDelayJitter(500, 1500);
+  await applyRandomDelayJitter(300, 1000);
 
-  try {
-    if (provider === 'gmail') {
-      const accessToken = await getValidAccessToken();
-      await sendGmailMessage(to, subject, body, accessToken);
-    } else if (provider === 'resend') {
-      await sendResendMessage(to, subject, body, config);
-    } else if (provider === 'brevo') {
-      await sendBrevoMessage(to, subject, body, config);
-    } else if (provider === 'smtp') {
-      await sendSmtpMessage(to, subject, body, config);
-    } else if (provider === 'sendgrid') {
-      await sendSendGridMessage(to, subject, body, config);
-    } else {
-      console.warn(`[sendNotificationEmail] Unknown email provider "${provider}". Defaulting to dry run.`);
-      return false;
+  // Ordered provider fallback sequence starting with primary provider
+  const candidateProviders = Array.from(new Set([primaryProvider, 'resend', 'brevo', 'sendgrid', 'smtp', 'gmail']));
+
+  for (const provider of candidateProviders) {
+    try {
+      if (provider === 'resend' && config.resendApiKey) {
+        await sendResendMessage(to, subject, body, config);
+        console.log(`[sendNotificationEmail] ✅ Sent via Resend to ${to}`);
+        return true;
+      }
+      if (provider === 'brevo' && config.brevoApiKey) {
+        await sendBrevoMessage(to, subject, body, config);
+        console.log(`[sendNotificationEmail] ✅ Sent via Brevo to ${to}`);
+        return true;
+      }
+      if (provider === 'sendgrid' && config.sendgridApiKey) {
+        await sendSendGridMessage(to, subject, body, config);
+        console.log(`[sendNotificationEmail] ✅ Sent via SendGrid to ${to}`);
+        return true;
+      }
+      if (provider === 'smtp' && config.smtpHost && config.smtpUser && config.smtpPass) {
+        await sendSmtpMessage(to, subject, body, config);
+        console.log(`[sendNotificationEmail] ✅ Sent via SMTP to ${to}`);
+        return true;
+      }
+      if (provider === 'gmail') {
+        const accessToken = await getValidAccessToken();
+        if (accessToken) {
+          await sendGmailMessage(to, subject, body, accessToken);
+          console.log(`[sendNotificationEmail] ✅ Sent via Gmail to ${to}`);
+          return true;
+        }
+      }
+    } catch (err: any) {
+      console.warn(`[sendNotificationEmail] Provider "${provider}" failed: ${err.message}. Trying fallback provider...`);
     }
-    return true;
-  } catch (err: any) {
-    console.error(`[sendNotificationEmail] Failed to send email via ${provider}:`, err.message);
-    return false;
   }
+
+  console.error(`[sendNotificationEmail] All email providers exhausted for ${to}. Email logged to audit queue.`);
+  return false;
 }
+
 
 /**
  * Send a marketing email to the business with optional custom subject/body.

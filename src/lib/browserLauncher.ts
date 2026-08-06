@@ -501,4 +501,25 @@ export async function selfHealBrowserContext(): Promise<boolean> {
   }
 }
 
+/**
+ * Safely closes a Puppeteer browser instance within a 5-second timeout to prevent zombie hanging processes.
+ */
+export async function safeCloseBrowser(browser: any): Promise<void> {
+  if (!browser) return;
+  try {
+    const closePromise = browser.close();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Browser close timed out after 5s')), 5000)
+    );
+    await Promise.race([closePromise, timeoutPromise]);
+  } catch (err: any) {
+    console.warn('[browserLauncher] Warning during browser.close():', err.message);
+    try {
+      if (browser.process() && typeof browser.process().kill === 'function') {
+        browser.process().kill('SIGKILL');
+      }
+    } catch (_) {}
+  }
+}
+
 

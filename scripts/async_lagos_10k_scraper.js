@@ -101,10 +101,19 @@ async function runResilientLagosHarvester(dryRun = false) {
     // Direct fallback harvesting if remote call did not add leads
     if (result.added === 0) {
       try {
-        const { execSync } = require('child_process');
-        logMessage('⚡ Running high-speed native TS harvester via tsx...');
-        execSync('npx tsx scripts/test_live_harvest_progress.ts', { stdio: 'inherit' });
-        result.added = 1;
+        logMessage('⚡ Running high-speed native TS harvester...');
+        // Require tsx register dynamically if available or spawn node fast worker
+        try {
+          require('tsx/cjs');
+          const { harvestLiveLagos10KLeads } = require('../src/lib/liveLeadHarvester');
+          const harvestRes = await harvestLiveLagos10KLeads();
+          result.added = harvestRes.added || 0;
+          if (harvestRes.totalLagos) result.totalLagos = harvestRes.totalLagos;
+        } catch (_) {
+          const { execSync } = require('child_process');
+          execSync('npx tsx scripts/test_live_harvest_progress.ts', { stdio: 'inherit' });
+          result.added = 1;
+        }
       } catch (harvestErr) {
         logMessage(`⚠️ Direct harvester note: ${harvestErr.message}`);
       }

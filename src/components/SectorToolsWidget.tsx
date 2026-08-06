@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { SocialAdAutomationWidget } from './SocialAdAutomationWidget';
 
 interface SectorToolsWidgetProps {
   businessCategory?: string;
@@ -14,8 +15,8 @@ export function SectorToolsWidget({
   merchantPhone = '08012345678',
 }: SectorToolsWidgetProps) {
   const [activeTab, setActiveTab] = useState<
-    'solar' | 'auto' | 'legal' | 'dva' | 'logistics' | 'mortgage' | 'pidgin'
-  >('solar');
+    'solar' | 'auto' | 'legal' | 'dva' | 'logistics' | 'mortgage' | 'pidgin' | 'social_ads'
+  >('social_ads');
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -80,6 +81,17 @@ export function SectorToolsWidget({
 
       {/* Navigation Tabs */}
       <div className="flex overflow-x-auto border-b border-slate-800 bg-slate-950 p-2 gap-1 scrollbar-none">
+        <button
+          onClick={() => {
+            setActiveTab('social_ads');
+            setResult(null);
+          }}
+          className={`px-4 py-2.5 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
+            activeTab === 'social_ads' ? 'bg-blue-600/30 border border-blue-500/50 text-blue-300' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          📱 AI Social Media & Ad Launcher
+        </button>
         <button
           onClick={() => {
             setActiveTab('solar');
@@ -479,6 +491,16 @@ export function SectorToolsWidget({
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* SOCIAL ADS & AUTOMATION TAB */}
+        {activeTab === 'social_ads' && (
+          <div className="space-y-4">
+            <SocialAdAutomationWidget
+              businessName={businessName}
+              category={businessCategory}
+            />
           </div>
         )}
       </div>

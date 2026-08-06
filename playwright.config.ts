@@ -11,8 +11,8 @@ export default defineConfig({
   reporter: 'list',
 
   webServer: {
-    command: 'npx next dev -p 3009',
-    url: 'http://127.0.0.1:3009',
+    command: 'npx next dev -p 3006',
+    url: 'http://127.0.0.1:3006',
     reuseExistingServer: true,
     timeout: 300000,
     stdout: 'pipe',
@@ -27,7 +27,7 @@ export default defineConfig({
   },
 
   use: {
-    baseURL: 'http://127.0.0.1:3009',
+    baseURL: 'http://127.0.0.1:3006',
     trace: 'off',
     video: {
       mode: 'on',

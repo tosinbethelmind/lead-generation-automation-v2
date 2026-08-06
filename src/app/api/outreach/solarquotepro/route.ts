@@ -28,20 +28,15 @@ export async function GET() {
     let localContactedCount = 49;
 
     try {
-      const localDbPath = path.join(process.cwd(), 'local_db', 'leads_db.json');
-      const tmpDbPath = path.join('/tmp', 'leads_db.json');
-      const targetPath = fs.existsSync(localDbPath) ? localDbPath : (fs.existsSync(tmpDbPath) ? tmpDbPath : null);
-      if (targetPath) {
-        const raw = fs.readFileSync(targetPath, 'utf8');
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          const solarLeads = parsed.filter((l: any) => {
-            const blob = `${l.category || ''} ${l.name || ''} ${l.source_query_or_seed || ''} ${l.business_summary || ''}`.toLowerCase();
-            return blob.includes('solar') || blob.includes('inverter') || blob.includes('renewable');
-          });
-          localSolarCount = solarLeads.length;
-          localContactedCount = solarLeads.filter((l: any) => l.status === 'CONTACTED' || l.last_contacted_at).length;
-        }
+      const { getLeads } = await import('@/lib/googleSheets');
+      const parsed = await getLeads();
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const solarLeads = parsed.filter((l: any) => {
+          const blob = `${l.category || ''} ${l.name || ''} ${l.source_query_or_seed || ''} ${l.business_summary || ''}`.toLowerCase();
+          return blob.includes('solar') || blob.includes('inverter') || blob.includes('renewable');
+        });
+        localSolarCount = solarLeads.length;
+        localContactedCount = solarLeads.filter((l: any) => l.status === 'CONTACTED' || l.last_contacted_at).length;
       }
 
       const logsDbPath = path.join(process.cwd(), 'local_db', 'logs_db.json');

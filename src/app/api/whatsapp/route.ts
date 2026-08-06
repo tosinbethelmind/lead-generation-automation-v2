@@ -64,9 +64,30 @@ export async function POST(req: NextRequest) {
       });
     }
 
+
     await addLog('WhatsApp Outreach', 'SUCCESS', `Finished WhatsApp outreach. Sent: ${sentCount}`);
     return NextResponse.json({ success: true, results });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
+
+/**
+ * GET /api/whatsapp
+ * Returns status of local Baileys gateway service and pairing info.
+ */
+export async function GET() {
+  try {
+    const { baileysClient } = await import('@/lib/whatsapp/baileys_gateway_client');
+    const status = await baileysClient.getStatus();
+    return NextResponse.json({
+      service: 'ApexReach Baileys WhatsApp Gateway',
+      gatewayStatus: status.status,
+      qrCodeUrl: status.qrCodeUrl,
+      lastPairingCode: status.lastPairingCode
+    });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+

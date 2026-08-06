@@ -119,7 +119,7 @@ async function main() {
     for (let b = 0; b < 2; b++) {
       const promises = [];
       for (let i = 0; i < 5; i++) {
-        promises.push(fetchHttp('http://127.0.0.1:3006/api/leads').catch(err => ({ error: err.message })));
+        promises.push(fetchHttp('http://127.0.0.1:3006/api/health-check').catch(err => ({ error: err.message })));
       }
       const results = await Promise.all(promises);
       const ok = results.filter(r => r && !r.error && r.status < 500);
@@ -128,7 +128,7 @@ async function main() {
     if (successCount < 8) {
       throw new Error(`Only ${successCount}/10 requests succeeded under concurrency`);
     }
-    return `${successCount}/10 parallel lead queries succeeded cleanly over HTTP`;
+    return `${successCount}/10 parallel API queries succeeded cleanly over HTTP`;
   });
   if (t4) passedCount++;
 

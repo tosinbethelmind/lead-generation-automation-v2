@@ -17,6 +17,8 @@
     "fully-automated-setup": "node scripts/fully_automated_setup.js",
     "demo": "npx playwright test tests/e2e/demo_recorder.spec.ts --headed",
     "whatsapp-service": "node scripts/whatsapp_baileys.js",
+    "command-center": "node scripts/unified_whatsapp_command_center.js",
+    "start-full-stack": "concurrently \"npm run dev\" \"npm run whatsapp-service\" \"npm run command-center\"",
     "setup-tor": "node scripts/setup_tor.js",
     "local-runner": "node scripts/keep_alive_runner.js",
     "test-queue": "ts-node scripts/test_hybrid_queue.ts",
@@ -47,8 +49,10 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "googleapis": "^173.0.0",
+    "imap": "^0.8.19",
     "libsodium-wrappers": "^0.8.4",
     "lucide-react": "^1.17.0",
+    "mailparser": "^3.7.2",
     "next": "16.2.7",
     "nodemailer": "^9.0.1",
     "pg": "^8.22.0",
@@ -83,5 +87,8 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.23.0",
     "typescript": "^5"
+  },
+  "optionalDependencies": {
+    "crawlee": "^3.18.0"
   }
 }

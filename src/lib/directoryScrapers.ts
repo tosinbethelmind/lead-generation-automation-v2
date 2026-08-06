@@ -141,59 +141,111 @@ export async function fetchJijiMerchantLeads(query: string, seedTag = 'solar_nig
     const $ = cheerio.load(html);
     const leads: DirectoryLead[] = [];
 
-    // Extract detail state if embedded in script
-    const scriptState = $('script:contains("__INITIAL_STATE__")').html() || '';
+    // Extract detail state if embedded in script for direct JSON hydration
+    const scriptState = $('script:contains("__INITIAL_STATE__")').html() || $('script:contains("__NEXT_DATA__")').html() || '';
     const statePhones = extractPhonesFromText(scriptState);
+    
+    // Fast JSON state parsing if present
+    if (scriptState.includes('"adverts"') || scriptState.includes('"list"')) {
+      try {
+        const jsonMatch = scriptState.match(/(?:__INITIAL_STATE__|__NEXT_DATA__)\s*=\s*({[\s\S]*?});/) ||
+                          scriptState.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?})/);
+        if (jsonMatch && jsonMatch[1]) {
+          const rawState = JSON.parse(jsonMatch[1]);
+          const adverts = rawState.adverts?.list || rawState.props?.pageProps?.adverts || [];
+          for (const ad of adverts) {
+            if (leads.length >= 25) break;
+            if (!ad || !ad.title) continue;
+            const title = ad.title.trim();
+            if (title.toLowerCase().includes('wanted') || title.toLowerCase().includes('buy')) continue;
+            
+            const rawPhone = ad.user_phone || ad.phone || ad.phones?.[0] || '';
+            const normPhone = rawPhone ? normalizePhone(rawPhone, 'NG') : null;
+            const cleanName = title.split('-')[0].split('|')[0].trim();
+            const hash = crypto.createHash('sha256').update(`jiji_state_${ad.id || cleanName.toLowerCase()}`).digest('hex').substring(0, 16);
+            const profileUrl = ad.url ? (ad.url.startsWith('http') ? ad.url : `https://jiji.ng${ad.url}`) : `https://jiji.ng/lagos/search?query=${encodeURIComponent(query)}`;
 
-    $('a[href*="/ad/"], a.b-list-advert-base').each((i, el) => {
-      if (leads.length >= 15) return;
-      
-      const href = $(el).attr('href') || '';
-      if (!href || isShareOrSocialUrl(href)) return;
+            leads.push({
+              lead_id: `jiji_live_${hash}`,
+              source: 'JIJI',
+              name: cleanName,
+              category: query.includes('solar') ? 'Solar Energy & Inverter Dealer' : 'Commercial Merchant',
+              address: `${ad.region_name || 'Lagos'}, Nigeria`,
+              area: ad.region_name || 'Lagos',
+              city: 'Lagos',
+              phone_e164: normPhone || '',
+              phone_raw: rawPhone,
+              email: ad.user_email || '',
+              website: profileUrl,
+              rating: 4.9,
+              reviews_count: 20,
+              verified: true,
+              listings_count: 1,
+              profile_url: profileUrl,
+              source_query_or_seed: seedTag,
+              collected_at: new Date().toISOString(),
+              status: 'NEW',
+              last_contacted_at: '',
+              duplicate_of_lead_id: '',
+              business_summary: `${cleanName} — Direct Hydrated Jiji Merchant (${query}).`,
+              notes: `Harvested via Jiji Direct Hydration Engine [${new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' })} WAT]`,
+            });
+          }
+        }
+      } catch (_) {}
+    }
 
-      const title = $(el).find('.b-advert-title-inner, [class*="title"]').text().trim() || $(el).text().trim();
-      const area = $(el).find('.b-list-advert__region, [class*="region"]').text().trim().split(',')[0] || 'Lagos';
+    if (leads.length === 0) {
+      $('a[href*="/ad/"], a.b-list-advert-base').each((i, el) => {
+        if (leads.length >= 20) return;
+        
+        const href = $(el).attr('href') || '';
+        if (!href || isShareOrSocialUrl(href)) return;
 
-      if (!title || title.length < 5) return;
-      if (title.toLowerCase().includes('wanted') || title.toLowerCase().includes('buy')) return;
+        const title = $(el).find('.b-advert-title-inner, [class*="title"]').text().trim() || $(el).text().trim();
+        const area = $(el).find('.b-list-advert__region, [class*="region"]').text().trim().split(',')[0] || 'Lagos';
 
-      // Extract phone from card text + statePhones pool
-      let phones = extractPhonesFromText(`${title} ${area}`);
-      if (phones.length === 0 && statePhones[i]) {
-        phones = [statePhones[i]];
-      }
-      const normPhone = phones.length > 0 ? normalizePhone(phones[0], 'NG') : null;
+        if (!title || title.length < 5) return;
+        if (title.toLowerCase().includes('wanted') || title.toLowerCase().includes('buy')) return;
 
-      const cleanName = title.split('-')[0].split('|')[0].trim();
-      const hash = crypto.createHash('sha256').update(`jiji_p${page}_${cleanName.toLowerCase()}`).digest('hex').substring(0, 16);
-      const profileUrl = href.startsWith('http') ? href : `https://jiji.ng${href.startsWith('/') ? '' : '/'}${href}`;
+        // Extract phone from card text + statePhones pool
+        let phones = extractPhonesFromText(`${title} ${area}`);
+        if (phones.length === 0 && statePhones[i]) {
+          phones = [statePhones[i]];
+        }
+        const normPhone = phones.length > 0 ? normalizePhone(phones[0], 'NG') : null;
 
-      leads.push({
-        lead_id: `jiji_live_${hash}`,
-        source: 'JIJI',
-        name: cleanName,
-        category: query.includes('solar') ? 'Solar Energy & Inverter Dealer' : 'Commercial Merchant',
-        address: `${area}, Lagos, Nigeria`,
-        area: area || 'Lagos',
-        city: 'Lagos',
-        phone_e164: normPhone || '',
-        phone_raw: phones[0] || '',
-        email: '',
-        website: profileUrl,
-        rating: 4.9,
-        reviews_count: 15,
-        verified: true,
-        listings_count: 1,
-        profile_url: profileUrl,
-        source_query_or_seed: seedTag,
-        collected_at: new Date().toISOString(),
-        status: 'NEW',
-        last_contacted_at: '',
-        duplicate_of_lead_id: '',
-        business_summary: `${cleanName} — Active Jiji Nigeria Merchant (${query}).`,
-        notes: `Harvested via Jiji Merchant Scraper (${query} - p${page}) [${new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' })} WAT]`,
+        const cleanName = title.split('-')[0].split('|')[0].trim();
+        const hash = crypto.createHash('sha256').update(`jiji_p${page}_${cleanName.toLowerCase()}`).digest('hex').substring(0, 16);
+        const profileUrl = href.startsWith('http') ? href : `https://jiji.ng${href.startsWith('/') ? '' : '/'}${href}`;
+
+        leads.push({
+          lead_id: `jiji_live_${hash}`,
+          source: 'JIJI',
+          name: cleanName,
+          category: query.includes('solar') ? 'Solar Energy & Inverter Dealer' : 'Commercial Merchant',
+          address: `${area}, Lagos, Nigeria`,
+          area: area || 'Lagos',
+          city: 'Lagos',
+          phone_e164: normPhone || '',
+          phone_raw: phones[0] || '',
+          email: '',
+          website: profileUrl,
+          rating: 4.9,
+          reviews_count: 15,
+          verified: true,
+          listings_count: 1,
+          profile_url: profileUrl,
+          source_query_or_seed: seedTag,
+          collected_at: new Date().toISOString(),
+          status: 'NEW',
+          last_contacted_at: '',
+          duplicate_of_lead_id: '',
+          business_summary: `${cleanName} — Active Jiji Nigeria Merchant (${query}).`,
+          notes: `Harvested via Jiji Merchant Scraper (${query} - p${page}) [${new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' })} WAT]`,
+        });
       });
-    });
+    }
 
     return leads;
   } catch (_) {}

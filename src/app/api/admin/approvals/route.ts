@@ -13,13 +13,45 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /api/admin/approvals
  * Returns approval queue tickets (supports status query filter: PENDING_HUMAN_APPROVAL, APPROVED, REJECTED)
+ * Also includes gateway status check for Baileys (:3007) and Command Center (:3008).
  */
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status') as any;
-    const tickets = await getApprovalTickets(status);
-    return NextResponse.json({ success: true, count: tickets.length, tickets });
+    
+    // Check external gateway statuses
+    let baileysStatus = { online: false, status: 'offline' };
+    let commandCenterStatus = { online: false, pendingCount: 0 };
+
+    try {
+      const bRes = await fetch('http://localhost:3007/status', { signal: AbortSignal.timeout(1500) });
+      if (bRes.ok) {
+        const bData = await bRes.json();
+        baileysStatus = { online: true, status: bData.status };
+      }
+    } catch (_) {}
+
+    try {
+      const cRes = await fetch('http://localhost:3008/health', { signal: AbortSignal.timeout(1500) });
+      if (cRes.ok) {
+        const cData = await cRes.json();
+        commandCenterStatus = { online: true, pendingCount: cData.pending || 0 };
+      }
+    } catch (_) {}
+
+    const tickets = await getApprovalTickets(status === 'ALL' ? undefined : status);
+
+    return NextResponse.json({
+      success: true,
+      count: tickets.length,
+      gateways: {
+        baileys: baileysStatus,
+        commandCenter: commandCenterStatus,
+        telegramBot: { configured: Boolean(process.env.TELEGRAM_BOT_TOKEN) }
+      },
+      tickets
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

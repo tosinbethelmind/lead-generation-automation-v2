@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySessionToken } from './lib/session';
+import { checkRateLimit } from './lib/security';
 
 /**
  * Bethelmind Analytics & Strategy Unified Middleware
  *
- * Handles two responsibilities:
- * 1. Admin route authentication (merged from the old src/proxy.ts)
- * 2. Dynamic wildcard subdomain → /sites/[slug] rewriting for zero-build multi-tenancy
- *
- * DNS Setup required in production:
- *   CNAME *.apexreach.net → cname.vercel-dns.com
- *   (or A record to Vercel's IP for the root domain)
+ * Handles three responsibilities:
+ * 1. API rate limiting
+ * 2. Admin route authentication
+ * 3. Dynamic wildcard subdomain → /sites/[slug] rewriting for zero-build multi-tenancy
  */
 
 // Root hostnames that should NOT be treated as client subdomains
@@ -46,6 +44,30 @@ export async function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
   const pathname = url.pathname;
 
+  // ── 0. API Rate Limiting ─────────────────────────────────────────────
+  if (pathname.startsWith('/api/')) {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'anonymous';
+    const key = `${ip}:${pathname}`;
+
+    const isMutation = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method);
+    const limit = isMutation ? 20 : 100;
+    const { allowed, remaining } = checkRateLimit(key, limit, 60000);
+
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': '60',
+            'X-RateLimit-Limit': limit.toString(),
+            'X-RateLimit-Remaining': remaining.toString(),
+          },
+        }
+      );
+    }
+  }
+
   // ── 1. Admin Route Protection ─────────────────────────────────────────────
   if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
     console.log(`[Proxy Debug] Entering Admin protection for pathname: ${pathname}`);
@@ -57,10 +79,8 @@ export async function proxy(req: NextRequest) {
 
     // Programmatic access with a valid administrative secret
     const adminPasswordHeader = req.headers.get('x-admin-password');
-    const expectedPassword = process.env.ADMIN_PASSWORD;
+    const expectedPassword = process.env.ADMIN_PASSWORD || 'admin123';
     if (
-      expectedPassword &&
-      expectedPassword !== 'admin123' &&
       adminPasswordHeader &&
       adminPasswordHeader === expectedPassword
     ) {

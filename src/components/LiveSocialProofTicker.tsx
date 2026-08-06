@@ -48,7 +48,7 @@ export function LiveSocialProofTicker() {
       fontFamily: 'system-ui, -apple-system, sans-serif',
       pointerEvents: 'none',
     }}>
-      {/* CAC Verified Shield Badge */}
+      {/* Verified Business Shield Badge */}
       <div style={{
         background: 'rgba(15, 23, 42, 0.92)',
         backdropFilter: 'blur(8px)',
@@ -65,7 +65,7 @@ export function LiveSocialProofTicker() {
         pointerEvents: 'auto',
       }}>
         <ShieldCheck size={18} style={{ color: '#22c55e' }} />
-        <span>CAC & FIRS Verified Business Shield (RC-1849204)</span>
+        <span>Verified Local Business Shield</span>
       </div>
 
       {/* Live Social Proof Toast */}

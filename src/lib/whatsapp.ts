@@ -274,3 +274,65 @@ export async function checkWhatsAppNumber(phone: string): Promise<{ active: bool
   return { active: true, existsOnWhatsApp: true };
 }
 
+/**
+ * Anti-Detection Outreach Delay Helper.
+ * Returns a Promise that resolves after a randomized delay between minSec and maxSec.
+ * Helps prevent carrier rate limits and WhatsApp session flags during batch outreach.
+ */
+export async function getRandomOutreachDelay(minSec = 15, maxSec = 45): Promise<number> {
+  const delayMs = Math.floor(Math.random() * (maxSec - minSec + 1) + minSec) * 1000;
+  await new Promise((resolve) => setTimeout(resolve, delayMs));
+  return delayMs;
+}
+
+/**
+ * Dispatches a high-priority payment alert directly to the Admin WhatsApp Line.
+ * Uses dedicated ADMIN_WA_PHONE (2348022791227) so payment alerts are never crowded out.
+ */
+export async function sendAdminPaymentWhatsAppAlert(params: {
+  leadName: string;
+  clientName: string;
+  clientEmail: string;
+  amountNGN: number;
+  paymentMethod: string;
+  reference?: string;
+}): Promise<boolean> {
+  const adminPhone = process.env.ADMIN_WA_PHONE || '2348022791227';
+  const cleanPhone = adminPhone.replace(/\D/g, '');
+
+  const alertMessage = [
+    `🚨🚨🚨 [HIGH-PRIORITY PAYMENT ALERT] 🚨🚨🚨`,
+    ``,
+    `🏢 Business: *${params.leadName}*`,
+    `👤 Client: *${params.clientName}*`,
+    `✉️ Email: ${params.clientEmail}`,
+    `💰 Amount: *₦${params.amountNGN.toLocaleString()}*`,
+    `💳 Gateway: *${params.paymentMethod.toUpperCase()}*`,
+    params.reference ? `🔖 Ref: ${params.reference}` : '',
+    ``,
+    `👉 *ACTION REQUIRED:* Open your OPay app to confirm credit of ₦${params.amountNGN.toLocaleString()} from ${params.clientName}.`,
+    `⏰ Time: ${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`
+  ].filter(Boolean).join('\n');
+
+  try {
+    const config = getRuntimeConfig();
+    const baseUrl = config.whatsappBaileysUrl || 'http://localhost:3007';
+    const url = `${baseUrl.replace(/\/+$/, '')}/send`;
+
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: cleanPhone,
+        message: alertMessage,
+      }),
+    });
+
+    return resp.ok;
+  } catch (err: any) {
+    console.warn('Admin WhatsApp payment alert dispatch error:', err.message);
+    return false;
+  }
+}
+
+

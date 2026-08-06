@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import { sendNotificationEmail } from '@/lib/email';
+import { sendAdminPaymentWhatsAppAlert } from '@/lib/whatsapp';
 import { commitFileToGitHub } from '@/lib/github';
 import fs from 'fs';
 import path from 'path';
@@ -77,31 +78,34 @@ export async function POST(req: NextRequest) {
 
     const siteConfigString = JSON.stringify(siteConfig, null, 2);
 
-    // 4. Local filesystem write (for local dev mode synchronization)
+    // 4. Local filesystem write (safe fallback for local development only)
     let localWriteSuccess = false;
-    try {
-      let workerIndex = '';
+    const isServerless = process.env.VERCEL || process.env.NETLIFY || process.env.AWS_EXECUTION_ENV;
+    if (!isServerless) {
       try {
-        workerIndex = req.headers.get('x-test-worker-index') || '';
-      } catch (e) {}
-      if (!workerIndex) {
-        workerIndex = process.env.TEST_WORKER_INDEX || '';
-      }
+        let workerIndex = '';
+        try {
+          workerIndex = req.headers.get('x-test-worker-index') || '';
+        } catch (e) {}
+        if (!workerIndex) {
+          workerIndex = process.env.TEST_WORKER_INDEX || '';
+        }
 
-      const dataDir = path.join(process.cwd(), 'src', 'data', 'sites');
-      if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
+        const dataDir = path.join(process.cwd(), 'src', 'data', 'sites');
+        if (!fs.existsSync(dataDir)) {
+          fs.mkdirSync(dataDir, { recursive: true });
+        }
+        const baseName = workerIndex ? `${leadId}.worker-${workerIndex}.json` : `${leadId}.json`;
+        const filePath = path.join(dataDir, baseName);
+        
+        const { writeJsonFileSyncAtomic } = require('@/lib/atomicIo');
+        writeJsonFileSyncAtomic(filePath, siteConfig);
+        localWriteSuccess = true;
+        console.log(`Locally wrote claimed site config to ${filePath}`);
+      } catch (fsErr: unknown) {
+        const error = fsErr as Error;
+        console.warn('[ClaimRoute] Non-fatal notice: Local filesystem write skipped:', error.message);
       }
-      const baseName = workerIndex ? `${leadId}.worker-${workerIndex}.json` : `${leadId}.json`;
-      const filePath = path.join(dataDir, baseName);
-      
-      const { writeJsonFileSyncAtomic } = require('@/lib/atomicIo');
-      writeJsonFileSyncAtomic(filePath, siteConfig);
-      localWriteSuccess = true;
-      console.log(`Locally wrote claimed site config to ${filePath}`);
-    } catch (fsErr: unknown) {
-      const error = fsErr as Error;
-      console.warn('Failed to write claimed site config to local filesystem:', error.message);
     }
 
     // 5. Commit to GitHub (for Vercel deployment update - ONLY if mode is 'git')
@@ -191,13 +195,26 @@ Please contact them at ${clientEmail} as soon as possible to finalize their webs
 Best regards,
 Bethelmind Analytics & Strategy Lead Engine`;
 
-    // Only send synchronous email notifications if NOT using git-batch mode
+    // Send email notification to admin
     if (scaling.mode !== 'git-batch' && adminEmail) {
       try {
         await sendNotificationEmail(adminEmail, adminSubject, adminBody);
       } catch (mailErr: any) {
         console.error('Failed to send admin claim notification email:', mailErr.message);
       }
+    }
+
+    // Send instant high-priority WhatsApp Payment alert to Admin Line (2348022791227)
+    try {
+      await sendAdminPaymentWhatsAppAlert({
+        leadName: lead.name,
+        clientName,
+        clientEmail,
+        amountNGN: config.claimFeeNGN || 185000,
+        paymentMethod: paymentMethod || 'opay_bank_transfer',
+      });
+    } catch (waAlertErr: any) {
+      console.warn('Failed to send WhatsApp admin alert:', waAlertErr.message);
     }
 
     // 7. Zero-Touch Auto-Provisioning Engine

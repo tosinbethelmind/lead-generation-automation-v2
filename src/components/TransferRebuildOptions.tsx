@@ -19,7 +19,10 @@ const FEATURE_CATALOG = [
   { id: 'social_proof_counters', label: 'Animated Social Proof Counters', cost: 15000, roi: 'Trust Builder', desc: 'Live counters showing clients served, average star rating, and verified status.' },
   { id: 'sms_whatsapp_reminders', label: 'Automated SMS & WhatsApp Reminders', cost: 25000, roi: '+95% Attendance', desc: 'Automated appointment and payment reminders sent 24h before scheduled slots.' },
   { id: 'parent_portal', label: 'Parent Attendance & CBT Portal Access', cost: 40000, roi: 'Parent Retention', desc: 'Digital portal for parents to track attendance, report cards, and CBT scores.' },
-  { id: 'fleet_tracker', label: 'Real-Time GPS Fleet & Delivery Tracker', cost: 55000, roi: 'Logistics Control', desc: 'Live tracking map for logistics packages, delivery riders, and school buses.' }
+  { id: 'fleet_tracker', label: 'Real-Time GPS Fleet & Delivery Tracker', cost: 55000, roi: 'Logistics Control', desc: 'Live tracking map for logistics packages, delivery riders, and school buses.' },
+  { id: 'social_media_management', label: 'AI Social Media Content Auto-Publisher', cost: 185000, roi: '+120% Organic Reach', desc: '30-day AI post calendar, dual-tone Pidgin/English captions, and multi-platform auto-posting (IG, FB, TikTok, X).' },
+  { id: 'ad_automation', label: 'AI Meta & Google Ad Campaign Launcher', cost: 285000, roi: '+3.5x Conversions', desc: '1-click Meta Lead Ads & Google Search Ads setup with AI audience persona modeling and instant WhatsApp lead dispatch.' },
+  { id: 'social_ad_dominance_suite', label: 'Topmost AI Social & Search Ad Suite', cost: 450000, roi: '👑 Hands-Free Growth', desc: 'Complete organic social management + paid ad campaign launcher bundle with automated budget ROI optimizer.' }
 ];
 
 export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ lead, onSuccess }) => {

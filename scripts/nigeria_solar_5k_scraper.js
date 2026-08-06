@@ -6,6 +6,11 @@
  * Synchronizes to main Supabase instance using valid UUIDs and updates scrape_jobs.
  */
 
+const dns = require('dns');
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
+
 let ws;
 try {
   ws = require('ws');
@@ -65,12 +70,20 @@ const supabaseSolarQuotePro = createClient(SOLARQUOTEPRO_URL, SOLARQUOTEPRO_KEY,
 async function logToSupabase(runId, message, level = 'info') {
   try {
     if (!runId) return;
+    const statusMap = {
+      info: 'INFO',
+      error: 'ERROR',
+      warn: 'WARN',
+      start: 'START',
+      success: 'SUCCESS'
+    };
+    const status = statusMap[String(level).toLowerCase()] || 'INFO';
     await supabaseMain.from('logs').insert([{
       run_id: runId,
+      step: 'solar_5k_scraper',
+      status: status,
       message: message,
-      level: level,
-      timestamp: new Date().toISOString(),
-      created_at: new Date().toISOString()
+      timestamp: new Date().toISOString()
     }]);
   } catch (e) {
     // Ignore logging insertion errors

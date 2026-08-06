@@ -15,8 +15,7 @@ if (typeof (global as any).WebSocket === 'undefined') {
 import { createClient } from '@supabase/supabase-js';
 import { getRuntimeConfig } from './localConfig';
 
-const ACTIVE_SUPABASE_URL = 'https://szyuterncawfxwzhvwcf.supabase.co';
-const ACTIVE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY';
+const ACTIVE_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
 
 function isValidKeyForProject(keyStr: string | undefined): boolean {
   if (!keyStr || typeof keyStr !== 'string') return false;
@@ -26,21 +25,23 @@ function isValidKeyForProject(keyStr: string | undefined): boolean {
     const parts = trimmed.split('.');
     if (parts.length === 3) {
       const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-      return payload.ref === 'szyuterncawfxwzhvwcf';
+      return payload.ref === 'pnsrjsyiygxdcxkpgbzx' || payload.ref === 'szyuterncawfxwzhvwcf';
     }
   } catch (e) {}
-  return false;
+  return trimmed.length > 20;
 }
 
 function getValidUrl(): string {
   const candidates = [process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_URL];
   for (const c of candidates) {
-    if (c && typeof c === 'string' && c.trim().includes('szyuterncawfxwzhvwcf')) {
+    if (c && typeof c === 'string' && c.trim().length > 10) {
       return c.trim();
     }
   }
   return ACTIVE_SUPABASE_URL;
 }
+
+const ACTIVE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
 
 function getValidKey(): string {
   const candidates = [
@@ -53,7 +54,7 @@ function getValidKey(): string {
       return c.trim();
     }
   }
-  return ACTIVE_SUPABASE_KEY;
+  return process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ACTIVE_SUPABASE_KEY;
 }
 
 let cachedClient: ReturnType<typeof createClient> | null = null;
@@ -63,6 +64,13 @@ export function getSupabaseClient() {
     cachedClient = createClient(getValidUrl(), getValidKey(), {
       auth: {
         persistSession: false,
+      },
+      global: {
+        fetch: (url, options) => {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 2000);
+          return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+        }
       },
       realtime: {
         transport: ws,
