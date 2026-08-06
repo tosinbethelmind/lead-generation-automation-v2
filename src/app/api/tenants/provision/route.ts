@@ -106,37 +106,10 @@ export async function POST(req: NextRequest) {
     try {
       const { sendNotificationEmail } = await import('@/lib/email');
       const tierDetails = NIGERIAN_MARKET_TIERS.find(t => t.id === package_tier);
-      await sendNotificationEmail({
-        to: owner_email,
-        subject: `🚀 Welcome to ApexReach! Your ${tierDetails?.name || package_tier} is Ready`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #07090e; color: #f8fafc; padding: 40px; border-radius: 16px;">
-            <h1 style="color: #06b6d4; margin-bottom: 8px;">Welcome, ${owner_name || business_name}! 🎉</h1>
-            <p style="color: #94a3b8; margin-bottom: 24px;">Your <strong style="color: #f8fafc;">${tierDetails?.badge || package_tier.toUpperCase()}</strong> is fully provisioned and ready to use.</p>
-            
-            <div style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-              <h2 style="color: #06b6d4; margin: 0 0 16px;">Your Login Credentials</h2>
-              <p><strong>Portal URL:</strong> <a href="${portalUrl}" style="color: #06b6d4;">${portalUrl}</a></p>
-              <p><strong>Access Token:</strong> <code style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; color: #10b981;">${tenant.access_token}</code></p>
-              <p style="color: #94a3b8; font-size: 0.85em;">⚠️ Keep this token private. It grants full access to your dashboard.</p>
-            </div>
+      const subject = `🚀 Welcome to ApexReach! Your ${tierDetails?.name || package_tier} is Ready`;
+      const emailBody = `Welcome, ${owner_name || business_name}!\n\nYour ${tierDetails?.badge || package_tier.toUpperCase()} is fully provisioned.\n\nPortal URL: ${portalUrl}\nAccess Token: ${tenant.access_token}\n\nKeep this token private as it grants access to your workspace.`;
+      await sendNotificationEmail(owner_email, subject, emailBody);
 
-            <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-              <h2 style="color: #10b981; margin: 0 0 12px;">What You Can Do Now</h2>
-              <ul style="color: #94a3b8; padding-left: 20px;">
-                ${tenant.features_enabled.lead_harvester ? '<li>🎯 10K Lagos B2B Lead Harvester Engine</li>' : ''}
-                ${tenant.features_enabled.ai_customer_agent ? '<li>🤖 24/7 Customer AI Agent</li>' : ''}
-                ${tenant.features_enabled.whatsapp_voice_notes ? '<li>🎙️ Nigerian Accent WhatsApp Voice Notes</li>' : ''}
-                ${tenant.features_enabled.ai_voice_caller ? '<li>📞 AI Voice Caller (Outbound)</li>' : ''}
-                ${tenant.features_enabled.solar_pipeline ? '<li>☀️ Solar Quote Pro Pipeline</li>' : ''}
-                ${tenant.features_enabled.recruitment_engine ? '<li>👥 Recruitment Engine</li>' : ''}
-              </ul>
-            </div>
-
-            <p style="color: #94a3b8;">Need help? Reply to this email or contact us on WhatsApp.</p>
-          </div>
-        `
-      });
     } catch (emailErr: any) {
       console.warn('[Provision] Email delivery failed (non-critical):', emailErr?.message);
     }
