@@ -2,15 +2,13 @@
  * @file scripts/lagos_10k_master_harvester.js
  * High-Performance Master Harvester for the 10K Lagos B2B Engine.
  *
- * OVERHAULED v7.0 — CONTINUOUS DYNAMIC GROWTH ENGINE:
- *  1. Dynamic Seed Query Shuffling & LGA Rotation across all 12 LGAs
- *  2. Multi-Page Jiji Web API Offset (pages 1-10 rotated dynamically per cycle)
- *  3. Multi-Page BusinessList Offset (pages 1-5 rotated dynamically per cycle)
- *  4. 60+ Small Business & Informal Category Seeds
- *  5. Google RSS Engine for Social Media & Nairaland (Zero-Block)
- *  6. 5-Layer Lead Verification Engine
- *
- * Guarantees 100-200 NEW UNIQUE leads synced to Supabase on EVERY cycle.
+ * OVERHAULED v8.0 — ACCURATE NET-NEW GROWTH ENGINE:
+ *  1. Measures exact NET NEW leads added to Supabase DB (countAfter - countBefore).
+ *  2. Rotates 25+ Lagos Districts (Ikeja, Lekki, Yaba, Surulere, Festac, Ajah, Ikorodu, Alimosho, Gbagada, Agege, etc.).
+ *  3. Rotates Jiji Web API Page Offsets (Pages 1 -> 15 dynamically).
+ *  4. Rotates BusinessList Category Page Offsets (Pages 1 -> 8 dynamically).
+ *  5. 60+ Small Business & Informal Category Seeds.
+ *  6. 5-Layer Lead Verification Engine.
  */
 
 let ws;
@@ -58,9 +56,11 @@ const SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_KEY, p
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false }, realtime: { transport: ws } });
 
-const LAGOS_LGAS = [
+const LAGOS_DISTRICTS = [
   'Ikeja', 'Lekki', 'Victoria Island', 'Yaba', 'Surulere', 'Oshodi', 'Ikorodu',
-  'Alimosho', 'Ojota', 'Ogudu', 'Apapa', 'Gbagada', 'Ajah', 'Sangotedo', 'Festac', 'Agege', 'Epe'
+  'Alimosho', 'Ojota', 'Ogudu', 'Apapa', 'Gbagada', 'Ajah', 'Sangotedo', 'Festac',
+  'Agege', 'Epe', 'Badagry', 'Ikotun', 'Egbeda', 'Ipaja', 'Ilupeju', 'Oregun',
+  'Ebute Metta', 'Magodo', 'Maryland', 'Anthony'
 ];
 
 const EXPANDED_SEARCH_QUERIES = [
@@ -167,7 +167,7 @@ async function harvestNominatimOSMZone(keyword, category, lgaName) {
     const searchQ = `${keyword} in ${lgaName} Lagos Nigeria`;
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQ)}&format=json&addressdetails=1&limit=25`;
     const resp = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ApexReachLagosHarvester/7.0' },
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ApexReachLagosHarvester/8.0' },
       signal: AbortSignal.timeout(9000),
     });
 
@@ -575,23 +575,23 @@ async function batchUpsertToSupabase(allLeads) {
 }
 
 // ---------------------------------------------------------------------------
-// MASTER ORCHESTRATOR v7.0 (Dynamic Cycle Shuffling)
+// MASTER ORCHESTRATOR v8.0 (Accurate Net-New Measurement & Deep Rotation)
 // ---------------------------------------------------------------------------
 async function runMasterLagosHarvester(dryRun = false, cycleNumber = 1) {
   console.log('==================================================');
-  console.log(`🚀 10K LAGOS B2B MASTER HARVESTER ENGINE v7.0 [Cycle #${cycleNumber}]`);
-  console.log('   CONTINUOUS DYNAMIC SEED & PAGE OFFSET ROTATION');
+  console.log(`🚀 10K LAGOS B2B MASTER HARVESTER ENGINE v8.0 [Cycle #${cycleNumber}]`);
+  console.log('   DEEP MULTI-PAGE & LGA DISTRICT ROTATION');
   console.log('==================================================\n');
 
   const allLeads = [];
 
   // Calculate dynamic page offsets based on cycleNumber
-  const jijiPage = ((cycleNumber - 1) % 8) + 1; // Rotates Jiji pages 1 -> 8
-  const bizPage = ((cycleNumber - 1) % 5) + 1;   // Rotates BusinessList pages 1 -> 5
+  const jijiPage = ((cycleNumber - 1) % 15) + 1; // Rotates Jiji pages 1 -> 15
+  const bizPage = ((cycleNumber - 1) % 8) + 1;   // Rotates BusinessList pages 1 -> 8
 
   // Calculate dynamic query slices based on cycleNumber
   const totalQueries = EXPANDED_SEARCH_QUERIES.length;
-  const sliceSize = 12;
+  const sliceSize = 14;
   const startIndex = ((cycleNumber - 1) * sliceSize) % totalQueries;
   const activeQueries = EXPANDED_SEARCH_QUERIES.slice(startIndex, startIndex + sliceSize);
   if (activeQueries.length < sliceSize) {
@@ -599,16 +599,16 @@ async function runMasterLagosHarvester(dryRun = false, cycleNumber = 1) {
   }
 
   // Calculate dynamic LGA slice
-  const lgaStartIndex = ((cycleNumber - 1) * 4) % LAGOS_LGAS.length;
-  const activeLgas = LAGOS_LGAS.slice(lgaStartIndex, lgaStartIndex + 4);
+  const lgaStartIndex = ((cycleNumber - 1) * 4) % LAGOS_DISTRICTS.length;
+  const activeLgas = LAGOS_DISTRICTS.slice(lgaStartIndex, lgaStartIndex + 4);
   if (activeLgas.length < 4) {
-    activeLgas.push(...LAGOS_LGAS.slice(0, 4 - activeLgas.length));
+    activeLgas.push(...LAGOS_DISTRICTS.slice(0, 4 - activeLgas.length));
   }
 
   console.log(`🔄 Cycle #${cycleNumber} Active Parameters:`);
-  console.log(`   ├─ Active LGAs: ${activeLgas.join(', ')}`);
+  console.log(`   ├─ Active Districts: ${activeLgas.join(', ')}`);
   console.log(`   ├─ Jiji Page: ${jijiPage} | BusinessList Page: ${bizPage}`);
-  console.log(`   └─ Categories: ${activeQueries.slice(0, 4).map(s => s.cat).join(', ')}... (+8 more)`);
+  console.log(`   └─ Categories: ${activeQueries.slice(0, 4).map(s => s.cat).join(', ')}... (+10 more)`);
 
   // === STAGE 1: Nominatim OpenStreetMap Geo Engine ===
   console.log('\n📍 STAGE 1: Nominatim OpenStreetMap Geo Engine...');
@@ -703,11 +703,16 @@ async function runMasterLagosHarvester(dryRun = false, cycleNumber = 1) {
   }
 
   if (finalLeads.length > 0) {
-    console.log('\n💾 Syncing new unique leads to Supabase...');
-    const totalSaved = await batchUpsertToSupabase(finalLeads);
-    const { count: totalLagosCount } = await supabase.from('leads').select('*', { count: 'exact', head: true });
+    console.log('\n💾 Measuring database count & syncing new leads to Supabase...');
+    const { count: countBefore } = await supabase.from('leads').select('*', { count: 'exact', head: true });
+    await batchUpsertToSupabase(finalLeads);
+    const { count: countAfter } = await supabase.from('leads').select('*', { count: 'exact', head: true });
+    const netAdded = (countAfter || 0) - (countBefore || 0);
+
     console.log('\n==================================================');
-    console.log(`🎉 CYCLE #${cycleNumber} COMPLETE! Saved: ${totalSaved} | Total All Leads in DB: ${totalLagosCount}`);
+    console.log(`🎉 CYCLE #${cycleNumber} COMPLETE!`);
+    console.log(`   ├─ Net NEW Unique Leads Added: +${netAdded}`);
+    console.log(`   └─ Total Verified Leads in DB: ${countAfter}`);
     console.log('==================================================\n');
   } else {
     console.log('\n⚠️  No valid leads this cycle. Check network connectivity.\n');
@@ -716,7 +721,7 @@ async function runMasterLagosHarvester(dryRun = false, cycleNumber = 1) {
 
 async function startNonStopMasterHarvester() {
   const isDryRun = process.argv.includes('--dry-run');
-  console.log('🚀 24/7 Lagos 10K Master Harvester v7.0 — Continuous Dynamic Growth Engine');
+  console.log('🚀 24/7 Lagos 10K Master Harvester v8.0 — Accurate Net-New Growth Engine');
   let cycle = 1;
   while (true) {
     console.log(`\n==================================================`);
