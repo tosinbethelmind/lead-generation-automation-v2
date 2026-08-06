@@ -179,16 +179,13 @@ export async function dispatchOutboundVoiceCall(
   records.unshift(record);
   writeCallRecords(records);
 
-  // Sync to Supabase
+  // Log activity
   try {
-    const supabase = getSupabaseClient();
-    if (supabase) {
-      await supabase.from('activity_logs').insert([{
-        type: 'voice_ai_call_dispatched',
-        description: `Outbound Voice AI call dispatched to ${name} (${formattedPhone}) via ${provider}. Cost: $${cost.costUsd} (~₦${cost.costNgn})`,
-        metadata: { call_id: callId, lead_id, provider, cost }
-      }]);
-    }
+    await logActivity({
+      type: 'voice_ai_call_dispatched',
+      description: `Outbound Voice AI call dispatched to ${name} (${formattedPhone}) via ${provider}. Cost: $${cost.costUsd} (~₦${cost.costNgn})`,
+      metadata: { call_id: callId, lead_id, provider, cost }
+    });
   } catch (_) {}
 
   // Auto-convert qualified call lead into deal pipeline
