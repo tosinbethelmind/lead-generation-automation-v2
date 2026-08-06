@@ -759,5 +759,7 @@ export function SocialAdAutomationWidget({
         )}
       </div>
     </div>
+    </div>
   );
 }
+

@@ -1051,5 +1051,7 @@ export function RecruitmentEngineWidget() {
         )}
       </div>
     </div>
+    </div>
   );
 }
+

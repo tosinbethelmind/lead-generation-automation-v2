@@ -43,14 +43,16 @@ export async function POST(req: NextRequest) {
     const amountNgn = plan_type === 'standalone' ? (tier?.priceNGN ?? 0) : (tier?.monthlyRenewalNGN ?? 0);
 
     // Check for duplicate order
-    const { data: existingOrder } = await supabase
+    const { data: existingOrder } = await (supabase as any)
       .from('marketplace_orders')
       .select('id, tenant_id')
       .eq('order_reference', orderRef)
       .single();
 
-    if (existingOrder?.tenant_id) {
-      const existingTenant = await getTenantById(existingOrder.tenant_id);
+    const orderObj = existingOrder as any;
+    if (orderObj?.tenant_id) {
+      const existingTenant = await getTenantById(orderObj.tenant_id);
+
       if (existingTenant) {
         return NextResponse.json({
           success: true,
@@ -78,7 +80,8 @@ export async function POST(req: NextRequest) {
     });
 
     // Save marketplace order with tenant linkage
-    await supabase.from('marketplace_orders').upsert({
+    await (supabase as any).from('marketplace_orders').upsert({
+
       order_reference: orderRef,
       tenant_id: tenant.id,
       business_name,

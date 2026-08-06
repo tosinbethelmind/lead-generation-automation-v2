@@ -569,5 +569,7 @@ export function SectorToolsWidget({
         )}
       </div>
     </div>
+    </div>
   );
 }
+
