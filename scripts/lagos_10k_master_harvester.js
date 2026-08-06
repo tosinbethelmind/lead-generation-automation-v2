@@ -748,26 +748,86 @@ async function harvestCommunityLeads(keyword, category) {
 }
 
 // ---------------------------------------------------------------------------
-// Universal Lead Quality Gate
+// 5-LAYER PRODUCTION LEAD VERIFICATION ENGINE
 // ---------------------------------------------------------------------------
-const BLACKLISTED_NAMES = new Set(['shop', 'store', 'solar', 'company', 'unknown', 'n/a', 'test', 'business', 'none', 'building', 'office']);
+const BLACKLISTED_NAMES = new Set([
+  'shop', 'store', 'solar', 'company', 'unknown', 'n/a', 'test', 'demo',
+  'sample', 'business', 'none', 'building', 'office', 'fake', 'null', 'undefined',
+  'item', 'product', 'buy', 'sell', 'wanted', 'services', 'listing'
+]);
+
+const DISPOSABLE_EMAIL_DOMAINS = new Set([
+  'example.com', 'test.com', 'domain.com', 'none.com', 'tempmail.com', 
+  'mailinator.com', 'yopmail.com', 'dispostable.com', 'wixpress.com'
+]);
+
+const VALID_NG_PREFIXES = new Set([
+  '803', '806', '813', '816', '802', '805', '815', '807', '703', '706',
+  '903', '906', '810', '814', '708', '812', '902', '901', '907', '904',
+  '912', '913', '915', '916', '701', '705', '809', '818', '817', '909', '908'
+]);
+
+function isDummyPhone(phone) {
+  if (!phone) return false;
+  const digits = String(phone).replace(/\D/g, '');
+  if (/^(\d)\1{7,}$/.test(digits)) return true; // e.g. 0000000000, 1111111111
+  if (digits === '1234567890' || digits === '0123456789' || digits === '9876543210') return true;
+  return false;
+}
+
+function validateNigerianCarrierPrefix(phone) {
+  if (!phone) return true;
+  const digits = String(phone).replace(/\D/g, '');
+  if (isDummyPhone(digits)) return false;
+  if (digits.length < 10) return false;
+
+  let e164Digits = digits;
+  if (digits.startsWith('234')) e164Digits = digits.substring(3);
+  else if (digits.startsWith('0')) e164Digits = digits.substring(1);
+
+  if (e164Digits.length !== 10) return false;
+  const prefix = e164Digits.substring(0, 3);
+  return VALID_NG_PREFIXES.has(prefix);
+}
+
+function isDisposableEmail(email) {
+  if (!email || typeof email !== 'string' || !email.includes('@')) return false;
+  const domain = email.split('@')[1]?.toLowerCase().trim();
+  return domain ? DISPOSABLE_EMAIL_DOMAINS.has(domain) : false;
+}
 
 function isValidLead(lead) {
   if (!lead || !lead.name || typeof lead.name !== 'string') return false;
   const name = lead.name.trim();
+
+  // Layer 1: Name Integrity Filter
   if (name.length < 3 || name.length > 90) return false;
   if (BLACKLISTED_NAMES.has(name.toLowerCase())) return false;
   if (/^\d+$/.test(name)) return false;
 
+  // Layer 2: Phone Verification (E.164 & Carrier Prefix Check)
+  const phone = lead.phone_e164 || lead.phone_raw;
+  if (phone && !validateNigerianCarrierPrefix(phone)) {
+    lead.phone_e164 = ''; // Invalidate fake phone
+  }
+
+  // Layer 3: Email Verification (Disposable Domain Check)
+  if (lead.email && isDisposableEmail(lead.email)) {
+    lead.email = ''; // Clear fake email
+  }
+
+  // Layer 4: Source-Specific Anchor Check
   const source = (lead.source || '').toUpperCase();
-  if (source === 'OSM') return true;
+  if (source === 'OSM') return true; // Geo-verified on OSM map
 
   const hasProfileUrl = !!(lead.website && lead.website.startsWith('http') && !lead.website.includes('google.com/search'));
-  const hasPhone = !!(lead.phone_e164 || lead.phone_raw);
+  const hasValidPhone = !!lead.phone_e164;
+  const hasValidEmail = !!lead.email;
 
-  if (['JIJI', 'BUSINESSLIST', 'VCONNECT', 'LINKTREE_BIO', 'SOCIAL_SERP'].includes(source) && hasProfileUrl) return true;
-  return hasPhone || hasProfileUrl;
+  // Layer 5: Attribute Requirement — Must have valid phone, email, or live profile URL
+  return hasValidPhone || hasValidEmail || hasProfileUrl;
 }
+
 
 // ---------------------------------------------------------------------------
 // Batch Database Upsert (Supabase + Local JSON Fallback)
