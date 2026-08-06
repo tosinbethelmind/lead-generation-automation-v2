@@ -398,5 +398,8 @@ export default function SolarQuoteProOutreachCard() {
         </div>
       )}
     </div>
-  );
+  </>
+);
 }
+
+

@@ -27,8 +27,8 @@ const dns = require('dns');
 
 const DOMAIN = 'bethelmindanalytics.com';
 const WWW_DOMAIN = 'www.bethelmindanalytics.com';
-const VERCEL_PROJECT_ID = 'prj_vfMEvGXha5E1pvAZLXY9F9F0dp0n';
-const VERCEL_TEAM_ID = 'team_qpoBet79QVTOafYzfLHzxKdG';
+const VERCEL_PROJECT_ID = 'prj_xh9RFVPAaJWRbDzL2exOHWwjMD1p';
+const VERCEL_TEAM_ID = '';
 const VERCEL_IP = '76.76.21.21';
 const VERCEL_CNAME = 'cname.vercel-dns.com';
 

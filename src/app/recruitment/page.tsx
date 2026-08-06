@@ -2,87 +2,272 @@ import React from 'react';
 import { RecruitmentEngineWidget } from '@/components/RecruitmentEngineWidget';
 import { WebappToolActionBar } from '@/components/WebappToolActionBar';
 import Link from 'next/link';
-import { ArrowLeft, Briefcase, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowLeft, Briefcase } from 'lucide-react';
 
 export const metadata = {
-  title: 'AI Recruitment & Talent Engine | ApexReach 2026',
+  title: 'AI Recruitment & Talent Engine | Bethelmind Analytics',
   description: 'Position advertising, evergreen talent pool bank, automated AI CV grading, Google X-Ray candidate sourcing, and interview scheduling.',
 };
 
 export default function RecruitmentPage() {
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Global Action Bar with Sell Engine & Team Access Buttons */}
+    <main
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#070a12',
+        color: '#f8fafc',
+        fontFamily: "'Inter', sans-serif",
+        padding: '24px clamp(12px, 4vw, 32px)',
+        backgroundImage: 'radial-gradient(ellipse 80% 60% at 10% 5%, rgba(6, 182, 212, 0.15) 0%, transparent 60%), radial-gradient(ellipse 70% 50% at 90% 90%, rgba(139, 92, 246, 0.15) 0%, transparent 60%), linear-gradient(160deg, #050812 0%, #070a14 40%, #060910 100%)',
+      }}
+    >
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        {/* Global Action Bar */}
         <WebappToolActionBar currentTool="Recruitment Engine" />
 
         {/* Header Navigation Bar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/80 border border-slate-800 p-4 rounded-2xl shadow-xl backdrop-blur-md">
-          <div className="flex items-center space-x-3">
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 16,
+            flexWrap: 'wrap',
+            background: 'rgba(13, 19, 33, 0.85)',
+            border: '1px solid rgba(99, 102, 241, 0.25)',
+            padding: '16px 24px',
+            borderRadius: 18,
+            boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            marginBottom: 20,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <Link
               href="/"
-              className="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 hover:text-white transition-all"
+              style={{
+                padding: '8px 12px',
+                background: 'rgba(30, 41, 59, 0.8)',
+                borderRadius: 12,
+                color: '#94a3b8',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textDecoration: 'none',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft style={{ width: 16, height: 16 }} />
             </Link>
             <div>
-              <div className="flex items-center space-x-2">
-                <span className="px-2.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[10px] font-semibold uppercase tracking-wider">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <span
+                  style={{
+                    padding: '2px 10px',
+                    background: 'rgba(59, 130, 246, 0.15)',
+                    color: '#60a5fa',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    borderRadius: 100,
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Enterprise HR & Talent Suite
                 </span>
-                <span className="flex items-center space-x-1 text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>AI Engine Active</span>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    padding: '2px 10px',
+                    background: 'rgba(16, 185, 129, 0.12)',
+                    color: '#34d399',
+                    border: '1px solid rgba(16, 185, 129, 0.25)',
+                    borderRadius: 100,
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399' }}></span>
+                  AI Engine Active
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-white mt-1 flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-cyan-400" />
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: 'clamp(1.2rem, 3vw, 1.6rem)',
+                  fontWeight: 800,
+                  color: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  fontFamily: "'Outfit', sans-serif",
+                }}
+              >
+                <Briefcase style={{ width: 22, height: 22, color: '#06b6d4' }} />
                 <span>AI Recruitment & Talent Hiring Engine</span>
               </h1>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
-            <Link
-              href="/dashboard"
-              className="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition-all shadow-lg"
-            >
-              Go to Master Dashboard &rarr;
-            </Link>
-          </div>
+          <Link
+            href="/admin"
+            style={{
+              padding: '10px 20px',
+              background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)',
+              color: '#ffffff',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              borderRadius: 12,
+              textDecoration: 'none',
+              boxShadow: '0 4px 20px rgba(6, 182, 212, 0.25)',
+            }}
+          >
+            Go to Master Dashboard &rarr;
+          </Link>
         </div>
 
-        {/* Feature Highlights Banner */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-          <div className="bg-slate-900/60 border border-slate-800 p-3 rounded-xl flex items-center space-x-3">
-            <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg font-bold">📢</div>
+        {/* Feature Highlights Cards Banner */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 12,
+            marginBottom: 24,
+          }}
+        >
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.6)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              padding: '14px 18px',
+              borderRadius: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+            }}
+          >
+            <div
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 10,
+                background: 'rgba(59, 130, 246, 0.15)',
+                color: '#60a5fa',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                fontSize: '1.1rem',
+              }}
+            >
+              📢
+            </div>
             <div>
-              <div className="font-bold text-white">Job Ads & Criteria</div>
-              <div className="text-slate-400 text-[11px]">Pre-screening filters</div>
+              <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#ffffff' }}>Job Ads & Criteria</div>
+              <div style={{ color: '#64748b', fontSize: '0.72rem', marginTop: 2 }}>Pre-screening filters</div>
             </div>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800 p-3 rounded-xl flex items-center space-x-3">
-            <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg font-bold">🌐</div>
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.6)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              padding: '14px 18px',
+              borderRadius: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+            }}
+          >
+            <div
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 10,
+                background: 'rgba(16, 185, 129, 0.15)',
+                color: '#34d399',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                fontSize: '1.1rem',
+              }}
+            >
+              🌐
+            </div>
             <div>
-              <div className="font-bold text-white">Talent Pool Bank</div>
-              <div className="text-slate-400 text-[11px]">1-tap WhatsApp availability</div>
+              <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#ffffff' }}>Talent Pool Bank</div>
+              <div style={{ color: '#64748b', fontSize: '0.72rem', marginTop: 2 }}>1-tap WhatsApp availability</div>
             </div>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800 p-3 rounded-xl flex items-center space-x-3">
-            <div className="p-2 bg-purple-500/20 text-purple-400 rounded-lg font-bold">🔎</div>
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.6)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              padding: '14px 18px',
+              borderRadius: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+            }}
+          >
+            <div
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 10,
+                background: 'rgba(139, 92, 246, 0.15)',
+                color: '#c084fc',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                fontSize: '1.1rem',
+              }}
+            >
+              🔎
+            </div>
             <div>
-              <div className="font-bold text-white">Google X-Ray Sourcing</div>
-              <div className="text-slate-400 text-[11px]">100% Free LinkedIn search</div>
+              <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#ffffff' }}>Google X-Ray Sourcing</div>
+              <div style={{ color: '#64748b', fontSize: '0.72rem', marginTop: 2 }}>100% Free LinkedIn search</div>
             </div>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800 p-3 rounded-xl flex items-center space-x-3">
-            <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg font-bold">🤖</div>
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.6)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              padding: '14px 18px',
+              borderRadius: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+            }}
+          >
+            <div
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 10,
+                background: 'rgba(245, 158, 11, 0.15)',
+                color: '#fbbf24',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                fontSize: '1.1rem',
+              }}
+            >
+              🤖
+            </div>
             <div>
-              <div className="font-bold text-white">AI CV Grader (0-100%)</div>
-              <div className="text-slate-400 text-[11px]">Instant suitability match</div>
+              <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#ffffff' }}>AI CV Grader (0-100%)</div>
+              <div style={{ color: '#64748b', fontSize: '0.72rem', marginTop: 2 }}>Instant suitability match</div>
             </div>
           </div>
         </div>

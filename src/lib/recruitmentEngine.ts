@@ -91,10 +91,14 @@ export interface AiSourcingRecommendation {
   roleTitle: string;
   targetChannels: { channel: string; rationale: string; expectedYield: string }[];
   linkedinBooleanString: string;
+  googleXraySearchString?: string;
+  freeChannels?: { method: string; template: string; impact: string }[];
   screeningFilterTactics: string[];
   referralBountySuggestion: string;
   samplePreScreeningQuestions: string[];
 }
+
+
 
 export interface VoiceNoteEvaluationResult {
   candidateName: string;

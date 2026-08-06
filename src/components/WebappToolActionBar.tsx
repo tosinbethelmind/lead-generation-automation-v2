@@ -2,59 +2,135 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Users, Briefcase, Sparkles, ShieldCheck } from 'lucide-react';
+import { Users, Briefcase, Sparkles } from 'lucide-react';
 
 export function WebappToolActionBar({ currentTool }: { currentTool?: string }) {
   return (
-    <div className="w-full bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl shadow-xl backdrop-blur-md mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs font-sans">
-      <div className="flex items-center space-x-2.5">
-        <div className="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-sm">
+    <div
+      style={{
+        width: '100%',
+        background: 'rgba(13, 19, 33, 0.85)',
+        border: '1px solid rgba(99, 102, 241, 0.25)',
+        borderRadius: 16,
+        padding: '14px 20px',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        marginBottom: 20,
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+        boxSizing: 'border-box',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 10,
+            background: 'rgba(6, 182, 212, 0.15)',
+            border: '1px solid rgba(6, 182, 212, 0.35)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#06b6d4',
+            fontWeight: 800,
+            fontSize: '1rem',
+          }}
+        >
           ⚡
         </div>
         <div>
-          <div className="flex items-center space-x-2">
-            <span className="text-white font-bold">Enterprise Engine Control</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ color: '#f8fafc', fontWeight: 800, fontSize: '0.9rem' }}>
+              Enterprise Engine Control
+            </span>
             {currentTool && (
-              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[10px] font-semibold capitalize">
+              <span
+                style={{
+                  padding: '2px 10px',
+                  background: 'rgba(6, 182, 212, 0.15)',
+                  color: '#06b6d4',
+                  border: '1px solid rgba(6, 182, 212, 0.3)',
+                  borderRadius: 100,
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  textTransform: 'capitalize',
+                }}
+              >
                 {currentTool}
               </span>
             )}
           </div>
-          <span className="text-slate-400 text-[11px]">
+          <span style={{ color: '#64748b', fontSize: '0.75rem', display: 'block', marginTop: 2 }}>
             Sell this engine copy or invite your team for multi-user access
           </span>
         </div>
       </div>
 
-      {/* The Two Prominent Tool Buttons */}
-      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-        {/* Button 1: Sell / Handover Engine for someone */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <Link
           href="/admin/handover"
-          className="flex-1 sm:flex-none px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center space-x-1.5 border border-emerald-400/30"
-          title="Sell or Transfer recruitment engine copy to a client with IP transfer docs & setup bundle"
+          style={{
+            padding: '8px 16px',
+            background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
+            color: '#ffffff',
+            fontWeight: 700,
+            borderRadius: 10,
+            fontSize: '0.78rem',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            border: '1px solid rgba(52, 211, 153, 0.3)',
+            boxShadow: '0 4px 14px rgba(5, 150, 105, 0.25)',
+          }}
         >
-          <Briefcase className="w-3.5 h-3.5" />
-          <span>🤝 1. Sell / Handover Engine</span>
+          <Briefcase style={{ width: 14, height: 14 }} />
+          <span>1. Sell / Handover Engine</span>
         </Link>
 
-        {/* Button 2: Team Multi-User Access */}
         <Link
           href="/admin/team"
-          className="flex-1 sm:flex-none px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center space-x-1.5 border border-blue-400/30"
-          title="Give your team multiple access, generate access tokens, and assign user roles"
+          style={{
+            padding: '8px 16px',
+            background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)',
+            color: '#ffffff',
+            fontWeight: 700,
+            borderRadius: 10,
+            fontSize: '0.78rem',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            border: '1px solid rgba(96, 165, 250, 0.3)',
+            boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
+          }}
         >
-          <Users className="w-3.5 h-3.5" />
-          <span>👥 2. Team Multi-User Access</span>
+          <Users style={{ width: 14, height: 14 }} />
+          <span>2. Team Multi-User Access</span>
         </Link>
 
-        {/* Dedicated Recruitment Link */}
         <Link
           href="/recruitment"
-          className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1"
-          title="AI Recruitment & Talent Engine Direct Link"
+          style={{
+            padding: '8px 14px',
+            background: 'rgba(15, 23, 42, 0.8)',
+            color: '#38bdf8',
+            fontWeight: 700,
+            borderRadius: 10,
+            fontSize: '0.78rem',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            border: '1px solid rgba(56, 189, 248, 0.3)',
+          }}
         >
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <Sparkles style={{ width: 14, height: 14, color: '#38bdf8' }} />
           <span>Recruitment Engine</span>
         </Link>
       </div>

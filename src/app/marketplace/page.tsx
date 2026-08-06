@@ -53,7 +53,7 @@ const TIERS = [
     tagline: 'Lead Harvester + AI Agent + Voice Notes',
     description: 'The complete AI-powered lead generation and outreach stack for serious Lagos businesses.',
     highlights: [
-      '🎯 10K Lagos B2B Lead Harvester (27 Districts)',
+      '🎯 Mass Lagos B2B Lead Harvester (27 Districts)',
       '🤖 24/7 Customer AI Agent (Human-level)',
       '🎙️ Nigerian Accent WhatsApp Voice Notes (en-NG)',
       '⚙️ Admin Control Panel + Approval Center',
@@ -136,7 +136,7 @@ const TIERS = [
 ];
 
 const TOOLS = [
-  { icon: Target, label: '10K Lagos B2B Lead Harvester', desc: 'Scrapes 27 Lagos districts with verified phone numbers & WhatsApp contacts', color: '#06b6d4' },
+  { icon: Target, label: 'Mass Lagos B2B Lead Harvester', desc: 'Scrapes 27 Lagos districts with verified phone numbers & WhatsApp contacts', color: '#06b6d4' },
   { icon: Brain, label: '24/7 Customer AI Agent', desc: 'Human-level AI that handles enquiries, closes sales, and escalates critical deals', color: '#8b5cf6' },
   { icon: MessageSquare, label: 'WhatsApp Voice Note Generator', desc: 'Nigerian accent (en-NG) voice notes sent automatically for warmer outreach', color: '#10b981' },
   { icon: Phone, label: 'AI Voice Caller', desc: 'Auto-dials your lead list with personalized AI pitches, 24/7', color: '#f59e0b' },
@@ -395,7 +395,7 @@ export default function MarketplacePage() {
             </thead>
             <tbody>
               {[
-                ['10K Lagos Lead Harvester', false, true, true, true],
+                ['Mass Lagos Lead Harvester', false, true, true, true],
                 ['AI Customer Agent', true, true, true, true],
                 ['WhatsApp Voice Notes', false, true, true, true],
                 ['AI Voice Caller (Outbound)', false, false, true, true],

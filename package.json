@@ -71,6 +71,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/canvas-confetti": "^1.9.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
@@ -83,7 +84,9 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "open": "^9.0.0",
+    "postcss": "^8.5.26",
     "socks-proxy-agent": "^10.1.0",
+    "tailwindcss": "^4.3.3",
     "ts-node": "^10.9.2",
     "tsx": "^4.23.0",
     "typescript": "^5"

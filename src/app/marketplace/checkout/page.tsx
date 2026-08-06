@@ -300,7 +300,7 @@ function CheckoutContent() {
               </button>
             </div>
 
-            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', pb: 16, paddingBottom: 16, marginBottom: 16 }}>
+            <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 16, marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                 <span style={{ color: '#f8fafc', fontWeight: 700 }}>{tier.name}</span>
                 <span style={{ color: '#06b6d4', fontWeight: 800 }}>₦{price.toLocaleString()}</span>
@@ -318,7 +318,8 @@ function CheckoutContent() {
               ))}
             </div>
 
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', pt: 16, paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
               <span style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.05rem' }}>Total Due Now</span>
               <span style={{ color: '#10b981', fontWeight: 900, fontSize: '1.4rem' }}>₦{price.toLocaleString()}</span>
             </div>

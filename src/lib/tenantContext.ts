@@ -217,7 +217,7 @@ export async function createTenant(params: {
   setup_fee_paid?: boolean;
   notes?: string;
 }): Promise<TenantRecord> {
-  const supabase = getSupabaseClient();
+  const supabase = getSupabaseClient() as any;
   const { tenant_id, access_token } = generateTenantCredentials();
 
   const now = new Date();
@@ -264,7 +264,7 @@ export async function createTenant(params: {
  * Renew/reactivate a tenant subscription (adds 30 days from now).
  */
 export async function renewTenant(tenantId: string, options?: { days?: number; paymentReference?: string }): Promise<void> {
-  const supabase = getSupabaseClient();
+  const supabase = getSupabaseClient() as any;
   const days = options?.days ?? 30;
   const newExpiry = new Date();
   newExpiry.setDate(newExpiry.getDate() + days);
@@ -282,7 +282,7 @@ export async function renewTenant(tenantId: string, options?: { days?: number; p
  */
 export async function listAllTenants(): Promise<TenantRecord[]> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseClient() as any;
     const { data, error } = await supabase
       .from('tenants')
       .select('*')
@@ -298,13 +298,14 @@ export async function listAllTenants(): Promise<TenantRecord[]> {
  * Suspend a tenant immediately (e.g. for fraud or non-payment).
  */
 export async function suspendTenant(tenantId: string, reason?: string): Promise<void> {
-  const supabase = getSupabaseClient();
+  const supabase = getSupabaseClient() as any;
   await supabase.from('tenants').update({
     status: 'suspended',
     notes: reason ? `SUSPENDED: ${reason}` : 'Suspended by admin',
     updated_at: new Date().toISOString(),
   }).eq('id', tenantId);
 }
+
 
 /**
  * Get days remaining on subscription (negative = expired).

@@ -48,7 +48,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     monthlyRenewalNGN: 35000,
     popular: true,
     simplicityHighlights: [
-      '🎯 10K Lagos B2B Lead Harvester & Verified WhatsApp Exporter (27 Districts)',
+      '🎯 Mass Lagos B2B Lead Harvester & Verified WhatsApp Exporter (27 Districts)',
       '🤖 24/7 Customer AI Agent with WhatsApp Human Critical Approval',
       '🎙️ Nigerian Accent WhatsApp Voice Note Autoresponder (en-NG)',
       '⚙️ Admin Control Panel (Live Sandbox, Persona Customizer & Approvals Center)',
@@ -57,7 +57,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     ],
     features: [
       'Everything in Express Starter Tier',
-      '10K Lagos B2B Master Lead Harvester Engine (27 Lagos Districts)',
+      'Mass Lagos B2B Master Lead Harvester Engine (27 Lagos Districts)',
       'Intelligent Customer AI Agent (Human-level intelligence & product knowledge)',
       'Nigerian Accent WhatsApp Voice Note Generator (en-NG Abeo / Ezinne)',
       'WhatsApp Critical Stage Human Approval System (Sends alerts to Admin phone)',

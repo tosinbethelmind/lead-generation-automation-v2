@@ -28,6 +28,16 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  compress: true,
+  poweredByHeader: false,
+  reactStrictMode: true,
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'date-fns',
+      'recharts',
+    ],
+  },
   serverExternalPackages: [
     '@sparticuz/chromium',
     'puppeteer-core',

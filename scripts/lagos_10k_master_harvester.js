@@ -51,10 +51,11 @@ function getCleanCredential(env1, env2, fallback) {
   return v1 || v2 || fallback;
 }
 
-const SUPABASE_URL = getCleanCredential(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL, 'https://szyuterncawfxwzhvwcf.supabase.co');
-const SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.SUPABASE_KEY, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY');
+const SUPABASE_URL = getCleanCredential(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_URL, 'https://pnsrjsyiygxdcxkpgbzx.supabase.co');
+const SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8');
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false }, realtime: { transport: ws } });
+
 
 const LAGOS_DISTRICTS = [
   'Ikeja', 'Lekki', 'Victoria Island', 'Yaba', 'Surulere', 'Oshodi', 'Ikorodu',
@@ -817,9 +818,9 @@ function sanitizeLeadForSupabase(lead) {
       clean[key] = lead[key];
     }
   }
-  clean['tenant_id'] = clean['tenant_id'] || process.env.DEFAULT_TENANT_ID || 'default';
   return clean;
 }
+
 
 
 async function batchUpsertToSupabase(allLeads) {

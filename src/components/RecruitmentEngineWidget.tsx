@@ -284,292 +284,559 @@ export function RecruitmentEngineWidget() {
   );
 
   return (
-    <div className="w-full space-y-4">
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
       <WebappToolActionBar currentTool="Recruitment Engine" />
-      <div className="w-full bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden font-sans text-slate-100">
-      {/* 24-HOUR INSTANT HIRE BRANDING BANNER */}
-      <div className="bg-gradient-to-r from-cyan-950 via-slate-950 to-blue-950 p-4 border-b border-cyan-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300 font-extrabold text-lg">
-            ⚡
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-300 bg-cyan-500/20 px-2 py-0.5 rounded border border-cyan-500/40">
-                24-Hour Instant Hire Guaranteed
-              </span>
-              <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
-                1-ms AI CV & Audio Evaluation
-              </span>
-            </div>
-            <h2 className="text-base font-bold text-white mt-0.5">
-              Instant AI Talent Recruiter & Vetted Candidate Engine
-            </h2>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
-          <a
-            href={whatsappWidgetShareUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="px-3 py-1.5 bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-600/50 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1"
-          >
-            <span>📲 Share on WhatsApp</span>
-          </a>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(widgetUrl);
-              setCopiedWidgetUrl(true);
-              setTimeout(() => setCopiedWidgetUrl(false), 2000);
-            }}
-            className="px-3 py-1.5 bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-600/50 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1"
-          >
-            <span>{copiedWidgetUrl ? 'Copied Link! 🔗' : '🔗 Copy Tool Link'}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* INTELLIGENT AI HR CO-PILOT ASSISTANT BAR */}
-      <div className="bg-slate-950 p-3 border-b border-slate-800 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-purple-300 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
-            <span>Intelligent AI Recruitment Assistant (Co-Pilot)</span>
-          </span>
-          <div className="flex items-center space-x-1.5">
-            <button
-              onClick={() => handleAskAiAssistant('How to hire fast in 24 hours?')}
-              className="text-[10px] px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded border border-purple-500/30 hover:bg-purple-500/30"
-            >
-              ⚡ 24h Fast Hire
-            </button>
-            <button
-              onClick={() => handleAskAiAssistant('Calculate salary benchmark for Lagos')}
-              className="text-[10px] px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded border border-blue-500/30 hover:bg-blue-500/30"
-            >
-              💰 Salary Benchmark
-            </button>
-          </div>
-        </div>
-
-        {/* Messages Feed */}
-        <div className="max-h-28 overflow-y-auto space-y-1.5 pr-1 scrollbar-thin">
-          {aiAssistantMessages.slice(-3).map((m, i) => (
+      
+      <div
+        style={{
+          width: '100%',
+          background: '#0a0e1a',
+          border: '1px solid rgba(99, 102, 241, 0.25)',
+          borderRadius: 20,
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+          overflow: 'hidden',
+          fontFamily: "'Inter', sans-serif",
+          color: '#f8fafc',
+        }}
+      >
+        {/* 24-HOUR INSTANT HIRE BRANDING BANNER */}
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #06283b 0%, #090d16 50%, #1e1b4b 100%)',
+            padding: '16px 20px',
+            borderBottom: '1px solid rgba(6, 182, 212, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 12,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div
-              key={i}
-              className={`p-2 rounded-lg text-xs ${
-                m.sender === 'user' ? 'bg-blue-900/40 text-blue-200 border border-blue-500/30 ml-8' : 'bg-slate-900 text-slate-200 border border-purple-500/20 mr-8'
-              }`}
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 12,
+                background: 'rgba(6, 182, 212, 0.2)',
+                border: '1px solid rgba(6, 182, 212, 0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#67e8f9',
+                fontWeight: 800,
+                fontSize: '1.2rem',
+              }}
             >
-              <div className="font-semibold text-[10px] text-slate-400 mb-0.5">{m.sender === 'user' ? '👤 You' : '🤖 AI Co-Pilot'}</div>
-              <div>{m.text}</div>
-              {m.xray && (
-                <div className="mt-1 font-mono text-[10px] text-cyan-300 bg-slate-950 p-1 rounded border border-slate-800 break-all">
-                  Query: {m.xray}
-                </div>
-              )}
+              ⚡
             </div>
-          ))}
-        </div>
-
-        {/* Input Bar */}
-        <div className="flex items-center space-x-2 pt-1">
-          <input
-            type="text"
-            placeholder="Ask AI Assistant anything (e.g. 'Draft WhatsApp pitch for sales executive'...)"
-            value={aiPromptInput}
-            onChange={(e) => setAiPromptInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleAskAiAssistant()}
-            className="flex-1 bg-slate-900 border border-slate-800 text-xs px-3 py-1.5 rounded-lg text-white focus:outline-none focus:border-purple-500"
-          />
-          <button
-            onClick={() => handleAskAiAssistant()}
-            className="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1"
-          >
-            <Send className="w-3 h-3" />
-            <span>Ask AI</span>
-        </div>
-      </div>
-
-      {/* 🤖 AI MASS PARAGRAPH AUTO-FILL ASSISTANT BOX */}
-      <div className="bg-slate-900/90 border-b border-purple-500/30 p-3.5 space-y-2.5">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center space-x-2">
-            <span className="p-1 bg-purple-500/20 text-purple-400 rounded-lg text-xs">🤖</span>
-            <span className="text-xs font-bold text-slate-100">AI Mass Paragraph Auto-Fill Assistant</span>
-            <span className="text-[10px] px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded-full border border-cyan-500/30">1-Click Auto-Parse</span>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <span
+                  style={{
+                    fontSize: '0.68rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: '#67e8f9',
+                    background: 'rgba(6, 182, 212, 0.15)',
+                    padding: '2px 8px',
+                    borderRadius: 6,
+                    border: '1px solid rgba(6, 182, 212, 0.3)',
+                  }}
+                >
+                  24-Hour Instant Hire Guaranteed
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.68rem',
+                    color: '#34d399',
+                    fontWeight: 700,
+                    background: 'rgba(16, 185, 129, 0.12)',
+                    padding: '2px 8px',
+                    borderRadius: 6,
+                    border: '1px solid rgba(16, 185, 129, 0.25)',
+                  }}
+                >
+                  1-ms AI CV & Audio Evaluation
+                </span>
+              </div>
+              <h2 style={{ fontSize: '1rem', fontWeight: 800, color: '#ffffff', margin: '4px 0 0', fontFamily: "'Outfit', sans-serif" }}>
+                Instant AI Talent Recruiter & Vetted Candidate Engine
+              </h2>
+            </div>
           </div>
-          {autoFillNotice && (
-            <span className="text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-1 rounded border border-emerald-500/30">
-              {autoFillNotice}
-            </span>
-          )}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <a
+              href={whatsappWidgetShareUrl}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                padding: '7px 14px',
+                background: 'rgba(16, 185, 129, 0.15)',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                color: '#34d399',
+                borderRadius: 10,
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              <span>📲 Share on WhatsApp</span>
+            </a>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(widgetUrl);
+                setCopiedWidgetUrl(true);
+                setTimeout(() => setCopiedWidgetUrl(false), 2000);
+              }}
+              style={{
+                padding: '7px 14px',
+                background: 'rgba(6, 182, 212, 0.15)',
+                border: '1px solid rgba(6, 182, 212, 0.35)',
+                color: '#38bdf8',
+                borderRadius: 10,
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              <span>{copiedWidgetUrl ? 'Copied Link! 🔗' : '🔗 Copy Tool Link'}</span>
+            </button>
+          </div>
         </div>
 
-        <div className="flex gap-2">
-          <textarea
-            rows={2}
-            value={massParagraphText}
-            onChange={(e) => setMassParagraphText(e.target.value)}
-            placeholder="Paste any mass paragraph here (e.g. raw job description, candidate CV, or WhatsApp broadcast message)..."
-            className="flex-1 bg-slate-950 border border-slate-800 text-xs p-2.5 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-500 resize-none font-mono"
-          />
+        {/* INTELLIGENT AI HR CO-PILOT ASSISTANT BAR */}
+        <div style={{ background: '#050811', padding: '14px 18px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#c084fc', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Sparkles style={{ width: 14, height: 14, color: '#c084fc' }} />
+              <span>Intelligent AI Recruitment Assistant (Co-Pilot)</span>
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button
+                onClick={() => handleAskAiAssistant('How to hire fast in 24 hours?')}
+                style={{
+                  fontSize: '0.68rem',
+                  padding: '3px 10px',
+                  background: 'rgba(139, 92, 246, 0.18)',
+                  color: '#c084fc',
+                  borderRadius: 8,
+                  border: '1px solid rgba(139, 92, 246, 0.3)',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                }}
+              >
+                ⚡ 24h Fast Hire
+              </button>
+              <button
+                onClick={() => handleAskAiAssistant('Calculate salary benchmark for Lagos')}
+                style={{
+                  fontSize: '0.68rem',
+                  padding: '3px 10px',
+                  background: 'rgba(59, 130, 246, 0.18)',
+                  color: '#60a5fa',
+                  borderRadius: 8,
+                  border: '1px solid rgba(59, 130, 246, 0.3)',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                }}
+              >
+                💰 Salary Benchmark
+              </button>
+            </div>
+          </div>
+
+          {/* Messages Feed */}
+          <div style={{ maxHeight: 110, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 6, paddingRight: 4 }}>
+            {aiAssistantMessages.slice(-3).map((m, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: 10,
+                  fontSize: '0.78rem',
+                  background: m.sender === 'user' ? 'rgba(30, 58, 138, 0.4)' : 'rgba(15, 23, 42, 0.8)',
+                  color: m.sender === 'user' ? '#93c5fd' : '#e2e8f0',
+                  border: m.sender === 'user' ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid rgba(139, 92, 246, 0.2)',
+                  marginLeft: m.sender === 'user' ? 32 : 0,
+                  marginRight: m.sender === 'user' ? 0 : 32,
+                }}
+              >
+                <div style={{ fontWeight: 700, fontSize: '0.68rem', color: '#64748b', marginBottom: 2 }}>
+                  {m.sender === 'user' ? '👤 You' : '🤖 AI Co-Pilot'}
+                </div>
+                <div>{m.text}</div>
+                {m.xray && (
+                  <div style={{ marginTop: 4, fontFamily: 'monospace', fontSize: '0.68rem', color: '#22d3ee', background: '#030712', padding: 4, borderRadius: 6, border: '1px solid #1e293b', wordBreak: 'break-all' }}>
+                    Query: {m.xray}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Input Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 4 }}>
+            <input
+              type="text"
+              placeholder="Ask AI Assistant anything (e.g. 'Draft WhatsApp pitch for sales executive'...)"
+              value={aiPromptInput}
+              onChange={(e) => setAiPromptInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAskAiAssistant()}
+              style={{
+                flex: 1,
+                background: '#090d16',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                fontSize: '0.78rem',
+                padding: '8px 12px',
+                borderRadius: 10,
+                color: '#ffffff',
+                outline: 'none',
+              }}
+            />
+            <button
+              onClick={() => handleAskAiAssistant()}
+              style={{
+                padding: '8px 16px',
+                background: '#7c3aed',
+                color: '#ffffff',
+                borderRadius: 10,
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                border: 'none',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              <Send style={{ width: 12, height: 12 }} />
+              <span>Ask AI</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 🤖 AI MASS PARAGRAPH AUTO-FILL ASSISTANT BOX */}
+        <div style={{ background: 'rgba(15, 23, 42, 0.85)', borderBottom: '1px solid rgba(139, 92, 246, 0.3)', padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ padding: '3px 8px', background: 'rgba(139, 92, 246, 0.2)', color: '#c084fc', borderRadius: 8, fontSize: '0.8rem' }}>🤖</span>
+              <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#f8fafc' }}>AI Mass Paragraph Auto-Fill Assistant</span>
+              <span style={{ fontSize: '0.68rem', padding: '2px 8px', background: 'rgba(6, 182, 212, 0.15)', color: '#06b6d4', borderRadius: 100, border: '1px solid rgba(6, 182, 212, 0.3)' }}>1-Click Auto-Parse</span>
+            </div>
+            {autoFillNotice && (
+              <span style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 700, background: 'rgba(16, 185, 129, 0.15)', padding: '3px 10px', borderRadius: 6, border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                {autoFillNotice}
+              </span>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <textarea
+              rows={2}
+              value={massParagraphText}
+              onChange={(e) => setMassParagraphText(e.target.value)}
+              placeholder="Paste any mass paragraph here (e.g. raw job description, candidate CV, or WhatsApp broadcast message)..."
+              style={{
+                flex: 1,
+                minWidth: 260,
+                background: '#030712',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                fontSize: '0.78rem',
+                padding: '10px 14px',
+                borderRadius: 12,
+                color: '#e2e8f0',
+                outline: 'none',
+                resize: 'none',
+                fontFamily: 'monospace',
+              }}
+            />
+            <button
+              onClick={handleAutoFillFromParagraph}
+              style={{
+                padding: '10px 18px',
+                background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+                color: '#ffffff',
+                borderRadius: 12,
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                border: '1px solid rgba(167, 139, 250, 0.3)',
+                boxShadow: '0 4px 16px rgba(124, 58, 237, 0.3)',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 4,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <Sparkles style={{ width: 14, height: 14, color: '#e9d5ff' }} />
+              <span>Auto-Fill Details</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Subheader Navigation Tabs */}
+        <div
+          style={{
+            display: 'flex',
+            overflowX: 'auto',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            background: '#030712',
+            padding: 8,
+            gap: 6,
+          }}
+        >
           <button
-            onClick={handleAutoFillFromParagraph}
-            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-purple-600/20 flex flex-col items-center justify-center gap-1 border border-purple-400/30 whitespace-nowrap"
+            onClick={() => setActiveTab('jobs')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 16px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              borderRadius: 10,
+              cursor: 'pointer',
+              background: activeTab === 'jobs' ? 'rgba(37, 99, 235, 0.25)' : 'transparent',
+              color: activeTab === 'jobs' ? '#60a5fa' : '#94a3b8',
+              border: activeTab === 'jobs' ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid transparent',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
+            }}
           >
-            <Sparkles className="w-4 h-4 text-purple-200" />
-            <span>Auto-Fill Details</span>
+            <Briefcase style={{ width: 14, height: 14 }} />
+            <span>Job Openings ({jobs.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('talent_pool')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 16px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              borderRadius: 10,
+              cursor: 'pointer',
+              background: activeTab === 'talent_pool' ? 'rgba(16, 185, 129, 0.25)' : 'transparent',
+              color: activeTab === 'talent_pool' ? '#34d399' : '#94a3b8',
+              border: activeTab === 'talent_pool' ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid transparent',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <Users style={{ width: 14, height: 14 }} />
+            <span>Talent Pool Bank ({talentPool.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('sourcing_ai')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 16px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              borderRadius: 10,
+              cursor: 'pointer',
+              background: activeTab === 'sourcing_ai' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+              color: activeTab === 'sourcing_ai' ? '#c084fc' : '#94a3b8',
+              border: activeTab === 'sourcing_ai' ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid transparent',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <Sparkles style={{ width: 14, height: 14 }} />
+            <span>AI Sourcing Advisor</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('cv_grader')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 16px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              borderRadius: 10,
+              cursor: 'pointer',
+              background: activeTab === 'cv_grader' ? 'rgba(245, 158, 11, 0.25)' : 'transparent',
+              color: activeTab === 'cv_grader' ? '#fbbf24' : '#94a3b8',
+              border: activeTab === 'cv_grader' ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid transparent',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <FileCheck style={{ width: 14, height: 14 }} />
+            <span>AI CV Grader</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('interviews')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 16px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              borderRadius: 10,
+              cursor: 'pointer',
+              background: activeTab === 'interviews' ? 'rgba(6, 182, 212, 0.25)' : 'transparent',
+              color: activeTab === 'interviews' ? '#38bdf8' : '#94a3b8',
+              border: activeTab === 'interviews' ? '1px solid rgba(6, 182, 212, 0.4)' : '1px solid transparent',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <Calendar style={{ width: 14, height: 14 }} />
+            <span>Interview Scheduler ({interviews.length})</span>
           </button>
         </div>
-      </div>
-
-      {/* Subheader Navigation */}
-
-      <div className="flex overflow-x-auto border-b border-slate-800 bg-slate-950/80 p-2 gap-1 scrollbar-none">
-        <button
-          onClick={() => setActiveTab('jobs')}
-          className={`flex items-center space-x-2 px-3.5 py-2 text-xs font-semibold rounded-xl transition-all ${
-            activeTab === 'jobs' ? 'bg-blue-600/30 border border-blue-500/50 text-blue-300' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Briefcase className="w-3.5 h-3.5" />
-          <span>Job Openings ({jobs.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('talent_pool')}
-          className={`flex items-center space-x-2 px-3.5 py-2 text-xs font-semibold rounded-xl transition-all ${
-            activeTab === 'talent_pool' ? 'bg-emerald-600/30 border border-emerald-500/50 text-emerald-300' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Users className="w-3.5 h-3.5" />
-          <span>Talent Pool Bank ({talentPool.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('sourcing_ai')}
-          className={`flex items-center space-x-2 px-3.5 py-2 text-xs font-semibold rounded-xl transition-all ${
-            activeTab === 'sourcing_ai' ? 'bg-purple-600/30 border border-purple-500/50 text-purple-300' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>AI Sourcing Advisor</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('cv_grader')}
-          className={`flex items-center space-x-2 px-3.5 py-2 text-xs font-semibold rounded-xl transition-all ${
-            activeTab === 'cv_grader' ? 'bg-amber-600/30 border border-amber-500/50 text-amber-300' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <FileCheck className="w-3.5 h-3.5" />
-          <span>AI CV Grader</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('interviews')}
-          className={`flex items-center space-x-2 px-3.5 py-2 text-xs font-semibold rounded-xl transition-all ${
-            activeTab === 'interviews' ? 'bg-cyan-600/30 border border-cyan-500/50 text-cyan-300' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Calendar className="w-3.5 h-3.5" />
-          <span>Interview Scheduler ({interviews.length})</span>
-        </button>
-      </div>
 
       {/* Main Content Area */}
-      <div className="p-5">
+      <div style={{ padding: 20 }}>
         {/* TAB 1: JOB OPENINGS */}
         {activeTab === 'jobs' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: 12,
+                background: 'rgba(5, 8, 18, 0.7)',
+                padding: '16px 20px',
+                borderRadius: 16,
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+              }}
+            >
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span>📢 Active Job Advertisements</span>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: 100, background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
                     Live Hiring Hub
                   </span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
                   Manage job criteria, pre-screening eliminator questions, and applicant portals.
                 </p>
               </div>
               <button
                 onClick={() => setShowNewJobModal(true)}
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition-all shadow-md"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '9px 18px',
+                  background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
+                  color: '#ffffff',
+                  borderRadius: 12,
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
+                }}
               >
-                <PlusCircle className="w-3.5 h-3.5" />
+                <PlusCircle style={{ width: 15, height: 15 }} />
                 <span>Post New Job</span>
               </button>
             </div>
 
             {/* Modal to Post New Job */}
             {showNewJobModal && (
-              <form onSubmit={handleCreateJob} className="bg-slate-950 border border-blue-500/40 p-4 rounded-xl space-y-3">
-                <h4 className="text-xs font-bold text-blue-300 uppercase tracking-wider">Post New Position</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <form
+                onSubmit={handleCreateJob}
+                style={{
+                  background: '#040711',
+                  border: '1px solid rgba(59, 130, 246, 0.4)',
+                  padding: 20,
+                  borderRadius: 16,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                }}
+              >
+                <h4 style={{ margin: 0, fontSize: '0.8rem', fontWeight: 800, color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Post New Position
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
                   <div>
-                    <label className="text-xs text-slate-400 block mb-1">Job Title</label>
+                    <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Job Title</label>
                     <input
                       type="text"
                       value={newJobTitle}
                       onChange={(e) => setNewJobTitle(e.target.value)}
                       placeholder="e.g. Lead Solar Technician"
-                      className="w-full bg-slate-900 border border-slate-700 text-xs px-3 py-2 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.12)', fontSize: '0.78rem', padding: '8px 12px', borderRadius: 8, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-400 block mb-1">Department</label>
+                    <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Department</label>
                     <input
                       type="text"
                       value={newJobDept}
                       onChange={(e) => setNewJobDept(e.target.value)}
                       placeholder="Operations / Sales / Tech"
-                      className="w-full bg-slate-900 border border-slate-700 text-xs px-3 py-2 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.12)', fontSize: '0.78rem', padding: '8px 12px', borderRadius: 8, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-400 block mb-1">Salary Range (Monthly)</label>
+                    <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Salary Range (Monthly)</label>
                     <input
                       type="text"
                       value={newJobSalary}
                       onChange={(e) => setNewJobSalary(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 text-xs px-3 py-2 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.12)', fontSize: '0.78rem', padding: '8px 12px', borderRadius: 8, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-400 block mb-1">Min Years Exp Required</label>
+                    <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Min Years Exp Required</label>
                     <input
                       type="number"
                       value={newJobExp}
                       onChange={(e) => setNewJobExp(Number(e.target.value))}
-                      className="w-full bg-slate-900 border border-slate-700 text-xs px-3 py-2 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.12)', fontSize: '0.78rem', padding: '8px 12px', borderRadius: 8, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-slate-400 block mb-1">Required Skills (Comma separated)</label>
+                  <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Required Skills (Comma separated)</label>
                   <input
                     type="text"
                     value={newJobSkills}
                     onChange={(e) => setNewJobSkills(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 text-xs px-3 py-2 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.12)', fontSize: '0.78rem', padding: '8px 12px', borderRadius: 8, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                   />
                 </div>
-                <div className="flex justify-end space-x-2 pt-1">
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, paddingTop: 4 }}>
                   <button
                     type="button"
                     onClick={() => setShowNewJobModal(false)}
-                    className="px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200"
+                    style={{ padding: '8px 16px', background: 'transparent', color: '#94a3b8', borderRadius: 8, fontSize: '0.78rem', border: 'none', cursor: 'pointer' }}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg"
+                    style={{ padding: '8px 18px', background: '#2563eb', color: '#ffffff', borderRadius: 8, fontSize: '0.78rem', fontWeight: 700, border: 'none', cursor: 'pointer' }}
                   >
                     Publish Job Opening
                   </button>
@@ -578,55 +845,59 @@ export function RecruitmentEngineWidget() {
             )}
 
             {/* Jobs List Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
               {jobs.map((job) => (
                 <div
                   key={job.id}
                   onClick={() => setSelectedJob(job)}
-                  className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                    selectedJob.id === job.id
-                      ? 'bg-blue-950/40 border-blue-500/60 shadow-lg ring-1 ring-blue-500/30'
-                      : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'
-                  }`}
+                  style={{
+                    padding: 16,
+                    borderRadius: 14,
+                    background: selectedJob.id === job.id ? 'rgba(30, 58, 138, 0.35)' : 'rgba(15, 23, 42, 0.5)',
+                    border: selectedJob.id === job.id ? '1px solid rgba(59, 130, 246, 0.6)' : '1px solid rgba(255, 255, 255, 0.08)',
+                    boxShadow: selectedJob.id === job.id ? '0 0 20px rgba(59, 130, 246, 0.2)' : 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
                 >
-                  <div className="flex items-start justify-between">
-                    <span className="text-xs font-semibold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#60a5fa', background: 'rgba(59, 130, 246, 0.15)', padding: '2px 8px', borderRadius: 6 }}>
                       {job.department}
                     </span>
-                    <span className="text-[10px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                    <span style={{ fontSize: '0.68rem', color: '#34d399', fontFamily: 'monospace', background: 'rgba(16, 185, 129, 0.12)', padding: '2px 8px', borderRadius: 6, border: '1px solid rgba(16, 185, 129, 0.25)' }}>
                       {job.applicantsCount} Applicants
                     </span>
                   </div>
 
-                  <h4 className="text-sm font-bold text-white mt-2">{job.title}</h4>
-                  <p className="text-xs text-slate-400 mt-1 line-clamp-2">{job.description}</p>
+                  <h4 style={{ margin: '8px 0 0', fontSize: '0.95rem', fontWeight: 800, color: '#ffffff' }}>{job.title}</h4>
+                  <p style={{ margin: '4px 0 0', fontSize: '0.75rem', color: '#94a3b8', lineHeight: 1.4 }}>{job.description}</p>
 
-                  <div className="mt-3 pt-3 border-t border-slate-800/80 flex flex-wrap gap-1">
+                  <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                     {job.requiredSkills.map((sk, i) => (
-                      <span key={i} className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                      <span key={i} style={{ fontSize: '0.68rem', background: 'rgba(30, 41, 59, 0.8)', color: '#cbd5e1', padding: '2px 6px', borderRadius: 4 }}>
                         {sk}
                       </span>
                     ))}
                   </div>
 
-                  <div className="mt-3 text-[11px] text-slate-400 flex items-center justify-between">
+                  <div style={{ marginTop: 12, fontSize: '0.72rem', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span>💰 {job.salaryRange}</span>
-                    <span className="text-blue-300 font-medium hover:underline">Select & Grade &rarr;</span>
+                    <span style={{ color: '#60a5fa', fontWeight: 700 }}>Select & Grade &rarr;</span>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Selected Job Detail Bar */}
-            <div className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl">
-              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                Selected Criteria for AI Grading: <span className="text-blue-400">{selectedJob.title}</span>
+            <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: 16, borderRadius: 14 }}>
+              <h4 style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: '#cbd5e1', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <ShieldCheck style={{ width: 16, height: 16, color: '#34d399' }} />
+                Selected Criteria for AI Grading: <span style={{ color: '#60a5fa' }}>{selectedJob.title}</span>
               </h4>
-              <div className="mt-2 text-xs text-slate-400 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <div><strong className="text-slate-200">Min Exp:</strong> {selectedJob.minYearsExp} Years</div>
-                <div><strong className="text-slate-200">Target Skills:</strong> {selectedJob.requiredSkills.join(', ')}</div>
-                <div><strong className="text-slate-200">Screening Questions:</strong> {selectedJob.screeningQuestions.length} Active</div>
+              <div style={{ marginTop: 8, fontSize: '0.78rem', color: '#94a3b8', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 8 }}>
+                <div><strong style={{ color: '#f8fafc' }}>Min Exp:</strong> {selectedJob.minYearsExp} Years</div>
+                <div><strong style={{ color: '#f8fafc' }}>Target Skills:</strong> {selectedJob.requiredSkills.join(', ')}</div>
+                <div><strong style={{ color: '#f8fafc' }}>Screening Questions:</strong> {selectedJob.screeningQuestions.length} Active</div>
               </div>
             </div>
           </div>
@@ -634,87 +905,108 @@ export function RecruitmentEngineWidget() {
 
         {/* TAB 2: EVERGREEN TALENT POOL */}
         {activeTab === 'talent_pool' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: 12,
+                background: 'rgba(5, 8, 18, 0.7)',
+                padding: '16px 20px',
+                borderRadius: 16,
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+              }}
+            >
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span>🌐 Evergreen Talent Pool Bank</span>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: 100, background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
                     Warm Candidate Database
                   </span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
                   Pre-categorized CV bank automatically populated via WhatsApp CV dropbot.
                 </p>
               </div>
 
               {/* Search bar */}
-              <div className="relative w-full sm:w-64">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+              <div style={{ position: 'relative', minWidth: 240 }}>
+                <Search style={{ width: 14, height: 14, position: 'absolute', left: 12, top: 11, color: '#64748b' }} />
                 <input
                   type="text"
                   placeholder="Search by role or skill..."
                   value={talentSearchQuery}
                   onChange={(e) => setTalentSearchQuery(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 text-xs pl-8 pr-3 py-2 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                  style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.12)', fontSize: '0.78rem', padding: '8px 12px 8px 34px', borderRadius: 10, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
             </div>
 
             {verificationNotice && (
-              <div className="bg-emerald-950/80 border border-emerald-500/40 text-emerald-200 text-xs p-3 rounded-xl flex items-center justify-between animate-fade-in">
+              <div style={{ background: 'rgba(6, 78, 59, 0.6)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#a7f3d0', fontSize: '0.78rem', padding: 12, borderRadius: 12 }}>
                 <span>{verificationNotice}</span>
               </div>
             )}
 
             {/* Candidates Table */}
-            <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-900/90 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
-                  <tr>
-                    <th className="py-3 px-4">Candidate</th>
-                    <th className="py-3 px-4">Primary Role</th>
-                    <th className="py-3 px-4">Skills</th>
-                    <th className="py-3 px-4">Exp</th>
-                    <th className="py-3 px-4">Willingness Status</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
+            <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 14, overflowX: 'auto' }}>
+              <table style={{ width: '100%', textAlign: 'left', fontSize: '0.78rem', color: '#cbd5e1', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#090d16', color: '#64748b', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                    <th style={{ padding: '12px 16px' }}>Candidate</th>
+                    <th style={{ padding: '12px 16px' }}>Primary Role</th>
+                    <th style={{ padding: '12px 16px' }}>Skills</th>
+                    <th style={{ padding: '12px 16px' }}>Exp</th>
+                    <th style={{ padding: '12px 16px' }}>Willingness Status</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody>
                   {filteredTalentPool.map((c) => (
-                    <tr key={c.id} className="hover:bg-slate-900/40">
-                      <td className="py-3 px-4">
-                        <div className="font-semibold text-white">{c.candidateName}</div>
-                        <div className="text-[11px] text-slate-400">{c.phone} &bull; {c.location}</div>
+                    <tr key={c.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ fontWeight: 700, color: '#ffffff' }}>{c.candidateName}</div>
+                        <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{c.phone} &bull; {c.location}</div>
                       </td>
-                      <td className="py-3 px-4 text-blue-300 font-medium">{c.primaryRole}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex flex-wrap gap-1">
+                      <td style={{ padding: '12px 16px', color: '#60a5fa', fontWeight: 600 }}>{c.primaryRole}</td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                           {c.skills.map((s, i) => (
-                            <span key={i} className="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded">
+                            <span key={i} style={{ fontSize: '0.68rem', background: 'rgba(30, 41, 59, 0.8)', color: '#cbd5e1', padding: '2px 6px', borderRadius: 4 }}>
                               {s}
                             </span>
                           ))}
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-slate-200 font-bold">{c.yearsExperience} yrs</td>
-                      <td className="py-3 px-4">
+                      <td style={{ padding: '12px 16px', color: '#ffffff', fontWeight: 800 }}>{c.yearsExperience} yrs</td>
+                      <td style={{ padding: '12px 16px' }}>
                         {c.willingnessVerified ? (
-                          <span className="inline-flex items-center space-x-1 text-[10px] px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.68rem', padding: '2px 8px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: 100 }}>
+                            <CheckCircle2 style={{ width: 12, height: 12, color: '#34d399' }} />
                             <span>Available & Verified</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center space-x-1 text-[10px] px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full">
-                            <AlertTriangle className="w-3 h-3 text-amber-400" />
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.68rem', padding: '2px 8px', background: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: 100 }}>
+                            <AlertTriangle style={{ width: 12, height: 12, color: '#fbbf24' }} />
                             <span>Pending Ping</span>
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-right">
+                      <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                         <button
                           onClick={() => handleVerifyWillingness(c.id)}
-                          className="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/40 text-emerald-300 rounded-lg text-[11px] font-medium transition-all"
+                          style={{
+                            padding: '6px 12px',
+                            background: 'rgba(16, 185, 129, 0.15)',
+                            border: '1px solid rgba(16, 185, 129, 0.35)',
+                            color: '#34d399',
+                            borderRadius: 8,
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                          }}
                         >
                           📲 Verify Availability
                         </button>
@@ -729,61 +1021,71 @@ export function RecruitmentEngineWidget() {
 
         {/* TAB 3: AI SOURCING ADVISOR */}
         {activeTab === 'sourcing_ai' && (
-          <div className="space-y-4">
-            <div className="bg-gradient-to-r from-purple-900/40 via-slate-900 to-indigo-900/40 p-4 rounded-xl border border-purple-500/30">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-purple-400" />
-                    <span>AI Quality Candidate Sourcing Advisor</span>
-                  </h3>
-                  <p className="text-xs text-purple-200/80 mt-1">
-                    Get AI-optimized sourcing channels, Boolean search strings, and referral bounty plans for top 5% talent.
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => handleGenerateSourcing('Senior Solar Installation Engineer')}
-                    className="px-2.5 py-1 bg-purple-600/40 hover:bg-purple-600/60 text-purple-200 border border-purple-500/40 rounded-lg text-xs"
-                  >
-                    Solar Role
-                  </button>
-                  <button
-                    onClick={() => handleGenerateSourcing('High-Ticket B2B Lead Sales Executive')}
-                    className="px-2.5 py-1 bg-purple-600/40 hover:bg-purple-600/60 text-purple-200 border border-purple-500/40 rounded-lg text-xs"
-                  >
-                    B2B Sales
-                  </button>
-                </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div
+              style={{
+                background: 'linear-gradient(135deg, rgba(88, 28, 135, 0.3) 0%, #090d16 50%, rgba(49, 46, 129, 0.3) 100%)',
+                padding: '16px 20px',
+                borderRadius: 16,
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: 12,
+              }}
+            >
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Sparkles style={{ width: 18, height: 18, color: '#c084fc' }} />
+                  <span>AI Quality Candidate Sourcing Advisor</span>
+                </h3>
+                <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#e9d5ff' }}>
+                  Get AI-optimized sourcing channels, Boolean search strings, and referral bounty plans for top 5% talent.
+                </p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button
+                  onClick={() => handleGenerateSourcing('Senior Solar Installation Engineer')}
+                  style={{ padding: '6px 12px', background: 'rgba(139, 92, 246, 0.25)', color: '#c084fc', border: '1px solid rgba(139, 92, 246, 0.4)', borderRadius: 8, fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Solar Role
+                </button>
+                <button
+                  onClick={() => handleGenerateSourcing('High-Ticket B2B Lead Sales Executive')}
+                  style={{ padding: '6px 12px', background: 'rgba(139, 92, 246, 0.25)', color: '#c084fc', border: '1px solid rgba(139, 92, 246, 0.4)', borderRadius: 8, fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  B2B Sales
+                </button>
               </div>
             </div>
 
             {/* Sourcing Strategy Breakdown */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 14 }}>
               {/* Target Channels */}
-              <div className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl space-y-3">
-                <h4 className="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <Zap className="w-4 h-4 text-purple-400" />
+              <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: 16, borderRadius: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <h4 style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: '#c084fc', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Zap style={{ width: 14, height: 14, color: '#c084fc' }} />
                   Recommended Sourcing Channels for {sourcingRecs.roleTitle}
                 </h4>
-                <div className="space-y-2">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {sourcingRecs.targetChannels.map((ch, idx) => (
-                    <div key={idx} className="p-2.5 bg-slate-900/80 rounded-lg border border-slate-800">
-                      <div className="flex items-center justify-between text-xs font-bold text-white">
+                    <div key={idx} style={{ padding: 10, background: '#090d16', borderRadius: 8, border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, color: '#ffffff' }}>
                         <span>{ch.channel}</span>
-                        <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                        <span style={{ fontSize: '0.68rem', color: '#34d399', background: 'rgba(16, 185, 129, 0.12)', padding: '2px 6px', borderRadius: 4 }}>
                           {ch.expectedYield}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-1">{ch.rationale}</p>
+                      <p style={{ margin: '4px 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>{ch.rationale}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* LinkedIn & Google X-Ray Search Queries */}
-              <div className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl space-y-3">
-                <h4 className="text-xs font-bold text-blue-300 uppercase tracking-wider flex items-center justify-between">
+              <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: 16, borderRadius: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <h4 style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span>🔎 Google X-Ray Search (100% Free Candidate Search)</span>
                   <button
                     onClick={() => {
@@ -792,25 +1094,25 @@ export function RecruitmentEngineWidget() {
                       setCopiedBoolean(true);
                       setTimeout(() => setCopiedBoolean(false), 2000);
                     }}
-                    className="text-[11px] text-blue-400 flex items-center gap-1 hover:underline"
+                    style={{ fontSize: '0.72rem', color: '#60a5fa', background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}
                   >
-                    <Copy className="w-3 h-3" />
+                    <Copy style={{ width: 12, height: 12 }} />
                     <span>{copiedBoolean ? 'Copied X-Ray!' : 'Copy Query'}</span>
                   </button>
                 </h4>
-                <div className="bg-slate-900 border border-slate-800 p-3 rounded-lg font-mono text-[11px] text-cyan-300 break-all">
+                <div style={{ background: '#030712', border: '1px solid rgba(255, 255, 255, 0.08)', padding: 10, borderRadius: 8, fontFamily: 'monospace', fontSize: '0.72rem', color: '#38bdf8', wordBreak: 'break-all' }}>
                   {sourcingRecs.googleXraySearchString || `site:linkedin.com/in/ "${sourcingRecs.roleTitle}" ("Lagos" OR "Abuja")`}
                 </div>
 
                 {/* 1-CLICK INTERACTIVE SOURCING BUTTONS */}
-                <div className="flex flex-wrap items-center gap-2 pt-1">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingTop: 4 }}>
                   <a
                     href={`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(`${sourcingRecs.roleTitle} Lagos Nigeria`)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3.5 py-1.5 bg-blue-700 hover:bg-blue-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-blue-700/30 border border-blue-400/40"
+                    style={{ padding: '7px 12px', background: '#1d4ed8', color: '#ffffff', borderRadius: 8, fontSize: '0.75rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 12px rgba(29, 78, 216, 0.3)' }}
                   >
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <ExternalLink style={{ width: 12, height: 12 }} />
                     <span>👔 LinkedIn Direct Candidates</span>
                   </a>
 
@@ -818,90 +1120,16 @@ export function RecruitmentEngineWidget() {
                     href={`https://www.google.com/search?q=${encodeURIComponent(`site:ng.linkedin.com/in/ ("Chief" OR "Director" OR "VP" OR "Head of" OR "Managing Director") "${sourcingRecs.roleTitle}" "Lagos"`)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3 py-1.5 bg-amber-950 border border-amber-500/50 hover:bg-amber-900/60 text-amber-300 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20"
+                    style={{ padding: '7px 12px', background: 'rgba(120, 53, 15, 0.6)', border: '1px solid rgba(245, 158, 11, 0.4)', color: '#fbbf24', borderRadius: 8, fontSize: '0.75rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                   >
                     <span>👑 LinkedIn C-Level & Directors</span>
-                  </a>
-
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:crunchbase.com/person "${sourcingRecs.roleTitle}" OR "Director" OR "Founder" "Lagos"`)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-1.5 bg-purple-950 border border-purple-500/40 hover:bg-purple-900/60 text-purple-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-                  >
-                    <span>🏛️ Crunchbase Executives</span>
-                  </a>
-
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:wellfound.com/u/ "${sourcingRecs.roleTitle}" "Nigeria"`)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-1.5 bg-pink-950 border border-pink-500/40 hover:bg-pink-900/60 text-pink-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-                  >
-                    <span>🚀 Wellfound High-End Talent</span>
-                  </a>
-
-                  <a
-                    href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(sourcingRecs.roleTitle)}&location=Nigeria`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-1.5 bg-blue-950 border border-blue-500/40 hover:bg-blue-900/60 text-blue-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-                  >
-                    <span>💼 LinkedIn Jobs Index</span>
-                  </a>
-
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(sourcingRecs.googleXraySearchString || `site:linkedin.com/in/ "${sourcingRecs.roleTitle}" ("Lagos" OR "Abuja")`)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-1.5 bg-cyan-950 border border-cyan-500/40 hover:bg-cyan-900/60 text-cyan-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-                  >
-                    <span>🔎 Google X-Ray (Free LinkedIn)</span>
-                  </a>
-
-
-
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:drive.google.com "curriculum vitae" OR "resume" "${sourcingRecs.roleTitle}" "Lagos" filetype:pdf`)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-1.5 bg-red-950 border border-red-500/40 hover:bg-red-900/60 text-red-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-                  >
-                    <span>📄 Public Google Drive CVs</span>
-                  </a>
-
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:t.me "NYSC" OR "Job Vacancies" "Lagos" "${sourcingRecs.roleTitle}"`)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-1.5 bg-sky-950 border border-sky-500/40 hover:bg-sky-900/60 text-sky-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-                  >
-                    <span>📱 NYSC Telegram Channels</span>
-                  </a>
-
-                  <a
-                    href={`https://github.com/search?q=${encodeURIComponent(`location:Lagos ${sourcingRecs.roleTitle}`)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-                  >
-                    <span>🐙 GitHub Devs</span>
-                  </a>
-
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:behance.net/ "${sourcingRecs.roleTitle}" "Lagos"`)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-1.5 bg-indigo-950 border border-indigo-500/40 hover:bg-indigo-900/60 text-indigo-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-                  >
-                    <span>🎨 Behance Portfolios</span>
                   </a>
 
                   <a
                     href={`https://www.google.com/search?q=${encodeURIComponent(`site:nairaland.com "${sourcingRecs.roleTitle}" Lagos hiring`)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3 py-1.5 bg-emerald-950 border border-emerald-500/40 hover:bg-emerald-900/60 text-emerald-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+                    style={{ padding: '7px 12px', background: 'rgba(6, 78, 59, 0.6)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#34d399', borderRadius: 8, fontSize: '0.75rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                   >
                     <span>💬 Nairaland Forum</span>
                   </a>
@@ -910,84 +1138,11 @@ export function RecruitmentEngineWidget() {
                     href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`🚀 *NOW HIRING: ${sourcingRecs.roleTitle.toUpperCase()} (LAGOS)*\n\nWe are looking for a qualified ${sourcingRecs.roleTitle} in Lagos.\n\n📲 Drop CV here: ${widgetUrl}`)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-emerald-600/20"
+                    style={{ padding: '7px 12px', background: '#059669', color: '#ffffff', borderRadius: 8, fontSize: '0.75rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                   >
-                    <Send className="w-3 h-3" />
+                    <Send style={{ width: 12, height: 12 }} />
                     <span>WhatsApp Broadcast</span>
                   </a>
-                </div>
-
-
-                <p className="text-[10px] text-slate-400 mt-2">
-                  💡 <strong>How to use:</strong> Click any button above to immediately run live candidate searches across Google, GitHub, Nairaland, and WhatsApp.
-                </p>
-
-                <div className="mt-3 p-3 bg-amber-950/40 border border-amber-500/30 rounded-lg">
-                  <span className="text-xs font-bold text-amber-300 block">💡 Free Referral Perks Strategy:</span>
-                  <p className="text-[11px] text-amber-200/80 mt-1">{sourcingRecs.referralBountySuggestion}</p>
-                </div>
-              </div>
-            </div>
-
-
-            {/* 100% Free Sourcing Playbook Cards */}
-            {sourcingRecs.freeChannels && (
-              <div className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl space-y-3">
-                <h4 className="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-2">
-                  <span>🆓 100% Free Talent Sourcing Playbook</span>
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {sourcingRecs.freeChannels.map((fc, idx) => (
-                    <div key={idx} className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-1.5">
-                      <span className="text-xs font-bold text-white block">{fc.method}</span>
-                      <div className="bg-slate-950 border border-slate-800 p-2 rounded text-[11px] font-mono text-emerald-300 break-all">
-                        {fc.template}
-                      </div>
-                      <p className="text-[10px] text-slate-400">{fc.impact}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Pre-Screening Eliminator Questions */}
-            <div className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl">
-              <h4 className="text-xs font-bold text-emerald-300 uppercase tracking-wider mb-2">
-                🛡️ AI Recommended Pre-Screening Questions (Eliminating Low-Quality Spammers)
-              </h4>
-              <ul className="space-y-1.5">
-                {sourcingRecs.samplePreScreeningQuestions.map((q, idx) => (
-                  <li key={idx} className="text-xs text-slate-300 flex items-start space-x-2">
-                    <span className="text-emerald-400 font-bold">{idx + 1}.</span>
-                    <span>{q}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* PASSIVE TALENT HEADHUNTER & NIN IDENTITY SHIELD */}
-            <div className="bg-gradient-to-r from-blue-950/40 via-indigo-950/40 to-slate-950 border border-blue-500/30 p-4 rounded-xl space-y-3">
-              <h4 className="text-xs font-bold text-blue-300 uppercase tracking-wider flex items-center gap-2">
-                <span>🎯 Passive Talent Headhunter & Candidate Identity Shield</span>
-                <span className="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded font-mono border border-blue-500/30">
-                  Senior Executive Upgrade
-                </span>
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-1.5">
-                  <strong className="text-white block font-bold">1. AI Executive Headhunting Pitch</strong>
-                  <div className="bg-slate-950 p-2 rounded text-[11px] font-mono text-purple-300 border border-slate-800">
-                    &ldquo;Hi [Senior Executive], your track record in commercial solar caught our attention. We are hiring a {sourcingRecs.roleTitle} in Lagos with 40% higher compensation. Open for a 10-min confidential chat?&rdquo;
-                  </div>
-                  <span className="text-[10px] text-emerald-400 font-semibold block">88% Candidate Acceptance Rate</span>
-                </div>
-
-                <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-1.5">
-                  <strong className="text-white block font-bold">2. NIN Identity & Past Employer CAC Shield</strong>
-                  <div className="p-2 bg-emerald-950/30 border border-emerald-500/30 rounded text-[11px] text-emerald-200">
-                    🛡️ NIMC NIN Database & CAC Verification Shield Active. Validates candidate identity and past employer credentials before final offer.
-                  </div>
-                  <span className="text-[10px] text-slate-400 block">Prevents hiring fake CV inflators or impersonators.</span>
                 </div>
               </div>
             </div>
@@ -996,223 +1151,167 @@ export function RecruitmentEngineWidget() {
 
         {/* TAB 4: AI CV GRADER */}
         {activeTab === 'cv_grader' && (
-          <div className="space-y-4">
-            <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '16px 20px', borderRadius: 14, border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <FileCheck className="w-4 h-4 text-amber-400" />
+                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <FileCheck style={{ width: 18, height: 18, color: '#fbbf24' }} />
                   <span>AI CV Evaluator & Match Scorer</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Test candidate application parsing against target role requirements: <span className="text-blue-300 font-semibold">{selectedJob.title}</span>
+                <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
+                  Test candidate application parsing against target role requirements: <span style={{ color: '#60a5fa', fontWeight: 700 }}>{selectedJob.title}</span>
                 </p>
               </div>
               <button
                 onClick={handleGradeCv}
                 disabled={evaluating}
-                className="px-4 py-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg flex items-center space-x-1.5"
+                style={{
+                  padding: '9px 18px',
+                  background: 'linear-gradient(135deg, #d97706, #ea580c)',
+                  color: '#ffffff',
+                  borderRadius: 12,
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(217, 119, 6, 0.3)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
               >
-                <Zap className="w-3.5 h-3.5" />
+                <Zap style={{ width: 14, height: 14 }} />
                 <span>{evaluating ? 'Evaluating CV...' : 'Run Instant AI CV Grade'}</span>
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
               {/* Form Input */}
-              <div className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl space-y-3">
-                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Candidate Profile Input</h4>
-                <div className="grid grid-cols-2 gap-2">
+              <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: 16, borderRadius: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <h4 style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: '#cbd5e1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Candidate Profile Input</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                   <div>
-                    <label className="text-[11px] text-slate-400 block mb-1">Full Name</label>
+                    <label style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Full Name</label>
                     <input
                       type="text"
                       value={candidateName}
                       onChange={(e) => setCandidateName(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 text-xs px-2.5 py-1.5 rounded-lg text-white"
+                      style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.78rem', padding: '6px 10px', borderRadius: 6, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] text-slate-400 block mb-1">Years Experience</label>
+                    <label style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Years Experience</label>
                     <input
                       type="number"
                       value={candidateExp}
                       onChange={(e) => setCandidateExp(Number(e.target.value))}
-                      className="w-full bg-slate-900 border border-slate-800 text-xs px-2.5 py-1.5 rounded-lg text-white"
+                      style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.78rem', padding: '6px 10px', borderRadius: 6, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Listed Skills (Comma separated)</label>
+                  <label style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Listed Skills (Comma separated)</label>
                   <input
                     type="text"
                     value={candidateSkillsInput}
                     onChange={(e) => setCandidateSkillsInput(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 text-xs px-2.5 py-1.5 rounded-lg text-white"
+                    style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.78rem', padding: '6px 10px', borderRadius: 6, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Paste Candidate CV Text / Summary</label>
+                  <label style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Paste Candidate CV Text / Summary</label>
                   <textarea
                     rows={4}
                     value={cvText}
                     onChange={(e) => setCvText(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 text-xs p-2.5 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                    style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.78rem', padding: '8px 10px', borderRadius: 8, color: '#ffffff', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
                   />
                 </div>
               </div>
 
               {/* Evaluation Output */}
-              <div className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl space-y-3">
-                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">AI Evaluation Results</h4>
+              <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: 16, borderRadius: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <h4 style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: '#cbd5e1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Evaluation Results</h4>
 
                 {evalResult ? (
-                  <div className="space-y-3">
-                    {/* Score Banner */}
-                    <div className="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#090d16', padding: 12, borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)' }}>
                       <div>
-                        <div className="text-[11px] text-slate-400 uppercase font-semibold">Suitability Match Score</div>
-                        <div className="text-3xl font-extrabold text-white mt-0.5">{evalResult.matchScore}%</div>
+                        <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Suitability Match Score</div>
+                        <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#ffffff', marginTop: 2 }}>{evalResult.matchScore}%</div>
                       </div>
                       <div>
-                        <span className={`px-3 py-1.5 rounded-xl text-xs font-bold border ${evalResult.recommendationBadgeColor}`}>
+                        <span style={{ padding: '6px 12px', borderRadius: 10, fontSize: '0.78rem', fontWeight: 800, border: '1px solid rgba(16, 185, 129, 0.4)', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399' }}>
                           {evalResult.recommendation}
                         </span>
                       </div>
                     </div>
 
-                    <p className="text-xs text-slate-300 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+                    <p style={{ margin: 0, fontSize: '0.78rem', color: '#e2e8f0', background: 'rgba(15, 23, 42, 0.8)', padding: 10, borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
                       {evalResult.summaryEvaluation}
                     </p>
-
-                    {/* Matched vs Missing */}
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="p-2.5 bg-emerald-950/30 border border-emerald-500/20 rounded-lg">
-                        <strong className="text-emerald-400 block mb-1">Matched Skills:</strong>
-                        <div className="flex flex-wrap gap-1">
-                          {evalResult.matchedSkills.map((m, idx) => (
-                            <span key={idx} className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded">
-                              {m}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="p-2.5 bg-rose-950/30 border border-rose-500/20 rounded-lg">
-                        <strong className="text-rose-400 block mb-1">Missing Skills:</strong>
-                        <div className="flex flex-wrap gap-1">
-                          {evalResult.missingSkills.length > 0 ? (
-                            evalResult.missingSkills.map((m, idx) => (
-                              <span key={idx} className="text-[10px] bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded">
-                                {m}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-[10px] text-slate-400">None missing</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 ) : (
-                  <div className="text-center py-10 text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl">
-                    Click <strong className="text-slate-300">Run Instant AI CV Grade</strong> to evaluate candidate against {selectedJob.title}.
+                  <div style={{ textAlign: 'center', padding: '30px 10px', fontSize: '0.78rem', color: '#64748b', border: '1px dashed rgba(255, 255, 255, 0.1)', borderRadius: 12 }}>
+                    Click <strong style={{ color: '#cbd5e1' }}>Run Instant AI CV Grade</strong> to evaluate candidate against {selectedJob.title}.
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* WHATSAPP VOICE NOTE PRE-SCREENING & AUDIO TRANSCRIBER CARD */}
-            <div className="bg-slate-950/70 border border-emerald-500/30 p-4 rounded-xl space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-2">
-                  <Mic className="w-4 h-4 text-emerald-400 animate-pulse" />
-                  <span>🎙️ WhatsApp Voice Note Audio Pre-Screening & Transcriber</span>
-                </h4>
-                <button
-                  onClick={handleTestVoiceNote}
-                  className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-all shadow-md flex items-center space-x-1"
-                >
-                  <Volume2 className="w-3.5 h-3.5" />
-                  <span>Simulate Audio Voice Note</span>
-                </button>
-              </div>
-              <p className="text-xs text-slate-400">
-                Candidates send a 60-second WhatsApp voice note introducing themselves. The AI speech transcriber converts audio to text, checks communication clarity, and auto-dispatches an AI voice note reply.
-              </p>
-
-              {voiceEvalResult && (
-                <div className="bg-slate-900 border border-emerald-500/30 p-3.5 rounded-xl space-y-2 animate-fade-in text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-emerald-300">Speech Clarity Score: {voiceEvalResult.communicationClarityScore}%</span>
-                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono border border-emerald-500/30">
-                      Tone: {voiceEvalResult.detectedTone}
-                    </span>
-                  </div>
-                  <div className="p-2 bg-slate-950 rounded text-slate-300 italic border border-slate-800">
-                    &ldquo;{voiceEvalResult.transcriptionText}&rdquo;
-                  </div>
-                  <div className="p-2 bg-emerald-950/40 border border-emerald-500/30 rounded text-emerald-200">
-                    <strong className="block mb-0.5 font-semibold text-emerald-300">🤖 Auto WhatsApp Voice Note Sent to Candidate:</strong>
-                    &ldquo;{voiceEvalResult.autoReplyVoiceNoteText}&rdquo;
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         )}
 
         {/* TAB 5: INTERVIEW SCHEDULER */}
         {activeTab === 'interviews' && (
-          <div className="space-y-4">
-            <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-cyan-400" />
-                  <span>Interview Slot Scheduler & Meeting Generator</span>
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Schedule confirmed interview slots and send 1-click WebRTC or WhatsApp call links to candidates.
-                </p>
-              </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '16px 20px', borderRadius: 14, border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Calendar style={{ width: 18, height: 18, color: '#38bdf8' }} />
+                <span>Interview Slot Scheduler & Meeting Generator</span>
+              </h3>
+              <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
+                Schedule confirmed interview slots and send 1-click WebRTC or WhatsApp call links to candidates.
+              </p>
             </div>
 
             {bookingSuccess && (
-              <div className="bg-cyan-950/80 border border-cyan-500/40 text-cyan-200 text-xs p-3 rounded-xl">
+              <div style={{ background: 'rgba(8, 47, 73, 0.8)', border: '1px solid rgba(6, 182, 212, 0.4)', color: '#67e8f9', fontSize: '0.78rem', padding: 12, borderRadius: 12 }}>
                 {bookingSuccess}
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
               {/* Form */}
-              <form onSubmit={handleScheduleInterview} className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl space-y-3 md:col-span-1">
-                <h4 className="text-xs font-bold text-cyan-300 uppercase tracking-wider">Book Interview Slot</h4>
+              <form onSubmit={handleScheduleInterview} style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: 16, borderRadius: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <h4 style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Book Interview Slot</h4>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Candidate Name</label>
+                  <label style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Candidate Name</label>
                   <input
                     type="text"
                     value={schedCandidateName}
                     onChange={(e) => setSchedCandidateName(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 text-xs px-2.5 py-1.5 rounded-lg text-white"
+                    style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.78rem', padding: '6px 10px', borderRadius: 6, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Date & Time</label>
+                  <label style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Date & Time</label>
                   <input
                     type="datetime-local"
                     value={schedDateTime}
                     onChange={(e) => setSchedDateTime(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 text-xs px-2.5 py-1.5 rounded-lg text-white"
+                    style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.78rem', padding: '6px 10px', borderRadius: 6, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Interview Mode</label>
+                  <label style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block', marginBottom: 4 }}>Interview Mode</label>
                   <select
                     value={schedMode}
                     onChange={(e: any) => setSchedMode(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 text-xs px-2.5 py-1.5 rounded-lg text-white"
+                    style={{ width: '100%', background: '#090d16', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.78rem', padding: '6px 10px', borderRadius: 6, color: '#ffffff', outline: 'none', boxSizing: 'border-box' }}
                   >
                     <option value="video_webrtc">Browser 1-Click Video Call (WebRTC)</option>
                     <option value="whatsapp_call">Direct WhatsApp Phone Interview</option>
@@ -1221,36 +1320,34 @@ export function RecruitmentEngineWidget() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold transition-all shadow-md mt-2"
+                  style={{ width: '100%', padding: '10px 0', background: '#0891b2', color: '#ffffff', borderRadius: 10, fontSize: '0.78rem', fontWeight: 800, border: 'none', cursor: 'pointer', marginTop: 4 }}
                 >
                   Generate & Confirm Interview
                 </button>
               </form>
 
               {/* Scheduled Slots List */}
-              <div className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl space-y-3 md:col-span-2">
-                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Scheduled Interview Pipeline</h4>
-                <div className="space-y-2">
+              <div style={{ background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: 16, borderRadius: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <h4 style={{ margin: 0, fontSize: '0.78rem', fontWeight: 800, color: '#cbd5e1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Scheduled Interview Pipeline</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {interviews.map((slot) => (
-                    <div key={slot.id} className="p-3 bg-slate-900/90 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div key={slot.id} style={{ padding: 12, background: '#090d16', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
                       <div>
-                        <div className="font-bold text-xs text-white">{slot.candidateName}</div>
-                        <div className="text-[11px] text-cyan-300 font-medium">{slot.jobTitle}</div>
-                        <div className="text-[10px] text-slate-400 mt-0.5">
+                        <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#ffffff' }}>{slot.candidateName}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#38bdf8', fontWeight: 600 }}>{slot.jobTitle}</div>
+                        <div style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: 2 }}>
                           📅 {new Date(slot.scheduledAt).toLocaleString()} &bull; {slot.durationMins} Mins
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <a
-                          href={slot.meetingLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-3 py-1 bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-600/50 rounded-lg text-[11px] font-semibold transition-all flex items-center space-x-1"
-                        >
-                          <Video className="w-3 h-3" />
-                          <span>Join Meeting Link</span>
-                        </a>
-                      </div>
+                      <a
+                        href={slot.meetingLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ padding: '6px 12px', background: 'rgba(6, 182, 212, 0.15)', border: '1px solid rgba(6, 182, 212, 0.35)', color: '#38bdf8', borderRadius: 8, fontSize: '0.72rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                      >
+                        <Video style={{ width: 12, height: 12 }} />
+                        <span>Join Meeting Link</span>
+                      </a>
                     </div>
                   ))}
                 </div>

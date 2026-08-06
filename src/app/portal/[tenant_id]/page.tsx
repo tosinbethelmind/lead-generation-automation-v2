@@ -98,7 +98,8 @@ export default function TenantPortalPage() {
                   style={{ width: '100%', padding: '12px 14px 12px 38px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, color: '#f8fafc', outline: 'none', boxSizing: 'border-box', fontSize: '0.85rem' }}
                 />
               </div>
-              <p style={{ color: '#475569', fontSize: '0.75rem', marginTop: 6, marginBotton: 0 }}>
+              <p style={{ color: '#475569', fontSize: '0.75rem', marginTop: 6, marginBottom: 0 }}>
+
                 Sent to your email upon subscription provisioning.
               </p>
             </div>

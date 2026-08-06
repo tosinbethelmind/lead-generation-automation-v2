@@ -54,7 +54,10 @@ export type ActivityType =
   | 'appointment_completed'
   | 'appointment_cancelled'
   | 'payment_received'
+  | 'subscription_renewed_opay'
+  | 'voice_ai_call_dispatched'
   | 'note_added'
+
   | 'tag_added'
   | 'tag_removed'
   | 'assigned'

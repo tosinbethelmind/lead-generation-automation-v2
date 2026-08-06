@@ -33,7 +33,7 @@ const HERO_STATS = [
 const TOOLS = [
   {
     icon: Target,
-    name: '10K Lagos Lead Harvester',
+    name: 'Mass Lead Harvester',
     desc: 'Automatically scrapes and verifies 10,000+ business contacts across all 27 Lagos districts — with phone numbers and WhatsApp IDs.',
     color: '#06b6d4',
     tiers: ['pro', 'vip', 'luxury'],
@@ -102,7 +102,7 @@ const INDUSTRIES = [
 
 const PRICING = [
   { id: 'starter', name: 'Starter', monthlyNGN: 15000, oneTimeNGN: 75000, color: '#0ea5e9', icon: Zap, tagline: 'WhatsApp Catalog + AI Autoresponder', features: ['AI Customer Widget', 'WhatsApp Catalog', '500 B2B Contacts', 'Free Subdomain'] },
-  { id: 'pro', name: 'Pro', monthlyNGN: 35000, oneTimeNGN: 185000, color: '#8b5cf6', icon: Star, tagline: 'Lead Harvester + AI Agent + Voice Notes', features: ['10K Lagos Lead Harvester', '24/7 AI Agent', 'Voice Notes', 'Custom Domain', 'Admin Panel'], popular: true },
+  { id: 'pro', name: 'Pro', monthlyNGN: 35000, oneTimeNGN: 185000, color: '#8b5cf6', icon: Star, tagline: 'Lead Harvester + AI Agent + Voice Notes', features: ['Mass Lead Harvester', '24/7 AI Agent', 'Voice Notes', 'Custom Domain', 'Admin Panel'], popular: true },
   { id: 'vip', name: 'VIP', monthlyNGN: 75000, oneTimeNGN: 480000, color: '#f59e0b', icon: Crown, tagline: 'AI Voice Caller + Full Automation Suite', features: ['Everything in Pro', 'AI Voice Caller', 'Solar Pipeline', 'Revenue Analytics', 'API Access'] },
   { id: 'luxury', name: 'Luxury', monthlyNGN: 150000, oneTimeNGN: 1200000, color: '#ec4899', icon: Rocket, tagline: 'Complete AI Business Empire', features: ['Everything in VIP', 'Recruitment Engine', 'White-Label Option', 'Priority Support', 'Dedicated Manager'] },
 ];
@@ -565,7 +565,7 @@ export default function HomePage() {
               <a href="https://wa.me/+2348022791227" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#25d366', fontSize: '0.85rem', textDecoration: 'none', marginBottom: 10 }}>
                 <MessageSquare style={{ width: 14, height: 14 }} /> WhatsApp
               </a>
-              <a href="mailto:hello@bethelmindanalytics.com" style={{ color: '#475569', fontSize: '0.85rem', textDecoration: 'none', display: 'block' }}>hello@bethelmindanalytics.com</a>
+              <a href="mailto:tosin@bethelmindanalytics.com" style={{ color: '#475569', fontSize: '0.85rem', textDecoration: 'none', display: 'block' }}>tosin@bethelmindanalytics.com</a>
             </div>
           </div>
 
