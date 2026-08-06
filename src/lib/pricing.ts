@@ -21,13 +21,15 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     originalPriceNGN: 150000,
     simplicityHighlights: [
       '⚡ 0 Setup Complexity (Instant Launch)',
-      '📲 Orders drop straight to your personal WhatsApp',
+      '📲 Orders & inquiries drop straight to your personal WhatsApp',
+      '🎯 500 Verified Lagos B2B Small Business Contacts Included',
       '⚡ Multi-Channel Autoresponder Engine (Instant Welcome & Keyword Replies)',
       '🌐 Free Subdomain (yourname.apexreach.site)',
     ],
     features: [
       'Interactive Product / Service Catalog',
       '1-Tap WhatsApp Checkout & Inquiry Builder',
+      '500 Verified Lagos B2B Small Business Contacts Export',
       'Multi-Channel Autoresponders (WhatsApp, Email, Web Chat)',
       'Express Customer AI Assistant Widget',
       'Basic Admin Control Panel',
@@ -37,27 +39,30 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
   },
   {
     id: 'pro',
-    name: 'Business Growth, AI Agent & Portal',
+    name: 'Business Growth, AI Agent & Lead Harvester',
     badge: 'Most Popular (70% Choice)',
     priceNGN: 185000,
     originalPriceNGN: 370000,
     popular: true,
     simplicityHighlights: [
+      '🎯 10K Lagos B2B Lead Harvester & Verified WhatsApp Exporter (27 Districts)',
       '🤖 24/7 Customer AI Agent with WhatsApp Human Critical Approval',
+      '🎙️ Nigerian Accent WhatsApp Voice Note Autoresponder (en-NG)',
       '⚙️ Admin Control Panel (Live Sandbox, Persona Customizer & Approvals Center)',
-      '⚡ Multi-Channel Autoresponder Engine (WhatsApp, SMS, Email, Web Chat)',
       '🏦 Moniepoint Dedicated Virtual Account Transfer Box',
       '🌐 Custom .com.ng Domain Name Included (Year 1)',
     ],
     features: [
       'Everything in Express Starter Tier',
+      '10K Lagos B2B Master Lead Harvester Engine (27 Lagos Districts)',
       'Intelligent Customer AI Agent (Human-level intelligence & product knowledge)',
+      'Nigerian Accent WhatsApp Voice Note Generator (en-NG Abeo / Ezinne)',
       'WhatsApp Critical Stage Human Approval System (Sends alerts to Admin phone)',
       'Dedicated Admin Control Panel (Persona Prompt Customizer, Live Sandbox & Transcripts)',
       'Multi-Channel Autoresponders with Keyword Triggers & Custom Templates',
       'Sector Calculator Engine (Solar BOQ, Tokunbo Duty, CAC Fees, Patient Intake)',
       'Moniepoint Dedicated Virtual Account Transfer Box',
-      'Verified CAC / Trust Shield Badge',
+      'Customer Guarantee & Trust Shield Badge',
       'Custom .com.ng Domain + Free SSL',
       'Two-Way Google Sheets CRM Sync',
     ],
@@ -65,19 +70,21 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
   },
   {
     id: 'vip',
-    name: 'VIP Intelligent AI Sales Agent Suite',
+    name: 'VIP Intelligent AI Sales & Voice Caller Suite',
     badge: '100% Hands-Free AI',
     priceNGN: 480000,
     originalPriceNGN: 950000,
     simplicityHighlights: [
+      '🎯 Unlimited Lagos B2B Lead Harvester & Automated Pipeline Sync',
       '🤖 24/7 Intelligent Customer AI Agent with WhatsApp Critical Sign-Off',
-      '⚡ Advanced Multi-Channel Autoresponder Engine (WhatsApp + SMS + Email + Web)',
-      '⚙️ Enterprise Admin Control Center (Live Sandbox, Persona Prompts & Approval Center)',
+      '🎙️ WhatsApp AI Voice Notes + Interactive Button Flow Generator',
       '📞 150 Mins Voice AI Phone Call Qualifier (Vapi / Retell AI)',
+      '⚙️ Enterprise Admin Control Center (Live Sandbox, Persona Prompts & Approval Center)',
       '🌐 Custom .com Domain Name Included (Year 1)',
     ],
     features: [
       'Everything in Business Pro Tier',
+      'Unlimited Lagos B2B Master Lead Harvester (All 27 Districts & 60+ Categories)',
       '24/7 Intelligent Customer AI Agent (Trained on full webapp process knowledge graph)',
       'WhatsApp Critical Stage Approval Protocol for quotes, payment links, and contracts',
       'Full Admin Control Center (Live Sandbox, System Prompt Trainer & WhatsApp Approvals)',
@@ -235,7 +242,7 @@ export const SECTOR_SAAS_PRICING: Record<string, SectorSaasConfig> = {
       oneTimeOwnershipNGN: 50000,
       annualNGN: 150000,
       setupFeeNGN: 10000,
-      features: ['Everything in Starter', '24/7 Customer AI Agent with WhatsApp Approvals', 'Multi-Channel Autoresponder Engine (WhatsApp/SMS/Email/Web)', 'Admin Control Panel Dashboard', 'Moniepoint DVA Dedicated Virtual Account', 'Inter-State Bus Park Waybill & Freight Cost Estimator', 'Verified Nigerian Business Shield Badge'],
+      features: ['Everything in Starter', '24/7 Customer AI Agent with WhatsApp Approvals', 'Multi-Channel Autoresponder Engine (WhatsApp/SMS/Email/Web)', 'Admin Control Panel Dashboard', 'Moniepoint DVA Dedicated Virtual Account', 'Inter-State Bus Park Waybill & Freight Cost Estimator', 'Instant Responder & Guarantee Shield Badge'],
     },
     enterprise: {
       monthlyNGN: 35000,
@@ -390,8 +397,12 @@ export const FEATURE_CATALOG = [
   { id: 'patient_intake', cost: 35000 },
   { id: 'ecommerce', cost: 50000 },
   { id: 'vehicle_valuation', cost: 30000 },
-  { id: 'table_reservation', cost: 25000 }
+  { id: 'table_reservation', cost: 25000 },
+  { id: 'social_media_management', cost: 185000 },
+  { id: 'ad_automation', cost: 285000 },
+  { id: 'social_ad_dominance_suite', cost: 450000 }
 ];
+
 
 export interface PaymentModeOption {
   modeKey: 'onetime_ownership' | 'monthly_payg' | 'annual_discount';
