@@ -228,7 +228,7 @@ export default function MarketplacePage() {
           <button onClick={scrollToPricing} style={{ background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', color: '#fff', border: 'none', borderRadius: 12, padding: '16px 32px', fontWeight: 800, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 0 40px rgba(6,182,212,0.3)' }}>
             <Rocket style={{ width: 18, height: 18 }} /> Start Free Setup →
           </button>
-          <a href="https://wa.me/+2348000000000?text=Hi%2C%20I%20want%20to%20see%20ApexReach%20demo" target="_blank" rel="noreferrer" style={{ background: 'rgba(255,255,255,0.05)', color: '#f8fafc', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '16px 32px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+          <a href="https://wa.me/+2348022791227?text=Hi%2C%20I%20want%20to%20see%20ApexReach%20demo" target="_blank" rel="noreferrer" style={{ background: 'rgba(255,255,255,0.05)', color: '#f8fafc', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '16px 32px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
             <Play style={{ width: 18, height: 18 }} /> Watch Live Demo
           </a>
         </div>
@@ -454,7 +454,7 @@ export default function MarketplacePage() {
             <button onClick={scrollToPricing} style={{ background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', color: '#fff', border: 'none', borderRadius: 12, padding: '16px 32px', fontWeight: 800, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Rocket style={{ width: 18, height: 18 }} /> View Pricing Plans
             </button>
-            <a href="https://wa.me/+2348000000000" target="_blank" rel="noreferrer" style={{ background: 'rgba(37,211,102,0.1)', color: '#25d366', border: '1px solid rgba(37,211,102,0.3)', borderRadius: 12, padding: '16px 32px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+            <a href="https://wa.me/+2348022791227" target="_blank" rel="noreferrer" style={{ background: 'rgba(37,211,102,0.1)', color: '#25d366', border: '1px solid rgba(37,211,102,0.3)', borderRadius: 12, padding: '16px 32px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
               💬 Chat on WhatsApp
             </a>
           </div>
@@ -466,7 +466,7 @@ export default function MarketplacePage() {
         <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 16, flexWrap: 'wrap' }}>
           <a href="/admin" style={{ color: '#475569', textDecoration: 'none' }}>Admin Portal</a>
           <a href="/marketplace" style={{ color: '#475569', textDecoration: 'none' }}>Pricing</a>
-          <a href="https://wa.me/+2348000000000" style={{ color: '#475569', textDecoration: 'none' }}>Support</a>
+          <a href="https://wa.me/+2348022791227" style={{ color: '#475569', textDecoration: 'none' }}>Support</a>
         </div>
         <p style={{ margin: 0 }}>© 2026 ApexReach · Bethelmind Analytics & Strategy · Lagos, Nigeria</p>
         <p style={{ margin: '8px 0 0', fontSize: '0.75rem' }}>

@@ -284,7 +284,7 @@ export default function HomePage() {
               <Rocket style={{ width: 20, height: 20 }} /> Start Free Setup
               <ArrowRight style={{ width: 18, height: 18 }} />
             </Link>
-            <a href="https://wa.me/+2348000000000?text=Hi%2C%20I%20want%20to%20see%20a%20live%20demo%20of%20Bethelmind%20Analytics" target="_blank" rel="noreferrer"
+            <a href="https://wa.me/+2348022791227?text=Hi%2C%20I%20want%20to%20see%20a%20live%20demo%20of%20Bethelmind%20Analytics" target="_blank" rel="noreferrer"
               style={{ background: 'rgba(37,211,102,0.08)', color: '#25d366', border: '1px solid rgba(37,211,102,0.25)', textDecoration: 'none', borderRadius: 14, padding: '16px 36px', fontWeight: 700, fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: 10 }}>
               <MessageSquare style={{ width: 20, height: 20 }} /> Book a Live Demo
             </a>
@@ -453,7 +453,7 @@ export default function HomePage() {
               <Link href="/marketplace" style={{ background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', color: '#fff', textDecoration: 'none', borderRadius: 10, padding: '12px 24px', fontWeight: 700, fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 View Plans <ArrowRight style={{ width: 15, height: 15 }} />
               </Link>
-              <a href="https://wa.me/+2348000000000" target="_blank" rel="noreferrer" style={{ color: '#25d366', border: '1px solid rgba(37,211,102,0.3)', textDecoration: 'none', borderRadius: 10, padding: '12px 24px', fontWeight: 700, fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(37,211,102,0.05)' }}>
+              <a href="https://wa.me/+2348022791227" target="_blank" rel="noreferrer" style={{ color: '#25d366', border: '1px solid rgba(37,211,102,0.3)', textDecoration: 'none', borderRadius: 10, padding: '12px 24px', fontWeight: 700, fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(37,211,102,0.05)' }}>
                 <MessageSquare style={{ width: 15, height: 15 }} /> WhatsApp Us
               </a>
             </div>
@@ -513,7 +513,7 @@ export default function HomePage() {
             <Link href="/marketplace" style={{ background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', color: '#fff', textDecoration: 'none', borderRadius: 14, padding: '16px 36px', fontWeight: 800, fontSize: '1.05rem', display: 'inline-flex', alignItems: 'center', gap: 10, boxShadow: '0 0 50px rgba(6,182,212,0.2)' }}>
               <Rocket style={{ width: 20, height: 20 }} /> View All Plans
             </Link>
-            <a href="https://wa.me/+2348000000000?text=Hi%2C%20I%20want%20to%20see%20a%20demo%20of%20Bethelmind%20Analytics" target="_blank" rel="noreferrer"
+            <a href="https://wa.me/+2348022791227?text=Hi%2C%20I%20want%20to%20see%20a%20demo%20of%20Bethelmind%20Analytics" target="_blank" rel="noreferrer"
               style={{ background: 'rgba(37,211,102,0.08)', color: '#25d366', border: '1px solid rgba(37,211,102,0.25)', textDecoration: 'none', borderRadius: 14, padding: '16px 36px', fontWeight: 700, fontSize: '1.05rem', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
               <MessageSquare style={{ width: 20, height: 20 }} /> WhatsApp Demo
             </a>
@@ -551,7 +551,7 @@ export default function HomePage() {
 
             <div>
               <h4 style={{ color: '#f8fafc', fontWeight: 700, marginBottom: 14, fontSize: '0.9rem' }}>Account</h4>
-              {[['Admin Login', '/admin'], ['Client Portal', '/portal'], ['My Subscription', '/admin/subscription'], ['Support', 'https://wa.me/+2348000000000']].map(([label, href]) => (
+              {[['Admin Login', '/admin'], ['Client Portal', '/portal'], ['My Subscription', '/admin/subscription'], ['Support', 'https://wa.me/+2348022791227']].map(([label, href]) => (
                 <div key={label} style={{ marginBottom: 8 }}>
                   <a href={href} style={{ color: '#475569', fontSize: '0.85rem', textDecoration: 'none' }}
                     onMouseEnter={e => (e.currentTarget.style.color = '#94a3b8')}
@@ -562,7 +562,7 @@ export default function HomePage() {
 
             <div>
               <h4 style={{ color: '#f8fafc', fontWeight: 700, marginBottom: 14, fontSize: '0.9rem' }}>Contact</h4>
-              <a href="https://wa.me/+2348000000000" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#25d366', fontSize: '0.85rem', textDecoration: 'none', marginBottom: 10 }}>
+              <a href="https://wa.me/+2348022791227" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#25d366', fontSize: '0.85rem', textDecoration: 'none', marginBottom: 10 }}>
                 <MessageSquare style={{ width: 14, height: 14 }} /> WhatsApp
               </a>
               <a href="mailto:hello@bethelmindanalytics.com" style={{ color: '#475569', fontSize: '0.85rem', textDecoration: 'none', display: 'block' }}>hello@bethelmindanalytics.com</a>

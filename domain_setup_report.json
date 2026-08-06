@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-08-06T10:33:29.002Z",
+  "domain": "bethelmindanalytics.com",
+  "vercel_verified": true,
+  "dns_automated": false,
+  "dns_records": [
+    {
+      "type": "A",
+      "name": "@",
+      "value": "76.76.21.21"
+    },
+    {
+      "type": "CNAME",
+      "name": "www",
+      "value": "cname.vercel-dns.com"
+    }
+  ]
+}

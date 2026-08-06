@@ -19,3 +19,5 @@ Aug 06 10:21:08.000 [notice] Bootstrapped 75% (enough_dirinfo): Loaded enough di
 Aug 06 10:21:08.000 [notice] Bootstrapped 90% (ap_handshake_done): Handshake finished with a relay to build circuits
 Aug 06 10:21:08.000 [notice] Bootstrapped 95% (circuit_create): Establishing a Tor circuit
 Aug 06 10:21:11.000 [notice] Bootstrapped 100% (done): Done
+Aug 06 10:40:26.000 [notice] Failed to find node for hop #1 of our path. Discarding this circuit.
+Aug 06 10:40:26.000 [notice] Our circuit 0 (id: 82) died due to an invalid selected path, purpose Unlinked conflux circuit. This may be a torrc configuration issue, or a bug.
