@@ -6,6 +6,7 @@ export interface MarketPackageTier {
   badge: string;
   priceNGN: number;
   originalPriceNGN: number;
+  monthlyRenewalNGN: number;
   popular?: boolean;
   simplicityHighlights: string[];
   features: string[];
@@ -19,6 +20,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     badge: 'Starter Tier',
     priceNGN: 75000,
     originalPriceNGN: 150000,
+    monthlyRenewalNGN: 15000,
     simplicityHighlights: [
       '⚡ 0 Setup Complexity (Instant Launch)',
       '📲 Orders & inquiries drop straight to your personal WhatsApp',
@@ -33,7 +35,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
       'Multi-Channel Autoresponders (WhatsApp, Email, Web Chat)',
       'Express Customer AI Assistant Widget',
       'Basic Admin Control Panel',
-      'Scraped Google Reviews & Business Hours Display',
+      'Monthly Renewal: ₦15,000/mo (Hosting + WhatsApp Maintenance)',
     ],
     recommendedFor: 'Small Instagram vendors, artisans, single technicians, local shops',
   },
@@ -43,6 +45,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     badge: 'Most Popular (70% Choice)',
     priceNGN: 185000,
     originalPriceNGN: 370000,
+    monthlyRenewalNGN: 35000,
     popular: true,
     simplicityHighlights: [
       '🎯 10K Lagos B2B Lead Harvester & Verified WhatsApp Exporter (27 Districts)',
@@ -64,7 +67,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
       'Moniepoint Dedicated Virtual Account Transfer Box',
       'Customer Guarantee & Trust Shield Badge',
       'Custom .com.ng Domain + Free SSL',
-      'Two-Way Google Sheets CRM Sync',
+      'Monthly Renewal: ₦35,000/mo (Lead Harvester Sync + AI Engine + Hosting)',
     ],
     recommendedFor: 'Solar installers, car dealers, law firms, clinics, boutique stores, realtors',
   },
@@ -74,6 +77,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     badge: '100% Hands-Free AI',
     priceNGN: 480000,
     originalPriceNGN: 950000,
+    monthlyRenewalNGN: 75000,
     simplicityHighlights: [
       '🎯 Unlimited Lagos B2B Lead Harvester & Automated Pipeline Sync',
       '🤖 24/7 Intelligent Customer AI Agent with WhatsApp Critical Sign-Off',
@@ -92,7 +96,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
       'Conversational Voice AI Phone Calling Agent (150 Mins/mo Included)',
       'Google Review 5-Star Tap Card Auto-Requester',
       'Custom Domain (yourbusiness.com) + Enterprise Hosting',
-      'Managed Done-For-You Weekly Lead Reports via WhatsApp',
+      'Monthly Renewal: ₦75,000/mo (Unlimited Lead Sync + AI Voice Calling + Cloud Server)',
     ],
     recommendedFor: 'High-ticket B2B contractors, commercial solar installers, multi-branch clinics, property developers',
   },
