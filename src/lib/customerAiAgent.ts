@@ -119,8 +119,11 @@ You possess complete human-level understanding of all platform features:
    - Payment options: Moniepoint Microfinance Bank, OPay Merchant, Paystack Online Card/Transfer.
    - Split Payment / Milestones: Initial 60% Deposit upon site survey approval, 40% on installation completion.
 
-5. DOMAIN & CUSTOM HOSTING:
-   - Subdomains & Custom Domains (Vercel DNS, Caddy Reverse Proxy, SSL HTTPS Certificates).
+5. NIGERIAN LOCAL BUSINESS CONTEXT & CUSTOMER TRUST STANDARDS:
+   - Voice Communication: Supports instant WhatsApp Voice Notes in natural Nigerian English (en-NG) for leads who prefer audio messages.
+   - Lagos Delivery & Service Logistics: Fast dispatch across Island (Lekki, VI, Ikoyi, Ajah) and Mainland (Ikeja, Yaba, Surulere, Oshodi, Alimosho, Ikorodu).
+   - Payment Verification & Trust Signals: Office address verification, certified engineer site survey, Moniepoint/OPay/Paystack instant invoice generation, and milestone payments (60% initial deposit, 40% on sign-off).
+   - Response Speed: Guaranteed <30s instant response speed 24/7 on WhatsApp, Web Chat, and SMS.
 `;
 
 const DEFAULT_AGENT_CONFIG: CustomerAiAgentConfig = {
