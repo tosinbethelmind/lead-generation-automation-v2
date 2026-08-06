@@ -815,6 +815,33 @@ export function RecruitmentEngineWidget() {
                   </a>
 
                   <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:ng.linkedin.com/in/ ("Chief" OR "Director" OR "VP" OR "Head of" OR "Managing Director") "${sourcingRecs.roleTitle}" "Lagos"`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-amber-950 border border-amber-500/50 hover:bg-amber-900/60 text-amber-300 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20"
+                  >
+                    <span>👑 LinkedIn C-Level & Directors</span>
+                  </a>
+
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:crunchbase.com/person "${sourcingRecs.roleTitle}" OR "Director" OR "Founder" "Lagos"`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-purple-950 border border-purple-500/40 hover:bg-purple-900/60 text-purple-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  >
+                    <span>🏛️ Crunchbase Executives</span>
+                  </a>
+
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:wellfound.com/u/ "${sourcingRecs.roleTitle}" "Nigeria"`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-pink-950 border border-pink-500/40 hover:bg-pink-900/60 text-pink-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  >
+                    <span>🚀 Wellfound High-End Talent</span>
+                  </a>
+
+                  <a
                     href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(sourcingRecs.roleTitle)}&location=Nigeria`}
                     target="_blank"
                     rel="noreferrer"
@@ -831,6 +858,7 @@ export function RecruitmentEngineWidget() {
                   >
                     <span>🔎 Google X-Ray (Free LinkedIn)</span>
                   </a>
+
 
 
                   <a

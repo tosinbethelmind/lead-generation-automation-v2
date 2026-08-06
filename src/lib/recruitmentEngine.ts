@@ -724,6 +724,9 @@ export function generateNigerianMassSourcingQueries(roleTitle: string, location:
 
   return {
     linkedinXray: `site:ng.linkedin.com/in/ ("${cleanRole}") ("${cleanLoc}" OR "Abuja" OR "Port Harcourt") ("080" OR "090" OR "070" OR "081" OR "gmail.com")`,
+    executiveLinkedinXray: `site:ng.linkedin.com/in/ ("Chief" OR "Director" OR "VP" OR "Head of" OR "Managing Director" OR "Partner") ("${cleanRole}") ("${cleanLoc}" OR "Nigeria")`,
+    crunchbaseExecutives: `site:crunchbase.com/person ("${cleanRole}" OR "Director" OR "Founder" OR "Executive") ("${cleanLoc}" OR "Nigeria")`,
+    wellfoundHighEnd: `site:wellfound.com/u/ "${cleanRole}" ("Nigeria" OR "Lagos" OR "Remote")`,
     googleDrivePdfs: `site:drive.google.com ("curriculum vitae" OR "resume" OR "CV") ("${cleanRole}") ("${cleanLoc}" OR "Nigeria") filetype:pdf`,
     nyscTelegramChannels: `site:t.me ("NYSC" OR "Job Vacancies" OR "Lagos Jobs" OR "Nigeria Hiring") "${cleanRole}"`,
     behancePortfolios: `site:behance.net/ "${cleanRole}" ("${cleanLoc}" OR "Nigeria")`,
@@ -733,6 +736,7 @@ export function generateNigerianMassSourcingQueries(roleTitle: string, location:
     nairalandSourcing: `site:nairaland.com "${cleanRole}" ("${cleanLoc}" OR "Hiring" OR "Vacancy" OR "Salary")`,
     jobboardsIndex: `(site:myjobmag.com OR site:jobberman.com OR site:hotnigerianjobs.com) "${cleanRole}" "${cleanLoc}"`,
     twitterSourcing: `("${cleanRole}") ("Hiring" OR "Vacancy" OR "LagosJobs" OR "NigeriaJobs")`,
+
     whatsappBroadcast: `🚀 *NOW HIRING: ${cleanRole.toUpperCase()} (${cleanLoc.toUpperCase()})*\n\n` +
       `We are seeking a top-performing ${cleanRole} to join our team in ${cleanLoc}.\n\n` +
       `📌 *Requirements:* Proven track record, strong technical/commercial expertise, immediately available.\n` +
