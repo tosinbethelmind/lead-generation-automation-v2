@@ -805,14 +805,33 @@ export function RecruitmentEngineWidget() {
                 {/* 1-CLICK INTERACTIVE SOURCING BUTTONS */}
                 <div className="flex flex-wrap items-center gap-2 pt-1">
                   <a
+                    href={`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(`${sourcingRecs.roleTitle} Lagos Nigeria`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3.5 py-1.5 bg-blue-700 hover:bg-blue-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-blue-700/30 border border-blue-400/40"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>👔 LinkedIn Direct Candidates</span>
+                  </a>
+
+                  <a
+                    href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(sourcingRecs.roleTitle)}&location=Nigeria`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-blue-950 border border-blue-500/40 hover:bg-blue-900/60 text-blue-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  >
+                    <span>💼 LinkedIn Jobs Index</span>
+                  </a>
+
+                  <a
                     href={`https://www.google.com/search?q=${encodeURIComponent(sourcingRecs.googleXraySearchString || `site:linkedin.com/in/ "${sourcingRecs.roleTitle}" ("Lagos" OR "Abuja")`)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-blue-600/20"
+                    className="px-3 py-1.5 bg-cyan-950 border border-cyan-500/40 hover:bg-cyan-900/60 text-cyan-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
                   >
-                    <ExternalLink className="w-3 h-3" />
-                    <span>Run Google X-Ray</span>
+                    <span>🔎 Google X-Ray (Free LinkedIn)</span>
                   </a>
+
 
                   <a
                     href={`https://www.google.com/search?q=${encodeURIComponent(`site:drive.google.com "curriculum vitae" OR "resume" "${sourcingRecs.roleTitle}" "Lagos" filetype:pdf`)}`}
