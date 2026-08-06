@@ -804,7 +804,7 @@ function isValidLead(lead) {
 // Batch Database Upsert (Sanitized Payload for Supabase)
 // ---------------------------------------------------------------------------
 const ALLOWED_LEAD_COLUMNS = new Set([
-  'lead_id', 'source', 'name', 'category', 'address', 'area', 'city', 'phone_e164',
+  'lead_id', 'tenant_id', 'source', 'name', 'category', 'address', 'area', 'city', 'phone_e164',
   'phone_raw', 'email', 'website', 'rating', 'reviews_count', 'verified', 'status',
   'source_query_or_seed', 'notes', 'collected_at', 'last_contacted_at', 'duplicate_of_lead_id',
   'business_summary'
@@ -817,8 +817,10 @@ function sanitizeLeadForSupabase(lead) {
       clean[key] = lead[key];
     }
   }
+  clean['tenant_id'] = clean['tenant_id'] || process.env.DEFAULT_TENANT_ID || 'default';
   return clean;
 }
+
 
 async function batchUpsertToSupabase(allLeads) {
   let totalHarvested = 0;
