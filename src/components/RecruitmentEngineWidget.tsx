@@ -84,6 +84,63 @@ export function RecruitmentEngineWidget() {
   const [voiceTranscriptInput, setVoiceTranscriptInput] = useState('');
   const [voiceEvalResult, setVoiceEvalResult] = useState<VoiceNoteEvaluationResult | null>(null);
 
+  // AI Mass Paragraph Parser Auto-Fill State
+  const [massParagraphText, setMassParagraphText] = useState('');
+  const [autoFillNotice, setAutoFillNotice] = useState<string | null>(null);
+
+  const handleAutoFillFromParagraph = () => {
+    if (!massParagraphText.trim()) return;
+
+    const lower = massParagraphText.toLowerCase();
+
+    // Inferred Title
+    let title = 'Senior Technical Specialist';
+    if (lower.includes('solar') || lower.includes('inverter') || lower.includes('pv')) title = 'Senior Solar Installation Engineer';
+    else if (lower.includes('sales') || lower.includes('b2b') || lower.includes('closing')) title = 'B2B Technical Sales Executive';
+    else if (lower.includes('developer') || lower.includes('software') || lower.includes('react') || lower.includes('node')) title = 'Full-Stack Software Developer';
+    else if (lower.includes('accountant') || lower.includes('audit') || lower.includes('finance')) title = 'Finance & Accounting Specialist';
+    else if (lower.includes('manager') || lower.includes('operations')) title = 'Operations & Branch Manager';
+    else if (lower.includes('nurse') || lower.includes('medical') || lower.includes('clinic')) title = 'Healthcare Medical Specialist';
+
+    // Inferred Location
+    let loc = 'Lagos';
+    if (lower.includes('abuja')) loc = 'Abuja';
+    else if (lower.includes('port harcourt') || lower.includes('ph')) loc = 'Port Harcourt';
+    else if (lower.includes('lekki')) loc = 'Lagos (Lekki)';
+    else if (lower.includes('ikeja')) loc = 'Lagos (Ikeja)';
+
+    // Inferred Salary
+    let sal = '₦350,000 - ₦550,000 / month';
+    const salMatch = massParagraphText.match(/(?:₦|N|NGN|\$)?\s*\d{2,3}[,k\d]*\s*(?:-|to)?\s*(?:₦|N|NGN|\$)?\s*\d{2,3}[,k\d]*/i);
+    if (salMatch) sal = salMatch[0];
+
+    // Inferred Experience
+    let exp = 3;
+    const expMatch = massParagraphText.match(/(\d+)\s*(?:\+|\s*years?|\s*yrs?)/i);
+    if (expMatch) exp = parseInt(expMatch[1], 10);
+
+    // Inferred Skills
+    const known = ['Solar', 'Inverter', 'Lithium', 'Sales', 'B2B', 'React', 'Node.js', 'Python', 'BOQ', 'Accounting', 'Management', 'Excel', 'Customer Service', 'CAD', 'Wiring'];
+    const found = known.filter(s => lower.includes(s.toLowerCase()));
+    const skills = found.length > 0 ? found.join(', ') : 'Technical Expertise, Problem Solving, Communication';
+
+    // Update all form fields across widget
+    setNewJobTitle(title);
+    setNewJobSalary(sal);
+    setNewJobExp(exp);
+    setNewJobSkills(skills);
+    setSourcingRole(title);
+    setCvText(massParagraphText);
+    setCandidateSkillsInput(skills);
+    setCandidateExp(exp);
+
+    // Generate sourcing recommendations immediately
+    setSourcingRecs(generateSourcingRecommendations(title, loc));
+
+    setAutoFillNotice(`✨ AI parsed mass paragraph! Auto-filled Job Title ("${title}"), Salary ("${sal}"), Experience (${exp} yrs), and Skills ("${skills}"). All UI forms updated!`);
+    setTimeout(() => setAutoFillNotice(null), 6000);
+  };
+
   // AI Co-Pilot Assistant State
   const [aiPromptInput, setAiPromptInput] = useState('');
   const [aiAssistantMessages, setAiAssistantMessages] = useState<
@@ -94,6 +151,7 @@ export function RecruitmentEngineWidget() {
       text: '👋 Hello! I am your Intelligent AI HR Co-Pilot. Ask me anything like: "How to hire in 24 hours?", "Calculate salary benchmark for senior solar installer", or "Generate WhatsApp pitch for B2B sales".',
     },
   ]);
+
 
   const handleTestVoiceNote = () => {
     const res = evaluateVoiceNoteSubmission(
@@ -331,11 +389,44 @@ export function RecruitmentEngineWidget() {
           >
             <Send className="w-3 h-3" />
             <span>Ask AI</span>
+        </div>
+      </div>
+
+      {/* 🤖 AI MASS PARAGRAPH AUTO-FILL ASSISTANT BOX */}
+      <div className="bg-slate-900/90 border-b border-purple-500/30 p-3.5 space-y-2.5">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center space-x-2">
+            <span className="p-1 bg-purple-500/20 text-purple-400 rounded-lg text-xs">🤖</span>
+            <span className="text-xs font-bold text-slate-100">AI Mass Paragraph Auto-Fill Assistant</span>
+            <span className="text-[10px] px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded-full border border-cyan-500/30">1-Click Auto-Parse</span>
+          </div>
+          {autoFillNotice && (
+            <span className="text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-1 rounded border border-emerald-500/30">
+              {autoFillNotice}
+            </span>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          <textarea
+            rows={2}
+            value={massParagraphText}
+            onChange={(e) => setMassParagraphText(e.target.value)}
+            placeholder="Paste any mass paragraph here (e.g. raw job description, candidate CV, or WhatsApp broadcast message)..."
+            className="flex-1 bg-slate-950 border border-slate-800 text-xs p-2.5 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-500 resize-none font-mono"
+          />
+          <button
+            onClick={handleAutoFillFromParagraph}
+            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-purple-600/20 flex flex-col items-center justify-center gap-1 border border-purple-400/30 whitespace-nowrap"
+          >
+            <Sparkles className="w-4 h-4 text-purple-200" />
+            <span>Auto-Fill Details</span>
           </button>
         </div>
       </div>
 
       {/* Subheader Navigation */}
+
       <div className="flex overflow-x-auto border-b border-slate-800 bg-slate-950/80 p-2 gap-1 scrollbar-none">
         <button
           onClick={() => setActiveTab('jobs')}
@@ -704,14 +795,56 @@ export function RecruitmentEngineWidget() {
                     className="text-[11px] text-blue-400 flex items-center gap-1 hover:underline"
                   >
                     <Copy className="w-3 h-3" />
-                    <span>{copiedBoolean ? 'Copied X-Ray!' : 'Copy X-Ray Query'}</span>
+                    <span>{copiedBoolean ? 'Copied X-Ray!' : 'Copy Query'}</span>
                   </button>
                 </h4>
                 <div className="bg-slate-900 border border-slate-800 p-3 rounded-lg font-mono text-[11px] text-cyan-300 break-all">
                   {sourcingRecs.googleXraySearchString || `site:linkedin.com/in/ "${sourcingRecs.roleTitle}" ("Lagos" OR "Abuja")`}
                 </div>
-                <p className="text-[10px] text-slate-400">
-                  💡 <strong>How to use:</strong> Copy and paste this exact string directly into Google. It bypasses LinkedIn Recruiter paywalls and lists 100s of active profiles.
+
+                {/* 1-CLICK INTERACTIVE SOURCING BUTTONS */}
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(sourcingRecs.googleXraySearchString || `site:linkedin.com/in/ "${sourcingRecs.roleTitle}" ("Lagos" OR "Abuja")`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-blue-600/20"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    <span>Run Google X-Ray Search</span>
+                  </a>
+
+                  <a
+                    href={`https://github.com/search?q=${encodeURIComponent(`location:Lagos ${sourcingRecs.roleTitle}`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  >
+                    <span>🐙 GitHub Devs</span>
+                  </a>
+
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`site:nairaland.com "${sourcingRecs.roleTitle}" Lagos hiring`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-emerald-950 border border-emerald-500/40 hover:bg-emerald-900/60 text-emerald-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  >
+                    <span>💬 Nairaland Forum</span>
+                  </a>
+
+                  <a
+                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`🚀 *NOW HIRING: ${sourcingRecs.roleTitle.toUpperCase()} (LAGOS)*\n\nWe are looking for a qualified ${sourcingRecs.roleTitle} in Lagos.\n\n📲 Drop CV here: ${widgetUrl}`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-emerald-600/20"
+                  >
+                    <Send className="w-3 h-3" />
+                    <span>WhatsApp Broadcast</span>
+                  </a>
+                </div>
+
+                <p className="text-[10px] text-slate-400 mt-2">
+                  💡 <strong>How to use:</strong> Click any button above to immediately run live candidate searches across Google, GitHub, Nairaland, and WhatsApp.
                 </p>
 
                 <div className="mt-3 p-3 bg-amber-950/40 border border-amber-500/30 rounded-lg">
@@ -720,6 +853,7 @@ export function RecruitmentEngineWidget() {
                 </div>
               </div>
             </div>
+
 
             {/* 100% Free Sourcing Playbook Cards */}
             {sourcingRecs.freeChannels && (
