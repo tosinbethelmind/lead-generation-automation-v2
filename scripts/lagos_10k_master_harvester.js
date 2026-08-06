@@ -379,8 +379,7 @@ async function harvestGoogleRssSocialLeads(keyword, category, platformWord = 'in
         verified: !!normPhone,
         status: 'NEW',
         source_query_or_seed: 'lagos_10k_b2b',
-        notes: `Google RSS Social Vendor: "${keyword}" (${platformWord}) — ${profileUrl}`,
-        social_links: JSON.stringify({ [platformWord]: profileUrl, whatsapp: normPhone || '' }),
+        notes: `Google RSS Social Vendor: "${keyword}" (${platformWord}) — ${profileUrl} | WA: ${normPhone || 'check profile'}`,
       });
     }
 
@@ -527,14 +526,32 @@ function isValidLead(lead) {
 }
 
 // ---------------------------------------------------------------------------
-// Batch Database Upsert
+// Batch Database Upsert (Sanitized Payload for Supabase)
 // ---------------------------------------------------------------------------
+const ALLOWED_LEAD_COLUMNS = new Set([
+  'lead_id', 'source', 'name', 'category', 'address', 'area', 'city', 'phone_e164',
+  'phone_raw', 'email', 'website', 'rating', 'reviews_count', 'verified', 'status',
+  'source_query_or_seed', 'notes', 'collected_at', 'last_contacted_at', 'duplicate_of_lead_id',
+  'business_summary'
+]);
+
+function sanitizeLeadForSupabase(lead) {
+  const clean = {};
+  for (const key of Object.keys(lead)) {
+    if (ALLOWED_LEAD_COLUMNS.has(key)) {
+      clean[key] = lead[key];
+    }
+  }
+  return clean;
+}
+
 async function batchUpsertToSupabase(allLeads) {
   let totalHarvested = 0;
   if (allLeads.length === 0) return totalHarvested;
   const chunkSize = 100;
   for (let i = 0; i < allLeads.length; i += chunkSize) {
-    const chunk = allLeads.slice(i, i + chunkSize);
+    const rawChunk = allLeads.slice(i, i + chunkSize);
+    const chunk = rawChunk.map(sanitizeLeadForSupabase);
     const { error } = await supabase.from('leads').upsert(chunk, { onConflict: 'lead_id', ignoreDuplicates: true });
     if (error) {
       console.error('Batch insert error:', error.message, '— Saving to Local JSON fallback...');
