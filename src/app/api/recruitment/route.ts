@@ -175,7 +175,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, aiResponse });
     }
 
+    if (action === 'mass_sourcing_queries') {
+      const { generateNigerianMassSourcingQueries } = await import('@/lib/recruitmentEngine');
+      const { roleTitle, location } = body;
+      const queries = generateNigerianMassSourcingQueries(roleTitle || 'Sales Executive', location || 'Lagos');
+      return NextResponse.json({ success: true, queries });
+    }
+
+    if (action === 'batch_grade_cvs') {
+      const { batchGradeCvsParallel, getJobPositions } = await import('@/lib/recruitmentEngine');
+      const { applicants, jobId } = body;
+      const job = getJobPositions().find(j => j.id === jobId) || getJobPositions()[0];
+      const graded = await batchGradeCvsParallel(applicants || [], job);
+      return NextResponse.json({ success: true, graded, count: graded.length });
+    }
+
     return NextResponse.json({ success: false, error: `Unsupported POST action: ${action}` }, { status: 400 });
+
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
