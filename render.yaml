@@ -1,11 +1,9 @@
 services:
-  - type: worker
-    name: apexreach-247-worker
-    env: node
-    buildCommand: npm install --production
-    startCommand: node scripts/hf_247_worker.js
-    envVars:
-      - key: NEXT_PUBLIC_SUPABASE_URL
-        value: https://szyuterncawfxwzhvwcf.supabase.co
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY
+  - type: web
+    name: bethelmind-platform
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    autoDeploy: true
+    healthCheckPath: /api/health-check
