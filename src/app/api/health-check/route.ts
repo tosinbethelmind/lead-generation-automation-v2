@@ -35,6 +35,11 @@ async function testProxyConnection(
 
 export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    if (searchParams.get('quick') === 'true' || req.headers.get('user-agent')?.includes('Render') || req.headers.get('user-agent')?.includes('UptimeRobot')) {
+      return NextResponse.json({ status: 'ok', success: true, timestamp: new Date().toISOString() });
+    }
+
     const config = getRuntimeConfig();
     const health: Record<string, any> = {};
     const timestamp = new Date().toISOString();
