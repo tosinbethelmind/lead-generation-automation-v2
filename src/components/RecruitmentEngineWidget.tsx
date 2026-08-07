@@ -115,6 +115,46 @@ export function RecruitmentEngineWidget() {
     const matches = matchTalentPoolFromProse(proseInputText, talentPool);
     setMatchedProseCandidates(matches);
   };
+
+  const handleCustomSourcingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    let role = customRoleInput.trim();
+    let location = customLocationInput.trim() || 'Lagos';
+
+    if (proseInputText.trim()) {
+      const lower = proseInputText.toLowerCase();
+      if (lower.includes('accountant') || lower.includes('ican') || lower.includes('audit')) {
+        role = 'Chartered Accountant (ICAN / ACCA)';
+      } else if (lower.includes('architect') || lower.includes('arcon') || lower.includes('revit')) {
+        role = 'Licensed Architect (ARCON / Revit)';
+      } else if (lower.includes('civil') || lower.includes('coren') || lower.includes('engineer')) {
+        role = 'Senior Civil Structural Engineer (COREN)';
+      } else if (lower.includes('solar') || lower.includes('inverter')) {
+        role = 'Senior Solar Installation Engineer';
+      } else if (lower.includes('sales') || lower.includes('b2b')) {
+        role = 'High-Ticket B2B Lead Sales Executive';
+      } else {
+        const firstLine = proseInputText.split('\n')[0].substring(0, 50);
+        role = firstLine || 'Senior Professional Specialist';
+      }
+
+      if (lower.includes('abuja')) location = 'Abuja';
+      else if (lower.includes('port harcourt')) location = 'Port Harcourt';
+
+      const matches = matchTalentPoolFromProse(proseInputText, talentPool);
+      setMatchedProseCandidates(matches);
+    }
+
+    if (!role) {
+      role = 'Senior Professional Specialist';
+    }
+
+    setCustomRoleInput(role);
+    setCustomLocationInput(location);
+    setSourcingRole(role);
+    setSourcingRecs(generateSourcingRecommendations(role, location));
+  };
   const [rawOsintPasteText, setRawOsintPasteText] = useState('');
   const [osintParseNotice, setOsintParseNotice] = useState<string | null>(null);
 
