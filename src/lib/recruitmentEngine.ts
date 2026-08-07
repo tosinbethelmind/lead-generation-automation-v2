@@ -629,10 +629,34 @@ export function generateSourcingRecommendations(
     { channel: 'GitHub & Behance Direct Work Sourcing', rationale: 'Source candidates directly from their proof of work without recruitment fees.', expectedYield: '20% Verified High-Performers' },
   ];
 
-  let linkedinBooleanString = `("${roleTitle}" OR "${roleTitle.split(' ')[0]}") AND ("${location}" OR "Lagos" OR "Abuja") AND ("Senior" OR "Lead")`;
+  let linkedinBooleanString = `("${roleTitle}" OR "${roleTitle.split(' ')[0]}") AND ("${location}" OR "Lagos" OR "Abuja") AND ("Senior" OR "Lead" OR "Registered")`;
   let googleXraySearchString = `site:linkedin.com/in/ "${roleTitle}" ("${location}" OR "Lagos" OR "Abuja")`;
 
-  if (roleLower.includes('solar') || roleLower.includes('engineer')) {
+  if (roleLower.includes('accountant') || roleLower.includes('ican') || roleLower.includes('acca') || roleLower.includes('audit') || roleLower.includes('finance')) {
+    targetChannels = [
+      { channel: 'Google X-Ray Search (Chartered ICAN / ACCA Accountants)', rationale: 'Bypasses LinkedIn Recruiter. Indexes registered ICAN, ACCA, and Big-4 Senior Audit profiles.', expectedYield: '50% Verified Financial Talent' },
+      { channel: 'ICAN & ACCA Professional Alumni Networks', rationale: 'Direct sourcing of licensed Chartered Accountants with proven tax, IFRS, and audit background.', expectedYield: '30% Immediate Candidates' },
+      { channel: 'Nairaland Finance & Tax Professional Threads', rationale: 'Active discussions with experienced financial controllers and senior accountants in Nigeria.', expectedYield: '20% Active Applicants' },
+    ];
+    linkedinBooleanString = `("Chartered Accountant" OR "ICAN" OR "ACCA" OR "Financial Controller" OR "Auditor") AND ("Lagos" OR "Abuja" OR "Nigeria") AND ("IFRS" OR "Tax" OR "Audit")`;
+    googleXraySearchString = `site:linkedin.com/in/ ("Chartered Accountant" OR "ICAN" OR "ACCA" OR "Financial Controller") ("Lagos" OR "Abuja") "IFRS"`;
+  } else if (roleLower.includes('architect') || roleLower.includes('arcon') || roleLower.includes('building design') || roleLower.includes('revit')) {
+    targetChannels = [
+      { channel: 'Google X-Ray Search (ARCON Registered Architects)', rationale: 'Directly finds licensed ARCON architects with Revit, AutoCAD, and 3D BIM expertise.', expectedYield: '45% Top Architectural Talent' },
+      { channel: 'Behance & Architectural Portfolio Portals', rationale: 'Inspect candidates live 3D renderings, floor plans, and elevation designs before outreach.', expectedYield: '35% Verified Design Work' },
+      { channel: 'Nigerian Institute of Architects (NIA) Networks', rationale: 'Connects directly with senior project architects and principal consultants.', expectedYield: '20% Executive Placement' },
+    ];
+    linkedinBooleanString = `("Architect" OR "ARCON" OR "Revit" OR "BIM Architect" OR "Architectural Consultant") AND ("Lagos" OR "Abuja" OR "Nigeria") AND ("Design" OR "AutoCAD")`;
+    googleXraySearchString = `site:linkedin.com/in/ ("Architect" OR "ARCON" OR "Revit Specialist") ("Lagos" OR "Abuja") "Design"`;
+  } else if (roleLower.includes('civil') || roleLower.includes('structural') || roleLower.includes('coren') || roleLower.includes('construction')) {
+    targetChannels = [
+      { channel: 'Google X-Ray Search (COREN Civil/Structural Engineers)', rationale: 'Directly indexes COREN-registered structural engineers, site managers, and BOQ estimators.', expectedYield: '50% Certified Engineers' },
+      { channel: 'Nigerian Society of Engineers (NSE) & COREN Registers', rationale: 'Accesses licensed civil engineers specializing in high-rise, foundation, and highway infrastructure.', expectedYield: '30% Verified Site Leads' },
+      { channel: 'Construction & Real Estate Industry Groups', rationale: 'Fast 1-on-1 WhatsApp sourcing for active site project engineers.', expectedYield: '20% Immediate Deployment' },
+    ];
+    linkedinBooleanString = `("Civil Engineer" OR "Structural Engineer" OR "COREN" OR "Site Manager") AND ("Lagos" OR "Abuja" OR "Nigeria") AND ("Concrete" OR "BOQ" OR "Steel")`;
+    googleXraySearchString = `site:linkedin.com/in/ ("Civil Engineer" OR "Structural Engineer" OR "COREN") ("Lagos" OR "Abuja") "BOQ"`;
+  } else if (roleLower.includes('solar') || roleLower.includes('engineer')) {
     linkedinBooleanString = `("Solar Engineer" OR "PV Specialist" OR "Inverter Engineer") AND ("Lagos" OR "Abuja" OR "Nigeria") AND ("Installer" OR "BOQ")`;
     googleXraySearchString = `site:linkedin.com/in/ ("Solar Engineer" OR "PV Specialist") ("Lagos" OR "Abuja") "Lithium"`;
   } else if (roleLower.includes('sales') || roleLower.includes('b2b')) {
@@ -764,5 +788,56 @@ export function getApplicants(): ApplicantCV[] {
 /** Returns scheduled interview slots */
 export function getInterviewSlots(): InterviewSlot[] {
   return interviewSlotsMemoryStore;
+}
+
+/** Matches and ranks candidates from the talent pool based on prose job description */
+export function matchTalentPoolFromProse(
+  proseText: string,
+  candidates: TalentPoolCandidate[]
+): { candidate: TalentPoolCandidate; matchScore: number; matchReasons: string[] }[] {
+  if (!proseText.trim() || candidates.length === 0) return [];
+
+  const textLower = proseText.toLowerCase();
+
+  return candidates.map(cand => {
+    let score = 50; // base score
+    const reasons: string[] = [];
+
+    // Role Match
+    const candRole = cand.primaryRole.toLowerCase();
+    const words = candRole.split(/\s+/).filter(w => w.length > 3);
+    const roleMatches = words.filter(w => textLower.includes(w));
+    if (roleMatches.length > 0) {
+      score += 25;
+      reasons.push(`Role Match: ${cand.primaryRole}`);
+    }
+
+    // Skills Match
+    const matchingSkills = cand.skills.filter(s => textLower.includes(s.toLowerCase()));
+    if (matchingSkills.length > 0) {
+      score += Math.min(matchingSkills.length * 10, 20);
+      reasons.push(`Skills Match: ${matchingSkills.join(', ')}`);
+    }
+
+    // Location Match
+    if (cand.location && textLower.includes(cand.location.toLowerCase())) {
+      score += 10;
+      reasons.push(`Location Match: ${cand.location}`);
+    }
+
+    // Verification Boost
+    if (cand.willingnessVerified) {
+      score += 5;
+      reasons.push('Verified Available');
+    }
+
+    const finalScore = Math.min(score, 98);
+
+    return {
+      candidate: cand,
+      matchScore: finalScore,
+      matchReasons: reasons.length > 0 ? reasons : ['General Talent Pool Profile'],
+    };
+  }).sort((a, b) => b.matchScore - a.matchScore);
 }
 
