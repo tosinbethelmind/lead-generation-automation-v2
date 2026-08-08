@@ -210,12 +210,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isPreview]);
 
-  // Delay the test alert widget so it doesn't compete with the hero pitch
-  useEffect(() => {
-    if (!isPreview) return;
-    const timer = setTimeout(() => setShowTestAlert(true), 12000);
-    return () => clearTimeout(timer);
-  }, [isPreview]);
+  // Keep test alert widget quiet during preview mode to avoid UI clutter
 
   // Dynamically load Google Fonts for headings and body
   useEffect(() => {
@@ -1664,7 +1659,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       fontFamily: bodyFontFamily,
       minHeight: '100vh',
       position: 'relative',
-      paddingTop: isPreview ? '64px' : '0px',
+      paddingTop: '0px',
       overflowX: 'hidden'
     }}>
       {/* Preloader Overlay */}
@@ -1683,122 +1678,56 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         rel="stylesheet" 
       />
 
-      {/* Sticky Conversion-Focused Preview Banner */}
+      {/* Single Clean Sticky Proposal Banner */}
       {isPreview && (
         <div style={{
-          position: 'fixed',
+          position: 'sticky',
           top: 0,
           left: 0,
           right: 0,
-          height: '64px',
-          background: 'rgba(5, 5, 5, 0.95)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
-          color: '#fff',
-          zIndex: 1000,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0 24px',
-          boxShadow: '0 4px 30px rgba(0,0,0,0.5)'
+          zIndex: 9999,
+          background: 'linear-gradient(135deg, #090d16 0%, #1e1b4b 100%)',
+          borderBottom: '1.5px solid rgba(139, 92, 246, 0.4)',
+          color: '#ffffff',
+          padding: '10px 24px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ 
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: 'rgba(16, 185, 129, 0.15)', 
-              border: '1px solid rgba(16, 185, 129, 0.4)',
-              fontSize: '0.72rem', 
-              fontWeight: 700, 
-              padding: '4px 10px', 
-              borderRadius: '99px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: '#10b981'
-            }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 8px #10b981' }}></span>
-              LIVE PREVIEW PREPARED FOR {lead.name.toUpperCase()}
-            </span>
-            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', margin: 0, fontWeight: 500, fontFamily: headingFontFamily }} className="hide-mobile">
-              ★ {lead.rating || '4.9'} ({lead.reviews_count || 38} Reviews) • {lead.area || lead.city || 'Lagos, Nigeria'}
-            </p>
-          </div>
-
-          {/* Countdown Timer Badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} className="hide-mobile">
-            <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>
-              {hasWebsite ? '⏰ UPGRADE OFFER RESERVED FOR:' : '⏰ RESERVED DOMAIN EXPIRES IN:'}
-            </span>
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              {Object.entries(timeLeft).map(([unit, value]) => (
-                <div key={unit} style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{
-                    background: 'rgba(212, 175, 55, 0.15)',
-                    color: '#d4af37',
-                    fontSize: '0.85rem',
-                    fontWeight: 700,
-                    padding: '2px 6px',
-                    borderRadius: '4px',
-                    fontFamily: 'monospace'
-                  }}>
-                    {String(value).padStart(2, '0')}
-                  </span>
-                  <span style={{ fontSize: '0.65rem', color: '#94a3b8', marginLeft: '2px', marginRight: '4px', textTransform: 'uppercase' }}>
-                    {unit[0]}
-                  </span>
-                </div>
-              ))}
+          <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+            
+            {/* Left: Lead Identity */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ background: '#10b981', color: '#fff', fontSize: '0.72rem', fontWeight: 800, padding: '4px 10px', borderRadius: '20px', textTransform: 'uppercase' }}>
+                🏷️ PROPOSAL FOR {lead.name.toUpperCase()}
+              </span>
+              <span style={{ fontSize: '0.82rem', color: '#cbd5e1', fontWeight: 500 }} className="hide-mobile">
+                Custom 24/7 Sales Website &amp; WhatsApp AI Preview
+              </span>
             </div>
-          </div>
-          {/* Top Proposal Header — Clearly Distinguishes Your Offer vs Client's Showcase */}
-          <div style={{
-            background: 'linear-gradient(135deg, #090d16 0%, #1e1b4b 100%)',
-            color: '#ffffff',
-            padding: '12px 24px',
-            borderBottom: '1px solid rgba(139, 92, 246, 0.4)',
-            position: 'sticky',
-            top: 0,
-            zIndex: 9999,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-          }}>
-            <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ background: '#10b981', color: '#fff', fontSize: '0.72rem', fontWeight: 800, padding: '4px 10px', borderRadius: '20px', textTransform: 'uppercase' }}>
-                  🏷️ PROPOSAL FOR {lead.name.toUpperCase()}
-                </span>
-                <span style={{ fontSize: '0.85rem', color: '#e2e8f0', fontWeight: 500 }}>
-                  We custom-designed this live 24/7 sales website &amp; AI preview for <strong>{lead.name}</strong> ({lead.category || 'Business'})
-                </span>
-              </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <a href="#services-showcase" style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#38bdf8',
-                  textDecoration: 'none',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  padding: '7px 12px',
-                  borderRadius: '8px',
-                }}>
-                  👇 View Your Services Showcase
-                </a>
-                <a href="#claim" style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  color: '#fff',
-                  textDecoration: 'none',
-                  fontSize: '0.85rem',
-                  fontWeight: 800,
-                  padding: '8px 18px',
-                  borderRadius: '8px',
-                  boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)',
-                }}>
-                  🚀 Claim Site &amp; AI Agent (OPay)
-                </a>
-              </div>
+            {/* Center: Countdown Timer */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }} className="hide-mobile">
+              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>⏰ OFFER EXPIRES IN:</span>
+              <span style={{ background: 'rgba(212, 175, 55, 0.2)', color: '#fde047', fontSize: '0.8rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px', fontFamily: 'monospace' }}>
+                {String(timeLeft.days).padStart(2, '0')}D {String(timeLeft.hours).padStart(2, '0')}H {String(timeLeft.minutes).padStart(2, '0')}M {String(timeLeft.seconds).padStart(2, '0')}S
+              </span>
             </div>
+
+            {/* Right: Direct Action Buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <a href="#claim" style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#fff',
+                textDecoration: 'none',
+                fontSize: '0.82rem',
+                fontWeight: 800,
+                padding: '7px 16px',
+                borderRadius: '8px',
+                boxShadow: '0 0 12px rgba(16, 185, 129, 0.4)',
+              }}>
+                🚀 Claim Site &amp; AI (OPay)
+              </a>
+            </div>
+
           </div>
         </div>
       )}
@@ -4617,8 +4546,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         </a>
       )}
 
-      {/* NDPR Privacy Compliance Banner */}
-      {!ndprDismissed && (
+      {/* NDPR Privacy Compliance Banner (Hidden on Preview Mode for Zero Clutter) */}
+      {!ndprDismissed && !isPreview && (
         <div className="ndpr-banner" style={{
           position: 'fixed',
           bottom: lead.phone_raw ? '96px' : '24px',
@@ -4662,6 +4591,46 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           >
             Accept
           </button>
+        </div>
+      )}
+
+      {/* Sticky Mobile Bottom Action Bar (1-Tap Mobile Conversion) */}
+      {isPreview && (
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 9995,
+          background: 'rgba(9, 13, 22, 0.96)',
+          backdropFilter: 'blur(16px)',
+          borderTop: '1.5px solid rgba(16, 185, 129, 0.4)',
+          padding: '10px 16px',
+          boxShadow: '0 -4px 20px rgba(0,0,0,0.6)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px'
+        }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>PROPOSAL PACKAGE</span>
+            <span style={{ fontSize: '0.95rem', color: '#34d399', fontWeight: 800 }}>₦150,000</span>
+          </div>
+          <a href="#claim" style={{
+            flex: 1,
+            maxWidth: '260px',
+            textAlign: 'center',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: '#ffffff',
+            padding: '10px 16px',
+            borderRadius: '8px',
+            fontWeight: 800,
+            fontSize: '0.85rem',
+            textDecoration: 'none',
+            boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
+          }}>
+            🚀 Claim Site &amp; AI (OPay)
+          </a>
         </div>
       )}
 
