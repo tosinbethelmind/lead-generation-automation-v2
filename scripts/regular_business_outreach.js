@@ -34,17 +34,19 @@ function generatePrePaymentWebsiteMessage(lead) {
 
   let template = `{Hi|Hello|Good day} [COMPANY_NAME],
 
-We {built|generated} a custom digital website preview for your [CATEGORY] in [CITY] to help you acquire more customers online:
+We {built|custom-designed} a high-converting website & interactive 24/7 AI lead automation system preview for your [CATEGORY] in [CITY]:
 
-🌐 View & Claim Your Custom Website Preview:
+🌐 View & Test Your Hybrid Website & Interactive AI Preview:
 ${websitePreviewUrl}
 
-Claim your website portal today to activate online bookings, customer requests, and Google My Business search visibility:
-👉 ${claimUrl}
+This hybrid system combines your custom business website with an embedded 24/7 WhatsApp AI agent, instant quote estimator, and automated PDF invoice generator.
+
+👉 Claim Your Complete Hybrid System Portal Today:
+${claimUrl}
 
 {Best regards|Warm regards},
-The Lagos Business Growth Desk
-(Reply STOP to unsubscribe)`;
+Bethelmind Growth & Automation Desk
+(Reply STOP to opt out)`;
 
   template = template.replace(/\[COMPANY_NAME\]/g, companyName);
   template = template.replace(/\[CATEGORY\]/g, category);

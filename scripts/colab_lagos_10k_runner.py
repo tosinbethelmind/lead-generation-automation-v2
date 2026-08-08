@@ -13,13 +13,27 @@ FIX HISTORY:
   - Only saves records with real extracted contact data
 """
 
-import sys, os, re, time, json, datetime, random
-from curl_cffi import requests as cf_requests
-from bs4 import BeautifulSoup
+import sys, os, re, time, json, datetime, random, subprocess
 
-# Supabase Credentials
-SUPABASE_URL = "https://szyuterncawfxwzhvwcf.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY"
+try:
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
+
+try:
+    from curl_cffi import requests as cf_requests
+    from bs4 import BeautifulSoup
+except ImportError:
+    print("Installing missing dependencies (curl_cffi, beautifulsoup4)...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "curl_cffi", "beautifulsoup4"])
+    from curl_cffi import requests as cf_requests
+    from bs4 import BeautifulSoup
+
+# Supabase Credentials (Updated Active Cloud Project)
+SUPABASE_URL = "https://pnsrjsyiygxdcxkpgbzx.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8"
 
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
@@ -34,7 +48,7 @@ def build_headers():
         "Referer": "https://jiji.ng/lagos",
     }
 
-session = cf_requests.Session(impersonate="chrome126")
+session = cf_requests.Session(impersonate="chrome")
 
 def normalize_phone(raw):
     if not raw:
@@ -77,39 +91,44 @@ def run_colab_lagos_harvest(max_pages=10):
                 continue
 
             soup = BeautifulSoup(resp.text, 'html.parser')
-            listings = soup.find_all('div', class_=re.compile(r'b-list-advert'))
-            print(f"  └─ Extracted {len(listings)} raw advert cards on page {page}.")
+            # Modern Jiji Advert Card Matching
+            listings = soup.find_all(['div', 'a'], class_=re.compile(r'b-list-advert|b-advert|b-card'))
+            if not listings:
+                listings = [a for a in soup.find_all('a', href=True) if '.html' in a['href']]
+            
+            print(f"  └─ Extracted {len(listings)} raw advert items on page {page}.")
 
             for idx, item in enumerate(listings):
-                title_elem = item.find('div', class_=re.compile(r'b-list-advert__title'))
-                if not title_elem:
-                    continue
-                title = title_elem.text.strip()
+                title_elem = item.find(class_=re.compile(r'b-advert-title-inner|b-list-advert__title|qa-advert-title|title'))
+                title = title_elem.text.strip() if title_elem else (item.get('title') or item.text.strip())
                 if not title or len(title) < 4:
                     continue
+                # Truncate long container text
+                title = title.split('\n')[0].strip()[:80]
 
-                # Extract REAL phone from listing HTML — NO synthetic fallback
+                # Extract profile/listing URL
+                href = item.get('href') if item.name == 'a' else None
+                if not href:
+                    link_elem = item.find('a', href=True)
+                    if link_elem:
+                        href = link_elem['href']
+
+                profile_url = ''
+                if href:
+                    profile_url = href if href.startswith('http') else f"https://jiji.ng{href}"
+
+                if not profile_url or '.html' not in profile_url:
+                    continue
+
                 raw_text = item.get_text(separator=' ')
                 phone_match = NIGERIAN_PHONE_REGEX.search(raw_text)
                 raw_phone = phone_match.group(0) if phone_match else None
                 phone_e164 = normalize_phone(raw_phone) if raw_phone else None
 
-                # Extract REAL email from listing HTML
                 email_match = EMAIL_REGEX.search(raw_text)
                 email = email_match.group(0) if email_match else None
 
-                # Extract profile/listing URL
-                link_elem = item.find('a', href=True)
-                profile_url = ''
-                if link_elem:
-                    href = link_elem['href']
-                    profile_url = href if href.startswith('http') else f"https://jiji.ng{href}"
-
-                # Quality Gate: skip if no real phone AND no real email AND no profile URL
-                if not phone_e164 and not email and not profile_url:
-                    continue
-
-                area_elem = item.find(class_=re.compile(r'b-list-advert__region'))
+                area_elem = item.find(class_=re.compile(r'b-list-advert__region|region|location'))
                 area = area_elem.text.strip().split(',')[0] if area_elem else 'Lagos'
 
                 scraped_leads.append({
@@ -137,6 +156,31 @@ def run_colab_lagos_harvest(max_pages=10):
 
     print(f"\nTotal Real Lagos Leads Harvested: {len(scraped_leads)}")
 
+    # Local Storage Backup
+    if scraped_leads:
+        local_db_path = os.path.join(os.path.dirname(__file__), '..', 'local_db', 'leads_db.json')
+        try:
+            existing_local = []
+            if os.path.exists(local_db_path):
+                with open(local_db_path, 'r', encoding='utf-8') as f:
+                    existing_local = json.load(f)
+            
+            seen_phones = {l.get('phone_e164') or l.get('phone_raw') for l in existing_local if l.get('phone_e164') or l.get('phone_raw')}
+            added_local = 0
+            for item in scraped_leads:
+                ph = item.get('phone_e164') or item.get('phone_raw')
+                if not ph or ph not in seen_phones:
+                    existing_local.append(item)
+                    if ph: seen_phones.add(ph)
+                    added_local += 1
+            
+            os.makedirs(os.path.dirname(local_db_path), exist_ok=True)
+            with open(local_db_path, 'w', encoding='utf-8') as f:
+                json.dump(existing_local, f, indent=2)
+            print(f"  💾 Local DB Backup: Saved +{added_local} new leads to local_db/leads_db.json (Total: {len(existing_local)})")
+        except Exception as err:
+            print(f"  ⚠️ Local DB Backup error: {err}")
+
     # Sync to Supabase
     if scraped_leads:
         import urllib.request
@@ -158,13 +202,31 @@ def run_colab_lagos_harvest(max_pages=10):
             )
             try:
                 with urllib.request.urlopen(req, timeout=20) as res:
-                    print(f"  ✓ Batch {i//chunk_size + 1} synced ({len(chunk)} leads). Status: {res.status}")
+                    print(f"  ✓ Batch {i//chunk_size + 1} synced ({len(chunk)} leads to Supabase Cloud). Status: {res.status}")
             except Exception as e:
-                print(f"  ❌ Batch {i//chunk_size + 1} sync error: {e}")
+                print(f"  ❌ Batch {i//chunk_size + 1} Cloud sync error: {e}")
 
     print("\n==================================================")
     print("🎉 COLAB LAGOS HARVEST COMPLETE!")
     print("==================================================\n")
 
 if __name__ == "__main__":
-    run_colab_lagos_harvest(max_pages=5)
+    is_loop = "--loop" in sys.argv or "--247" in sys.argv or "--continuous" in sys.argv
+    if is_loop:
+        print("==================================================")
+        print("🔄 LAUNCHING 24/7 CONTINUOUS LAGOS HARVESTER LOOP")
+        print("   Will scrape & sync continuously every 15 minutes...")
+        print("==================================================\n")
+        cycle = 1
+        while True:
+            try:
+                print(f"\n--- [24/7 Harvest Cycle #{cycle} @ {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ---")
+                run_colab_lagos_harvest(max_pages=5)
+            except Exception as loop_err:
+                print(f"⚠️ Cycle #{cycle} error: {loop_err}")
+            
+            print("\n💤 Sleeping for 15 minutes before next 24/7 cycle...")
+            time.sleep(15 * 60)
+            cycle += 1
+    else:
+        run_colab_lagos_harvest(max_pages=5)

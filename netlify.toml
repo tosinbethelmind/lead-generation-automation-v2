@@ -9,15 +9,3 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Redirect www to non-www (handled by Vercel primary, Netlify fallback)
-[[redirects]]
-  from = "https://www.bethelmindanalytics.com/*"
-  to = "https://bethelmindanalytics.com/:splat"
-  status = 301
-  force = true
-
-# SPA fallback
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200

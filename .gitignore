@@ -69,3 +69,6 @@ whatsapp_baileys.log
 startup_log.txt
 
 .env*.local
+
+# Local Netlify folder
+.netlify

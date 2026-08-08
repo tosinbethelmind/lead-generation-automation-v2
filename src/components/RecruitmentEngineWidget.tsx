@@ -398,15 +398,6 @@ export function RecruitmentEngineWidget() {
     setTimeout(() => setAutoFillNotice(null), 7000);
   };
 
-  const handleCustomSourcingSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!customRoleInput.trim()) return;
-
-    setSourcingRole(customRoleInput);
-    const recs = generateSourcingRecommendations(customRoleInput, customLocationInput);
-    setSourcingRecs(recs);
-  };
-
   const handleAskAiAssistant = (promptText?: string) => {
     const query = promptText || aiPromptInput;
     if (!query.trim()) return;
@@ -1696,7 +1687,6 @@ export function RecruitmentEngineWidget() {
                   </button>
                 </div>
 
-                <button
                 <div style={{ display: 'flex', gap: 8 }}>
                   {proseInputText.trim() && (
                     <button

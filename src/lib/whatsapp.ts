@@ -76,11 +76,15 @@ export async function sendWhatsAppMessage(
   const spintaxTemplate = parseSpintax(template);
 
   // Simple placeholder substitution
-  const message = spintaxTemplate
+  let message = spintaxTemplate
     .replace(/{{\s*lead\.name\s*}}/g, lead.name)
     .replace(/{{\s*previewUrl\s*}}/g, previewUrl)
     .replace(/{{\s*businessSignature\s*}}/g, config.businessSignature || '')
     .replace(/{{\s*signature\s*}}/g, config.businessSignature || '');
+
+  if (!message.toLowerCase().includes('stop')) {
+    message += '\n\n(Reply STOP to unsubscribe)';
+  }
 
   const provider = config.whatsappProvider || 'cloud';
 

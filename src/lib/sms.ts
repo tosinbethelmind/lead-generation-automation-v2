@@ -42,6 +42,10 @@ export function replaceSmsPlaceholders(template: string, lead: any, previewUrl: 
   if (emailText && !formatted.includes(emailText)) {
     formatted += ` Details also sent to ${emailText}`;
   }
+
+  if (!formatted.toLowerCase().includes('stop')) {
+    formatted += ' (Reply STOP to opt out)';
+  }
   return formatted;
 }
 
@@ -66,43 +70,89 @@ export async function sendSmsMessage(
   }
   const phone = cleanPhoneNumber(rawPhone);
 
-  if (provider === 'gateway') {
-    const gatewayUrl = config.smsGatewayUrl;
-    if (!gatewayUrl) {
-      throw new Error('SMS Gateway URL is not configured.');
-    }
+  if (provider === 'gateway' || provider === 'cascade') {
+    // Auto-Discovery Candidate Gateway URLs to ensure zero-setup connection
+    const candidateUrls = Array.from(new Set([
+      config.smsGatewayUrl,
+      'http://10.50.220.22:8082',
+      'http://100.107.243.108:8082',
+      'http://127.0.0.1:8082',
+      'http://192.168.43.1:8082',
+      'http://192.168.137.1:8082'
+    ].filter(Boolean)));
 
-    // A multi-compatible payload to support multiple Android SMS gateway formats out-of-the-box
     const payload = {
       to: phone,
-      phone: phone,
-      number: phone,
-      message: messageText,
-      text: messageText
+      message: messageText
     };
 
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    const token = config.smsGatewayToken || config.smsGatewayKey || config.smsGatewayAuth;
-    if (token) {
-      headers['Authorization'] = token;
+    const token = config.smsGatewayToken || config.smsGatewayKey || config.smsGatewayAuth || 'f34af5ea-f657-41b1-b83e-4a59eb786e57';
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = token;
+
+    let gatewaySuccess = false;
+    let successfulUrl = '';
+
+    for (const url of candidateUrls) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500); // Fast 2.5s probe per candidate
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          gatewaySuccess = true;
+          successfulUrl = url;
+          break;
+        }
+      } catch (_) {
+        // Silently probe next candidate
+      }
     }
 
-    const response = await fetch(gatewayUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Gateway Error (${response.status}): ${errText || response.statusText}`);
+    if (gatewaySuccess) {
+      return `Sent via Carrier Android Gateway (${successfulUrl}) to ${phone}`;
     }
 
-    return `Sent via Carrier Android Gateway to ${phone}`;
-  } 
-  
+    // Termii Fallback
+    const apiKey = config.termiiApiKey ? rotateKey(config.termiiApiKey) : 'tlv_HilsNNhBaQtzgLkf0nyq1Maie3kfr27xDYW2_d-JD6M';
+    if (apiKey) {
+      try {
+        const termiiPhone = phone.replace('+', '');
+        const payload = {
+          to: termiiPhone,
+          from: config.termiiSenderId || 'N-Alert',
+          sms: messageText,
+          type: 'plain',
+          channel: 'generic',
+          api_key: apiKey
+        };
+
+        const response = await fetch('https://api.ng.termii.com/api/sms/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        if (response.ok && (data.code === 'ok' || data.message_id)) {
+          return `Sent via Termii Fallback to ${phone} (ID: ${data.message_id || 'N/A'})`;
+        }
+        console.warn(`Termii Fallback response: ${JSON.stringify(data)}`);
+      } catch (termiiErr: any) {
+        console.warn(`Termii Fallback failed: ${termiiErr.message}`);
+      }
+    }
+
+    throw new Error(`SMS delivery failed on Android Gateway and Termii Fallback.`);
+  }
+
   else if (provider === 'termii') {
     const apiKey = rotateKey(config.termiiApiKey);
     const senderId = config.termiiSenderId || 'Sandbox';

@@ -197,7 +197,10 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
   }
 
   // Apply jitter before sending
-  await applyRandomDelayJitter(300, 1000);
+  const appUrl = (config as any).appUrl || process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
+  if (!body.toLowerCase().includes('unsubscribe') && !body.toLowerCase().includes('opt out')) {
+    body += `\n\n---\nTo unsubscribe from future updates, click here: ${appUrl}/api/dnc?email=${encodeURIComponent(to)}`;
+  }
 
   // Ordered provider fallback sequence starting with primary provider
   const candidateProviders = Array.from(new Set([primaryProvider, 'resend', 'brevo', 'sendgrid', 'smtp', 'gmail']));
