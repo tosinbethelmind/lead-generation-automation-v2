@@ -308,7 +308,7 @@ function writeLocalJobs(jobs: Record<string, any>) {
 }
 
 // High-speed worker concurrency settings
-const MAX_CONCURRENT_JOBS = parseInt(process.env.MAX_CONCURRENT_JOBS || '5', 10);
+const MAX_CONCURRENT_JOBS = parseInt(process.env.MAX_CONCURRENT_JOBS || '10', 10);
 let activeJobCount = 0;
 
 async function processJob(job: any, alreadyRunning: boolean = false) {

@@ -869,7 +869,7 @@ async function runMasterLagosHarvester(dryRun = false, cycleNumber = 1) {
 
   // Calculate dynamic query slices based on cycleNumber (Rotates through 300+ keywords)
   const totalQueries = EXPANDED_SEARCH_QUERIES.length;
-  const sliceSize = 25;
+  const sliceSize = 50;
   const startIndex = ((cycleNumber - 1) * sliceSize) % totalQueries;
   const activeQueries = EXPANDED_SEARCH_QUERIES.slice(startIndex, startIndex + sliceSize);
   if (activeQueries.length < sliceSize) {
@@ -877,21 +877,21 @@ async function runMasterLagosHarvester(dryRun = false, cycleNumber = 1) {
   }
 
   // Calculate dynamic LGA slice
-  const lgaStartIndex = ((cycleNumber - 1) * 4) % LAGOS_DISTRICTS.length;
-  const activeLgas = LAGOS_DISTRICTS.slice(lgaStartIndex, lgaStartIndex + 4);
-  if (activeLgas.length < 4) {
-    activeLgas.push(...LAGOS_DISTRICTS.slice(0, 4 - activeLgas.length));
+  const lgaStartIndex = ((cycleNumber - 1) * 8) % LAGOS_DISTRICTS.length;
+  const activeLgas = LAGOS_DISTRICTS.slice(lgaStartIndex, lgaStartIndex + 8);
+  if (activeLgas.length < 8) {
+    activeLgas.push(...LAGOS_DISTRICTS.slice(0, 8 - activeLgas.length));
   }
 
-  console.log(`🔄 Cycle #${cycleNumber} Active Parameters:`);
-  console.log(`   ├─ Active Districts: ${activeLgas.join(', ')}`);
-  console.log(`   ├─ Jiji Page: ${jijiPage} | BusinessList Page: ${bizPage}`);
-  console.log(`   └─ Categories: ${activeQueries.slice(0, 4).map(s => s.cat).join(', ')}... (+10 more)`);
+  console.log(`🔄 Cycle #${cycleNumber} Turbo Parameters:`);
+  console.log(`   ├─ Active Districts (8): ${activeLgas.join(', ')}`);
+  console.log(`   ├─ Jiji Pages: ${jijiPage}-${jijiPage + 2} | BusinessList Page: ${bizPage}`);
+  console.log(`   └─ Categories: ${activeQueries.length} Active Query Clusters`);
 
   // === STAGE 1: Nominatim OpenStreetMap Geo Engine (Concurrent) ===
-  console.log('\n📍 STAGE 1: Nominatim OpenStreetMap Geo Engine...');
+  console.log('\n📍 STAGE 1: Nominatim OpenStreetMap Geo Engine (8 Districts)...');
   const osmTasks = [];
-  for (const item of activeQueries.slice(0, 4)) {
+  for (const item of activeQueries.slice(0, 8)) {
     for (const lga of activeLgas) {
       osmTasks.push(harvestNominatimOSMZone(item.q, item.cat, lga));
     }
@@ -918,8 +918,14 @@ async function runMasterLagosHarvester(dryRun = false, cycleNumber = 1) {
   const jijiRegion = jijiSubRegions[(cycleNumber - 1) % jijiSubRegions.length];
   const jijiSort = sortModes[(cycleNumber - 1) % sortModes.length];
 
-  console.log(`\n🛒 STAGE 2: Direct Jiji.ng Web API Engine (${jijiRegion}, p${jijiPage}, sort=${jijiSort})...`);
-  const jijiResults = await Promise.allSettled(activeQueries.map(s => harvestJijiDirectApi(s.q, s.cat, jijiPage, jijiRegion, jijiSort)));
+  console.log(`\n🛒 STAGE 2: Accelerated Direct Jiji.ng Web API Engine (${jijiRegion}, p${jijiPage}-${jijiPage + 2}, sort=${jijiSort})...`);
+  const jijiPromises = [];
+  for (const s of activeQueries) {
+    jijiPromises.push(harvestJijiDirectApi(s.q, s.cat, jijiPage, jijiRegion, jijiSort));
+    jijiPromises.push(harvestJijiDirectApi(s.q, s.cat, jijiPage + 1, jijiRegion, jijiSort));
+    jijiPromises.push(harvestJijiDirectApi(s.q, s.cat, jijiPage + 2, jijiRegion, jijiSort));
+  }
+  const jijiResults = await Promise.allSettled(jijiPromises);
   let jijiCount = 0;
   jijiResults.forEach((res) => {
     if (res.status === 'fulfilled' && Array.isArray(res.value)) {
