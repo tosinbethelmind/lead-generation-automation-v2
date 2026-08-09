@@ -141,6 +141,7 @@ const LUXURY_PRESETS = [
 export default function LandingPage({ data, leadId, isPreview = false }: LandingPageProps) {
   const { lead, copy, paymentConfig } = data;
   const [selectedTheme, setSelectedTheme] = useState(data.theme);
+  const [showThemeBar, setShowThemeBar] = useState(false);
   const theme = selectedTheme || data.theme;
 
   useEffect(() => {
@@ -3454,7 +3455,23 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             flexWrap: 'wrap'
           }}
         >
-          <span>🎁 <strong>100% HANDS-FREE SETUP:</strong> Free Custom Domain (<strong>.com</strong>, <strong>.com.ng</strong>, <strong>.org</strong>, <strong>.ng</strong>) + Hosting + WhatsApp AI included!</span>
+          <span>🎁 <strong>100% HANDS-FREE SETUP:</strong> Custom Domain + Hosting + WhatsApp AI included (We Do All The Work)!</span>
+          <button
+            type="button"
+            onClick={() => setShowThemeBar(!showThemeBar)}
+            style={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              padding: '4px 12px',
+              borderRadius: '20px',
+              fontSize: '0.76rem',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            🎨 {showThemeBar ? 'Hide Style Picker' : 'Change Design Style'}
+          </button>
           <a
             href="#claim"
             style={{
@@ -3468,20 +3485,20 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
             }}
           >
-            🚀 Claim Now (We Do All The Work) →
+            🚀 Claim Website Now →
           </a>
         </div>
       )}
 
-      {/* ─── Interactive Luxury Theme Variant Switcher Bar ───────────────── */}
-      {isPreview && (
+      {/* ─── Interactive Luxury Theme Variant Switcher Bar (Toggleable) ── */}
+      {isPreview && showThemeBar && (
         <div
           id="theme-switcher-bar"
           style={{
             position: 'fixed',
             top: '110px',
             left: 0, right: 0,
-            background: 'rgba(6, 9, 18, 0.92)',
+            background: 'rgba(6, 9, 18, 0.95)',
             backdropFilter: 'blur(16px)',
             borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
             padding: '8px 16px',
@@ -3494,8 +3511,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             flexWrap: 'wrap'
           }}
         >
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            🎨 <span>Don't like this style? Try another luxury design:</span>
+          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#f8fafc' }}>
+            🎨 Select A Theme Preset:
           </span>
 
           {LUXURY_PRESETS.map((preset, idx) => (
@@ -3512,8 +3529,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 fontSize: '0.75rem',
                 fontWeight: 700,
                 cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                boxShadow: theme.primary === preset.primary ? '0 0 14px ' + preset.primary : 'none'
+                transition: 'all 0.25s ease'
               }}
             >
               {preset.name}
@@ -3536,11 +3552,10 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               borderRadius: '20px',
               fontSize: '0.75rem',
               fontWeight: 800,
-              cursor: 'pointer',
-              boxShadow: '0 0 12px rgba(236, 72, 153, 0.4)'
+              cursor: 'pointer'
             }}
           >
-            🎲 Generate Fresh AI Variant ✨
+            🎲 Fresh AI Variant ✨
           </button>
         </div>
       )}
