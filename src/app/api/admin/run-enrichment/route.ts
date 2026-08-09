@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const password = process.env.DATABASE_PASSWORD || 'pHqrTQc2gpdSqnAx';
   
   // Use Supabase connection pooler on port 6543
-  const connectionString = `postgresql://postgres:${encodeURIComponent(password)}@db.szyuterncawfxwzhvwcf.supabase.co:6543/postgres?sslmode=require`;
+  const connectionString = `postgresql://postgres:${encodeURIComponent(password)}@db.pnsrjsyiygxdcxkpgbzx.supabase.co:6543/postgres?sslmode=require`;
 
   console.log("Connecting to Supabase via connection pooler (port 6543)...");
   const client = new Client({

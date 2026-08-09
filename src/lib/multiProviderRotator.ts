@@ -72,9 +72,14 @@ class TokenRotator {
     if (Array.isArray(config.serpApiKeys) && config.serpApiKeys.length > 0) {
       keys.push(...config.serpApiKeys.filter(k => Boolean(k && k.trim())));
     }
-    if (keys.length === 0) return null;
-    const key = keys[this.serpApiIdx % keys.length];
-    this.serpApiIdx = (this.serpApiIdx + 1) % keys.length;
+    const envVal = process.env.SERPAPI_KEY || process.env.SERP_API_KEY || process.env.SERP_API_KEYS;
+    if (envVal) {
+      keys.push(...envVal.split(',').map(k => k.trim()).filter(Boolean));
+    }
+    const uniqueKeys = Array.from(new Set(keys));
+    if (uniqueKeys.length === 0) return null;
+    const key = uniqueKeys[this.serpApiIdx % uniqueKeys.length];
+    this.serpApiIdx = (this.serpApiIdx + 1) % uniqueKeys.length;
     return key;
   }
 
@@ -84,9 +89,14 @@ class TokenRotator {
     if (Array.isArray(config.serperApiKeys) && config.serperApiKeys.length > 0) {
       keys.push(...config.serperApiKeys.filter(k => Boolean(k && k.trim())));
     }
-    if (keys.length === 0) return null;
-    const key = keys[this.serperIdx % keys.length];
-    this.serperIdx = (this.serperIdx + 1) % keys.length;
+    const envVal = process.env.SERPER_API_KEY || process.env.SERPER_API_KEYS;
+    if (envVal) {
+      keys.push(...envVal.split(',').map(k => k.trim()).filter(Boolean));
+    }
+    const uniqueKeys = Array.from(new Set(keys));
+    if (uniqueKeys.length === 0) return null;
+    const key = uniqueKeys[this.serperIdx % uniqueKeys.length];
+    this.serperIdx = (this.serperIdx + 1) % uniqueKeys.length;
     return key;
   }
 
@@ -247,9 +257,12 @@ export async function fetchSERPWithFallback(query: string, limit: number = 10): 
             snippet: item.snippet || '',
           }));
         }
+      } else {
+        const text = await resp.text();
+        console.warn(`[SERP Rotator] SerpAPI query failed (HTTP ${resp.status}): ${text.substring(0, 100)}`);
       }
-    } catch (_) {
-      console.warn('[SERP Rotator] SerpAPI query failed, trying zero-key fallback...');
+    } catch (err: any) {
+      console.warn(`[SERP Rotator] SerpAPI query failed (${err.message}), trying zero-key fallback...`);
     }
   }
 

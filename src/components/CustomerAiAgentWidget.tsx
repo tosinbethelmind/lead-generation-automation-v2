@@ -260,6 +260,14 @@ export default function CustomerAiAgentWidget({
           right: 24px;
           z-index: 99999;
           font-family: var(--font-sans, 'Inter', sans-serif);
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          pointer-events: none;
+        }
+
+        .ai-widget-trigger, .ai-chat-window {
+          pointer-events: auto;
         }
 
         .ai-widget-trigger {

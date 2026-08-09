@@ -32,7 +32,16 @@ export async function GET(
 
     const businessName = lead ? lead.name : leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase();
     const sector = lead ? lead.category || 'B2B Services' : 'General Business';
-    const appOrigin = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3006';
+    let appOrigin = process.env.NEXT_PUBLIC_APP_URL || '';
+    if (!appOrigin || appOrigin.includes('localhost') || appOrigin.includes('127.0.0.1')) {
+      const host = req.headers.get('x-forwarded-host') || req.headers.get('host');
+      const proto = req.headers.get('x-forwarded-proto') || (req.url.startsWith('https') ? 'https' : 'http');
+      if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+        appOrigin = `${proto}://${host}`;
+      } else {
+        appOrigin = 'https://www.bethelmindanalytics.com';
+      }
+    }
 
     const jsBundle = `
 (function() {
@@ -47,16 +56,16 @@ export async function GET(
   // Create floating button container
   var container = document.createElement('div');
   container.id = 'bethelmind-ai-widget-root';
-  container.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;font-family:Inter,system-ui,sans-serif;';
+  container.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-end;pointer-events:none;';
 
   // Launcher Button
   var button = document.createElement('button');
-  button.style.cssText = 'background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:#fff;border:none;border-radius:30px;padding:12px 20px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 10px 25px rgba(6,182,212,0.4);display:flex;align-items:center;gap:8px;transition:all 0.2s;';
+  button.style.cssText = 'pointer-events:auto;background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:#fff;border:none;border-radius:30px;padding:12px 20px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 10px 25px rgba(6,182,212,0.4);display:flex;align-items:center;gap:8px;transition:all 0.2s;outline:none;';
   button.innerHTML = '🤖 <span>Chat with ' + businessName + ' AI</span>';
 
   // Modal Frame
   var iframe = document.createElement('iframe');
-  iframe.style.cssText = 'display:none;width:380px;height:520px;border:1px solid rgba(255,255,255,0.15);border-radius:20px;box-shadow:0 25px 50px rgba(0,0,0,0.5);background:#0f172a;margin-bottom:12px;';
+  iframe.style.cssText = 'pointer-events:auto;display:none;width:380px;max-width:calc(100vw - 32px);height:520px;max-height:calc(100vh - 90px);border:1px solid rgba(255,255,255,0.15);border-radius:20px;box-shadow:0 25px 50px rgba(0,0,0,0.5);background:#0f172a;margin-bottom:12px;';
   iframe.src = origin + '/preview/' + encodeURIComponent(leadId) + '?embed=true';
 
   button.onclick = function() {
