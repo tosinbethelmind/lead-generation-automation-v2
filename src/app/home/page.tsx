@@ -266,6 +266,29 @@ export default function HomePage() {
   const [copiedBank, setCopiedBank] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
+  // Dynamic Bank Account Details State
+  const [bankDetails, setBankDetails] = useState({
+    bankName: 'OPay Digital Services',
+    accountNumber: '7034297995',
+    accountName: 'Oyelakin Tosin Matthew',
+  });
+
+  useEffect(() => {
+    fetch('/api/config')
+      .then(res => res.json())
+      .then(data => {
+        if (data && (data.config || data)) {
+          const cfg = data.config || data;
+          setBankDetails({
+            bankName: cfg.moniepointBankName || cfg.opayBankName || 'OPay Digital Services',
+            accountNumber: cfg.moniepointAccountNumber || cfg.opayAccountNumber || '7034297995',
+            accountName: cfg.moniepointAccountName || cfg.opayAccountName || 'Oyelakin Tosin Matthew',
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Live Sector Tool API Testing Modal State
   const [activeModalTool, setActiveModalTool] = useState<SectorTool | null>(null);
   const [modalInputs, setModalInputs] = useState<Record<string, any>>({});
@@ -282,7 +305,7 @@ export default function HomePage() {
   }, [selectedPlanId]);
 
   const copyAccountNum = () => {
-    navigator.clipboard.writeText('8123456789');
+    navigator.clipboard.writeText(bankDetails.accountNumber);
     setCopiedBank(true);
     setTimeout(() => setCopiedBank(false), 2500);
   };
@@ -1064,10 +1087,10 @@ export default function HomePage() {
 
           <div style={{ background: 'rgba(7,9,14,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 20 }}>
             <div>
-              <p style={{ margin: '0 0 2px', fontSize: '0.75rem', color: '#64748b' }}>Bank Name: <strong style={{ color: '#fff' }}>Moniepoint Microfinance Bank</strong></p>
-              <p style={{ margin: '0 0 2px', fontSize: '0.75rem', color: '#64748b' }}>Account Name: <strong style={{ color: '#fff' }}>Bethelmind Analytics & Strategy</strong></p>
+              <p style={{ margin: '0 0 2px', fontSize: '0.75rem', color: '#64748b' }}>Bank Name: <strong style={{ color: '#fff' }}>{bankDetails.bankName}</strong></p>
+              <p style={{ margin: '0 0 2px', fontSize: '0.75rem', color: '#64748b' }}>Account Name: <strong style={{ color: '#fff' }}>{bankDetails.accountName}</strong></p>
               <p style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#06b6d4', letterSpacing: '0.05em', fontFamily: "'Outfit', sans-serif" }}>
-                8123456789
+                {bankDetails.accountNumber}
               </p>
             </div>
 
