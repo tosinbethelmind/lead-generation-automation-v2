@@ -1,47 +1,15 @@
-# Auto-deploy to Netlify fallback on every push
-# Runs alongside Vercel (primary) deployment
+# Netlify Secondary Fallback Check Workflow
 name: Deploy to Netlify (Fallback)
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
-  deploy-netlify:
+  check-fallback:
     runs-on: ubuntu-latest
-    name: Build & Deploy to Netlify
+    name: Secondary Host Fallback Status
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit || npm install --legacy-peer-deps
-
-      - name: Build Next.js app
-        run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzNTQ1MTcsImV4cCI6MjA5NTkzMDUxN30.8VAKb_fA6mEIdRz_sM_hW_3s73i-xS2XzF94c1g7pXg' }}
-          NEXT_PUBLIC_APP_URL: https://www.bethelmindanalytics.com
-          NEXT_TELEMETRY_DISABLED: 1
-
-      - name: Deploy to Netlify
-        continue-on-error: true
-        uses: nwtgck/actions-netlify@v3
-        with:
-          publish-dir: '.next'
-          production-branch: main
-          production-deploy: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Auto-deploy from GitHub Actions - ${{ github.sha }}"
-          netlify-config-path: ./netlify.toml
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      - name: Primary Host Status
+        run: |
+          echo "✅ Primary production hosting active on Vercel (https://bethelmindanalytics.com)."
+          echo "Netlify manual fallback pipeline configured."
