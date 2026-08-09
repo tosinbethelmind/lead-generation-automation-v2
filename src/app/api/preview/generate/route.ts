@@ -29,12 +29,45 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Load lead from database
     const repo = getActiveLeadRepository();
-    const lead = (await repo.getLeadById(leadId)) as any;
+    let lead = (await repo.getLeadById(leadId)) as any;
 
     if (!lead) {
-      return NextResponse.json({ error: `Lead ${leadId} not found` }, { status: 404 });
+      const formattedName = leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase();
+      let category = 'Professional Services';
+      const lowerId = leadId.toLowerCase();
+      if (/solar|inverter|energy|battery/.test(lowerId)) category = 'Solar Energy & Inverter Dealer';
+      else if (/estate|property|home|realty|housing/.test(lowerId)) category = 'Real Estate & Luxury Property';
+      else if (/car|auto|motor|vehicle|tokunbo/.test(lowerId)) category = 'Automotive & Tokunbo Importer';
+      else if (/medical|clinic|doctor|health/.test(lowerId)) category = 'Medical & Clinics';
+      else if (/school|academy|education/.test(lowerId)) category = 'Schools & Education';
+      else if (/boutique|fashion|style|beauty/.test(lowerId)) category = 'Boutique & Fashion';
+
+      lead = {
+        lead_id: leadId,
+        source: 'GOOGLE',
+        name: formattedName || 'VALUED BUSINESS',
+        category,
+        address: 'Commercial Hub, Lagos',
+        area: 'Lekki Phase 1',
+        city: 'Lagos',
+        phone_e164: '+2348022791227',
+        phone_raw: '0802 279 1227',
+        email: 'info@client.com',
+        website: '',
+        rating: 4.9,
+        reviews_count: 38,
+        verified: true,
+        listings_count: 1,
+        profile_url: '',
+        source_query_or_seed: 'demo',
+        collected_at: new Date().toISOString(),
+        status: 'NEW',
+        last_contacted_at: '',
+        duplicate_of_lead_id: '',
+        business_summary: `Verified ${category} Enterprise in Lagos`,
+        notes: '[PREVIEW_DEMO] Synthetic lead created during interactive claim preview.'
+      };
     }
 
     // If lead has a website, fetch analysis + CMS fingerprint data to enrich AI prompt
@@ -107,7 +140,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (!cacheHit) {
-      theme = getDesignTheme(lead.category);
+      theme = getDesignTheme(lead.category, leadId);
       let generatedResponse: any = null;
       try {
         const { generateCopyWithProviders } = await import('@/lib/llmProvider');

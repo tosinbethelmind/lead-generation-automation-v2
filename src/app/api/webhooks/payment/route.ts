@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generatePostPaymentSolarReferralMessage } from '../../../../../scripts/regular_business_outreach';
+import { createHmac } from 'crypto';
+import { safeCompareStrings } from '@/lib/security';
 
 /**
  * Payment Webhook Handler
@@ -8,7 +10,25 @@ import { generatePostPaymentSolarReferralMessage } from '../../../../../scripts/
  */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const rawBody = await req.text();
+    const paystackSecret = process.env.PAYSTACK_SECRET_KEY || process.env.PAYMENT_WEBHOOK_SECRET;
+    const signatureHeader = req.headers.get('x-paystack-signature');
+
+    if (paystackSecret) {
+      if (!signatureHeader) {
+        console.error('❌ [Payment Webhook Error]: Missing x-paystack-signature header');
+        return NextResponse.json({ error: 'Missing signature header' }, { status: 401 });
+      }
+
+      const expectedSignature = createHmac('sha512', paystackSecret).update(rawBody).digest('hex');
+      if (!safeCompareStrings(signatureHeader, expectedSignature)) {
+        console.error('❌ [Payment Webhook Error]: Invalid signature verification');
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+      }
+      console.log('✅ [Payment Webhook]: HMAC Signature verified successfully.');
+    }
+
+    const body = JSON.parse(rawBody);
 
     const {
       event,

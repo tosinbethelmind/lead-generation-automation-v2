@@ -14,40 +14,80 @@ import path from 'path';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { leadId, clientName, clientEmail, theme, copy, paymentMethod, selectedFeatures, customInstructions } = body;
+    const { leadId, clientName, clientEmail, clientPhone, preferredDomain, theme, copy, paymentMethod, selectedFeatures, customInstructions } = body;
 
     if (!leadId || !clientName || !clientEmail) {
       return NextResponse.json({ error: 'Missing required parameters: leadId, clientName, or clientEmail' }, { status: 400 });
     }
 
     const repo = getActiveLeadRepository();
-    const lead = await repo.getLeadById(leadId);
+    let lead = await repo.getLeadById(leadId);
 
     if (!lead) {
-      return NextResponse.json({ error: `Lead with ID ${leadId} not found` }, { status: 404 });
+      const formattedName = leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase();
+      lead = {
+        lead_id: leadId,
+        source: 'GOOGLE',
+        name: formattedName || 'VALUED BUSINESS',
+        category: 'Professional Services',
+        address: 'Commercial Hub, Lagos',
+        area: 'Lekki Phase 1',
+        city: 'Lagos',
+        phone_e164: '+2348022791227',
+        phone_raw: '0802 279 1227',
+        email: clientEmail,
+        website: '',
+        rating: 4.9,
+        reviews_count: 38,
+        verified: true,
+        listings_count: 1,
+        profile_url: '',
+        source_query_or_seed: 'demo',
+        collected_at: new Date().toISOString(),
+        status: 'NEW',
+        last_contacted_at: '',
+        duplicate_of_lead_id: '',
+        business_summary: 'Verified Local Business Enterprise',
+        notes: '[PREVIEW_DEMO] Synthetic lead created during interactive claim preview.'
+      };
     }
+
+    const activeLead = lead!;
 
     // 1. Update lead's status/notes in sheet/Supabase
     const { parseScalingConfig } = require('@/lib/scalingHelper');
-    const scaling = parseScalingConfig(lead.notes);
+    const scaling = parseScalingConfig(activeLead.notes);
 
     const timestamp = new Date().toISOString();
     const transferPending = (paymentMethod === 'bank_transfer_moniepoint' || paymentMethod === 'bank_transfer_opay' || paymentMethod === 'bank_transfer') ? ' [MANUAL TRANSFER PENDING]' : '';
     const featuresNote = selectedFeatures && selectedFeatures.length > 0 ? ` Activated Features: ${selectedFeatures.join(', ')}.` : '';
     const instNote = customInstructions ? ` Custom Instructions: "${customInstructions}"` : '';
+    const domainNote = preferredDomain ? ` Preferred Domain: "${preferredDomain}"` : ' Domain: [AUTO-REGISTER BEST AVAILABLE]';
+    const phoneNote = clientPhone ? ` WhatsApp/Phone: ${clientPhone}` : '';
     
     const gitPendingTag = scaling.mode === 'git-batch' ? ' [GIT_SYNC_PENDING: true]' : '';
     const redesignPendingTag = customInstructions ? ' [REDESIGN_PENDING: true]' : '';
 
-    const newNotes = `${lead.notes || ''}\n[CLAIMED${transferPending}]${gitPendingTag}${redesignPendingTag} Client requested ownership on ${timestamp}. Contact: ${clientName} (${clientEmail}).${featuresNote}${instNote}`;
-    await repo.updateLeadStatus(leadId, 'CONTACTED', newNotes, timestamp);
+    const newNotes = `${activeLead.notes || ''}\n[CLAIMED${transferPending}]${gitPendingTag}${redesignPendingTag} Client requested ownership on ${timestamp}. Contact: ${clientName} (${clientEmail}${phoneNote}).${domainNote}${featuresNote}${instNote}`;
+    
+    try {
+      if (!activeLead.notes?.includes('[PREVIEW_DEMO]')) {
+        await repo.updateLeadStatus(leadId, 'CONTACTED', newNotes, timestamp);
+      }
+    } catch (repoErr: any) {
+      console.warn('[ClaimRoute] Lead status update notice:', repoErr.message);
+    }
 
     // 2. Add log entry
-    await addLog(
-      'Lead Claim Event',
-      'SUCCESS',
-      `Lead "${lead.name}" claimed by ${clientName} (${clientEmail}) [Mode: ${scaling.mode}]`
-    );
+    try {
+      await addLog(
+        'Lead Claim Event',
+        'SUCCESS',
+        `Lead "${activeLead.name}" claimed by ${clientName} (${clientEmail}) [Mode: ${scaling.mode}]`
+      );
+    } catch (logErr: any) {
+      console.warn('[ClaimRoute] Log entry notice:', logErr.message);
+    }
 
     // 3. Assemble JSON configuration for the claimed website
     const siteConfig = {
@@ -228,8 +268,9 @@ Bethelmind Analytics & Strategy Lead Engine`;
         leadId,
         clientName,
         clientEmail,
-        clientPhone: lead.phone_raw || lead.phone_e164,
-        selectedStrategy: scaling.mode || 'basic_presence',
+        clientPhone: clientPhone || lead.phone_raw || lead.phone_e164,
+        customDomain: preferredDomain || undefined,
+        selectedStrategy: body.upgradeStrategy || scaling.mode || 'basic_presence',
         selectedFeatures: selectedFeatures || [],
         claimFeeNGN: 150000,
         paymentMethod: paymentMethod || 'paystack'

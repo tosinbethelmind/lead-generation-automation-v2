@@ -19,124 +19,95 @@ export function sanitizeGeneratedContent(str: string | undefined): string {
     .replace(/javascript:/gi, '');
 }
 
-export function getDesignTheme(category: string): DesignTheme {
-  const cat = category.toLowerCase();
+export function hashString(str: string): number {
+  let hash = 0;
+  if (!str || str.length === 0) return hash;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
 
-  if (/solar|inverter|clean tech|energy|battery|power/.test(cat)) {
-    return {
-      primary: '#059669',
-      accent: '#f59e0b',
-      bg: '#064e3b',
-      text: '#f0fdf4',
-      font: 'Outfit',
-      headingFont: 'Space Grotesk',
-      bodyFont: 'Plus Jakarta Sans',
-      heroImage: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1400&q=80',
-      gradient: 'linear-gradient(135deg, #059669 0%, #f59e0b 100%)',
-    };
-  }
-  if (/estate|property|real estate|realty|developer|housing|apartment|shortlet/.test(cat)) {
-    return {
-      primary: '#0f172a',
-      accent: '#d97706',
-      bg: '#020617',
-      text: '#f8fafc',
-      font: 'Outfit',
-      headingFont: 'Playfair Display',
-      bodyFont: 'Plus Jakarta Sans',
-      heroImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&q=80',
-      gradient: 'linear-gradient(135deg, #0f172a 0%, #d97706 100%)',
-    };
-  }
-  if (/school|academy|college|university|tutor|education|creche|nursery/.test(cat)) {
-    return {
-      primary: '#1e3a8a',
-      accent: '#b91c1c',
-      bg: '#eff6ff',
-      text: '#1e3a8a',
-      font: 'Plus Jakarta Sans',
-      headingFont: 'Outfit',
-      bodyFont: 'Inter',
-      heroImage: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1400&q=80',
-      gradient: 'linear-gradient(135deg, #1e3a8a 0%, #b91c1c 100%)',
-    };
-  }
-  if (/law|legal|attorney|advocate|solicitor|barrister|consultant|accounting|audit/.test(cat)) {
-    return {
-      primary: '#1e293b',
-      accent: '#ca8a04',
-      bg: '#0f172a',
-      text: '#f8fafc',
-      font: 'Outfit',
-      headingFont: 'Playfair Display',
-      bodyFont: 'Inter',
-      heroImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1400&q=80',
-      gradient: 'linear-gradient(135deg, #1e293b 0%, #ca8a04 100%)',
-    };
-  }
-  if (/dental|medical|clinic|hospital|doctor|health|pharma|wellness/.test(cat)) {
-    return {
-      primary: '#0284c7',
-      accent: '#14b8a6',
-      bg: '#f0f9ff',
-      text: '#0c4a6e',
-      font: 'Inter',
-      headingFont: 'Outfit',
-      bodyFont: 'Inter',
-      heroImage: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1400&q=80',
-      gradient: 'linear-gradient(135deg, #0284c7 0%, #14b8a6 100%)',
-    };
-  }
-  if (/car|auto|motor|vehicle|transport|logistic/.test(cat)) {
-    return {
-      primary: '#1f2937',
-      accent: '#f59e0b',
-      bg: '#111827',
-      text: '#f9fafb',
-      font: 'Space Grotesk',
-      headingFont: 'Space Grotesk',
-      bodyFont: 'Inter',
-      heroImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1400&q=80',
-      gradient: 'linear-gradient(135deg, #1f2937 0%, #f59e0b 100%)',
-    };
-  }
-  if (/boutique|fashion|cloth|salon|beauty|hair|spa|style/.test(cat)) {
-    return {
-      primary: '#db2777',
-      accent: '#f9a8d4',
-      bg: '#fff1f2',
-      text: '#881337',
-      font: 'Playfair Display',
-      headingFont: 'Playfair Display',
-      bodyFont: 'Plus Jakarta Sans',
-      heroImage: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1400&q=80',
-      gradient: 'linear-gradient(135deg, #db2777 0%, #f9a8d4 100%)',
-    };
-  }
-  if (/restaurant|food|cafe|cuisine|catering|bakery|eatery/.test(cat)) {
-    return {
-      primary: '#c2410c',
-      accent: '#fed7aa',
-      bg: '#fff7ed',
-      text: '#7c2d12',
-      font: 'DM Serif Display',
-      headingFont: 'DM Serif Display',
-      bodyFont: 'Cabin',
-      heroImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1400&q=80',
-      gradient: 'linear-gradient(135deg, #c2410c 0%, #f59e0b 100%)',
-    };
-  }
-  // Default: Professional Services
+const HERO_IMAGE_BANKS: Record<string, string[]> = {
+  solar: [
+    'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1400&q=80',
+    'https://images.unsplash.com/photo-1508873696983-2df515122519?w=1400&q=80',
+    'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=1400&q=80',
+    'https://images.unsplash.com/photo-1545208942-e1c9c916524b?w=1400&q=80',
+    'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1400&q=80',
+  ],
+  realestate: [
+    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&q=80',
+    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1400&q=80',
+    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1400&q=80',
+    'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1400&q=80',
+    'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1400&q=80',
+  ],
+  automotive: [
+    'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1400&q=80',
+    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=80',
+    'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1400&q=80',
+    'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1400&q=80',
+  ],
+  medical: [
+    'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1400&q=80',
+    'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1400&q=80',
+    'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=1400&q=80',
+  ],
+  default: [
+    'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80',
+    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1400&q=80',
+    'https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1400&q=80',
+  ]
+};
+
+const FONT_PAIRINGS = [
+  { headingFont: 'Space Grotesk', bodyFont: 'Outfit' },
+  { headingFont: 'Playfair Display', bodyFont: 'Plus Jakarta Sans' },
+  { headingFont: 'Syne', bodyFont: 'Inter' },
+  { headingFont: 'Outfit', bodyFont: 'Plus Jakarta Sans' },
+  { headingFont: 'DM Serif Display', bodyFont: 'Cabin' },
+  { headingFont: 'Plus Jakarta Sans', bodyFont: 'Inter' }
+];
+
+export function getDesignTheme(category: string, leadIdSeed?: string): DesignTheme {
+  const cat = category.toLowerCase();
+  const seed = hashString((leadIdSeed || '') + category);
+
+  let categoryKey = 'default';
+  if (/solar|inverter|energy|battery/.test(cat)) categoryKey = 'solar';
+  else if (/estate|property|home|realty|housing/.test(cat)) categoryKey = 'realestate';
+  else if (/car|auto|motor|vehicle|tokunbo/.test(cat)) categoryKey = 'automotive';
+  else if (/medical|clinic|doctor|health/.test(cat)) categoryKey = 'medical';
+
+  // Generate unique primary & accent hues per lead seed
+  const primaryHue = (seed * 47) % 360;
+  const accentHue = (primaryHue + 150 + (seed % 60)) % 360;
+
+  const primaryColor = `hsl(${primaryHue}, 85%, 52%)`;
+  const accentColor = `hsl(${accentHue}, 90%, 60%)`;
+  const bgDarkColor = `hsl(${(primaryHue + 25) % 360}, 50%, 4%)`; // Deep obsidian space with subtle hue tint
+
+  const gradientAngle = 110 + (seed % 60);
+  const gradient = `linear-gradient(${gradientAngle}deg, ${primaryColor} 0%, hsl(${(primaryHue + 35) % 360}, 80%, 48%) 50%, ${accentColor} 100%)`;
+
+  const imageBank = HERO_IMAGE_BANKS[categoryKey] || HERO_IMAGE_BANKS['default'];
+  const heroImage = imageBank[seed % imageBank.length];
+
+  const fontPairing = FONT_PAIRINGS[seed % FONT_PAIRINGS.length];
+
   return {
-    primary: '#1e3a8a',
-    accent: '#60a5fa',
-    bg: '#eff6ff',
-    text: '#1e3a8a',
-    font: 'Outfit',
-    headingFont: 'Outfit',
-    bodyFont: 'Inter',
-    heroImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80',
-    gradient: 'linear-gradient(135deg, #1e3a8a 0%, #60a5fa 100%)',
+    primary: primaryColor,
+    accent: accentColor,
+    bg: bgDarkColor,
+    text: '#ffffff',
+    font: fontPairing.headingFont,
+    headingFont: fontPairing.headingFont,
+    bodyFont: fontPairing.bodyFont,
+    heroImage,
+    gradient,
   };
 }
 

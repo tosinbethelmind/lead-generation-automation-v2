@@ -11,7 +11,9 @@ import {
 
 export default function SetupPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'ai' | 'browser' | 'outreach' | 'deploy'>('ai');
+  const [activeTab, setActiveTab] = useState<'wizard' | 'ai' | 'browser' | 'outreach' | 'deploy' | 'approvals'>('wizard');
+  const [adminPhone, setAdminPhone] = useState('+2348022791227');
+  const [escalateCritical, setEscalateCritical] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error' | null; message: string | null }>({ type: null, message: null });
@@ -515,6 +517,12 @@ export default function SetupPage() {
 
           {/* Tabs Navigation */}
           <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', marginBottom: '24px', gap: '4px', flexWrap: 'wrap' }}>
+            <button type="button" onClick={() => setActiveTab('wizard')} style={tabStyle(activeTab === 'wizard')}>
+              <Sparkles style={{ width: '14px', height: '14px', color: '#06b6d4' }} /> ⚡ 60-Sec Onboarding
+            </button>
+            <button type="button" onClick={() => setActiveTab('approvals')} style={tabStyle(activeTab === 'approvals')}>
+              <Phone style={{ width: '14px', height: '14px', color: '#25d366' }} /> 🤖 AI WhatsApp Escalations
+            </button>
             <button type="button" onClick={() => setActiveTab('ai')} style={tabStyle(activeTab === 'ai')}>
               <Cpu style={{ width: '14px', height: '14px' }} /> AI & Core Engines
             </button>
@@ -531,6 +539,91 @@ export default function SetupPage() {
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             
+            {/* ======= TAB 0: SEAMLESS 60-SEC ONBOARDING WIZARD ======= */}
+            {activeTab === 'wizard' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.08), rgba(139,92,246,0.08))', border: '1px solid rgba(6,182,212,0.25)', borderRadius: '16px', padding: '24px' }}>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                    <Sparkles style={{ width: '22px', height: '22px', color: '#06b6d4' }} />
+                    <h2 style={{ margin: 0, fontSize: '1.1rem', color: '#fff', fontWeight: 700 }}>Seamless 3-Step Setup for New Clients</h2>
+                  </div>
+
+                  <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '20px' }}>
+                    Setting up a new business lead takes under 60 seconds. Follow these 3 simple steps:
+                  </p>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '20px' }}>
+                    <div style={{ background: 'rgba(7,9,14,0.8)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px' }}>
+                      <span style={{ fontSize: '1.2rem', color: '#06b6d4', fontWeight: 900, display: 'block', marginBottom: '6px' }}>STEP 1</span>
+                      <h4 style={{ margin: '0 0 4px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>Connect WhatsApp</h4>
+                      <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.75rem', lineHeight: 1.4 }}>Scan QR code from phone in 5 seconds to pair WhatsApp automation.</p>
+                    </div>
+
+                    <div style={{ background: 'rgba(7,9,14,0.8)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px' }}>
+                      <span style={{ fontSize: '1.2rem', color: '#8b5cf6', fontWeight: 900, display: 'block', marginBottom: '6px' }}>STEP 2</span>
+                      <h4 style={{ margin: '0 0 4px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>Link AI Key (ALL Clients)</h4>
+                      <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.75rem', lineHeight: 1.4 }}>All clients (Subscribers & One-Time) paste their free Gemini key for 100% quota control.</p>
+                    </div>
+
+                    <div style={{ background: 'rgba(7,9,14,0.8)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px' }}>
+                      <span style={{ fontSize: '1.2rem', color: '#10b981', fontWeight: 900, display: 'block', marginBottom: '6px' }}>STEP 3</span>
+                      <h4 style={{ margin: '0 0 4px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>Activate & Launch</h4>
+                      <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.75rem', lineHeight: 1.4 }}>Activate sector tools, AI social ads creator, and start harvesting leads!</p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    <button type="button" onClick={() => setActiveTab('ai')} style={{ background: 'linear-gradient(135deg, #06b6d4, #7c3aed)', color: '#fff', border: 'none', borderRadius: '10px', padding: '10px 18px', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}>
+                      Connect Gemini API Key →
+                    </button>
+                    <a href="/admin/approvals" style={{ background: 'rgba(255,255,255,0.06)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '10px 18px', fontWeight: 700, fontSize: '0.82rem', textDecoration: 'none' }}>
+                      Open Approvals Dashboard
+                    </a>
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+            {/* ======= TAB APPROVALS: AI WHATSAPP HUMAN APPROVAL RULES ======= */}
+            {activeTab === 'approvals' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ background: 'rgba(37,211,102,0.05)', border: '1px solid rgba(37,211,102,0.25)', borderRadius: '16px', padding: '20px' }}>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+                    <Phone style={{ width: '20px', height: '20px', color: '#25d366' }} />
+                    <h3 style={{ margin: 0, color: '#fff', fontSize: '1.05rem', fontWeight: 700 }}>
+                      Intelligent AI Customer Agent + Critical WhatsApp Escalation
+                    </h3>
+                  </div>
+
+                  <p style={{ color: '#94a3b8', fontSize: '0.82rem', lineHeight: 1.5, marginBottom: '20px' }}>
+                    Standard customer questions (pricing, catalog, FAQs, Moniepoint transfer steps, BOQ quotes) are <strong>auto-answered in 1.2 seconds</strong> by the AI. Critical issues are automatically held for your <strong>1-click WhatsApp Admin approval</strong>.
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
+                    <div>
+                      <span style={labelStyle}>Admin WhatsApp Phone Number for Instant Escalation Alerts</span>
+                      <input type="text" value={adminPhone} onChange={e => setAdminPhone(e.target.value)} placeholder="+2348022791227" style={inputStyle} />
+                      <span style={hintStyle}>When a critical issue (refund, custom quote &gt; ₦1M, bank transfer dispute) occurs, an alert is sent to this number.</span>
+                    </div>
+
+                    <div style={{ background: 'rgba(7,9,14,0.6)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '14px' }}>
+                      <h4 style={{ margin: '0 0 8px', color: '#25d366', fontSize: '0.85rem', fontWeight: 700 }}>⚡ Critical Triggers Requiring WhatsApp Human Approval:</h4>
+                      <ul style={{ margin: 0, paddingLeft: '18px', color: '#cbd5e1', fontSize: '0.78rem', lineHeight: 1.7 }}>
+                        <li><strong>Custom Quotation Sign-Off</strong>: High-value solar system proposals or formal invoices.</li>
+                        <li><strong>Price Discounts &gt; ₦1,000,000</strong>: Custom enterprise contract agreements.</li>
+                        <li><strong>Payment Disputes &amp; Manual Bank Verification</strong>: Moniepoint/OPay receipt verification queries.</li>
+                        <li><strong>Senior Engineer Sign-Off</strong>: Direct request to speak with a human manager or certified engineer.</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            )}
+
             {/* ======= TAB 1: AI & CORE ======= */}
             {activeTab === 'ai' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -575,6 +668,22 @@ export default function SetupPage() {
                         ? (cloudPersisted ? '✅ Saved to Cloud' : '⚠️ Saved Locally Only')
                         : '❌ Not Configured'}
                     </span>
+                  </div>
+
+                  {/* Direct 1-Click Google AI Studio Button Card */}
+                  <div style={{ background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.3)', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+                    <div>
+                      <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#fff', display: 'block', marginBottom: '2px' }}>🔑 Need your free Google Gemini API Key?</span>
+                      <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>Takes 10 seconds. Log in with any Gmail account, click "Create API Key", and paste below.</span>
+                    </div>
+                    <a
+                      href="https://aistudio.google.com/app/apikey"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ background: 'linear-gradient(135deg, #06b6d4, #7c3aed)', color: '#fff', border: 'none', borderRadius: '10px', padding: '10px 18px', fontWeight: 800, fontSize: '0.82rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 14px rgba(6,182,212,0.3)' }}
+                    >
+                      👉 Get Free Gemini API Key Direct <ExternalLink style={{ width: '12px', height: '12px' }} />
+                    </a>
                   </div>
 
                   {/* Key input */}

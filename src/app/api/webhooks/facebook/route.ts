@@ -4,6 +4,7 @@ import { solarQuoteProSupabase } from '@/lib/solarQuoteProClient';
 import { addLog } from '@/lib/googleSheets';
 import { createHmac } from 'crypto';
 import { setWorkerIndex } from '@/lib/requestContext';
+import { safeCompareStrings } from '@/lib/security';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
     const config = getRuntimeConfig();
     const VERIFY_TOKEN = process.env.META_WEBHOOK_VERIFY_TOKEN || config.metaWebhookVerifyToken || 'solar-quote-pro-secret-verify-token-2026';
 
-    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+    if (mode === 'subscribe' && token && safeCompareStrings(token, VERIFY_TOKEN)) {
       console.log('[Meta Webhook] Verification successful!');
       return new Response(challenge, { status: 200 });
     }
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
         }
 
         const expectedHash = createHmac('sha256', appSecret).update(rawBody).digest('hex');
-        if (signatureHash !== expectedHash) {
+        if (!safeCompareStrings(signatureHash, expectedHash)) {
           console.error('[Meta Webhook] Signature verification failed: Hashes do not match.');
           return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
         }

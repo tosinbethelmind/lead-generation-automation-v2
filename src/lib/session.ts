@@ -1,7 +1,13 @@
+import { safeCompareStrings } from './security';
+
 export interface SessionUser {
   token: string;
   role: string;
   name: string;
+}
+
+function getMasterSecret(): string {
+  return process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD || '';
 }
 
 /**
@@ -9,7 +15,7 @@ export interface SessionUser {
  */
 async function computeSignature(message: string, secret: string): Promise<string> {
   const encoder = new TextEncoder();
-  const keyData = encoder.encode(secret);
+  const keyData = encoder.encode(secret || 'fallback_internal_secret_key');
   const messageData = encoder.encode(message);
 
   const cryptoKey = await crypto.subtle.importKey(
@@ -40,7 +46,7 @@ export async function createSessionToken(
   role: string,
   name: string
 ): Promise<string> {
-  const masterSecret = process.env.ADMIN_TOKEN || 'bethelmind_admin_2026';
+  const masterSecret = getMasterSecret();
   const payload = [
     encodeURIComponent(token),
     encodeURIComponent(role),
@@ -60,10 +66,10 @@ export async function verifySessionToken(
 ): Promise<SessionUser | null> {
   if (!cookieValue) return null;
 
-  const masterSecret = process.env.ADMIN_TOKEN || 'bethelmind_admin_2026';
+  const masterSecret = getMasterSecret();
 
-  // 1. Direct/raw fallback for master admin token (backward compatibility / one-click login)
-  if (cookieValue === masterSecret) {
+  // 1. Direct/raw match for master admin token (only if master secret is defined)
+  if (masterSecret && safeCompareStrings(cookieValue, masterSecret)) {
     return {
       token: masterSecret,
       role: 'super_admin',
@@ -80,7 +86,7 @@ export async function verifySessionToken(
 
   // Compute expected signature
   const expectedSignature = await computeSignature(payload, masterSecret);
-  if (signature !== expectedSignature) {
+  if (!safeCompareStrings(signature, expectedSignature)) {
     return null; // Invalid signature
   }
 

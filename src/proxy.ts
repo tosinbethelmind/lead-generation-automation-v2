@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySessionToken } from './lib/session';
-import { checkRateLimit } from './lib/security';
+import { checkRateLimit, safeCompareStrings } from './lib/security';
 
 /**
  * Bethelmind Analytics & Strategy Unified Middleware
@@ -79,10 +79,11 @@ export async function proxy(req: NextRequest) {
 
     // Programmatic access with a valid administrative secret
     const adminPasswordHeader = req.headers.get('x-admin-password');
-    const expectedPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const expectedPassword = process.env.ADMIN_PASSWORD;
     if (
       adminPasswordHeader &&
-      adminPasswordHeader === expectedPassword
+      expectedPassword &&
+      safeCompareStrings(adminPasswordHeader, expectedPassword)
     ) {
       return NextResponse.next();
     }

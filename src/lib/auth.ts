@@ -1,4 +1,5 @@
 import { getRuntimeConfig, type TeamMember } from './localConfig';
+import { safeCompareStrings } from './security';
 
 export type AdminRole = 'super_admin' | 'outreach_manager' | 'designer' | 'viewer';
 
@@ -47,9 +48,9 @@ export const ALL_PERMISSIONS = [
 export function getAdminUser(token: string | undefined): AdminUser | null {
   if (!token) return null;
 
-  const masterToken = process.env.ADMIN_TOKEN || 'bethelmind_admin_2026';
+  const masterToken = process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD;
 
-  if (masterToken && token === masterToken) {
+  if (masterToken && safeCompareStrings(token, masterToken)) {
     return {
       id: 'admin',
       name: 'Master Admin',
@@ -63,7 +64,7 @@ export function getAdminUser(token: string | undefined): AdminUser | null {
   const config = getRuntimeConfig();
   const teamMembers = config.teamMembers || [];
 
-  const found = teamMembers.find(m => m.token === token);
+  const found = teamMembers.find(m => safeCompareStrings(m.token, token));
   if (found) {
     // Merge standard role permissions with any customized permissions
     const standardPermissions = ROLE_PERMISSIONS[found.role as AdminRole] || [];

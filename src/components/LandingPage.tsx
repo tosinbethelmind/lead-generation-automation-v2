@@ -75,8 +75,79 @@ interface LandingPageProps {
   isPreview?: boolean;
 }
 
+const LUXURY_PRESETS = [
+  {
+    name: '👑 Royal Gold',
+    primary: 'hsl(45, 90%, 55%)',
+    accent: 'hsl(198, 95%, 60%)',
+    bg: 'hsl(225, 45%, 4%)',
+    text: '#ffffff',
+    font: 'Playfair Display',
+    headingFont: 'Playfair Display',
+    bodyFont: 'Plus Jakarta Sans',
+    heroImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&q=80',
+    gradient: 'linear-gradient(135deg, hsl(45, 90%, 55%) 0%, hsl(38, 95%, 55%) 50%, hsl(265, 85%, 60%) 100%)'
+  },
+  {
+    name: '🌿 Emerald Solar',
+    primary: 'hsl(160, 84%, 45%)',
+    accent: 'hsl(38, 92%, 50%)',
+    bg: 'hsl(150, 45%, 3%)',
+    text: '#ffffff',
+    font: 'Space Grotesk',
+    headingFont: 'Space Grotesk',
+    bodyFont: 'Plus Jakarta Sans',
+    heroImage: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1400&q=80',
+    gradient: 'linear-gradient(135deg, hsl(160, 84%, 45%) 0%, hsl(190, 90%, 45%) 50%, hsl(38, 92%, 50%) 100%)'
+  },
+  {
+    name: '⚡ Cyber Crimson',
+    primary: 'hsl(348, 89%, 60%)',
+    accent: 'hsl(43, 96%, 56%)',
+    bg: 'hsl(240, 20%, 4%)',
+    text: '#ffffff',
+    font: 'Space Grotesk',
+    headingFont: 'Space Grotesk',
+    bodyFont: 'Inter',
+    heroImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1400&q=80',
+    gradient: 'linear-gradient(135deg, hsl(348, 89%, 60%) 0%, hsl(43, 96%, 56%) 100%)'
+  },
+  {
+    name: '💎 Diamond Cyan',
+    primary: 'hsl(188, 94%, 43%)',
+    accent: 'hsl(158, 64%, 52%)',
+    bg: 'hsl(210, 60%, 4%)',
+    text: '#ffffff',
+    font: 'Outfit',
+    headingFont: 'Outfit',
+    bodyFont: 'Inter',
+    heroImage: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1400&q=80',
+    gradient: 'linear-gradient(135deg, hsl(188, 94%, 43%) 0%, hsl(217, 91%, 60%) 50%, hsl(158, 64%, 52%) 100%)'
+  },
+  {
+    name: '🌹 Rose Gold',
+    primary: 'hsl(330, 81%, 60%)',
+    accent: 'hsl(43, 96%, 56%)',
+    bg: 'hsl(315, 45%, 4%)',
+    text: '#ffffff',
+    font: 'Playfair Display',
+    headingFont: 'Playfair Display',
+    bodyFont: 'Plus Jakarta Sans',
+    heroImage: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1400&q=80',
+    gradient: 'linear-gradient(135deg, hsl(330, 81%, 60%) 0%, hsl(348, 89%, 60%) 50%, hsl(43, 96%, 56%) 100%)'
+  }
+];
+
 export default function LandingPage({ data, leadId, isPreview = false }: LandingPageProps) {
-  const { lead, theme, copy, paymentConfig } = data;
+  const { lead, copy, paymentConfig } = data;
+  const [selectedTheme, setSelectedTheme] = useState(data.theme);
+  const theme = selectedTheme || data.theme;
+
+  useEffect(() => {
+    if (data?.theme) {
+      setSelectedTheme(data.theme);
+    }
+  }, [data]);
   const hasWebsite = !!(lead.website && lead.website.trim() && lead.website.toLowerCase() !== 'none');
   const websiteUrl = lead.website || '';
 
@@ -1338,8 +1409,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     }
   };
 
-  // Claim States
-  const [claimForm, setClaimForm] = useState({ name: '', email: '' });
+  // Claim States — pre-populated from scraped lead metadata for 0-typing convenience
+  const [claimForm, setClaimForm] = useState(() => ({
+    name: lead.name || '',
+    email: '',
+    phone: lead.phone_raw || lead.phone_e164 || '',
+    preferredDomain: lead.name ? `${lead.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com.ng` : ''
+  }));
   const [claimLoading, setClaimLoading] = useState(false);
   const [claimMessage, setClaimMessage] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<'paystack' | 'moniepoint' | 'opay'>('paystack');
@@ -1582,6 +1658,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             leadId,
             email: claimForm.email,
             name: claimForm.name,
+            phone: claimForm.phone,
+            preferredDomain: claimForm.preferredDomain,
             theme,
             copy,
             selectedFeatures,
@@ -1604,6 +1682,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         leadId,
         clientName: claimForm.name,
         clientEmail: claimForm.email,
+        clientPhone: claimForm.phone,
+        preferredDomain: claimForm.preferredDomain,
         theme,
         copy,
         selectedFeatures,
@@ -3351,7 +3431,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         </div>
       )}
 
-      {/* ─── .com.ng Domain Availability Strip ───────────────────────────────── */}
+      {/* ─── Hands-Free White-Glove Domain Guarantee Banner ────────────────── */}
       {isPreview && (
         <div
           id="domain-checker-strip"
@@ -3359,7 +3439,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             position: 'fixed',
             top: '64px',
             left: 0, right: 0,
-            background: domainStatus === 'registrar' ? 'rgba(14, 165, 233, 0.92)' : 'rgba(2, 132, 199, 0.92)',
+            background: 'linear-gradient(90deg, #0284c7 0%, #0d9488 100%)',
             backdropFilter: 'blur(10px)',
             color: '#fff',
             padding: '8px 20px',
@@ -3368,42 +3448,100 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             alignItems: 'center',
             justifyContent: 'center',
             gap: '12px',
-            fontSize: '0.8rem',
+            fontSize: '0.82rem',
             fontWeight: 600,
-            transition: 'background 0.4s',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
             flexWrap: 'wrap'
           }}
         >
-          {domainStatus === 'registrar' ? (
-            <>
-              <span>🔍 <strong>{domainSlug}.com.ng</strong> — Check live availability on the registrar:</span>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-                <a href={`https://www.whogohost.com/domain/?s=${domainSlug}.com.ng`} target="_blank" rel="noopener noreferrer" style={{ background: '#fff', color: '#0284c7', padding: '4px 12px', borderRadius: '20px', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 700 }}>Check on Whogohost</a>
-                <a href={`https://web.com.ng/?s=${domainSlug}`} target="_blank" rel="noopener noreferrer" style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', padding: '4px 12px', borderRadius: '20px', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 600 }}>or Web4Africa</a>
-              </div>
-            </>
-          ) : domainStatus === 'checking' ? (
-            <span>⏳ Looking up <strong>{domainSlug}.com.ng</strong>...</span>
-          ) : (
-            <>
-              <span>🔍 Check if your domain is available:</span>
-              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                <input
-                  type="text"
-                  value={domainSlug}
-                  onChange={(e) => setDomainSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 30))}
-                  placeholder="yourbusiness"
-                  style={{ padding: '4px 10px', borderRadius: '6px', border: 'none', fontSize: '0.8rem', color: '#1f2937', width: '140px' }}
-                />
-                <span style={{ opacity: 0.8 }}>.com.ng</span>
-                <button
-                  type="button"
-                  onClick={handleDomainCheck}
-                  style={{ background: '#fff', color: '#0284c7', border: 'none', borderRadius: '6px', padding: '4px 12px', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
-                >Check</button>
-              </div>
-            </>
-          )}
+          <span>🎁 <strong>100% HANDS-FREE SETUP:</strong> Free Custom Domain (<strong>.com</strong>, <strong>.com.ng</strong>, <strong>.org</strong>, <strong>.ng</strong>) + Hosting + WhatsApp AI included!</span>
+          <a
+            href="#claim"
+            style={{
+              background: '#ffffff',
+              color: '#0284c7',
+              padding: '4px 14px',
+              borderRadius: '20px',
+              textDecoration: 'none',
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+            }}
+          >
+            🚀 Claim Now (We Do All The Work) →
+          </a>
+        </div>
+      )}
+
+      {/* ─── Interactive Luxury Theme Variant Switcher Bar ───────────────── */}
+      {isPreview && (
+        <div
+          id="theme-switcher-bar"
+          style={{
+            position: 'fixed',
+            top: '110px',
+            left: 0, right: 0,
+            background: 'rgba(6, 9, 18, 0.92)',
+            backdropFilter: 'blur(16px)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+            padding: '8px 16px',
+            zIndex: 998,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+            flexWrap: 'wrap'
+          }}
+        >
+          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            🎨 <span>Don't like this style? Try another luxury design:</span>
+          </span>
+
+          {LUXURY_PRESETS.map((preset, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setSelectedTheme(preset as any)}
+              style={{
+                background: theme.primary === preset.primary ? preset.gradient : 'rgba(255, 255, 255, 0.06)',
+                border: theme.primary === preset.primary ? '1px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#ffffff',
+                padding: '4px 12px',
+                borderRadius: '20px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                boxShadow: theme.primary === preset.primary ? '0 0 14px ' + preset.primary : 'none'
+              }}
+            >
+              {preset.name}
+            </button>
+          ))}
+
+          <button
+            type="button"
+            onClick={() => {
+              const randSeed = Math.random().toString(36).substring(2, 9);
+              const { getDesignTheme } = require('@/lib/designGenerator');
+              const randTheme = getDesignTheme(lead.category || 'general', randSeed);
+              setSelectedTheme(randTheme);
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+              border: 'none',
+              color: '#ffffff',
+              padding: '4px 12px',
+              borderRadius: '20px',
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 0 12px rgba(236, 72, 153, 0.4)'
+            }}
+          >
+            🎲 Generate Fresh AI Variant ✨
+          </button>
         </div>
       )}
 
@@ -3813,13 +3951,45 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   )}
                 </div>
 
-                <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '30px', lineHeight: 1.5 }}>
-                  {hasWebsite ? (
-                    <>This is a live responsive preview of the website upgrade we designed for <strong>{lead.name}</strong>. Provide your details below to claim and integrate these automations.</>
-                  ) : (
-                    <>This is a live responsive preview of the website we designed for <strong>{lead.name}</strong>. Provide your details below to claim ownership, customize content, and launch.</>
-                  )}
-                </p>
+                {/* ⚡ 1-CLICK WHATSAPP CLAIM BUTTON (FOR NON-TECH BUSINESS OWNERS) */}
+                <div style={{ background: 'rgba(37, 211, 102, 0.08)', border: '1px solid rgba(37, 211, 102, 0.3)', borderRadius: '16px', padding: '16px', marginBottom: '20px', textAlign: 'center' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 700, display: 'block', marginBottom: '6px' }}>
+                    ⚡ Prefer to claim directly on WhatsApp? (Zero Typing Required)
+                  </span>
+                  <a
+                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Lagos'}. I want to claim our custom website & 24/7 WhatsApp AI platform. Please activate my domain.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      background: '#25d366',
+                      color: '#ffffff',
+                      textDecoration: 'none',
+                      padding: '12px 20px',
+                      borderRadius: '10px',
+                      fontWeight: 800,
+                      fontSize: '0.9rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      boxShadow: '0 4px 14px rgba(37, 211, 102, 0.3)'
+                    }}
+                  >
+                    💬 1-Click Claim via WhatsApp →
+                  </a>
+                </div>
+
+                {/* 📋 "WHAT YOU GET" INCLUDED CHECKLIST CARD */}
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '14px 18px', marginBottom: '24px', textAlign: 'left' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '8px' }}>
+                    🎁 Included In Your Website Claim:
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px', fontSize: '0.78rem', color: '#334155', fontWeight: 600 }}>
+                    <div>✅ Free .com.ng Domain Name</div>
+                    <div>✅ 24/7 WhatsApp AI Agent</div>
+                    <div>✅ Instant PDF Invoice Generator</div>
+                    <div>✅ 100% Done-For-You Setup</div>
+                  </div>
+                </div>
 
                 <form onSubmit={handleClaimSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'left' }}>
                   <div>
@@ -3829,7 +3999,18 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                       required 
                       value={claimForm.name}
                       onChange={(e) => setClaimForm({ ...claimForm, name: e.target.value })}
-                      placeholder="Enter your name"
+                      placeholder="e.g. Engr. Tosin Bethel"
+                      style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>WhatsApp / Phone Number</label>
+                    <input 
+                      type="tel" 
+                      required 
+                      value={claimForm.phone}
+                      onChange={(e) => setClaimForm({ ...claimForm, phone: e.target.value })}
+                      placeholder="e.g. 0802 279 1227"
                       style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}
                     />
                   </div>
@@ -3843,6 +4024,52 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                       placeholder="name@business.com"
                       style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}
                     />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '4px' }}>Preferred Website Address (Domain Name)</label>
+                    <input 
+                      type="text" 
+                      value={claimForm.preferredDomain}
+                      onChange={(e) => setClaimForm({ ...claimForm, preferredDomain: e.target.value })}
+                      placeholder={`e.g. ${lead.name ? lead.name.toLowerCase().replace(/[^a-z0-9]/g, '') : 'yourbusiness'}.com`}
+                      style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}
+                    />
+                    
+                    {/* Domain Extension Selector Chips */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Choose Extension:</span>
+                      {['.com', '.com.ng', '.org', '.ng', '.africa'].map((ext) => {
+                        const isSelected = claimForm.preferredDomain.toLowerCase().endsWith(ext);
+                        return (
+                          <button
+                            key={ext}
+                            type="button"
+                            onClick={() => {
+                              const base = claimForm.preferredDomain.replace(/\.(com|com\.ng|org|ng|africa)$/i, '');
+                              const prefix = base || (lead.name ? lead.name.toLowerCase().replace(/[^a-z0-9]/g, '') : 'yourbusiness');
+                              setClaimForm({ ...claimForm, preferredDomain: `${prefix}${ext}` });
+                            }}
+                            style={{
+                              padding: '4px 10px',
+                              borderRadius: '6px',
+                              border: isSelected ? '1.5px solid #0284c7' : '1px solid #cbd5e1',
+                              background: isSelected ? 'rgba(2, 132, 199, 0.12)' : '#f8fafc',
+                              color: isSelected ? '#0284c7' : '#475569',
+                              fontSize: '0.75rem',
+                              fontWeight: isSelected ? 800 : 600,
+                              cursor: 'pointer',
+                              transition: 'all 0.15s'
+                            }}
+                          >
+                            {ext}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginTop: '6px' }}>
+                      💡 Pick any extension above, or leave blank and our team will register the best domain for you hands-free!
+                    </span>
                   </div>
 
                   {/* 🎙️ WHATSAPP-STYLE AUDIO VOICE NOTE EXPLANATION WIDGET */}

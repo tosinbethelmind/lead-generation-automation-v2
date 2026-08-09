@@ -149,8 +149,8 @@ YOUR CORE BEHAVIOR RULES:
   ai_model: 'gemini-1.5-flash',
   handover_enabled: true,
   auto_lead_conversion: true,
-  admin_whatsapp_phone: '+2348000000000',
-  welcome_message: '👋 Welcome to Bethelmind Solutions! I am your 24/7 AI Customer Specialist. How can I help you scale your energy or lead generation today?',
+  admin_whatsapp_phone: '+2348022791227',
+  welcome_message: '👋 Welcome to Bethelmind Analytics! I am your 24/7 AI Customer Specialist. How can I help you scale your business or lead generation today?',
   custom_faq: [
     {
       question: 'How fast can a 5kVA Solar System be installed?',
@@ -271,7 +271,10 @@ function detectCriticalStage(userMsg: string): { isCritical: boolean; stage?: Cr
   if (lower.includes('enterprise') || lower.includes('contract') || lower.includes('franchise') || lower.includes('partnership')) {
     return { isCritical: true, stage: 'enterprise_deal', title: 'Enterprise Contract Agreement' };
   }
-  if (lower.includes('human engineer') || lower.includes('talk to manager') || lower.includes('senior engineer')) {
+  if (lower.includes('refund') || lower.includes('debited') || lower.includes('dispute') || lower.includes('fccpc') || lower.includes('chargeback') || lower.includes('scam') || lower.includes('fraud')) {
+    return { isCritical: true, stage: 'human_escalation', title: 'Priority 1 Payment Dispute & Refund Alert' };
+  }
+  if (lower.includes('human engineer') || lower.includes('talk to manager') || lower.includes('senior engineer') || lower.includes('speak to human')) {
     return { isCritical: true, stage: 'human_escalation', title: 'Senior Engineer Escalation' };
   }
 

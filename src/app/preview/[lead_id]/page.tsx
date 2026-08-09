@@ -59,18 +59,37 @@ interface PreviewData {
 
 import { InteractiveFeatureShowcaseModal } from '@/components/InteractiveFeatureShowcaseModal';
 
+import { getDesignTheme } from '@/lib/designGenerator';
+
 export default function PreviewPage() {
   const params = useParams();
   const rawLeadId = params?.lead_id;
   const leadId = Array.isArray(rawLeadId) ? rawLeadId[0] : (rawLeadId as string || '');
 
-  // Pre-populate instant preview shell for 0ms spinner delay
+  // Pre-populate instant preview shell with luxury sector visual theme
   const [data, setData] = useState<PreviewData | null>(() => {
     const fallbackName = leadId ? leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase() : 'VALUED BUSINESS';
+    
+    let category = 'Professional Services';
+    const lowerId = leadId.toLowerCase();
+    if (/solar|inverter|energy|battery/.test(lowerId)) category = 'Solar Energy & Inverter Dealer';
+    else if (/estate|property|home|realty|housing/.test(lowerId)) category = 'Real Estate & Luxury Property';
+    else if (/car|auto|motor|vehicle|tokunbo/.test(lowerId)) category = 'Automotive & Tokunbo Importer';
+    else if (/medical|clinic|doctor|health/.test(lowerId)) category = 'Medical & Clinics';
+    else if (/school|academy|education/.test(lowerId)) category = 'Schools & Education';
+    else if (/boutique|fashion|style|beauty/.test(lowerId)) category = 'Boutique & Fashion';
+
+    const luxuryTheme = getDesignTheme(category, leadId);
+
+    let heroTitle = `${fallbackName}`;
+    if (category.includes('Solar')) heroTitle = `${fallbackName} — Solar & Energy Solutions`;
+    else if (category.includes('Real Estate')) heroTitle = `${fallbackName} — Luxury Homes & Estates`;
+    else if (category.includes('Automotive')) heroTitle = `${fallbackName} — Tokunbo Autos & Fleet Imports`;
+
     return {
       lead: {
         name: fallbackName,
-        category: 'Business Enterprise',
+        category,
         address: 'Commercial Hub, Lagos',
         area: 'Lekki Phase 1',
         city: 'Lagos',
@@ -78,26 +97,18 @@ export default function PreviewPage() {
         phone_e164: '+2348022791227',
         rating: 4.9,
         reviews_count: 38,
-        business_summary: 'Verified Local Business Enterprise'
+        business_summary: `Verified ${category} Enterprise in Lagos`
       },
-      theme: {
-        primary: '#10b981',
-        accent: '#06b6d4',
-        bg: '#090d16',
-        text: '#ffffff',
-        font: 'system-ui, sans-serif',
-        heroImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80',
-        gradient: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)'
-      },
+      theme: luxuryTheme,
       copy: {
-        heroTitle: `Welcome to ${fallbackName}`,
-        heroSubtitle: '24/7 AI Lead Automation & Customer Booking Engine',
+        heroTitle,
+        heroSubtitle: '24/7 AI Lead Automation, Instant PDF Quotes & Direct Booking Engine',
         services: [
           { title: '24/7 WhatsApp AI Customer Agent', description: 'Answers customer inquiries & voice notes automatically.', icon: '🤖' },
           { title: 'Instant Quote & Sizing Estimator', description: 'Generates branded PDF quotes sent to customer phone.', icon: '⚡' },
           { title: 'OPay Direct Bank Transfer Gateway', description: 'Collects customer payments straight to your bank.', icon: '💳' }
         ],
-        aboutText: `${fallbackName} is a top-rated local business enterprise committed to delivering excellence.`,
+        aboutText: `${fallbackName} is a top-rated enterprise in Lagos committed to delivering excellence.`,
         testimonials: [
           { name: 'Engr. Femi A.', text: 'Outstanding service and 24/7 responsiveness.', rating: 5 }
         ],

@@ -185,10 +185,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, result });
     }
 
-    if (action === 'recruitment_sourcing_help') {
-      const { generateSourcingRecommendations } = await import('@/lib/recruitmentEngine');
-      const { roleTitle, location, experienceLevel } = body;
-      const result = generateSourcingRecommendations(roleTitle || 'Senior Solar Engineer', location || 'Lagos', experienceLevel || 'Senior');
+    if (action === 'social_ad_creator') {
+      const { businessName, industry, targetDistrict } = body;
+      const bName = businessName || 'Apex Business';
+      const ind = industry || 'Solar';
+      const dist = targetDistrict || 'Lekki Phase 1';
+
+      const result = {
+        platform: 'Meta Ads (Instagram & Facebook Lead Ads)',
+        adHeadline: `⚡ Get Instant ${ind} Quote in ${dist} — 24/7 AI Automation`,
+        primaryAdText: `🚨 Attention ${dist} Business Owners & Residents!\nStop losing customers to slow replies. ${bName} provides premium ${ind} solutions with instant WhatsApp quotes & 24-hr installation.`,
+        hookLine: `Looking for reliable ${ind} in ${dist}? Get an instant quote on WhatsApp now! 📲`,
+        callToAction: 'Send WhatsApp Message',
+        targetAudience: {
+          location: `Lagos, Nigeria (${dist} + 15km radius)`,
+          ageRange: '25 - 55',
+          interests: [ind, 'Small Business Owners', 'Lagos Property', 'Corporate Procurement'],
+          deviceTargeting: 'Mobile (Android & iOS)'
+        },
+        automationWorkflow: [
+          '1. Prospect clicks Instagram/Facebook Ad CTA button',
+          '2. Meta Lead Form captures Name, Phone & WhatsApp details',
+          '3. Webhook triggers instant 3-second WhatsApp greeting with recipient name',
+          '4. Lead automatically added to Simple CRM Kanban Board'
+        ]
+      };
       return NextResponse.json({ success: true, result });
     }
 
