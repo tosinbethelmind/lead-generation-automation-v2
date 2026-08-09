@@ -33,7 +33,7 @@ jobs:
           NEXT_TELEMETRY_DISABLED: 1
 
       - name: Deploy to Netlify
-        if: ${{ secrets.NETLIFY_TOKEN != '' && secrets.NETLIFY_SITE_ID != '' }}
+        continue-on-error: true
         uses: nwtgck/actions-netlify@v3
         with:
           publish-dir: '.next'
@@ -45,11 +45,3 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-
-      - name: Netlify Deploy Skipped Notice
-        if: ${{ secrets.NETLIFY_TOKEN == '' || secrets.NETLIFY_SITE_ID == '' }}
-        run: |
-          echo "⚠️ Netlify deployment skipped: NETLIFY_TOKEN or NETLIFY_SITE_ID not set in GitHub repository secrets."
-          echo "Primary deployment on Vercel is active."
-
-
