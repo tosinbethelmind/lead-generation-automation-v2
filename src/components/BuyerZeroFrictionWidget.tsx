@@ -13,7 +13,7 @@ interface BuyerZeroFrictionWidgetProps {
 export function BuyerZeroFrictionWidget({
   businessName,
   category = 'general',
-  merchantPhone = '2348031234567',
+  merchantPhone = '2348022791227',
   defaultPriceNGN = 185000,
 }: BuyerZeroFrictionWidgetProps) {
   const [sliderValue, setSliderValue] = useState(5); // 5kVA or 5 items
@@ -42,7 +42,7 @@ export function BuyerZeroFrictionWidget({
   const waCheckoutUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(checkoutMessage)}`;
 
   const handleCopyAccount = () => {
-    navigator.clipboard.writeText('9920148192');
+    navigator.clipboard.writeText('7034297995');
     setCopiedAcc(true);
     setTimeout(() => setCopiedAcc(false), 2500);
   };
@@ -294,7 +294,7 @@ export function BuyerZeroFrictionWidget({
           <div style={{ background: '#1e293b', padding: '12px 14px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <div>
               <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>MONIEPOINT MICROFINANCE BANK</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>9920148192</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>7034297995</div>
               <div style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>Name: ApexReach / {businessName}</div>
             </div>
             <button
@@ -348,7 +348,7 @@ export function BuyerZeroFrictionWidget({
             </svg>
           </div>
           <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
-            Moniepoint Account: <strong style={{ color: '#fff' }}>9920148192</strong>
+            Moniepoint Account: <strong style={{ color: '#fff' }}>7034297995</strong>
           </div>
         </div>
       )}

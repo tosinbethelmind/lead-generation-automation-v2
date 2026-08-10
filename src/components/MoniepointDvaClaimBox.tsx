@@ -158,7 +158,7 @@ export function MoniepointDvaClaimBox({
           <div>
             <div style={{ fontSize: '0.82rem', color: '#94a3b8', marginBottom: '2px' }}>ACCOUNT NUMBER</div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '1px', fontFamily: 'monospace' }}>
-              {loading ? 'Generating...' : dvaData?.dva?.accountNumber || '9920148192'}
+              {loading ? 'Generating...' : dvaData?.dva?.accountNumber || '7034297995'}
             </div>
           </div>
           <button
