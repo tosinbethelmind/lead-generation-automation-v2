@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, MessageSquare, X, Send, User, Sparkles, PhoneCall, RefreshCw, CheckCircle2, Shield } from 'lucide-react';
+import { Bot, MessageSquare, X, Send, User, Sparkles, PhoneCall, RefreshCw, CheckCircle2, Shield, Volume2, VolumeX } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -29,10 +29,34 @@ export default function CustomerAiAgentWidget({
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState('');
   const [handedOver, setHandedOver] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   
   const displayName = agentTitle || (businessName ? `${businessName} AI Concierge` : 'Bethelmind AI Concierge');
   const [agentName, setAgentName] = useState(displayName);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Natural Web Speech Synthesis Audio Voice Synthesizer
+  const speakText = (text: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+
+    if (isPlayingAudio) {
+      setIsPlayingAudio(false);
+      return;
+    }
+
+    const cleanText = text.replace(/[*_~`]/g, '').replace(/http\S+/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+    utterance.lang = 'en-US';
+
+    utterance.onstart = () => setIsPlayingAudio(true);
+    utterance.onend = () => setIsPlayingAudio(false);
+    utterance.onerror = () => setIsPlayingAudio(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   useEffect(() => {
     // Initialize session ID
@@ -44,7 +68,7 @@ export default function CustomerAiAgentWidget({
     setSessionId(sid);
 
     const welcomeGreeting = businessName
-      ? `👋 Welcome to ${businessName}! I am your 24/7 Virtual Assistant & Business Guide. How can I assist you with our services, instant quotes, or bookings today?`
+      ? `👋 Welcome to ${businessName}! I am your 24/7 AI Business Guide & Virtual Assistant. How can I assist you with our services, instant quotes, or custom domain setup today?`
       : `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`;
 
     // Initial greeting
@@ -57,6 +81,34 @@ export default function CustomerAiAgentWidget({
       },
     ]);
   }, [sector, businessName]);
+
+  // Exit-Intent Mouseleave & Proactive Auto-Pop Trigger
+  useEffect(() => {
+    let triggered = false;
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 8 && !triggered && !isOpen) {
+        triggered = true;
+        setIsOpen(true);
+        const exitOffer = businessName
+          ? `⚡ Wait, ${businessName}! Before you leave, let me show you how to claim your 24/7 AI Chatbot & Lead Tools with just ₦92,500 50% deposit!`
+          : `⚡ Wait! Before you leave, test our 1-click sector calculators or speak with our 24/7 AI Guide right now!`;
+        
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `msg_exit_${Date.now()}`,
+            sender: 'agent',
+            text: exitOffer,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
+        speakText(exitOffer);
+      }
+    };
+
+    document.addEventListener('mouseleave', handleMouseLeave);
+    return () => document.removeEventListener('mouseleave', handleMouseLeave);
+  }, [businessName, isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -175,9 +227,32 @@ export default function CustomerAiAgentWidget({
                 </div>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="close-btn">
-              <X size={18} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                onClick={() => speakText(messages[messages.length - 1]?.text || '')}
+                style={{
+                  background: isPlayingAudio ? '#10b981' : 'rgba(255, 255, 255, 0.1)',
+                  color: '#fff',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '20px',
+                  padding: '4px 10px',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  transition: 'all 0.2s',
+                }}
+                title="Listen to AI voice message"
+              >
+                {isPlayingAudio ? <VolumeX size={12} /> : <Volume2 size={12} />}
+                {isPlayingAudio ? 'Speaking...' : 'Listen Voice'}
+              </button>
+              <button onClick={() => setIsOpen(false)} className="close-btn">
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           {/* Handover Notice Banner */}
