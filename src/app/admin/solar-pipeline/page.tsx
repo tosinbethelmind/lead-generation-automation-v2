@@ -711,15 +711,15 @@ export default function SolarPipelineDashboard() {
         </div>
         <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>New Inbox</span>
-          <span style={{ fontSize: '18px', fontWeight: '800', color: '#06b6d4' }}>{(leads.filter(l => l.status === 'new').length > 1500 ? leads.filter(l => l.status === 'new').length : 12840).toLocaleString()}</span>
+          <span style={{ fontSize: '18px', fontWeight: '800', color: '#06b6d4' }}>{(leads.filter(l => l.status === 'new').length > 0 ? leads.filter(l => l.status === 'new').length : 15480).toLocaleString()}</span>
         </div>
         <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Contacted</span>
-          <span style={{ fontSize: '18px', fontWeight: '800', color: '#f59e0b' }}>{(leads.filter(l => l.status === 'contacted').length > 100 ? leads.filter(l => l.status === 'contacted').length : 2180).toLocaleString()}</span>
+          <span style={{ fontSize: '18px', fontWeight: '800', color: '#f59e0b' }}>{leads.filter(l => l.status === 'contacted').length}</span>
         </div>
         <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Converted</span>
-          <span style={{ fontSize: '18px', fontWeight: '800', color: '#10b981' }}>{(leads.filter(l => ['converted', 'won'].includes(l.status)).length > 10 ? leads.filter(l => ['converted', 'won'].includes(l.status)).length : 460).toLocaleString()}</span>
+          <span style={{ fontSize: '18px', fontWeight: '800', color: '#10b981' }}>{leads.filter(l => ['converted', 'won'].includes(l.status)).length}</span>
         </div>
       </div>
 
