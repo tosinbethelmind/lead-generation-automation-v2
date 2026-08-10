@@ -54,7 +54,26 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)",
+        // Allow preview pages and widget to be embedded in iframes on client sites
+        source: "/preview/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Content-Security-Policy", value: "frame-ancestors *" },
+          { key: "X-Frame-Options", value: "ALLOWALL" }, // override DENY for embeds
+        ],
+      },
+      {
+        // Allow widget JS and any widget-served pages to be embedded
+        source: "/api/widget/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Content-Security-Policy", value: "frame-ancestors *" },
+          { key: "X-Frame-Options", value: "ALLOWALL" },
+        ],
+      },
+      {
+        // All other routes keep strict security headers
+        source: "/((?!preview|api/widget).*)",
         headers: securityHeaders,
       },
     ];
