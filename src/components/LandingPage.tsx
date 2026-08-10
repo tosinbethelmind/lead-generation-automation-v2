@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X, Clock } from 'lucide-react';
+import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X, Clock, FileText } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { TransferRebuildOptions } from '@/components/TransferRebuildOptions';
 import { SocialAdAutomationWidget } from '@/components/SocialAdAutomationWidget';
+import BeforeAfterAuditWidget from '@/components/BeforeAfterAuditWidget';
+import InvoiceModal, { InvoiceItem } from '@/components/InvoiceModal';
 
 interface PreviewData {
   lead: {
@@ -405,6 +407,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   };
 
   // New Interactive Widget States
+  const [showClaimInvoice, setShowClaimInvoice] = useState(false);
   const [activeModalInvoice, setActiveModalInvoice] = useState<any | null>(null);
   const [whatsappMessages, setWhatsappMessages] = useState<any[]>([]);
   const [whatsappSimActive, setWhatsappSimActive] = useState(false);
@@ -1819,153 +1822,147 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         minHeight: '75vh', 
         display: 'flex', 
         alignItems: 'center',
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80'})`,
+        backgroundImage: pitch.categoryKey === 'solar'
+          ? `linear-gradient(135deg, rgba(6, 78, 59, 0.75), rgba(15, 23, 42, 0.85)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1600&q=80'})`
+          : pitch.categoryKey === 'auto'
+          ? `linear-gradient(135deg, rgba(153, 27, 27, 0.75), rgba(15, 23, 42, 0.88)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1600&q=80'})`
+          : pitch.categoryKey === 'medical'
+          ? `linear-gradient(135deg, rgba(14, 116, 144, 0.75), rgba(15, 23, 42, 0.88)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1600&q=80'})`
+          : pitch.categoryKey === 'real_estate'
+          ? `linear-gradient(135deg, rgba(161, 98, 7, 0.75), rgba(15, 23, 42, 0.88)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=80'})`
+          : `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80'})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: '#fff',
         padding: '80px 24px',
       }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
-          {/* Big Bold Business Name Badge (First Catch) */}
+        <div style={{ maxWidth: '850px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
+          {/* Executive Clean Proposal Status Bar */}
           <div style={{
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            background: hasWebsite ? 'rgba(14, 116, 144, 0.85)' : 'rgba(15, 23, 42, 0.75)',
+            border: hasWebsite ? '1px solid #06b6d4' : '1px solid rgba(255, 255, 255, 0.2)',
+            backdropFilter: 'blur(12px)',
             color: '#ffffff',
-            fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
-            fontWeight: 800,
-            padding: '8px 24px',
-            borderRadius: '30px',
+            fontSize: 'clamp(0.8rem, 1.8vw, 0.95rem)',
+            fontWeight: 700,
+            padding: '8px 20px',
+            borderRadius: '40px',
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            marginBottom: '16px',
-            boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
-            letterSpacing: '0.05em'
-          }}>
-            <span>🏢 OFFICIAL SITE FOR:</span>
-            <strong style={{ color: '#fde047', fontSize: '1.15em' }}>{lead.name.toUpperCase()}</strong>
-          </div>
-
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            gap: '6px', 
-            background: 'rgba(255,255,255,0.1)', 
-            backdropFilter: 'blur(8px)',
-            borderRadius: '99px', 
-            padding: '6px 16px', 
             marginBottom: '20px',
-            border: '1px solid rgba(255,255,255,0.2)'
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            flexWrap: 'wrap',
+            justifyContent: 'center'
           }}>
-            <Star style={{ color: '#fbbf24', fill: '#fbbf24' }} size={16} />
-            <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Rated {lead.rating || '4.9'} Stars by {lead.reviews_count || 38} Verified Locals in {lead.area || lead.city || 'Lagos'}</span>
+            {hasWebsite ? (
+              <>
+                <span style={{ color: '#67e8f9' }}>🌐 ACTIVE SITE DETECTED:</span>
+                <strong style={{ color: '#fde047' }}>{websiteUrl}</strong>
+                <span style={{ color: '#94a3b8' }}>•</span>
+                <span style={{ color: '#ffffff' }}>KEEP YOUR EXISTING SITE & ATTACH OUR TOOLS IN 10 MINS</span>
+              </>
+            ) : (
+              <>
+                <span style={{ color: '#10b981' }}>🔒 PRIVATE PROPOSAL FOR:</span>
+                <strong style={{ color: '#fde047', textTransform: 'uppercase' }}>{lead.name}</strong>
+                <span style={{ color: '#94a3b8' }}>•</span>
+                <span style={{ color: '#cbd5e1' }}>{lead.area || lead.city || 'Lagos'}, Nigeria</span>
+                <span style={{ color: '#94a3b8' }}>•</span>
+                <span style={{ color: '#6ee7b7' }}>24h SLA Guarantee</span>
+              </>
+            )}
           </div>
 
           <h1 style={{ 
             fontFamily: headingFontFamily,
-            fontSize: 'clamp(2.2rem, 5vw, 4rem)', 
-            lineHeight: 1.1, 
+            fontSize: 'clamp(2.1rem, 4.8vw, 3.6rem)', 
+            lineHeight: 1.15, 
             fontWeight: 800, 
-            marginBottom: '20px',
+            marginBottom: '18px',
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             letterSpacing: '-0.02em',
-            background: 'linear-gradient(135deg, #ffffff 30%, #fde047 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>{copy.heroTitle}</h1>
+            color: '#ffffff'
+          }}>
+            {hasWebsite 
+              ? `Keep Your Website at ${websiteUrl}. Attach Our Automated Sales Tools in 10 Mins.`
+              : copy.heroTitle}
+          </h1>
 
           <p style={{ 
-            fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)', 
+            fontSize: 'clamp(1.05rem, 2.2vw, 1.3rem)', 
             color: '#e2e8f0', 
-            marginBottom: '36px',
-            maxWidth: '650px',
-            margin: '0 auto 36px',
+            marginBottom: '30px',
+            maxWidth: '720px',
+            margin: '0 auto 30px',
             lineHeight: 1.5,
             textShadow: '0 1px 5px rgba(0,0,0,0.3)'
-          }}>{copy.heroSubtitle}</p>
+          }}>
+            {hasWebsite 
+              ? `We inspected your live site at ${websiteUrl}. You don't need a new website — attach our custom interactive ${pitch.widgetTitle || 'lead engine'} directly to your current site to capture 3x more WhatsApp leads.`
+              : copy.heroSubtitle}
+          </p>
 
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '24px' }}>
             <a href={isPreview ? "#pricing" : "#booking"} className="btn-hover-effect" style={{
-              background: theme.primary,
-              border: `1px solid ${theme.primary}`,
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              border: 'none',
               color: '#fff',
               textDecoration: 'none',
-              padding: '14px 28px',
-              borderRadius: '8px',
-              fontWeight: 700,
-              fontSize: '1rem',
+              padding: '16px 32px',
+              borderRadius: '10px',
+              fontWeight: 800,
+              fontSize: '1.05rem',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '8px',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+              gap: '10px',
+              boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
               transition: 'all 0.2s'
             }}>
-              {isPreview 
-                ? '🔒 Claim Site — ₦0 Upfront Risk'
-                : copy.ctaText} <ArrowRight size={18} />
+              {hasWebsite 
+                ? `🔌 Order Plug & Play Tool Embed (₦35,000)`
+                : isPreview 
+                ? `🔒 Claim ${lead.name}'s Website (₦50k Deposit)`
+                : copy.ctaText} <ArrowRight size={20} />
             </a>
+
             {lead.phone_raw && (
-              <a href={`tel:${lead.phone_e164}`} className="btn-hover-effect" style={{
-                background: 'rgba(255, 255, 255, 0.15)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
+              <a href={`https://wa.me/${formatWhatsAppNumber(lead.phone_raw)}?text=${encodeURIComponent(`Hi! I am reviewing the tool embed proposal for ${lead.name} (${websiteUrl}). I have a question before ordering.`)}`} target="_blank" rel="noreferrer" className="btn-hover-effect" style={{
+                background: 'rgba(255, 255, 255, 0.12)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
                 color: '#fff',
                 textDecoration: 'none',
-                padding: '14px 28px',
-                borderRadius: '8px',
-                fontWeight: 600,
-                fontSize: '1rem',
+                padding: '16px 24px',
+                borderRadius: '10px',
+                fontWeight: 700,
+                fontSize: '0.95rem',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
                 transition: 'all 0.2s'
               }}>
-                <Phone size={18} /> Call Us Directly
+                💬 Chat Project Lead on WhatsApp
               </a>
             )}
           </div>
 
-          {/* Nigerian Business Peculiarity Badges (Naira Price Lock & Verified Business) */}
+          {/* Single Clean Reassurance Bar */}
           <div style={{
+            color: '#cbd5e1',
+            fontSize: '0.82rem',
+            fontWeight: 600,
             display: 'flex',
             justifyContent: 'center',
-            gap: '12px',
+            gap: '16px',
             flexWrap: 'wrap',
-            marginTop: '28px'
+            opacity: 0.95
           }}>
-            <div style={{
-              background: 'rgba(234, 179, 8, 0.15)',
-              border: '1px solid rgba(234, 179, 8, 0.4)',
-              color: '#fde047',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              padding: '6px 14px',
-              borderRadius: '20px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              backdropFilter: 'blur(6px)'
-            }}>
-              <Clock size={14} />
-              <span>⚡ NAIRA FX PRICE LOCK: Guaranteed for 48 Hours</span>
-            </div>
-
-            <div style={{
-              background: 'rgba(16, 185, 129, 0.15)',
-              border: '1px solid rgba(16, 185, 129, 0.4)',
-              color: '#6ee7b7',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              padding: '6px 14px',
-              borderRadius: '20px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              backdropFilter: 'blur(6px)'
-            }}>
-              <ShieldCheck size={14} />
-              <span>🛡️ VERIFIED LOCAL BUSINESS</span>
-            </div>
+            <span>⚡ Ready in 24 Hours</span>
+            <span>•</span>
+            <span>🛡️ 100% Refund Guarantee</span>
+            <span>•</span>
+            <span>📲 Direct WhatsApp Leads Included</span>
           </div>
 
           {/* ⚡ ULTRA-STRAIGHTFORWARD 3-STEP BUSINESS OWNER ACTION GRID */}
@@ -3319,7 +3316,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       {isPreview && (
         <a
           id="wa-chat-float"
-          href={`https://wa.me/2348000000000?text=${encodeURIComponent(`Hello Bethelmind Analytics & Strategy! I'm ${lead.name} in ${lead.city || lead.area}. I want to claim the website you built for my business. Preview: ${typeof window !== 'undefined' ? window.location.href : ''}`)}`}
+          href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Analytics & Strategy! I'm ${lead.name} in ${lead.city || lead.area}. I want to claim the website you built for my business. Preview: ${typeof window !== 'undefined' ? window.location.href : ''}`)}`}
           target="_blank"
           rel="noopener noreferrer"
           title="Chat Bethelmind Analytics & Strategy Support on WhatsApp"
@@ -3782,6 +3779,54 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', alignItems: 'stretch' }}>
+              {/* Special Tier for Existing Website Owners: Standalone Tool Embed */}
+              {hasWebsite && (
+                <div style={{
+                  background: '#f0f9ff',
+                  borderRadius: '16px',
+                  border: '2px solid #0284c7',
+                  padding: '36px 28px',
+                  position: 'relative',
+                  boxShadow: '0 12px 30px rgba(2,132,199,0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}>
+                  <span style={{ position: 'absolute', top: '-14px', left: '28px', background: '#0284c7', color: '#fff', fontSize: '0.7rem', fontWeight: 800, padding: '4px 14px', borderRadius: '99px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    🔌 RECOMMENDED FOR YOUR EXISTING SITE ({websiteUrl})
+                  </span>
+                  <div>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0369a1', marginBottom: '6px' }}>Plug & Play Tool Embed Suite</h3>
+                    <p style={{ fontSize: '0.85rem', color: '#0369a1', marginBottom: '20px' }}>Keep your site at {websiteUrl}. Attach our interactive lead calculator in 10 mins.</p>
+                    <div style={{ marginBottom: '24px' }}>
+                      <span style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0284c7' }}>₦35,000</span>
+                      <span style={{ fontSize: '0.9rem', color: '#64748b', marginLeft: '6px' }}>One-time setup (or ₦15k/mo)</span>
+                    </div>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.9rem', color: '#334155' }}>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✓ 1-Line Script Tag / WordPress Plugin Embed</li>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✓ Custom-Branded to Match Your Website Colors</li>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✓ Direct WhatsApp Lead Routing to Your Sales Team</li>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✓ Zero Changes to Your Current Domain/Hosting</li>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✓ 100% Refund Guarantee if not working on your site</li>
+                    </ul>
+                  </div>
+                  <a href="#claim" onClick={() => setSelectedStrategy('script_embed')} style={{
+                    display: 'block',
+                    textAlign: 'center',
+                    background: '#0284c7',
+                    color: '#ffffff',
+                    padding: '14px 20px',
+                    borderRadius: '10px',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 14px rgba(2,132,199,0.35)'
+                  }}>
+                    🔌 Order Tool Embed for {websiteUrl} (₦35k)
+                  </a>
+                </div>
+              )}
+
               {/* Tier 1: Zero Risk Staging */}
               <div style={{
                 background: '#ffffff',
@@ -3795,7 +3840,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 justifyContent: 'space-between'
               }}>
                 <span style={{ position: 'absolute', top: '-14px', left: '28px', background: '#10b981', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '4px 12px', borderRadius: '99px', textTransform: 'uppercase' }}>
-                  MOST POPULAR (ZERO RISK)
+                  {hasWebsite ? 'FULL WEBSITE REPLACEMENT' : 'MOST POPULAR (ZERO RISK)'}
                 </span>
                 <div>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>1. Fast-Track Staging Approval</h3>
@@ -3921,10 +3966,33 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         <section id="claim" style={{ 
           background: '#ffffff', 
           borderTop: '1px solid #e2e8f0',
-          padding: '100px 24px',
+          padding: '80px 24px',
           display: 'flex',
-          justifyContent: 'center'
+          flexDirection: 'column',
+          alignItems: 'center'
         }}>
+          {/* Automatic Invoice Modal Trigger */}
+          <InvoiceModal
+            isOpen={showClaimInvoice}
+            onClose={() => setShowClaimInvoice(false)}
+            clientName={lead.name}
+            clientIndustry={lead.category}
+            clientDistrict={lead.area || lead.city}
+            items={[
+              { name: `${lead.name} Custom Platform & AI Setup`, price: 150000, qty: 1 },
+              { name: '1-Year .com.ng Domain & Cloud Hosting', price: 0, qty: 1 }
+            ]}
+            paymentRef={`BMA-CLAIM-${leadId.slice(0, 6).toUpperCase()}`}
+          />
+
+          <div style={{ maxWidth: '800px', width: '100%', marginBottom: '32px' }}>
+            <BeforeAfterAuditWidget
+              businessName={lead.name}
+              categoryName={lead.category}
+              existingWebsite={lead.website}
+            />
+          </div>
+
           <div style={{ 
             maxWidth: '600px', 
             width: '100%', 
@@ -3941,6 +4009,29 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                  <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#1f2937', marginBottom: '12px' }}>
                   {hasWebsite ? 'Claim My Website Upgrade & Automations' : 'Claim This Website & Domain'}
                 </h2>
+
+                {/* Instant Pro-Forma Invoice Preview Trigger */}
+                <div style={{ marginBottom: '20px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowClaimInvoice(true)}
+                    style={{
+                      background: 'rgba(2, 132, 199, 0.08)',
+                      color: '#0284c7',
+                      border: '1px solid rgba(2, 132, 199, 0.25)',
+                      padding: '10px 18px',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <FileText size={16} /> Preview Instant Pro-Forma Invoice Before Payment
+                  </button>
+                </div>
                 
                 {/* Social Proof Counter Banner */}
                 <div style={{
