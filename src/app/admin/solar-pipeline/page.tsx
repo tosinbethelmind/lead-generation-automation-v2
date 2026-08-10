@@ -50,17 +50,35 @@ interface SolarLead {
   state?: string;
 }
 
+import { PRE_SCRAPED_LEADS } from '@/lib/preScrapedLeads';
+
+const SEEDED_LEADS: SolarLead[] = (PRE_SCRAPED_LEADS || []).map((l: any, idx: number) => ({
+  id: l.id || `lead-${idx}`,
+  name: l.business_name || l.name || 'Lagos Business',
+  phone: l.phone || l.phone_e164 || l.mobile || '',
+  email: l.email || '',
+  location: l.address ? l.address : `${l.city || 'Lagos'}, Nigeria`,
+  city: l.city || 'Lagos',
+  state: l.district || l.area || l.city || 'Lagos',
+  contact_person: l.contact_person || 'Lagos Commercial Manager',
+  project_scope: l.business_summary || l.category || 'Lagos Business Lead',
+  status: l.status || 'new',
+  notes: l.notes || '',
+  created_at: l.created_at || new Date().toISOString(),
+  type: 'nigeria_5k' as const
+}));
+
 export default function SolarPipelineDashboard() {
   const [activeTab, setActiveTab] = useState<'pipeline' | 'report' | 'advanced'>('pipeline');
-  const [leads, setLeads] = useState<SolarLead[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
-  const [nigeria5kCount, setNigeria5kCount] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
+  const [leads, setLeads] = useState<SolarLead[]>(SEEDED_LEADS);
+  const [totalCount, setTotalCount] = useState<number>(SEEDED_LEADS.length);
+  const [nigeria5kCount, setNigeria5kCount] = useState<number>(SEEDED_LEADS.length);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
-  const [selectedLead, setSelectedLead] = useState<SolarLead | null>(null);
+  const [selectedLead, setSelectedLead] = useState<SolarLead | null>(SEEDED_LEADS[0] || null);
   
   // Outreach Modal states
   const [outreachModalOpen, setOutreachModalOpen] = useState(false);
