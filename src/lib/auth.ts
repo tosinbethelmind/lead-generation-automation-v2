@@ -53,12 +53,9 @@ export function getAdminUser(token: string | undefined): AdminUser | null {
 
   const envMasterToken = (process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD || '').trim();
 
-  // Permissive list of master admin tokens to ensure access is never blocked
+  // Master admin token array restricted to bethelmind_admin_2026 exclusively
   const validMasterTokens = [
     'bethelmind_admin_2026',
-    'bethelmind_admin',
-    'bethelmind2026',
-    'admin',
     envMasterToken,
   ].filter(Boolean);
 
