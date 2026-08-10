@@ -35,3 +35,7 @@ Aug 10 07:29:29.000 [notice] While not bootstrapping, fetched this many bytes: 1
 Aug 10 13:29:26.000 [notice] Heartbeat: Tor's uptime is 17:10 hours, with 0 circuits open. I've sent 686 kB and received 6.44 MB. I've received 3 connections on IPv4 and 0 on IPv6. I've made 16 connections with IPv4 and 0 with IPv6.
 Aug 10 13:29:26.000 [notice] While bootstrapping, fetched this many bytes: 876708 (consensus network-status fetch); 4616082 (microdescriptor fetch)
 Aug 10 13:29:26.000 [notice] While not bootstrapping, fetched this many bytes: 283643 (consensus network-status fetch); 15431 (microdescriptor fetch)
+Aug 10 19:29:26.000 [notice] Heartbeat: Tor's uptime is 22:27 hours, with 0 circuits open. I've sent 706 kB and received 6.54 MB. I've received 3 connections on IPv4 and 0 on IPv6. I've made 20 connections with IPv4 and 0 with IPv6.
+Aug 10 19:29:26.000 [notice] While bootstrapping, fetched this many bytes: 876708 (consensus network-status fetch); 4616082 (microdescriptor fetch)
+Aug 10 19:29:26.000 [notice] While not bootstrapping, fetched this many bytes: 361877 (consensus network-status fetch); 1777 (authority cert fetch); 15431 (microdescriptor fetch)
+Aug 10 20:14:35.000 [notice] No circuits are opened. Relaxed timeout for circuit 44 (a General-purpose client 1-hop circuit in state doing handshakes with channel state open) to 60000ms. However, it appears the circuit has timed out anyway.
