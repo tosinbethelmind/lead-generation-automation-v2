@@ -4,7 +4,7 @@
  * Allows already-claimed websites and new clients to pick & choose selective features.
  */
 
-import { getOpayBankTransferDetails } from './subscriptionManager';
+import { paymentConfig } from '@/config/payment';
 
 export interface ModularFeature {
   id: string;
@@ -125,7 +125,11 @@ export function formatCustomFeatureWhatsAppRequest(params: {
 } {
   const { businessName, leadId = 'site_custom', selectedIds, clientPhone } = params;
   const calc = calculateCustomFeatureSelection(selectedIds);
-  const opay = getOpayBankTransferDetails();
+  const opay = {
+    bankName: paymentConfig.bankName || 'OPay Digital Services',
+    accountNumber: paymentConfig.accountNumber || '7034297995',
+    accountName: paymentConfig.accountName || 'Oyelakin Tosin Matthew',
+  };
 
   const featureNames = calc.selectedFeatures.map(f => `${f.icon} ${f.name}`).join('\n');
 

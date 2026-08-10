@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Palette, Save, Loader2, RefreshCw, Type, Eye } from 'lucide-react';
+import AdminLeadRedesignStudio from '@/components/AdminLeadRedesignStudio';
 
 export default function AdminDesignPage() {
   const [primary, setPrimary] = useState('#06b6d4');
@@ -274,6 +275,11 @@ export default function AdminDesignPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Human Assistant AI Redesign & Modular Feature Pricing Studio */}
+      <div className="mt-8">
+        <AdminLeadRedesignStudio />
       </div>
 
       <style jsx>{`

@@ -4,6 +4,7 @@ import { ArrowLeft, Sparkles, Share2, ShieldCheck } from 'lucide-react';
 import { SectorToolsWidget } from '@/components/SectorToolsWidget';
 import { RecruitmentEngineWidget } from '@/components/RecruitmentEngineWidget';
 import { WebappToolActionBar } from '@/components/WebappToolActionBar';
+import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -69,6 +70,12 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
           <SectorToolsWidget />
         )}
       </div>
+
+      {/* 24/7 Bethel AI Concierge — helps visitors interpret calculator results and take next steps */}
+      <CustomerAiAgentWidget
+        sector={(slug || 'tool').replace(/-/g, ' ')}
+        agentTitle={`Bethel — Your ${(slug || 'tool').replace(/-/g, ' ').toUpperCase()} AI Guide`}
+      />
     </main>
   );
 }

@@ -6,7 +6,7 @@ import { Shield, CheckCircle2, AlertTriangle, RefreshCw, Download, FileText, Plu
 export default function AdminHandoverPage() {
   const [diagnostics, setDiagnostics] = useState<any>(null);
   const [loadingDiag, setLoadingDiag] = useState(true);
-  const [activeTab, setActiveTab] = useState<'audit' | 'revisions' | 'ip' | 'referrals'>('audit');
+  const [activeTab, setActiveTab] = useState<'audit' | 'revisions' | 'ip' | 'referrals' | 'docs'>('audit');
 
   // Client / IP Contract State
   const [clientName, setClientName] = useState('');
@@ -210,6 +210,14 @@ export default function AdminHandoverPage() {
           >
             3. Legal IP Agreement Vault
           </button>
+          <button
+            onClick={() => setActiveTab('docs')}
+            className={`px-4 py-3 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'docs' ? 'border-[#06b6d4] text-[#06b6d4]' : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            4. Downloadable Docs & Walkthrough Hub
+          </button>
         </div>
 
         {/* TAB 1: BUNDLE GENERATOR */}
@@ -345,6 +353,49 @@ export default function AdminHandoverPage() {
               <p className="my-3"><strong>Client:</strong> {clientName || '______________________'}</p>
               <p className="my-3"><strong>Date:</strong> {signedDate}</p>
               <p>The original author hereby waives all copyright claims and grants the client all rights to modify, distribute, and commercialize the software without any further obligations.</p>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: DOWNLOADABLE DOCS & WALKTHROUGH HUB */}
+        {activeTab === 'docs' && (
+          <div className="bg-slate-900/60 border border-white/10 p-8 rounded-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-[#06b6d4]" /> Official Platform Documents & Governance Hub
+                </h2>
+                <p className="text-xs text-slate-400">Download official policies, client agreements, AI disclaimers, and human assistant walkthroughs.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { key: 'admin_assistant_walkthrough', title: '📖 Admin Assistant Operations Walkthrough', desc: 'Complete operational walkthrough covering prompt-based redesigns, feature customizer, and approval workflows.' },
+                { key: 'ai_responsible_use_policy', title: '🛡️ AI Responsible Use & Safety Policy', desc: 'Rules for human oversight, anti-abuse protocols, AI transparency, and non-training privacy guarantees.' },
+                { key: 'ai_disclaimer_policy', title: '⚠️ AI Disclaimer & Transparency Policy', desc: 'Accuracy limits, non-binding quote disclaimer, and human confirmation requirements.' },
+                { key: 'client_ip_transfer', title: '📜 Client Software & IP Transfer Contract', desc: 'Legal transfer agreement for turnkey website assets, custom domain setups, and embed scripts.' },
+                { key: 'responsible_outreach_policy', title: '⚖️ Responsible Outreach & NDPR Policy', desc: 'Outreach compliance rules, WhatsApp business policy adherence, and NDPR opt-out requirements.' },
+                { key: 'sla_service_level_agreement', title: '⚡ Service Level Agreement (SLA) & Uptime', desc: '99.9% uptime target, maintenance windows, and emergency support response times.' },
+                { key: 'client_onboarding_guide', title: '🚀 Client Web Portal Onboarding Guide', desc: 'Step-by-step onboarding walkthrough for clients claiming websites & pasting embed scripts.' },
+                { key: 'terms_of_service', title: '📜 Master Terms of Service & Subscriptions', desc: 'Platform usage terms, recurring subscription billing rules, and acceptable conduct.' },
+                { key: 'privacy_policy', title: '🔒 Privacy Policy & Data Protection', desc: 'NDPR compliance, data encryption standards, and user privacy rights statement.' },
+                { key: 'partner_referral_agreement', title: '🤝 Agency & Partner Referral Terms', desc: '15% recurring commission structure, payout conditions, and partner agency terms.' },
+              ].map((doc) => (
+                <div key={doc.key} className="bg-slate-950 p-5 rounded-xl border border-white/5 flex flex-col justify-between hover:border-white/20 transition-all">
+                  <div>
+                    <h4 className="text-sm font-bold text-white mb-1.5">{doc.title}</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed mb-4">{doc.desc}</p>
+                  </div>
+                  <a
+                    href={`/api/admin/download-doc?doc=${doc.key}`}
+                    download
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold bg-[#06b6d4]/15 text-[#06b6d4] border border-[#06b6d4]/30 hover:bg-[#06b6d4]/25 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Download className="w-4 h-4" /> Download Markdown (.md)
+                  </a>
+                </div>
+              ))}
             </div>
           </div>
         )}

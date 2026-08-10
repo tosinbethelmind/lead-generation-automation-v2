@@ -15,7 +15,7 @@ import { processAutoresponderMessage } from './autoresponderEngine';
 import { sendWhatsAppMessage } from './whatsapp';
 import { paymentConfig } from '@/config/payment';
 import { PLANS } from '@/config/plans';
-import { SECTORS } from '@/config/sectors';
+import { SECTOR_PROFILES } from '@/config/sectors';
 
 export type CriticalStage =
   | 'quote_finalization'
@@ -581,7 +581,7 @@ async function generateIntelligentAiResponse(
 
       const payment = paymentConfig;
       const activePlans = PLANS.map(p => `• ${p.name}: Setup ₦${p.setupFeeNGN.toLocaleString()} + ₦${p.monthlyNGN.toLocaleString()}/mo — ${p.tagline}`).join('\n');
-      const activeSectors = SECTORS.map(s => `• ${s.name}: ${s.description} (Tool: ${s.toolName})`).join('\n');
+      const activeSectors = Object.values(SECTOR_PROFILES).map((s: any) => `• ${s.name}: ${s.topToolDesc} (Tool: ${s.topToolName})`).join('\n');
 
       const scrapedLeadPrompt = leadData ? `
 SCRAPED LEAD INDIVIDUAL PROFILE & DATA:
