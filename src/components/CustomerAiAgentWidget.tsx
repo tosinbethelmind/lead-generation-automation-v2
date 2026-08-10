@@ -356,7 +356,7 @@ export default function CustomerAiAgentWidget({
             >
               <input
                 type="text"
-                placeholder="Ask anything or leave your WhatsApp/Email..."
+                placeholder={leadData ? `Tell me anything — what's on your mind, ${leadData.name?.split(' ')[0] || 'friend'}?` : "Type anything — questions, ideas, concerns... I'm listening 👂"}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 disabled={loading}
@@ -366,7 +366,7 @@ export default function CustomerAiAgentWidget({
               </button>
             </form>
             <div className="footer-secure-notice">
-              <Shield size={11} /> Instant Autoresponder & Lead Protection Active
+              <Shield size={11} /> No judgment — say what's on your mind. I'll sort it out or bring in a human if needed.
             </div>
           </div>
         </div>
