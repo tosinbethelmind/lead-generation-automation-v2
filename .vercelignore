@@ -1,4 +1,8 @@
-# Vercel ignore patterns for transient local runner files
+.next
+.netlify
+node_modules
+tools/
+public/assets/
 *.tmp*
 *.log
 local_db/
@@ -10,3 +14,10 @@ local_runner.log
 services_output.log
 whatsapp_baileys.log
 startup_log.txt
+diff_output.txt
+diff_output_utf8.txt
+*.wav
+*.mp3
+*.xlsx
+*.webm
+tsconfig.tsbuildinfo

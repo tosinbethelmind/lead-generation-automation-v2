@@ -352,15 +352,20 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   ],
 };
 
-const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
+const isServerless = !!(
+  process.env.VERCEL ||
+  process.env.LAMBDA_TASK_ROOT ||
+  process.env.AWS_EXECUTION_ENV ||
+  process.env.RENDER ||
+  process.env.PORT ||
+  process.env.DOCKER_CONTAINER
+);
 
 import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from './atomicIo';
-
 import { getWorkerIndex } from './requestContext';
 
 export function getConfigFilePath(workerIndexOverride?: string): string {
   const workerIndex = workerIndexOverride || getWorkerIndex();
-
   const baseName = workerIndex ? `config.worker-${workerIndex}.json` : 'config.json';
   
   if (process.env.APEXREACH_CONFIG_PATH) {
@@ -383,14 +388,16 @@ export function getRuntimeConfig(): RuntimeConfig {
       try {
         fs.copyFileSync(bundlePath, writeablePath);
       } catch (err) {
-        console.error('Error copying base config to worker config:', err);
+        // Silent catch for read-only cloud container filesystems
       }
     }
 
-    const readPath = fs.existsSync(writeablePath) ? writeablePath : bundlePath;
-    fileConfig = readJsonFileSyncWithRetry(readPath, {});
+    const readPath = fs.existsSync(writeablePath) ? writeablePath : (fs.existsSync(bundlePath) ? bundlePath : '');
+    if (readPath) {
+      fileConfig = readJsonFileSyncWithRetry(readPath, {});
+    }
   } catch (e) {
-    console.error('Error reading local config:', e);
+    // Silent catch for local config reading in serverless/container
   }
 
   // Precedence rule: process.env > config.json > DEFAULT_CONFIG
