@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /api/widget/[leadId]
  * Returns dynamic, self-executing JavaScript bundle that injects the
- * 24/7 WhatsApp AI Chatbot & Quote Estimator directly onto the client's existing website.
+ * 24/7 WhatsApp AI Chatbot & Quote Estimator directly onto any external client website (WordPress, Wix, Shopify, HTML).
  */
 export async function GET(
   req: NextRequest,
@@ -26,7 +26,7 @@ export async function GET(
       const repo = getActiveLeadRepository();
       lead = await Promise.race([
         repo.getLeadById(leadId),
-        new Promise((resolve) => setTimeout(() => resolve(null), 500))
+        new Promise((resolve) => setTimeout(() => resolve(null), 2500))
       ]) as any;
     } catch (_) {}
 
@@ -49,38 +49,69 @@ export async function GET(
   window.__BETHEL_AI_WIDGET_LOADED__ = true;
 
   var leadId = "${leadId}";
-  var businessName = "${businessName.replace(/"/g, '\\"')}";
-  var sector = "${sector.replace(/"/g, '\\"')}";
+  var businessName = "${businessName.replace(/"/g, '\\"').replace(/\n/g, ' ')}";
+  var sector = "${sector.replace(/"/g, '\\"').replace(/\n/g, ' ')}";
   var origin = "${appOrigin}";
 
-  // Create floating button container
-  var container = document.createElement('div');
-  container.id = 'bethelmind-ai-widget-root';
-  container.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-end;pointer-events:none;';
-
-  // Launcher Button
-  var button = document.createElement('button');
-  button.style.cssText = 'pointer-events:auto;background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:#fff;border:none;border-radius:30px;padding:12px 20px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 10px 25px rgba(6,182,212,0.4);display:flex;align-items:center;gap:8px;transition:all 0.2s;outline:none;';
-  button.innerHTML = '🤖 <span>Chat with ' + businessName + ' AI</span>';
-
-  // Modal Frame
-  var iframe = document.createElement('iframe');
-  iframe.style.cssText = 'pointer-events:auto;display:none;width:380px;max-width:calc(100vw - 32px);height:520px;max-height:calc(100vh - 90px);border:1px solid rgba(255,255,255,0.15);border-radius:20px;box-shadow:0 25px 50px rgba(0,0,0,0.5);background:#0f172a;margin-bottom:12px;';
-  iframe.src = origin + '/preview/' + encodeURIComponent(leadId) + '?embed=true';
-
-  button.onclick = function() {
-    if (iframe.style.display === 'none') {
-      iframe.style.display = 'block';
-      button.innerHTML = '❌ <span>Close Chat</span>';
-    } else {
-      iframe.style.display = 'none';
-      button.innerHTML = '🤖 <span>Chat with ' + businessName + ' AI</span>';
+  function mountWidget() {
+    if (!document.body) {
+      return setTimeout(mountWidget, 50);
     }
-  };
+    if (document.getElementById('bethelmind-ai-widget-root')) return;
 
-  container.appendChild(iframe);
-  container.appendChild(button);
-  document.body.appendChild(container);
+    // Create floating button container
+    var container = document.createElement('div');
+    container.id = 'bethelmind-ai-widget-root';
+    container.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;font-family:Inter,system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;align-items:flex-end;pointer-events:none;';
+
+    // Launcher Button
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.style.cssText = 'pointer-events:auto;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:30px;padding:14px 22px;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 10px 25px rgba(16,185,129,0.45);display:flex;align-items:center;gap:8px;transition:all 0.2s;outline:none;';
+    button.innerHTML = '🤖 <span>Chat with ' + businessName + ' AI</span>';
+
+    // Popup window reference
+    var popupRef = null;
+    var popupUrl = origin + '/preview/' + encodeURIComponent(leadId) + '?embed=true';
+    var popupOpts = 'width=440,height=660,top=' + Math.max(0, (screen.height - 660) / 2) + ',left=' + Math.max(0, (screen.width - 440) / 2) + ',toolbar=no,menubar=no,scrollbars=yes,resizable=yes,location=no,status=no';
+
+    button.onclick = function() {
+      // If popup exists and is open, bring it to focus
+      if (popupRef && !popupRef.closed) {
+        popupRef.focus();
+        button.innerHTML = '🤖 <span>Chat with ' + businessName + ' AI</span>';
+        button.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+        return;
+      }
+      // Open fresh popup — bypasses X-Frame-Options on all browsers
+      popupRef = window.open(popupUrl, 'BethelmindAIChat_' + leadId, popupOpts);
+      if (popupRef) {
+        button.innerHTML = '✅ <span>Chat Opened</span>';
+        button.style.background = 'linear-gradient(135deg,#059669,#047857)';
+        // Reset button when popup is closed
+        var checkClosed = setInterval(function() {
+          if (!popupRef || popupRef.closed) {
+            clearInterval(checkClosed);
+            button.innerHTML = '🤖 <span>Chat with ' + businessName + ' AI</span>';
+            button.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+            popupRef = null;
+          }
+        }, 800);
+      } else {
+        // Popup was blocked by browser — fallback: open in new tab
+        window.open(popupUrl, '_blank', 'noopener');
+      }
+    };
+
+    container.appendChild(button);
+    document.body.appendChild(container);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mountWidget);
+  } else {
+    mountWidget();
+  }
 })();
 `;
 
@@ -88,13 +119,17 @@ export async function GET(
       headers: {
         'Content-Type': 'application/javascript; charset=utf-8',
         'Cache-Control': 'public, max-age=3600, s-maxage=3600',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Content-Security-Policy': 'frame-ancestors *'
       }
     });
 
   } catch (err: any) {
     return new NextResponse(`console.error("Bethelmind AI Widget Error:", "${err.message}");`, {
-      headers: { 'Content-Type': 'application/javascript; charset=utf-8' }
+      headers: { 
+        'Content-Type': 'application/javascript; charset=utf-8',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
   }
 }
