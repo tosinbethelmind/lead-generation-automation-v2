@@ -733,11 +733,13 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       githubRepo: updated.githubRepo,
     };
     
-    writeJsonFileSyncAtomic(writeablePath, fileData);
+    try {
+      writeJsonFileSyncAtomic(writeablePath, fileData);
+    } catch (_) {}
     return updated;
   } catch (e) {
-    console.error('Error writing local config:', e);
-    throw e;
+    console.warn('Notice: Unable to persist config in read-only environment:', e);
+    return getRuntimeConfig();
   }
 }
 
