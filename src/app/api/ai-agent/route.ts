@@ -38,7 +38,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action = 'chat', sessionId, message, sector, config } = body;
+    const { action = 'chat', sessionId, message, sector, leadData, config } = body;
 
     if (action === 'save_config') {
       if (!config) {
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     }
 
     const activeSessionId = sessionId || `session_${Math.random().toString(36).substring(2, 10)}`;
-    const response = await processCustomerMessage(activeSessionId, message, sector || 'general');
+    const response = await processCustomerMessage(activeSessionId, message, sector || 'general', leadData);
 
     return NextResponse.json({
       success: true,

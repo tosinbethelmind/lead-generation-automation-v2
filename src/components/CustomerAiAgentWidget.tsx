@@ -15,6 +15,7 @@ interface CustomerAiAgentWidgetProps {
   businessName?: string;
   agentTitle?: string;
   initialOpen?: boolean;
+  leadData?: any;
 }
 
 export default function CustomerAiAgentWidget({
@@ -22,6 +23,7 @@ export default function CustomerAiAgentWidget({
   businessName,
   agentTitle,
   initialOpen = false,
+  leadData,
 }: CustomerAiAgentWidgetProps) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -141,6 +143,7 @@ export default function CustomerAiAgentWidget({
           message: text.trim(),
           sector,
           businessName,
+          leadData,
         }),
       });
 

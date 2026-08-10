@@ -305,7 +305,8 @@ function detectCriticalStage(userMsg: string): { isCritical: boolean; stage?: Cr
 export async function processCustomerMessage(
   sessionId: string,
   userMessage: string,
-  sector = 'general'
+  sector = 'general',
+  leadData?: any
 ): Promise<{ reply: string; session: CustomerAiSession; pendingApproval: boolean }> {
   const session = await getOrCreateCustomerSession(sessionId, sector);
   const agentConfig = await getCustomerAiAgentConfig();
@@ -379,7 +380,7 @@ export async function processCustomerMessage(
     replyText = autoresResult.replyText;
   } else {
     // 5. Query Intelligent Gemini AI
-    replyText = await generateIntelligentAiResponse(userMessage, session, agentConfig);
+    replyText = await generateIntelligentAiResponse(userMessage, session, agentConfig, leadData);
   }
 
   // 6. Push Response
@@ -529,7 +530,8 @@ function extractCustomerInfo(text: string, session: CustomerAiSession) {
 async function generateIntelligentAiResponse(
   userMsg: string,
   session: CustomerAiSession,
-  config: CustomerAiAgentConfig
+  config: CustomerAiAgentConfig,
+  leadData?: any
 ): Promise<string> {
   const runtimeConfig = getRuntimeConfig();
   const apiKey = runtimeConfig.antigravityApiKey || process.env.GEMINI_API_KEY;
@@ -545,6 +547,18 @@ async function generateIntelligentAiResponse(
       const activePlans = PLANS.map(p => `• ${p.name}: Setup ₦${p.setupFeeNGN.toLocaleString()} + ₦${p.monthlyNGN.toLocaleString()}/mo — ${p.tagline}`).join('\n');
       const activeSectors = SECTORS.map(s => `• ${s.name}: ${s.description} (Tool: ${s.toolName})`).join('\n');
 
+      const scrapedLeadPrompt = leadData ? `
+SCRAPED LEAD INDIVIDUAL PROFILE & DATA:
+- Target Business Name: ${leadData.name || 'Valued Business'}
+- Category / Sector: ${leadData.category || 'General Business'}
+- Primary Location: ${leadData.address || leadData.area || leadData.city || 'Lagos'}
+- Google Business Rating: ${leadData.rating || 4.8}★ (${leadData.reviews_count || 32} reviews)
+- Summary: ${leadData.business_summary || 'Verified Enterprise'}
+
+TAILORED SALES ADVICE DIRECTIVE:
+Address them warmly using their business name (${leadData.name}). Provide fascinating, bespoke advice explaining how our 24/7 AI Chatbot & 1-Click ${leadData.category} calculator will capture 4x more inbound leads for their business in ${leadData.area || leadData.city || 'Lagos'}!
+` : '';
+
       const liveWebsiteState = `
 LIVE WEBSITE & CONFIGURATION STATE (REAL-TIME UPDATED):
 - Official Bank Account for Transfers: ${payment.bankName} | Account No: ${payment.accountNumber} | Name: ${payment.accountName}
@@ -558,6 +572,7 @@ ${activeSectors}
   1) Existing Website: Add 1-line script tag (<script src="https://www.bethelmindanalytics.com/api/widget/lead-id.js"></script>) in 60s.
   2) No Website: We host full portal on custom domain / subdomain with free SSL.
   3) Transfer ₦92,500 50% deposit or ₦185,000 full fee to ${payment.accountNumber} (${payment.bankName}) and send receipt on WhatsApp.
+${scrapedLeadPrompt}
 `;
 
       const response = await fetch(
