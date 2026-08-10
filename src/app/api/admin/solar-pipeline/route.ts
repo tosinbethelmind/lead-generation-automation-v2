@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { PRE_SCRAPED_LEADS } from '@/lib/preScrapedLeads';
 import { supabase } from '@/lib/supabaseClient';
 import { solarQuoteProSupabase } from '@/lib/solarQuoteProClient';
 import { verifySessionToken } from '@/lib/session';
@@ -117,36 +118,31 @@ export async function GET(req: NextRequest) {
         nigeriaSolarData = allDbLeads;
       }
       
-      // Secondary fallback: Load local_db/leads_db.json directly
+      // Secondary fallback: Load bundled PRE_SCRAPED_LEADS directly
       try {
-        const jsonPath = path.join(process.cwd(), 'local_db', 'leads_db.json');
-        if (fs.existsSync(jsonPath)) {
-          const raw = fs.readFileSync(jsonPath, 'utf8');
-          const jsonLeads = JSON.parse(raw);
-          if (Array.isArray(jsonLeads) && jsonLeads.length > 0) {
-            const extraLeads = jsonLeads.map((l: any, idx: number) => ({
-              id: l.id || `json-lead-${idx}`,
-              name: l.business_name || l.name || 'Lagos Business',
-              phone_e164: l.phone || l.phone_e164 || l.mobile || '',
-              phone: l.phone || l.phone_e164 || l.mobile || '',
-              email: l.email || '',
-              address: l.address || l.location || `${l.city || 'Lagos'}, Nigeria`,
-              city: l.city || 'Lagos',
-              area: l.district || l.area || l.city || 'Lagos',
-              rating: l.rating || 4.5,
-              source_query_or_seed: l.source || 'lagos_10k_b2b',
-              status: l.status || 'new',
-              created_at: l.created_at || new Date().toISOString()
-            }));
-            
-            // Merge unique leads
-            const existingIds = new Set((nigeriaSolarData || []).map((x: any) => x.id));
-            const uniqueExtra = extraLeads.filter((x: any) => !existingIds.has(x.id));
-            nigeriaSolarData = [...(nigeriaSolarData || []), ...uniqueExtra];
-          }
+        if (Array.isArray(PRE_SCRAPED_LEADS) && PRE_SCRAPED_LEADS.length > 0) {
+          const extraLeads = PRE_SCRAPED_LEADS.map((l: any, idx: number) => ({
+            id: l.id || `pre-lead-${idx}`,
+            name: l.business_name || l.name || 'Lagos Business',
+            phone_e164: l.phone || l.phone_e164 || l.mobile || '',
+            phone: l.phone || l.phone_e164 || l.mobile || '',
+            email: l.email || '',
+            address: l.address || l.location || `${l.city || 'Lagos'}, Nigeria`,
+            city: l.city || 'Lagos',
+            area: l.district || l.area || l.city || 'Lagos',
+            rating: l.rating || 4.5,
+            source_query_or_seed: l.source || 'lagos_10k_b2b',
+            status: l.status || 'new',
+            created_at: l.created_at || new Date().toISOString()
+          }));
+          
+          // Merge unique leads
+          const existingIds = new Set((nigeriaSolarData || []).map((x: any) => x.id));
+          const uniqueExtra = extraLeads.filter((x: any) => !existingIds.has(x.id));
+          nigeriaSolarData = [...(nigeriaSolarData || []), ...uniqueExtra];
         }
       } catch (fileErr) {
-        console.error('Error loading local JSON leads fallback:', fileErr);
+        console.error('Error loading PRE_SCRAPED_LEADS fallback:', fileErr);
       }
     }
 
