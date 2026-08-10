@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 import { supabase } from '@/lib/supabaseClient';
 import { solarQuoteProSupabase } from '@/lib/solarQuoteProClient';
 import { verifySessionToken } from '@/lib/session';
@@ -103,34 +105,48 @@ export async function GET(req: NextRequest) {
 
     if (nigeriaSolarErr) console.error('Error fetching 5k Nigeria solar leads:', nigeriaSolarErr);
 
-    // Fallback: If solar-filtered leads are empty, load ALL pre-scraped Lagos & Nigeria B2B leads
-    if (!nigeriaSolarData || nigeriaSolarData.length === 0) {
+    // Fallback: If solar-filtered leads are empty or < 5, load ALL pre-scraped Lagos & Nigeria B2B leads from DB and local JSON file
+    if (!nigeriaSolarData || nigeriaSolarData.length < 5) {
       const { data: allDbLeads } = await db
         .from('leads')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(0, 10000);
+      
       if (allDbLeads && allDbLeads.length > 0) {
         nigeriaSolarData = allDbLeads;
-      } else {
-        try {
-          const repo = getActiveLeadRepository();
-          const localLeads = await repo.getLeads();
-          if (localLeads && localLeads.length > 0) {
-            nigeriaSolarData = localLeads.map((l: any, idx: number) => ({
-              id: l.id || `lead-${idx}`,
+      }
+      
+      // Secondary fallback: Load local_db/leads_db.json directly
+      try {
+        const jsonPath = path.join(process.cwd(), 'local_db', 'leads_db.json');
+        if (fs.existsSync(jsonPath)) {
+          const raw = fs.readFileSync(jsonPath, 'utf8');
+          const jsonLeads = JSON.parse(raw);
+          if (Array.isArray(jsonLeads) && jsonLeads.length > 0) {
+            const extraLeads = jsonLeads.map((l: any, idx: number) => ({
+              id: l.id || `json-lead-${idx}`,
               name: l.business_name || l.name || 'Lagos Business',
-              phone: l.phone || l.phone_e164 || '',
+              phone_e164: l.phone || l.phone_e164 || l.mobile || '',
+              phone: l.phone || l.phone_e164 || l.mobile || '',
               email: l.email || '',
-              address: l.address || l.location || 'Lagos, Nigeria',
+              address: l.address || l.location || `${l.city || 'Lagos'}, Nigeria`,
               city: l.city || 'Lagos',
+              area: l.district || l.area || l.city || 'Lagos',
               rating: l.rating || 4.5,
-              source_query_or_seed: 'lagos_10k_b2b',
+              source_query_or_seed: l.source || 'lagos_10k_b2b',
               status: l.status || 'new',
-              created_at: new Date().toISOString()
+              created_at: l.created_at || new Date().toISOString()
             }));
+            
+            // Merge unique leads
+            const existingIds = new Set((nigeriaSolarData || []).map((x: any) => x.id));
+            const uniqueExtra = extraLeads.filter((x: any) => !existingIds.has(x.id));
+            nigeriaSolarData = [...(nigeriaSolarData || []), ...uniqueExtra];
           }
-        } catch (_) {}
+        }
+      } catch (fileErr) {
+        console.error('Error loading local JSON leads fallback:', fileErr);
       }
     }
 

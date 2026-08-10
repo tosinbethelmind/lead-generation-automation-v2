@@ -286,6 +286,34 @@ export default function SolarPipelineDashboard() {
     }
   };
 
+  const exportLeadsToCsv = () => {
+    if (!filteredLeads || filteredLeads.length === 0) {
+      alert('No leads match your current search/filter criteria.');
+      return;
+    }
+    const headers = ['ID', 'Business Name', 'Phone', 'Email', 'Location', 'City', 'Status', 'Segment', 'Created At'];
+    const rows = filteredLeads.map(l => [
+      `"${l.id}"`,
+      `"${(l.name || '').replace(/"/g, '""')}"`,
+      `"${(l.phone || '').replace(/"/g, '""')}"`,
+      `"${(l.email || '').replace(/"/g, '""')}"`,
+      `"${(l.location || '').replace(/"/g, '""')}"`,
+      `"${(l.city || '').replace(/"/g, '""')}"`,
+      `"${l.status}"`,
+      `"${l.type}"`,
+      `"${l.created_at}"`
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `scraped_leads_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const fetchLeads = async (silent = false) => {
     if (!silent) setLoading(true);
     else setRefreshing(true);
@@ -847,22 +875,23 @@ export default function SolarPipelineDashboard() {
         /* Tab 1: 10K Solar Pipeline View */
         <>
           {/* Filters Bar */}
-      <div className="filters-bar glass-panel">
-        <div className="search-wrapper">
+      <div className="filters-bar glass-panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+        <div className="search-wrapper" style={{ flex: 1, minWidth: '240px' }}>
           <Search className="search-icon" />
           <input 
             type="text" 
-            placeholder="Search leads by name, email, phone, location..."
+            placeholder="Search leads by name, email, phone, location, district..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="select-filters">
+        <div className="select-filters" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div className="filter-group">
             <Filter className="icon" />
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-              <option value="all">All Segments</option>
-              <option value="nigeria_5k">Nationwide 5K Solar</option>
+              <option value="all">All Segments (1,938+)</option>
+              <option value="lagos_10k">Lagos 10K B2B</option>
+              <option value="nigeria_5k">Nationwide 2.5K Solar</option>
               <option value="homeowner">Residential B2C</option>
               <option value="enterprise">Commercial B2B</option>
             </select>
@@ -870,12 +899,30 @@ export default function SolarPipelineDashboard() {
           <div className="filter-group">
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="all">All Statuses</option>
-              <option value="new">New</option>
-              <option value="contacted">Contacted</option>
-              <option value="converted">Converted</option>
+              <option value="new">New Inbox</option>
+              <option value="contacted">Contacted / Engaged</option>
+              <option value="converted">Converted / Won</option>
               <option value="lost">Lost</option>
             </select>
           </div>
+          <button 
+            onClick={exportLeadsToCsv}
+            style={{
+              background: 'rgba(16, 185, 129, 0.15)',
+              border: '1px solid rgba(16, 185, 129, 0.35)',
+              color: '#34D399',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              fontWeight: '700',
+              fontSize: '12px',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <Copy size={13} /> Export CSV
+          </button>
         </div>
       </div>
 
