@@ -232,6 +232,69 @@ export const TransferRebuildOptions: React.FC<TransferRebuildOptionsProps> = ({ 
         })}
       </div>
 
+      {/* 1-Click Script Tag Embed Code Generator for Existing Website Owners */}
+      {strategy === 'script_embed' && (
+        <div style={{
+          background: '#0f172a',
+          border: '1px solid #0284c7',
+          borderRadius: '14px',
+          padding: '20px',
+          marginBottom: '28px',
+          color: '#ffffff'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              🔌 1-Line Embed Script Tag for Your Website:
+            </span>
+            <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Works with WordPress, Wix, Shopify & HTML</span>
+          </div>
+
+          <pre style={{
+            background: '#020617',
+            padding: '12px 16px',
+            borderRadius: '8px',
+            fontSize: '0.82rem',
+            color: '#7dd3fc',
+            fontFamily: 'monospace',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-all',
+            border: '1px solid #1e293b',
+            margin: '0 0 14px 0'
+          }}>
+            {`<script src="${typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com'}/api/widget/${lead?.lead_id || lead?.id || 'test-lead'}.js"></script>`}
+          </pre>
+
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => {
+                const code = `<script src="${typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com'}/api/widget/${lead?.lead_id || lead?.id || 'test-lead'}.js"></script>`;
+                navigator.clipboard.writeText(code);
+                alert('📋 Embed script copied to clipboard! Paste this tag into your website HTML or WordPress plugin.');
+              }}
+              style={{
+                background: '#0284c7',
+                color: '#ffffff',
+                border: 'none',
+                padding: '8px 18px',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              📋 Copy 1-Line Script Code
+            </button>
+            <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+              ⚡ Injects 24/7 AI Chatbot & Lead Calculator onto your site in 10 seconds.
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Feature Selection checklist */}
       <div style={{ marginBottom: '28px' }}>
         <h4 style={{ fontSize: '1rem', fontWeight: 600, color: '#374151', marginBottom: '12px', marginTop: 0 }}>

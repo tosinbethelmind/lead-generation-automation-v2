@@ -62,6 +62,12 @@ export default function AdminLayout({
       visible: true,
     },
     {
+      name: 'Onboarding & Claim Studio',
+      path: '/admin/onboarding',
+      icon: Briefcase,
+      visible: true,
+    },
+    {
       name: 'Customer AI Agent',
       path: '/admin/ai-agent',
       icon: Bot,

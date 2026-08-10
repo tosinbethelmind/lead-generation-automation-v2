@@ -13,8 +13,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Bethelmind Analytics | AI Lead Generation & Business Automation Platform for Nigerian Enterprises",
-  description: "Nigeria's #1 AI-powered B2B lead generation & sales automation platform. Extract verified Lagos business contacts, deploy 24/7 AI Customer Care Agents, automate WhatsApp voice notes, and scale revenue effortlessly.",
+  title: "Bethelmind Analytics | AI Lead Generation & Business Automation for Lagos SMEs",
+  description: "AI-assisted WhatsApp enquiry handling, lead follow-up, simple CRM, and sector workflow tools for Lagos businesses. Guided onboarding, monthly plans, no long-term contract.",
   metadataBase: new URL('https://www.bethelmindanalytics.com'),
   alternates: {
     canonical: 'https://www.bethelmindanalytics.com',
@@ -46,8 +46,8 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Bethelmind Analytics — Premier AI Lead Generation & Business Automation Nigeria',
-    description: 'Harvest verified Lagos B2B leads, automate WhatsApp outreach with native voice notes, and let a 24/7 AI Sales Agent close deals for your business.',
+    title: 'Bethelmind Analytics — AI Lead Generation & Business Automation for Lagos SMEs',
+    description: 'AI-assisted WhatsApp enquiry handling, lead qualification, simple CRM, and sector workflow tools for Lagos businesses. Guided onboarding, monthly plans, cancel anytime.',
     url: 'https://www.bethelmindanalytics.com',
     siteName: 'Bethelmind Analytics',
     locale: 'en_NG',
@@ -63,8 +63,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Bethelmind Analytics — AI Lead Generation & Business Automation',
-    description: "Nigeria's most advanced AI lead generation and revenue automation platform.",
+    title: 'Bethelmind Analytics — AI Lead Generation & Business Automation for Lagos SMEs',
+    description: 'AI-assisted enquiry handling, lead follow-up, simple CRM, and sector tools for Lagos businesses. Practical workflows, guided onboarding.',
     images: ['https://www.bethelmindanalytics.com/og-image.png'],
   },
 };
@@ -78,7 +78,7 @@ const jsonLdSchema = {
       name: 'Bethelmind Analytics & Strategy',
       url: 'https://www.bethelmindanalytics.com',
       logo: 'https://www.bethelmindanalytics.com/favicon.ico',
-      description: "Nigeria's premier AI-powered B2B lead generation, WhatsApp automation, and sales AI agent platform.",
+      description: 'Business automation and customer-acquisition workflows for Lagos SMEs. AI-assisted enquiry handling, lead follow-up, simple CRM, and sector tools.',
       address: {
         '@type': 'PostalAddress',
         addressLocality: 'Lagos',
@@ -102,13 +102,8 @@ const jsonLdSchema = {
         '@type': 'AggregateOffer',
         priceCurrency: 'NGN',
         lowPrice: '15000',
-        highPrice: '150000',
-        offerCount: '4',
-      },
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.9',
-        ratingCount: '38',
+        highPrice: '75000',
+        offerCount: '3',
       },
     },
     {
