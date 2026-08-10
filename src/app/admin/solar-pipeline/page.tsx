@@ -200,10 +200,13 @@ export default function SolarPipelineDashboard() {
     return null;
   };
 
-  const handleTriggerScrape = async (mode: 'dry-run' | 'synthetic' | 'live-solar' | 'live-nigeria-5k') => {
+  const [scrapingLagos10k, setScrapingLagos10k] = useState(false);
+
+  const handleTriggerScrape = async (mode: 'dry-run' | 'synthetic' | 'live-solar' | 'live-nigeria-5k' | 'lagos-10k') => {
     if (mode === 'dry-run') setScrapingDryRun(true);
     else if (mode === 'synthetic') setGeneratingSynthetic(true);
     else if (mode === 'live-nigeria-5k') setScrapingNigeria5k(true);
+    else if (mode === 'lagos-10k') setScrapingLagos10k(true);
     else setScrapingLiveSolar(true);
 
     setJobStatus('running');
@@ -212,13 +215,14 @@ export default function SolarPipelineDashboard() {
     setPollingActive(false);
 
     try {
-      const res = await fetch('/api/admin/solar-pipeline', {
+      const endpoint = mode === 'lagos-10k' ? '/api/admin/lagos-pipeline' : '/api/admin/solar-pipeline';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'scrape',
           mode,
-          count: mode === 'live-nigeria-5k' ? 2500 : (mode === 'synthetic' ? 1000 : undefined)
+          count: mode === 'lagos-10k' ? 10000 : (mode === 'live-nigeria-5k' ? 2500 : (mode === 'synthetic' ? 1000 : undefined))
         })
       });
       const data = await res.json();
@@ -230,6 +234,7 @@ export default function SolarPipelineDashboard() {
         if (mode === 'dry-run') setScrapingDryRun(false);
         else if (mode === 'synthetic') setGeneratingSynthetic(false);
         else if (mode === 'live-nigeria-5k') setScrapingNigeria5k(false);
+        else if (mode === 'lagos-10k') setScrapingLagos10k(false);
         else setScrapingLiveSolar(false);
       }
     } catch (err: any) {
@@ -237,6 +242,7 @@ export default function SolarPipelineDashboard() {
       if (mode === 'dry-run') setScrapingDryRun(false);
       else if (mode === 'synthetic') setGeneratingSynthetic(false);
       else if (mode === 'live-nigeria-5k') setScrapingNigeria5k(false);
+      else if (mode === 'lagos-10k') setScrapingLagos10k(false);
       else setScrapingLiveSolar(false);
     }
   };
@@ -556,11 +562,33 @@ export default function SolarPipelineDashboard() {
               </button>
             </div>
 
-            {/* FRONT & CENTER BIG GREEN SCRAPER BUTTON */}
+            {/* FRONT & CENTER SCRAPER BUTTONS */}
+            <button 
+              onClick={() => handleTriggerScrape('lagos-10k')} 
+              disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || scrapingLagos10k || harvesting}
+              className="start-btn-pulse"
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                background: 'linear-gradient(135deg, #06B6D4 0%, #0284C7 100%)',
+                border: '1px solid #38BDF8',
+                borderRadius: '9px',
+                padding: '9px 18px',
+                cursor: 'pointer',
+                color: '#FFFFFF',
+                fontWeight: '800',
+                fontSize: '13px',
+                letterSpacing: '0.02em'
+              }}
+            >
+              <Building className={scrapingLagos10k ? 'spin-slow-icon' : ''} size={16} />
+              {scrapingLagos10k ? 'HARVESTING LAGOS 10K...' : '🏙️ START 10K LAGOS B2B SCRAPER'}
+            </button>
+
             <button 
               onClick={() => handleTriggerScrape('live-nigeria-5k')} 
-              disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || harvesting}
-              className="start-btn-pulse"
+              disabled={scrapingDryRun || generatingSynthetic || scrapingLiveSolar || scrapingNigeria5k || scrapingLagos10k || harvesting}
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -723,9 +751,28 @@ export default function SolarPipelineDashboard() {
         /* Advanced Engine & Tools Tab View */
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px', flex: 1, overflowY: 'auto' }}>
           
+          {/* Lagos 10K B2B Harvester Card */}
+          <div className="glass-panel" style={{ padding: '16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '10px', border: '1px solid rgba(56, 189, 248, 0.3)', background: 'rgba(6, 182, 212, 0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Building style={{ color: '#38bdf8' }} size={20} />
+              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: '#f8fafc' }}>10K Lagos B2B Harvester</h3>
+            </div>
+            <p style={{ fontSize: '12px', color: '#cbd5e1', margin: 0, flex: 1 }}>
+              Extract 10,000 verified Lagos commercial leads across 27 districts (Ikeja, Lekki, VI, Victoria Island, Surulere, Yaba).
+            </p>
+            <button 
+              onClick={() => handleTriggerScrape('lagos-10k')}
+              disabled={scrapingLagos10k}
+              className="btn-primary"
+              style={{ padding: '9px 14px', fontSize: '12px', background: 'linear-gradient(135deg, #06b6d4 0%, #0284c7 100%)', border: 'none', color: '#fff', fontWeight: '800' }}
+            >
+              <Building size={14} /> {scrapingLagos10k ? 'Extracting Lagos 10K...' : 'Start 10K Lagos B2B Scraper'}
+            </button>
+          </div>
+
           <div className="glass-panel" style={{ padding: '16px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Building style={{ color: '#06b6d4' }} size={20} />
+              <Building style={{ color: '#10b981' }} size={20} />
               <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700' }}>Harvest Scraped Leads</h3>
             </div>
             <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, flex: 1 }}>
