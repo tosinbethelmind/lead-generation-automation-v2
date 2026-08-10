@@ -40,7 +40,7 @@ export default function CustomerAiAgentWidget({
       {
         id: 'msg_welcome',
         sender: 'agent',
-        text: `👋 Hello! Welcome to Bethelmind Solutions. I am your 24/7 Customer AI Specialist for ${sector}. How can I assist your business today?`,
+        text: `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Sales & Customer Specialist. How can I help you automate lead generation, get instant quotes, or scale your business today?`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
