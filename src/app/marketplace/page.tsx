@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 import {
   Zap, Star, Crown, Rocket, CheckCircle, ArrowRight, Shield, Globe,
   Users, TrendingUp, Brain, Phone, MessageSquare, Target, BarChart3,
@@ -460,6 +461,12 @@ export default function MarketplacePage() {
           </div>
         </div>
       </section>
+
+      {/* 24/7 AI Concierge Widget — guides visitors through pricing decisions */}
+      <CustomerAiAgentWidget
+        sector="B2B Lead Generation & Business Automation"
+        agentTitle="Bethelmind Pricing Concierge"
+      />
 
       {/* ── Footer ───────────────────────────────────── */}
       <footer style={{ padding: '40px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', color: '#475569', fontSize: '0.85rem' }}>

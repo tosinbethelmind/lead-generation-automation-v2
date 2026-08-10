@@ -98,24 +98,35 @@ function getAgentSessionsPath(): string {
 
 const WEBAPP_KNOWLEDGE_BASE = `
 SYSTEM ARCHITECTURE & CAPABILITIES KNOWLEDGE GRAPH:
-You possess complete human-level understanding of all platform features, landing pages, claiming options, pricing, and sector tools:
+You possess complete human-level understanding of all platform features, landing pages, claiming options, pricing, and sector tools. This knowledge base is ALWAYS current — updated with every website change.
 
 1. SCRAPED LEAD WEBSITE & PORTAL CLAIMING WORKFLOW:
-   - What happens when a business lead receives a preview link: We pre-generated a complete, custom, high-converting AI website and sector tools for their business.
+   - What happens when a business lead receives a preview link: We pre-generated a complete, custom, high-converting AI website and sector tools specifically for their business using their Google Business data (name, category, location, rating, services).
+   - The AI Concierge greets each lead by their business name, mentions their Google rating & location, and immediately explains the value of activating.
    - Claiming Options:
-     * Option A (Has Existing Website): They can claim their AI Chatbot & Lead Harvester by adding a 1-line script tag (<script src="https://www.bethelmindanalytics.com/api/widget/their-lead-id.js"></script>) to WordPress, Wix, Squarespace, or custom site in 60 seconds.
-     * Option B (No Website): We host their complete website on custom subdomain (e.g. businessname.bethelmindanalytics.com) or map their custom domain (e.g. www.businessname.com) with 100% free SSL auto-provisioning.
+     * Option A (Has Existing Website): They claim by adding 1 line of code to their WordPress, Wix, Squarespace, or custom site in 60 seconds: <script src="https://www.bethelmindanalytics.com/api/widget/their-lead-id.js"></script>
+     * Option B (No Website): We host their complete portal on a custom subdomain (e.g. businessname.bethelmindanalytics.com) or map their own domain (e.g. www.businessname.com) with free SSL auto-provisioning.
    - Pricing & Claim Fees:
-     * One-time setup fee: ₦185,000 NGN.
-     * 50% Deposit Option: ₦92,500 NGN to start onboarding immediately.
-     * Renewal: ₦35,000/month after the first 30 days.
+     * One-time setup fee: ₦185,000 NGN (full claim — own domain + complete system).
+     * 50% Deposit Option: ₦92,500 NGN to start onboarding immediately today.
+     * Monthly Subscription (after first 30 days): ₦35,000/month.
    - Bank Payment Details (Moniepoint MFB / OPay):
      * Bank: Moniepoint Microfinance Bank / OPay Digital Services
      * Account Number: 7034297995
      * Account Name: Oyelakin Tosin Matthew (Bethelmind Analytics)
      * WhatsApp Receipt Verification: Send transfer receipt to 2348022791227 for 1-minute activation.
 
-2. ALL 8 SECTOR TOOLS & CALCULATORS:
+2. AI CONCIERGE INTELLIGENT FEATURES (ALL ACTIVE ON EVERY PAGE):
+   - Exit-Intent Auto-Engagement: When a visitor moves their cursor to close the page, the AI Concierge widget automatically pops open with a personalized urgent offer, e.g. "Wait, [Business Name]! Before you leave, let me show you how to claim your 24/7 AI Chatbot with just ₦92,500!"
+   - Audio Voice Synthesizer: Every chat message can be read aloud using the browser's Web Speech API. Visitors click "🔊 Listen Voice" in the chat header. The AI greets scraped leads by voice using their business name and sector 2.5 seconds after page load.
+   - Hyper-Personalized Greetings: When a scraped lead opens their preview link, the AI immediately addresses them by name: "Hello [Business Name]! 🌟 Your Google profile shows you're rated [X]★ with [N] reviews in [Area]. I've already built a custom portal for your [Category] business! Shall I walk you through activating it today?"
+   - Dynamic Quick-Action Chips: Quick-reply buttons adapt to the lead's business category:
+     * Solar businesses get: "☀️ Quote 5kVA Solar System for [Business Name]"
+     * Real Estate gets: "🏠 Show [Business Name] Real Estate Lead Tools"
+     * Auto dealers get: "🚗 Tokunbo Auto Duty Calculator for [Business Name]"
+     * Clinics get: "🏥 Clinic Appointment Booking AI for [Business Name]"
+
+3. ALL 8 SECTOR TOOLS & CALCULATORS:
    - Solar & Renewable Energy: Solar BOQ load estimator (3.5kVA, 5kVA, 10kVA+), battery type breakdown (Lithium vs Tubular), panel count, and generator fuel savings calculator.
    - Real Estate & Luxury Property: 6-12 month installment payment schedule, mortgage calculator, and site inspection booking.
    - Tokunbo Automotive Importers: Vehicle import duty calculator (Nigeria Customs rates), port clearing fees, and haulage delivery.
@@ -125,16 +136,29 @@ You possess complete human-level understanding of all platform features, landing
    - Schools & Academies: Termly tuition fee reference and online admission form.
    - General B2B Services: Instant quote generator, lead qualification, and appointment scheduler.
 
-3. SUBSCRIPTION PACKAGES & PRICING PLANS:
-   - Starter Package (₦25,000 setup + ₦15,000/mo): Includes 24/7 AI Customer Care Chatbot & Web Widget.
-   - Business Pro Package (₦50,000 setup + ₦35,000/mo): Includes Lead Harvester (10k leads/mo) + AI Customer Specialist + WhatsApp Voice Notes + Sector Tools.
-   - VIP Enterprise Suite (₦100,000+ setup + ₦75,000+/mo): Includes AI Voice Phone Calling + Custom Domain Hosting + Dedicated Account Manager.
+4. SUBSCRIPTION PACKAGES & PRICING PLANS:
+   - Express Starter (₦75,000 setup + ₦15,000/mo): 24/7 AI Chatbot, WhatsApp Catalog, 500 Lagos B2B Contacts, free subdomain.
+   - Business Growth Pro (₦185,000 setup + ₦35,000/mo): Lead Harvester (10k leads/mo) + AI Customer Specialist + WhatsApp Voice Notes + Sector Tools. [Most Popular — 70% choice]
+   - VIP Enterprise Suite (₦350,000+ setup + ₦75,000+/mo): AI Voice Phone Calling + Custom Domain Hosting + Dedicated Account Manager + Unlimited leads.
 
-4. MULTI-CHANNEL AUTOMATED OUTREACH:
+5. MULTI-CHANNEL AUTOMATED OUTREACH:
    - WhatsApp Baileys Automation: Direct WhatsApp message dispatch, spintax message variations, interactive button templates.
    - Email SMTP & Nodemailer: Instant PDF proposals, drip campaigns, HTML templates.
    - SMS API: Immediate appointment reminders & order alerts.
+
+6. ADMIN CONTROL PANEL CAPABILITIES (for your reference):
+   - Customer AI Agent Control Panel: /admin/ai-agent — Live AI Sandbox, WhatsApp Critical Approvals, Persona Settings, Transcript Logs.
+   - Demands & Lead Journey Analytics: Tracks top customer requests, sentiment ratios (65% high-intent, 25% technical inquiry, 10% hesitating), full 5-step lead journey map.
+   - 1-Click CSV Transcript Export: Download all AI conversation transcripts for strategy review and product iteration.
+   - Human Escalation Anti-Abuse Protocol: 98% of queries resolved by AI. Human escalation only permitted after name + WhatsApp number collected and critical requirement verified.
+
+7. LANDING PAGES & WHERE THE AI WIDGET APPEARS:
+   - Homepage (/home): Full business profiler with sector tools and pricing.
+   - Marketplace / Pricing (/marketplace): All subscription tiers with feature comparison.
+   - Lead Preview Pages (/preview/[lead_id]): Hyper-personalized with scraped business data and auto-voice greeting.
+   - All pages feature the floating AI Concierge widget for 24/7 instant engagement.
 `;
+
 
 const DEFAULT_AGENT_CONFIG: CustomerAiAgentConfig = {
   agent_name: 'Bethel Intelligent Customer Specialist',
