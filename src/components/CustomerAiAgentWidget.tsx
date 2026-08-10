@@ -40,7 +40,7 @@ export default function CustomerAiAgentWidget({
       {
         id: 'msg_welcome',
         sender: 'agent',
-        text: `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Sales & Customer Specialist. How can I help you automate lead generation, get instant quotes, or scale your business today?`,
+        text: `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
@@ -118,10 +118,11 @@ export default function CustomerAiAgentWidget({
   };
 
   const quickPrompts = [
-    '☀️ Request Solar Quote',
-    '💰 Lead Gen Packages & Pricing',
-    '📞 Talk to Human Agent',
-    '⚡ How fast can you deploy?',
+    '🎯 Explore Business Services',
+    '☀️ Solar BOQ Calculator',
+    '🏠 Real Estate & Auto Tools',
+    '💳 View Pricing & Offers',
+    '📞 Talk to Human Consultant',
   ];
 
   return (
