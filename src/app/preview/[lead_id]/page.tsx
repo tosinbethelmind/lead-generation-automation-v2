@@ -201,10 +201,23 @@ export default function PreviewPage() {
         leadId={leadId}
       />
 
-      {/* Floating 24/7 AI Concierge Widget */}
+      {/* Floating 24/7 AI Concierge Widget — Receives full scraped lead profile for hyper-personalized suggestions */}
       <CustomerAiAgentWidget
         businessName={data.lead.name}
         sector={data.lead.category}
+        leadData={{
+          name: data.lead.name,
+          category: data.lead.category,
+          address: data.lead.address,
+          area: data.lead.area,
+          city: data.lead.city,
+          rating: data.lead.rating,
+          reviews_count: data.lead.reviews_count,
+          business_summary: data.lead.business_summary,
+          phone: data.lead.phone_raw,
+          services: data.copy?.services?.map((s: any) => s.title).join(', '),
+          social_links: data.lead.social_links,
+        }}
       />
     </div>
   );

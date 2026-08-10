@@ -69,7 +69,9 @@ export default function CustomerAiAgentWidget({
     }
     setSessionId(sid);
 
-    const welcomeGreeting = businessName
+    const welcomeGreeting = leadData
+      ? `👋 Hello, **${leadData.name}**! 🌟 Congratulations — your Google Business profile shows you're rated **${leadData.rating}★** with ${leadData.reviews_count} reviews in **${leadData.area || leadData.city || 'Lagos'}**. I've already built a custom AI Lead Generation portal specifically for your **${leadData.category}** business! 🚀 Shall I walk you through how to activate it today with just ₦92,500?`
+      : businessName
       ? `👋 Welcome to ${businessName}! I am your 24/7 AI Business Guide & Virtual Assistant. How can I assist you with our services, instant quotes, or custom domain setup today?`
       : `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`;
 
@@ -82,7 +84,19 @@ export default function CustomerAiAgentWidget({
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
-  }, [sector, businessName]);
+
+    // Auto-speak the personalized welcome greeting to the lead
+    if (leadData && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      setTimeout(() => {
+        const cleanText = `Hello ${leadData.name}! Your Google-rated ${leadData.category} business in ${leadData.area || leadData.city || 'Lagos'} is already set up and ready. Let me show you how to activate your 24/7 AI system today.`;
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = 0.92;
+        utterance.pitch = 1.0;
+        utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+      }, 2500);
+    }
+  }, [sector, businessName, leadData]);
 
   // Exit-Intent Mouseleave & Proactive Auto-Pop Trigger
   useEffect(() => {
@@ -185,7 +199,21 @@ export default function CustomerAiAgentWidget({
     }
   };
 
-  const quickPrompts = [
+  // Dynamic quick-action chips based on scraped lead's business category
+  const quickPrompts = leadData ? [
+    leadData.category?.toLowerCase().includes('solar')
+      ? `☀️ Quote 5kVA Solar System for ${leadData.name}`
+      : leadData.category?.toLowerCase().includes('real estate') || leadData.category?.toLowerCase().includes('property')
+      ? `🏠 Show ${leadData.name} Real Estate Lead Tools`
+      : leadData.category?.toLowerCase().includes('auto') || leadData.category?.toLowerCase().includes('car')
+      ? `🚗 Tokunbo Auto Duty Calculator for ${leadData.name}`
+      : leadData.category?.toLowerCase().includes('medical') || leadData.category?.toLowerCase().includes('clinic')
+      ? `🏥 Clinic Appointment Booking AI for ${leadData.name}`
+      : `🎯 How ${leadData.name} Gets 4x More Leads`,
+    `🚀 Activate My Portal for ₦92,500`,
+    `💳 View Pricing Plans`,
+    `📞 How to Send Payment Receipt`,
+  ] : [
     '🎯 Explore Business Services',
     '☀️ Solar BOQ Calculator',
     '🏠 Real Estate & Auto Tools',
