@@ -13,6 +13,9 @@ import { logActivity } from './activityLogger';
 import { convertLeadToDeal } from './pipelineManager';
 import { processAutoresponderMessage } from './autoresponderEngine';
 import { sendWhatsAppMessage } from './whatsapp';
+import { paymentConfig } from '@/config/payment';
+import { PLANS } from '@/config/plans';
+import { SECTORS } from '@/config/sectors';
 
 export type CriticalStage =
   | 'quote_finalization'
@@ -533,6 +536,25 @@ async function generateIntelligentAiResponse(
         .map((m) => `${m.sender.toUpperCase()}: ${m.text}`)
         .join('\n');
 
+      const payment = paymentConfig;
+      const activePlans = PLANS.map(p => `• ${p.name}: Setup ₦${p.setupFeeNGN.toLocaleString()} + ₦${p.monthlyNGN.toLocaleString()}/mo — ${p.tagline}`).join('\n');
+      const activeSectors = SECTORS.map(s => `• ${s.name}: ${s.description} (Tool: ${s.toolName})`).join('\n');
+
+      const liveWebsiteState = `
+LIVE WEBSITE & CONFIGURATION STATE (REAL-TIME UPDATED):
+- Official Bank Account for Transfers: ${payment.bankName} | Account No: ${payment.accountNumber} | Name: ${payment.accountName}
+- Support WhatsApp: +${payment.whatsappNumber}
+- Official Website URL: https://www.bethelmindanalytics.com
+- Active Pricing Plans & Packages:
+${activePlans}
+- Supported Industry Sectors & Tools:
+${activeSectors}
+- Lead Claiming Options:
+  1) Existing Website: Add 1-line script tag (<script src="https://www.bethelmindanalytics.com/api/widget/lead-id.js"></script>) in 60s.
+  2) No Website: We host full portal on custom domain / subdomain with free SSL.
+  3) Transfer ₦92,500 50% deposit or ₦185,000 full fee to ${payment.accountNumber} (${payment.bankName}) and send receipt on WhatsApp.
+`;
+
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
         {
@@ -545,6 +567,8 @@ async function generateIntelligentAiResponse(
                 parts: [
                   {
                     text: `${config.system_prompt}
+
+${liveWebsiteState}
 
 Session Industry Sector: ${session.sector || config.sector}
 Customer Name: ${session.customer_name || 'Visitor'}
