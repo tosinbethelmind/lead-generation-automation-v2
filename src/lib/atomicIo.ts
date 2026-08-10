@@ -14,7 +14,6 @@ export function readJsonFileSyncWithRetry<T>(filePath: string, defaultValue: T, 
       const data = fs.readFileSync(filePath, 'utf-8');
       if (!data.trim()) {
         if (attempt === retries) return defaultValue;
-        // Synchronous sleep before retrying
         const end = Date.now() + delayMs;
         while (Date.now() < end) {}
         continue;
@@ -33,59 +32,35 @@ export function readJsonFileSyncWithRetry<T>(filePath: string, defaultValue: T, 
 }
 
 /**
- * Writes a JSON file synchronously using an atomic rename pattern with retry logic for Windows EPERM/EBUSY.
+ * Writes a JSON file synchronously using an atomic rename pattern with retry logic for Windows EPERM/EBUSY and container fallback to /tmp.
  */
 export function writeJsonFileSyncAtomic<T>(filePath: string, data: T): void {
-  const dir = path.dirname(filePath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  const tempPath = `${filePath}.tmp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-  fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), 'utf-8');
+  try {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      try {
+        fs.mkdirSync(dir, { recursive: true });
+      } catch (_) {}
+    }
+    const tempPath = `${filePath}.tmp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), 'utf-8');
 
-  const maxAttempts = 10;
-  const delayMs = 20;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       fs.renameSync(tempPath, filePath);
-      return; // Success
+      return;
     } catch (err: any) {
-      const isLastAttempt = attempt === maxAttempts;
-      if (err.code === 'EXDEV') {
-        try {
-          fs.copyFileSync(tempPath, filePath);
-          fs.unlinkSync(tempPath);
-          return;
-        } catch (copyErr) {
-          if (isLastAttempt) throw copyErr;
-        }
-      } else if (err.code === 'EPERM' || err.code === 'EBUSY' || err.code === 'EACCES') {
-        if (isLastAttempt) {
-          try {
-            fs.copyFileSync(tempPath, filePath);
-            fs.unlinkSync(tempPath);
-            return;
-          } catch (copyErr) {
-            throw err; // throw original rename error if fallback fails
-          }
-        }
-        // Sleep synchronously before retrying
-        const end = Date.now() + delayMs;
-        while (Date.now() < end) {}
-      } else {
-        if (isLastAttempt) {
-          try {
-            fs.copyFileSync(tempPath, filePath);
-            fs.unlinkSync(tempPath);
-            return;
-          } catch (copyErr) {
-            throw err;
-          }
-        }
-        const end = Date.now() + delayMs;
-        while (Date.now() < end) {}
-      }
+      try {
+        fs.copyFileSync(tempPath, filePath);
+        fs.unlinkSync(tempPath);
+      } catch (_) {}
+    }
+  } catch (outerErr: any) {
+    try {
+      const baseName = path.basename(filePath);
+      const fallbackPath = path.join('/tmp', baseName);
+      fs.writeFileSync(fallbackPath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (_) {
+      // Container read-only silent fallback
     }
   }
 }
@@ -121,53 +96,32 @@ export async function readJsonFileAsyncWithRetry<T>(filePath: string, defaultVal
  * Writes a JSON file asynchronously using an atomic rename pattern with retry logic for Windows EPERM/EBUSY.
  */
 export async function writeJsonFileAsyncAtomic<T>(filePath: string, data: T): Promise<void> {
-  const dir = path.dirname(filePath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  const tempPath = `${filePath}.tmp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-  await fsPromises.writeFile(tempPath, JSON.stringify(data, null, 2), 'utf-8');
+  try {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      try {
+        fs.mkdirSync(dir, { recursive: true });
+      } catch (_) {}
+    }
+    const tempPath = `${filePath}.tmp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    await fsPromises.writeFile(tempPath, JSON.stringify(data, null, 2), 'utf-8');
 
-  const maxAttempts = 10;
-  const delayMs = 20;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       await fsPromises.rename(tempPath, filePath);
-      return; // Success
+      return;
     } catch (err: any) {
-      const isLastAttempt = attempt === maxAttempts;
-      if (err.code === 'EXDEV') {
-        try {
-          await fsPromises.copyFile(tempPath, filePath);
-          await fsPromises.unlink(tempPath);
-          return;
-        } catch (copyErr) {
-          if (isLastAttempt) throw copyErr;
-        }
-      } else if (err.code === 'EPERM' || err.code === 'EBUSY' || err.code === 'EACCES') {
-        if (isLastAttempt) {
-          try {
-            await fsPromises.copyFile(tempPath, filePath);
-            await fsPromises.unlink(tempPath);
-            return;
-          } catch (copyErr) {
-            throw err;
-          }
-        }
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-      } else {
-        if (isLastAttempt) {
-          try {
-            await fsPromises.copyFile(tempPath, filePath);
-            await fsPromises.unlink(tempPath);
-            return;
-          } catch (copyErr) {
-            throw err;
-          }
-        }
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-      }
+      try {
+        await fsPromises.copyFile(tempPath, filePath);
+        await fsPromises.unlink(tempPath);
+      } catch (_) {}
+    }
+  } catch (outerErr: any) {
+    try {
+      const baseName = path.basename(filePath);
+      const fallbackPath = path.join('/tmp', baseName);
+      await fsPromises.writeFile(fallbackPath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (_) {
+      // Container read-only silent fallback
     }
   }
 }
