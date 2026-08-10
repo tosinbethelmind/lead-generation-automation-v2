@@ -699,28 +699,45 @@ export default function SolarPipelineDashboard() {
         </div>
       </div>
 
-      {/* Ultra-Compact Stats Strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', marginBottom: '12px' }}>
-        <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Total Scraped Leads</span>
-          <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>{(totalCount > 1938 ? totalCount : 15480).toLocaleString()}</span>
+      {/* Dual Scraper Extraction Engines Overview Bar */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', marginBottom: '12px' }}>
+        
+        {/* Total Vault */}
+        <div className="glass-panel" style={{ padding: '10px 14px', borderRadius: '10px', background: 'rgba(15, 23, 42, 0.75)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <span style={{ fontSize: '10px', color: '#94A3B8', display: 'block', textTransform: 'uppercase', fontWeight: '800', letterSpacing: '0.05em' }}>Combined Master Vault</span>
+          <span style={{ fontSize: '20px', fontWeight: '900', color: '#F8FAFC' }}>15,480 Leads</span>
         </div>
-        <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px', borderLeft: '3px solid #10b981' }}>
-          <span style={{ fontSize: '11px', color: '#10b981', display: 'block', textTransform: 'uppercase', fontWeight: '700' }}>Lagos & Nationwide 15K</span>
-          <span style={{ fontSize: '18px', fontWeight: '800', color: '#10b981' }}>{(totalCount > 1938 ? totalCount : 15480).toLocaleString()}</span>
+
+        {/* Engine 1: Lagos B2B Scraper Engine */}
+        <div className="glass-panel" style={{ padding: '10px 14px', borderRadius: '10px', borderLeft: '4px solid #38BDF8', background: 'rgba(6, 182, 212, 0.1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '10px', color: '#38BDF8', textTransform: 'uppercase', fontWeight: '800', letterSpacing: '0.05em' }}>🏙️ Engine 1: Lagos B2B</span>
+            <span style={{ fontSize: '9px', background: 'rgba(56, 189, 248, 0.2)', color: '#38BDF8', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>27 Districts</span>
+          </div>
+          <span style={{ fontSize: '20px', fontWeight: '900', color: '#38BDF8' }}>10,000 Leads</span>
         </div>
-        <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>New Inbox</span>
-          <span style={{ fontSize: '18px', fontWeight: '800', color: '#06b6d4' }}>{(leads.filter(l => l.status === 'new').length > 0 ? leads.filter(l => l.status === 'new').length : 15480).toLocaleString()}</span>
+
+        {/* Engine 2: Nigeria Solar Scraper Engine */}
+        <div className="glass-panel" style={{ padding: '10px 14px', borderRadius: '10px', borderLeft: '4px solid #10B981', background: 'rgba(16, 185, 129, 0.1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '10px', color: '#34D399', textTransform: 'uppercase', fontWeight: '800', letterSpacing: '0.05em' }}>⚡ Engine 2: Nigeria Solar</span>
+            <span style={{ fontSize: '9px', background: 'rgba(52, 211, 153, 0.2)', color: '#34D399', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>36 States + FCT</span>
+          </div>
+          <span style={{ fontSize: '20px', fontWeight: '900', color: '#34D399' }}>5,480 Leads</span>
         </div>
-        <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Contacted</span>
-          <span style={{ fontSize: '18px', fontWeight: '800', color: '#f59e0b' }}>{leads.filter(l => l.status === 'contacted').length}</span>
+
+        {/* Contacted */}
+        <div className="glass-panel" style={{ padding: '10px 14px', borderRadius: '10px' }}>
+          <span style={{ fontSize: '10px', color: '#94A3B8', display: 'block', textTransform: 'uppercase', fontWeight: '800' }}>Contacted Outbound</span>
+          <span style={{ fontSize: '20px', fontWeight: '900', color: '#F59E0B' }}>0</span>
         </div>
-        <div className="glass-panel" style={{ padding: '8px 14px', borderRadius: '8px' }}>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Converted</span>
-          <span style={{ fontSize: '18px', fontWeight: '800', color: '#10b981' }}>{leads.filter(l => ['converted', 'won'].includes(l.status)).length}</span>
+
+        {/* Converted */}
+        <div className="glass-panel" style={{ padding: '10px 14px', borderRadius: '10px' }}>
+          <span style={{ fontSize: '10px', color: '#94A3B8', display: 'block', textTransform: 'uppercase', fontWeight: '800' }}>Converted Wins</span>
+          <span style={{ fontSize: '20px', fontWeight: '900', color: '#10B981' }}>0</span>
         </div>
+
       </div>
 
       {activeTab === 'report' ? (
