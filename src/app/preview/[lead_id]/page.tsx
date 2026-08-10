@@ -7,6 +7,7 @@ import Link from 'next/link';
 import LandingPage from '@/components/LandingPage';
 import { ZeroAgentSandboxingWidget } from '@/components/ZeroAgentSandboxingWidget';
 import { LiveSocialProofTicker } from '@/components/LiveSocialProofTicker';
+import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 
 interface PreviewData {
   lead: {
@@ -198,6 +199,12 @@ export default function PreviewPage() {
       <InteractiveFeatureShowcaseModal
         businessName={data.lead.name}
         leadId={leadId}
+      />
+
+      {/* Floating 24/7 AI Concierge Widget */}
+      <CustomerAiAgentWidget
+        businessName={data.lead.name}
+        sector={data.lead.category}
       />
     </div>
   );

@@ -10,20 +10,28 @@ interface ChatMessage {
   timestamp: string;
 }
 
+interface CustomerAiAgentWidgetProps {
+  sector?: string;
+  businessName?: string;
+  agentTitle?: string;
+  initialOpen?: boolean;
+}
+
 export default function CustomerAiAgentWidget({
   sector = 'Solar & B2B Lead Gen',
+  businessName,
+  agentTitle,
   initialOpen = false,
-}: {
-  sector?: string;
-  initialOpen?: boolean;
-}) {
+}: CustomerAiAgentWidgetProps) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState('');
   const [handedOver, setHandedOver] = useState(false);
-  const [agentName, setAgentName] = useState('Bethel AI Specialist');
+  
+  const displayName = agentTitle || (businessName ? `${businessName} AI Concierge` : 'Bethelmind AI Concierge');
+  const [agentName, setAgentName] = useState(displayName);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,16 +43,20 @@ export default function CustomerAiAgentWidget({
     }
     setSessionId(sid);
 
+    const welcomeGreeting = businessName
+      ? `👋 Welcome to ${businessName}! I am your 24/7 Virtual Assistant & Business Guide. How can I assist you with our services, instant quotes, or bookings today?`
+      : `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`;
+
     // Initial greeting
     setMessages([
       {
         id: 'msg_welcome',
         sender: 'agent',
-        text: `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`,
+        text: welcomeGreeting,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
-  }, [sector]);
+  }, [sector, businessName]);
 
   useEffect(() => {
     if (isOpen) {
@@ -76,6 +88,7 @@ export default function CustomerAiAgentWidget({
           sessionId,
           message: text.trim(),
           sector,
+          businessName,
         }),
       });
 
@@ -132,15 +145,15 @@ export default function CustomerAiAgentWidget({
         <button
           onClick={() => setIsOpen(true)}
           className="ai-widget-trigger"
-          aria-label="Chat with Customer AI Agent"
+          aria-label={`Chat with ${displayName}`}
         >
           <div className="trigger-icon-wrap">
             <Bot size={24} />
             <span className="trigger-pulse"></span>
           </div>
           <div className="trigger-text">
-            <span className="trigger-title">Chat with Bethel AI</span>
-            <span className="trigger-sub">24/7 Customer Agent</span>
+            <span className="trigger-title">{businessName ? `Chat with ${businessName}` : 'Chat with AI Concierge'}</span>
+            <span className="trigger-sub">24/7 Virtual Assistant</span>
           </div>
         </button>
       )}
