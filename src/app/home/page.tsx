@@ -25,6 +25,7 @@ import PricingSection from '@/components/home/PricingSection';
 import PaymentSection from '@/components/home/PaymentSection';
 import FaqSection from '@/components/home/FaqSection';
 import Footer from '@/components/home/Footer';
+import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 import { getSectorById } from '@/config/sectors';
 
 export default function HomePage() {
@@ -90,6 +91,8 @@ export default function HomePage() {
 
         <FaqSection />
       </main>
+
+      <CustomerAiAgentWidget sector={sectorProfile.name} />
 
       <Footer />
 
