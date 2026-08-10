@@ -135,7 +135,7 @@ export default function CustomerAiAgentWidget({
     '☀️ Solar BOQ Calculator',
     '🏠 Real Estate & Auto Tools',
     '💳 View Pricing & Offers',
-    '📞 Talk to Human Consultant',
+    '🚀 How to Claim My Website',
   ];
 
   return (
