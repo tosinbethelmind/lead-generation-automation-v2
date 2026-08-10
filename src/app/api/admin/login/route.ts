@@ -2,9 +2,27 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
 import { createSessionToken } from '@/lib/session';
 
+function getPublicUrl(targetPath: string, req: NextRequest): URL {
+  const forwardedHost = req.headers.get('x-forwarded-host') || req.headers.get('host') || 'www.bethelmindanalytics.com';
+  const proto = req.headers.get('x-forwarded-proto') || 'https';
+  
+  // Ignore internal docker container IP / host 0.0.0.0
+  const isInternal = forwardedHost.includes('0.0.0.0') || forwardedHost.includes('127.0.0.1');
+  const activeHost = isInternal ? 'www.bethelmindanalytics.com' : forwardedHost;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${proto}://${activeHost}`;
+
+  try {
+    return new URL(targetPath, baseUrl);
+  } catch (_) {
+    return new URL(targetPath, req.url);
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { token } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const token = body?.token;
+
     if (!token) {
       return NextResponse.json(
         { success: false, message: 'Token is required' },
@@ -55,16 +73,16 @@ export async function GET(req: NextRequest) {
     const redirectPath = url.searchParams.get('redirect') || '/admin';
 
     if (!token) {
-      return NextResponse.redirect(new URL('/admin/login?error=Token required', req.url));
+      return NextResponse.redirect(getPublicUrl('/admin/login?error=Token required', req));
     }
 
     const adminUser = getAdminUser(token);
     if (!adminUser) {
-      return NextResponse.redirect(new URL('/admin/login?error=Invalid token', req.url));
+      return NextResponse.redirect(getPublicUrl('/admin/login?error=Invalid token', req));
     }
 
     const sessionValue = await createSessionToken(token, adminUser.role, adminUser.name);
-    const response = NextResponse.redirect(new URL(redirectPath, req.url));
+    const response = NextResponse.redirect(getPublicUrl(redirectPath, req));
 
     response.cookies.set('admin-token', sessionValue, {
       path: '/',
@@ -76,6 +94,6 @@ export async function GET(req: NextRequest) {
 
     return response;
   } catch (error: any) {
-    return NextResponse.redirect(new URL('/admin/login?error=Authentication error', req.url));
+    return NextResponse.redirect(getPublicUrl('/admin/login?error=Authentication error', req));
   }
 }
