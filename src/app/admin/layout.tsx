@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun, Bot, Zap, Briefcase, Building2, CreditCard, Crown } from 'lucide-react';
+import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun, Bot, Zap, Briefcase, Building2, CreditCard, Crown, Send, Settings as SettingsIcon, FileText } from 'lucide-react';
 import { WebappToolActionBar } from '@/components/WebappToolActionBar';
 
 export default function AdminLayout({
@@ -62,9 +62,15 @@ export default function AdminLayout({
       visible: true,
     },
     {
-      name: 'Onboarding & Claim Studio',
-      path: '/admin/onboarding',
-      icon: Briefcase,
+      name: 'CRM & Lead Engine',
+      path: '/admin/solar-pipeline',
+      icon: Sun,
+      visible: true,
+    },
+    {
+      name: 'AI Approvals & Outreach',
+      path: '/admin/approvals',
+      icon: Send,
       visible: true,
     },
     {
@@ -80,13 +86,19 @@ export default function AdminLayout({
       visible: true,
     },
     {
-      name: 'Specialise Solar Pipeline',
-      path: '/admin/solar-pipeline',
-      icon: Sun,
+      name: 'Settings & Integrations',
+      path: '/admin/settings',
+      icon: SettingsIcon,
       visible: true,
     },
     {
-      name: 'Design Customize',
+      name: 'Onboarding & Claim Studio',
+      path: '/admin/onboarding',
+      icon: Briefcase,
+      visible: true,
+    },
+    {
+      name: 'Design & Prompt Studio',
       path: '/admin/design',
       icon: Palette,
       visible: loading || hasPermission('edit_design'),
@@ -96,6 +108,12 @@ export default function AdminLayout({
       path: '/admin/domain',
       icon: Globe,
       visible: loading || hasPermission('manage_domains'),
+    },
+    {
+      name: 'Docs & Software Handover',
+      path: '/admin/handover',
+      icon: FileText,
+      visible: true,
     },
     {
       name: 'Team & Security',

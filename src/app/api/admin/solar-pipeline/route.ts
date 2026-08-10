@@ -93,8 +93,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: true, active: false });
     }
 
-    // 3. Fetch 5K/10K Nigeria Nationwide Solar leads from main `leads` table using schema columns
-    const { data: nigeriaSolarData, count: nigeriaSolarExactCount, error: nigeriaSolarErr } = await db
+    // 3. Fetch 5K/10K Nigeria Nationwide Solar & Lagos B2B leads from main `leads` table
+    let { data: nigeriaSolarData, count: nigeriaSolarExactCount, error: nigeriaSolarErr } = await db
       .from('leads')
       .select('*', { count: 'exact' })
       .or('source_query_or_seed.ilike.%solar%,category.ilike.%solar%,name.ilike.%solar%,business_summary.ilike.%solar%')
@@ -102,6 +102,37 @@ export async function GET(req: NextRequest) {
       .range(0, 10000);
 
     if (nigeriaSolarErr) console.error('Error fetching 5k Nigeria solar leads:', nigeriaSolarErr);
+
+    // Fallback: If solar-filtered leads are empty, load ALL pre-scraped Lagos & Nigeria B2B leads
+    if (!nigeriaSolarData || nigeriaSolarData.length === 0) {
+      const { data: allDbLeads } = await db
+        .from('leads')
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(0, 10000);
+      if (allDbLeads && allDbLeads.length > 0) {
+        nigeriaSolarData = allDbLeads;
+      } else {
+        try {
+          const repo = getActiveLeadRepository();
+          const localLeads = await repo.getLeads();
+          if (localLeads && localLeads.length > 0) {
+            nigeriaSolarData = localLeads.map((l: any, idx: number) => ({
+              id: l.id || `lead-${idx}`,
+              name: l.business_name || l.name || 'Lagos Business',
+              phone: l.phone || l.phone_e164 || '',
+              email: l.email || '',
+              address: l.address || l.location || 'Lagos, Nigeria',
+              city: l.city || 'Lagos',
+              rating: l.rating || 4.5,
+              source_query_or_seed: 'lagos_10k_b2b',
+              status: l.status || 'new',
+              created_at: new Date().toISOString()
+            }));
+          }
+        } catch (_) {}
+      }
+    }
 
     const nigeriaSolarNormalized = (nigeriaSolarData || []).map((l: any) => ({
       id: l.id,
@@ -112,7 +143,7 @@ export async function GET(req: NextRequest) {
       city: l.city || '',
       state: l.area || l.city || 'Nigeria',
       contact_person: 'Solar Contractor',
-      project_scope: `[Nationwide Solar] ${l.city || 'Nigeria'}. Rating: ${l.rating || 4.5}. Source: ${l.source_query_or_seed || 'solar_nigeria_5k'}`,
+      project_scope: `[Nationwide B2B] ${l.city || 'Lagos'}. Rating: ${l.rating || 4.5}. Source: ${l.source_query_or_seed || 'lagos_10k_b2b'}`,
       status: l.status || 'new',
       notes: l.notes || '',
       created_at: l.created_at,
