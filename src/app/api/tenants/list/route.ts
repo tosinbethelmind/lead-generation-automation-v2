@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
     features: getTenantFeatures(t),
     site_url: t.site_url,
     created_at: t.created_at,
-    portal_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://lead-generation-automation-ecru.vercel.app'}/portal/${t.id}`,
+    portal_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com'}/portal/${t.id}`,
   }));
 
   const stats = {

@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
     const currentConfig = getRuntimeConfig();
     const supabaseUrlVal = process.env.NEXT_PUBLIC_SUPABASE_URL || currentConfig.supabaseUrl || '';
     const supabaseKeyVal = process.env.SUPABASE_SERVICE_ROLE_KEY || currentConfig.supabaseKey || '';
-    const liveLinkVal = currentConfig.liveLink || (req.headers.get('host') ? `https://${req.headers.get('host')}` : 'https://lead-generation-automation-ecru.vercel.app');
+    const liveLinkVal = currentConfig.liveLink || (req.headers.get('host') ? `https://${req.headers.get('host')}` : 'https://www.bethelmindanalytics.com');
 
     const secretsToSet = [
       { key: 'SUPABASE_URL', value: supabaseUrlVal },

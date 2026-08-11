@@ -665,7 +665,7 @@ export default function AdminCrmDualEnginePage() {
                           {/* WhatsApp Direct */}
                           {lead.phone && (
                             <a
-                              href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${lead.name}, regarding your business quote proposal: https://lead-generation-automation-ecru.vercel.app/preview/${encodeURIComponent(lead.id)}`)}`}
+                              href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${lead.name}, regarding your business quote proposal: ${(typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com')}/preview/${encodeURIComponent(lead.id)}`)}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all"
@@ -701,7 +701,7 @@ export default function AdminCrmDualEnginePage() {
 
                           {/* Copy Link */}
                           <button
-                            onClick={() => copyText(`https://lead-generation-automation-ecru.vercel.app/preview/${encodeURIComponent(lead.id)}`, lead.id)}
+                            onClick={() => copyText(`${(typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com')}/preview/${encodeURIComponent(lead.id)}`, lead.id)}
                             className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all"
                             title="Copy Live Preview Link"
                           >
@@ -846,7 +846,7 @@ export default function AdminCrmDualEnginePage() {
                 <label className="text-xs text-slate-400 block mb-1">Message Body</label>
                 <textarea
                   rows={4}
-                  value={customMessage || `Hello ${selectedLead.name}, your custom proposal is ready to view online: https://lead-generation-automation-ecru.vercel.app/preview/${selectedLead.id}`}
+                  value={customMessage || `Hello ${selectedLead.name}, your custom proposal is ready to view online: ${(typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com')}/preview/${selectedLead.id}`}
                   onChange={(e) => setCustomMessage(e.target.value)}
                   className="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-xs text-white"
                 />

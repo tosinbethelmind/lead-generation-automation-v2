@@ -30,8 +30,8 @@ export async function POST(req: NextRequest, props: { params: Promise<{ siteId: 
     }
 
     const vercelToken = process.env.VERCEL_TOKEN || '';
-    const projectId = process.env.VERCEL_PROJECT_ID || 'prj_xh9RFVPAaJWRbDzL2exOHWwjMD1p';
-    const teamId = 'team_wazv1qGXcoYV8evkITxITCon';
+    const projectId = process.env.VERCEL_PROJECT_ID || 'prj_vfMEvGXha5E1pvAZLXY9F9F0dp0n';
+    const teamId = process.env.VERCEL_TEAM_ID || 'team_qpoBet79QVTOafYzfLHzxKdG';
 
     const isSandbox = vercelToken.startsWith('vc_placeholder') || !vercelToken;
 

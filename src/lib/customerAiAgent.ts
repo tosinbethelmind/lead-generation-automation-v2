@@ -465,12 +465,13 @@ export async function triggerWhatsAppApprovalAlert(
   request: ApprovalRequest,
   config: CustomerAiAgentConfig
 ): Promise<boolean> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
   const messageText = `🚨 *CRITICAL STAGE APPROVAL REQUIRED* 🚨\n\n` +
     `*Stage:* ${request.title}\n` +
     `*Customer:* ${request.customer_name} (${request.customer_phone})\n` +
     `*Session ID:* ${request.session_id}\n` +
     `*Inquiry Details:* "${request.details}"\n\n` +
-    `👉 Open Admin Approval Center: https://lead-generation-automation-ecru.vercel.app/admin/ai-agent`;
+    `👉 Open Admin Approval Center: ${appUrl}/admin/ai-agent`;
 
   try {
     await sendWhatsAppMessage(
@@ -480,8 +481,8 @@ export async function triggerWhatsAppApprovalAlert(
         phone: config.admin_whatsapp_phone,
         phone_e164: config.admin_whatsapp_phone,
       },
-      'https://lead-generation-automation-ecru.vercel.app/admin/ai-agent',
-      'https://lead-generation-automation-ecru.vercel.app',
+      `${appUrl}/admin/ai-agent`,
+      appUrl,
       messageText
     );
   } catch (e) {

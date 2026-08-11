@@ -25,11 +25,10 @@ export async function POST(req: NextRequest) {
     const cfToken = process.env.CLOUDFLARE_TOKEN || '';
     const cfZoneId = process.env.CLOUDFLARE_ZONE_ID || '';
     const vercelToken = process.env.VERCEL_TOKEN || '';
-    const projectId = process.env.VERCEL_PROJECT_ID || 'prj_xh9RFVPAaJWRbDzL2exOHWwjMD1p';
+    const projectId = process.env.VERCEL_PROJECT_ID || 'prj_vfMEvGXha5E1pvAZLXY9F9F0dp0n';
     
-    // Parse teamId if orgId in project settings represents a team
-    // orgId is team_wazv1qGXcoYV8evkITxITCon based on .vercel/project.json
-    const teamId = 'team_wazv1qGXcoYV8evkITxITCon';
+    // Parse teamId from env or .vercel/project.json
+    const teamId = process.env.VERCEL_TEAM_ID || 'team_qpoBet79QVTOafYzfLHzxKdG';
 
     // Sandbox check: if tokens are placeholders, run in simulated/dev mode
     const isSandbox = 

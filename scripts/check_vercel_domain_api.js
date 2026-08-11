@@ -16,7 +16,7 @@ const token = process.env.VERCEL_TOKEN;
 
 const req = https.request({
   hostname: 'api.vercel.com',
-  path: `/v9/projects/prj_vfMEvGXha5E1pvAZLXY9F9F0dp0n/domains/bethelmindanalytics.com`,
+  path: `/v9/projects/prj_vfMEvGXha5E1pvAZLXY9F9F0dp0n/domains`,
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,

@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     }
 
     const origin = getOutreachOrigin(req.url);
-    const previewUrl = `https://solar-roi-proposal-builder-fw961j972.vercel.app/admin/leads?id=${leadId}`; // Redirect back to proposal builder leads or public proposal preview if needed
+    const previewUrl = `${origin}/preview/${leadId}`;
     let responseMessage = '';
 
     // 2. Dispatch message through requested channel

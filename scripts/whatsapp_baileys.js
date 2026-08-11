@@ -236,7 +236,7 @@ async function connectToWhatsApp() {
           replyText = `Hello! 👋 Thanks for reaching out to ApexReach.\n\nOur Growth Packages start at ₦75,000 for Starter WhatsApp Catalogs and ₦185,000 for full Business Portals with virtual bank transfer. Would you like to view a live preview for your business?`;
           isTier1StandardFaq = true;
         } else if (lowerMsg.includes('preview') || lowerMsg.includes('site') || lowerMsg.includes('website') || lowerMsg.includes('link') || lowerMsg.includes('demo')) {
-          replyText = `Great! 🌐 You can view your business preview live at: https://lead-generation-automation-ecru.vercel.app/\n\nReply with 'CLAIM' when you are ready to launch!`;
+          replyText = `Great! 🌐 You can view your business preview live at: https://www.bethelmindanalytics.com/\n\nReply with 'CLAIM' when you are ready to launch!`;
           isTier1StandardFaq = true;
         } else if (lowerMsg.includes('claim') || lowerMsg.includes('buy') || lowerMsg.includes('pay') || lowerMsg.includes('start')) {
           replyText = `Awesome! 🚀 To claim your site and setup your domain, choose your preferred payment option:\n1️⃣ Bank Transfer (Moniepoint)\n2️⃣ Paystack Card Payment\n\nVisit your portal or call us directly to finalize setup!`;

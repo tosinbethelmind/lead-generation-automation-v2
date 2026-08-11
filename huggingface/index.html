@@ -14,7 +14,7 @@
   <div class="card">
     <h2>⚡ ApexReach 24/7 Cloud Harvester Engine</h2>
     <p>Status: <span class="badge">🟢 ACTIVE 24/7 CLOUD WORKER</span></p>
-    <p>Target Vercel Base: <code>https://lead-generation-automation-ecru.vercel.app</code></p>
+    <p>Target Vercel Base: <code>https://www.bethelmindanalytics.com</code></p>
     <hr style="border-color: #334155;">
     <div><strong>Last Pinged:</strong> <span id="lastPing">Initializing...</span></div>
     <div><strong>Harvest Status:</strong> <span id="harvestStatus">Running continuous loop...</span></div>
@@ -35,7 +35,7 @@
       document.getElementById('lastPing').innerText = new Date().toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos' }) + ' WAT';
       try {
         log('⚡ Triggering 24/7 multi-pipeline harvest pass...');
-        const res = await fetch('https://lead-generation-automation-ecru.vercel.app/api/cron/harvest');
+        const res = await fetch('https://www.bethelmindanalytics.com/api/cron/harvest');
         const data = await res.json();
         document.getElementById('harvestStatus').innerText = '✓ Success (Lagos: ' + (data.results?.lagos?.totalLagos || 2754) + ', Solar: ' + (data.results?.solar?.totalSolar || 1194) + ')';
         log(`✓ Harvest complete! Lagos Total: ${data.results?.lagos?.totalLagos || 2754}, Solar Total: ${data.results?.solar?.totalSolar || 1194}`);

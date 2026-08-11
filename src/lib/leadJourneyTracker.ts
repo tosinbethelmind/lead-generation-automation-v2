@@ -134,7 +134,7 @@ export async function trackLeadJourneyEvent(params: {
     description,
     channelUsed = 'Automation',
     score = 75,
-    previewUrl = `https://lead-generation-automation-e0oitxcsi.vercel.app/preview/${leadId}`,
+    previewUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com'}/preview/${leadId}`,
     metadata = {}
   } = params;
 

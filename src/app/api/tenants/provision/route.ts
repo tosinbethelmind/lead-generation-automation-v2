@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
           already_provisioned: true,
           tenant_id: existingTenant.id,
           access_token: existingTenant.access_token,
-          portal_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://lead-generation-automation-ecru.vercel.app'}/portal/${existingTenant.id}`,
-          dashboard_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://lead-generation-automation-ecru.vercel.app'}/admin`,
+          portal_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com'}/portal/${existingTenant.id}`,
+          dashboard_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com'}/admin`,
         });
       }
     }
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
       provisioned_at: new Date().toISOString(),
     }, { onConflict: 'order_reference' });
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://lead-generation-automation-ecru.vercel.app';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
     const portalUrl = `${baseUrl}/portal/${tenant.id}`;
     const dashboardUrl = `${baseUrl}/admin`;
 

@@ -13,7 +13,8 @@ function log(msg) {
 async function runHarvestPass() {
   log('⚡ Starting 24/7 Cloud Harvester Pass...');
   try {
-    const fetchRes = await fetch('https://lead-generation-automation-ecru.vercel.app/api/cron/harvest');
+    const targetHost = process.env.SCRAPER_API_BASE_URL || 'https://www.bethelmindanalytics.com';
+    const fetchRes = await fetch(`${targetHost}/api/cron/harvest`);
     const data = await fetchRes.json();
     log(`✓ Harvest Pass Done: Lagos: +${data.results?.lagos?.added || 0}, Solar: +${data.results?.solar?.added || 0}`);
 

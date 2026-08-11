@@ -20,7 +20,7 @@ async function sync() {
     githubRepo: config.githubRepo,
     supabaseUrl: config.supabaseUrl,
     supabaseKey: config.supabaseKey,
-    scraperApiBaseUrl: 'https://lead-generation-automation-ecru.vercel.app',
+    scraperApiBaseUrl: 'https://www.bethelmindanalytics.com',
     lagosDailyLeadTarget: 10000,
     lastGitHubDispatchTime: 0
   };

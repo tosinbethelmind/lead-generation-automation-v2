@@ -213,7 +213,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   // Google data tools
   googleSpreadsheetId: '',
   googlePlacesApiKey: '',
-  liveLink: 'https://lead-generation-automation-ecru.vercel.app',
+  liveLink: 'https://www.bethelmindanalytics.com',
   // Outreach
   dryRun: true,
   businessSignature: 'Bethelmind Analytics & Strategy',
@@ -820,7 +820,7 @@ export function getRotatedTwilioKeys(sidStr: string | undefined, tokenStr: strin
 /**
  * Resolves the absolute base URL / origin to use for outreach preview links.
  * Prefers the configured liveLink if present; falls back to the requested URL's origin,
- * and finally defaults to https://lead-generation-automation-ecru.vercel.app.
+ * and finally defaults to https://www.bethelmindanalytics.com.
  */
 export function getOutreachOrigin(reqUrl?: string): string {
   const config = getRuntimeConfig();
@@ -839,7 +839,7 @@ export function getOutreachOrigin(reqUrl?: string): string {
       return new URL(reqUrl).origin;
     } catch (_) {}
   }
-  return 'https://lead-generation-automation-ecru.vercel.app';
+  return process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
 }
 
 import { getOptimalHostUrl } from './adaptiveHostManager';

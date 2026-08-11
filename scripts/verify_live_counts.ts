@@ -1,5 +1,5 @@
 async function verifyLiveEndpoints() {
-  const baseUrl = 'https://lead-generation-automation-ecru.vercel.app';
+  const baseUrl = 'https://www.bethelmindanalytics.com';
   
   console.log('Fetching live counts from Vercel production endpoints...\n');
 
