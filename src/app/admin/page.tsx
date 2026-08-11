@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Rocket, ExternalLink, Server, Settings, Shield, RefreshCw, Bot, Zap } from 'lucide-react';
+import { Rocket, ExternalLink, Server, Settings, Shield, RefreshCw, Bot, Zap, Sun, Briefcase, Building, Layers } from 'lucide-react';
 
 export default function AdminDashboardHome() {
   const [deploying, setDeploying] = useState(false);
@@ -85,11 +85,11 @@ export default function AdminDashboardHome() {
         {/* Welcome Box */}
         <div className="bento-card welcome-card glass-panel col-span-2">
           <div className="card-header">
-            <h2>Welcome to Bethelmind Analytics & Strategy Admin</h2>
-            <p>You have full client ownership. Authenticated as secure administrator.</p>
+            <h2>Welcome to ApexReach Executive Admin Portal</h2>
+            <p>Unified administration suite for lead scrapers, CRM, AI agents, and recruitment.</p>
           </div>
           <div className="live-link-box">
-            <span className="label">Live URL:</span>
+            <span className="label">Live Production URL:</span>
             <a
               href="https://lead-generation-automation-ecru.vercel.app/"
               target="_blank"
@@ -99,6 +99,38 @@ export default function AdminDashboardHome() {
               https://lead-generation-automation-ecru.vercel.app/
               <ExternalLink className="inline-icon" />
             </a>
+          </div>
+        </div>
+
+        {/* ☀️ DUAL SCRAPER CRM HUB CARD */}
+        <div className="bento-card glass-panel border-cyan-500/30">
+          <div className="card-header">
+            <div className="header-icon-wrapper" style={{ color: '#06b6d4' }}>
+              <Layers />
+            </div>
+            <h3>Dual-Engine CRM Hub</h3>
+          </div>
+          <div className="card-body">
+            <p>Administer prospects across **Engine 1 (Solar & Energy)** and **Engine 2 (Lagos 10K B2B)** with 1-click action controls.</p>
+            <Link href="/admin/crm" className="accessible-btn accessible-btn-cyan text-xs" style={{ marginTop: '12px', display: 'inline-flex' }}>
+              Open Dual CRM <Sun size={16} />
+            </Link>
+          </div>
+        </div>
+
+        {/* 💼 STANDALONE RECRUITMENT SUITE CARD */}
+        <div className="bento-card glass-panel border-indigo-500/30">
+          <div className="card-header">
+            <div className="header-icon-wrapper" style={{ color: '#818cf8' }}>
+              <Briefcase />
+            </div>
+            <h3>Recruitment & HR Suite</h3>
+          </div>
+          <div className="card-body">
+            <p>Standalone entity for candidate sourcing, AI CV grading, talent pool banking, and interview workflows.</p>
+            <Link href="/admin/recruitment" className="accessible-btn accessible-btn-emerald text-xs" style={{ marginTop: '12px', display: 'inline-flex' }}>
+              Launch Recruitment <Briefcase size={16} />
+            </Link>
           </div>
         </div>
 

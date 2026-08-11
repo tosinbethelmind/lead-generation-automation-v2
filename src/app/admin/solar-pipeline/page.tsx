@@ -551,6 +551,25 @@ export default function SolarPipelineDashboard() {
           {/* Right Controls & Start Scraper Action */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             
+            <Link
+              href="/admin/crm"
+              style={{
+                background: 'linear-gradient(135deg, #06B6D4 0%, #0284C7 100%)',
+                color: '#030712',
+                borderRadius: '8px',
+                padding: '7px 14px',
+                fontWeight: '800',
+                fontSize: '12px',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 10px rgba(6, 182, 212, 0.3)'
+              }}
+            >
+              <Sun size={14} /> Open Dual CRM
+            </Link>
+
             {/* Tab Pill Switcher */}
             <div style={{ display: 'flex', background: 'rgba(0, 0, 0, 0.4)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <button 

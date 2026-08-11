@@ -54,89 +54,126 @@ export default function AdminLayout({
     return user.role === 'super_admin' || user.permissions.includes('*') || user.permissions.includes(permission);
   };
 
-  const navItems = [
+  const navCategories = [
     {
-      name: 'Overview',
-      path: '/admin',
-      icon: LayoutDashboard,
-      visible: true,
+      title: 'LEAD GENERATION & SCRAPERS',
+      items: [
+        {
+          name: 'Dashboard Overview',
+          path: '/admin',
+          icon: LayoutDashboard,
+          visible: true,
+        },
+        {
+          name: 'Dual-Engine CRM Hub',
+          path: '/admin/crm',
+          icon: Sun,
+          visible: true,
+          badge: '2 Scrapers',
+        },
+        {
+          name: 'Solar Scraper Engine',
+          path: '/admin/solar-pipeline',
+          icon: Sun,
+          visible: true,
+        },
+      ],
     },
     {
-      name: 'CRM & Lead Engine',
-      path: '/admin/solar-pipeline',
-      icon: Sun,
-      visible: true,
+      title: 'SEPARATE ENTITIES',
+      items: [
+        {
+          name: 'Recruitment & HR Suite',
+          path: '/admin/recruitment',
+          icon: Briefcase,
+          visible: true,
+          badge: 'Standalone',
+        },
+      ],
     },
     {
-      name: 'AI Approvals & Outreach',
-      path: '/admin/approvals',
-      icon: Send,
-      visible: true,
+      title: 'AUTOMATION & OUTREACH',
+      items: [
+        {
+          name: 'AI Approvals & Outreach',
+          path: '/admin/approvals',
+          icon: Send,
+          visible: true,
+        },
+        {
+          name: 'Customer AI Agent',
+          path: '/admin/ai-agent',
+          icon: Bot,
+          visible: true,
+        },
+        {
+          name: 'Autoresponders',
+          path: '/admin/autoresponders',
+          icon: Zap,
+          visible: true,
+        },
+      ],
     },
     {
-      name: 'Customer AI Agent',
-      path: '/admin/ai-agent',
-      icon: Bot,
-      visible: true,
+      title: 'PLATFORM MANAGEMENT',
+      items: [
+        {
+          name: 'Settings & Integrations',
+          path: '/admin/settings',
+          icon: SettingsIcon,
+          visible: true,
+        },
+        {
+          name: 'Onboarding & Claim Studio',
+          path: '/admin/onboarding',
+          icon: Briefcase,
+          visible: true,
+        },
+        {
+          name: 'Design & Prompt Studio',
+          path: '/admin/design',
+          icon: Palette,
+          visible: loading || hasPermission('edit_design'),
+        },
+        {
+          name: 'Domain & Hosting',
+          path: '/admin/domain',
+          icon: Globe,
+          visible: loading || hasPermission('manage_domains'),
+        },
+        {
+          name: 'Docs & Software Handover',
+          path: '/admin/handover',
+          icon: FileText,
+          visible: true,
+        },
+        {
+          name: 'Team & Security',
+          path: '/admin/team',
+          icon: Users,
+          visible: loading || hasPermission('manage_team'),
+        },
+        {
+          name: 'All Tenants',
+          path: '/admin/tenants',
+          icon: Building2,
+          visible: loading || hasPermission('manage_team'),
+        },
+        {
+          name: 'My Subscription',
+          path: '/admin/subscription',
+          icon: CreditCard,
+          visible: true,
+        },
+      ],
     },
-    {
-      name: 'Autoresponders',
-      path: '/admin/autoresponders',
-      icon: Zap,
-      visible: true,
-    },
-    {
-      name: 'Settings & Integrations',
-      path: '/admin/settings',
-      icon: SettingsIcon,
-      visible: true,
-    },
-    {
-      name: 'Onboarding & Claim Studio',
-      path: '/admin/onboarding',
-      icon: Briefcase,
-      visible: true,
-    },
-    {
-      name: 'Design & Prompt Studio',
-      path: '/admin/design',
-      icon: Palette,
-      visible: loading || hasPermission('edit_design'),
-    },
-    {
-      name: 'Domain & Hosting',
-      path: '/admin/domain',
-      icon: Globe,
-      visible: loading || hasPermission('manage_domains'),
-    },
-    {
-      name: 'Docs & Software Handover',
-      path: '/admin/handover',
-      icon: FileText,
-      visible: true,
-    },
-    {
-      name: 'Team & Security',
-      path: '/admin/team',
-      icon: Users,
-      visible: loading || hasPermission('manage_team'),
-    },
-    {
-      name: 'All Tenants',
-      path: '/admin/tenants',
-      icon: Building2,
-      visible: loading || hasPermission('manage_team'),
-    },
-    {
-      name: 'My Subscription',
-      path: '/admin/subscription',
-      icon: CreditCard,
-      visible: true,
-    },
-  ].filter(item => item.visible);
+  ];
+
+  // Flattened nav items for lookup
+  const navItems = navCategories.flatMap((cat) => cat.items).filter((item) => item.visible);
 
   const hasPageAccess = () => {
-    if (pathname === '/admin' || pathname === '/admin/login' || loading) return true;
+    if (pathname === '/admin' || pathname === '/admin/crm' || pathname === '/admin/recruitment' || pathname === '/admin/login' || loading) return true;
     if (pathname === '/admin/ai-agent' || pathname === '/admin/autoresponders') return true;
     if (pathname === '/admin/solar-pipeline') return true;
     if (pathname === '/admin/design') return hasPermission('edit_design');
@@ -158,8 +195,27 @@ export default function AdminLayout({
             <ShieldAlert />
           </div>
           <div>
-            <h3 style={{ fontSize: '0.85rem', whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: '1.2' }}>ApexReach Platform</h3>
-            <span className="brand-badge">Admin</span>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1.2 }}>ApexReach Suite</h3>
+            <span className="brand-badge">Executive Console</span>
+          </div>
+        </div>
+
+        {/* Live Scraper Engine Status Card */}
+        <div className="p-3 mb-3 rounded-xl bg-slate-950/80 border border-white/10 space-y-2">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Live Scraper Engines</div>
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <span className="flex items-center gap-1.5 text-amber-400">
+              <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b] animate-pulse"></span>
+              Solar Scraper
+            </span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold">READY</span>
+          </div>
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <span className="flex items-center gap-1.5 text-cyan-400">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#06b6d4] animate-pulse"></span>
+              Lagos 10K B2B
+            </span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold">24/7 LOOP</span>
           </div>
         </div>
 
@@ -192,19 +248,40 @@ export default function AdminLayout({
           </div>
         )}
 
-        <nav className="sidebar-nav">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.path;
+        <nav className="sidebar-nav space-y-4" style={{ overflowY: 'auto' }}>
+          {navCategories.map((cat) => {
+            const visibleCategoryItems = cat.items.filter((item) => item.visible);
+            if (visibleCategoryItems.length === 0) return null;
             return (
-              <Link
-                key={item.path}
-                href={item.path}
-                className={`nav-link ${isActive ? 'active' : ''}`}
-              >
-                <Icon className="nav-icon" />
-                <span>{item.name}</span>
-              </Link>
+              <div key={cat.title} className="space-y-1">
+                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-3 py-1">
+                  {cat.title}
+                </div>
+                {visibleCategoryItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.path;
+                  return (
+                    <Link
+                      key={item.path}
+                      href={item.path}
+                      className={`nav-link ${isActive ? 'active' : ''}`}
+                      style={{
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className="nav-icon" />
+                        <span>{item.name}</span>
+                      </div>
+                      {item.badge && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
             );
           })}
         </nav>
@@ -212,24 +289,32 @@ export default function AdminLayout({
         <div className="sidebar-footer">
           <button onClick={handleLogout} className="logout-btn btn-secondary">
             <LogOut className="nav-icon" />
-            <span>Logout</span>
+            <span>Logout Session</span>
           </button>
         </div>
       </aside>
 
       <main className="admin-content">
-        {pathname !== '/admin/solar-pipeline' && (
+        {pathname !== '/admin/solar-pipeline' && pathname !== '/admin/crm' && (
           <>
             <header className="admin-header">
               <div className="header-title">
                 <h1>
                   {navItems.find((n) => n.path === pathname)?.name || 'Admin Dashboard'}
                 </h1>
-                <p>Control visual themes, domain aliases and cloud deployments.</p>
+                <p>Seamless management center for lead scrapers, CRM, AI outreach, and deployment.</p>
               </div>
-              <div className="header-status">
-                <span className="status-indicator"></span>
-                <span>Secure Console</span>
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/admin/crm"
+                  className="accessible-btn accessible-btn-cyan text-xs"
+                >
+                  <Sun className="w-4 h-4" /> Open Dual CRM Hub
+                </Link>
+                <div className="header-status">
+                  <span className="status-indicator"></span>
+                  <span>Secure Console</span>
+                </div>
               </div>
             </header>
 
@@ -239,7 +324,7 @@ export default function AdminLayout({
           </>
         )}
 
-        <div className="content-body" style={{ padding: pathname === '/admin/solar-pipeline' ? '0' : '40px', flex: 1, overflow: 'hidden' }}>
+        <div className="content-body" style={{ padding: (pathname === '/admin/solar-pipeline' || pathname === '/admin/crm') ? '0' : '40px', flex: 1, overflow: 'hidden' }}>
           {!hasPageAccess() ? (
             <div className="access-denied-container glass-panel">
               <ShieldAlert className="denied-icon" />
