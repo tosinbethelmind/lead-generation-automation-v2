@@ -154,8 +154,14 @@ export default function AdminCrmDualEnginePage() {
   });
   const [addingLead, setAddingLead] = useState(false);
 
-  // Copy status indicator
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  // Bulk selection & notification states
+  const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
 
   useEffect(() => {
     fetchLeads();
@@ -231,7 +237,7 @@ export default function AdminCrmDualEnginePage() {
   // Status quick update
   const handleQuickStatusChange = async (lead: LeadItem, newStatus: string) => {
     try {
-      const endpoint = lead.engine === 'solar' ? '/api/admin/solar-pipeline' : '/api/admin/lagos-pipeline';
+      const endpoint = '/api/admin/crm-leads';
       const res = await fetch(endpoint, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -246,11 +252,75 @@ export default function AdminCrmDualEnginePage() {
         if (selectedLead?.id === lead.id) {
           setSelectedLead(prev => prev ? { ...prev, status: newStatus } : null);
         }
+        showToast(`Lead status updated to ${newStatus.toUpperCase()}`);
       } else {
-        alert(data.error || 'Failed to update status');
+        showToast(data.error || 'Failed to update status', 'error');
       }
     } catch (err) {
-      alert('Network error updating lead status.');
+      showToast('Network error updating lead status', 'error');
+    }
+  };
+
+  // Bulk Status Update
+  const handleBulkStatusChange = async (newStatus: string) => {
+    if (selectedLeadIds.length === 0) return;
+    try {
+      const res = await fetch('/api/admin/crm-leads', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: selectedLeadIds, status: newStatus })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setLeads(prev => prev.map(l => selectedLeadIds.includes(l.id) ? { ...l, status: newStatus } : l));
+        showToast(`Updated ${selectedLeadIds.length} lead(s) to ${newStatus.toUpperCase()}`);
+        setSelectedLeadIds([]);
+      } else {
+        showToast(data.error || 'Failed bulk status update', 'error');
+      }
+    } catch (err) {
+      showToast('Network error on bulk status update', 'error');
+    }
+  };
+
+  // Execute Live Outreach
+  const handleExecuteOutreach = async (targetIds?: string[]) => {
+    const idsToOutreach = targetIds || (selectedLeadIds.length > 0 ? selectedLeadIds : selectedLead ? [selectedLead.id] : []);
+    if (idsToOutreach.length === 0) {
+      showToast('No prospect selected for outreach', 'error');
+      return;
+    }
+
+    setOutreachSending(true);
+    setOutreachNotice(null);
+
+    try {
+      const res = await fetch('/api/admin/crm-leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'outreach',
+          leadIds: idsToOutreach,
+          channel: outreachChannel,
+          message: customMessage,
+          subject: customSubject
+        })
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        // Mark targeted leads as 'contacted'
+        setLeads(prev => prev.map(l => idsToOutreach.includes(l.id) ? { ...l, status: 'contacted' } : l));
+        showToast(`🚀 Live ${outreachChannel.toUpperCase()} Campaign Dispatched to ${idsToOutreach.length} prospect(s)!`);
+        setOutreachModalOpen(false);
+        setSelectedLeadIds([]);
+      } else {
+        showToast(data.error || 'Failed to dispatch outreach', 'error');
+      }
+    } catch (err: any) {
+      showToast(`Network error triggering outreach: ${err.message}`, 'error');
+    } finally {
+      setOutreachSending(false);
     }
   };
 
@@ -374,8 +444,32 @@ export default function AdminCrmDualEnginePage() {
     }
   };
 
+  const handleToggleSelectAll = () => {
+    if (selectedLeadIds.length === filteredLeads.length) {
+      setSelectedLeadIds([]);
+    } else {
+      setSelectedLeadIds(filteredLeads.map(l => l.id));
+    }
+  };
+
+  const handleSelectLead = (id: string) => {
+    setSelectedLeadIds(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
   return (
-    <div className="p-4 md:p-8 space-y-6 max-w-[1600px] mx-auto min-h-screen text-slate-100">
+    <div className="p-4 md:p-8 space-y-6 max-w-[1600px] mx-auto min-h-screen text-slate-100 relative">
+      
+      {/* 🔔 LIVE TOAST NOTIFICATION */}
+      {toast && (
+        <div className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-2xl border text-xs font-extrabold flex items-center gap-2 animate-bounce ${
+          toast.type === 'success' ? 'bg-emerald-950 border-emerald-500/50 text-emerald-400' : 'bg-rose-950 border-rose-500/50 text-rose-400'
+        }`}>
+          {toast.type === 'success' ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <ShieldAlert className="w-4 h-4 text-rose-400" />}
+          {toast.message}
+        </div>
+      )}
       
       {/* 🚀 TOP NAVIGATION & MULTI ENGINE SWITCHER */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-950/80 p-6 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-md">
@@ -553,6 +647,52 @@ export default function AdminCrmDualEnginePage() {
         )}
       </div>
 
+      {/* ⚡ BULK ACTION COMMAND TOOLBAR */}
+      {selectedLeadIds.length > 0 && (
+        <div className="bg-cyan-950/80 border border-cyan-500/50 p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in shadow-xl">
+          <div className="flex items-center gap-2 text-xs font-bold text-cyan-300">
+            <UserCheck className="w-4 h-4 text-cyan-400" />
+            <span>{selectedLeadIds.length} Lead(s) Selected for Bulk Actions</span>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => {
+                setOutreachModalOpen(true);
+              }}
+              className="accessible-btn accessible-btn-cyan text-xs"
+            >
+              <Send className="w-3.5 h-3.5" /> Dispatch Bulk Outreach ({selectedLeadIds.length})
+            </button>
+
+            <select
+              onChange={(e) => {
+                if (e.target.value) {
+                  handleBulkStatusChange(e.target.value);
+                  e.target.value = '';
+                }
+              }}
+              className="bg-slate-900 border border-cyan-500/40 text-xs text-cyan-200 rounded-xl px-3 py-2 font-bold focus:outline-none"
+            >
+              <option value="">Bulk Status Change...</option>
+              <option value="new">Mark NEW</option>
+              <option value="contacted">Mark CONTACTED</option>
+              <option value="qualified">Mark QUALIFIED</option>
+              <option value="proposal_sent">Mark PROPOSAL SENT</option>
+              <option value="closed_won">Mark CLOSED WON</option>
+              <option value="lost">Mark LOST</option>
+            </select>
+
+            <button
+              onClick={() => setSelectedLeadIds([])}
+              className="accessible-btn accessible-btn-ghost text-xs text-slate-400 hover:text-white"
+            >
+              Clear Selection
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 🔍 SEARCH, FILTER & VIEW MODE TOGGLE BAR */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-950 p-4 rounded-2xl border border-white/10">
         
@@ -628,6 +768,14 @@ export default function AdminCrmDualEnginePage() {
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-slate-900/90 text-slate-400 font-bold border-b border-white/10 uppercase tracking-wider">
+                  <th className="p-4 w-10">
+                    <input
+                      type="checkbox"
+                      checked={filteredLeads.length > 0 && selectedLeadIds.length === filteredLeads.length}
+                      onChange={handleToggleSelectAll}
+                      className="rounded accent-cyan-500 cursor-pointer w-4 h-4"
+                    />
+                  </th>
                   <th className="p-4">Engine</th>
                   <th className="p-4">Business / Lead Name</th>
                   <th className="p-4">Phone / Contact</th>
@@ -640,7 +788,7 @@ export default function AdminCrmDualEnginePage() {
               <tbody className="divide-y divide-white/5 text-slate-300">
                 {filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-slate-500 font-semibold">
+                    <td colSpan={8} className="p-8 text-center text-slate-500 font-semibold">
                       No leads match your active filters or search term.
                     </td>
                   </tr>
@@ -649,9 +797,17 @@ export default function AdminCrmDualEnginePage() {
                     <tr
                       key={lead.id}
                       className={`hover:bg-slate-900/50 transition-colors ${
-                        selectedLead?.id === lead.id ? 'bg-cyan-500/5 border-l-4 border-cyan-400' : ''
+                        selectedLeadIds.includes(lead.id) ? 'bg-cyan-500/10 border-l-4 border-cyan-400' : selectedLead?.id === lead.id ? 'bg-cyan-500/5' : ''
                       }`}
                     >
+                      <td className="p-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedLeadIds.includes(lead.id)}
+                          onChange={() => handleSelectLead(lead.id)}
+                          className="rounded accent-cyan-500 cursor-pointer w-4 h-4"
+                        />
+                      </td>
                       {/* Engine Tag */}
                       <td className="p-4 whitespace-nowrap">
                         {lead.engine === 'solar' ? (
@@ -917,15 +1073,30 @@ export default function AdminCrmDualEnginePage() {
               <button onClick={() => setOutreachModalOpen(false)} className="accessible-btn accessible-btn-ghost text-xs">
                 Cancel
               </button>
-              <a
-                href={`https://wa.me/${selectedLead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(customMessage || `Hello ${selectedLead.name}, your proposal is ready.`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setOutreachModalOpen(false)}
-                className="accessible-btn accessible-btn-emerald text-xs"
+              
+              {outreachChannel === 'whatsapp' && selectedLead.phone && (
+                <a
+                  href={`https://wa.me/${selectedLead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(customMessage || `Hello ${selectedLead.name}, your custom quote proposal is ready: ${(typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com')}/preview/${selectedLead.id}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    handleQuickStatusChange(selectedLead, 'contacted');
+                    setOutreachModalOpen(false);
+                  }}
+                  className="accessible-btn accessible-btn-emerald text-xs"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" /> WhatsApp Web Direct
+                </a>
+              )}
+
+              <button
+                onClick={() => handleExecuteOutreach()}
+                disabled={outreachSending}
+                className="accessible-btn accessible-btn-cyan text-xs"
               >
-                Dispatch Message <Send className="w-3.5 h-3.5" />
-              </a>
+                {outreachSending ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                Dispatch Live Campaign
+              </button>
             </div>
           </div>
         </div>
