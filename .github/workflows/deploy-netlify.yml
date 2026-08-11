@@ -1,4 +1,3 @@
-# Netlify Secondary Fallback Check Workflow
 name: Deploy to Netlify (Fallback)
 
 on:
@@ -13,3 +12,4 @@ jobs:
         run: |
           echo "✅ Primary production hosting active on Vercel (https://bethelmindanalytics.com)."
           echo "Netlify manual fallback pipeline configured."
+          exit 0

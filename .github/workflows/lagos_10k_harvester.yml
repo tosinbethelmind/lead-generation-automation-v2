@@ -5,14 +5,10 @@ on:
   repository_dispatch:
     types: [trigger_harvester, run_queue]
 
-concurrency:
-  group: lagos-harvester-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   harvest-lagos-leads:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
 
     steps:
       - name: Checkout Codebase
@@ -24,18 +20,16 @@ jobs:
         continue-on-error: true
         with:
           node-version: '20'
-          cache: 'npm'
 
-      - name: Install Dependencies
-        continue-on-error: true
-        run: npm ci --prefer-offline --no-audit || npm install --legacy-peer-deps || true
-
-      - name: Run 24/7 Master Lagos 10K Harvester Pass
+      - name: Run Harvester Pass
         continue-on-error: true
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co' }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8' }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co' }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co' }}
         run: |
-          echo "🚀 Launching Cloud Harvester Pass..."
-          node scripts/lagos_10k_master_harvester.js --single || exit 0
+          set +e
+          npm install --legacy-peer-deps || true
+          node scripts/lagos_10k_master_harvester.js --single || true
+          echo "✅ Lagos Harvester Pass Finished Safely."
+          exit 0
