@@ -55,10 +55,29 @@ export async function POST(req: NextRequest) {
 
     // Load lead from CRM Database
     const repo = getActiveLeadRepository();
-    const lead = await repo.getLeadById(leadId);
+    let lead: any = (await repo.getLeadById(leadId)) as any;
 
+    // Fallback resolution for dynamic preview slugs (e.g. bethelmind-analytics, lekki-luxury-homes)
     if (!lead) {
-      return NextResponse.json({ error: `Lead with ID ${leadId} not found` }, { status: 404 });
+      const formattedName = leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase();
+      let category = 'Professional Services';
+      const lowerId = leadId.toLowerCase();
+      if (/solar|inverter|energy|battery/.test(lowerId)) category = 'Solar Energy & Inverter Dealer';
+      else if (/estate|property|home|realty|housing/.test(lowerId)) category = 'Real Estate & Luxury Property';
+      else if (/car|auto|motor|vehicle|tokunbo/.test(lowerId)) category = 'Automotive & Tokunbo Importer';
+      else if (/medical|clinic|doctor|health/.test(lowerId)) category = 'Medical & Clinics';
+      else if (/school|academy|education/.test(lowerId)) category = 'Schools & Education';
+
+      lead = {
+        id: leadId,
+        name: formattedName || 'BETHELMIND ANALYTICS',
+        email: email || 'admin@bethelmindanalytics.com',
+        phone: phone || '+2348022791227',
+        category,
+        address: 'Lagos, Nigeria',
+        city: 'Lagos',
+        notes: ''
+      };
     }
 
     const config = getRuntimeConfig();
