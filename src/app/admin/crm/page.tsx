@@ -217,35 +217,7 @@ export default function AdminCrmDualEnginePage() {
         setScrapingLagos(false);
         setScrapingIbadan(false);
       }
-    } catch (err: any) {
-      alert(`Network error starting ${engine} scraper: ${err.message}`);
-      setScrapingSolar(false);
-      setScrapingLagos(false);
       setScrapingIbadan(false);
-    }
-  };
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'scrape',
-          mode: engine === 'solar' ? 'live-solar' : 'lagos-10k',
-          count: engine === 'solar' ? 500 : 1000
-        })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setActiveJobId(data.jobId);
-        setPollingActive(true);
-      } else {
-        alert(`Error starting ${engine} scraper: ${data.error || 'Failed'}`);
-        setScrapingSolar(false);
-        setScrapingLagos(false);
-      }
-    } catch (err: any) {
-      alert(`Network error starting ${engine} scraper: ${err.message}`);
-      setScrapingSolar(false);
-      setScrapingLagos(false);
     }
   };
 
