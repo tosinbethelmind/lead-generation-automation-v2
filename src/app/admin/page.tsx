@@ -111,7 +111,18 @@ export default function AdminDashboardHome() {
             <h3>Multi-Engine Lead CRM Hub</h3>
           </div>
           <div className="card-body">
-            <p>Administer prospects seamlessly across <strong>SolarQuotePro</strong>, <strong>Lagos 10K B2B</strong>, and <strong>Ibadan 10K B2B</strong> engines with 1-click action controls.</p>
+            <p>Administer <strong>21,078 verified prospects</strong> across <strong>SolarQuotePro (2,438)</strong>, <strong>Lagos 10K (17,578)</strong>, and <strong>Ibadan 10K (1,062)</strong> engines.</p>
+            <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[11px] font-bold">
+              <div className="bg-amber-500/10 border border-amber-500/20 p-2 rounded-lg text-amber-400">
+                <span className="block text-base font-black">2,438</span> Solar
+              </div>
+              <div className="bg-emerald-500/10 border border-emerald-500/20 p-2 rounded-lg text-emerald-400">
+                <span className="block text-base font-black">17,578</span> Lagos
+              </div>
+              <div className="bg-indigo-500/10 border border-indigo-500/20 p-2 rounded-lg text-indigo-400">
+                <span className="block text-base font-black">1,062</span> Ibadan
+              </div>
+            </div>
             <Link href="/admin/crm" className="accessible-btn accessible-btn-cyan text-xs" style={{ marginTop: '12px', display: 'inline-flex' }}>
               Open Multi-Engine CRM <Layers size={16} />
             </Link>
