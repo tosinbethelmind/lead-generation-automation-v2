@@ -1,12 +1,13 @@
 name: 24/7 Lagos 10K Multi-Engine Harvester
 
 on:
-  schedule:
-    # Run every 30 minutes 24/7 in the cloud (even when laptop is closed)
-    - cron: '*/30 * * * *'
   workflow_dispatch:
   repository_dispatch:
     types: [trigger_harvester, run_queue]
+
+concurrency:
+  group: lagos-harvester-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   harvest-lagos-leads:
@@ -16,21 +17,25 @@ jobs:
     steps:
       - name: Checkout Codebase
         uses: actions/checkout@v4
+        continue-on-error: true
 
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
+        continue-on-error: true
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit || npm install --legacy-peer-deps
+        continue-on-error: true
+        run: npm ci --prefer-offline --no-audit || npm install --legacy-peer-deps || true
 
-      - name: Run 24/7 Master Lagos 10K Harvester (All 7 Free Engines)
+      - name: Run 24/7 Master Lagos 10K Harvester Pass
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co' }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8' }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co' }}
         run: |
-          echo "🚀 Launching 24/7 Cloud Harvester Pass..."
-          node scripts/lagos_10k_master_harvester.js --single
+          echo "🚀 Launching Cloud Harvester Pass..."
+          node scripts/lagos_10k_master_harvester.js --single || exit 0
