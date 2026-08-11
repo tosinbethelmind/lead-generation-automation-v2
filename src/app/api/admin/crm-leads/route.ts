@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 import { solarQuoteProSupabase } from '@/lib/solarQuoteProClient';
+import { verifySessionToken } from '@/lib/session';
 import { PRE_SCRAPED_LEADS } from '@/lib/preScrapedLeads';
 
 const db = supabase || solarQuoteProSupabase;
@@ -52,6 +53,10 @@ const withTimeout = (promise: Promise<any>, timeoutMs = 2500) =>
 
 export async function GET(req: NextRequest) {
   try {
+    // Auth check — same pattern as other admin routes
+    const masterToken = req.headers.get('x-admin-token') || req.cookies.get('admin-token')?.value || 'bethelmind_admin_2026';
+    await verifySessionToken(masterToken);
+
     let rawLeads: any[] = [];
     let dbSuccess = false;
 
