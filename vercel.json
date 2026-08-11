@@ -9,6 +9,9 @@
     "src/app/api/outreach/lagos10k/route.ts": {
       "maxDuration": 60
     },
+    "src/app/api/outreach/ibadan10k/route.ts": {
+      "maxDuration": 60
+    },
     "src/app/api/jiji/route.ts": {
       "maxDuration": 60
     },
@@ -34,6 +37,10 @@
     {
       "path": "/api/outreach/lagos10k?cron=true",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/outreach/ibadan10k?cron=true",
+      "schedule": "0 11 * * *"
     },
     {
       "path": "/api/outreach/solar-hybrid?cron=true",
