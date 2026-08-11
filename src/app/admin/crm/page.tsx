@@ -156,6 +156,7 @@ export default function AdminCrmDualEnginePage() {
 
   // Bulk selection & notification states
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
@@ -429,6 +430,7 @@ export default function AdminCrmDualEnginePage() {
   const copyText = (txt: string, id: string) => {
     navigator.clipboard.writeText(txt);
     setCopiedId(id);
+    showToast('Copied live preview link to clipboard!');
     setTimeout(() => setCopiedId(null), 2000);
   };
 
