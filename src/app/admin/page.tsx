@@ -102,18 +102,18 @@ export default function AdminDashboardHome() {
           </div>
         </div>
 
-        {/* ☀️ DUAL SCRAPER CRM HUB CARD */}
+        {/* ☀️ MULTI-ENGINE LEAD CRM HUB CARD */}
         <div className="bento-card glass-panel border-cyan-500/30">
           <div className="card-header">
             <div className="header-icon-wrapper" style={{ color: '#06b6d4' }}>
               <Layers />
             </div>
-            <h3>Dual-Engine CRM Hub</h3>
+            <h3>Multi-Engine Lead CRM Hub</h3>
           </div>
           <div className="card-body">
-            <p>Administer prospects across **Engine 1 (Solar & Energy)** and **Engine 2 (Lagos 10K B2B)** with 1-click action controls.</p>
+            <p>Administer prospects seamlessly across <strong>SolarQuotePro</strong>, <strong>Lagos 10K B2B</strong>, and <strong>Ibadan 10K B2B</strong> engines with 1-click action controls.</p>
             <Link href="/admin/crm" className="accessible-btn accessible-btn-cyan text-xs" style={{ marginTop: '12px', display: 'inline-flex' }}>
-              Open Dual CRM <Sun size={16} />
+              Open Multi-Engine CRM <Layers size={16} />
             </Link>
           </div>
         </div>

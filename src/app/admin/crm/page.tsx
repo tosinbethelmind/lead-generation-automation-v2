@@ -47,8 +47,8 @@ interface LeadItem {
   status: string;
   notes?: string;
   created_at: string;
-  type: 'homeowner' | 'enterprise' | 'nigeria_5k' | 'lagos_b2b';
-  engine: 'solar' | 'lagos';
+  type: 'homeowner' | 'enterprise' | 'nigeria_5k' | 'lagos_b2b' | 'ibadan_b2b' | 'lagos_10k' | 'ibadan_10k';
+  engine: 'solar' | 'lagos' | 'ibadan';
   kva_recommended?: string;
   running_load_w?: number;
 }
@@ -67,11 +67,11 @@ const INITIAL_SEEDED: LeadItem[] = (PRE_SCRAPED_LEADS || []).map((l: any, idx: n
   notes: l.notes || '',
   created_at: l.created_at || new Date().toISOString(),
   type: (l.type || 'nigeria_5k') as any,
-  engine: l.type === 'homeowner' || l.type === 'enterprise' ? 'solar' : 'lagos'
+  engine: l.type === 'homeowner' || l.type === 'enterprise' ? 'solar' : /ibadan|bodija|dugbe/i.test(`${l.city || ''} ${l.address || ''}`) ? 'ibadan' : 'lagos'
 }));
 
 export default function AdminCrmDualEnginePage() {
-  const [activeEngine, setActiveEngine] = useState<'all' | 'solar' | 'lagos'>('all');
+  const [activeEngine, setActiveEngine] = useState<'all' | 'solar' | 'lagos' | 'ibadan'>('all');
   const [viewMode, setViewMode] = useState<'kanban' | 'table'>('table');
   const [leads, setLeads] = useState<LeadItem[]>(INITIAL_SEEDED);
   const [loading, setLoading] = useState(false);
@@ -84,6 +84,7 @@ export default function AdminCrmDualEnginePage() {
   // Scraper control states
   const [scrapingSolar, setScrapingSolar] = useState(false);
   const [scrapingLagos, setScrapingLagos] = useState(false);
+  const [scrapingIbadan, setScrapingIbadan] = useState(false);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [jobStatus, setJobStatus] = useState<string | null>(null);
   const [jobLogs, setJobLogs] = useState<any[]>([]);
@@ -109,8 +110,8 @@ export default function AdminCrmDualEnginePage() {
     email: '',
     location: '',
     city: 'Lagos',
-    engine: 'solar' as 'solar' | 'lagos',
-    type: 'enterprise' as 'homeowner' | 'enterprise' | 'lagos_b2b',
+    engine: 'solar' as 'solar' | 'lagos' | 'ibadan',
+    type: 'enterprise' as 'homeowner' | 'enterprise' | 'lagos_b2b' | 'ibadan_b2b',
     notes: ''
   });
   const [addingLead, setAddingLead] = useState(false);
@@ -127,21 +128,20 @@ export default function AdminCrmDualEnginePage() {
     else setRefreshing(true);
 
     try {
-      // Fetch from solar pipeline endpoint
-      const solarRes = await fetch('/api/admin/solar-pipeline');
-      const solarData = await solarRes.json();
-
       let combined: LeadItem[] = [];
 
+      // 1. Fetch from solar pipeline endpoint
+      const solarRes = await fetch('/api/admin/solar-pipeline');
+      const solarData = await solarRes.json();
       if (solarRes.ok && solarData.success && Array.isArray(solarData.leads)) {
         const mappedSolar: LeadItem[] = solarData.leads.map((l: any) => ({
           ...l,
-          engine: l.type === 'homeowner' || l.type === 'enterprise' ? 'solar' : 'lagos'
+          engine: l.type === 'homeowner' || l.type === 'enterprise' ? 'solar' : /ibadan|bodija|dugbe/i.test(`${l.city || ''} ${l.address || ''}`) ? 'ibadan' : 'lagos'
         }));
         combined = [...mappedSolar];
       }
 
-      // Fetch from lagos pipeline endpoint
+      // 2. Fetch from lagos pipeline endpoint
       const lagosRes = await fetch('/api/admin/lagos-pipeline');
       const lagosData = await lagosRes.json();
       if (lagosRes.ok && lagosData.success && Array.isArray(lagosData.leads)) {
@@ -149,9 +149,22 @@ export default function AdminCrmDualEnginePage() {
           ...l,
           engine: 'lagos' as const
         }));
-        // Avoid duplicate IDs
         const existingIds = new Set(combined.map(c => c.id));
         mappedLagos.forEach(l => {
+          if (!existingIds.has(l.id)) combined.push(l);
+        });
+      }
+
+      // 3. Fetch from ibadan pipeline endpoint
+      const ibadanRes = await fetch('/api/admin/ibadan-pipeline');
+      const ibadanData = await ibadanRes.json();
+      if (ibadanRes.ok && ibadanData.success && Array.isArray(ibadanData.leads)) {
+        const mappedIbadan: LeadItem[] = ibadanData.leads.map((l: any) => ({
+          ...l,
+          engine: 'ibadan' as const
+        }));
+        const existingIds = new Set(combined.map(c => c.id));
+        mappedIbadan.forEach(l => {
           if (!existingIds.has(l.id)) combined.push(l);
         });
       }
@@ -169,15 +182,48 @@ export default function AdminCrmDualEnginePage() {
   };
 
   // Trigger Scraper
-  const handleTriggerScraper = async (engine: 'solar' | 'lagos') => {
+  const handleTriggerScraper = async (engine: 'solar' | 'lagos' | 'ibadan') => {
     if (engine === 'solar') setScrapingSolar(true);
-    else setScrapingLagos(true);
+    else if (engine === 'lagos') setScrapingLagos(true);
+    else setScrapingIbadan(true);
 
     setJobStatus('running');
     setJobLogs([]);
 
     try {
-      const endpoint = engine === 'solar' ? '/api/admin/solar-pipeline' : '/api/admin/lagos-pipeline';
+      const endpoint = engine === 'solar' 
+        ? '/api/admin/solar-pipeline' 
+        : engine === 'lagos' 
+        ? '/api/admin/lagos-pipeline' 
+        : '/api/outreach/ibadan10k';
+      
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'scrape',
+          mode: engine === 'solar' ? 'live-solar' : engine === 'lagos' ? 'lagos-10k' : 'ibadan-10k',
+          count: 500
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setActiveJobId(data.jobId || `job-${Date.now()}`);
+        setPollingActive(true);
+        alert(`🏛️ ${engine.toUpperCase()} Scraper Engine Triggered Successfully! Extracting leads in background...`);
+      } else {
+        alert(`Error starting ${engine} scraper: ${data.error || 'Failed'}`);
+        setScrapingSolar(false);
+        setScrapingLagos(false);
+        setScrapingIbadan(false);
+      }
+    } catch (err: any) {
+      alert(`Network error starting ${engine} scraper: ${err.message}`);
+      setScrapingSolar(false);
+      setScrapingLagos(false);
+      setScrapingIbadan(false);
+    }
+  };
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -270,6 +316,7 @@ export default function AdminCrmDualEnginePage() {
     // Engine filter
     if (activeEngine === 'solar' && lead.engine !== 'solar') return false;
     if (activeEngine === 'lagos' && lead.engine !== 'lagos') return false;
+    if (activeEngine === 'ibadan' && lead.engine !== 'ibadan') return false;
 
     // Status filter
     if (statusFilter !== 'all' && lead.status !== statusFilter) return false;
@@ -297,6 +344,7 @@ export default function AdminCrmDualEnginePage() {
   const totalLeadsCount = filteredLeads.length;
   const solarCount = leads.filter(l => l.engine === 'solar').length;
   const lagosCount = leads.filter(l => l.engine === 'lagos').length;
+  const ibadanCount = leads.filter(l => l.engine === 'ibadan').length;
   const contactedCount = leads.filter(l => l.status === 'contacted' || l.status === 'proposal_sent' || l.status === 'closed_won').length;
   const closedWonCount = leads.filter(l => l.status === 'closed_won').length;
   const conversionRate = totalLeadsCount > 0 ? ((closedWonCount / totalLeadsCount) * 100).toFixed(1) : '0.0';
@@ -323,7 +371,7 @@ export default function AdminCrmDualEnginePage() {
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     const link = document.createElement('a');
     link.href = encodeURI(csvContent);
-    link.download = `dual_engine_crm_leads_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `multi_engine_crm_leads_${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -350,51 +398,62 @@ export default function AdminCrmDualEnginePage() {
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-[1600px] mx-auto min-h-screen text-slate-100">
       
-      {/* 🚀 TOP NAVIGATION & DUAL ENGINE SWITCHER */}
+      {/* 🚀 TOP NAVIGATION & MULTI ENGINE SWITCHER */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-950/80 p-6 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-md">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1">
-            <Layers className="w-4 h-4" /> Dual-Scraper Lead Management & CRM Suite
+            <Layers className="w-4 h-4" /> Multi-Scraper Lead Management & CRM Suite
           </div>
           <h1 className="text-2xl font-extrabold text-white">Central Lead Administration Console</h1>
           <p className="text-xs text-slate-400 mt-1">
-            Control, harvest, outreach, and manage prospects across **Engine 1 (Solar & Energy)** and **Engine 2 (Lagos 10K B2B)**.
+            Control, harvest, outreach, and manage prospects across <strong>SolarQuotePro</strong>, <strong>Lagos 10K B2B</strong>, and <strong>Ibadan 10K B2B</strong> engines.
           </p>
         </div>
 
         {/* Engine Switcher Buttons */}
-        <div className="flex items-center gap-2 bg-slate-900 p-1.5 rounded-xl border border-white/10">
+        <div className="flex items-center gap-2 bg-slate-900 p-1.5 rounded-xl border border-white/10 flex-wrap">
           <button
             onClick={() => setActiveEngine('all')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeEngine === 'all'
                 ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-lg shadow-cyan-500/20'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Globe className="w-4 h-4" /> All Engines ({leads.length})
+            <Globe className="w-3.5 h-3.5" /> All Engines ({leads.length})
           </button>
           
           <button
             onClick={() => setActiveEngine('solar')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeEngine === 'solar'
                 ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-lg shadow-amber-500/20'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Sun className="w-4 h-4 text-amber-400" /> Solar Engine ({solarCount})
+            <Sun className="w-3.5 h-3.5 text-amber-400" /> Solar ({solarCount})
           </button>
 
           <button
             onClick={() => setActiveEngine('lagos')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeEngine === 'lagos'
                 ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 shadow-lg shadow-emerald-500/20'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Building className="w-4 h-4 text-emerald-400" /> Lagos 10K B2B ({lagosCount})
+            <Building className="w-3.5 h-3.5 text-emerald-400" /> Lagos 10K ({lagosCount})
+          </button>
+
+          <button
+            onClick={() => setActiveEngine('ibadan')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+              activeEngine === 'ibadan'
+                ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Building className="w-3.5 h-3.5 text-indigo-400" /> Ibadan 10K ({ibadanCount})
           </button>
         </div>
       </div>
@@ -410,19 +469,19 @@ export default function AdminCrmDualEnginePage() {
         <div className="bg-slate-900/70 p-5 rounded-2xl border border-white/10 backdrop-blur-md">
           <div className="text-xs font-bold text-slate-400 uppercase">Solar Quote Leads</div>
           <div className="text-2xl font-extrabold text-amber-400 mt-1">{solarCount}</div>
-          <div className="text-[11px] text-slate-400 mt-1 font-semibold">Engine 1 Harvester</div>
+          <div className="text-[11px] text-slate-400 mt-1 font-semibold">SolarQuotePro Engine</div>
         </div>
 
         <div className="bg-slate-900/70 p-5 rounded-2xl border border-white/10 backdrop-blur-md">
           <div className="text-xs font-bold text-slate-400 uppercase">Lagos B2B Merchants</div>
           <div className="text-2xl font-extrabold text-emerald-400 mt-1">{lagosCount}</div>
-          <div className="text-[11px] text-slate-400 mt-1 font-semibold">Engine 2 24/7 Loop</div>
+          <div className="text-[11px] text-slate-400 mt-1 font-semibold">Lagos 10K Engine</div>
         </div>
 
         <div className="bg-slate-900/70 p-5 rounded-2xl border border-white/10 backdrop-blur-md">
-          <div className="text-xs font-bold text-slate-400 uppercase">Win Conversion Rate</div>
-          <div className="text-2xl font-extrabold text-purple-400 mt-1">{conversionRate}%</div>
-          <div className="text-[11px] text-emerald-400 mt-1 font-semibold">{closedWonCount} Closed Deals</div>
+          <div className="text-xs font-bold text-slate-400 uppercase">Ibadan B2B Merchants</div>
+          <div className="text-2xl font-extrabold text-indigo-400 mt-1">{ibadanCount}</div>
+          <div className="text-[11px] text-indigo-400 mt-1 font-semibold">Ibadan 10K Engine</div>
         </div>
       </div>
 
@@ -434,19 +493,37 @@ export default function AdminCrmDualEnginePage() {
               <Terminal className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">Live Scraper Engine Harvester</h3>
-              <p className="text-xs text-slate-400">Launch live automated lead generation runs for either scraper engine.</p>
+              <h3 className="text-sm font-bold text-white">Live Scraper Engine Harvesters</h3>
+              <p className="text-xs text-slate-400">Launch live automated lead generation runs across all 3 engines.</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => handleTriggerScraper('solar')}
-              disabled={scrapingSolar || scrapingLagos}
+              disabled={scrapingSolar || scrapingLagos || scrapingIbadan}
               className="accessible-btn accessible-btn-amber text-xs"
             >
-              {scrapingSolar ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sun className="w-4 h-4" />}
-              Scrape Solar Engine
+              {scrapingSolar ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sun className="w-3.5 h-3.5" />}
+              Scrape Solar
+            </button>
+
+            <button
+              onClick={() => handleTriggerScraper('lagos')}
+              disabled={scrapingSolar || scrapingLagos || scrapingIbadan}
+              className="accessible-btn accessible-btn-cyan text-xs"
+            >
+              {scrapingLagos ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Building className="w-3.5 h-3.5" />}
+              Scrape Lagos 10K
+            </button>
+
+            <button
+              onClick={() => handleTriggerScraper('ibadan')}
+              disabled={scrapingSolar || scrapingLagos || scrapingIbadan}
+              className="accessible-btn accessible-btn-indigo text-xs"
+            >
+              {scrapingIbadan ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Building className="w-3.5 h-3.5" />}
+              Scrape Ibadan 10K
             </button>
 
             <button
@@ -602,9 +679,13 @@ export default function AdminCrmDualEnginePage() {
                           <span className="engine-badge engine-badge-solar">
                             <Sun className="w-3 h-3" /> Solar
                           </span>
+                        ) : lead.engine === 'ibadan' ? (
+                          <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-md text-[11px] font-bold inline-flex items-center gap-1">
+                            <Building className="w-3 h-3" /> Ibadan 10K
+                          </span>
                         ) : (
                           <span className="engine-badge engine-badge-lagos">
-                            <Building className="w-3 h-3" /> Lagos B2B
+                            <Building className="w-3 h-3" /> Lagos 10K
                           </span>
                         )}
                       </td>

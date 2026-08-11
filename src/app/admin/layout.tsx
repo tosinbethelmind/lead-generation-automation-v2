@@ -65,11 +65,11 @@ export default function AdminLayout({
           visible: true,
         },
         {
-          name: 'Dual-Engine CRM Hub',
+          name: 'Multi-Engine Lead CRM Hub',
           path: '/admin/crm',
-          icon: Sun,
+          icon: Layers,
           visible: true,
-          badge: '2 Scrapers',
+          badge: '4 Engines',
         },
         {
           name: 'Solar Scraper Engine',
