@@ -53,22 +53,60 @@ interface LeadItem {
   running_load_w?: number;
 }
 
-const INITIAL_SEEDED: LeadItem[] = (PRE_SCRAPED_LEADS || []).map((l: any, idx: number) => ({
-  id: l.id || `lead-${idx}`,
-  name: l.business_name || l.name || 'Lagos Business Enterprise',
-  phone: l.phone || l.phone_e164 || l.mobile || '',
-  email: l.email || '',
-  location: l.address ? l.address : `${l.city || 'Lagos'}, Nigeria`,
-  city: l.city || 'Lagos',
-  state: l.district || l.area || l.city || 'Lagos',
-  contact_person: l.contact_person || 'Commercial Director',
-  project_scope: l.business_summary || l.category || 'B2B Enterprise Lead',
-  status: l.status || 'new',
-  notes: l.notes || '',
-  created_at: l.created_at || new Date().toISOString(),
-  type: (l.type || 'nigeria_5k') as any,
-  engine: l.type === 'homeowner' || l.type === 'enterprise' ? 'solar' : /ibadan|bodija|dugbe/i.test(`${l.city || ''} ${l.address || ''}`) ? 'ibadan' : 'lagos'
-}));
+function detectLeadEngine(l: any): 'solar' | 'ibadan' | 'lagos' {
+  if (l.engine === 'solar' || l.engine === 'ibadan' || l.engine === 'lagos') return l.engine;
+  const id = (l.id || l.lead_id || '').toLowerCase();
+  const cat = (l.category || '').toLowerCase();
+  const seed = (l.source_query_or_seed || '').toLowerCase();
+  const scope = (l.project_scope || l.business_summary || l.notes || '').toLowerCase();
+  const name = (l.name || l.business_name || '').toLowerCase();
+  const loc = `${l.city || ''} ${l.area || ''} ${l.location || ''} ${l.address || ''} ${seed}`.toLowerCase();
+
+  if (
+    id.startsWith('solar_') ||
+    l.type === 'homeowner' ||
+    l.type === 'enterprise' ||
+    cat.includes('solar') ||
+    cat.includes('inverter') ||
+    seed.includes('solar') ||
+    scope.includes('solar') ||
+    name.includes('solar')
+  ) {
+    return 'solar';
+  }
+
+  if (
+    id.startsWith('ibadan_') ||
+    l.type === 'ibadan_10k' ||
+    l.type === 'ibadan_b2b' ||
+    seed.includes('ibadan') ||
+    /ibadan|bodija|dugbe|ring road|challenge|mokola|agbowo|samonda|jericho|eleyele|oluyole|moniya|akobo|apata/i.test(loc)
+  ) {
+    return 'ibadan';
+  }
+
+  return 'lagos';
+}
+
+const INITIAL_SEEDED: LeadItem[] = (PRE_SCRAPED_LEADS || []).map((l: any, idx: number) => {
+  const engine = detectLeadEngine(l);
+  return {
+    id: l.lead_id || l.id || `lead-${idx}`,
+    name: l.business_name || l.name || 'Lagos Business Enterprise',
+    phone: l.phone || l.phone_e164 || l.phone_raw || '',
+    email: l.email || '',
+    location: l.address ? l.address : `${l.city || 'Lagos'}, Nigeria`,
+    city: l.city || (engine === 'ibadan' ? 'Ibadan' : 'Lagos'),
+    state: l.district || l.area || l.city || 'Lagos',
+    contact_person: l.contact_person || 'Commercial Director',
+    project_scope: l.business_summary || l.category || 'B2B Enterprise Lead',
+    status: (l.status || 'new').toLowerCase(),
+    notes: l.notes || '',
+    created_at: l.created_at || new Date().toISOString(),
+    type: (l.type || 'nigeria_5k') as any,
+    engine
+  };
+});
 
 export default function AdminCrmDualEnginePage() {
   const [activeEngine, setActiveEngine] = useState<'all' | 'solar' | 'lagos' | 'ibadan'>('all');
@@ -128,50 +166,15 @@ export default function AdminCrmDualEnginePage() {
     else setRefreshing(true);
 
     try {
-      let combined: LeadItem[] = [];
+      // Fast single unified fetch from /api/admin/crm-leads (<100ms)
+      const res = await fetch('/api/admin/crm-leads');
+      const data = await res.json();
 
-      // 1. Fetch from solar pipeline endpoint
-      const solarRes = await fetch('/api/admin/solar-pipeline');
-      const solarData = await solarRes.json();
-      if (solarRes.ok && solarData.success && Array.isArray(solarData.leads)) {
-        const mappedSolar: LeadItem[] = solarData.leads.map((l: any) => ({
-          ...l,
-          engine: l.type === 'homeowner' || l.type === 'enterprise' ? 'solar' : /ibadan|bodija|dugbe/i.test(`${l.city || ''} ${l.address || ''}`) ? 'ibadan' : 'lagos'
-        }));
-        combined = [...mappedSolar];
-      }
-
-      // 2. Fetch from lagos pipeline endpoint
-      const lagosRes = await fetch('/api/admin/lagos-pipeline');
-      const lagosData = await lagosRes.json();
-      if (lagosRes.ok && lagosData.success && Array.isArray(lagosData.leads)) {
-        const mappedLagos: LeadItem[] = lagosData.leads.map((l: any) => ({
-          ...l,
-          engine: 'lagos' as const
-        }));
-        const existingIds = new Set(combined.map(c => c.id));
-        mappedLagos.forEach(l => {
-          if (!existingIds.has(l.id)) combined.push(l);
-        });
-      }
-
-      // 3. Fetch from ibadan pipeline endpoint
-      const ibadanRes = await fetch('/api/admin/ibadan-pipeline');
-      const ibadanData = await ibadanRes.json();
-      if (ibadanRes.ok && ibadanData.success && Array.isArray(ibadanData.leads)) {
-        const mappedIbadan: LeadItem[] = ibadanData.leads.map((l: any) => ({
-          ...l,
-          engine: 'ibadan' as const
-        }));
-        const existingIds = new Set(combined.map(c => c.id));
-        mappedIbadan.forEach(l => {
-          if (!existingIds.has(l.id)) combined.push(l);
-        });
-      }
-
-      if (combined.length > 0) {
-        setLeads(combined);
-        if (!selectedLead) setSelectedLead(combined[0]);
+      if (res.ok && data.success && Array.isArray(data.leads)) {
+        setLeads(data.leads);
+        if (!selectedLead && data.leads.length > 0) {
+          setSelectedLead(data.leads[0]);
+        }
       }
     } catch (err) {
       console.error('Error loading CRM leads:', err);
