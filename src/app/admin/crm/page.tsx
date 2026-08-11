@@ -68,9 +68,12 @@ function detectLeadEngine(l: any): 'solar' | 'ibadan' | 'lagos' {
     l.type === 'enterprise' ||
     cat.includes('solar') ||
     cat.includes('inverter') ||
+    cat.includes('energy') ||
+    cat.includes('power') ||
     seed.includes('solar') ||
     scope.includes('solar') ||
-    name.includes('solar')
+    name.includes('solar') ||
+    name.includes('inverter')
   ) {
     return 'solar';
   }

@@ -9,6 +9,7 @@ const db = supabase || solarQuoteProSupabase;
 export const dynamic = 'force-dynamic';
 
 export function detectLeadEngine(l: any): 'solar' | 'ibadan' | 'lagos' {
+  if (l.engine === 'solar' || l.engine === 'ibadan' || l.engine === 'lagos') return l.engine;
   const id = (l.id || l.lead_id || '').toLowerCase();
   const cat = (l.category || '').toLowerCase();
   const seed = (l.source_query_or_seed || '').toLowerCase();
@@ -23,9 +24,12 @@ export function detectLeadEngine(l: any): 'solar' | 'ibadan' | 'lagos' {
     l.type === 'enterprise' ||
     cat.includes('solar') ||
     cat.includes('inverter') ||
+    cat.includes('energy') ||
+    cat.includes('power') ||
     seed.includes('solar') ||
     scope.includes('solar') ||
-    name.includes('solar')
+    name.includes('solar') ||
+    name.includes('inverter')
   ) {
     return 'solar';
   }
@@ -45,7 +49,7 @@ export function detectLeadEngine(l: any): 'solar' | 'ibadan' | 'lagos' {
   return 'lagos';
 }
 
-const withTimeout = (promise: Promise<any>, timeoutMs = 2500) => 
+const withTimeout = (promise: Promise<any>, timeoutMs = 6000) => 
   Promise.race([
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs))
@@ -61,13 +65,14 @@ export async function GET(req: NextRequest) {
     let dbSuccess = false;
 
     try {
+      // Fetch fresh DB records with clean valid columns
       const res: any = await withTimeout(
         db
           .from('leads')
-          .select('id, name, business_name, phone_e164, phone, phone_raw, email, address, city, area, district, category, business_summary, status, notes, created_at, source_query_or_seed, type')
+          .select('id, name, business_name, phone_e164, phone, phone_raw, email, address, city, area, category, business_summary, status, notes, created_at, source_query_or_seed')
           .order('created_at', { ascending: false })
-          .limit(3000),
-        2500
+          .limit(5000),
+        6000
       );
 
       if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
@@ -88,7 +93,7 @@ export async function GET(req: NextRequest) {
         email: l.email || '',
         address: l.address || `${l.city || 'Lagos'}, Nigeria`,
         city: l.city || 'Lagos',
-        area: l.area || l.district || 'Commercial Hub',
+        area: l.area || 'Commercial Hub',
         category: l.category || 'Commercial Lead',
         business_summary: l.business_summary || '',
         status: (l.status || 'new').toLowerCase(),
@@ -127,7 +132,7 @@ export async function GET(req: NextRequest) {
         email: l.email || '',
         location: l.address ? l.address : `${l.city || 'Nigeria'}, ${l.area || ''}`,
         city: l.city || (engine === 'ibadan' ? 'Ibadan' : 'Lagos'),
-        state: l.area || l.district || l.city || '',
+        state: l.area || l.city || '',
         contact_person: l.contact_person || 'Operations Lead',
         project_scope: l.category || l.business_summary || 'B2B Enterprise Prospect',
         status: st,
