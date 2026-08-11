@@ -77,6 +77,16 @@ export async function POST(req: NextRequest) {
       }
     };
 
+    if (publicKey === 'mock' || secretKey === 'mock' || !secretKey.startsWith('sk_')) {
+      const mockRef = `PSTK-${Math.floor(100000 + Math.random() * 900000)}-${Date.now()}`;
+      return NextResponse.json({
+        success: true,
+        authorization_url: `${callbackUrl}&gateway=paystack&reference=${mockRef}`,
+        reference: mockRef,
+        message: 'Mock Paystack checkout session initialized.'
+      });
+    }
+
     const response = await fetch('https://api.paystack.co/transaction/initialize', {
       method: 'POST',
       headers: {
