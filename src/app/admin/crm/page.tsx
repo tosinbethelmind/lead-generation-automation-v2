@@ -217,6 +217,10 @@ export default function AdminCrmDualEnginePage() {
         setScrapingLagos(false);
         setScrapingIbadan(false);
       }
+    } catch (err: any) {
+      alert(`Network error starting ${engine} scraper: ${err.message}`);
+      setScrapingSolar(false);
+      setScrapingLagos(false);
       setScrapingIbadan(false);
     }
   };
