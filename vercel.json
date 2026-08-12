@@ -28,27 +28,8 @@
   "crons": [
     {
       "path": "/api/cron/harvest",
-      "schedule": "0 */4 * * *"
-    },
-    {
-      "path": "/api/solarquotepro-pipeline?cron=true",
-      "schedule": "0 */6 * * *"
-    },
-    {
-      "path": "/api/outreach/lagos10k?cron=true",
-      "schedule": "0 */6 * * *"
-    },
-    {
-      "path": "/api/outreach/ibadan10k?cron=true",
-      "schedule": "0 11 * * *"
-    },
-    {
-      "path": "/api/outreach/solar-hybrid?cron=true",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/outreach/regular-business?cron=true",
-      "schedule": "0 10 * * *"
+      "schedule": "0 4 * * *"
     }
   ]
 }
+
