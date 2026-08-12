@@ -55,7 +55,7 @@ export default function HeroSection({
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.25)', borderRadius: 100, padding: '6px 16px' }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#06b6d4', flexShrink: 0 }} aria-hidden="true" />
-          <span style={{ fontSize: '0.78rem', color: '#06b6d4', fontWeight: 700 }}>Built for Lagos SMEs</span>
+          <span style={{ fontSize: '0.78rem', color: '#06b6d4', fontWeight: 700 }}>Built Specifically for Nigerian SMEs & Enterprises</span>
           <span style={{ color: '#475569', fontSize: '0.75rem' }}>•</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 2, color: '#f59e0b', fontSize: '0.75rem', fontWeight: 700 }}>
             <Star size={12} fill="#f59e0b" />
@@ -69,25 +69,25 @@ export default function HeroSection({
         id="hero-heading"
         style={{ textAlign: 'center', fontSize: 'clamp(2rem, 5.5vw, 3.4rem)', fontWeight: 900, lineHeight: 1.15, margin: '0 0 16px', fontFamily: "'Outfit', sans-serif", color: '#f8fafc' }}
       >
-        Turn More Lagos Enquiries Into<br />
+        Turn Inbound Enquiries Into<br />
         <span style={{ background: 'linear-gradient(135deg, #06b6d4 0%, #8b5cf6 60%, #ec4899 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          Qualified WhatsApp Conversations.
+          Paying Customers on WhatsApp.
         </span>
       </h1>
 
-      <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', maxWidth: 680, margin: '0 auto 12px', lineHeight: 1.65 }}>
-        Use AI-assisted follow-up, lead qualification, simple CRM, and sector tools to help your team respond faster and sell more consistently.
+      <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', maxWidth: 720, margin: '0 auto 14px', lineHeight: 1.65 }}>
+        Automate customer intake, transcribe WhatsApp Voice Notes, auto-verify bank transfers via dedicated virtual accounts, and deliver sector quotes instantly.
       </p>
 
       {/* Trust Subbar */}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, flexWrap: 'wrap', color: '#64748b', fontSize: '0.8rem', marginBottom: 36 }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <ShieldCheck size={14} style={{ color: '#10b981' }} /> 500+ Lagos SMEs Powered
+          <ShieldCheck size={14} style={{ color: '#10b981' }} /> Bank Transfer Auto-Reconciliation
         </span>
         <span>•</span>
-        <span>Guided Onboarding</span>
+        <span>WhatsApp Voice Note AI Ready</span>
         <span>•</span>
-        <span>Cancel Monthly Plans Anytime</span>
+        <span>FIRS VAT/WHT Invoice Generator</span>
       </div>
 
       {/* Primary CTAs */}

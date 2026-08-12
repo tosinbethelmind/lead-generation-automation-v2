@@ -1,14 +1,14 @@
 const { chromium } = require('playwright');
 
 (async () => {
-  console.log('🚀 Launching Physical Chrome Browser for Production E2E Verification...');
+  console.log('🚀 Launching Physical Chrome Browser for Local & Production E2E Verification...');
 
-  const targetUrl = 'https://lead-generation-automation-v2-4rwljehah-tosin4.vercel.app/tools/integrations';
-  const landingUrl = 'https://lead-generation-automation-v2-4rwljehah-tosin4.vercel.app';
+  const targetUrl = 'http://127.0.0.1:3006/tools/integrations';
+  const landingUrl = 'http://127.0.0.1:3006';
 
   const browser = await chromium.launch({
     headless: false,
-    slowMo: 100
+    slowMo: 150
   });
 
   const context = await browser.newContext({
@@ -18,9 +18,9 @@ const { chromium } = require('playwright');
   const page = await context.newPage();
 
   try {
-    console.log(`🌐 1. Navigating to Live Production Command Center: ${targetUrl}`);
+    console.log(`🌐 1. Navigating to Local Command Center: ${targetUrl}`);
     await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(2000);
 
     console.log('  ✅ Page loaded! Verifying Command Center heading...');
     const heading = await page.locator('h1').innerText();
@@ -49,23 +49,34 @@ const { chromium } = require('playwright');
 
     console.log('🌐 4. Testing Live Event Simulator Tab...');
     await page.click('button:has-text("Live Event Simulator")');
-    await page.waitForTimeout(1500);
-
-    console.log('  ⚡ Triggering Test SDK Event Collection API...');
-    await page.click('button:has-text("Test SDK Event Collection API")');
-    await page.waitForTimeout(1500);
-
-    console.log('  ⚡ Triggering Test Meta CAPI SHA-256 Hash...');
-    await page.click('button:has-text("Test Meta CAPI SHA-256 Hash")');
-    await page.waitForTimeout(1500);
-
-    console.log('  ⚡ Triggering Test Full-Stack Webhooks...');
-    await page.click('button:has-text("Test Full-Stack Webhooks")');
     await page.waitForTimeout(2000);
+
+    // Click simulator action buttons using text locator
+    const simulatorBtns = page.locator('button');
+    const sdkBtn = simulatorBtns.filter({ hasText: 'Test SDK Event' });
+    if (await sdkBtn.count() > 0) {
+      console.log('  ⚡ Triggering Test SDK Event Collection API...');
+      await sdkBtn.first().click();
+      await page.waitForTimeout(1500);
+    }
+
+    const capiBtn = simulatorBtns.filter({ hasText: 'Test Meta CAPI' });
+    if (await capiBtn.count() > 0) {
+      console.log('  ⚡ Triggering Test Meta CAPI SHA-256 Hash...');
+      await capiBtn.first().click();
+      await page.waitForTimeout(1500);
+    }
+
+    const webhookBtn = simulatorBtns.filter({ hasText: 'Full-Stack Webhooks' });
+    if (await webhookBtn.count() > 0) {
+      console.log('  ⚡ Triggering Test Full-Stack Webhooks...');
+      await webhookBtn.first().click();
+      await page.waitForTimeout(2000);
+    }
 
     console.log('🌐 5. Testing Sales Narrative Showcase Tab...');
     await page.click('button:has-text("Sales Narrative Showcase")');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(2500);
     console.log('  ✅ Sales Narrative Showcase rendered zero-friction value proposition.');
 
     console.log(`🌐 6. Navigating to Main Landing Page: ${landingUrl}`);

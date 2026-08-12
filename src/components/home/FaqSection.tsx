@@ -11,43 +11,39 @@ import { Plus, Minus } from 'lucide-react';
 const FAQ_ITEMS = [
   {
     q: 'How does onboarding work?',
-    a: 'After we confirm your payment, we schedule an onboarding session (typically within one business day). We collect your business information, products or services, and workflow requirements. We then configure your initial setup and review it with you before going live.',
+    a: 'After payment, we schedule an onboarding session (typically within one business day). We collect your business information, products, or service rules, configure your initial WhatsApp & CRM setup, and review everything with you before launching.',
   },
   {
-    q: 'Can the AI hand a conversation to my team?',
-    a: "Yes. The workflow is designed with a human handoff step. When a conversation requires your team's attention — for example, a pricing negotiation, a sensitive enquiry, or a confirmed order — the system routes it to a designated team contact on WhatsApp.",
+    q: 'How does Bank Transfer Auto-Verification (Virtual Accounts) work?',
+    a: 'For businesses handling bank transfers, we integrate dedicated Virtual Bank Account Numbers (NUBANs) generated via Paystack or Monnify. When a customer transfers funds via their mobile banking app (GTB, Kuda, Zenith, OPay), the transaction is automatically verified, updating the lead status and issuing an instant PDF receipt on WhatsApp without manual checking.',
   },
   {
-    q: 'Do I need a WhatsApp Business account?',
-    a: 'Yes. A WhatsApp Business account (or WhatsApp Business API access, depending on your plan and requirements) is required to use the WhatsApp workflow features. We will advise on the appropriate setup during onboarding.',
+    q: 'Can the assistant process WhatsApp Voice Notes and Nigerian Pidgin?',
+    a: 'Yes. The system uses Speech-to-Text AI (OpenAI Whisper) to transcribe audio voice notes sent by Nigerian customers in local accents or Pidgin English, enabling your automated workflow to process voice messages and generate structured replies or route them to your team.',
   },
   {
-    q: 'Which integrations are currently supported?',
-    a: 'Current integrations include WhatsApp Business messaging, website enquiry capture widgets, and basic CRM pipeline tracking. Payment gateway integration (Paystack, OPay API) is not yet configured. We use a manual OPay transfer process for plan payments. Other integrations are scoped individually — please ask during onboarding.',
+    q: 'Can the assistant hand conversations over to my sales team?',
+    a: 'Yes. The system includes a human handoff step. When an enquiry requires custom negotiation, a physical site visit, or complex closing, the conversation routes to designated team members on WhatsApp while keeping all records centralized in your CRM.',
   },
   {
-    q: 'Are sector tools included in every plan?',
-    a: 'Basic sector workflow configuration is included in Starter. Sector-specific calculator and quote workflow tools are included in Business Pro and above. Availability and scope depend on your plan and specific business requirements. Please review the plan feature list or ask us via WhatsApp.',
+    q: 'How do you protect against Meta WhatsApp account bans during marketing?',
+    a: 'We configure rate-limiting throttles, randomized human message delays, and message variation templates. For larger campaigns, we integrate the Official WhatsApp Business Cloud API to ensure full compliance with Meta’s anti-spam guidelines.',
+  },
+  {
+    q: 'Are sector-specific calculators included in every plan?',
+    a: 'Basic sector enquiry workflows are included in Starter. Specialized quote calculators (Solar BOQ, Vehicle VIN Import Duty, Real Estate Installment Spreads, and CAC Filing Fees) are included in Business Pro and VIP Enterprise plans.',
+  },
+  {
+    q: 'Does the system generate FIRS VAT and WHT-compliant invoices?',
+    a: 'Yes. The pro-forma invoice generator allows you to generate professional PDF invoices formatted with your CAC Registration Number, Tax Identification Number (TIN), 7.5% VAT, and 5% Withholding Tax (WHT) line items for corporate clients.',
+  },
+  {
+    q: 'Can I cancel my monthly plan anytime?',
+    a: 'Yes. Monthly subscriptions can be cancelled at any time before your next billing cycle with no long-term contracts or cancellation penalties.',
   },
   {
     q: 'How is my business data handled?',
-    a: 'Business data you provide during onboarding is used only to configure your workflow. We do not sell or share your data with third parties. For full details, please review our Privacy Policy and Responsible Outreach & Data Policy. We recommend reviewing these with a qualified legal professional before production use.',
-  },
-  {
-    q: 'Can I cancel my monthly plan?',
-    a: 'Yes. Monthly plans can be cancelled at any time. Simply contact us via WhatsApp before your next billing cycle. The one-time setup fee is non-refundable once onboarding has begun, as it covers work already performed. Please review our Refund and Cancellation Policy for full details.',
-  },
-  {
-    q: 'How do I pay for my plan?',
-    a: 'We currently accept manual OPay bank transfer only. Transfer the monthly fee and setup fee to the OPay account displayed on our pricing page, then send your payment receipt via WhatsApp. We confirm payment manually, typically within one business day.',
-  },
-  {
-    q: 'Is payment confirmed automatically?',
-    a: 'No. Payment confirmation is a manual process. We review your transfer receipt on WhatsApp and confirm by message before onboarding begins. We do not have an automated payment gateway or instant activation system at this time.',
-  },
-  {
-    q: 'Is lead outreach subject to consent and platform rules?',
-    a: "Yes, and this is your responsibility as the business owner. You must ensure you have a lawful basis for any outreach you conduct using our tools. WhatsApp's policies, Nigerian data protection obligations (NDPR), and applicable consumer protection rules apply. Do not use our tools for unsolicited bulk messaging, spam, impersonation, or any prohibited activity. Please review our Acceptable Use Policy and Responsible Outreach & Data Policy for full details.",
+    a: 'All client information and lead databases are kept strictly confidential and secure. We do not share or sell client data to third parties. Review our Privacy Policy for full terms.',
   },
 ];
 

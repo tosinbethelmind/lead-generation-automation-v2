@@ -17,6 +17,8 @@ import { paymentConfig, buildWhatsAppLink, generatePaymentReference } from '@/co
 import RoiCalculator from '@/components/home/RoiCalculator';
 import InvoiceModal, { InvoiceItem } from '@/components/InvoiceModal';
 
+import AddonModulesSection from '@/components/home/AddonModulesSection';
+
 interface PricingSectionProps {
   selectedPlanId: string;
   setSelectedPlanId: (id: string) => void;
@@ -243,6 +245,9 @@ export default function PricingSection({
           );
         })}
       </div>
+
+      {/* Selectable Tool Add-on Modules */}
+      <AddonModulesSection />
 
       {/* What happens after you subscribe */}
       <div style={{ background: 'rgba(16,185,129,0.04)', border: '1px solid rgba(16,185,129,0.15)', borderRadius: 20, padding: 'clamp(20px, 4vw, 32px)', maxWidth: 720, margin: '0 auto' }}>

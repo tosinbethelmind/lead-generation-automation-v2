@@ -1,13 +1,50 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Rocket, ExternalLink, Server, Settings, Shield, RefreshCw, Bot, Zap, Sun, Briefcase, Building, Layers } from 'lucide-react';
+import { Rocket, ExternalLink, Server, Settings, Shield, RefreshCw, Bot, Zap, Sun, Briefcase, Building, Layers, Power, Play, Square, Cpu, CloudLightning } from 'lucide-react';
 
 export default function AdminDashboardHome() {
   const [deploying, setDeploying] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  // Runner Power Switch State
+  const [runnerActive, setRunnerActive] = useState<boolean>(false);
+  const [togglingRunner, setTogglingRunner] = useState<boolean>(false);
+  const [runnerMessage, setRunnerMessage] = useState<string>('');
+
+  useEffect(() => {
+    fetch('/api/admin/runner-toggle')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d && typeof d.active === 'boolean') setRunnerActive(d.active);
+      })
+      .catch(() => {});
+  }, []);
+
+  const toggleRunner = async (enable: boolean) => {
+    setTogglingRunner(true);
+    setRunnerMessage('');
+    try {
+      const res = await fetch('/api/admin/runner-toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enable }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setRunnerActive(data.active);
+        setRunnerMessage(data.message);
+      } else {
+        setRunnerMessage(data.error || 'Failed to update runner state.');
+      }
+    } catch (err: any) {
+      setRunnerMessage('Network error toggling runner.');
+    } finally {
+      setTogglingRunner(false);
+    }
+  };
 
   const triggerDeploy = async () => {
     setDeploying(true);
@@ -99,6 +136,91 @@ export default function AdminDashboardHome() {
               https://www.bethelmindanalytics.com/
               <ExternalLink className="inline-icon" />
             </a>
+          </div>
+        </div>
+
+        {/* ⚡ LOCAL RUNNER MASTER POWER SWITCH CARD */}
+        <div className={`bento-card glass-panel col-span-2 ${runnerActive ? 'border-emerald-500/50 bg-emerald-950/10' : 'border-slate-700/50 bg-slate-900/30'}`}>
+          <div className="card-header flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className={`p-3 rounded-xl ${runnerActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
+                <Power size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-100">Local Scraping Runner Control</h3>
+                <p className="text-xs text-slate-400">Master ON / OFF toggle to run local jobs or preserve laptop CPU & battery.</p>
+              </div>
+            </div>
+            <div className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 ${runnerActive ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}`}>
+              <span className={`w-2 h-2 rounded-full ${runnerActive ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`}></span>
+              {runnerActive ? 'RUNNER ON' : 'RUNNER OFF (LAPTOP PROTECTED)'}
+            </div>
+          </div>
+
+          <div className="card-body mt-3">
+            {runnerMessage && (
+              <div className={`p-3 rounded-lg text-xs font-medium mb-3 ${runnerActive ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-300 border border-amber-500/20'}`}>
+                {runnerMessage}
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="text-xs text-slate-300">
+                {runnerActive ? (
+                  <span>🟢 <strong>Status: Running</strong> — Job runner is executing queue silently without popups.</span>
+                ) : (
+                  <span>🔴 <strong>Status: Stopped</strong> — Zero laptop RAM/CPU usage. Laptop hardware is 100% protected.</span>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                {!runnerActive ? (
+                  <button
+                    onClick={() => toggleRunner(true)}
+                    disabled={togglingRunner}
+                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-emerald-950/50 cursor-pointer"
+                  >
+                    <Play size={16} /> TURN RUNNER ON
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => toggleRunner(false)}
+                    disabled={togglingRunner}
+                    className="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-rose-950/50 cursor-pointer"
+                  >
+                    <Square size={16} /> TURN RUNNER OFF
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ☁️ GOOGLE COLAB CLOUD HARVESTER CARD */}
+        <div className="bento-card glass-panel border-amber-500/30 col-span-2">
+          <div className="card-header flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-amber-500/20 text-amber-400">
+                <CloudLightning size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-100">Google Colab Cloud Harvester</h3>
+                <p className="text-xs text-slate-400">Run heavy B2B web scraping on Google&apos;s cloud infrastructure (0% laptop load).</p>
+              </div>
+            </div>
+            <a
+              href="https://colab.research.google.com/github/tosinbethelmind/lead-generation-automation-v2/blob/main/Colab_247_Harvester.ipynb"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all flex items-center gap-2 shadow-md cursor-pointer"
+            >
+              <ExternalLink size={15} /> Launch on Google Colab
+            </a>
+          </div>
+          <div className="card-body mt-2">
+            <p className="text-xs text-slate-300">
+              Google Colab gives you free cloud Python runtime. It scrapes Lagos &amp; Solar leads using Chrome TLS impersonation and saves data directly into your Supabase database.
+            </p>
           </div>
         </div>
 
