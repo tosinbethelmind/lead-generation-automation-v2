@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Building2, Copy, Check, ShieldCheck, Sparkles, MessageSquare } from 'lucide-react';
+import { copyToClipboard } from '@/lib/clipboard';
 
 interface OpayTransferBoxProps {
   businessName: string;
@@ -25,10 +26,12 @@ export function OpayTransferBox({
     accountName: 'Oyelakin Tosin Matthew',
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(opayAccount.accountNumber);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+  const handleCopy = async () => {
+    const success = await copyToClipboard(opayAccount.accountNumber);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
   };
 
   const cleanPhone = adminWhatsAppPhone.replace(/\D/g, '');

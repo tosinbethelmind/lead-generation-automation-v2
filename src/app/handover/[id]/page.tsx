@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Globe, Shield, CheckCircle2, RefreshCw, Server, Star, Zap, ArrowRight, MessageSquare, PlusCircle, Sparkles, Send, Copy, AlertCircle, Info, Lock, CheckSquare, Square, Volume2, Bell, Cpu, Video, UserCheck, FileText, Users, Clock } from 'lucide-react';
+import { copyToClipboard } from '@/lib/clipboard';
 
 interface HandoverPageProps {
   params: Promise<{ id: string }>;
@@ -274,10 +275,12 @@ export default function HandoverPage({ params }: HandoverPageProps) {
     );
   };
 
-  const copyAccountToClipboard = () => {
-    navigator.clipboard.writeText(opayDetails.accountNumber);
-    setCopyToast(true);
-    setTimeout(() => setCopyToast(false), 3000);
+  const copyAccountToClipboard = async () => {
+    const success = await copyToClipboard(opayDetails.accountNumber);
+    if (success) {
+      setCopyToast(true);
+      setTimeout(() => setCopyToast(false), 3000);
+    }
   };
 
   // Pricing calculations

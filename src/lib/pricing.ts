@@ -409,8 +409,15 @@ export const FEATURE_CATALOG = [
   { id: 'table_reservation', cost: 25000 },
   { id: 'social_media_management', cost: 185000 },
   { id: 'ad_automation', cost: 285000 },
-  { id: 'social_ad_dominance_suite', cost: 450000 }
+  { id: 'social_ad_dominance_suite', cost: 450000 },
+  { id: 'meta_capi', cost: 45000 },
+  { id: 'journey_analytics', cost: 35000 },
+  { id: 'facebook_ads_dashboard', cost: 45000 },
+  { id: 'email_drip', cost: 75000 },
+  { id: 'ai_lead_scoring', cost: 55000 },
+  { id: 'whatsapp_bot', cost: 95000 }
 ];
+
 
 
 export interface PaymentModeOption {

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Building2, Copy, Check, Clock, ShieldCheck, RefreshCw, Sparkles, AlertCircle } from 'lucide-react';
+import { copyToClipboard } from '@/lib/clipboard';
 
 interface MoniepointDvaClaimBoxProps {
   businessName: string;
@@ -61,11 +62,13 @@ export function MoniepointDvaClaimBox({
     }
   };
 
-  const handleCopyAccount = () => {
+  const handleCopyAccount = async () => {
     if (!dvaData?.dva?.accountNumber) return;
-    navigator.clipboard.writeText(dvaData.dva.accountNumber);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    const success = await copyToClipboard(dvaData.dva.accountNumber);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
   };
 
   const formatTimer = (seconds: number) => {

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun, Bot, Zap, Briefcase, Building2, CreditCard, Crown, Send, Settings as SettingsIcon, FileText, Layers } from 'lucide-react';
+import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun, Bot, Zap, Briefcase, Building2, CreditCard, Crown, Send, Settings as SettingsIcon, FileText, Layers, UserCheck } from 'lucide-react';
 import { WebappToolActionBar } from '@/components/WebappToolActionBar';
 
 export default function AdminLayout({
@@ -94,6 +94,13 @@ export default function AdminLayout({
     {
       title: 'AUTOMATION & OUTREACH',
       items: [
+        {
+          name: 'Admin Assistant Desk',
+          path: '/assistant',
+          icon: UserCheck,
+          visible: true,
+          badge: 'Workstation',
+        },
         {
           name: 'AI Approvals & Outreach',
           path: '/admin/approvals',

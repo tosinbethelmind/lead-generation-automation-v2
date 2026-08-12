@@ -1,7 +1,7 @@
 import { getRuntimeConfig, type TeamMember } from './localConfig';
 import { safeCompareStrings } from './security';
 
-export type AdminRole = 'super_admin' | 'outreach_manager' | 'designer' | 'viewer';
+export type AdminRole = 'super_admin' | 'outreach_manager' | 'designer' | 'viewer' | 'admin_assistant';
 
 export interface AdminUser {
   id: string;
@@ -26,6 +26,14 @@ export const ROLE_PERMISSIONS: Record<AdminRole, string[]> = {
   viewer: [
     'view_dashboard',
     'view_leads'
+  ],
+  admin_assistant: [
+    'view_dashboard',
+    'view_leads',
+    'edit_leads',
+    'verify_claims',
+    'trigger_outreach',
+    'manage_domains'
   ]
 };
 
@@ -68,6 +76,18 @@ export function getAdminUser(token: string | undefined): AdminUser | null {
       email: 'admin@bethelmind.com',
       role: 'super_admin',
       permissions: ['*']
+    };
+  }
+
+  // Check assistant token (cannot access /admin/* routes)
+  const assistantToken = (process.env.ASSISTANT_TOKEN || '').trim();
+  if (assistantToken && cleanToken.toLowerCase() === assistantToken.toLowerCase()) {
+    return {
+      id: 'assistant',
+      name: 'Admin Assistant',
+      email: 'assistant@bethelmind.com',
+      role: 'admin_assistant',
+      permissions: ROLE_PERMISSIONS['admin_assistant']
     };
   }
 

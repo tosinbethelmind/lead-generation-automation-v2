@@ -9,6 +9,8 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [redirectPath, setRedirectPath] = useState('/admin');
 
+  const [remember, setRemember] = useState(true);
+
   useEffect(() => {
     // Safely parse redirect query param on client side
     if (typeof window !== 'undefined') {
@@ -16,6 +18,10 @@ export default function AdminLoginPage() {
       const redirect = params.get('redirect');
       if (redirect) {
         setRedirectPath(redirect);
+      }
+      const saved = localStorage.getItem('saved_admin_token');
+      if (saved) {
+        setToken(saved);
       }
     }
   }, []);
@@ -36,12 +42,15 @@ export default function AdminLoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({ token: token.trim() }),
       });
 
       const data = await response.json();
 
       if (response.ok && data.success) {
+        if (remember) {
+          localStorage.setItem('saved_admin_token', token.trim());
+        }
         // Redirect to dashboard
         window.location.href = redirectPath;
       } else {
@@ -65,19 +74,37 @@ export default function AdminLoginPage() {
           <p>Please enter your secure administrator token to gain entry to the dashboard.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="login-form" method="POST" action="/api/admin/login">
+          {/* Hidden username input to trigger browser Password Manager save prompt */}
+          <input type="text" name="username" value="admin@bethelmind.com" readOnly style={{ display: 'none' }} autoComplete="username" />
+          
           <div className="form-group">
             <label htmlFor="token">Security Token</label>
             <div className="input-wrapper">
               <input
                 id="token"
+                name="password"
                 type="password"
+                autoComplete="current-password"
                 placeholder="••••••••••••••••••••••••"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 disabled={loading}
               />
             </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '8px 0 16px', fontSize: '0.75rem', color: '#94a3b8' }}>
+            <input
+              type="checkbox"
+              id="remember"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              style={{ accentColor: '#06b6d4', cursor: 'pointer' }}
+            />
+            <label htmlFor="remember" style={{ cursor: 'pointer', userSelect: 'none' }}>
+              Remember me on this browser (30 days persistent login)
+            </label>
           </div>
 
           {error && (

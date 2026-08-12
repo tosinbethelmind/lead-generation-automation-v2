@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Sparkles, Check, Copy, Globe, Send, ShieldCheck, Zap, Code, ExternalLink, Bot, CheckCircle2 } from 'lucide-react';
+import { copyToClipboard } from '@/lib/clipboard';
 
 export default function AdminOnboardingStudioPage() {
   const [businessName, setBusinessName] = useState('');
@@ -67,16 +68,20 @@ Every customer who requests a quote or site survey will instantly be routed to y
 
 Our technical support team is here to assist you anytime! Welcome aboard! 🚀`;
 
-  const copyWelcomeMessage = () => {
-    navigator.clipboard.writeText(welcomeMessage);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copyWelcomeMessage = async () => {
+    const success = await copyToClipboard(welcomeMessage);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
-  const copyScriptCode = () => {
-    navigator.clipboard.writeText(scriptTag);
-    setCopiedScript(true);
-    setTimeout(() => setCopiedScript(false), 2000);
+  const copyScriptCode = async () => {
+    const success = await copyToClipboard(scriptTag);
+    if (success) {
+      setCopiedScript(true);
+      setTimeout(() => setCopiedScript(false), 2000);
+    }
   };
 
   return (

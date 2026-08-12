@@ -1059,8 +1059,8 @@ async function startNonStopMasterHarvester() {
     } catch (err) {
       console.error(`❌ Cycle #${cycle} error:`, err.message);
     }
-    console.log(`\n⏳ Waiting 45s before next pass (Cycle #${cycle + 1})...`);
-    await new Promise(resolve => setTimeout(resolve, 45000));
+    console.log(`\n⏳ Low-CPU Mode: Waiting 180s (3 mins) before next pass (Cycle #${cycle + 1})...`);
+    await new Promise(resolve => setTimeout(resolve, 180000));
     cycle++;
   }
 }

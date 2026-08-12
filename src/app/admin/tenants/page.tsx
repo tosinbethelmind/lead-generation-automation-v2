@@ -6,6 +6,7 @@ import {
   Copy, Check, RefreshCw, XCircle, ExternalLink, Search, Filter,
   Zap, Star, Crown, Rocket, DollarSign
 } from 'lucide-react';
+import { copyToClipboard } from '@/lib/clipboard';
 
 interface TenantRow {
   id: string;
@@ -79,8 +80,12 @@ export default function TenantsPage() {
     setActionLoading(null);
   };
 
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text).then(() => { setCopiedId(id); setTimeout(() => setCopiedId(null), 2000); });
+  const handleCopyText = async (text: string, id: string) => {
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
   };
 
   const handleProvision = async () => {
@@ -227,7 +232,7 @@ export default function TenantsPage() {
                   {/* Actions */}
                   <div style={{ display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'wrap' }}>
                     {/* Copy portal link */}
-                    <button onClick={() => copyToClipboard(tenant.portal_url, tenant.id + '_portal')} title="Copy portal link"
+                    <button onClick={() => handleCopyText(tenant.portal_url, tenant.id + '_portal')} title="Copy portal link"
                       style={{ padding: '6px 10px', borderRadius: 8, background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.2)', color: '#06b6d4', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.8rem' }}>
                       {copiedId === tenant.id + '_portal' ? <><Check style={{ width: 14 }} /> Copied!</> : <><Copy style={{ width: 14 }} /> Portal Link</>}
                     </button>
@@ -280,7 +285,7 @@ export default function TenantsPage() {
                   <code style={{ color: '#10b981', fontSize: '0.85rem', wordBreak: 'break-all' }}>{provisionResult.access_token}</code>
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
-                  <button onClick={() => copyToClipboard(provisionResult.portal_url, 'new_portal')} className="btn-secondary" style={{ flex: 1 }}>
+                  <button onClick={() => handleCopyText(provisionResult.portal_url, 'new_portal')} className="btn-secondary" style={{ flex: 1 }}>
                     {copiedId === 'new_portal' ? '✅ Copied!' : '📋 Copy Portal Link'}
                   </button>
                   <button onClick={() => { setShowProvisionModal(false); setProvisionResult(null); setProvisionForm({ business_name:'',owner_name:'',owner_email:'',owner_phone:'',package_tier:'pro',plan_type:'subscription' }); }} className="btn-primary" style={{ flex: 1 }}>

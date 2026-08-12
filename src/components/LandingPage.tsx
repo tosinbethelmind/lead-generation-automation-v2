@@ -7,6 +7,13 @@ import { TransferRebuildOptions } from '@/components/TransferRebuildOptions';
 import { SocialAdAutomationWidget } from '@/components/SocialAdAutomationWidget';
 import BeforeAfterAuditWidget from '@/components/BeforeAfterAuditWidget';
 import InvoiceModal, { InvoiceItem } from '@/components/InvoiceModal';
+import BusinessOwnerToolSelector from '@/components/BusinessOwnerToolSelector';
+import CustomerJourneyAnalyticsWidget from '@/components/CustomerJourneyAnalyticsWidget';
+import FacebookAdAnalyticsWidget from '@/components/FacebookAdAnalyticsWidget';
+import EmailDripDashboardWidget from '@/components/EmailDripDashboardWidget';
+import SalesIntegrationNarrative from '@/components/SalesIntegrationNarrative';
+import { trackDualMetaEvent } from '@/lib/metaPixel';
+import { CustomerJourneyTracker } from '@/lib/customerJourneyTracker';
 
 interface PreviewData {
   lead: {
@@ -150,7 +157,17 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     if (data?.theme) {
       setSelectedTheme(data.theme);
     }
-  }, [data]);
+    if (typeof window !== 'undefined') {
+      const tracker = new CustomerJourneyTracker(leadId);
+      tracker.init();
+      trackDualMetaEvent({
+        eventName: 'PageView',
+        eventSourceUrl: window.location.href,
+        eventId: `pv_${leadId}_${Date.now()}`
+      });
+    }
+  }, [data, leadId]);
+
   const hasWebsite = !!(lead.website && lead.website.trim() && lead.website.toLowerCase() !== 'none');
   const websiteUrl = lead.website || '';
 
@@ -4966,6 +4983,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           </a>
         </div>
       )}
+
+      {/* Universal Integration & Tool Compatibility Sales Narrative */}
+      <SalesIntegrationNarrative clientName={lead?.name || 'Your Business'} />
 
       {/* Opt Out Footer Bar */}
       <footer style={{

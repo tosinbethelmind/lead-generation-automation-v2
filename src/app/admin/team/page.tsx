@@ -5,6 +5,7 @@ import {
   Users, UserPlus, Key, Trash2, ShieldAlert, 
   Check, Copy, RefreshCw, X, Shield, Lock, Eye
 } from 'lucide-react';
+import { copyToClipboard } from '@/lib/clipboard';
 
 interface TeamMember {
   id: string;
@@ -140,11 +141,13 @@ export default function TeamSecurityPage() {
     }
   };
 
-  const copyTokenToClipboard = () => {
+  const copyTokenToClipboard = async () => {
     if (!newToken) return;
-    navigator.clipboard.writeText(newToken);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const success = await copyToClipboard(newToken);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const getRoleBadgeClass = (memberRole: string) => {

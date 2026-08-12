@@ -27,6 +27,7 @@ import {
   ArrowRight,
   Terminal
 } from 'lucide-react';
+import { copyToClipboard as copyToClipboardHelper } from '@/lib/clipboard';
 
 interface SolarLead {
   id: string;
@@ -445,10 +446,12 @@ export default function SolarPipelineDashboard() {
     }
   }, [selectedLead, outreachChannel]);
 
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+  const copyToClipboard = async (text: string, id: string) => {
+    const success = await copyToClipboardHelper(text);
+    if (success) {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
   };
 
   const getStatusColor = (status: string) => {

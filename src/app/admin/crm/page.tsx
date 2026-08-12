@@ -33,6 +33,8 @@ import {
 } from 'lucide-react';
 import { PRE_SCRAPED_LEADS } from '@/lib/preScrapedLeads';
 import AdminLeadRedesignStudio from '@/components/AdminLeadRedesignStudio';
+import AdminAssistantSupportDesk from '@/components/AdminAssistantSupportDesk';
+import { copyToClipboard } from '@/lib/clipboard';
 
 interface LeadItem {
   id: string;
@@ -115,6 +117,12 @@ export default function AdminCrmDualEnginePage() {
   const [activeEngine, setActiveEngine] = useState<'all' | 'solar' | 'lagos' | 'ibadan'>('all');
   const [viewMode, setViewMode] = useState<'kanban' | 'table'>('table');
   const [leads, setLeads] = useState<LeadItem[]>(INITIAL_SEEDED);
+  const [dbStats, setDbStats] = useState({
+    totalLeads: 22096,
+    solarCount: 2438,
+    lagosCount: 18596,
+    ibadanCount: 1062
+  });
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -182,6 +190,14 @@ export default function AdminCrmDualEnginePage() {
 
       if (res.ok && data.success && Array.isArray(data.leads)) {
         setLeads(data.leads);
+        if (data.stats) {
+          setDbStats({
+            totalLeads: data.stats.totalLeads || data.totalCount || data.leads.length,
+            solarCount: data.stats.solarCount || 2438,
+            lagosCount: data.stats.lagosCount || 17578,
+            ibadanCount: data.stats.ibadanCount || 1062,
+          });
+        }
         if (!selectedLead && data.leads.length > 0) {
           setSelectedLead(data.leads[0]);
         }
@@ -430,11 +446,27 @@ export default function AdminCrmDualEnginePage() {
     document.body.removeChild(link);
   };
 
-  const copyText = (txt: string, id: string) => {
-    navigator.clipboard.writeText(txt);
-    setCopiedId(id);
-    showToast('Copied live preview link to clipboard!');
-    setTimeout(() => setCopiedId(null), 2000);
+  const formatWhatsAppPhone = (phone: string) => {
+    if (!phone) return '';
+    const digits = phone.replace(/[^0-9]/g, '');
+    if (digits.startsWith('0') && digits.length === 11) {
+      return '234' + digits.slice(1);
+    }
+    if (digits.length === 10) {
+      return '234' + digits;
+    }
+    return digits;
+  };
+
+  const copyText = async (txt: string, id: string) => {
+    const success = await copyToClipboard(txt);
+    if (success) {
+      setCopiedId(id);
+      showToast('Copied live preview link to clipboard!');
+      setTimeout(() => setCopiedId(null), 2000);
+    } else {
+      showToast('Failed to copy link automatically. URL: ' + txt, 'error');
+    }
   };
 
   const getStatusBadgeClass = (st: string) => {
@@ -485,11 +517,11 @@ export default function AdminCrmDualEnginePage() {
           <h1 className="text-2xl font-extrabold text-white flex items-center gap-3">
             Central Lead Administration Console
             <span className="text-xs font-black px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
-              21,078 Verified Leads Live
+              {dbStats.totalLeads.toLocaleString()} Verified Leads Live
             </span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Control, harvest, outreach, and manage <strong>21,078 prospects</strong> across <strong>SolarQuotePro (2,438)</strong>, <strong>Lagos 10K B2B (17,578)</strong>, and <strong>Ibadan 10K B2B (1,062)</strong>.
+            Control, harvest, outreach, and manage <strong>{dbStats.totalLeads.toLocaleString()} prospects</strong> across <strong>SolarQuotePro ({dbStats.solarCount.toLocaleString()})</strong>, <strong>Lagos 10K B2B ({dbStats.lagosCount.toLocaleString()})</strong>, and <strong>Ibadan 10K B2B ({dbStats.ibadanCount.toLocaleString()})</strong>.
           </p>
         </div>
 
@@ -503,7 +535,7 @@ export default function AdminCrmDualEnginePage() {
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Globe className="w-3.5 h-3.5" /> All Engines (21,078)
+            <Globe className="w-3.5 h-3.5" /> All Engines ({dbStats.totalLeads.toLocaleString()})
           </button>
           
           <button
@@ -514,7 +546,7 @@ export default function AdminCrmDualEnginePage() {
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Sun className="w-3.5 h-3.5 text-amber-400" /> Solar (2,438)
+            <Sun className="w-3.5 h-3.5 text-amber-400" /> Solar ({dbStats.solarCount.toLocaleString()})
           </button>
 
           <button
@@ -525,7 +557,7 @@ export default function AdminCrmDualEnginePage() {
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Building className="w-3.5 h-3.5 text-emerald-400" /> Lagos 10K (17,578)
+            <Building className="w-3.5 h-3.5 text-emerald-400" /> Lagos 10K ({dbStats.lagosCount.toLocaleString()})
           </button>
 
           <button
@@ -536,7 +568,7 @@ export default function AdminCrmDualEnginePage() {
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Building className="w-3.5 h-3.5 text-indigo-400" /> Ibadan 10K (1,062)
+            <Building className="w-3.5 h-3.5 text-indigo-400" /> Ibadan 10K ({dbStats.ibadanCount.toLocaleString()})
           </button>
         </div>
       </div>
@@ -545,7 +577,7 @@ export default function AdminCrmDualEnginePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-slate-900/70 p-5 rounded-2xl border border-cyan-500/30 backdrop-blur-md relative overflow-hidden">
           <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Total Database Leads</div>
-          <div className="text-3xl font-black text-white mt-1">21,078</div>
+          <div className="text-3xl font-black text-white mt-1">{dbStats.totalLeads.toLocaleString()}</div>
           <div className="text-[11px] text-slate-400 mt-1 font-semibold flex items-center justify-between">
             <span>Showing: {totalLeadsCount}</span>
             <span className="text-cyan-400 font-bold">100% Live DB</span>
@@ -554,22 +586,25 @@ export default function AdminCrmDualEnginePage() {
 
         <div className="bg-slate-900/70 p-5 rounded-2xl border border-amber-500/30 backdrop-blur-md">
           <div className="text-xs font-bold text-amber-400 uppercase tracking-wider">SolarQuotePro Engine</div>
-          <div className="text-3xl font-black text-amber-400 mt-1">2,438</div>
+          <div className="text-3xl font-black text-amber-400 mt-1">{dbStats.solarCount.toLocaleString()}</div>
           <div className="text-[11px] text-slate-400 mt-1 font-semibold">Verified Solar Prospects</div>
         </div>
 
         <div className="bg-slate-900/70 p-5 rounded-2xl border border-emerald-500/30 backdrop-blur-md">
           <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Lagos 10K B2B Engine</div>
-          <div className="text-3xl font-black text-emerald-400 mt-1">17,578</div>
+          <div className="text-3xl font-black text-emerald-400 mt-1">{dbStats.lagosCount.toLocaleString()}</div>
           <div className="text-[11px] text-slate-400 mt-1 font-semibold">Lagos Enterprise Merchants</div>
         </div>
 
         <div className="bg-slate-900/70 p-5 rounded-2xl border border-indigo-500/30 backdrop-blur-md">
           <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Ibadan 10K B2B Engine</div>
-          <div className="text-3xl font-black text-indigo-400 mt-1">1,062</div>
+          <div className="text-3xl font-black text-indigo-400 mt-1">{dbStats.ibadanCount.toLocaleString()}</div>
           <div className="text-[11px] text-indigo-300 mt-1 font-semibold">Ibadan Commercial Hubs</div>
         </div>
       </div>
+
+      {/* 🛎️ REAL-TIME ADMIN ASSISTANT ALERT & DUTY COMMAND DESK */}
+      <AdminAssistantSupportDesk />
 
       {/* ⚡ SCRAPER CONTROLLER BAR */}
       <div className="bg-slate-950/80 p-5 rounded-2xl border border-white/10 space-y-4">
@@ -612,14 +647,7 @@ export default function AdminCrmDualEnginePage() {
               Scrape Ibadan 10K
             </button>
 
-            <button
-              onClick={() => handleTriggerScraper('lagos')}
-              disabled={scrapingSolar || scrapingLagos}
-              className="accessible-btn accessible-btn-cyan text-xs"
-            >
-              {scrapingLagos ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Building className="w-4 h-4" />}
-              Scrape Lagos 10K B2B
-            </button>
+
 
             <button
               onClick={() => fetchLeads(true)}
@@ -894,7 +922,7 @@ export default function AdminCrmDualEnginePage() {
                           {/* WhatsApp Direct */}
                           {lead.phone && (
                             <a
-                              href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${lead.name}, regarding your business quote proposal: ${(typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com')}/preview/${encodeURIComponent(lead.id)}`)}`}
+                              href={`https://wa.me/${formatWhatsAppPhone(lead.phone)}?text=${encodeURIComponent(`Hi ${lead.name}, regarding your business quote proposal: ${(typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com')}/preview/${encodeURIComponent(lead.id)}`)}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all"
@@ -987,11 +1015,11 @@ export default function AdminCrmDualEnginePage() {
                         <div>{lead.location}</div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                      <div className="flex items-center justify-between pt-2 border-t border-white/5 gap-1.5">
                         <select
                           value={lead.status}
                           onChange={(e) => handleQuickStatusChange(lead, e.target.value)}
-                          className="bg-slate-950 text-[10px] text-slate-300 border border-white/10 rounded px-2 py-1"
+                          className="bg-slate-950 text-[10px] text-slate-300 border border-white/10 rounded px-1.5 py-1 focus:outline-none"
                         >
                           <option value="new">New</option>
                           <option value="contacted">Contacted</option>
@@ -1001,16 +1029,49 @@ export default function AdminCrmDualEnginePage() {
                           <option value="lost">Lost</option>
                         </select>
 
-                        <button
-                          onClick={() => {
-                            setSelectedLead(lead);
-                            setRedesignModalOpen(true);
-                          }}
-                          className="p-1.5 rounded bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
-                          title="Prompt AI Redesign"
-                        >
-                          <Sparkles className="w-3.5 h-3.5" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          {lead.phone && (
+                            <a
+                              href={`https://wa.me/${formatWhatsAppPhone(lead.phone)}?text=${encodeURIComponent(`Hi ${lead.name}, regarding your business quote proposal: ${(typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com')}/preview/${encodeURIComponent(lead.id)}`)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1.5 rounded bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20"
+                              title="WhatsApp Direct Message"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+
+                          <button
+                            onClick={() => {
+                              setSelectedLead(lead);
+                              setOutreachModalOpen(true);
+                            }}
+                            className="p-1.5 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/20"
+                            title="Send Outreach"
+                          >
+                            <Send className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setSelectedLead(lead);
+                              setRedesignModalOpen(true);
+                            }}
+                            className="p-1.5 rounded bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/20"
+                            title="Prompt AI Redesign"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
+                            onClick={() => copyText(`${(typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com')}/preview/${encodeURIComponent(lead.id)}`, lead.id)}
+                            className="p-1.5 rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
+                            title="Copy Live Preview Link"
+                          >
+                            {copiedId === lead.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -1089,7 +1150,7 @@ export default function AdminCrmDualEnginePage() {
               
               {outreachChannel === 'whatsapp' && selectedLead.phone && (
                 <a
-                  href={`https://wa.me/${selectedLead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(customMessage || `Hello ${selectedLead.name}, your custom quote proposal is ready: ${(typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com')}/preview/${selectedLead.id}`)}`}
+                  href={`https://wa.me/${formatWhatsAppPhone(selectedLead.phone)}?text=${encodeURIComponent(customMessage || `Hello ${selectedLead.name}, your custom quote proposal is ready: ${(typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com')}/preview/${selectedLead.id}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => {

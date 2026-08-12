@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Shield, CheckCircle2, XCircle, RefreshCw, Send, AlertTriangle, MessageSquare, Play, Sparkles, Smartphone, Mail, Globe, Bot } from 'lucide-react';
+import OutreachChannelSetupHub from '@/components/OutreachChannelSetupHub';
 
 export default function AdminApprovalsPage() {
   const [tickets, setTickets] = useState<any[]>([]);
@@ -155,6 +156,11 @@ export default function AdminApprovalsPage() {
               <RefreshCw className={`w-3.5 h-3.5 text-[#06b6d4] ${loading ? 'animate-spin' : ''}`} /> Refresh Queue
             </button>
           </div>
+        </div>
+
+        {/* 🟢 MULTI-CHANNEL OUTREACH & WHATSAPP QR CODE SETUP HUB */}
+        <div className="mb-8">
+          <OutreachChannelSetupHub />
         </div>
 
         {/* Live Gateways Status Bar */}

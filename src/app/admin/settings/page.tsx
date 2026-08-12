@@ -19,6 +19,7 @@ import {
   Zap,
   Building
 } from 'lucide-react';
+import OutreachChannelSetupHub from '@/components/OutreachChannelSetupHub';
 
 export default function AdminSettingsIntegrationsPage() {
   const [loading, setLoading] = useState(true);
@@ -246,7 +247,10 @@ export default function AdminSettingsIntegrationsPage() {
       <form onSubmit={handleSave}>
         {/* Tab 1: Outreach Gateways */}
         {activeTab === 'outreach' && (
-          <div className="glass-panel" style={{ padding: 24, borderRadius: 16, background: 'rgba(15, 23, 42, 0.6)' }}>
+          <div className="space-y-6">
+            <OutreachChannelSetupHub />
+
+            <div className="glass-panel" style={{ padding: 24, borderRadius: 16, background: 'rgba(15, 23, 42, 0.6)' }}>
             <h3 style={{ color: '#f8fafc', fontSize: '1.2rem', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
               <Send size={20} style={{ color: '#38bdf8' }} /> Outbound Communication Channels
             </h3>
@@ -319,7 +323,8 @@ export default function AdminSettingsIntegrationsPage() {
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
         {/* Tab 2: Bank & Payments */}
         {activeTab === 'payment' && (
