@@ -1,7 +1,10 @@
 const { chromium } = require('playwright');
 
 (async () => {
-  console.log('🚀 Launching Physical Chrome Browser for E2E Verification...');
+  console.log('🚀 Launching Physical Chrome Browser for Production E2E Verification...');
+
+  const targetUrl = 'https://lead-generation-automation-v2-4rwljehah-tosin4.vercel.app/tools/integrations';
+  const landingUrl = 'https://lead-generation-automation-v2-4rwljehah-tosin4.vercel.app';
 
   const browser = await chromium.launch({
     headless: false,
@@ -15,11 +18,11 @@ const { chromium } = require('playwright');
   const page = await context.newPage();
 
   try {
-    console.log('🌐 1. Navigating to Live Integration Command Center...');
-    await page.goto('https://bethelmindanalytics.com/tools/integrations', { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForTimeout(2000);
+    console.log(`🌐 1. Navigating to Live Production Command Center: ${targetUrl}`);
+    await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(2500);
 
-    console.log('  ✅ Page loaded. Verifying Command Center heading...');
+    console.log('  ✅ Page loaded! Verifying Command Center heading...');
     const heading = await page.locator('h1').innerText();
     console.log(`  📌 Found Heading: "${heading.trim()}"`);
 
@@ -65,8 +68,8 @@ const { chromium } = require('playwright');
     await page.waitForTimeout(2000);
     console.log('  ✅ Sales Narrative Showcase rendered zero-friction value proposition.');
 
-    console.log('🌐 6. Navigating to Main Landing Page to verify embedded Sales Narrative...');
-    await page.goto('https://bethelmindanalytics.com', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    console.log(`🌐 6. Navigating to Main Landing Page: ${landingUrl}`);
+    await page.goto(landingUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(2500);
 
     console.log('  📜 Scrolling down to Sales Narrative section...');
