@@ -5,6 +5,7 @@ import { SectorToolsWidget } from '@/components/SectorToolsWidget';
 import { RecruitmentEngineWidget } from '@/components/RecruitmentEngineWidget';
 import { WebappToolActionBar } from '@/components/WebappToolActionBar';
 import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
+import IntegrationBlueprintDashboard from '@/components/IntegrationBlueprintDashboard';
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -12,6 +13,12 @@ interface ToolPageProps {
 
 export async function generateMetadata({ params }: ToolPageProps) {
   const { slug } = await params;
+  if (slug === 'integrations') {
+    return {
+      title: 'Seamless Integration Blueprint | ApexReach Automation Suite',
+      description: 'Connect platform lead generation tools, Meta CAPI, GA4, WhatsApp, and CRMs seamlessly to any website or business app in under 60 seconds.'
+    };
+  }
   const formattedTitle = (slug || 'tool').replace('-', ' ').toUpperCase();
   return {
     title: `Free ${formattedTitle} Business Tool | ApexReach 2026`,
@@ -21,6 +28,10 @@ export async function generateMetadata({ params }: ToolPageProps) {
 
 export default async function StandaloneToolPage({ params }: ToolPageProps) {
   const { slug } = await params;
+
+  if (slug === 'integrations') {
+    return <IntegrationBlueprintDashboard />;
+  }
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8">
