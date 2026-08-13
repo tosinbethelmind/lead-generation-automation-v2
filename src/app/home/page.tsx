@@ -29,6 +29,7 @@ const FaqSection = dynamic(() => import('@/components/home/FaqSection'), { ssr: 
 const CustomerAiAgentWidget = dynamic(() => import('@/components/CustomerAiAgentWidget'), { ssr: false });
 
 const RelumeSiteGeneratorSection = dynamic(() => import('@/components/home/RelumeSiteGeneratorSection'), { ssr: false });
+const LeadMarketplaceSection = dynamic(() => import('@/components/home/LeadMarketplaceSection'), { ssr: false });
 
 export default function HomePage() {
   const [businessName, setBusinessName] = useState('My Business');
@@ -65,6 +66,8 @@ export default function HomePage() {
         <SolutionsSection />
 
         <RelumeSiteGeneratorSection />
+
+        <LeadMarketplaceSection />
 
         <SectorToolsSection
           selectedIndustry={selectedIndustry}
