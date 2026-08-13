@@ -43,18 +43,18 @@ const MAIN_SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.S
 const supabase = createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY, { auth: { persistSession: false } });
 
 // Message template for Web Contact Form Partnership Invites
-const PARTNERSHIP_MESSAGE_TEMPLATE = `Hello Team {COMPANY_NAME},
+const PARTNERSHIP_MESSAGE_TEMPLATE = `Hello Lead Engineering Team at {COMPANY_NAME},
 
-We operate SolarQuotePro.ng, Nigeria's dedicated solar marketplace connecting verified local installers with residential & commercial quote requests across Lagos, Abuja, Port Harcourt, and major states.
+We operate SolarQuotePro.ng, Nigeria's dedicated solar marketplace connecting top verified installers with high-budget residential & commercial solar prospects across Lagos, Abuja, Port Harcourt, and major states.
 
-We have noticed your solar & inverter installation services in {CITY} and would love to route high-intent residential installation requests directly to your engineering team.
+We have active homeowner load calculation requests & solar installation inquiries in {CITY} ready to be allocated directly to verified engineering teams.
 
-Claim your free verified installer profile and start receiving quote inquiries:
-https://solarquotepro.ng/installers
+⚡ Claim your free verified installer profile to start receiving direct client leads & Solar Quote Pro calculator integrations:
+👉 https://solarquotepro.ng/installers
 
 Best regards,
-Partner Onboarding Team | SolarQuotePro Nigeria
-contact@solarquotepro.ng`;
+Solar Partner Success Team | SolarQuotePro Nigeria
+contact@solarquotepro.ng | +234 802 279 1227`;
 
 async function findContactFormUrl(websiteUrl) {
   if (!websiteUrl || !websiteUrl.startsWith('http')) return null;

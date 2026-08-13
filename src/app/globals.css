@@ -1,8 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
-
 :root {
-  --font-sans: var(--font-base, 'Inter', sans-serif);
-  --font-title: 'Outfit', sans-serif;
+  --font-sans: var(--font-inter, 'Inter', sans-serif);
+  --font-title: var(--font-outfit, 'Outfit', sans-serif);
   
   --bg-dark: #070a12;
   --panel-bg: rgba(13, 19, 33, 0.7);

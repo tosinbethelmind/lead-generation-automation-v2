@@ -13,16 +13,51 @@ interface ToolPageProps {
 
 export async function generateMetadata({ params }: ToolPageProps) {
   const { slug } = await params;
-  if (slug === 'integrations') {
+  
+  if (slug === 'solar-quote-pro' || slug === 'solar-quote') {
     return {
-      title: 'Seamless Integration Blueprint | ApexReach Automation Suite',
-      description: 'Connect platform lead generation tools, Meta CAPI, GA4, WhatsApp, and CRMs seamlessly to any website or business app in under 60 seconds.'
+      title: 'Solar Quote Pro Calculator Nigeria — Free Inverter & Battery Sizing Tool Lagos',
+      description: 'Calculate exact solar inverter, load requirement, and battery backup pricing in 2 minutes. Free interactive solar sizing & PDF quote generator for Nigerian installers and property owners.',
+      openGraph: {
+        title: 'Solar Quote Pro Calculator Nigeria — Free Solar Sizing & PDF Quote Generator',
+        description: 'Instant load sizing, battery requirement calculation, and installer quote matching across Lagos, Abuja, & Port Harcourt.',
+      },
     };
   }
-  const formattedTitle = (slug || 'tool').replace('-', ' ').toUpperCase();
+
+  if (slug === 'lagos-lead-harvester' || slug === 'leads') {
+    return {
+      title: 'Lagos B2B Lead Harvester — Verified Nigerian Business Contact Database',
+      description: 'Access 10,000+ verified decision-maker business contacts, WhatsApp numbers, and emails across Ikeja, Lekki, Victoria Island, and 27 Lagos districts.',
+      openGraph: {
+        title: 'Lagos B2B Lead Harvester — Verified Business Contacts Database',
+        description: 'Instant access to active Nigerian business leads and decision-maker contact details.',
+      },
+    };
+  }
+
+  if (slug === 'whatsapp-voice-notes' || slug === 'voice-notes') {
+    return {
+      title: 'Nigerian WhatsApp Voice Note Generator — Automated Audio Outreach NG',
+      description: 'Convert text sales messages into realistic Nigerian accent audio voice notes for WhatsApp sales automation. Boost reply rates by 4x.',
+      openGraph: {
+        title: 'Nigerian WhatsApp Voice Note Generator — Bethelmind Analytics',
+        description: 'Human-like Nigerian voice note automation for WhatsApp CRM and lead qualification.',
+      },
+    };
+  }
+
+  if (slug === 'integrations') {
+    return {
+      title: 'Seamless Web & CRM Integration Blueprint | ApexReach Automation Suite',
+      description: 'Connect platform lead generation tools, Meta CAPI, GA4, WhatsApp API, and Paystack/Moniepoint webhooks to any website or business app in under 60 seconds.',
+    };
+  }
+
+  const formattedTitle = (slug || 'tool').replace(/-/g, ' ').toUpperCase();
   return {
-    title: `Free ${formattedTitle} Business Tool | ApexReach 2026`,
-    description: `Free standalone business automation calculator and interactive tool for ${formattedTitle}. Share on WhatsApp or bookmark for instant use.`,
+    title: `Free ${formattedTitle} Business Tool | Bethelmind Analytics Nigeria`,
+    description: `Free standalone business automation calculator, instant PDF quote generator, and interactive lead tool for ${formattedTitle} in Nigeria. Share on WhatsApp or bookmark for instant use.`,
   };
 }
 

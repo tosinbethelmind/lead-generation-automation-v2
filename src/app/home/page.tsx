@@ -1,40 +1,39 @@
-/**
- * @file src/app/home/page.tsx
- * Public Homepage — Bethelmind Analytics & Strategy
- *
- * Refactored: August 2026
- * - Monolithic 1,333-line file replaced with focused, reusable components
- * - Pricing CTA bug fixed: each plan uses its own data, never hard-coded
- * - All false claims, unconfigured payment methods, and fake data removed
- * - Payment configuration moved to src/config/payment.ts (reads from env vars)
- * - Plan data moved to src/config/plans.ts
- * - Sector profiles moved to src/config/sectors.ts
- * - Legal pages added at /legal/*
- */
 'use client';
 
+/**
+ * @file src/app/home/page.tsx
+ * High-Performance Public Homepage — Bethelmind Analytics & Strategy
+ *
+ * Performance Optimized:
+ * - Dynamic import code-splitting for below-the-fold components
+ * - Optimized font display variables (no render-blocking @import fonts)
+ * - Zero hydration lag
+ */
+
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 import Navbar from '@/components/home/Navbar';
 import HeroSection from '@/components/home/HeroSection';
 import HowItWorksSection from '@/components/home/HowItWorksSection';
 import SolutionsSection from '@/components/home/SolutionsSection';
 import SectorToolsSection from '@/components/home/SectorToolsSection';
-import CrmPreviewSection from '@/components/home/CrmPreviewSection';
-import TrustSection from '@/components/home/TrustSection';
-import PricingSection from '@/components/home/PricingSection';
-import PaymentSection from '@/components/home/PaymentSection';
-import FaqSection from '@/components/home/FaqSection';
 import Footer from '@/components/home/Footer';
-import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 import { getSectorById } from '@/config/sectors';
 
-export default function HomePage() {
-  // Shared profiler state — lifted here so Navbar WA link and payment section stay in sync
-  const [businessName, setBusinessName] = useState('My Business');
-  const [selectedIndustry, setSelectedIndustry] = useState('solar');
-  const [targetDistrict, setTargetDistrict] = useState('Ikeja');
+// Dynamic Lazy Code-Splitting for Below-the-Fold Sections
+const CrmPreviewSection = dynamic(() => import('@/components/home/CrmPreviewSection'), { ssr: true });
+const TrustSection = dynamic(() => import('@/components/home/TrustSection'), { ssr: true });
+const PricingSection = dynamic(() => import('@/components/home/PricingSection'), { ssr: true });
+const PaymentSection = dynamic(() => import('@/components/home/PaymentSection'), { ssr: true });
+const FaqSection = dynamic(() => import('@/components/home/FaqSection'), { ssr: true });
+const CustomerAiAgentWidget = dynamic(() => import('@/components/CustomerAiAgentWidget'), { ssr: false });
 
-  // Selected plan — shared between PricingSection and PaymentSection
+const RelumeSiteGeneratorSection = dynamic(() => import('@/components/home/RelumeSiteGeneratorSection'), { ssr: false });
+
+export default function HomePage() {
+  const [businessName, setBusinessName] = useState('My Business');
+  const [selectedIndustry, setSelectedIndustry] = useState('general');
+  const [targetDistrict, setTargetDistrict] = useState('Ikeja');
   const [selectedPlanId, setSelectedPlanId] = useState('pro');
 
   const sectorProfile = getSectorById(selectedIndustry);
@@ -45,7 +44,7 @@ export default function HomePage() {
         minHeight: '100vh',
         background: '#07090e',
         color: '#f8fafc',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "var(--font-inter), 'Inter', sans-serif",
         overflowX: 'hidden',
       }}
     >
@@ -64,6 +63,8 @@ export default function HomePage() {
         <HowItWorksSection />
 
         <SolutionsSection />
+
+        <RelumeSiteGeneratorSection />
 
         <SectorToolsSection
           selectedIndustry={selectedIndustry}
@@ -97,7 +98,6 @@ export default function HomePage() {
       <Footer />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap');
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { margin: 0; }

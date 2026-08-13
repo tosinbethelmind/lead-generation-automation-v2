@@ -337,3 +337,58 @@ export async function generateCopyWithGeminiApiKey(
     return { copy: buildFallbackCopy(lead) };
   }
 }
+
+import {
+  renderRelumeNavbar,
+  renderRelumeHero,
+  renderRelumeFeatureGrid,
+  renderRelumeStats,
+  renderRelumeCTA,
+  renderRelumeFooter
+} from './relumeComponents';
+
+/**
+ * Generates a full, responsive Relume UI Page HTML for any lead (existing or generated)
+ */
+export function renderFullRelumeSitePage(lead: any): string {
+  const params = {
+    businessName: lead.business_name || lead.name || 'Business',
+    category: lead.category,
+    tagline: lead.business_summary || lead.notes,
+    phone: lead.phone || lead.rawPhone || '2348022791227',
+    email: lead.email,
+    address: lead.address,
+    heroImageUrl: lead.photos_data?.heroImageUrl || lead.maps_images?.[0],
+    logoUrl: lead.photos_data?.logoUrl,
+    speedScore: lead.photos_data?.pageSpeed?.score
+  };
+
+  const nav = renderRelumeNavbar(params);
+  const hero = renderRelumeHero(params);
+  const features = renderRelumeFeatureGrid(params);
+  const stats = renderRelumeStats();
+  const cta = renderRelumeCTA(params);
+  const footer = renderRelumeFooter(params);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${params.businessName} — Modern Digital Experience</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: #0f172a; font-family: 'Segoe UI', Roboto, sans-serif; color: #f8fafc; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  ${nav}
+  ${hero}
+  ${features}
+  ${stats}
+  ${cta}
+  ${footer}
+</body>
+</html>`;
+}
+

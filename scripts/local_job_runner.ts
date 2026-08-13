@@ -12,7 +12,7 @@ if (typeof (global as any).WebSocket === 'undefined') {
 
 import { createClient } from '@supabase/supabase-js';
 import { spawn } from 'child_process';
-import { harvestLiveSolarLeads, harvestLiveLagosLeads } from '../src/lib/liveLeadHarvester';
+import { harvestLiveSolarLeads, harvestLiveLagosLeads, harvestLiveIbadanLeads } from '../src/lib/liveLeadHarvester';
 import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from '../src/lib/atomicIo';
 
 if (dns.setDefaultResultOrder) {
@@ -1101,9 +1101,10 @@ async function checkLagosDailyScraper() {
       const isActive = await isActiveRunner();
       if (!isActive) return;
       
-      const [solarRes, lagosRes] = await Promise.allSettled([
+      const [solarRes, lagosRes, ibadanRes] = await Promise.allSettled([
         harvestLiveSolarLeads(),
-        harvestLiveLagosLeads()
+        harvestLiveLagosLeads(),
+        harvestLiveIbadanLeads()
       ]);
 
       if (solarRes.status === 'fulfilled' && solarRes.value.added > 0) {
@@ -1111,6 +1112,9 @@ async function checkLagosDailyScraper() {
       }
       if (lagosRes.status === 'fulfilled' && lagosRes.value.added > 0) {
         console.log(`🏢 [Autonomous Daemon] Lagos Engine harvested +${lagosRes.value.added} leads (Total: ${lagosRes.value.totalLagos})`);
+      }
+      if (ibadanRes.status === 'fulfilled' && ibadanRes.value.added > 0) {
+        console.log(`🏛️ [Autonomous Daemon] Ibadan Engine harvested +${ibadanRes.value.added} leads (Total: ${ibadanRes.value.totalIbadan})`);
       }
     } catch (_) {}
   }

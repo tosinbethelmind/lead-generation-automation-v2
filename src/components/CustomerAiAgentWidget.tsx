@@ -19,7 +19,7 @@ interface CustomerAiAgentWidgetProps {
 }
 
 export default function CustomerAiAgentWidget({
-  sector = 'Solar & B2B Lead Gen',
+  sector = 'Multi-Sector Lead Automation & AI Guide',
   businessName,
   agentTitle,
   initialOpen = false,
@@ -215,10 +215,10 @@ export default function CustomerAiAgentWidget({
     `📞 How to Send Payment Receipt`,
   ] : [
     '🎯 Explore Business Services',
-    '☀️ Solar BOQ Calculator',
-    '🏠 Real Estate & Auto Tools',
-    '💳 View Pricing & Offers',
-    '🚀 How to Claim My Website',
+    '⚡ Test Sector Calculators',
+    '🚗 Tokunbo Customs & BOQ Tools',
+    '💳 View Pricing & Packages',
+    '🚀 How to Activate 24/7 AI System',
   ];
 
   return (

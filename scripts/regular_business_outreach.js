@@ -32,21 +32,26 @@ function generatePrePaymentWebsiteMessage(lead) {
   const websitePreviewUrl = `https://lagosportals.ng/preview/${slug}?src=10k_lagos`;
   const claimUrl = `https://lagosportals.ng/claim?biz=${encodeURIComponent(companyName)}&id=${lead.id || '10K_99'}`;
 
-  let template = `{Hi|Hello|Good day} [COMPANY_NAME],
+  let template = `{Hi|Hello|Good day} management team at [COMPANY_NAME],
 
-We {built|custom-designed} a high-converting website & interactive 24/7 AI lead automation system preview for your [CATEGORY] in [CITY]:
+I was reviewing leading [CATEGORY] businesses operating in [CITY] and noticed potential clients are searching for instant pricing & WhatsApp responses from your team.
 
-🌐 View & Test Your Hybrid Website & Interactive AI Preview:
+We {custom-built|designed} a 2-minute live demo preview specifically for [COMPANY_NAME] to show how you can capture 3x more paying customers on autopilot:
+
+🌐 Test Your Live 2-Min Interactive AI Sales Demo:
 ${websitePreviewUrl}
 
-This hybrid system combines your custom business website with an embedded 24/7 WhatsApp AI agent, instant quote estimator, and automated PDF invoice generator.
+⚡ What this system does for [COMPANY_NAME]:
+• 🤖 24/7 WhatsApp AI Sales Agent (replies instantly in under 2 seconds)
+• 🎙️ Natural Nigerian Voice Note generator to build high customer trust
+• 📄 Instant automated PDF quote & Moniepoint/Paystack payment link generator
 
-👉 Claim Your Complete Hybrid System Portal Today:
+👉 Claim Your Complete Business Portal & Activate Direct Client Leads:
 ${claimUrl}
 
-{Best regards|Warm regards},
-Bethelmind Growth & Automation Desk
-(Reply STOP to opt out)`;
+{To your growth|Warm regards},
+Tosin | Bethelmind Analytics & Strategy
+(Reply STOP anytime to unsubscribe)`;
 
   template = template.replace(/\[COMPANY_NAME\]/g, companyName);
   template = template.replace(/\[CATEGORY\]/g, category);

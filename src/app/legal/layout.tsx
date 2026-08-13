@@ -48,7 +48,6 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
       </footer>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap');
         * { box-sizing: border-box; }
         body { margin: 0; }
         .legal-content h2 { font-size: 1.25rem; font-weight: 800; color: #f8fafc; margin: 2rem 0 0.6rem; font-family: 'Outfit', sans-serif; }

@@ -31,10 +31,11 @@ import {
   Trash2,
   Globe
 } from 'lucide-react';
-import { PRE_SCRAPED_LEADS } from '@/lib/preScrapedLeads';
-import AdminLeadRedesignStudio from '@/components/AdminLeadRedesignStudio';
-import AdminAssistantSupportDesk from '@/components/AdminAssistantSupportDesk';
+import dynamic from 'next/dynamic';
 import { copyToClipboard } from '@/lib/clipboard';
+
+const AdminLeadRedesignStudio = dynamic(() => import('@/components/AdminLeadRedesignStudio'), { ssr: false });
+const AdminAssistantSupportDesk = dynamic(() => import('@/components/AdminAssistantSupportDesk'), { ssr: false });
 
 interface LeadItem {
   id: string;
@@ -55,80 +56,22 @@ interface LeadItem {
   running_load_w?: number;
 }
 
-function detectLeadEngine(l: any): 'solar' | 'ibadan' | 'lagos' {
-  if (l.engine === 'solar' || l.engine === 'ibadan' || l.engine === 'lagos') return l.engine;
-  const id = (l.id || l.lead_id || '').toLowerCase();
-  const cat = (l.category || '').toLowerCase();
-  const seed = (l.source_query_or_seed || '').toLowerCase();
-  const scope = (l.project_scope || l.business_summary || l.notes || '').toLowerCase();
-  const name = (l.name || l.business_name || '').toLowerCase();
-  const loc = `${l.city || ''} ${l.area || ''} ${l.location || ''} ${l.address || ''} ${seed}`.toLowerCase();
-
-  if (
-    id.startsWith('solar_') ||
-    l.type === 'homeowner' ||
-    l.type === 'enterprise' ||
-    cat.includes('solar') ||
-    cat.includes('inverter') ||
-    cat.includes('energy') ||
-    cat.includes('power') ||
-    seed.includes('solar') ||
-    scope.includes('solar') ||
-    name.includes('solar') ||
-    name.includes('inverter')
-  ) {
-    return 'solar';
-  }
-
-  if (
-    id.startsWith('ibadan_') ||
-    l.type === 'ibadan_10k' ||
-    l.type === 'ibadan_b2b' ||
-    seed.includes('ibadan') ||
-    /ibadan|bodija|dugbe|ring road|challenge|mokola|agbowo|samonda|jericho|eleyele|oluyole|moniya|akobo|apata/i.test(loc)
-  ) {
-    return 'ibadan';
-  }
-
-  return 'lagos';
-}
-
-const INITIAL_SEEDED: LeadItem[] = (PRE_SCRAPED_LEADS || []).map((l: any, idx: number) => {
-  const engine = detectLeadEngine(l);
-  return {
-    id: l.lead_id || l.id || `lead-${idx}`,
-    name: l.business_name || l.name || 'Lagos Business Enterprise',
-    phone: l.phone || l.phone_e164 || l.phone_raw || '',
-    email: l.email || '',
-    location: l.address ? l.address : `${l.city || 'Lagos'}, Nigeria`,
-    city: l.city || (engine === 'ibadan' ? 'Ibadan' : 'Lagos'),
-    state: l.district || l.area || l.city || 'Lagos',
-    contact_person: l.contact_person || 'Commercial Director',
-    project_scope: l.business_summary || l.category || 'B2B Enterprise Lead',
-    status: (l.status || 'new').toLowerCase(),
-    notes: l.notes || '',
-    created_at: l.created_at || new Date().toISOString(),
-    type: (l.type || 'nigeria_5k') as any,
-    engine
-  };
-});
-
 export default function AdminCrmDualEnginePage() {
   const [activeEngine, setActiveEngine] = useState<'all' | 'solar' | 'lagos' | 'ibadan'>('all');
   const [viewMode, setViewMode] = useState<'kanban' | 'table'>('table');
-  const [leads, setLeads] = useState<LeadItem[]>(INITIAL_SEEDED);
+  const [leads, setLeads] = useState<LeadItem[]>([]);
   const [dbStats, setDbStats] = useState({
     totalLeads: 22096,
     solarCount: 2438,
     lagosCount: 18596,
     ibadanCount: 1062
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [cityFilter, setCityFilter] = useState('all');
-  const [selectedLead, setSelectedLead] = useState<LeadItem | null>(INITIAL_SEEDED[0] || null);
+  const [selectedLead, setSelectedLead] = useState<LeadItem | null>(null);
 
   // Scraper control states
   const [scrapingSolar, setScrapingSolar] = useState(false);

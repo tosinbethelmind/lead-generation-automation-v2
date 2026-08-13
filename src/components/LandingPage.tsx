@@ -247,6 +247,17 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     }, 900);
   };
 
+  // Celebration Confetti Trigger Helper
+  const triggerConfetti = () => {
+    try {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    } catch (_) {}
+  };
+
   // Countdown timer — persisted across page reloads via localStorage
   const COUNTDOWN_DURATION_MS = 5 * 24 * 60 * 60 * 1000; // 5 days
   const [timeLeft, setTimeLeft] = useState({ days: 4, hours: 23, minutes: 59, seconds: 59 });
