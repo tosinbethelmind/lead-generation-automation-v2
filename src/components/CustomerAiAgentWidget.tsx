@@ -69,6 +69,18 @@ export default function CustomerAiAgentWidget({
     }
     setSessionId(sid);
 
+    // Restore conversation memory from localStorage if present
+    const savedChat = localStorage.getItem(`bethel_ai_chat_history_${sid}`);
+    if (savedChat) {
+      try {
+        const parsed = JSON.parse(savedChat);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed);
+          return;
+        }
+      } catch (e) {}
+    }
+
     const welcomeGreeting = leadData
       ? `👋 Hello, **${leadData.name}**! 🌟 Congratulations — your Google Business profile shows you're rated **${leadData.rating}★** with ${leadData.reviews_count} reviews in **${leadData.area || leadData.city || 'Lagos'}**. I've already built a custom AI Lead Generation portal specifically for your **${leadData.category}** business! 🚀 Shall I walk you through how to activate it today with just ₦92,500?`
       : businessName
@@ -76,14 +88,16 @@ export default function CustomerAiAgentWidget({
       : `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`;
 
     // Initial greeting
-    setMessages([
-      {
-        id: 'msg_welcome',
-        sender: 'agent',
-        text: welcomeGreeting,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      },
-    ]);
+    const initMsg: ChatMessage = {
+      id: 'msg_welcome',
+      sender: 'agent',
+      text: welcomeGreeting,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+    setMessages([initMsg]);
+    try {
+      localStorage.setItem(`bethel_ai_chat_history_${sid}`, JSON.stringify([initMsg]));
+    } catch {}
 
     // Auto-speak the personalized welcome greeting to the lead
     if (leadData && typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -97,6 +111,15 @@ export default function CustomerAiAgentWidget({
       }, 2500);
     }
   }, [sector, businessName, leadData]);
+
+  // Sync messages to localStorage whenever they update
+  useEffect(() => {
+    if (sessionId && messages.length > 0) {
+      try {
+        localStorage.setItem(`bethel_ai_chat_history_${sessionId}`, JSON.stringify(messages));
+      } catch {}
+    }
+  }, [messages, sessionId]);
 
   // Exit-Intent Mouseleave & Proactive Auto-Pop Trigger
   useEffect(() => {
@@ -144,7 +167,8 @@ export default function CustomerAiAgentWidget({
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const updatedHistory = [...messages, userMsg];
+    setMessages(updatedHistory);
     if (!textToSend) setInput('');
     setLoading(true);
 
@@ -158,6 +182,7 @@ export default function CustomerAiAgentWidget({
           sector,
           businessName,
           leadData,
+          messagesHistory: updatedHistory,
         }),
       });
 
@@ -179,7 +204,7 @@ export default function CustomerAiAgentWidget({
           {
             id: `err_${Date.now()}`,
             sender: 'agent',
-            text: 'I am experiencing a momentary connection glitch, but your inquiry has been recorded! Please leave your WhatsApp phone number below.',
+            text: data.error || 'I am currently calculating your custom breakdown. Share your WhatsApp number and our team will send it over!',
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           },
         ]);
@@ -190,7 +215,7 @@ export default function CustomerAiAgentWidget({
         {
           id: `err_${Date.now()}`,
           sender: 'agent',
-          text: 'Thank you for reaching out! Share your mobile phone or email address and our support team will reach out directly.',
+          text: 'Thank you for reaching out! Share your WhatsApp number and our senior specialist will send your full proposal directly.',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);

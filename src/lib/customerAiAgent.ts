@@ -335,19 +335,40 @@ export async function processCustomerMessage(
   sessionId: string,
   userMessage: string,
   sector = 'general',
-  leadData?: any
+  leadData?: any,
+  messagesHistory?: AiAgentMessage[]
 ): Promise<{ reply: string; session: CustomerAiSession; pendingApproval: boolean }> {
   const session = await getOrCreateCustomerSession(sessionId, sector);
   const agentConfig = await getCustomerAiAgentConfig();
   const now = new Date().toISOString();
 
-  // 1. Record User Message
-  session.messages.push({
-    id: `msg_${randomUUID().substring(0, 8)}`,
-    sender: 'user',
-    text: userMessage,
-    timestamp: now,
-  });
+  // If client supplied message history, sync it to guarantee 100% memory persistence across serverless requests
+  if (messagesHistory && Array.isArray(messagesHistory) && messagesHistory.length > 0) {
+    session.messages = messagesHistory.map((m) => ({
+      id: m.id || `msg_${randomUUID().substring(0, 8)}`,
+      sender: m.sender || 'user',
+      text: m.text,
+      timestamp: m.timestamp || now,
+    }));
+  }
+
+  // 1. Record Latest User Message if not already present as the last message
+  const lastMsg = session.messages[session.messages.length - 1];
+  if (!lastMsg || lastMsg.text !== userMessage || lastMsg.sender !== 'user') {
+    session.messages.push({
+      id: `msg_${randomUUID().substring(0, 8)}`,
+      sender: 'user',
+      text: userMessage,
+      timestamp: now,
+    });
+  }
+
+  // Scan full message history to re-extract any previously shared contact info
+  for (const m of session.messages) {
+    if (m.sender === 'user') {
+      extractCustomerInfo(m.text, session);
+    }
+  }
 
   // 2. Parse Contact Info from message or leadData
   if (leadData?.phone && !session.customer_phone) {
