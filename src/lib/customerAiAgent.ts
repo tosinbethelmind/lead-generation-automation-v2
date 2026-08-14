@@ -382,8 +382,20 @@ export async function processCustomerMessage(
     return { reply: contactPrompt, session, pendingApproval: false };
   }
 
+  // Find previous user inquiry if the current message is just phone/email
+  const userMessages = session.messages.filter(m => m.sender === 'user');
+  let activeInquiry = userMessage;
+  const isJustContact = /^(\+?234|0)[789][01]\d{8}$/.test(userMessage.replace(/[\s-]/g, '')) || /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(userMessage.trim());
+
+  if (isJustContact && userMessages.length >= 2) {
+    const prevMsg = userMessages[userMessages.length - 2];
+    if (prevMsg && prevMsg.text) {
+      activeInquiry = prevMsg.text;
+    }
+  }
+
   // 4. Check Critical Stage Detection (Dispatched to Admin in Background without blocking the customer)
-  const criticalCheck = detectCriticalStage(userMessage);
+  const criticalCheck = detectCriticalStage(activeInquiry);
   let pendingApproval = false;
 
   if (criticalCheck.isCritical && criticalCheck.stage) {
@@ -392,7 +404,7 @@ export async function processCustomerMessage(
       session_id: sessionId,
       stage: criticalCheck.stage,
       title: criticalCheck.title || 'Critical Deal Approval Required',
-      details: userMessage,
+      details: activeInquiry,
       customer_name: session.customer_name || 'Valued Visitor',
       customer_phone: session.customer_phone || 'Unprovided',
       customer_email: session.customer_email || 'Unprovided',
@@ -409,24 +421,19 @@ export async function processCustomerMessage(
     });
   }
 
-  // 5. Check Multi-Channel Autoresponder Triggers
-  const autoresResult = await processAutoresponderMessage({
-    message: userMessage,
-    channel: 'webchat',
-    senderContact: session.customer_phone || session.customer_email,
-    senderName: session.customer_name,
-  });
+  // 5. Query Intelligent Gemini AI — freely answering the active question now that contact is secured
+  const promptQuery = isJustContact
+    ? `Customer provided contact info (${userMessage}) to unlock response for: "${activeInquiry}". Warmly acknowledge their contact, then immediately answer "${activeInquiry}" with complete, detailed numbers, tools, and options!`
+    : activeInquiry;
 
-  let replyText = '';
+  let replyText = await generateIntelligentAiResponse(promptQuery, session, agentConfig, leadData);
 
-  if (autoresResult.matched && autoresResult.responseType === 'template') {
-    replyText = autoresResult.replyText;
-  } else {
-    // 6. Query Intelligent Gemini AI — freely answering the question asked now that contact is secured
-    replyText = await generateIntelligentAiResponse(userMessage, session, agentConfig, leadData);
+  // If user just provided contact info, ensure warm acknowledgement is prepended if not already present
+  if (isJustContact && !replyText.toLowerCase().includes('thank') && !replyText.toLowerCase().includes('got it') && !replyText.toLowerCase().includes('saved')) {
+    replyText = `✅ *Thank you! I've saved your WhatsApp contact (${session.customer_phone || session.customer_email}).*\n\n${replyText}`;
   }
 
-  // 7. Push Response to Session History
+  // 6. Push Response to Session History
   session.messages.push({
     id: `msg_${randomUUID().substring(0, 8)}`,
     sender: 'agent',
@@ -696,6 +703,10 @@ Latest Customer Query: "${userMsg}"`,
 
   if (lower.includes('lekki') || lower.includes('ikoyi') || lower.includes('ikeja') || lower.includes('abuja') || lower.includes('banana island')) {
     return `📍 Perfect! For properties in ${userMsg}, our Real Estate Lead Engine provides 6–12 month flexible installment payment schedules, automated inspection slot bookings, and instant brochure downloads for local and diaspora buyers. Would you like to see a live simulation?`;
+  }
+
+  if (lower.includes('calculator') || lower.includes('sector') || lower.includes('tool') || lower.includes('test')) {
+    return `🧮 Here are our **8 Live Sector Engines & Calculators** ready to test:\n\n1. ☀️ **Solar BOQ Load & Inverter Estimator**: Calculates appliance wattages (3.5kVA, 5kVA, 10kVA+), battery sizes, and generator fuel savings.\n2. 🏡 **Real Estate Payment Schedule Engine**: Off-plan 6–12 month installments, mortgage calculations, and VIP site tour bookings.\n3. 🚗 **Tokunbo Customs Duty & Valuation**: Computes Nigeria Customs import tariffs, clearing fees, and vehicle inspection slots.\n4. ⚖️ **CAC & Corporate Legal Registration**: Business name reservation fee lookup and CAC filing guides.\n5. 🏥 **Clinic & HMO Appointment Scheduler**: HMO insurance coverage lookup and doctor booking.\n6. 📦 **Logistics & Delivery Calculator**: Mainland vs Island delivery tariff estimator.\n7. 🎓 **School & Academy Tuition Reference**: Termly fee breakdown and student admission registration.\n8. 💼 **General B2B Instant Quote Generator**: 1-click tailored proposals for Nigerian enterprises.\n\nWhich of these would you like to run a live test on right now?`;
   }
 
   return `Thank you for your response! I'm following your thread closely. I can help you with pricing packages, custom domain setup, our 24/7 WhatsApp AI Agent with Nigerian Voice Notes, or sector calculators (Solar, Real Estate, Auto, Legal). What would you like to explore next?`;
