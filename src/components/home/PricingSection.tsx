@@ -94,29 +94,26 @@ export default function PricingSection({
         />
       )}
 
-      {/* Interactive Lagos SME ROI Calculator */}
-      <RoiCalculator />
-
-      <div style={{ textAlign: 'center', marginBottom: 48 }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 100, padding: '5px 14px', marginBottom: 14 }}>
-          <span style={{ fontSize: '0.74rem', color: '#8b5cf6', fontWeight: 700 }}>Pricing</span>
+      <div style={{ textAlign: 'center', marginBottom: 44 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.25)', borderRadius: 100, padding: '5px 16px', marginBottom: 14 }}>
+          <span style={{ fontSize: '0.78rem', color: '#22d3ee', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Transparent Pricing Plans</span>
         </div>
         <h2
           id="pricing-heading"
-          style={{ fontSize: 'clamp(1.7rem, 4vw, 2.5rem)', fontWeight: 900, margin: '0 0 12px', fontFamily: "'Outfit', sans-serif", color: '#f8fafc' }}
+          style={{ fontSize: 'clamp(1.8rem, 4.2vw, 2.6rem)', fontWeight: 900, margin: '0 0 12px', fontFamily: "'Outfit', sans-serif", color: '#f8fafc', letterSpacing: '-0.02em' }}
         >
-          Transparent NGN Investment — Guaranteed 3.5x ROI
+          Simple, Transparent NGN Investment Packages
         </h2>
-        <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: 8, maxWidth: 680, margin: '0 auto 8px' }}>
-          Flexible monthly plans with zero long-term lock-in. Cancel anytime with a 1-click message. Includes 30-day satisfaction & lead delivery assurance.
+        <p style={{ color: '#94a3b8', fontSize: '0.96rem', maxWidth: 720, margin: '0 auto 8px', lineHeight: 1.5 }}>
+          Select the right package for your business. Zero hidden fees, 50% deposit option available, and instant WhatsApp handover within 24 hours.
         </p>
-        <p style={{ color: '#10b981', fontSize: '0.84rem', fontWeight: 600 }}>
-          ⚡ Setup fee covers 1-on-1 WhatsApp configuration, sector calculator setup, Moniepoint/Paystack integration, and custom AI prompt training.
+        <p style={{ color: '#10b981', fontSize: '0.84rem', fontWeight: 700, margin: 0 }}>
+          ⚡ All plans include 24/7 AI Chatbot, WhatsApp Voice Notes, Sector Calculators & Moniepoint/Paystack verification.
         </p>
       </div>
 
       {/* Plan grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 52 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 56 }}>
         {PLANS.map((plan) => {
           const isSelected = selectedPlanId === plan.id;
           const planWaLink = buildPlanWhatsAppLink(plan, businessName, selectedIndustry, targetDistrict);
@@ -244,6 +241,11 @@ export default function PricingSection({
             </div>
           );
         })}
+      </div>
+
+      {/* Interactive Lagos SME ROI Calculator (Positioned below plan cards) */}
+      <div style={{ marginTop: 10, marginBottom: 50 }}>
+        <RoiCalculator />
       </div>
 
       {/* Selectable Tool Add-on Modules */}
