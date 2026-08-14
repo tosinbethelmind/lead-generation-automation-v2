@@ -69,19 +69,19 @@ export default function HowItWorksSection() {
     >
       <div style={{ textAlign: 'center', marginBottom: 48 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.2)', borderRadius: 100, padding: '5px 14px', marginBottom: 14 }}>
-          <span style={{ fontSize: '0.74rem', color: '#06b6d4', fontWeight: 700 }}>How It Works</span>
+          <span style={{ fontSize: '0.74rem', color: '#06b6d4', fontWeight: 700 }}>6-Step Sales Workflow</span>
         </div>
         <h2
           id="how-it-works-heading"
           style={{ fontSize: 'clamp(1.7rem, 4vw, 2.5rem)', fontWeight: 900, margin: '0 0 12px', fontFamily: "'Outfit', sans-serif", color: '#f8fafc' }}
         >
-          From First Enquiry to Organised Follow-Up
+          How We Turn Cold Enquiries Into Paid Customers in 6 Steps
         </h2>
-        <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: 600, margin: '0 auto 8px' }}>
-          A guided workflow that helps your team respond faster, follow up consistently, and keep every lead organised.
+        <p style={{ color: '#94a3b8', fontSize: '0.96rem', maxWidth: 680, margin: '0 auto 8px', lineHeight: 1.5 }}>
+          Stop losing buyers to slow WhatsApp replies. Here is how our automated system captures, qualifies, quotes, and verifies payments for your business 24/7.
         </p>
-        <p style={{ color: '#64748b', fontSize: '0.82rem', maxWidth: 600, margin: '0 auto' }}>
-          Your team can review conversations and take over whenever needed.
+        <p style={{ color: '#10b981', fontSize: '0.84rem', fontWeight: 600, maxWidth: 600, margin: '0 auto' }}>
+          ✓ Your human team can review conversations and take over anytime in 1 click.
         </p>
       </div>
 

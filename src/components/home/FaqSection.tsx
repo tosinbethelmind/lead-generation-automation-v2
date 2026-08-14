@@ -10,40 +10,36 @@ import { Plus, Minus } from 'lucide-react';
 
 const FAQ_ITEMS = [
   {
-    q: 'How does onboarding work?',
-    a: 'After payment, we schedule an onboarding session (typically within one business day). We collect your business information, products, or service rules, configure your initial WhatsApp & CRM setup, and review everything with you before launching.',
+    q: 'Do I or my staff need any technical or coding skills?',
+    a: 'None at all! We handle 100% of the setup, domain configuration, WhatsApp AI training, and sector calculator integration for you. You receive a complete, ready-to-use system delivered in 24 hours.',
   },
   {
-    q: 'How does Bank Transfer Auto-Verification (Virtual Accounts) work?',
-    a: 'For businesses handling bank transfers, we integrate dedicated Virtual Bank Account Numbers (NUBANs) generated via Paystack or Monnify. When a customer transfers funds via their mobile banking app (GTB, Kuda, Zenith, OPay), the transaction is automatically verified, updating the lead status and issuing an instant PDF receipt on WhatsApp without manual checking.',
+    q: 'Can my human sales team still reply and chat with customers on WhatsApp?',
+    a: 'Yes, absolutely. The AI operates seamlessly in the background. Whenever your staff wants to reply directly, they can simply type or send voice notes on WhatsApp as usual. You have full control at all times.',
   },
   {
-    q: 'Can the assistant process WhatsApp Voice Notes and Nigerian Pidgin?',
-    a: 'Yes. The system uses Speech-to-Text AI (OpenAI Whisper) to transcribe audio voice notes sent by Nigerian customers in local accents or Pidgin English, enabling your automated workflow to process voice messages and generate structured replies or route them to your team.',
+    q: 'How do the Nigerian Accent Voice Notes work?',
+    a: 'Our AI speaks in natural, authentic Nigerian English. When prospects ask about prices, inverter sizes, or property installments, the AI sends warm audio voice notes that sound like an experienced human sales rep, building instant trust and closing sales faster.',
   },
   {
-    q: 'Can the assistant hand conversations over to my sales team?',
-    a: 'Yes. The system includes a human handoff step. When an enquiry requires custom negotiation, a physical site visit, or complex closing, the conversation routes to designated team members on WhatsApp while keeping all records centralized in your CRM.',
+    q: 'How does the 50% deposit option work?',
+    a: 'You can start onboarding today with a 50% deposit (₦92,500). Our engineering team sets up your 24/7 AI agent and sector tools immediately, and you pay the remaining balance upon 100% handover within 24 hours.',
   },
   {
-    q: 'How do you protect against Meta WhatsApp account bans during marketing?',
-    a: 'We configure rate-limiting throttles, randomized human message delays, and message variation templates. For larger campaigns, we integrate the Official WhatsApp Business Cloud API to ensure full compliance with Meta’s anti-spam guidelines.',
+    q: 'What if I already have a website (WordPress, Wix, Shopify, custom)?',
+    a: 'You DO NOT need to rebuild your website! Simply paste our 1-line script tag into your existing site in 60 seconds, and your 24/7 AI concierge and sector calculators will activate instantly.',
   },
   {
-    q: 'Are sector-specific calculators included in every plan?',
-    a: 'Basic sector enquiry workflows are included in Starter. Specialized quote calculators (Solar BOQ, Vehicle VIN Import Duty, Real Estate Installment Spreads, and CAC Filing Fees) are included in Business Pro and VIP Enterprise plans.',
+    q: 'How does Bank Transfer Auto-Verification work?',
+    a: 'We integrate with Moniepoint and Paystack virtual accounts. When a customer transfers funds via their mobile banking app (GTB, Kuda, Zenith, OPay), the payment is automatically verified in real time and an official receipt is issued on WhatsApp with zero manual delays.',
   },
   {
-    q: 'Does the system generate FIRS VAT and WHT-compliant invoices?',
-    a: 'Yes. The pro-forma invoice generator allows you to generate professional PDF invoices formatted with your CAC Registration Number, Tax Identification Number (TIN), 7.5% VAT, and 5% Withholding Tax (WHT) line items for corporate clients.',
+    q: 'How many B2B leads do I receive with the Lead Harvester?',
+    a: 'Our Business Pro plan includes up to 10,000 verified Nigerian B2B contacts every month, complete with verified business names, WhatsApp phone numbers, and decision-maker details across Lagos, Abuja, and Port Harcourt.',
   },
   {
-    q: 'Can I cancel my monthly plan anytime?',
-    a: 'Yes. Monthly subscriptions can be cancelled at any time before your next billing cycle with no long-term contracts or cancellation penalties.',
-  },
-  {
-    q: 'How is my business data handled?',
-    a: 'All client information and lead databases are kept strictly confidential and secure. We do not share or sell client data to third parties. Review our Privacy Policy for full terms.',
+    q: 'Can I cancel my monthly subscription anytime?',
+    a: 'Yes. Monthly subscriptions can be cancelled at any time with a simple 1-click message. There are no contracts, lock-ins, or hidden cancellation penalties.',
   },
 ];
 

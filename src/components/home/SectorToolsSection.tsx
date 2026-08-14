@@ -420,20 +420,20 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
       style={{ padding: '72px clamp(16px, 4vw, 40px)', maxWidth: 1200, margin: '0 auto' }}
     >
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 100, padding: '5px 14px', marginBottom: 14 }}>
-          <span style={{ fontSize: '0.74rem', color: '#8b5cf6', fontWeight: 700 }}>Interactive Sector Workflows</span>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 100, padding: '5px 16px', marginBottom: 14 }}>
+          <span style={{ fontSize: '0.78rem', color: '#c084fc', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>1-Click Sector Tools</span>
         </div>
         <h2
           id="sector-tools-heading"
-          style={{ fontSize: 'clamp(1.7rem, 4vw, 2.5rem)', fontWeight: 900, margin: '0 0 12px', fontFamily: "'Outfit', sans-serif", color: '#f8fafc' }}
+          style={{ fontSize: 'clamp(1.8rem, 4.2vw, 2.6rem)', fontWeight: 900, margin: '0 0 12px', fontFamily: "'Outfit', sans-serif", color: '#f8fafc', letterSpacing: '-0.02em' }}
         >
-          Automated Workflow & Cost Calculators Built for Your Sector
+          Live Sector Calculators & Automated Quote Engines
         </h2>
-        <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: 680, margin: '0 auto 8px' }}>
-          Select your industry below to run live, high-speed calculations, BOQ generators, and tariff estimates.
+        <p style={{ color: '#94a3b8', fontSize: '0.96rem', maxWidth: 700, margin: '0 auto 8px', lineHeight: 1.5 }}>
+          Save your sales team 10+ hours a week. Let your clients calculate their exact Solar load, Real Estate installments, Vehicle customs duty, or Legal fees in 2 minutes with instant PDF quotes.
         </p>
-        <p style={{ color: '#64748b', fontSize: '0.78rem', maxWidth: 620, margin: '0 auto' }}>
-          Calculators deliver instant structured quotes ready to share on WhatsApp or export to PDF.
+        <p style={{ color: '#10b981', fontSize: '0.84rem', fontWeight: 700, maxWidth: 620, margin: '0 auto' }}>
+          ✓ Select your industry below to run a live calculation simulation right now.
         </p>
       </div>
 
