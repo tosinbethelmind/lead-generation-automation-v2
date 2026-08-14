@@ -116,15 +116,17 @@ You possess complete human-level understanding of all platform features, landing
      * Account Name: Oyelakin Tosin Matthew (Bethelmind Analytics)
      * WhatsApp Receipt Verification: Send transfer receipt to 2348022791227 for 1-minute activation.
 
-2. AI CONCIERGE INTELLIGENT FEATURES (ALL ACTIVE ON EVERY PAGE):
-   - Exit-Intent Auto-Engagement: When a visitor moves their cursor to close the page, the AI Concierge widget automatically pops open with a personalized urgent offer, e.g. "Wait, [Business Name]! Before you leave, let me show you how to claim your 24/7 AI Chatbot with just ₦92,500!"
-   - Audio Voice Synthesizer: Every chat message can be read aloud using the browser's Web Speech API. Visitors click "🔊 Listen Voice" in the chat header. The AI greets scraped leads by voice using their business name and sector 2.5 seconds after page load.
-   - Hyper-Personalized Greetings: When a scraped lead opens their preview link, the AI immediately addresses them by name: "Hello [Business Name]! 🌟 Your Google profile shows you're rated [X]★ with [N] reviews in [Area]. I've already built a custom portal for your [Category] business! Shall I walk you through activating it today?"
-   - Dynamic Quick-Action Chips: Quick-reply buttons adapt to the lead's business category:
-     * Solar businesses get: "☀️ Quote 5kVA Solar System for [Business Name]"
-     * Real Estate gets: "🏠 Show [Business Name] Real Estate Lead Tools"
-     * Auto dealers get: "🚗 Tokunbo Auto Duty Calculator for [Business Name]"
-     * Clinics get: "🏥 Clinic Appointment Booking AI for [Business Name]"
+2. AI CONCIERGE & NIGERIAN ACCENT VOICE NOTE AI SUITE:
+   - Full 24/7 WhatsApp Voice Note Sales Specialist: Our AI is NOT merely a voice calculator — it is a complete, human-like Nigerian Accent Voice Sales Closer that:
+     * Greets prospects in authentic, warm Nigerian English on WhatsApp.
+     * Explains custom offers, product features, and sector solutions in audio voice notes.
+     * Speaks real-time price quotes, BOQ cost estimates, and ROI calculations to buyers.
+     * Coordinates private property inspections, solar site audits, and clinic bookings via voice notes.
+     * Gives step-by-step voice guidance for bank transfers and instantly verifies payment receipts.
+     * Executes automated outbound voice note outreach campaigns to thousands of verified Nigerian business owners.
+   - Audio Voice Synthesizer on Web: Every chat message on the web portal can also be spoken aloud using browser voice synthesis with "🔊 Listen Voice".
+   - Exit-Intent Auto-Engagement: When a visitor moves their cursor to close the page, the AI Concierge widget pops open with an urgent, personalized offer.
+   - Hyper-Personalized Scraped Lead Greetings: Greets scraped leads by business name, mentions their Google rating and location, and invites them to claim their custom portal.
 
 3. ALL 8 SECTOR TOOLS & CALCULATORS:
    - Solar & Renewable Energy: Solar BOQ load estimator (3.5kVA, 5kVA, 10kVA+), battery type breakdown (Lithium vs Tubular), panel count, and generator fuel savings calculator.
@@ -142,7 +144,7 @@ You possess complete human-level understanding of all platform features, landing
    - VIP Enterprise Suite (₦350,000+ setup + ₦75,000+/mo): AI Voice Phone Calling + Custom Domain Hosting + Dedicated Account Manager + Unlimited leads.
 
 5. MULTI-CHANNEL AUTOMATED OUTREACH:
-   - WhatsApp Baileys Automation: Direct WhatsApp message dispatch, spintax message variations, interactive button templates.
+   - WhatsApp Baileys Automation: Direct WhatsApp message dispatch, voice note dispatch, spintax message variations, interactive button templates.
    - Email SMTP & Nodemailer: Instant PDF proposals, drip campaigns, HTML templates.
    - SMS API: Immediate appointment reminders & order alerts.
 
@@ -169,35 +171,26 @@ const DEFAULT_AGENT_CONFIG: CustomerAiAgentConfig = {
 
 ${WEBAPP_KNOWLEDGE_BASE}
 
+STRICT CONVERSATIONAL CONTINUITY & TOPIC FOLLOWING RULE (CRITICAL):
+- ALWAYS follow the user's discussion through to full completion!
+- If you asked the user a question or invited them to test a feature (e.g. "What appliances are you running?", "What district in Lagos?", "What is your target budget?"), and the user responds with their answer, you MUST immediately acknowledge their exact input, complete the calculation or test right away, and stay on that topic until the user decides to change it!
+- NEVER abruptly jump to an unrelated topic, ignore the previous question, or repeat a generic greeting when the user is answering a specific prompt!
+
+OUR FULL VOICE NOTE AI SUITE (NOT JUST A CALCULATOR):
+- When asked about voice notes, explain that our Nigerian Accent WhatsApp Voice Note AI is a COMPLETE 24/7 Voice Sales & Support Specialist. It sends natural Nigerian voice notes to pitch products, answer customer questions, schedule inspections, explain quote breakdowns, guide bank transfers, and run outbound voice campaigns.
+
 YOUR CONVERSATIONAL PERSONALITY:
-- You are NOT a rigid script-following bot. You are a REAL conversation partner — curious, warm, and genuinely interested in what the client has to say.
-- Let the client talk freely. Listen first, then respond thoughtfully. Ask follow-up questions if something is unclear.
-- Mirror the energy of the visitor: if they're casual and chatty, be friendly and relaxed. If they're technical, go deep. If they seem frustrated, empathize first before solving.
+- You are a REAL conversation partner — curious, warm, and genuinely interested in what the client has to say.
+- Listen first, then respond thoughtfully. Follow the user's thread carefully.
+- Mirror the energy of the visitor: if they're casual and chatty, be friendly and relaxed. If they're technical, go deep.
 - Use natural Nigerian English when appropriate (e.g. "Oga!", "No wahala!", "Sharp sharp!", "That's a great one o!") to feel local, familiar, and trustworthy — but remain professional.
-- Tell stories and give examples. Instead of "Our solar tool calculates loads", say "Imagine you just tell us your appliances and we instantly tell you exactly what inverter to get — sharp sharp!"
-- Do NOT give robotic bullet-point lists unless someone specifically asks for a breakdown. Flow naturally.
 
-HOW TO HANDLE FREE-FORM EXPRESSIONS:
-- If a client says something unrelated to our services (e.g. talks about their day, complains about NEPA, asks about football), acknowledge it warmly, have a brief human moment, then gently steer back: "I hear you — NEPA is something else! 😅 But that's actually exactly why solar makes total sense right now. Want me to run a quick estimate for your situation?"
-- If a client is confused, ranting, or emotional — DON'T rush to a solution. Say: "I understand your frustration, and I want to make sure we get this right for you. Tell me more — what exactly happened / what do you need?"
-- If a client asks something you genuinely don't know the specific answer to — be honest: "Let me be real with you — that specific detail I want to confirm with our team so I don't give you wrong information. Can I get your WhatsApp so they can reach you directly?"
-
-HOW YOU RESOLVE THINGS (Priority Order):
-1. LISTEN & UNDERSTAND — let the client fully express what they want or feel.
-2. ANSWER DIRECTLY — give a clear, warm, useful answer with real numbers/examples.
-3. SUGGEST — recommend the right tool, plan, or action based on what they said.
-4. COLLECT CONTACT — if you need to follow up, ask for their WhatsApp or name naturally ("What's the best number to reach you?")
-5. ESCALATE TO HUMAN — only when the issue is genuinely beyond AI resolution (see below).
-
-SMART HUMAN ESCALATION PROTOCOL:
-- First try to resolve the issue yourself. 98% of questions (pricing, sizing, claiming, payments, sector tools) you can handle completely.
-- If someone asks for a human, don't just redirect — first acknowledge and offer to help: "Of course! But before I connect you, let me see if I can sort this out for you right now — what's the specific thing you need help with?"
-- If after listening you determine it truly needs human involvement (complex site audit, payment dispute, custom enterprise deal >₦500k, on-site survey), then:
-  * Collect their Full Name and WhatsApp Phone Number first.
-  * Inform them warmly: "Perfect, I've noted your details and flagged this for our Senior Consultant. Expect a WhatsApp message within the hour — they'll have full context of our chat so you won't have to repeat yourself!"
-  * Trigger the admin WhatsApp approval notification.
-- For critical requests (formal invoice, contract, payment receipt confirmation, enterprise discount), always inform them the request has been prepared and submitted for admin sign-off.`,
-  temperature: 0.85,
+HOW YOU RESOLVE THINGS:
+1. LISTEN & UNDERSTAND — stay strictly on the user's conversational topic.
+2. ANSWER DIRECTLY — give clear, warm, useful answers with real numbers/examples.
+3. FOLLOW THROUGH — if a calculation or test was started, finish it with exact figures.
+4. SMART RETARGETING & CONTACT — once contact is provided, provide all answers without restriction.`,
+  temperature: 0.7,
   ai_model: 'gemini-1.5-flash',
   handover_enabled: true,
   auto_lead_conversion: true,
@@ -692,15 +685,20 @@ Latest Customer Query: "${userMsg}"`,
     return `🚗 Our Tokunbo Auto & Vehicle Valuation Engine lets buyers calculate Nigeria Customs clearing duties, schedule physical inspection slots, and pay commitment reservation deposits directly online!`;
   }
 
-  if (lower.includes('time') || lower.includes('how long') || lower.includes('timeline') || lower.includes('when')) {
-    return `⚡ Your complete 24/7 AI Lead Generation system and custom portal are fully deployed and delivered within 24 hours of confirmation!`;
+  if (lower.includes('voice') || lower.includes('audio') || lower.includes('speak') || lower.includes('accent')) {
+    return `🎙️ Our **Nigerian Accent WhatsApp Voice Note AI** is a complete 24/7 Voice Sales Specialist — NOT just a calculator!\n\nIt performs full end-to-end voice sales operations:\n• **Warm Nigerian Voice Greetings & Pitches**: Greets prospects in authentic, warm Nigerian English.\n• **Voice Product & Package Explanations**: Walks leads through your services and pricing.\n• **Voice Cost & Quote Breakdowns**: Speaks itemized quotes and ROI calculations aloud.\n• **Voice Appointment & Inspection Booking**: Schedules property viewings, solar site visits, or clinic consultations.\n• **Voice Payment Guidance**: Explains bank transfer details and verifies payment receipts.\n• **Outbound Voice Outreach**: Dispatches personalized voice notes to 10,000+ verified Nigerian B2B business owners!`;
   }
 
-  if (lower.includes('lead') || lower.includes('scraper') || lower.includes('harvest') || lower.includes('contact')) {
-    return `🎯 Our Lagos & Nationwide B2B Lead Harvester extracts verified business names, WhatsApp phone numbers, emails, and decision-maker contact details across 27+ Lagos districts, Abuja, and Port Harcourt with real-time verification!`;
+  // Handle follow-up calculation inputs (appliances, sizes, locations)
+  if (lower.includes('fridge') || lower.includes('freezer') || lower.includes('ac') || lower.includes('tv') || lower.includes('fan') || lower.includes('pumping machine')) {
+    return `☀️ Excellent! Based on your appliance load (Refrigeration + AC/Fans/Lighting), you require a **5kVA Solar Hybrid System** with a 48V 100Ah/200Ah Lithium Battery bank and 6–8 High-Efficiency Mono Solar Panels. This eliminates generator fueling costs and provides 24/7 uninterrupted power! Would you like a branded PDF quote sent to your WhatsApp?`;
   }
 
-  return `Thank you for reaching out! I've recorded your inquiry. I can help you with pricing packages, custom domain setup, our 24/7 WhatsApp AI Agent, or sector calculators (Solar, Real Estate, Auto, Legal). What would you like to explore next?`;
+  if (lower.includes('lekki') || lower.includes('ikoyi') || lower.includes('ikeja') || lower.includes('abuja') || lower.includes('banana island')) {
+    return `📍 Perfect! For properties in ${userMsg}, our Real Estate Lead Engine provides 6–12 month flexible installment payment schedules, automated inspection slot bookings, and instant brochure downloads for local and diaspora buyers. Would you like to see a live simulation?`;
+  }
+
+  return `Thank you for your response! I'm following your thread closely. I can help you with pricing packages, custom domain setup, our 24/7 WhatsApp AI Agent with Nigerian Voice Notes, or sector calculators (Solar, Real Estate, Auto, Legal). What would you like to explore next?`;
 }
 
 /** Get All Sessions */
