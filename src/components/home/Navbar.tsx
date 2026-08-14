@@ -73,8 +73,21 @@ export default function Navbar() {
           <a
             key={link.href}
             href={link.href}
-            className="nav-link desktop-only"
-            style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500, padding: '6px 8px', borderRadius: 8, transition: 'color 0.2s' }}
+            className="nav-btn-chip desktop-only"
+            style={{
+              color: '#94a3b8',
+              textDecoration: 'none',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              padding: '6px 13px',
+              borderRadius: 10,
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              backdropFilter: 'blur(8px)',
+              transition: 'all 0.2s ease',
+              display: 'inline-flex',
+              alignItems: 'center',
+            }}
           >
             {link.label}
           </a>
@@ -83,29 +96,64 @@ export default function Navbar() {
         <Link
           href="/admin"
           className="desktop-only"
-          style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem', padding: '6px 12px' }}
+          style={{
+            color: '#64748b',
+            textDecoration: 'none',
+            fontSize: '0.82rem',
+            fontWeight: 500,
+            padding: '6px 12px',
+            borderRadius: 8,
+            transition: 'color 0.2s ease',
+          }}
         >
           Login
         </Link>
 
-        {/* Secondary CTA */}
+        {/* Secondary CTA Button */}
         <a
           id="nav-whatsapp-cta"
           href={waLink}
           target="_blank"
           rel="noreferrer noopener"
           className="desktop-only"
-          style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, padding: '7px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: 6, transition: 'border-color 0.2s' }}
+          style={{
+            color: '#25d366',
+            textDecoration: 'none',
+            fontSize: '0.84rem',
+            fontWeight: 700,
+            padding: '7px 15px',
+            borderRadius: 11,
+            background: 'rgba(37, 211, 102, 0.08)',
+            border: '1px solid rgba(37, 211, 102, 0.28)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'all 0.2s ease',
+          }}
           aria-label="Chat with us on WhatsApp"
         >
           <MessageSquare style={{ width: 14, height: 14 }} aria-hidden="true" /> WhatsApp Us
         </a>
 
-        {/* Primary CTA */}
+        {/* Primary CTA Button */}
         <a
           id="nav-demo-cta"
           href="#how-it-works"
-          style={{ background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', color: '#fff', textDecoration: 'none', borderRadius: 10, padding: '8px 18px', fontWeight: 700, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6, transition: 'opacity 0.2s', whiteSpace: 'nowrap' }}
+          style={{
+            background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)',
+            color: '#fff',
+            textDecoration: 'none',
+            borderRadius: 11,
+            padding: '8px 18px',
+            fontWeight: 700,
+            fontSize: '0.85rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            boxShadow: '0 4px 14px rgba(6, 182, 212, 0.25)',
+            transition: 'all 0.2s ease',
+            whiteSpace: 'nowrap',
+          }}
         >
           See a Live Demo
         </a>
@@ -130,23 +178,33 @@ export default function Navbar() {
           id="mobile-menu"
           role="navigation"
           aria-label="Mobile navigation menu"
-          style={{ position: 'absolute', top: 66, left: 0, right: 0, background: 'rgba(7,9,14,0.98)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '16px 20px 24px', display: 'flex', flexDirection: 'column', gap: 4 }}
+          style={{ position: 'absolute', top: 66, left: 0, right: 0, background: 'rgba(7,9,14,0.98)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '16px 20px 24px', display: 'flex', flexDirection: 'column', gap: 8 }}
         >
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              style={{ color: '#cbd5e1', textDecoration: 'none', fontSize: '1rem', fontWeight: 600, padding: '10px 4px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'block' }}
+              style={{
+                color: '#cbd5e1',
+                textDecoration: 'none',
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                padding: '11px 14px',
+                borderRadius: 10,
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                display: 'block',
+              }}
             >
               {link.label}
             </a>
           ))}
-          <Link href="/admin" onClick={() => setMenuOpen(false)} style={{ color: '#64748b', textDecoration: 'none', fontSize: '1rem', padding: '10px 4px', display: 'block' }}>
+          <Link href="/admin" onClick={() => setMenuOpen(false)} style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.9rem', padding: '8px 14px', display: 'block' }}>
             Login
           </Link>
-          <div style={{ display: 'flex', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
-            <a href={waLink} target="_blank" rel="noreferrer noopener" style={{ flex: 1, textAlign: 'center', padding: '12px 0', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', color: '#cbd5e1', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>
+          <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
+            <a href={waLink} target="_blank" rel="noreferrer noopener" style={{ flex: 1, textAlign: 'center', padding: '12px 0', borderRadius: 10, border: '1px solid rgba(37,211,102,0.3)', background: 'rgba(37,211,102,0.08)', color: '#25d366', textDecoration: 'none', fontWeight: 700, fontSize: '0.9rem' }}>
               WhatsApp Us
             </a>
             <a href="#pricing" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '12px 0', borderRadius: 10, background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '0.9rem' }}>
@@ -159,7 +217,24 @@ export default function Navbar() {
       <style>{`
         @media (max-width: 768px) { .desktop-only { display: none !important; } }
         @media (min-width: 769px) { .mobile-only { display: none !important; } }
-        .nav-link:hover { color: #e2e8f0 !important; }
+        .nav-btn-chip:hover {
+          color: #ffffff !important;
+          background: rgba(255, 255, 255, 0.08) !important;
+          border-color: rgba(6, 182, 212, 0.4) !important;
+          box-shadow: 0 0 12px rgba(6, 182, 212, 0.15);
+          transform: translateY(-1px);
+        }
+        #nav-whatsapp-cta:hover {
+          background: rgba(37, 211, 102, 0.16) !important;
+          border-color: rgba(37, 211, 102, 0.5) !important;
+          box-shadow: 0 0 14px rgba(37, 211, 102, 0.2);
+          transform: translateY(-1px);
+        }
+        #nav-demo-cta:hover {
+          opacity: 0.95;
+          box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+          transform: translateY(-1px);
+        }
       `}</style>
     </header>
   );

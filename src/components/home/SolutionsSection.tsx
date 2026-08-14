@@ -98,13 +98,38 @@ export default function SolutionsSection() {
               </div>
               <h3 style={{ fontSize: '1.08rem', fontWeight: 800, color: '#f8fafc', margin: '0 0 10px' }}>{title}</h3>
               <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.65, margin: '0 0 20px', flex: 1 }}>{desc}</p>
-              <a
-                href={href}
-                style={{ fontSize: '0.82rem', fontWeight: 700, color, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}
-                aria-label={`${action} for ${title}`}
-              >
-                {action} →
-              </a>
+              <div>
+                <a
+                  href={href}
+                  style={{
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    background: `${color}18`,
+                    border: `1px solid ${color}40`,
+                    padding: '8px 16px',
+                    borderRadius: 10,
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.background = `${color}30`;
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor = `${color}80`;
+                    (e.currentTarget as HTMLAnchorElement).style.transform = 'translateX(2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.background = `${color}18`;
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor = `${color}40`;
+                    (e.currentTarget as HTMLAnchorElement).style.transform = 'translateX(0)';
+                  }}
+                  aria-label={`${action} for ${title}`}
+                >
+                  {action} →
+                </a>
+              </div>
             </div>
           ))}
         </div>
