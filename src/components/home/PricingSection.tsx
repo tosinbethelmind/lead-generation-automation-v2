@@ -94,7 +94,7 @@ export default function PricingSection({
         />
       )}
 
-      <div style={{ textAlign: 'center', marginBottom: 44 }}>
+      <div style={{ textAlign: 'center', marginBottom: 36 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.25)', borderRadius: 100, padding: '5px 16px', marginBottom: 14 }}>
           <span style={{ fontSize: '0.78rem', color: '#22d3ee', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Transparent Pricing Plans</span>
         </div>
@@ -104,11 +104,30 @@ export default function PricingSection({
         >
           Simple, Transparent NGN Investment Packages
         </h2>
-        <p style={{ color: '#94a3b8', fontSize: '0.96rem', maxWidth: 720, margin: '0 auto 8px', lineHeight: 1.5 }}>
-          Select the right package for your business. Zero hidden fees, 50% deposit option available, and instant WhatsApp handover within 24 hours.
+        <p style={{ color: '#94a3b8', fontSize: '0.96rem', maxWidth: 720, margin: '0 auto 16px', lineHeight: 1.5 }}>
+          Whether you need a brand-new luxury website developed from scratch or want to embed our AI tools into your existing site, select the plan below.
         </p>
+
+        {/* Website Choice Comparison Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12, maxWidth: 840, margin: '0 auto 28px', textAlign: 'left' }}>
+          <div style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.25)', borderRadius: 14, padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: '1.4rem' }}>🔌</span>
+            <div>
+              <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#38bdf8' }}>Already Have a Website?</div>
+              <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>WordPress, Wix, Shopify — simply paste our 1-line script embed in 60 seconds (Starter Plan).</div>
+            </div>
+          </div>
+          <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.35)', borderRadius: 14, padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: '1.4rem' }}>🌐</span>
+            <div>
+              <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#c084fc' }}>Need Complete Website Built?</div>
+              <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>We build & host your complete luxury website on your custom .com / .ng domain in 24h (Business Pro).</div>
+            </div>
+          </div>
+        </div>
+
         <p style={{ color: '#10b981', fontSize: '0.84rem', fontWeight: 700, margin: 0 }}>
-          ⚡ All plans include 24/7 AI Chatbot, WhatsApp Voice Notes, Sector Calculators & Moniepoint/Paystack verification.
+          ⚡ 50% deposit option available on all setup packages • Instant WhatsApp handover within 24 hours.
         </p>
       </div>
 
