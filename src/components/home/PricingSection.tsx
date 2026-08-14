@@ -12,40 +12,32 @@
 
 import React, { useState } from 'react';
 import { CheckCircle, ArrowRight, FileText } from 'lucide-react';
-import { PLANS, ONBOARDING_STEPS, getPlanById, type Plan } from '@/config/plans';
-import { paymentConfig, buildWhatsAppLink, generatePaymentReference } from '@/config/payment';
-import RoiCalculator from '@/components/home/RoiCalculator';
-import InvoiceModal, { InvoiceItem } from '@/components/InvoiceModal';
+import { PLANS_NEED_WEBSITE, PLANS_HAVE_WEBSITE, getPlanById, ONBOARDING_STEPS, type Plan } from '@/config/plans';
+import { generatePaymentReference } from '@/config/payment';
+import RoiCalculator from './RoiCalculator';
+import AddonModulesSection from './AddonModulesSection';
+import InvoiceModal from '@/components/InvoiceModal';
 
-import AddonModulesSection from '@/components/home/AddonModulesSection';
+interface InvoiceItem {
+  name: string;
+  price: number;
+  qty: number;
+}
 
 interface PricingSectionProps {
   selectedPlanId: string;
-  setSelectedPlanId: (id: string) => void;
-  businessName: string;
+  setSelectedPlanId: (planId: string) => void;
+  businessName?: string;
   selectedIndustry: string;
   targetDistrict: string;
 }
 
-function buildPlanWhatsAppLink(
-  plan: Plan,
-  businessName: string,
-  industry: string,
-  district: string,
-): string {
-  const ref = generatePaymentReference(plan.id);
-  const msg =
-    `Hello Bethelmind Analytics,\n\n` +
-    `I have selected a subscription plan and would like to proceed.\n\n` +
-    `Business Name: ${businessName || 'My Business'}\n` +
-    `Industry: ${industry}\n` +
-    `Lagos District: ${district}\n` +
-    `Selected Plan: ${plan.name}\n` +
-    `Monthly Fee: ₦${plan.monthlyNGN.toLocaleString()}/month\n` +
-    `One-Time Setup Fee: ₦${plan.setupFeeNGN.toLocaleString()}\n` +
-    `Payment Reference: ${ref}\n\n` +
-    `Please confirm next steps for payment and onboarding.`;
-  return buildWhatsAppLink(paymentConfig.whatsappNumber, msg);
+function buildPlanWhatsAppLink(plan: Plan, businessName?: string, industry?: string, district?: string): string {
+  const biz = businessName ? ` for *${businessName}*` : '';
+  const ind = industry ? ` in *${industry}*` : '';
+  const dist = district ? ` (${district})` : '';
+  const msg = `Hello Bethelmind Team,\n\nI want to subscribe to the *${plan.name}* (₦${plan.monthlyNGN.toLocaleString()}/mo + ₦${plan.setupFeeNGN.toLocaleString()} setup)${biz}${ind}${dist}.\n\nPlease guide me through onboarding and payment!`;
+  return `https://wa.me/2347034297995?text=${encodeURIComponent(msg)}`;
 }
 
 function scrollToPayment() {
@@ -60,14 +52,17 @@ export default function PricingSection({
   selectedIndustry,
   targetDistrict,
 }: PricingSectionProps) {
+  const [websiteMode, setWebsiteMode] = useState<'need_website' | 'have_website'>('need_website');
   const [invoicePlanId, setInvoicePlanId] = useState<string | null>(null);
+
+  const activePlans = websiteMode === 'need_website' ? PLANS_NEED_WEBSITE : PLANS_HAVE_WEBSITE;
 
   const handleSelectPlan = (planId: string) => {
     setSelectedPlanId(planId);
     setTimeout(scrollToPayment, 80);
   };
 
-  const currentInvoicePlan = invoicePlanId ? getPlanById(invoicePlanId) : null;
+  const currentInvoicePlan = invoicePlanId ? getPlanById(invoicePlanId, websiteMode) : null;
   const invoiceItems: InvoiceItem[] = currentInvoicePlan
     ? [
         { name: `${currentInvoicePlan.name} Subscription (1st Month)`, price: currentInvoicePlan.monthlyNGN, qty: 1 },
@@ -102,28 +97,104 @@ export default function PricingSection({
           id="pricing-heading"
           style={{ fontSize: 'clamp(1.8rem, 4.2vw, 2.6rem)', fontWeight: 900, margin: '0 0 12px', fontFamily: "'Outfit', sans-serif", color: '#f8fafc', letterSpacing: '-0.02em' }}
         >
-          Simple, Transparent NGN Investment Packages
+          Choose Your Website & AI Setup
         </h2>
-        <p style={{ color: '#94a3b8', fontSize: '0.96rem', maxWidth: 720, margin: '0 auto 16px', lineHeight: 1.5 }}>
-          Whether you need a brand-new luxury website developed from scratch or want to embed our AI tools into your existing site, select the plan below.
+        <p style={{ color: '#94a3b8', fontSize: '0.96rem', maxWidth: 720, margin: '0 auto 20px', lineHeight: 1.5 }}>
+          Select whether you need a complete website developed from scratch or want to embed our AI tools into your existing website.
         </p>
 
-        {/* Website Choice Comparison Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12, maxWidth: 840, margin: '0 auto 28px', textAlign: 'left' }}>
-          <div style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.25)', borderRadius: 14, padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: '1.4rem' }}>🔌</span>
-            <div>
-              <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#38bdf8' }}>Already Have a Website?</div>
-              <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>WordPress, Wix, Shopify — simply paste our 1-line script embed in 60 seconds (Starter Plan).</div>
+        {/* Interactive Website Choice Switcher Tabs */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: 14, maxWidth: 860, margin: '0 auto 28px', textAlign: 'left' }}>
+          
+          {/* Option 1: Need Complete Website */}
+          <button
+            type="button"
+            onClick={() => {
+              setWebsiteMode('need_website');
+              setSelectedPlanId('pro');
+            }}
+            style={{
+              background: websiteMode === 'need_website'
+                ? 'linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(124,58,237,0.1) 100%)'
+                : 'rgba(255,255,255,0.02)',
+              border: `2px solid ${websiteMode === 'need_website' ? '#8b5cf6' : 'rgba(255,255,255,0.08)'}`,
+              borderRadius: 18,
+              padding: '16px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 14,
+              cursor: 'pointer',
+              boxShadow: websiteMode === 'need_website' ? '0 8px 30px rgba(139,92,246,0.25)' : 'none',
+              transition: 'all 0.25s ease',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', flexShrink: 0 }}>
+                🌐
+              </div>
+              <div>
+                <div style={{ fontSize: '0.92rem', fontWeight: 800, color: websiteMode === 'need_website' ? '#f8fafc' : '#cbd5e1' }}>
+                  I Need a Complete Website
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: 2 }}>
+                  Full luxury website build + free .com/.ng domain + 24/7 AI Sales Closer.
+                </div>
+              </div>
             </div>
-          </div>
-          <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.35)', borderRadius: 14, padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: '1.4rem' }}>🌐</span>
-            <div>
-              <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#c084fc' }}>Need Complete Website Built?</div>
-              <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>We build & host your complete luxury website on your custom .com / .ng domain in 24h (Business Pro).</div>
+            {websiteMode === 'need_website' && (
+              <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <CheckCircle style={{ width: 14, height: 14, color: '#fff' }} />
+              </div>
+            )}
+          </button>
+
+          {/* Option 2: Already Have Website */}
+          <button
+            type="button"
+            onClick={() => {
+              setWebsiteMode('have_website');
+              setSelectedPlanId('starter');
+            }}
+            style={{
+              background: websiteMode === 'have_website'
+                ? 'linear-gradient(135deg, rgba(6,182,212,0.18) 0%, rgba(14,165,233,0.1) 100%)'
+                : 'rgba(255,255,255,0.02)',
+              border: `2px solid ${websiteMode === 'have_website' ? '#06b6d4' : 'rgba(255,255,255,0.08)'}`,
+              borderRadius: 18,
+              padding: '16px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 14,
+              cursor: 'pointer',
+              boxShadow: websiteMode === 'have_website' ? '0 8px 30px rgba(6,182,212,0.25)' : 'none',
+              transition: 'all 0.25s ease',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(6,182,212,0.2)', border: '1px solid rgba(6,182,212,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', flexShrink: 0 }}>
+                🔌
+              </div>
+              <div>
+                <div style={{ fontSize: '0.92rem', fontWeight: 800, color: websiteMode === 'have_website' ? '#f8fafc' : '#cbd5e1' }}>
+                  I Already Have a Website
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: 2 }}>
+                  WordPress, Shopify, Wix — embed our AI closer in 60 seconds (1-line script).
+                </div>
+              </div>
             </div>
-          </div>
+            {websiteMode === 'have_website' && (
+              <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#06b6d4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <CheckCircle style={{ width: 14, height: 14, color: '#fff' }} />
+              </div>
+            )}
+          </button>
         </div>
 
         <p style={{ color: '#10b981', fontSize: '0.84rem', fontWeight: 700, margin: 0 }}>
@@ -132,8 +203,8 @@ export default function PricingSection({
       </div>
 
       {/* Plan grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 56 }}>
-        {PLANS.map((plan) => {
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: 20, marginBottom: 56 }}>
+        {activePlans.map((plan) => {
           const isSelected = selectedPlanId === plan.id;
           const planWaLink = buildPlanWhatsAppLink(plan, businessName, selectedIndustry, targetDistrict);
 
