@@ -356,10 +356,40 @@ export async function processCustomerMessage(
     timestamp: now,
   });
 
-  // 2. Parse Contact Info
+  // 2. Parse Contact Info from message or leadData
+  if (leadData?.phone && !session.customer_phone) {
+    session.customer_phone = leadData.phone;
+  }
+  if (leadData?.email && !session.customer_email) {
+    session.customer_email = leadData.email;
+  }
+  if (leadData?.name && !session.customer_name) {
+    session.customer_name = leadData.name;
+  }
   extractCustomerInfo(userMessage, session);
 
-  // 3. Check Critical Stage Detection (Dispatched to Admin in Background without blocking the customer)
+  const hasContact = !!(session.customer_phone || session.customer_email);
+
+  // 3. If contact is NOT yet provided, prompt for WhatsApp number or email for retargeting/followup
+  if (!hasContact) {
+    const contactPrompt = `👋 I would love to give you the exact details and customized breakdown for your business!\n\nPlease share your **WhatsApp phone number** or **email address** below so our team can send you the official proposal & offer, and I will immediately answer your question right here! 🚀`;
+
+    session.messages.push({
+      id: `msg_${randomUUID().substring(0, 8)}`,
+      sender: 'agent',
+      text: contactPrompt,
+      timestamp: new Date().toISOString(),
+    });
+
+    session.updated_at = new Date().toISOString();
+    const sessions = readSessions();
+    sessions[sessionId] = session;
+    writeSessions(sessions);
+
+    return { reply: contactPrompt, session, pendingApproval: false };
+  }
+
+  // 4. Check Critical Stage Detection (Dispatched to Admin in Background without blocking the customer)
   const criticalCheck = detectCriticalStage(userMessage);
   let pendingApproval = false;
 
@@ -386,7 +416,7 @@ export async function processCustomerMessage(
     });
   }
 
-  // 4. Check Multi-Channel Autoresponder Triggers
+  // 5. Check Multi-Channel Autoresponder Triggers
   const autoresResult = await processAutoresponderMessage({
     message: userMessage,
     channel: 'webchat',
@@ -399,11 +429,11 @@ export async function processCustomerMessage(
   if (autoresResult.matched && autoresResult.responseType === 'template') {
     replyText = autoresResult.replyText;
   } else {
-    // 5. Query Intelligent Gemini AI — freely answering the question asked
+    // 6. Query Intelligent Gemini AI — freely answering the question asked now that contact is secured
     replyText = await generateIntelligentAiResponse(userMessage, session, agentConfig, leadData);
   }
 
-  // 6. Push Response to Session History
+  // 7. Push Response to Session History
   session.messages.push({
     id: `msg_${randomUUID().substring(0, 8)}`,
     sender: 'agent',
@@ -411,7 +441,7 @@ export async function processCustomerMessage(
     timestamp: new Date().toISOString(),
   });
 
-  // 7. Auto-convert lead to deal pipeline if phone/email captured for the first time
+  // 8. Auto-convert lead to deal pipeline if phone/email captured for the first time
   if (!session.lead_captured && (session.customer_phone || session.customer_email) && agentConfig.auto_lead_conversion) {
     session.lead_captured = true;
     try {
