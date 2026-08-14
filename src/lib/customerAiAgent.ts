@@ -359,7 +359,7 @@ export async function processCustomerMessage(
   // 2. Parse Contact Info
   extractCustomerInfo(userMessage, session);
 
-  // 3. Check Critical Stage Detection
+  // 3. Check Critical Stage Detection (Dispatched to Admin in Background without blocking the customer)
   const criticalCheck = detectCriticalStage(userMessage);
   let pendingApproval = false;
 
@@ -378,28 +378,12 @@ export async function processCustomerMessage(
     };
 
     session.pending_approval = approvalReq;
-    session.status = 'pending_approval';
     pendingApproval = true;
 
-    // Trigger WhatsApp Alert to Admin Phone
-    await triggerWhatsAppApprovalAlert(approvalReq, agentConfig);
-
-    const replyText = `📋 I have calculated your custom requirements for "${criticalCheck.title}". Because this is a critical deal stage, I have dispatched a real-time sign-off request to our Senior Engineer's WhatsApp (${agentConfig.admin_whatsapp_phone}). You will receive immediate notification here as soon as approved!`;
-
-    session.messages.push({
-      id: `msg_${randomUUID().substring(0, 8)}`,
-      sender: 'agent',
-      text: replyText,
-      timestamp: new Date().toISOString(),
-      requires_approval: true,
+    // Trigger WhatsApp Alert to Admin Phone asynchronously in background
+    triggerWhatsAppApprovalAlert(approvalReq, agentConfig).catch((err) => {
+      console.warn('[CustomerAiAgent] Background WhatsApp alert failed:', err);
     });
-
-    session.updated_at = new Date().toISOString();
-    const sessions = readSessions();
-    sessions[sessionId] = session;
-    writeSessions(sessions);
-
-    return { reply: replyText, session, pendingApproval: true };
   }
 
   // 4. Check Multi-Channel Autoresponder Triggers
@@ -415,11 +399,11 @@ export async function processCustomerMessage(
   if (autoresResult.matched && autoresResult.responseType === 'template') {
     replyText = autoresResult.replyText;
   } else {
-    // 5. Query Intelligent Gemini AI
+    // 5. Query Intelligent Gemini AI — freely answering the question asked
     replyText = await generateIntelligentAiResponse(userMessage, session, agentConfig, leadData);
   }
 
-  // 6. Push Response
+  // 6. Push Response to Session History
   session.messages.push({
     id: `msg_${randomUUID().substring(0, 8)}`,
     sender: 'agent',
@@ -457,7 +441,7 @@ export async function processCustomerMessage(
   sessions[sessionId] = session;
   writeSessions(sessions);
 
-  return { reply: replyText, session, pendingApproval: false };
+  return { reply: replyText, session, pendingApproval };
 }
 
 /** Trigger WhatsApp Approval Alert to Admin Phone */
@@ -650,16 +634,43 @@ Latest Customer Query: "${userMsg}"`,
     }
   }
 
-  // Intelligent Fallback
+  // Comprehensive Intelligent Fallback System
   const lower = userMsg.toLowerCase();
-  if (lower.includes('solar') || lower.includes('inverter') || lower.includes('battery')) {
-    return `We offer 3.5kVA, 5kVA, and 10kVA-20kVA commercial solar systems with lithium storage & 5-year warranty! Would you like a free site survey in your location?`;
-  }
-  if (lower.includes('scraper') || lower.includes('lead') || lower.includes('harvest')) {
-    return `Our B2B Lead Harvester extracts verified WhatsApp contacts from Jiji, Google Places, Instagram, and LinkedIn with real-time verification!`;
+  const payment = paymentConfig;
+
+  if (lower.includes('bank') || lower.includes('account') || lower.includes('transfer') || lower.includes('pay') || lower.includes('payment')) {
+    return `💳 Here are the official payment details to activate your system today:\n\n• Bank: ${payment.bankName}\n• Account Number: ${payment.accountNumber}\n• Account Name: ${payment.accountName}\n• Setup Fee: ₦185,000 (or ₦92,500 50% deposit to begin immediately)\n\nOnce transferred, send your receipt screenshot to our WhatsApp (+${payment.whatsappNumber}) for instant activation!`;
   }
 
-  return `Thank you for your message! Share your WhatsApp phone number or email address and our team will send a full breakdown directly.`;
+  if (lower.includes('price') || lower.includes('cost') || lower.includes('how much') || lower.includes('plan') || lower.includes('package')) {
+    return `💰 Here are our transparent setup & subscription packages:\n\n1. Express Starter (₦75k setup + ₦15k/mo): 24/7 AI Chatbot, WhatsApp Catalog, 500 Lagos B2B Contacts.\n2. Business Growth Pro (₦185k setup + ₦35k/mo): 10k Verified B2B Leads/mo + AI WhatsApp Voice Notes + Sector Calculators + Custom Domain. [Most Popular]\n3. VIP Enterprise (₦350k+ setup): Custom CRM Sync + Outbound AI Voice Phone Calls + Dedicated Account Manager.\n\nYou can also start with a 50% deposit (₦92,500). What package fits your goals best?`;
+  }
+
+  if (lower.includes('website') || lower.includes('domain') || lower.includes('wordpress') || lower.includes('wix') || lower.includes('shopify')) {
+    return `🌐 You have two flexible options:\n\n1. If you already have a website (WordPress, Shopify, Wix, custom): You DO NOT need to rebuild. Simply paste our 1-line script to embed the AI agent & calculators in 60 seconds.\n2. If you need a website: We host and deliver your complete luxury website on your custom .com / .ng domain with SSL within 24 hours!\n\nWhich option matches your business?`;
+  }
+
+  if (lower.includes('solar') || lower.includes('inverter') || lower.includes('battery') || lower.includes('kva')) {
+    return `☀️ Our Solar Quote Pro engine allows your customers to calculate exact appliance loads (3.5kVA, 5kVA, 10kVA+), battery banks, and solar panel requirements in 2 minutes, generating branded PDF technical quotes and Paystack commitment deposits automatically!`;
+  }
+
+  if (lower.includes('real estate') || lower.includes('property') || lower.includes('estate') || lower.includes('duplex') || lower.includes('land')) {
+    return `🏡 Our Real Estate Lead Engine allows diaspora and local buyers to calculate off-plan installment payment plans (10%, 20%, 30% deposits), schedule private property inspections in Lekki/Ikoyi/Abuja, and download PDF brochures directly on WhatsApp!`;
+  }
+
+  if (lower.includes('auto') || lower.includes('car') || lower.includes('tokunbo') || lower.includes('duty') || lower.includes('customs')) {
+    return `🚗 Our Tokunbo Auto & Vehicle Valuation Engine lets buyers calculate Nigeria Customs clearing duties, schedule physical inspection slots, and pay commitment reservation deposits directly online!`;
+  }
+
+  if (lower.includes('time') || lower.includes('how long') || lower.includes('timeline') || lower.includes('when')) {
+    return `⚡ Your complete 24/7 AI Lead Generation system and custom portal are fully deployed and delivered within 24 hours of confirmation!`;
+  }
+
+  if (lower.includes('lead') || lower.includes('scraper') || lower.includes('harvest') || lower.includes('contact')) {
+    return `🎯 Our Lagos & Nationwide B2B Lead Harvester extracts verified business names, WhatsApp phone numbers, emails, and decision-maker contact details across 27+ Lagos districts, Abuja, and Port Harcourt with real-time verification!`;
+  }
+
+  return `Thank you for reaching out! I've recorded your inquiry. I can help you with pricing packages, custom domain setup, our 24/7 WhatsApp AI Agent, or sector calculators (Solar, Real Estate, Auto, Legal). What would you like to explore next?`;
 }
 
 /** Get All Sessions */
