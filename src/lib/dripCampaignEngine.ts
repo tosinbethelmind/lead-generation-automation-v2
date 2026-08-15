@@ -1,13 +1,11 @@
 /**
  * @file dripCampaignEngine.ts
- * Drip Campaign & Nurture Sequence Engine
+ * Drip Campaign & Nurture Sequence Engine with Adaptive Multi-Channel Routing
  * 
  * Automated multi-touch follow-up sequences:
- * - Day 0: WhatsApp → Day 3: Email → Day 7: SMS → Day 14: Follow-up
- * - Sector-specific campaign templates
- * - Step execution with delay scheduling
- * - Campaign analytics (open rates, reply rates)
- * - Pause/resume/cancel controls
+ * - Dynamic Channel Waterfall: adapts automatically if lead is Phone-Only, Email-Only, or Phone+Email.
+ * - Dynamic Cross-Referencing: injects email/WhatsApp cross-notices only when relevant contact info exists.
+ * - Automated Opt-Out Suppression across all channels.
  */
 
 import { randomUUID } from 'crypto';
@@ -23,7 +21,7 @@ import { logActivity } from './activityLogger';
 // ============================================================================
 
 export type CampaignStatus = 'draft' | 'active' | 'paused' | 'completed' | 'cancelled';
-export type StepChannel = 'email' | 'whatsapp' | 'sms' | 'social_dm' | 'contact_form' | 'wait';
+export type StepChannel = 'email' | 'whatsapp' | 'sms' | 'social_dm' | 'contact_form' | 'wait' | 'skip';
 export type StepStatus = 'pending' | 'scheduled' | 'sent' | 'delivered' | 'opened' | 'clicked' | 'replied' | 'failed' | 'skipped';
 
 export interface CampaignStep {
@@ -58,7 +56,7 @@ export interface LeadEnrollment {
   lead_id: string;
   deal_id: string;
   lead_name: string;
-  current_step: number; // index into steps array
+  current_step: number;
   status: 'active' | 'completed' | 'paused' | 'unsubscribed' | 'replied';
   enrolled_at: string;
   last_step_at: string;
@@ -90,14 +88,13 @@ export interface CampaignCreateInput {
 export const CAMPAIGN_TEMPLATES: Record<string, { name: string; description: string; sector: string; steps: Omit<CampaignStep, 'id'>[] }> = {
   solar_nurture: {
     name: 'Solar Installation Nurture',
-    description: 'Multi-touch sequence for solar energy prospects — from initial contact to site survey booking.',
+    description: 'Multi-touch sequence for solar energy prospects — adapts to phone-only or email leads.',
     sector: 'solar',
     steps: [
-      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Initial Contact', message: 'Hi {{name}} 👋, I noticed {{business}} in {{area}}. We help businesses like yours cut electricity costs by 60-80% with solar. Would you like a free energy audit? Check this out: {{preview_url}}', conditions: '{}' },
-      { order: 1, channel: 'email', delay_hours: 24, subject: '{{name}}, Your Free Solar Savings Report', message: 'Hi {{name}},\n\nI reached out via WhatsApp — just wanted to follow up with more details.\n\nBusinesses in {{area}} typically spend ₦150K-₦500K monthly on diesel. Our solar solutions cut that by 60-80%.\n\nSee your personalized calculator: {{preview_url}}\n\nBest,\n{{signature}}', conditions: '{"if_not_replied": true}' },
-      { order: 2, channel: 'sms', delay_hours: 72, subject: 'SMS Follow-up', message: '{{name}}, quick reminder — your FREE solar savings analysis is ready at {{preview_url}}. Most businesses save ₦3M+ yearly. Reply YES for a callback.', conditions: '{"if_not_replied": true}' },
-      { order: 3, channel: 'whatsapp', delay_hours: 168, subject: 'Case Study Share', message: 'Hi {{name}}, wanted to share a quick success story 📊 — we installed a 10KVA system for a business similar to {{business}} in {{area}} and they now save ₦250K/month on diesel. Would a free site survey work for you this week?', conditions: '{"if_not_replied": true}' },
-      { order: 4, channel: 'email', delay_hours: 336, subject: 'Last Chance: Free Site Survey This Month', message: 'Hi {{name}},\n\nThis is my final follow-up. We have limited site survey slots this month.\n\nIf you\'re still interested in cutting your electricity costs, reply to this email or call us.\n\nBest regards,\n{{signature}}', conditions: '{"if_not_replied": true}' },
+      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Initial Contact', message: 'Good day {{name}} 👋, I noticed {{business}} in {{area}}. We help businesses cut diesel costs by 60-80% with solar. Check out your custom quote portal: {{preview_url}}{{cross_channel_note}} (Reply STOP to opt out)', conditions: '{}' },
+      { order: 1, channel: 'email', delay_hours: 24, subject: '{{name}}, Your Free Solar Savings Report', message: 'Dear {{name}},\n\nFollowing up on our review of {{business}} in {{area}}.\n\nBusinesses in your sector spend ₦200K-₦800K monthly on diesel. Our solar setups cut that significantly.\n\nSee your personalized calculator: {{preview_url}}\n\nBest regards,\n{{signature}}\n\n(Reply STOP to unsubscribe)', conditions: '{"if_not_replied": true}' },
+      { order: 2, channel: 'sms', delay_hours: 72, subject: 'SMS Follow-up', message: '{{name}}, your solar savings analysis for {{business}} is ready at {{preview_url}}. Most save ₦3M+ yearly. Reply YES for a callback. {{signature}} (STOP to end)', conditions: '{"if_not_replied": true}' },
+      { order: 3, channel: 'whatsapp', delay_hours: 168, subject: 'Case Study Share', message: 'Good day {{name}}, wanted to share a quick update 📊 — we deployed a 10KVA solar system for a business in {{area}} that now saves ₦250K/month on diesel. Would a free site survey work for you this week? View demo: {{preview_url}} (STOP to end)', conditions: '{"if_not_replied": true}' },
     ],
   },
   real_estate_nurture: {
@@ -105,10 +102,9 @@ export const CAMPAIGN_TEMPLATES: Record<string, { name: string; description: str
     description: 'Nurture real estate prospects from inquiry to inspection booking.',
     sector: 'real_estate',
     steps: [
-      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Initial Response', message: 'Hi {{name}} 👋, thank you for your interest in our properties! I\'m your dedicated agent. What type of property are you looking for? 🏠', conditions: '{}' },
-      { order: 1, channel: 'email', delay_hours: 24, subject: 'Properties Matching Your Interest in {{area}}', message: 'Hi {{name}},\n\nThank you for your inquiry. I\'ve curated some properties that might interest you in {{area}}.\n\nView our listings: {{preview_url}}\n\nWould you like to schedule a viewing?\n\nBest,\n{{signature}}', conditions: '{"if_not_replied": true}' },
-      { order: 2, channel: 'whatsapp', delay_hours: 72, subject: 'Price Drop Alert', message: '{{name}}, prices on some units in {{area}} just dropped 📉. Limited availability. Shall I book a viewing for you this weekend?', conditions: '{"if_not_replied": true}' },
-      { order: 3, channel: 'sms', delay_hours: 168, subject: 'Inspection Reminder', message: 'Hi {{name}}, free inspection tours happening this Saturday in {{area}}. Limited slots — reply YES to reserve yours. {{signature}}', conditions: '{"if_not_replied": true}' },
+      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Initial Response', message: 'Good day {{name}} 👋, we designed an Off-Plan Payment & Tour Booking preview for {{business}} in {{area}}: {{preview_url}}{{cross_channel_note}} (Reply STOP to opt out)', conditions: '{}' },
+      { order: 1, channel: 'email', delay_hours: 24, subject: 'Property Showcase & Tour Scheduler for {{business}}', message: 'Dear {{name}},\n\nWe designed an interactive property showcase & installment calculator for {{business}} in {{area}}.\n\nView the live preview: {{preview_url}}\n\nBest regards,\n{{signature}}\n\n(Reply STOP to unsubscribe)', conditions: '{"if_not_replied": true}' },
+      { order: 2, channel: 'sms', delay_hours: 72, subject: 'Inspection Reminder', message: 'Good day {{name}}, property tour booking demo for {{business}} is live: {{preview_url}} - {{signature}} (STOP to end)', conditions: '{"if_not_replied": true}' },
     ],
   },
   school_enrollment: {
@@ -116,71 +112,31 @@ export const CAMPAIGN_TEMPLATES: Record<string, { name: string; description: str
     description: 'Guide parents from inquiry to admission application.',
     sector: 'school',
     steps: [
-      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Welcome', message: 'Hello {{name}} 🎓! Thank you for your interest in {{business}}. What class/level are you looking to enroll your child in?', conditions: '{}' },
-      { order: 1, channel: 'email', delay_hours: 24, subject: 'Admission Guide for {{business}}', message: 'Dear {{name}},\n\nThank you for considering {{business}} for your child\'s education.\n\nPlease find our admission requirements and fee structure: {{preview_url}}\n\nApplications are now open for next term.\n\nWarm regards,\n{{signature}}', conditions: '{}' },
-      { order: 2, channel: 'whatsapp', delay_hours: 72, subject: 'Tour Invitation', message: '{{name}}, we\'d love to show you our facilities! Can we schedule a campus tour this week? 🏫 Our students achieve 95%+ in WAEC/JAMB.', conditions: '{"if_not_replied": true}' },
-      { order: 3, channel: 'sms', delay_hours: 168, subject: 'Deadline Reminder', message: 'Reminder: {{business}} admission closes soon. Apply online at {{preview_url}} or call us. Early bird discount available! {{signature}}', conditions: '{"if_not_replied": true}' },
+      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Welcome', message: 'Good day {{name}} 🎓! We built a digital admissions portal & termly tuition fee calculator for {{business}} in {{area}}: {{preview_url}}{{cross_channel_note}} (Reply STOP to opt out)', conditions: '{}' },
+      { order: 1, channel: 'email', delay_hours: 24, subject: 'Admission Guide & Fee Portal for {{business}}', message: 'Dear {{name}},\n\nWe built an online admission portal preview for {{business}} in {{area}}.\n\nTest the fee breakdown calculator here: {{preview_url}}\n\nWarm regards,\n{{signature}}\n\n(Reply STOP to unsubscribe)', conditions: '{}' },
+      { order: 2, channel: 'sms', delay_hours: 72, subject: 'Deadline Reminder', message: 'Reminder: Digital admission portal demo for {{business}} ready at {{preview_url}} - {{signature}} (STOP to end)', conditions: '{"if_not_replied": true}' },
     ],
   },
-  medical_patient: {
-    name: 'Patient Engagement Sequence',
-    description: 'Follow up with potential patients to book appointments.',
-    sector: 'medical',
+  lagos_10k_multichannel: {
+    name: 'Lagos 10K Multi-Sector 5-Touch Blitz',
+    description: 'High-conversion multi-touch sequence for Lagos B2B businesses — 2-step WhatsApp handshake, web form, email, social DMs, and FOMO follow-ups.',
+    sector: 'general',
     steps: [
-      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Initial Contact', message: 'Hello {{name}} 🏥, thank you for reaching out to {{business}}. How can we help? You can book a consultation directly: {{preview_url}}', conditions: '{}' },
-      { order: 1, channel: 'email', delay_hours: 48, subject: 'Your Health Matters — Book a Consultation', message: 'Dear {{name}},\n\nWe received your inquiry. Our specialist team is ready to help.\n\nBook your consultation: {{preview_url}}\n\nNew patients enjoy 20% off their first visit.\n\n{{signature}}', conditions: '{"if_not_replied": true}' },
-      { order: 2, channel: 'sms', delay_hours: 120, subject: 'Appointment Reminder', message: '{{name}}, don\'t forget your health! Book a consultation at {{business}} today. Call us or visit {{preview_url}}. {{signature}}', conditions: '{"if_not_replied": true}' },
+      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Step 1A: Conversational Warm Hook', message: '{Good morning|Hello|Good afternoon} {{name}} 👋, please is this the management desk for {{business}} in {{area}}?', conditions: '{}' },
+      { order: 1, channel: 'email', delay_hours: 4, subject: 'Follow-up to WhatsApp note regarding {{business}} growth portal', message: 'Dear {{name}},\n\nI sent a brief message to your WhatsApp line earlier regarding {{business}} in {{area}}.\n\nWe designed an interactive 24/7 AI Customer Booking & Quoting portal preview specifically for your brand:\n{{preview_url}}\n\nTest the live interactive preview to see how it automatically quotes customers and collects verified bank transfers.\n\nBest regards,\n{{signature}}\n\n(Reply STOP to unsubscribe)', conditions: '{"if_not_replied": true}' },
+      { order: 2, channel: 'social_dm', delay_hours: 24, subject: 'Social DM Follow-up', message: 'Hello {{business}} team! We sent a WhatsApp note and email to management regarding your live 24/7 AI portal demo. Here is your private preview link: {{preview_url}}', conditions: '{"if_not_replied": true}' },
+      { order: 3, channel: 'whatsapp', delay_hours: 72, subject: 'Step 3: Competitor Reallocation Notice (FOMO)', message: 'Good day {{name}}, since we have not received your feedback on the custom portal build for {{business}}, we will reallocate the verified {{area}} district spot by tomorrow 5:00 PM unless your team claims it today: {{preview_url}} (Reply STOP to opt out)', conditions: '{"if_not_replied": true}' },
+      { order: 4, channel: 'sms', delay_hours: 120, subject: 'Step 4: Flash SMS Expiry Notice', message: '{{name}}, final notice: your reserved domain & business portal preview for {{business}} expires in 24h. Claim here: {{preview_url}} - {{signature}} (STOP to end)', conditions: '{"if_not_replied": true}' },
     ],
   },
   general_b2b: {
     name: 'General B2B Follow-Up',
-    description: 'Universal multi-channel nurture for any business type.',
+    description: 'Universal multi-channel nurture for any Nigerian business.',
     sector: 'general',
     steps: [
-      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Initial Contact', message: 'Hi {{name}} 👋, I came across {{business}} and I think we can help you grow. Check out what we prepared for you: {{preview_url}}', conditions: '{}' },
-      { order: 1, channel: 'email', delay_hours: 48, subject: 'A Special Offer for {{business}}', message: 'Hi {{name}},\n\nI reached out earlier about an opportunity for {{business}}.\n\nHere\'s what we can do for you: {{preview_url}}\n\nLet me know if you\'d like to discuss.\n\nBest,\n{{signature}}', conditions: '{"if_not_replied": true}' },
-      { order: 2, channel: 'sms', delay_hours: 120, subject: 'Quick Follow-up', message: '{{name}}, just checking in about {{business}}. Reply YES if you\'d like more info, or NO to opt out. {{signature}}', conditions: '{"if_not_replied": true}' },
-      { order: 3, channel: 'whatsapp', delay_hours: 240, subject: 'Final Check-in', message: 'Hi {{name}}, this is my last follow-up. If you\'re ever interested in growing {{business}} online, the offer at {{preview_url}} will be available. Wishing you success! 🙏', conditions: '{"if_not_replied": true}' },
-    ],
-  },
-  auto_dealer: {
-    name: 'Auto Dealer Lead Nurture',
-    description: 'Follow up with potential car buyers from inquiry to test drive.',
-    sector: 'auto',
-    steps: [
-      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Vehicle Inquiry', message: 'Hi {{name}} 🚗, thank you for your interest! What type of vehicle are you looking for? We have fresh arrivals this week. Check our inventory: {{preview_url}}', conditions: '{}' },
-      { order: 1, channel: 'email', delay_hours: 24, subject: 'New Arrivals at {{business}}', message: 'Hi {{name}},\n\nWe have exciting new vehicles that match your interest.\n\nBrowse our inventory: {{preview_url}}\n\nWe also offer competitive financing options.\n\n{{signature}}', conditions: '{"if_not_replied": true}' },
-      { order: 2, channel: 'whatsapp', delay_hours: 72, subject: 'Test Drive', message: '{{name}}, would you like to schedule a test drive? We can arrange a time that works for you. Just say the word 🚙', conditions: '{"if_not_replied": true}' },
-    ],
-  },
-  restaurant_event: {
-    name: 'Restaurant/Event Booking',
-    description: 'Convert inquiries into reservations and catering bookings.',
-    sector: 'restaurant',
-    steps: [
-      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Reservation Inquiry', message: 'Hello {{name}} 🍽️! Thank you for your interest in {{business}}. When would you like to visit? Check our menu: {{preview_url}}', conditions: '{}' },
-      { order: 1, channel: 'email', delay_hours: 24, subject: 'Special Menu & Reservation at {{business}}', message: 'Hi {{name}},\n\nThank you for considering {{business}}.\n\nSee our menu and make a reservation: {{preview_url}}\n\nWe also handle private events and catering!\n\n{{signature}}', conditions: '{"if_not_replied": true}' },
-      { order: 2, channel: 'sms', delay_hours: 72, subject: 'Special Offer', message: '{{name}}, enjoy 15% off your first visit to {{business}}! Reserve now at {{preview_url}} or reply YES. {{signature}}', conditions: '{"if_not_replied": true}' },
-    ],
-  },
-  legal_intake: {
-    name: 'Legal Client Intake',
-    description: 'Follow up with legal service inquiries.',
-    sector: 'legal',
-    steps: [
-      { order: 0, channel: 'email', delay_hours: 0, subject: 'Thank You for Contacting {{business}}', message: 'Dear {{name}},\n\nThank you for reaching out to {{business}}.\n\nWe understand that legal matters require prompt attention. Please book a confidential consultation: {{preview_url}}\n\nAll communications are privileged and confidential.\n\n{{signature}}', conditions: '{}' },
-      { order: 1, channel: 'whatsapp', delay_hours: 24, subject: 'Consultation Follow-up', message: 'Hi {{name}}, I sent you an email about booking a consultation with {{business}}. Would you prefer to schedule a call? Our initial consultation helps us understand your needs.', conditions: '{"if_not_replied": true}' },
-      { order: 2, channel: 'sms', delay_hours: 120, subject: 'Consultation Reminder', message: '{{name}}, {{business}} is ready to assist with your legal needs. Book a confidential consultation at {{preview_url}}. {{signature}}', conditions: '{"if_not_replied": true}' },
-    ],
-  },
-  retail_cart_recovery: {
-    name: 'Retail Cart Recovery',
-    description: 'Re-engage customers who showed interest but didn\'t purchase.',
-    sector: 'retail',
-    steps: [
-      { order: 0, channel: 'whatsapp', delay_hours: 1, subject: 'Cart Reminder', message: 'Hi {{name}} 🛍️, we noticed you were browsing {{business}}! Need help deciding? We\'re here to assist. Shop now: {{preview_url}}', conditions: '{}' },
-      { order: 1, channel: 'email', delay_hours: 24, subject: 'Your Items Are Waiting at {{business}}', message: 'Hi {{name}},\n\nYou left some great items behind!\n\nComplete your purchase: {{preview_url}}\n\nUse code WELCOME10 for 10% off.\n\n{{signature}}', conditions: '{"if_not_replied": true}' },
-      { order: 2, channel: 'sms', delay_hours: 72, subject: 'Last Chance', message: '{{name}}, last chance! Your items at {{business}} are selling fast. Shop now: {{preview_url}} Code: WELCOME10', conditions: '{"if_not_replied": true}' },
+      { order: 0, channel: 'whatsapp', delay_hours: 0, subject: 'Initial Contact', message: 'Good day {{name}} 👋, we custom-built a 24/7 AI quote & customer portal preview for {{business}} in {{area}}: {{preview_url}}{{cross_channel_note}} (Reply STOP to opt out)', conditions: '{}' },
+      { order: 1, channel: 'email', delay_hours: 48, subject: 'Interactive Portal & Growth Proposal for {{business}}', message: 'Dear {{name}},\n\nFollowing up on our review of {{business}} in {{area}}.\n\nWe built a 24/7 automated quote & client intake portal for your brand:\n{{preview_url}}\n\nBest regards,\n{{signature}}\n\n(Reply STOP to unsubscribe)', conditions: '{"if_not_replied": true}' },
+      { order: 2, channel: 'sms', delay_hours: 120, subject: 'Quick Follow-up', message: 'Good day {{name}}, just checking in regarding {{business}}. View your custom portal preview: {{preview_url}} - {{signature}} (STOP to end)', conditions: '{"if_not_replied": true}' },
     ],
   },
 };
@@ -225,10 +181,68 @@ function isTableMissingError(error: any): boolean {
 }
 
 // ============================================================================
+// Adaptive Multi-Channel Waterfall Helpers
+// ============================================================================
+
+/**
+ * Determines the best delivery channel for a lead based on available contact fields.
+ * Gracefully falls back (e.g. Email -> SMS if email missing; WA -> Email if phone missing).
+ */
+export function getAdaptiveChannelForLead(
+  desiredChannel: StepChannel,
+  lead: { phone?: string; email?: string }
+): { channel: StepChannel; skipped: boolean; reason?: string } {
+  const hasPhone = !!(lead.phone && lead.phone.trim().length > 6);
+  const hasEmail = !!(lead.email && lead.email.trim().includes('@'));
+
+  if (desiredChannel === 'email') {
+    if (hasEmail) return { channel: 'email', skipped: false };
+    if (hasPhone) return { channel: 'sms', skipped: false, reason: 'FALLBACK_SMS_NO_EMAIL' };
+    return { channel: 'skip', skipped: true, reason: 'NO_EMAIL_OR_PHONE' };
+  }
+
+  if (desiredChannel === 'whatsapp') {
+    if (hasPhone) return { channel: 'whatsapp', skipped: false };
+    if (hasEmail) return { channel: 'email', skipped: false, reason: 'FALLBACK_EMAIL_NO_PHONE' };
+    return { channel: 'skip', skipped: true, reason: 'NO_PHONE_OR_EMAIL' };
+  }
+
+  if (desiredChannel === 'sms') {
+    if (hasPhone) return { channel: 'sms', skipped: false };
+    if (hasEmail) return { channel: 'email', skipped: false, reason: 'FALLBACK_EMAIL_NO_PHONE' };
+    return { channel: 'skip', skipped: true, reason: 'NO_PHONE_OR_EMAIL' };
+  }
+
+  return { channel: desiredChannel, skipped: false };
+}
+
+/** Replace template variables with dynamic cross-referencing */
+export function resolveTemplateVariables(
+  template: string,
+  lead: { name?: string; business?: string; area?: string; category?: string; email?: string; phone?: string },
+  previewUrl: string,
+  signature: string
+): string {
+  const emailText = lead.email ? lead.email.trim() : '';
+  const crossChannelNote = emailText ? ` (Details also sent to ${emailText})` : '';
+
+  return template
+    .replace(/\{\{name\}\}/g, lead.name || 'Valued Business')
+    .replace(/\{\{business\}\}/g, lead.business || lead.name || 'your business')
+    .replace(/\{\{area\}\}/g, lead.area || 'your area')
+    .replace(/\{\{category\}\}/g, lead.category || 'business')
+    .replace(/\{\{email\}\}/g, emailText)
+    .replace(/\{\{phone\}\}/g, lead.phone || '')
+    .replace(/\{\{cross_channel_note\}\}/g, crossChannelNote)
+    .replace(/\{\{preview_url\}\}/g, previewUrl)
+    .replace(/\{\{previewUrl\}\}/g, previewUrl)
+    .replace(/\{\{signature\}\}/g, signature);
+}
+
+// ============================================================================
 // Campaign CRUD
 // ============================================================================
 
-/** Create a new campaign */
 export async function createCampaign(input: CampaignCreateInput): Promise<Campaign> {
   const id = randomUUID();
   const now = new Date().toISOString();
@@ -262,115 +276,75 @@ export async function createCampaign(input: CampaignCreateInput): Promise<Campai
     const campaigns = readLocalCampaigns();
     campaigns[id] = campaign;
     writeLocalCampaigns(campaigns);
-  } else {
-    try {
-      const supabase = getSupabaseClient();
-      const { error } = await (supabase as any).from('campaigns').insert([campaign]);
-      if (error) {
-        if (isTableMissingError(error)) {
-          const campaigns = readLocalCampaigns();
-          campaigns[id] = campaign;
-          writeLocalCampaigns(campaigns);
-        } else {
-          throw error;
-        }
-      }
-    } catch (err: any) {
-      if (isTableMissingError(err)) {
-        const campaigns = readLocalCampaigns();
-        campaigns[id] = campaign;
-        writeLocalCampaigns(campaigns);
-      } else {
-        throw err;
-      }
-    }
+    return campaign;
   }
 
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await (supabase as any)
+      .from('campaigns')
+      .insert([campaign])
+      .select()
+      .single();
+
+    if (error && !isTableMissingError(error)) throw error;
+    if (data) return data;
+  } catch (err: any) {
+    if (!isTableMissingError(err)) throw err;
+  }
+
+  const campaigns = readLocalCampaigns();
+  campaigns[id] = campaign;
+  writeLocalCampaigns(campaigns);
   return campaign;
 }
 
-/** Create a campaign from a template */
-export async function createCampaignFromTemplate(templateKey: string, overrides?: Partial<CampaignCreateInput>): Promise<Campaign> {
-  const template = CAMPAIGN_TEMPLATES[templateKey];
-  if (!template) throw new Error(`Template not found: ${templateKey}`);
-
-  return createCampaign({
-    name: overrides?.name || template.name,
-    description: overrides?.description || template.description,
-    sector: overrides?.sector || template.sector,
-    steps: (overrides?.steps || template.steps).map((s, i) => ({
-      ...s,
-      id: randomUUID(),
-      order: s.order ?? i,
-    })) as CampaignStep[],
-    tags: overrides?.tags,
-  });
-}
-
-/** Get all campaigns */
-export async function getCampaigns(filters?: { sector?: string; status?: CampaignStatus }): Promise<Campaign[]> {
+export async function getCampaigns(filters?: { status?: CampaignStatus; sector?: string }): Promise<Campaign[]> {
   const config = getRuntimeConfig();
-  let campaigns: Campaign[] = [];
-
   if (config.storageMode === 'local') {
-    campaigns = Object.values(readLocalCampaigns());
-  } else {
-    try {
-      const supabase = getSupabaseClient();
-      let query = (supabase as any).from('campaigns').select('*').order('updated_at', { ascending: false });
-      if (filters?.sector) query = query.eq('sector', filters.sector);
-      if (filters?.status) query = query.eq('status', filters.status);
-      const { data, error } = await query;
-      if (error) {
-        if (isTableMissingError(error)) {
-          campaigns = Object.values(readLocalCampaigns());
-        } else {
-          throw error;
-        }
-      } else {
-        campaigns = (data || []) as Campaign[];
-      }
-    } catch (err: any) {
-      if (isTableMissingError(err)) {
-        campaigns = Object.values(readLocalCampaigns());
-      } else {
-        throw err;
-      }
-    }
+    let list = Object.values(readLocalCampaigns());
+    if (filters?.status) list = list.filter(c => c.status === filters.status);
+    if (filters?.sector) list = list.filter(c => c.sector === filters.sector);
+    return list;
   }
 
-  if (filters?.sector) campaigns = campaigns.filter(c => c.sector === filters.sector);
-  if (filters?.status) campaigns = campaigns.filter(c => c.status === filters.status);
+  try {
+    const supabase = getSupabaseClient();
+    let query = (supabase as any).from('campaigns').select('*').order('created_at', { ascending: false });
+    if (filters?.status) query = query.eq('status', filters.status);
+    if (filters?.sector) query = query.eq('sector', filters.sector);
+    const { data, error } = await query;
+    if (!error && data) return data;
+  } catch {}
 
-  return campaigns.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+  let list = Object.values(readLocalCampaigns());
+  if (filters?.status) list = list.filter(c => c.status === filters.status);
+  if (filters?.sector) list = list.filter(c => c.sector === filters.sector);
+  return list;
 }
 
-/** Get a single campaign */
 export async function getCampaign(id: string): Promise<Campaign | null> {
   const config = getRuntimeConfig();
   if (config.storageMode === 'local') {
     return readLocalCampaigns()[id] || null;
   }
+
   try {
     const supabase = getSupabaseClient();
-    const { data, error } = await (supabase as any).from('campaigns').select('*').eq('id', id).single();
-    if (error) {
-      if (isTableMissingError(error)) return readLocalCampaigns()[id] || null;
-      if (error.code === 'PGRST116') return null;
-      throw error;
-    }
-    return data as Campaign;
-  } catch (err: any) {
-    if (isTableMissingError(err)) return readLocalCampaigns()[id] || null;
-    throw err;
-  }
+    const { data, error } = await (supabase as any)
+      .from('campaigns')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (!error && data) return data;
+  } catch {}
+
+  return readLocalCampaigns()[id] || null;
 }
 
-/** Update a campaign */
 export async function updateCampaign(id: string, updates: Partial<Campaign>): Promise<Campaign> {
   const now = new Date().toISOString();
   const updatePayload = { ...updates, updated_at: now };
-  delete (updatePayload as any).id;
 
   const config = getRuntimeConfig();
   if (config.storageMode === 'local') {
@@ -383,31 +357,23 @@ export async function updateCampaign(id: string, updates: Partial<Campaign>): Pr
 
   try {
     const supabase = getSupabaseClient();
-    const { data, error } = await (supabase as any).from('campaigns').update(updatePayload).eq('id', id).select().single();
-    if (error) {
-      if (isTableMissingError(error)) {
-        const campaigns = readLocalCampaigns();
-        if (!campaigns[id]) throw new Error(`Campaign not found: ${id}`);
-        campaigns[id] = { ...campaigns[id], ...updatePayload };
-        writeLocalCampaigns(campaigns);
-        return campaigns[id];
-      }
-      throw error;
-    }
-    return data as Campaign;
-  } catch (err: any) {
-    if (isTableMissingError(err)) {
-      const campaigns = readLocalCampaigns();
-      if (!campaigns[id]) throw new Error(`Campaign not found: ${id}`);
-      campaigns[id] = { ...campaigns[id], ...updatePayload };
-      writeLocalCampaigns(campaigns);
-      return campaigns[id];
-    }
-    throw err;
-  }
+    const { data, error } = await (supabase as any)
+      .from('campaigns')
+      .update(updatePayload)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (!error && data) return data;
+  } catch {}
+
+  const campaigns = readLocalCampaigns();
+  if (!campaigns[id]) throw new Error(`Campaign not found: ${id}`);
+  campaigns[id] = { ...campaigns[id], ...updatePayload };
+  writeLocalCampaigns(campaigns);
+  return campaigns[id];
 }
 
-/** Enroll a lead into a campaign */
 export async function enrollLeadInCampaign(
   campaignId: string,
   lead: { lead_id: string; deal_id?: string; name: string }
@@ -417,7 +383,6 @@ export async function enrollLeadInCampaign(
 
   const enrollments: LeadEnrollment[] = JSON.parse(campaign.enrolled_leads || '[]');
 
-  // Check if already enrolled
   if (enrollments.some(e => e.lead_id === lead.lead_id && e.status === 'active')) {
     throw new Error(`Lead ${lead.lead_id} is already enrolled in this campaign`);
   }
@@ -450,18 +415,9 @@ export async function enrollLeadInCampaign(
     started_at: campaign.started_at || now,
   });
 
-  await logActivity({
-    type: 'campaign_started',
-    lead_id: lead.lead_id,
-    deal_id: lead.deal_id,
-    description: `Lead "${lead.name}" enrolled in campaign "${campaign.name}"`,
-    metadata: { campaign_id: campaignId, campaign_name: campaign.name },
-  });
-
   return enrollment;
 }
 
-/** Get next due campaign steps (for the cron/runner to execute) */
 export async function getDueCampaignSteps(): Promise<{
   campaign: Campaign;
   enrollment: LeadEnrollment;
@@ -490,7 +446,6 @@ export async function getDueCampaignSteps(): Promise<{
   return dueSteps;
 }
 
-/** Record the result of executing a campaign step */
 export async function recordStepExecution(
   campaignId: string,
   leadId: string,
@@ -508,7 +463,6 @@ export async function recordStepExecution(
   enrollment.last_step_at = new Date().toISOString();
   enrollment.current_step += 1;
 
-  // Check if campaign is complete for this lead
   if (enrollment.current_step >= steps.length) {
     enrollment.status = 'completed';
     enrollment.next_step_at = '';
@@ -527,12 +481,17 @@ export async function recordStepExecution(
     total_completed: totalCompleted,
     total_replied: totalReplied,
   });
+}
 
-  await logActivity({
-    type: 'campaign_step_executed',
-    lead_id: leadId,
-    description: `Campaign "${campaign.name}" step ${stepResult.step_order + 1} (${stepResult.channel}) — ${stepResult.status}`,
-    metadata: { campaign_id: campaignId, step_id: stepResult.step_id, channel: stepResult.channel },
+/** Create a campaign from a predefined template */
+export async function createCampaignFromTemplate(templateKey: string, customName?: string): Promise<Campaign> {
+  const template = CAMPAIGN_TEMPLATES[templateKey];
+  if (!template) throw new Error(`Template not found: ${templateKey}`);
+  return createCampaign({
+    name: customName || template.name,
+    description: template.description,
+    sector: template.sector,
+    steps: template.steps as any,
   });
 }
 
@@ -565,18 +524,3 @@ export async function deleteCampaign(id: string): Promise<void> {
   }
 }
 
-/** Replace template variables in message */
-export function resolveTemplateVariables(
-  template: string,
-  lead: { name?: string; business?: string; area?: string; category?: string },
-  previewUrl: string,
-  signature: string
-): string {
-  return template
-    .replace(/\{\{name\}\}/g, lead.name || 'there')
-    .replace(/\{\{business\}\}/g, lead.business || lead.name || 'your business')
-    .replace(/\{\{area\}\}/g, lead.area || 'your area')
-    .replace(/\{\{category\}\}/g, lead.category || 'business')
-    .replace(/\{\{preview_url\}\}/g, previewUrl)
-    .replace(/\{\{signature\}\}/g, signature);
-}

@@ -1826,6 +1826,26 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
 
             {/* Right: Direct Action Buttons */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <a
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our custom website & WhatsApp AI platform.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  background: '#25d366',
+                  color: '#fff',
+                  textDecoration: 'none',
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
+                  padding: '7px 14px',
+                  borderRadius: '8px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 0 10px rgba(37, 211, 102, 0.4)'
+                }}
+              >
+                🎙️ Claim on WhatsApp
+              </a>
               <a href="#claim" style={{
                 background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                 color: '#fff',
@@ -1836,7 +1856,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 borderRadius: '8px',
                 boxShadow: '0 0 12px rgba(16, 185, 129, 0.4)',
               }}>
-                🚀 Claim Site &amp; AI (OPay)
+                🚀 Claim Site (OPay)
               </a>
             </div>
 
@@ -1878,7 +1898,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            marginBottom: '20px',
+            marginBottom: '16px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
             flexWrap: 'wrap',
             justifyContent: 'center'
@@ -1901,6 +1921,32 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               </>
             )}
           </div>
+
+          {/* Prominent Localized FOMO Urgency Badge (Above The Fold) */}
+          {isPreview && (
+            <div style={{
+              background: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid rgba(248, 113, 113, 0.4)',
+              backdropFilter: 'blur(10px)',
+              padding: '6px 16px',
+              borderRadius: '24px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              fontSize: 'clamp(0.75rem, 1.6vw, 0.85rem)',
+              fontWeight: 700,
+              color: '#fecaca',
+              marginBottom: '20px',
+              flexWrap: 'wrap'
+            }}>
+              <span>🔥 <strong>4 similar businesses in {lead.area || lead.city || 'your area'}</strong> upgraded this week</span>
+              <span>•</span>
+              <span style={{ color: '#fef08a' }}>⏰ Domain reserved for {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m</span>
+              <span>•</span>
+              <span style={{ color: '#a7f3d0' }}>🛡️ 100% Hands-Free White-Glove Setup</span>
+            </div>
+          )}
 
           <h1 style={{ 
             fontFamily: headingFontFamily,
@@ -1931,27 +1977,51 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               : copy.heroSubtitle}
           </p>
 
-          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
             <a href={isPreview ? "#pricing" : "#booking"} className="btn-hover-effect" style={{
               background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
               border: 'none',
               color: '#fff',
               textDecoration: 'none',
-              padding: '16px 32px',
+              padding: '16px 28px',
               borderRadius: '10px',
               fontWeight: 800,
-              fontSize: '1.05rem',
+              fontSize: '1.02rem',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '10px',
+              gap: '8px',
               boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
               transition: 'all 0.2s'
             }}>
               {hasWebsite 
-                ? `🔌 Order Plug & Play Tool Embed (₦35,000)`
+                ? `🔌 Order Tool Embed (₦35,000)`
                 : isPreview 
-                ? `🔒 Claim ${lead.name}'s Website (₦50k Deposit)`
-                : copy.ctaText} <ArrowRight size={20} />
+                ? `🔒 Claim ${lead.name}'s Website`
+                : copy.ctaText} <ArrowRight size={18} />
+            </a>
+
+            {/* 1-Click WhatsApp Voice Note Claim Button */}
+            <a
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our custom website & 24/7 WhatsApp AI platform. Please activate my domain.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-hover-effect"
+              style={{
+                background: '#25d366',
+                color: '#fff',
+                textDecoration: 'none',
+                padding: '16px 24px',
+                borderRadius: '10px',
+                fontWeight: 800,
+                fontSize: '0.98rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 6px 20px rgba(37, 211, 102, 0.35)',
+                transition: 'all 0.2s'
+              }}
+            >
+              🎙️ 1-Click Claim via WhatsApp →
             </a>
 
             {lead.phone_raw && (
@@ -1961,19 +2031,70 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 border: '1px solid rgba(255, 255, 255, 0.25)',
                 color: '#fff',
                 textDecoration: 'none',
-                padding: '16px 24px',
+                padding: '16px 20px',
                 borderRadius: '10px',
                 fontWeight: 700,
-                fontSize: '0.95rem',
+                fontSize: '0.9rem',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '6px',
                 transition: 'all 0.2s'
               }}>
-                💬 Chat Project Lead on WhatsApp
+                💬 Chat Support
               </a>
             )}
           </div>
+
+          {/* Quick 1-Tap Audio Explanation Player in Hero */}
+          {isPreview && (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              background: 'rgba(15, 23, 42, 0.85)',
+              border: '1px solid rgba(139, 92, 246, 0.4)',
+              backdropFilter: 'blur(10px)',
+              padding: '8px 16px',
+              borderRadius: '30px',
+              marginBottom: '20px',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.3)'
+            }}>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+                    if (window.speechSynthesis.speaking) {
+                      window.speechSynthesis.cancel();
+                    } else {
+                      const text = `Hello! We custom-built this sales website and WhatsApp AI for ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. It handles customer inquiries 24/7, creates instant branded PDF quotes, and accepts OPay transfers. You can claim it now with 100% hands-free setup.`;
+                      const utterance = new SpeechSynthesisUtterance(text);
+                      utterance.rate = 1.0;
+                      window.speechSynthesis.speak(utterance);
+                    }
+                  }
+                }}
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  background: '#10b981',
+                  color: '#fff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.85rem',
+                  fontWeight: 700
+                }}
+              >
+                ▶
+              </button>
+              <span style={{ fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 600 }}>
+                🎙️ Listen to 45s Audio Note (English / Pidgin)
+              </span>
+            </div>
+          )}
 
           {/* Single Clean Reassurance Bar */}
           <div style={{

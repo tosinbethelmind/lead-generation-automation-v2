@@ -62,6 +62,8 @@ export interface TalentPoolCandidate {
 
 export interface CvGradeResult {
   matchScore: number; // 0 - 100
+  score?: number;
+  grade?: string;
   recommendation: 'Strong Hire' | 'Interview' | 'Review' | 'Reject';
   recommendationBadgeColor: string;
   matchedSkills: string[];
@@ -467,6 +469,8 @@ export function evaluateCvGrade(
 
   return {
     matchScore,
+    score: matchScore,
+    grade: matchScore >= 80 ? 'A+' : matchScore >= 65 ? 'A' : 'B',
     recommendation,
     recommendationBadgeColor,
     matchedSkills,

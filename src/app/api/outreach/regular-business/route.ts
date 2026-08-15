@@ -29,14 +29,14 @@ function buildRegularBusinessPayload(lead: {
     company_name: companyName,
     city,
     category,
-    pitch_type: 'REGULAR_WEBSITE_WITH_POST_PAYMENT_SOLAR',
+    pitch_type: 'REGULAR_WEBSITE_AI_PORTAL',
     pre_payment: {
-      website_preview_url: `https://lagosportals.ng/preview/${slug}?src=10k_lagos`,
-      claim_url: `https://lagosportals.ng/claim?biz=${encodeURIComponent(companyName)}&id=${leadId}`
+      website_preview_url: `https://www.bethelmindanalytics.com/preview/${slug}?src=10k_lagos`,
+      claim_url: `https://www.bethelmindanalytics.com/claim?biz=${encodeURIComponent(companyName)}&id=${leadId}`
     },
     post_payment: {
-      solar_calculator_url: `${SOLAR_CALCULATOR_BASE}?biz=${encodeURIComponent(companyName)}&city=${encodeURIComponent(city)}&ref=web_client_perk`,
-      message: `🎉 Your website for ${companyName} is now LIVE! As a Lagos business owner, reduce your diesel costs by calculating your solar needs and connecting with verified installers on SolarQuotePro.ng.`
+      dashboard_url: `https://www.bethelmindanalytics.com/client/dashboard?biz=${encodeURIComponent(companyName)}`,
+      message: `🎉 Your website for ${companyName} is now LIVE! Access your 24/7 AI lead and booking dashboard at https://www.bethelmindanalytics.com/client/dashboard.`
     },
     generated_at: new Date().toISOString()
   };

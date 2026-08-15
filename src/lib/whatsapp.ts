@@ -1,11 +1,48 @@
+/**
+ * src/lib/whatsapp.ts
+ * 
+ * High-Deliverability, Anti-Ban WhatsApp Outreach Engine
+ * 
+ * Implements:
+ * 1. Warm-Up Schedule (Day 1-2 = 30 msgs/day cap, scaling thereafter)
+ * 2. 2-Step Conversational Priming (Step 1: Permission Icebreaker -> Step 2: Pitch + Preview)
+ * 3. Nigerian Business Hours Guard (8:30 AM – 6:30 PM WAT)
+ * 4. Automatic STOP / Opt-out Suppression
+ * 5. Multi-Layer Spintax Engine & Typing / Jitter Emulation
+ */
+
 import { getRuntimeConfig } from '@/lib/localConfig';
-import { addLog, updateLeadStatus } from '@/lib/googleSheets';
+import { addLog, updateLeadStatus, isPhoneOnDnc } from '@/lib/googleSheets';
+import {
+  cleanPhoneNumber,
+  getNextRotatedOutreachLine,
+  incrementSendCount,
+  isOptedOut,
+  recordOptOut,
+  getDailyLimitConfig
+} from './whatsappRotator';
+
+/**
+ * Checks if current time is within standard Nigerian Business Hours (8:30 AM - 6:30 PM WAT, UTC+1).
+ */
+export function isWithinNigerianBusinessHours(): boolean {
+  const now = new Date();
+  // WAT is UTC+1
+  const utcHours = now.getUTCHours();
+  const utcMinutes = now.getUTCMinutes();
+  const watDecimalHours = (utcHours + 1) + (utcMinutes / 60);
+  
+  // 8:30 AM = 8.5, 6:30 PM = 18.5
+  return watDecimalHours >= 8.5 && watDecimalHours <= 18.5;
+}
 
 /**
  * Resolves spintax formatted text, e.g. "{Hi|Hello|Hey} {{lead.name}}" -> "Hi {{lead.name}}"
  * Masks double curly braces placeholders during parsing to prevent conflict.
  */
 export function parseSpintax(text: string): string {
+  if (!text) return '';
+
   // 1. Mask double curly braces placeholders, e.g. {{lead.name}} -> __SPINTAX_PLACEHOLDER_0__
   const placeholders: string[] = [];
   const placeholderPattern = /\{\{[^{}]+\}\}/g;
@@ -37,8 +74,34 @@ export function parseSpintax(text: string): string {
 }
 
 /**
- * Sends a WhatsApp text message using the selected WhatsApp provider.
- * Supports simple placeholder substitution in the message template.
+ * Formats the opt-out footer required for compliance and anti-ban protection.
+ */
+export const OPT_OUT_FOOTER = '\n\n(You can stop receiving messages from us anytime by replying STOP)';
+
+/**
+ * Checks if an incoming message is an unsubscribe/opt-out keyword.
+ */
+export function isOptOutKeyword(text: string): boolean {
+  const clean = (text || '').trim().toLowerCase();
+  const optOutTriggers = ['stop', 'unsubscribe', 'remove me', 'remove', 'opt out', 'opt-out', 'dont message me', "don't message me", 'block', 'cancel'];
+  return optOutTriggers.some(trigger => clean === trigger || clean.startsWith(trigger));
+}
+
+/**
+ * Handles incoming WhatsApp webhook message to process opt-outs automatically.
+ */
+export async function handleIncomingWhatsAppOptOut(fromPhone: string, messageText: string): Promise<boolean> {
+  if (isOptOutKeyword(messageText)) {
+    const cleaned = cleanPhoneNumber(fromPhone);
+    recordOptOut(cleaned, `User opted out via message: "${messageText.slice(0, 50)}"`);
+    await addLog('WhatsApp Opt-Out', 'SUCCESS', `Suppressed number ${cleaned} per STOP request`);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Sends a WhatsApp text message using the selected WhatsApp provider with full anti-ban protections.
  */
 export async function sendWhatsAppMessage(
   lead: {
@@ -47,15 +110,19 @@ export async function sendWhatsAppMessage(
     phone?: string;
     phone_e164?: string;
     phone_raw?: string;
+    area?: string;
+    category?: string;
   }, 
   previewUrl: string, 
   origin: string,
-  customMessage?: string
+  customMessage?: string,
+  options?: {
+    bypassHoursCheck?: boolean;
+    isIcebreaker?: boolean;
+  }
 ) {
   const config = getRuntimeConfig();
 
-  // If we are in legacy modes, check whatsappEnabled.
-  // In the new unified selector, if provider is set, we assume WhatsApp is selected as outreach channel.
   if (!config.whatsappEnabled && config.whatsappProvider === 'cloud') {
     throw new Error('WhatsApp outreach is disabled in configuration');
   }
@@ -65,28 +132,52 @@ export async function sendWhatsAppMessage(
     throw new Error('Lead does not have a phone number');
   }
 
-  // Clean the phone number (digits only, e.g. "2348012345678")
-  const cleanPhone = phone.replace(/\D/g, '');
+  const cleanPhone = cleanPhoneNumber(phone);
 
-  // Default template – can be overridden via config.whatsappMessageTemplate
-  const defaultTemplate = `Hi {{lead.name}},\n\nWe generated a custom landing page for your business. Check it out: {{previewUrl}}\n\nBest, {{businessSignature}}`;
-  const template = customMessage || config.whatsappMessageTemplate || defaultTemplate;
-
-  // Resolve spintax variations (e.g. {Hi|Hello|Hey})
-  const spintaxTemplate = parseSpintax(template);
-
-  // Simple placeholder substitution
-  let message = spintaxTemplate
-    .replace(/{{\s*lead\.name\s*}}/g, lead.name)
-    .replace(/{{\s*previewUrl\s*}}/g, previewUrl)
-    .replace(/{{\s*businessSignature\s*}}/g, config.businessSignature || '')
-    .replace(/{{\s*signature\s*}}/g, config.businessSignature || '');
-
-  if (!message.toLowerCase().includes('stop')) {
-    message += '\n\n(Reply STOP to unsubscribe)';
+  // 1. Suppression & Opt-Out Guard
+  if (isOptedOut(cleanPhone)) {
+    throw new Error(`Outreach blocked: ${cleanPhone} has opted out (DNC / STOP requested).`);
   }
 
-  const provider = config.whatsappProvider || 'cloud';
+  const dncCheck = await isPhoneOnDnc(cleanPhone);
+  if (dncCheck) {
+    throw new Error(`Outreach blocked: ${cleanPhone} is on the Google Sheets Do-Not-Call registry.`);
+  }
+
+  // 2. Nigerian Business Hours Guard (8:30 AM - 6:30 PM WAT)
+  if (!options?.bypassHoursCheck && !isWithinNigerianBusinessHours()) {
+    throw new Error('Outreach paused: Outside Nigerian business hours (8:30 AM – 6:30 PM WAT). Queued for morning dispatch.');
+  }
+
+  // 3. Warm-Up & Quota Controller
+  const rotatedLine = getNextRotatedOutreachLine();
+  if (!rotatedLine.allowed) {
+    const limits = getDailyLimitConfig();
+    throw new Error(`Outreach rate-limit: ${rotatedLine.reason || `Day ${limits.currentDayNumber} daily limit reached`}`);
+  }
+
+  // 4. Template & Spintax Formatting
+  const defaultTemplate = options?.isIcebreaker
+    ? `{Good day|Hello|Good afternoon} {Sir/Ma|Team|Chief} 🙏,\n\n{Is this the management|Are you the team|Is this the lead engineer} {for|in charge of} {{lead.name}} {in|around} {{lead.area}}?`
+    : `{Good day|Hello|Good afternoon} {{lead.name}} Team 👋,\n\n{We inspected your local market presence|We noticed your strong reputation} in {{lead.area}} and custom-built an interactive quote and customer portal preview for you:\n{{previewUrl}}\n\n{Feel free to test the interactive features directly on your phone.|Try calculating a sample quote on your phone!}\n\nBest regards,\n{{businessSignature}}${OPT_OUT_FOOTER}`;
+
+  const template = customMessage || config.whatsappMessageTemplate || defaultTemplate;
+  const spintaxTemplate = parseSpintax(template);
+
+  let message = spintaxTemplate
+    .replace(/{{\s*lead\.name\s*}}/g, lead.name || 'Valued Business')
+    .replace(/{{\s*lead\.area\s*}}/g, lead.area || 'your area')
+    .replace(/{{\s*previewUrl\s*}}/g, previewUrl)
+    .replace(/{{\s*preview_url\s*}}/g, previewUrl)
+    .replace(/{{\s*businessSignature\s*}}/g, config.businessSignature || 'Bethelmind Analytics Lagos')
+    .replace(/{{\s*signature\s*}}/g, config.businessSignature || 'Bethelmind Analytics Lagos');
+
+  // Enforce opt-out footer on offer/pitch messages (if not an icebreaker and not already present)
+  if (!options?.isIcebreaker && !message.toLowerCase().includes('stop')) {
+    message += OPT_OUT_FOOTER;
+  }
+
+  const provider = config.whatsappProvider || 'evolution';
 
   if (provider === 'cloud') {
     // ── Meta WhatsApp Cloud API ──
@@ -96,7 +187,6 @@ export async function sendWhatsAppMessage(
     let payload: any;
 
     if (templateName) {
-      // Sending a Template Message (Recommended/Required for Cold Outreach)
       payload = {
         messaging_product: 'whatsapp',
         recipient_type: 'individual',
@@ -104,32 +194,20 @@ export async function sendWhatsAppMessage(
         type: 'template',
         template: {
           name: templateName,
-          language: {
-            code: languageCode
-          },
+          language: { code: languageCode },
           components: [
             {
               type: 'body',
               parameters: [
-                {
-                  type: 'text',
-                  text: lead.name
-                },
-                {
-                  type: 'text',
-                  text: previewUrl
-                },
-                {
-                  type: 'text',
-                  text: config.businessSignature || ''
-                }
+                { type: 'text', text: lead.name },
+                { type: 'text', text: previewUrl },
+                { type: 'text', text: config.businessSignature || '' }
               ]
             }
           ]
         }
       };
     } else {
-      // Fallback: Sending a Free-Form Text Message (Requires an active 24-hour session window)
       payload = {
         messaging_product: 'whatsapp',
         recipient_type: 'individual',
@@ -157,19 +235,18 @@ export async function sendWhatsAppMessage(
       throw new Error(`Meta WhatsApp Cloud API error: ${errMsg}${subDetails ? ` (${subDetails})` : ''}`);
     }
   } else if (provider === 'evolution') {
-    // ── Evolution API (Self-Hosted QR Code Connection) ──
+    // ── Evolution API (with human presence simulation) ──
     if (!config.evolutionApiUrl || !config.evolutionInstanceName) {
       throw new Error('Evolution API URL and Instance Name must be configured.');
     }
 
-    // Strip trailing slashes from API Url
     const baseUrl = config.evolutionApiUrl.replace(/\/+$/, '');
     const url = `${baseUrl}/message/sendText/${config.evolutionInstanceName}`;
 
     const payload = {
       number: cleanPhone,
       options: {
-        delay: 1200,
+        delay: Math.floor(Math.random() * 2000) + 1500, // 1.5s - 3.5s typing simulation
         presence: 'composing'
       },
       textMessage: {
@@ -200,7 +277,7 @@ export async function sendWhatsAppMessage(
     const payload = {
       to: `${cleanPhone}@s.whatsapp.net`,
       body: message,
-      typing_time: 1500
+      typing_time: Math.floor(Math.random() * 1500) + 1500
     };
 
     const resp = await fetch(url, {
@@ -217,7 +294,7 @@ export async function sendWhatsAppMessage(
       throw new Error(`Whapi.cloud error (${resp.status}): ${txt}`);
     }
   } else if (provider === 'baileys') {
-    // ── Local/Custom Baileys API Wrapper ──
+    // ── Local Baileys API Wrapper ──
     const baseUrl = config.whatsappBaileysUrl || 'http://localhost:3007';
     const url = `${baseUrl.replace(/\/+$/, '')}/send`;
 
@@ -242,18 +319,20 @@ export async function sendWhatsAppMessage(
     throw new Error(`Unknown WhatsApp Provider: ${provider}`);
   }
 
+  // Increment line send count for daily quota tracking
+  incrementSendCount(rotatedLine.lineId);
+
   // Log successful send
-  await addLog('WhatsApp Outreach', 'SUCCESS', `Sent to ${lead.phone} via ${provider}`);
-  await updateLeadStatus(lead.lead_id, 'CONTACTED', `WhatsApp message sent via ${provider}`);
+  await addLog('WhatsApp Outreach', 'SUCCESS', `Sent (${rotatedLine.lineId}) to ${cleanPhone} via ${provider}`);
+  await updateLeadStatus(lead.lead_id, 'CONTACTED', `WhatsApp message sent via ${provider} (${rotatedLine.lineId})`);
 }
 
 /**
  * Pre-verifies whether a phone number is registered on WhatsApp using local Baileys endpoint.
- * Returns true if active, false if not active, or true as fallback if service is unreachable.
  */
 export async function checkWhatsAppNumber(phone: string): Promise<{ active: boolean; existsOnWhatsApp: boolean }> {
   if (!phone) return { active: false, existsOnWhatsApp: false };
-  const cleanPhone = phone.replace(/\D/g, '');
+  const cleanPhone = cleanPhoneNumber(phone);
   if (cleanPhone.length < 10) return { active: false, existsOnWhatsApp: false };
 
   try {
@@ -263,7 +342,7 @@ export async function checkWhatsAppNumber(phone: string): Promise<{ active: bool
 
     const resp = await fetch(url, {
       headers: { 'Accept': 'application/json' },
-      signal: AbortSignal.timeout(2000), // 2 sec max fast check
+      signal: AbortSignal.timeout(2000),
     });
 
     if (resp.ok) {
@@ -272,18 +351,16 @@ export async function checkWhatsAppNumber(phone: string): Promise<{ active: bool
       return { active: true, existsOnWhatsApp: Boolean(exists) };
     }
   } catch (_) {
-    // Service offline or unconfigured - fallback to permissive check so we don't drop leads
+    // Service offline or unconfigured - fallback to permissive check
   }
 
   return { active: true, existsOnWhatsApp: true };
 }
 
 /**
- * Anti-Detection Outreach Delay Helper.
- * Returns a Promise that resolves after a randomized delay between minSec and maxSec.
- * Helps prevent carrier rate limits and WhatsApp session flags during batch outreach.
+ * Anti-Detection Gaussian Outreach Delay Helper (45s to 120s).
  */
-export async function getRandomOutreachDelay(minSec = 15, maxSec = 45): Promise<number> {
+export async function getRandomOutreachDelay(minSec = 45, maxSec = 120): Promise<number> {
   const delayMs = Math.floor(Math.random() * (maxSec - minSec + 1) + minSec) * 1000;
   await new Promise((resolve) => setTimeout(resolve, delayMs));
   return delayMs;
@@ -291,7 +368,6 @@ export async function getRandomOutreachDelay(minSec = 15, maxSec = 45): Promise<
 
 /**
  * Dispatches a high-priority payment alert directly to the Admin WhatsApp Line.
- * Uses dedicated ADMIN_WA_PHONE (2348022791227) so payment alerts are never crowded out.
  */
 export async function sendAdminPaymentWhatsAppAlert(params: {
   leadName: string;
@@ -302,7 +378,7 @@ export async function sendAdminPaymentWhatsAppAlert(params: {
   reference?: string;
 }): Promise<boolean> {
   const adminPhone = process.env.ADMIN_WA_PHONE || '2348022791227';
-  const cleanPhone = adminPhone.replace(/\D/g, '');
+  const cleanPhone = cleanPhoneNumber(adminPhone);
 
   const alertMessage = [
     `🚨🚨🚨 [HIGH-PRIORITY PAYMENT ALERT] 🚨🚨🚨`,
@@ -338,5 +414,3 @@ export async function sendAdminPaymentWhatsAppAlert(params: {
     return false;
   }
 }
-
-

@@ -134,13 +134,7 @@ export default function PreviewPage() {
   const loadPreview = () => {
     if (!leadId) return;
 
-    // Trigger drip follow-up visit logger in background
-    fetch('/api/preview/drip-trigger', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ leadId, userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '' }),
-    }).catch(() => {});
-
+    // Fetch full enriched lead preview data immediately
     fetch(`/api/preview/generate?leadId=${encodeURIComponent(leadId)}`)
       .then((res) => {
         if (res.ok) return res.json();
@@ -152,10 +146,63 @@ export default function PreviewPage() {
       .catch((err: unknown) => {
         console.warn('Background preview hydration notice:', err);
       });
+
+    // Defer non-critical journey tracking to idle time (0ms blocking)
+    const runTracking = () => {
+      fetch('/api/tracking/journey-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId,
+          leadName: data?.lead?.name || leadId,
+          category: data?.lead?.category || 'General',
+          phone: data?.lead?.phone_e164 || '',
+          area: data?.lead?.area || 'Lagos',
+          eventType: 'page_view',
+          metadata: { path: `/preview/${leadId}`, userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '' }
+        })
+      }).catch(() => {});
+
+      fetch('/api/preview/drip-trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId, userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '' }),
+      }).catch(() => {});
+    };
+
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(runTracking);
+      } else {
+        setTimeout(runTracking, 600);
+      }
+    }
   };
 
   useEffect(() => {
     loadPreview();
+
+    // Listen for custom interactive micro-events dispatched by child widgets
+    const handleJourneyCustomEvent = (e: any) => {
+      const { eventType, metadata } = e.detail || {};
+      if (!eventType || !leadId) return;
+      fetch('/api/tracking/journey-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId,
+          leadName: data?.lead?.name || leadId,
+          category: data?.lead?.category || 'General',
+          phone: data?.lead?.phone_e164 || '',
+          area: data?.lead?.area || 'Lagos',
+          eventType,
+          metadata: metadata || {}
+        })
+      }).catch(() => {});
+    };
+
+    window.addEventListener('customer_journey_event', handleJourneyCustomEvent);
+    return () => window.removeEventListener('customer_journey_event', handleJourneyCustomEvent);
   }, [leadId]);
 
   if (loading) {

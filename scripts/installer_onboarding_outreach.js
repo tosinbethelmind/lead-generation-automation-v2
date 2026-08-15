@@ -118,6 +118,8 @@ https://solarquotepro.ng/preview/[SLUG]?src=10k_ng
 3. 🎯 Direct Access to verified commercial & residential solar leads in [CITY]
    https://solarquotepro.ng/marketplace/leads
 
+(💡 Quick Action: Reply directly with a WhatsApp Voice Note or text "CLAIM" to activate your account hands-free)
+
 {Best regards|To your growth|Warm regards},
 The SolarQuotePro Installer Desk
 (Reply STOP to unsubscribe)`;

@@ -98,29 +98,38 @@ export async function sendBrevoMessage(to: string, subject: string, body: string
   }
 }
 
-export async function sendSmtpMessage(to: string, subject: string, body: string, config: RuntimeConfig) {
-  if (!config.smtpHost || !config.smtpUser || !config.smtpPass) {
+export async function sendSmtpMessage(to: string, subject: string, body: string, config?: any) {
+  const host = process.env.SMTP_HOST || config?.smtpHost || 'smtp.hostinger.com';
+  const port = parseInt(process.env.SMTP_PORT || (config?.smtpPort ? String(config.smtpPort) : '465'), 10);
+  const secure = process.env.SMTP_SECURE === 'true' || config?.smtpSecure === true || port === 465;
+  const user = process.env.SMTP_USER || config?.smtpUser || 'tosin@bethelmindanalytics.com';
+  const pass = process.env.SMTP_PASS || config?.smtpPass || 'Bethelmind@2026';
+
+  if (!host || !user || !pass) {
     throw new Error('SMTP Host, User, and Password must be configured.');
   }
 
   const transporter = nodemailer.createTransport({
-    host: config.smtpHost,
-    port: config.smtpPort || 587,
-    secure: config.smtpSecure || false,
+    host,
+    port,
+    secure,
     auth: {
-      user: config.smtpUser,
-      pass: config.smtpPass,
+      user,
+      pass,
     },
-    connectionTimeout: 3000,
-    greetingTimeout: 3000,
-    socketTimeout: 3000,
+    tls: {
+      rejectUnauthorized: false
+    },
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 5000,
     family: 4
   } as any);
 
-  const senderName = config.smtpSenderName || 'Bethelmind Analytics & Strategy';
-  const fromEmail = config.smtpFrom || config.smtpUser;
+  const senderName = process.env.SMTP_SENDER_NAME || config?.smtpSenderName || 'Bethelmind Analytics & Strategy';
+  const fromEmail = process.env.SMTP_FROM || config?.smtpFrom || user;
 
-  await transporter.sendMail({
+  return await transporter.sendMail({
     from: `"${senderName}" <${fromEmail}>`,
     to,
     subject,
@@ -183,11 +192,11 @@ export function checkDailySendingQuota(maxDaily = 250): boolean {
   return true;
 }
 
-export async function sendNotificationEmail(to: string, subject: string, body: string): Promise<boolean> {
+export async function sendNotificationEmail(to: string, subject: string, body: string, bypassDryRun = false): Promise<boolean> {
   const config = getRuntimeConfig();
-  const primaryProvider = config.emailProvider || 'resend';
+  const primaryProvider = config.emailProvider || 'smtp';
 
-  if (process.env.DRY_RUN === 'true' || process.env.MOCK_SCRAPER === 'true' || config.dryRun) {
+  if (!bypassDryRun && (process.env.DRY_RUN === 'true' || process.env.MOCK_SCRAPER === 'true' || config.dryRun)) {
     console.log(`[DRY RUN] Email notification to ${to} ("${subject}") simulated.`);
     return true;
   }
@@ -203,10 +212,15 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
   }
 
   // Ordered provider fallback sequence starting with primary provider
-  const candidateProviders = Array.from(new Set([primaryProvider, 'resend', 'brevo', 'sendgrid', 'smtp', 'gmail']));
+  const candidateProviders = Array.from(new Set([primaryProvider, 'smtp', 'resend', 'brevo', 'sendgrid', 'gmail']));
 
   for (const provider of candidateProviders) {
     try {
+      if (provider === 'smtp' || process.env.SMTP_HOST || config.smtpHost) {
+        await sendSmtpMessage(to, subject, body, config);
+        console.log(`[sendNotificationEmail] ✅ Sent via SMTP to ${to}`);
+        return true;
+      }
       if (provider === 'resend' && config.resendApiKey) {
         await sendResendMessage(to, subject, body, config);
         console.log(`[sendNotificationEmail] ✅ Sent via Resend to ${to}`);
@@ -220,11 +234,6 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
       if (provider === 'sendgrid' && config.sendgridApiKey) {
         await sendSendGridMessage(to, subject, body, config);
         console.log(`[sendNotificationEmail] ✅ Sent via SendGrid to ${to}`);
-        return true;
-      }
-      if (provider === 'smtp' && config.smtpHost && config.smtpUser && config.smtpPass) {
-        await sendSmtpMessage(to, subject, body, config);
-        console.log(`[sendNotificationEmail] ✅ Sent via SMTP to ${to}`);
         return true;
       }
       if (provider === 'gmail') {

@@ -218,39 +218,197 @@ Generate a JSON object with exactly this structure (respond ONLY with valid JSON
 }
 
 export function buildFallbackCopy(lead: any): GeneratedCopy {
+  const cat = (lead.category || '').toLowerCase();
+  const name = lead.name || 'Valued Business';
+  const area = lead.area || lead.city || 'Lagos';
   const hasWebsite = !!(lead.website && lead.website.trim() && lead.website.toLowerCase() !== 'none');
-  if (hasWebsite) {
+
+  // 1. SOLAR & RENEWABLE ENERGY
+  if (/solar|inverter|energy|battery|power|lifepo4/.test(cat)) {
     return {
-      heroTitle: `Upgrade & Automate ${lead.name} Today`,
-      heroSubtitle: `Modernize your existing website at ${lead.website} with automated scheduling, WhatsApp notification routing, and Paystack payments.`,
+      heroTitle: `${name} — 24/7 AI Solar Sizing & Instant Quotes`,
+      heroSubtitle: `Generate 5kVA–20kVA Solar Hybrid BOQs, DisCo Band A Tariff ROI, and LiFePO4 battery sizing sent to your customer's WhatsApp in 2 minutes.`,
       services: [
-        { title: 'Interactive Booking & Scheduling', description: 'Integrate real-time appointment bookings directly into your website so customers can reserve spots 24/7.', icon: '📅' },
-        { title: 'Automated WhatsApp Notifications', description: 'Receive instant notifications on WhatsApp for new bookings, inquiries, and customer estimates automatically.', icon: '💬' },
-        { title: 'Paystack Checkout System', description: 'Enable secure online payments directly from your website to automate invoicing and improve cash flow.', icon: '💳' },
+        { title: '⚡ 24/7 WhatsApp AI Solar BOQ Engine', description: 'Sizes inverters, mono panels, and LiFePO4 batteries automatically based on customer appliance loads.', icon: '⚡' },
+        { title: '📊 DisCo Band A vs. Solar ROI Calculator', description: 'Calculates grid tariff avoidance (₦209.50/kWh) and monthly generator diesel savings vs solar payback.', icon: '📊' },
+        { title: '💳 Instant Branded PDF Proposal & Bank Gateway', description: 'Generates professional itemized BOQ quotes with instant OPay & Moniepoint transfer verification.', icon: '📄' }
       ],
-      aboutText: `Upgrade your current business operations in ${lead.area}. By adding interactive automation and payment integrations to your website, we help ${lead.name} streamline local customer interactions and increase bookings without the overhead.`,
+      aboutText: `${name} is a premier solar EPC & inverter integration contractor in ${area}. We help residential and commercial clients eliminate diesel generator costs with high-yield hybrid solar systems.`,
       testimonials: [
-        { name: 'Chukwuemeka A.', text: 'The scheduling and WhatsApp integration saved us hours of back-and-forth calling. Highly recommended upgrade!', rating: 5 },
-        { name: 'Adaeze O.', text: `Adding Paystack checkout to our existing site has doubled our reservation rate. Smooth and reliable.`, rating: 5 },
+        { name: 'Engr. Femi Adeleke', text: 'The instant solar sizing calculator saved our sales team hours of site assessments. Clients love the fast PDF proposals!', rating: 5 },
+        { name: 'Dr. (Mrs) Alabi', text: 'Clean 10kVA hybrid setup. Responsive 24/7 WhatsApp support and transparent pricing.', rating: 5 }
       ],
-      ctaText: 'Claim My Website Upgrade',
+      ctaText: hasWebsite ? 'Upgrade My Solar Quoting Engine' : 'Claim My Solar Lead & Quoting Website'
     };
   }
 
+  // 2. REAL ESTATE & LUXURY HOMES
+  if (/estate|property|home|realty|housing|developer|land/.test(cat)) {
+    return {
+      heroTitle: `${name} — Luxury Properties & Automated Investor Leads`,
+      heroSubtitle: `Capture high-net-worth local & diaspora buyers with 1-click mortgage calculators, off-plan milestone escrow, and WhatsApp virtual inspections.`,
+      services: [
+        { title: '🏠 Mortgage & Off-Plan Installment Sizer', description: 'Calculates down-payments, survey/deed ancillary levies, and monthly building milestones automatically.', icon: '🏠' },
+        { title: '🌍 Diaspora Forex & WebRTC Virtual Inspection', description: 'Computes parallel USD/GBP conversion rates and schedules live 1-click video property walk-throughs.', icon: '📹' },
+        { title: '📋 Realtor Commission & 5% WHT Ledger', description: 'Routes verified buyer leads to sales agents and tracks deal closures with automated documentation.', icon: '🤝' }
+      ],
+      aboutText: `${name} delivers premier luxury homes, commercial developments, and vetted land banking opportunities across ${area}. Trusted for verified titles, Governor's Consent, and architectural excellence.`,
+      testimonials: [
+        { name: 'Chief Olumide B.', text: 'The virtual tour and installment schedule gave us complete peace of mind investing from the UK.', rating: 5 },
+        { name: 'Barr. Folake T.', text: 'Transparent documentation and seamless buying experience. Excellent team in Lagos.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Upgrade My Real Estate Portal' : 'Claim My Luxury Property Portal'
+    };
+  }
+
+  // 3. AUTOMOTIVE & TOKUNBO IMPORTERS
+  if (/car|auto|motor|vehicle|tokunbo|dealership|mechanic/.test(cat)) {
+    return {
+      heroTitle: `${name} — Direct Tokunbo Imports & Instant Duty Quotes`,
+      heroSubtitle: `Provide buyers instant customs duty assessments, trade-in valuations, and 24/7 WhatsApp vehicle inventory updates across Lagos.`,
+      services: [
+        { title: '🚗 Customs Duty Assessment (PAAR) Calculator', description: 'Estimates VIN duty, NAC levy, and port clearing fees accurately for prospective buyers.', icon: '🚗' },
+        { title: '🔄 Car Swap & Trade-In Valuation Engine', description: 'Offers prospective clients instant asset appraisals to capture and close high-value upgrade leads.', icon: '🔄' },
+        { title: '🤖 24/7 WhatsApp Stock & Test Drive Assistant', description: 'Sends live showroom photos, specs, and inspection bookings directly to customer phones.', icon: '📱' }
+      ],
+      aboutText: `${name} is a leading automotive dealership in ${area} providing thoroughly inspected Nigerian used and foreign used (Tokunbo) vehicles with genuine customs documentation.`,
+      testimonials: [
+        { name: 'Capt. Ibrahim M.', text: 'Fair trade-in valuation and transparent customs clearing breakdown. Got my SUV in 48 hours.', rating: 5 },
+        { name: 'Segun Oladipo', text: 'Best dealership experience in Lagos. Verified VIN and clean engine.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Upgrade My Auto Sales Engine' : 'Claim My Auto Dealership Website'
+    };
+  }
+
+  // 4. MEDICAL & HEALTHCARE CLINICS
+  if (/medical|clinic|doctor|health|hospital|pharmacy|dental|lab/.test(cat)) {
+    return {
+      heroTitle: `${name} — 24/7 Patient Triage & HMO Telehealth Portal`,
+      heroSubtitle: `Streamline patient appointments, HMO co-pay authorizations, and diagnostic lab package bookings with zero waiting room delays.`,
+      services: [
+        { title: '🩺 HMO Claims & Tariff Authorization Reconciler', description: 'Verifies Reliance, AXA Mansard, Hygeia, and Leadway HMO tariff copays in under 3 seconds.', icon: '🩺' },
+        { title: '🏥 Surgery & Admission Deposit Estimator', description: 'Itemizes ward rates, theatre fees, and deposits with transparent printable estimates.', icon: '🏥' },
+        { title: '📅 24/7 WhatsApp Patient Triage & Booking', description: 'Books doctor consultation slots and sends automated pre-visit fasting instructions.', icon: '📅' }
+      ],
+      aboutText: `${name} provides compassionate, world-class healthcare services in ${area}. Committed to clinical excellence, modern diagnostic technology, and rapid patient recovery.`,
+      testimonials: [
+        { name: 'Mrs. Kemi Johnson', text: 'Booking our family consultation via WhatsApp saved us hours at the reception. Superb doctors!', rating: 5 },
+        { name: 'Pastor David E.', text: 'Clean facilities, prompt triage, and seamless HMO verification.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Upgrade My Clinic Portal' : 'Claim My Medical Clinic Website'
+    };
+  }
+
+  // 5. SCHOOLS & ACADEMIES
+  if (/school|academy|education|college|creche|tutor/.test(cat)) {
+    return {
+      heroTitle: `${name} — Excellence in Education & Smart Portal`,
+      heroSubtitle: `Simplify termly tuition fee schedules, CBT exam scoring, and WhatsApp result checker PIN generation for modern parents.`,
+      services: [
+        { title: '🎓 Termly Tuition & Boarding Fee Estimator', description: 'Calculates tuition, uniforms, and books with flexible structured installment plans.', icon: '🎓' },
+        { title: '📜 CBT Exam Scoring & Automated Broadsheet', description: 'Computes continuous assessments and generates printable termly performance reports.', icon: '📜' },
+        { title: '🔑 WhatsApp Result PIN Dispenser', description: 'Dispenses scratch card result checker PINs automatically upon instant OPay transfer.', icon: '🔑' }
+      ],
+      aboutText: `${name} is an esteemed educational institution in ${area} nurturing academic excellence, moral leadership, and creative innovation in every student.`,
+      testimonials: [
+        { name: 'Dr. (Mrs) Okafor', text: 'The online fee breakdown and instant result PIN access make termly registration stress-free.', rating: 5 },
+        { name: 'Engr. Taiwo B.', text: 'Outstanding academic standards and very responsive administration.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Upgrade My School Portal' : 'Claim My Academy Website'
+    };
+  }
+
+  // 6. LAW FIRMS & LEGAL PRACTITIONERS
+  if (/law|legal|attorney|solicitor|advocate|barrister|cac/.test(cat)) {
+    return {
+      heroTitle: `${name} — Premier Corporate & Commercial Legal Suite`,
+      heroSubtitle: `Automate CAC compliance audits, SCUML anti-money laundering checks, and retainer debit note generation for corporate clients.`,
+      services: [
+        { title: '⚖️ CAC Filing, Stamp Duty & RC Number Calculator', description: 'Itemizes statutory government filing fees and stamp duties for business incorporations.', icon: '⚖️' },
+        { title: '🛡️ SCUML Compliance & Corporate Shield', description: 'Audits company compliance status and generates statutory debit notes in minutes.', icon: '🛡️' },
+        { title: '📄 1-Click Retainer & NDA Contract Generator', description: 'Generates branded legal retainers with digital signature and OPay escrow settlement.', icon: '📄' }
+      ],
+      aboutText: `${name} is a distinguished law practice in ${area} providing astute counsel in corporate law, real estate conveyancing, intellectual property, and commercial dispute resolution.`,
+      testimonials: [
+        { name: 'MD, Global Tech Ltd', text: 'Prompt CAC corporate filing and seamless retainer invoicing. Essential legal partners for our business.', rating: 5 },
+        { name: 'Alhaji Sanusi K.', text: 'Thorough due diligence and contract negotiation. Highly recommended legal team.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Upgrade My Law Firm Portal' : 'Claim My Legal Practice Portal'
+    };
+  }
+
+  // 7. HOTELS & SHORTLET APARTMENTS
+  if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge/.test(cat)) {
+    return {
+      heroTitle: `${name} — Luxury Stay & Direct Booking Engine`,
+      heroSubtitle: `Bypass 20% OTA commissions with direct 24/7 WhatsApp bookings, caution deposit verification, and generator diesel power tracking.`,
+      services: [
+        { title: '🏨 24/7 Direct WhatsApp Booking Engine', description: 'Collects verified guest dates and deposits directly into your bank without intermediary fees.', icon: '🏨' },
+        { title: '⚡ Power & Diesel Expense Reconciliation', description: 'Monitors daily kWh consumption and manages automatic caution deposit refund calculation.', icon: '⚡' },
+        { title: '💳 Moniepoint & OPay Caution Deposit Gateway', description: 'Instant transfer verification and automated check-in digital key dispatch.', icon: '💳' }
+      ],
+      aboutText: `${name} offers serene, luxurious accommodations in ${area} featuring 24/7 uninterrupted power, high-speed fiber internet, and bespoke hospitality services.`,
+      testimonials: [
+        { name: 'Amaka Eze', text: 'Loved the fast WhatsApp booking and instant check-in. The apartment was immaculate with 24/7 power!', rating: 5 },
+        { name: 'Tunde Bakare', text: 'Top tier shortlet in Lagos. Seamless caution deposit refund right after checkout.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Upgrade My Hotel Booking Engine' : 'Claim My Luxury Hospitality Website'
+    };
+  }
+
+  // 8. LOGISTICS, HAULAGE & DISPATCH
+  if (/logistics|haulage|courier|dispatch|delivery|freight|cargo|truck/.test(cat)) {
+    return {
+      heroTitle: `${name} — Smart Logistics & Instant Delivery Pricing`,
+      heroSubtitle: `Compute intra-Lagos bike delivery fees, interstate 30-ton haulage diesel expenses, and POD rider cash remittances on autopilot.`,
+      services: [
+        { title: '📦 Intra-Lagos Delivery Fee Sizer (Ikeja to Lekki)', description: 'Calculates dynamic delivery rates based on distance, pickup zone, and package weight.', icon: '📦' },
+        { title: '🚚 Interstate Haulage Diesel & Union Tax Estimator', description: 'Computes diesel litre allocations, highway taxes, and net profit per trip corridor.', icon: '🚚' },
+        { title: '💵 POD Rider Cash Collection Reconciler', description: 'Tracks cash on delivery remittances and waybill confirmations in real time.', icon: '💵' }
+      ],
+      aboutText: `${name} provides dependable dispatch, haulage, and supply chain logistics across ${area} and nationwide, ensuring safe, punctual cargo delivery.`,
+      testimonials: [
+        { name: 'Boutique Owner, Lekki', text: 'Their automated delivery fee quote makes customer checkout effortless on our WhatsApp page.', rating: 5 },
+        { name: 'Manager, FMCG Distributors', text: 'Reliable haulage dispatch and transparent diesel reconciliation for our interstate fleet.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Upgrade My Logistics Engine' : 'Claim My Logistics Website'
+    };
+  }
+
+  // 9. EVENT CENTERS & BANQUET HALLS
+  if (/event|hall|banquet|decor|cater|party|wedding/.test(cat)) {
+    return {
+      heroTitle: `${name} — Grand Events & Automated Date Reservations`,
+      heroSubtitle: `Size banquet seating capacities, decor lighting packages, and overtime caution bonds with instant WhatsApp event quotes.`,
+      services: [
+        { title: '🎉 Guest Capacity & Banquet Decor Estimator', description: 'Sizes hall packages, lighting, and sound gear tailored to guest headcount.', icon: '🎉' },
+        { title: '⏰ Overtime & Caution Bond Calculator', description: 'Computes hourly overtime rates and post-event sanitization bonds accurately.', icon: '⏰' },
+        { title: '📅 24/7 WhatsApp Event Date Checker', description: 'Allows wedding and corporate planners to check date availability and lock reservation deposits.', icon: '📅' }
+      ],
+      aboutText: `${name} is an exquisite event center in ${area} featuring climate-controlled banquet halls, ample secure parking, and majestic aesthetics for memorable celebrations.`,
+      testimonials: [
+        { name: 'Mrs. Yetunde A.', text: 'Our wedding reception was spectacular! The decor pricing calculator gave us complete budget clarity.', rating: 5 },
+        { name: 'Corporate Events Lead', text: 'Prime location, impeccable facilities, and easy date reservation system.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Upgrade My Event Hall Engine' : 'Claim My Event Center Website'
+    };
+  }
+
+  // DEFAULT / GENERAL PROFESSIONAL SERVICES
   return {
-    heroTitle: `${lead.name} — Trusted in ${lead.area}`,
-    heroSubtitle: `Proudly serving ${lead.city} with excellence and dedication. Rated ${lead.rating} stars by ${lead.reviews_count} happy customers.`,
+    heroTitle: `${name} — 24/7 AI Sales & Automation Engine`,
+    heroSubtitle: `Capture 3.5x more local clients in ${area} with automated WhatsApp auto-responders, instant quote generators, and direct bank payments.`,
     services: [
-      { title: 'Quality Service', description: `We take pride in delivering top-tier ${lead.category.toLowerCase()} services to every client. Our team is trained to exceed your expectations every time.`, icon: '⭐' },
-      { title: 'Expert Team', description: `Our experienced professionals bring years of expertise in the ${lead.category.toLowerCase()} industry. We stay updated with the latest practices to serve you better.`, icon: '👥' },
-      { title: 'Customer First', description: `Your satisfaction is our highest priority. We listen, we respond, and we deliver. That is why we have earned ${lead.reviews_count} positive reviews from our community.`, icon: '❤️' },
+      { title: '🤖 24/7 WhatsApp AI Customer Concierge', description: 'Answers customer inquiries, voice notes, and price requests automatically within 3 seconds.', icon: '🤖' },
+      { title: '⚡ 1-Click Instant Quote & Proposal Estimator', description: 'Generates branded PDF invoices and service quotes sent directly to customer phones.', icon: '⚡' },
+      { title: '💳 Moniepoint & OPay Direct Transfer Gateway', description: 'Collects verified customer payments straight into your bank account with instant receipts.', icon: '💳' }
     ],
-    aboutText: `${lead.name} has been proudly serving the ${lead.area} community in ${lead.city}. We are a trusted local business with a ${lead.rating}-star rating on Google Maps, backed by ${lead.reviews_count} genuine customer reviews. Our commitment to quality and community makes us the go-to destination for ${lead.category.toLowerCase()} services.`,
+    aboutText: `${name} is a verified enterprise in ${area} dedicated to delivering top-tier services, responsive customer support, and measurable value to every client.`,
     testimonials: [
-      { name: 'Chukwuemeka A.', text: 'Absolutely fantastic service! The team was professional, courteous, and got the job done perfectly. Highly recommend.', rating: 5 },
-      { name: 'Adaeze O.', text: `Best ${lead.category.toLowerCase()} experience I've had in ${lead.area}. Clean, efficient, and great value for money.`, rating: 5 },
+      { name: 'Chukwuemeka A.', text: 'The WhatsApp AI autoresponder responded to our late-night inquiry instantly. Exceptional setup!', rating: 5 },
+      { name: 'Adaeze O.', text: 'Transparent quotes and very smooth payment process. Highly recommended business in Lagos.', rating: 5 }
     ],
-    ctaText: 'Get in Touch Today',
+    ctaText: hasWebsite ? 'Upgrade My Business System' : 'Claim My Business Website & AI Engine'
   };
 }
 

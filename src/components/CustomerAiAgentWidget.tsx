@@ -82,7 +82,7 @@ export default function CustomerAiAgentWidget({
     }
 
     const welcomeGreeting = leadData
-      ? `👋 Hello, **${leadData.name}**! 🌟 Congratulations — your Google Business profile shows you're rated **${leadData.rating}★** with ${leadData.reviews_count} reviews in **${leadData.area || leadData.city || 'Lagos'}**. I've already built a custom AI Lead Generation portal specifically for your **${leadData.category}** business! 🚀 Shall I walk you through how to activate it today with just ₦92,500?`
+      ? `👋 Hello, **${leadData.name}**! 🌟 Your profile is verified in **${leadData.area || leadData.city || 'Lagos'}**. I have already pre-configured this 24/7 AI Lead & Quoting portal specifically for **${leadData.name}**! 🚀 How can I assist you with your instant quote or system setup today?`
       : businessName
       ? `👋 Welcome to ${businessName}! I am your 24/7 AI Business Guide & Virtual Assistant. How can I assist you with our services, instant quotes, or custom domain setup today?`
       : `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`;
@@ -224,6 +224,25 @@ export default function CustomerAiAgentWidget({
     }
   };
 
+  const handleResetChat = () => {
+    const newSid = `client_${Math.random().toString(36).substring(2, 10)}`;
+    localStorage.setItem('bethel_ai_session_id', newSid);
+    setSessionId(newSid);
+    const welcomeGreeting = leadData
+      ? `👋 Hello, **${leadData.name}**! 🌟 Fresh chat initialized. How can I assist your ${leadData.category} business today?`
+      : `👋 Hello! Fresh chat session initialized with active memory. How can I help you today?`;
+    const initMsg: ChatMessage = {
+      id: `msg_${Date.now()}`,
+      sender: 'agent',
+      text: welcomeGreeting,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+    setMessages([initMsg]);
+    try {
+      localStorage.setItem(`bethel_ai_chat_history_${newSid}`, JSON.stringify([initMsg]));
+    } catch {}
+  };
+
   // Dynamic quick-action chips based on scraped lead's business category
   const quickPrompts = leadData ? [
     leadData.category?.toLowerCase().includes('solar')
@@ -261,7 +280,7 @@ export default function CustomerAiAgentWidget({
           </div>
           <div className="trigger-text">
             <span className="trigger-title">{businessName ? `Chat with ${businessName}` : 'Chat with AI Concierge'}</span>
-            <span className="trigger-sub">24/7 Virtual Assistant</span>
+            <span className="trigger-sub">24/7 Intelligent Assistant</span>
           </div>
         </button>
       )}
@@ -278,12 +297,32 @@ export default function CustomerAiAgentWidget({
               </div>
               <div>
                 <h4>{agentName}</h4>
-                <div className="agent-status-badge">
-                  <Sparkles size={12} /> 24/7 AI Active • {sector}
+                <div className="agent-status-badge" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Sparkles size={11} /> <span>24/7 AI • {sector}</span>
+                  <span style={{ background: 'rgba(16,185,129,0.2)', color: '#34d399', fontSize: '0.62rem', padding: '1px 6px', borderRadius: '10px', border: '1px solid rgba(16,185,129,0.3)' }}>🧠 Memory Active</span>
                 </div>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button
+                onClick={handleResetChat}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  color: '#94a3b8',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '16px',
+                  padding: '4px 8px',
+                  fontSize: '0.68rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                }}
+                title="Start a fresh chat"
+              >
+                <RefreshCw size={11} /> Reset
+              </button>
               <button
                 onClick={() => speakText(messages[messages.length - 1]?.text || '')}
                 style={{
@@ -291,8 +330,8 @@ export default function CustomerAiAgentWidget({
                   color: '#fff',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   borderRadius: '20px',
-                  padding: '4px 10px',
-                  fontSize: '0.72rem',
+                  padding: '4px 9px',
+                  fontSize: '0.70rem',
                   fontWeight: 600,
                   cursor: 'pointer',
                   display: 'flex',

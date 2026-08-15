@@ -38,8 +38,16 @@ const FAQ_ITEMS = [
     a: 'Our Business Pro plan includes up to 10,000 verified Nigerian B2B contacts every month, complete with verified business names, WhatsApp phone numbers, and decision-maker details across Lagos, Abuja, and Port Harcourt.',
   },
   {
-    q: 'Can I cancel my monthly subscription anytime?',
-    a: 'Yes. Monthly subscriptions can be cancelled at any time with a simple 1-click message. There are no contracts, lock-ins, or hidden cancellation penalties.',
+    q: 'Can I do a 1-time purchase/download with 100% full code ownership and NO monthly subscription?',
+    a: 'Yes, absolutely! For clients who prefer complete independence with ₦0 recurring monthly fees, we offer an Outright Code Handover & IP Transfer package. You receive the complete production source code (ZIP & GitHub repository), full legal Intellectual Property transfer deed, setup scripts, and self-hosting documentation for your own servers (Vercel, Render, or cPanel/VPS) with lifetime unrestricted commercial ownership and ZERO monthly charges.',
+  },
+  {
+    q: 'What happens if I need updates, price changes, or fresh leads months after my 1-time purchase?',
+    a: 'You have 3 flexible, zero-stress options: 1) Use your private, mobile-friendly Admin Dashboard to update your prices, phone numbers, and products anytime for FREE with zero coding; 2) Submit on-demand developer update requests from our Pay-As-You-Go menu (from just ₦10,000 per task); or 3) Grab our optional Annual Peace of Mind Pass (₦85,000/year) which handles your domain renewal, cloud hosting, daily backups, and gives you 2 free developer updates every single month.',
+  },
+  {
+    q: 'Can I cancel my monthly subscription anytime if I choose the managed plan?',
+    a: 'Yes. If you choose our fully managed cloud hosting and AI maintenance plan, it can be cancelled at any time with a simple 1-click message. There are no contracts, lock-ins, or hidden cancellation penalties.',
   },
 ];
 

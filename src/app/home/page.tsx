@@ -30,6 +30,7 @@ const CustomerAiAgentWidget = dynamic(() => import('@/components/CustomerAiAgent
 
 const RelumeSiteGeneratorSection = dynamic(() => import('@/components/home/RelumeSiteGeneratorSection'), { ssr: false });
 const LeadMarketplaceSection = dynamic(() => import('@/components/home/LeadMarketplaceSection'), { ssr: false });
+const AddonModulesSection = dynamic(() => import('@/components/home/AddonModulesSection'), { ssr: false });
 
 export default function HomePage() {
   const [businessName, setBusinessName] = useState('My Business');
@@ -73,6 +74,8 @@ export default function HomePage() {
           selectedIndustry={selectedIndustry}
           setSelectedIndustry={setSelectedIndustry}
         />
+
+        <AddonModulesSection />
 
         <CrmPreviewSection />
 

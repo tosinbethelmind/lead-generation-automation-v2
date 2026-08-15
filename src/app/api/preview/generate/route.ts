@@ -8,9 +8,7 @@ import { getDesignTheme, buildFallbackCopy, DesignTheme, GeneratedCopy } from '@
 import fs from 'fs';
 import path from 'path';
 
-// Ultra-Fast In-Memory Cache for Sub-Second Preview Page Loads (<15ms)
-const _previewCache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL_MS = 60 * 60 * 1000; // 1 Hour Cache
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,14 +17,6 @@ export async function GET(req: NextRequest) {
 
     if (!leadId) {
       return NextResponse.json({ error: 'Missing leadId parameter' }, { status: 400 });
-    }
-
-    // Return instant cached response if available
-    const cached = _previewCache.get(leadId);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return NextResponse.json(cached.data, {
-        headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400' }
-      });
     }
 
     const repo = getActiveLeadRepository();
@@ -93,7 +83,7 @@ export async function GET(req: NextRequest) {
 
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1200); // Ultra-fast 1.2s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 500); // Super-fast 500ms max timeout
         const analysisResp = await fetch(`${origin}/api/analysis/website`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -144,9 +134,12 @@ export async function GET(req: NextRequest) {
       let generatedResponse: any = null;
       try {
         const { generateCopyWithProviders } = await import('@/lib/llmProvider');
-        generatedResponse = await generateCopyWithProviders(lead);
+        // Lightning-fast 800ms max timeout so page loads instantly
+        const llmPromise = generateCopyWithProviders(lead);
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('LLM timeout')), 800));
+        generatedResponse = await Promise.race([llmPromise, timeoutPromise]);
       } catch (err: any) {
-        console.warn('Copy generation via providers failed:', err.message);
+        // Instant fallback to optimized local copy engine (<1ms)
       }
 
       let photoFallback = '';
@@ -255,11 +248,8 @@ export async function GET(req: NextRequest) {
       }
     };
 
-    // Store in cache for sub-second repeat loads
-    _previewCache.set(leadId, { data: responsePayload, timestamp: Date.now() });
-
     return NextResponse.json(responsePayload, {
-      headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400' }
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0' }
     });
   } catch (err: any) {
     console.error('Preview Generation API Error:', err);

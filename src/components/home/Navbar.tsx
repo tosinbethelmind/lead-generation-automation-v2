@@ -23,8 +23,10 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'How It Works', href: '#how-it-works' },
-    { label: 'Solutions', href: '#solutions' },
     { label: 'Sector Tools', href: '#sector-tools' },
+    { label: 'Add-ons', href: '#addon-modules', badge: 'NEW' },
+    { label: 'Marketplace', href: '/marketplace', badge: 'LIVE' },
+    { label: 'Recruitment AI', href: '/recruitment', badge: 'PRO' },
     { label: 'Pricing', href: '#pricing' },
     { label: 'FAQ', href: '#faq' },
   ];
@@ -100,7 +102,7 @@ export default function Navbar() {
       {/* Desktop nav */}
       <nav aria-label="Primary navigation" style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
         {navLinks.map((link) => (
-          <a
+          <Link
             key={link.href}
             href={link.href}
             className="nav-btn-chip desktop-only"
@@ -109,7 +111,7 @@ export default function Navbar() {
               textDecoration: 'none',
               fontSize: '0.82rem',
               fontWeight: 600,
-              padding: '6px 12px',
+              padding: '6px 11px',
               borderRadius: 10,
               background: 'rgba(255, 255, 255, 0.03)',
               border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -117,10 +119,28 @@ export default function Navbar() {
               transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
               display: 'inline-flex',
               alignItems: 'center',
+              gap: 5,
             }}
           >
             {link.label}
-          </a>
+            {link.badge && (
+              <span
+                style={{
+                  fontSize: '0.6rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.04em',
+                  padding: '2px 5px',
+                  borderRadius: 6,
+                  background: link.badge === 'LIVE' ? 'rgba(16, 185, 129, 0.2)' : link.badge === 'PRO' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(6, 182, 212, 0.2)',
+                  color: link.badge === 'LIVE' ? '#34d399' : link.badge === 'PRO' ? '#c084fc' : '#22d3ee',
+                  border: `1px solid ${link.badge === 'LIVE' ? 'rgba(16, 185, 129, 0.4)' : link.badge === 'PRO' ? 'rgba(168, 85, 247, 0.4)' : 'rgba(6, 182, 212, 0.4)'}`,
+                  lineHeight: 1,
+                }}
+              >
+                {link.badge}
+              </span>
+            )}
+          </Link>
         ))}
 
         <Link
@@ -211,7 +231,7 @@ export default function Navbar() {
           style={{ position: 'absolute', top: 72, left: 0, right: 0, background: 'rgba(7,10,20,0.98)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 18, padding: '16px 20px 24px', display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '0 25px 60px rgba(0,0,0,0.9)' }}
         >
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
@@ -224,11 +244,28 @@ export default function Navbar() {
                 borderRadius: 12,
                 background: 'rgba(255,255,255,0.04)',
                 border: '1px solid rgba(255,255,255,0.06)',
-                display: 'block',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
-              {link.label}
-            </a>
+              <span>{link.label}</span>
+              {link.badge && (
+                <span
+                  style={{
+                    fontSize: '0.62rem',
+                    fontWeight: 800,
+                    padding: '2px 7px',
+                    borderRadius: 6,
+                    background: link.badge === 'LIVE' ? 'rgba(16, 185, 129, 0.2)' : link.badge === 'PRO' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(6, 182, 212, 0.2)',
+                    color: link.badge === 'LIVE' ? '#34d399' : link.badge === 'PRO' ? '#c084fc' : '#22d3ee',
+                    border: `1px solid ${link.badge === 'LIVE' ? 'rgba(16, 185, 129, 0.4)' : link.badge === 'PRO' ? 'rgba(168, 85, 247, 0.4)' : 'rgba(6, 182, 212, 0.4)'}`,
+                  }}
+                >
+                  {link.badge}
+                </span>
+              )}
+            </Link>
           ))}
           <Link href="/admin" onClick={() => setMenuOpen(false)} style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.9rem', padding: '8px 14px', display: 'block' }}>
             Login

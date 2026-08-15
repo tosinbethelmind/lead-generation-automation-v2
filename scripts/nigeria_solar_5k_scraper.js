@@ -224,7 +224,7 @@ async function fetchOSMSolarLeads(stateObj, batchOffset) {
   try {
     const res = await fetch(url, {
       headers: {
-        'User-Agent': 'ApexReach-SolarScraper/1.0 (tosin@bethelmindanalytics.com)'
+        'User-Agent': 'ApexReach-SolarScraper/1.0 (contact@bethelmindanalytics.com)'
       }
     });
     if (!res.ok) return [];

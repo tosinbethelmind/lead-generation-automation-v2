@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun, Bot, Zap, Briefcase, Building2, CreditCard, Crown, Send, Settings as SettingsIcon, FileText, Layers, UserCheck } from 'lucide-react';
+import { LayoutDashboard, Palette, Globe, LogOut, ShieldAlert, Users, Sun, Bot, Zap, Briefcase, Building2, CreditCard, Crown, Send, Settings as SettingsIcon, FileText, Layers, UserCheck, Activity } from 'lucide-react';
 import { WebappToolActionBar } from '@/components/WebappToolActionBar';
 
 export default function AdminLayout({
@@ -112,6 +112,13 @@ export default function AdminLayout({
           path: '/admin/ai-agent',
           icon: Bot,
           visible: true,
+        },
+        {
+          name: 'Customer Journey & Retargeting',
+          path: '/admin/journey',
+          icon: Activity,
+          visible: true,
+          badge: 'Live AI',
         },
         {
           name: 'Autoresponders',

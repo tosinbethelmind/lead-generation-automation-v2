@@ -99,15 +99,37 @@ app.post('/api/refresh-qr', async (req, res) => {
   return res.json({ success: true, message: `Fresh QR code generated for ${targetLine.name}` });
 });
 
+app.post('/api/pairing-code', async (req, res) => {
+  const lineId = parseInt(req.query?.lineId || req.body?.lineId || '1', 10);
+  const targetLine = LINES.find(l => l.id === lineId) || LINES[0];
+  const sock = socketMap[targetLine.id];
+
+  if (!sock) {
+    return res.status(500).json({ error: 'Socket not initialized' });
+  }
+
+  try {
+    const cleanPhone = targetLine.phone.replace(/\D/g, '');
+    const code = await sock.requestPairingCode(cleanPhone);
+    const formatted = code?.match(/.{1,4}/g)?.join('-') || code;
+    stateMap[targetLine.id].pairingCode = formatted;
+    return res.json({ success: true, lineId: targetLine.id, pairingCode: formatted });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // === HTML UI PAGE ROUTE ===
 
 function renderCardHtml(line, st) {
   const isConnected = st.status === 'open';
   const isQr = st.status === 'qr_ready' && st.qrDataUrl;
+  const pCode = st.pairingCode || '';
+
   return `
     <div class="card ${isConnected ? 'connected' : (isQr ? 'qr-ready' : '')}" id="card-${line.id}">
       <div class="badge ${isConnected ? 'connected' : (isQr ? 'qr-ready' : (st.status === 'connecting' ? 'connecting' : 'disconnected'))}">
-        ${isConnected ? '🎉 LINKED & ACTIVE ✅' : (isQr ? '⚡ SCAN QR CODE NOW' : st.status.toUpperCase())}
+        ${isConnected ? '🎉 LINKED & ACTIVE ✅' : (isQr ? '⚡ SCAN QR OR ENTER CODE' : st.status.toUpperCase())}
       </div>
       <div class="line-title">${line.name}</div>
       <div class="line-phone">${line.phone}</div>
@@ -118,13 +140,21 @@ function renderCardHtml(line, st) {
           <p>Line is online & ready for lead dispatch.</p>
         </div>
       ` : `
+        ${pCode ? `
+          <div style="background:#0f172a;border:2px solid #38bdf8;padding:16px;border-radius:12px;margin:12px 0;">
+            <div style="font-size:0.75rem;color:#94a3b8;margin-bottom:4px;">ENTER CODE ON WHATSAPP:</div>
+            <div style="font-size:1.6rem;font-weight:900;letter-spacing:3px;color:#38bdf8;font-family:monospace;">${pCode}</div>
+          </div>
+        ` : ''}
+
         <div class="qr-box">
           ${isQr ? `<img src="${st.qrDataUrl}" alt="${line.name} QR" />` : `<p style="color:#64748b;padding:30px 0;">Generating QR code...</p>`}
         </div>
-        <div class="step">1. Open WhatsApp for <strong>${line.phone}</strong></div>
+        <div class="step">1. Open WhatsApp on <strong>${line.phone}</strong></div>
         <div class="step">2. Tap Settings / 3-dots &rarr; <strong>Linked Devices</strong></div>
-        <div class="step">3. Tap <strong>Link a Device</strong> &amp; scan QR above</div>
-        <button class="btn-card" onclick="refreshLine(${line.id})">⚡ Regenerate QR for ${line.name}</button>
+        <div class="step">3. Tap <strong>Link a Device</strong> &amp; scan QR or tap code</div>
+        <button class="btn-card" style="background:#0284c7;" onclick="getPairingCode(${line.id})">🔑 Get 8-Digit Pairing Code</button>
+        <button class="btn-card" onclick="refreshLine(${line.id})">⚡ Regenerate QR</button>
       `}
     </div>
   `;
@@ -219,8 +249,23 @@ app.get('/', (req, res) => {
       } catch (_) {}
     }
 
+    async function getPairingCode(lineId) {
+      try {
+        const resp = await fetch('/api/pairing-code?lineId=' + lineId, { method: 'POST' });
+        const data = await resp.json();
+        if (data.pairingCode) {
+          alert('🔑 Your 8-digit Pairing Code for Line ' + lineId + ' is: ' + data.pairingCode + '\n\nOpen WhatsApp on your phone ➔ Linked Devices ➔ Link with phone number instead ➔ enter code.');
+          checkStatus();
+        } else {
+          alert('Error: ' + (data.error || 'Failed to get code'));
+        }
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
     async function refreshLine(lineId) {
-      if (!confirm('🔒 Are you sure you want to reset this linked WhatsApp session? (Your session is currently locked & active)')) return;
+      if (!confirm('🔒 Are you sure you want to reset this linked WhatsApp session?')) return;
       try {
         await fetch('/api/refresh-qr?lineId=' + lineId, { method: 'POST' });
         checkStatus();
@@ -259,6 +304,13 @@ async function getBaileysVersion() {
 
 async function restartSingleLine(line) {
   const authDir = path.join(__dirname, '../local_db', line.authSubDir);
+  
+  // Safeguard: If line is already linked & active, do NOT wipe its auth credentials
+  if (stateMap[line.id]?.status === 'open') {
+    console.log(`🛡️ Line ${line.id} (${line.name}) is already linked and protected. Skipping credential deletion.`);
+    return;
+  }
+
   stateMap[line.id].status = 'connecting';
   stateMap[line.id].qrDataUrl = '';
 
@@ -286,7 +338,7 @@ async function startLineSocket(line) {
     logger: pino({ level: 'silent' }),
     auth: state,
     printQRInTerminal: false,
-    browser: ['Ubuntu', 'Chrome', '20.0.04']
+    browser: ['Windows', 'Chrome', '125.0.0.0']
   });
 
   socketMap[line.id] = sock;

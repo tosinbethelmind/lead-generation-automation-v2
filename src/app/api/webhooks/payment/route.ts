@@ -51,13 +51,15 @@ export async function POST(req: NextRequest) {
       phone: phone
     });
 
-    console.log(`⚡ [Post-Payment Trigger] Solar Referral Generated:`, solarReferral.calculator_url);
+    const postPaymentUrl = (solarReferral as any).dashboard_url || (solarReferral as any).calculator_url || 'https://www.bethelmindanalytics.com/client/dashboard';
+
+    console.log(`⚡ [Post-Payment Trigger] Client Onboarding Generated:`, postPaymentUrl);
 
     return NextResponse.json({
       success: true,
-      message: 'Payment recorded and Post-Payment Solar Referral onboarding dispatched.',
+      message: 'Payment recorded and Client Onboarding dispatched.',
       company_name: companyName,
-      post_payment_referral_url: solarReferral.calculator_url
+      post_payment_dashboard_url: postPaymentUrl
     });
   } catch (error: any) {
     console.error('❌ [Payment Webhook Error]:', error);

@@ -56,6 +56,8 @@ When you claim your website, [COMPANY_NAME] automatically gets:
 3. 🎯 Direct Access to qualified commercial & residential solar leads in [CITY]
    ${leadsUrl}
 
+(💡 Fast-Track: Reply directly with a WhatsApp Voice Note or text "CLAIM" to lock your domain & installer spot hands-free)
+
 {Best regards|Warm regards|To your growth},
 The SolarQuotePro Installer Desk
 (Reply STOP to unsubscribe)`;

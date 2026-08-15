@@ -1,7 +1,7 @@
 /**
  * @file autoresponderEngine.ts
  * Multi-Channel Autoresponder Engine
- * Supports WhatsApp, SMS, Email, and Web Chat auto-replies.
+ * Supports WhatsApp, SMS, Email, and Web Chat auto-replies with integrated Anti-Ban STOP suppression.
  */
 
 import { randomUUID } from 'crypto';
@@ -11,6 +11,7 @@ import { getSupabaseClient } from './supabaseClient';
 import { getRuntimeConfig } from './localConfig';
 import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from './atomicIo';
 import { logActivity } from './activityLogger';
+import { isOptOutKeyword, recordOptOut } from './whatsappRotator';
 
 export type AutoresponderChannel = 'all' | 'whatsapp' | 'sms' | 'email' | 'webchat';
 export type TriggerType = 'keyword' | 'contains' | 'default_welcome' | 'outside_hours';
@@ -39,8 +40,36 @@ function getAutorespondersFilePath(): string {
     : path.join(process.cwd(), 'local_db', 'autoresponder_rules.json');
 }
 
-/** Default starter autoresponder rules */
+/** Default starter autoresponder rules with Anti-Ban STOP suppression */
 const DEFAULT_RULES: AutoresponderRule[] = [
+  {
+    id: 'rule_optout_000',
+    name: 'Automatic STOP / Unsubscribe Handler',
+    channel: 'all',
+    trigger_type: 'keyword',
+    keywords: ['stop', 'unsubscribe', 'remove me', 'remove', 'opt out', 'opt-out', 'dont message me', "don't message me", 'block', 'cancel'],
+    response_type: 'template',
+    response_text: 'You have been successfully unsubscribed. You will not receive any further automated outreach messages from Bethelmind Solutions. Wishing your business continued success!',
+    priority: 100, // Highest priority to intercept opt-outs immediately
+    enabled: true,
+    reply_count: 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'rule_lagos10k_handshake',
+    name: 'Lagos 10K Warm Greeting Handshake Handler',
+    channel: 'whatsapp',
+    trigger_type: 'keyword',
+    keywords: ['yes', 'speaking', 'who is this', 'who is speaking', 'how can i help', 'who are you', 'how may i help', 'good morning', 'good afternoon', 'im listening', "i'm listening", 'tell me', 'go ahead'],
+    response_type: 'template',
+    response_text: 'Thank you for confirming! 👋 We operate Bethelmind Analytics in Lagos. We have designed an interactive 24/7 AI Customer Quoting & Booking portal demo specifically for your business to capture after-hours customers on autopilot.\n\n👉 Test your live 2-min interactive preview here:\nhttps://www.bethelmindanalytics.com/preview/demo\n\n(💡 Would you prefer customer booking requests routed directly to this WhatsApp line or to your email?)',
+    priority: 50,
+    enabled: true,
+    reply_count: 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
   {
     id: 'rule_welcome_001',
     name: 'Instant Welcome Auto-reply',
@@ -178,7 +207,7 @@ export async function saveAutoresponderRule(rule: Partial<AutoresponderRule> & {
         keywords: rule.keywords || [],
         response_type: rule.response_type || 'template',
         response_text: rule.response_text || 'Thank you for reaching out!',
-        priority: rule.priority || 5,
+        priority: rule.priority || 1,
         enabled: rule.enabled !== undefined ? rule.enabled : true,
         reply_count: rule.reply_count || 0,
         created_at: now,
@@ -195,7 +224,7 @@ export async function saveAutoresponderRule(rule: Partial<AutoresponderRule> & {
       keywords: rule.keywords || [],
       response_type: rule.response_type || 'template',
       response_text: rule.response_text || 'Thank you for reaching out!',
-      priority: rule.priority || 5,
+      priority: rule.priority || 1,
       enabled: rule.enabled !== undefined ? rule.enabled : true,
       reply_count: 0,
       created_at: now,
@@ -252,7 +281,28 @@ export async function processAutoresponderMessage(params: {
   channel: AutoresponderChannel;
   senderContact?: string;
   senderName?: string;
-}): Promise<{ matched: boolean; ruleId?: string; replyText: string; responseType: ResponseType }> {
+}): Promise<{ matched: boolean; ruleId?: string; replyText: string; responseType: ResponseType; isOptOut?: boolean }> {
+  // 1. Instant check for Opt-Out / STOP
+  if (isOptOutKeyword(params.message)) {
+    if (params.senderContact) {
+      recordOptOut(params.senderContact, `User sent opt-out keyword: "${params.message}"`);
+    }
+
+    await logActivity({
+      type: 'autoresponder_triggered',
+      description: `Opt-out / STOP processed for ${params.senderContact || 'unknown contact'}`,
+      metadata: { channel: params.channel, sender: params.senderContact, text: params.message },
+    });
+
+    return {
+      matched: true,
+      ruleId: 'rule_optout_000',
+      replyText: 'You have been successfully unsubscribed. You will not receive any further automated outreach messages from Bethelmind Solutions. Wishing your business continued success!',
+      responseType: 'template',
+      isOptOut: true,
+    };
+  }
+
   const rules = await getAutoresponderRules();
   const activeRules = rules.filter(
     (r) => r.enabled && (r.channel === 'all' || r.channel === params.channel)
@@ -279,7 +329,6 @@ export async function processAutoresponderMessage(params: {
     }
 
     if (matches) {
-      // Increment reply counter
       rule.reply_count = (rule.reply_count || 0) + 1;
       await saveAutoresponderRule(rule);
 
@@ -298,7 +347,6 @@ export async function processAutoresponderMessage(params: {
     }
   }
 
-  // Fallback default message
   return {
     matched: false,
     replyText: 'Thank you for your message! Our Customer AI Agent and support team have logged your inquiry and will reply shortly.',

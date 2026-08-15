@@ -21,7 +21,25 @@ function parseSpintax(text) {
 }
 
 /**
- * Phase 1: Pre-Payment Website Outreach Pitch
+ * Step 1A: 2-Step WhatsApp Conversational Warm-Up Hook (Zero Links)
+ */
+function generateWarmupGreetingMessage(lead) {
+  const companyName = lead.company_name || lead.name || 'Your Enterprise';
+  const city = lead.city || 'Lagos';
+  
+  let template = `{Good morning|Hello|Good day} {Management Team|Sir/Ma} 👋, please is this the official desk for [COMPANY_NAME] in [CITY]?`;
+  template = template.replace(/\[COMPANY_NAME\]/g, companyName);
+  template = template.replace(/\[CITY\]/g, city);
+  
+  return {
+    step: 'STEP_1A_WARMUP_GREETING',
+    company_name: companyName,
+    message_body: parseSpintax(template)
+  };
+}
+
+/**
+ * Phase 1: Pre-Payment Website & AI Portal Outreach Pitch (Step 1B Delivery)
  */
 function generatePrePaymentWebsiteMessage(lead) {
   const companyName = lead.company_name || lead.name || 'Your Enterprise';
@@ -29,8 +47,9 @@ function generatePrePaymentWebsiteMessage(lead) {
   const city = lead.city || 'Lagos';
   const slug = companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-  const websitePreviewUrl = `https://lagosportals.ng/preview/${slug}?src=10k_lagos`;
-  const claimUrl = `https://lagosportals.ng/claim?biz=${encodeURIComponent(companyName)}&id=${lead.id || '10K_99'}`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
+  const websitePreviewUrl = `${appUrl}/preview/${slug}?src=10k_lagos`;
+  const claimUrl = `${appUrl}/claim?biz=${encodeURIComponent(companyName)}&id=${lead.id || '10K_99'}`;
 
   let template = `{Hi|Hello|Good day} management team at [COMPANY_NAME],
 
@@ -44,10 +63,11 @@ ${websitePreviewUrl}
 ⚡ What this system does for [COMPANY_NAME]:
 • 🤖 24/7 WhatsApp AI Sales Agent (replies instantly in under 2 seconds)
 • 🎙️ Natural Nigerian Voice Note generator to build high customer trust
-• 📄 Instant automated PDF quote & Moniepoint/Paystack payment link generator
+• 📄 Instant automated PDF quote & OPay/Moniepoint direct payment verification
 
 👉 Claim Your Complete Business Portal & Activate Direct Client Leads:
 ${claimUrl}
+(💡 Prefer hands-free? Reply to this message with a short WhatsApp Voice Note or text "CLAIM" to lock your domain immediately)
 
 {To your growth|Warm regards},
 Tosin | Bethelmind Analytics & Strategy
@@ -68,37 +88,34 @@ Tosin | Bethelmind Analytics & Strategy
 }
 
 /**
- * Phase 2: Post-Payment Solar Referral Onboarding Message
- * Sent immediately after a client completes payment for their website.
+ * Phase 2: Post-Payment Client Onboarding & AI Activation Message
  */
-function generatePostPaymentSolarReferralMessage(lead) {
+function generatePostPaymentOnboardingMessage(lead) {
   const companyName = lead.company_name || lead.name || 'Valued Client';
   const city = lead.city || 'Lagos';
-  const calculatorUrl = `https://solarquotepro.ng/calculator?biz=${encodeURIComponent(companyName)}&city=${encodeURIComponent(city)}&ref=web_client_perk`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
+  const dashboardUrl = `${appUrl}/client/dashboard?biz=${encodeURIComponent(companyName)}`;
 
-  let template = `🎉 {Congratulations|Welcome aboard}! Your website for [COMPANY_NAME] is now LIVE and active!
+  let template = `🎉 {Congratulations|Welcome aboard}! Your custom business portal & AI assistant for [COMPANY_NAME] is now LIVE and active!
 
-⚡ {Exclusive Client Perk|Special Partner Perk} (Cut Your Monthly Operating Expenses):
-As a business operating in [CITY], high diesel expenses can eat up your monthly profits. We have partnered with SolarQuotePro.ng to offer our website clients a FREE Solar Energy & Diesel Savings Audit.
+⚡ {Next Steps to Maximize Inbound Customers|Getting Started}:
+1. 📱 Connect your official WhatsApp business number to start receiving 24/7 client booking alerts.
+2. 📊 Access your live CRM & lead dashboard at:
+${dashboardUrl}
+3. 💬 Your 24/7 AI Concierge is now actively quoting visitors and generating instant invoices.
 
-With SolarQuotePro, you can:
-• 📊 Calculate your exact inverter & battery load requirements in 2 minutes.
-• 🤝 Connect directly with top-rated, verified, warranty-backed solar installers in [CITY].
-
-👉 Calculate Your Business Solar Needs & Match with Installers:
-${calculatorUrl}
-
-{To your continued success|Best regards},
-The Client Success Team`;
+{To your continued success|Warm regards},
+Client Success Team | Bethelmind Analytics & Strategy
+contact@bethelmindanalytics.com`;
 
   template = template.replace(/\[COMPANY_NAME\]/g, companyName);
   template = template.replace(/\[CITY\]/g, city);
   const result = parseSpintax(template);
 
   return {
-    phase: 'POST_PAYMENT_SOLAR_REFERRAL',
+    phase: 'POST_PAYMENT_ONBOARDING',
     company_name: companyName,
-    calculator_url: calculatorUrl,
+    dashboard_url: dashboardUrl,
     message_body: result
   };
 }
@@ -120,17 +137,21 @@ async function runRegularBusinessOutreach() {
     phone: '+2348022223333'
   };
 
+  const warmupPayload = generateWarmupGreetingMessage(sampleLead);
   const prePaymentPayload = generatePrePaymentWebsiteMessage(sampleLead);
-  const postPaymentPayload = generatePostPaymentSolarReferralMessage(sampleLead);
+  const postPaymentPayload = generatePostPaymentOnboardingMessage(sampleLead);
 
-  console.log('\x1b[33m--- PHASE 1: PRE-PAYMENT WEBSITE PITCH ---\x1b[0m');
+  console.log('\x1b[35m--- STEP 1A: 2-STEP WHATSAPP WARM-UP GREETING (ZERO LINKS) ---\x1b[0m');
+  console.log(warmupPayload.message_body);
+
+  console.log('\n\x1b[33m--- STEP 1B: INSTANT AI DEMO DELIVERY (UPON REPLY) ---\x1b[0m');
   console.log(prePaymentPayload.message_body);
 
-  console.log('\n\x1b[32m--- PHASE 2: POST-PAYMENT SOLAR REFERRAL TRIGGER ---\x1b[0m');
+  console.log('\n\x1b[32m--- PHASE 2: POST-PAYMENT ONBOARDING TRIGGER ---\x1b[0m');
   console.log(postPaymentPayload.message_body);
 
-  console.log('\n✅ Track B Execution Finished: Successfully verified Pre-Payment & Post-Payment message structures.');
-  return { prePaymentPayload, postPaymentPayload };
+  console.log('\n✅ Track B Execution Finished: Successfully verified 2-Step Handshake & Onboarding message structures.');
+  return { warmupPayload, prePaymentPayload, postPaymentPayload };
 }
 
 if (require.main === module) {
@@ -138,7 +159,9 @@ if (require.main === module) {
 }
 
 module.exports = {
+  generateWarmupGreetingMessage,
   generatePrePaymentWebsiteMessage,
-  generatePostPaymentSolarReferralMessage,
+  generatePostPaymentOnboardingMessage,
+  generatePostPaymentSolarReferralMessage: generatePostPaymentOnboardingMessage,
   runRegularBusinessOutreach
 };

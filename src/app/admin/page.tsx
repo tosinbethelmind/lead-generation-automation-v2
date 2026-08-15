@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Rocket, ExternalLink, Server, Settings, Shield, RefreshCw, Bot, Zap, Sun, Briefcase, Building, Layers, Power, Play, Square, Cpu, CloudLightning } from 'lucide-react';
+import Lagos10KOutreachCard from '@/app/dashboard/components/Lagos10KOutreachCard';
 
 export default function AdminDashboardHome() {
   const [deploying, setDeploying] = useState(false);
@@ -194,6 +195,11 @@ export default function AdminDashboardHome() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* 🚀 10K LAGOS MULTI-SECTOR OUTREACH ENGINE CARD */}
+        <div className="col-span-2">
+          <Lagos10KOutreachCard />
         </div>
 
         {/* ☁️ GOOGLE COLAB CLOUD HARVESTER CARD */}

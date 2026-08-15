@@ -1,5 +1,7 @@
 import twilio from 'twilio';
 import { getRuntimeConfig, getRotatedTwilioKeys, rotateKey } from '@/lib/localConfig';
+import { isOptedOut, cleanPhoneNumber as cleanWaPhone } from '@/lib/whatsappRotator';
+import { isPhoneOnDnc } from '@/lib/googleSheets';
 
 /**
  * Clean phone numbers to E.164 format.
@@ -14,43 +16,44 @@ export function cleanPhoneNumber(phone: string): string {
 }
 
 /**
- * Replace placeholders in template strings.
+ * Replace placeholders in template strings with adaptive multi-channel cross-referencing.
  * Supported variables: {{lead.name}}, {{lead.company}}, {{lead.email}}, {{lead.phone}}, {{previewUrl}}, {{businessSignature}}, {{signature}}
  */
 export function replaceSmsPlaceholders(template: string, lead: any, previewUrl: string): string {
   const config = getRuntimeConfig();
-  const signature = config.businessSignature || '';
+  const signature = config.businessSignature || 'Bethelmind Lagos';
   const phone = lead.phone_e164 || lead.phone_raw || '';
+  const emailText = lead.email ? lead.email.trim() : '';
   
   let formatted = template
-    .replace(/{{\s*lead\.name\s*}}/g, lead.name || '')
-    .replace(/{{\s*lead\.company\s*}}/g, lead.company || '')
-    .replace(/{{\s*lead\.email\s*}}/g, lead.email || '')
+    .replace(/{{\s*lead\.name\s*}}/g, lead.name || 'Valued Business')
+    .replace(/{{\s*lead\.company\s*}}/g, lead.company || lead.name || '')
+    .replace(/{{\s*lead\.email\s*}}/g, emailText)
     .replace(/{{\s*lead\.phone\s*}}/g, phone)
     .replace(/{{\s*previewUrl\s*}}/g, previewUrl)
+    .replace(/{{\s*preview_url\s*}}/g, previewUrl)
     .replace(/{{\s*businessSignature\s*}}/g, signature)
     .replace(/{{\s*signature\s*}}/g, signature);
 
-  const emailText = lead.email ? lead.email.trim() : '';
-
   // Safety guard: always include the preview URL in the SMS
   if (previewUrl && !formatted.includes(previewUrl)) {
-    formatted += ` View your site: ${previewUrl}`;
+    formatted += ` View: ${previewUrl}`;
   }
 
-  // Cross-channel reference: nudge them to check their email inbox
-  if (emailText && !formatted.includes(emailText)) {
-    formatted += ` Details also sent to ${emailText}`;
+  // Adaptive Cross-channel reference: only append email notice if lead actually has an email address
+  if (emailText && !formatted.includes(emailText) && formatted.length < 110) {
+    formatted += ` (Sent to ${emailText})`;
   }
 
   if (!formatted.toLowerCase().includes('stop')) {
-    formatted += ' (Reply STOP to opt out)';
+    formatted += ' (STOP to end)';
   }
+  
   return formatted;
 }
 
 /**
- * Send an SMS message using the configured provider.
+ * Send an SMS message using the configured provider with full opt-out suppression.
  */
 export async function sendSmsMessage(
   lead: any,
@@ -61,17 +64,27 @@ export async function sendSmsMessage(
   const config = configOverride || getRuntimeConfig();
   const provider = config.smsProvider || 'gateway';
   
-  const rawTemplate = customMessage || config.smsMessageTemplate || 'Hello {{lead.name}}, please check {{previewUrl}} for details. {{signature}}';
-  const messageText = replaceSmsPlaceholders(rawTemplate, lead, previewUrl);
-  
   const rawPhone = lead.phone_e164 || lead.phone_raw;
   if (!rawPhone) {
     throw new Error('Lead does not contain a phone number.');
   }
   const phone = cleanPhoneNumber(rawPhone);
+  const waPhone = cleanWaPhone(rawPhone);
+
+  // 1. Suppression & Opt-Out Guard
+  if (isOptedOut(waPhone)) {
+    throw new Error(`SMS blocked: ${phone} has opted out (STOP requested).`);
+  }
+
+  const dncCheck = await isPhoneOnDnc(waPhone);
+  if (dncCheck) {
+    throw new Error(`SMS blocked: ${phone} is on the Do-Not-Call registry.`);
+  }
+
+  const rawTemplate = customMessage || config.smsMessageTemplate || 'Good day {{lead.name}}, we built a custom quote portal for your business: {{previewUrl}} - {{signature}}';
+  const messageText = replaceSmsPlaceholders(rawTemplate, lead, previewUrl);
 
   if (provider === 'gateway' || provider === 'cascade') {
-    // Auto-Discovery Candidate Gateway URLs to ensure zero-setup connection
     const candidateUrls = Array.from(new Set([
       config.smsGatewayUrl,
       'http://10.50.220.22:8082',
@@ -96,7 +109,7 @@ export async function sendSmsMessage(
     for (const url of candidateUrls) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2500); // Fast 2.5s probe per candidate
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
 
         const response = await fetch(url, {
           method: 'POST',
@@ -144,7 +157,6 @@ export async function sendSmsMessage(
         if (response.ok && (data.code === 'ok' || data.message_id)) {
           return `Sent via Termii Fallback to ${phone} (ID: ${data.message_id || 'N/A'})`;
         }
-        console.warn(`Termii Fallback response: ${JSON.stringify(data)}`);
       } catch (termiiErr: any) {
         console.warn(`Termii Fallback failed: ${termiiErr.message}`);
       }
@@ -160,9 +172,6 @@ export async function sendSmsMessage(
       throw new Error('Termii API key is not configured.');
     }
 
-    // Termii API expects the number to be cleaned, typically without leading '+' sign for some routes,
-    // but the system handles E.164. Let's strip '+' for Termii to ensure compatibility if needed,
-    // though Termii accepts '+'. To be safe, keep numeric digits only for the 'to' parameter.
     const termiiPhone = phone.replace('+', '');
 
     const payload = {

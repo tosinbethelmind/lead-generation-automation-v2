@@ -99,7 +99,7 @@ const jsonLdSchema = {
         '@type': 'ContactPoint',
         contactType: 'customer support & sales',
         telephone: '+2348022791227',
-        email: 'tosin@bethelmindanalytics.com',
+        email: 'contact@bethelmindanalytics.com',
         availableLanguage: ['en', 'en-NG'],
       },
     },

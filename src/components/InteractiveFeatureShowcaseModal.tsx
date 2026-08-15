@@ -166,7 +166,7 @@ interface ShowcaseProps {
 }
 
 export function InteractiveFeatureShowcaseModal({ businessName, leadId }: ShowcaseProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>(
     SHOWCASE_FEATURES.filter(f => f.isDefaultActive).map(f => f.id)
