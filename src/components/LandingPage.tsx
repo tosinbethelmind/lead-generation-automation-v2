@@ -1859,15 +1859,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         minHeight: '70vh', 
         display: 'flex', 
         alignItems: 'center',
-        backgroundImage: pitch.categoryKey === 'solar'
-          ? `linear-gradient(135deg, rgba(6, 78, 59, 0.85), rgba(15, 23, 42, 0.92)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1600&q=80'})`
-          : pitch.categoryKey === 'auto'
-          ? `linear-gradient(135deg, rgba(153, 27, 27, 0.85), rgba(15, 23, 42, 0.92)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1600&q=80'})`
-          : pitch.categoryKey === 'medical'
-          ? `linear-gradient(135deg, rgba(14, 116, 144, 0.85), rgba(15, 23, 42, 0.92)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1600&q=80'})`
-          : pitch.categoryKey === 'real_estate'
-          ? `linear-gradient(135deg, rgba(161, 98, 7, 0.85), rgba(15, 23, 42, 0.92)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=80'})`
-          : `linear-gradient(rgba(10, 15, 30, 0.85), rgba(10, 15, 30, 0.85)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80'})`,
+        backgroundImage: `linear-gradient(135deg, rgba(8, 12, 22, 0.88) 0%, rgba(10, 15, 30, 0.94) 100%), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80'})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: '#fff',
@@ -1878,7 +1870,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           {/* Streamlined Executive Trust Pill */}
           <div style={{
             background: 'rgba(15, 23, 42, 0.85)',
-            border: '1px solid rgba(16, 185, 129, 0.5)',
+            border: `1px solid ${theme.primary || '#10b981'}`,
             backdropFilter: 'blur(10px)',
             color: '#ffffff',
             fontSize: 'clamp(0.78rem, 1.6vw, 0.88rem)',
@@ -1893,8 +1885,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             flexWrap: 'wrap',
             justifyContent: 'center'
           }}>
-            <span style={{ color: '#34d399' }}>🔒 PRIVATE PROPOSAL FOR:</span>
-            <strong style={{ color: '#fde047', textTransform: 'uppercase' }}>{lead.name}</strong>
+            <span style={{ color: theme.primary || '#34d399' }}>🔒 PRIVATE PROPOSAL FOR:</span>
+            <strong style={{ color: theme.accent || '#fde047', textTransform: 'uppercase' }}>{lead.name}</strong>
             <span style={{ color: '#64748b' }}>•</span>
             <span style={{ color: '#cbd5e1' }}>{lead.area || lead.city || 'Lagos'}, Nigeria</span>
             <span style={{ color: '#64748b' }}>•</span>
@@ -1929,7 +1921,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             lineHeight: 1.5,
             textShadow: '0 1px 4px rgba(0,0,0,0.3)',
             wordBreak: 'break-word',
-            overflowWrap: 'break-word'
+            overflowWrap: 'break-word',
+            fontFamily: bodyFontFamily
           }}>
             {hasWebsite 
               ? `We inspected your live site. Attach our 24/7 AI customer agent and dynamic quote generator directly to your existing domain to capture 3x more paying clients.`
@@ -1942,7 +1935,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               href={isPreview ? "#pricing" : "#booking"} 
               className="btn-hover-effect" 
               style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                background: theme.gradient || 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                 border: 'none',
                 color: '#fff',
                 textDecoration: 'none',
@@ -1953,7 +1946,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 6px 25px rgba(16, 185, 129, 0.45)',
+                boxShadow: `0 6px 25px rgba(0, 0, 0, 0.4)`,
                 transition: 'all 0.2s',
                 letterSpacing: '-0.01em'
               }}

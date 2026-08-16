@@ -60,7 +60,7 @@ interface PreviewData {
 
 import { InteractiveFeatureShowcaseModal } from '@/components/InteractiveFeatureShowcaseModal';
 
-import { getDesignTheme } from '@/lib/designGenerator';
+import { getDesignTheme, buildFallbackCopy } from '@/lib/designGenerator';
 
 export default function PreviewPage() {
   const params = useParams();
@@ -73,19 +73,35 @@ export default function PreviewPage() {
     
     let category = 'Professional Services';
     const lowerId = leadId.toLowerCase();
-    if (/solar|inverter|energy|battery/.test(lowerId)) category = 'Solar Energy & Inverter Dealer';
-    else if (/estate|property|home|realty|housing/.test(lowerId)) category = 'Real Estate & Luxury Property';
-    else if (/car|auto|motor|vehicle|tokunbo/.test(lowerId)) category = 'Automotive & Tokunbo Importer';
-    else if (/medical|clinic|doctor|health/.test(lowerId)) category = 'Medical & Clinics';
-    else if (/school|academy|education/.test(lowerId)) category = 'Schools & Education';
-    else if (/boutique|fashion|style|beauty/.test(lowerId)) category = 'Boutique & Fashion';
+    if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge|dining|lounge|restaurant|bar|cafe/.test(lowerId)) {
+      category = 'Hotels & Shortlet Apartments';
+    } else if (/estate|property|home|realty|housing|developer|land|mansion/.test(lowerId)) {
+      category = 'Real Estate & Luxury Homes';
+    } else if (/medical|clinic|doctor|health|hospital|pharmacy|dental|dentist|eye|optician|lab|surgery/.test(lowerId)) {
+      category = 'Medical & Healthcare Clinics';
+    } else if (/car|auto|motor|vehicle|tokunbo|dealership|mechanic|garage|tyre|spare/.test(lowerId)) {
+      category = 'Automotive & Tokunbo Importers';
+    } else if (/school|academy|education|college|creche|tutor|university|institute/.test(lowerId)) {
+      category = 'Schools & Academies';
+    } else if (/law|legal|attorney|solicitor|advocate|barrister|cac|chamber/.test(lowerId)) {
+      category = 'Law Firms & Legal Practitioners';
+    } else if (/boutique|fashion|style|beauty|salon|spa|hair|cloth|tailor|apparel/.test(lowerId)) {
+      category = 'Boutiques & Luxury Fashion';
+    } else if (/logistics|haulage|courier|dispatch|delivery|freight|cargo|truck|transport/.test(lowerId)) {
+      category = 'Logistics & Haulage Fleet';
+    } else if (/event|hall|banquet|decor|cater|party|wedding|marquee|plaza/.test(lowerId)) {
+      category = 'Event Centers & Banquet Halls';
+    } else if (/solar|inverter|energy|battery|power|lifepo4|clean energy/.test(lowerId)) {
+      category = 'Solar & Renewable Energy';
+    }
 
     const luxuryTheme = getDesignTheme(category, leadId);
-
-    let heroTitle = `${fallbackName}`;
-    if (category.includes('Solar')) heroTitle = `${fallbackName} — Solar & Energy Solutions`;
-    else if (category.includes('Real Estate')) heroTitle = `${fallbackName} — Luxury Homes & Estates`;
-    else if (category.includes('Automotive')) heroTitle = `${fallbackName} — Tokunbo Autos & Fleet Imports`;
+    const tailoredCopy = buildFallbackCopy({
+      name: fallbackName,
+      category,
+      area: 'Lekki Phase 1',
+      city: 'Lagos'
+    });
 
     return {
       lead: {
@@ -101,20 +117,7 @@ export default function PreviewPage() {
         business_summary: `Verified ${category} Enterprise in Lagos`
       },
       theme: luxuryTheme,
-      copy: {
-        heroTitle,
-        heroSubtitle: '24/7 AI Lead Automation, Instant PDF Quotes & Direct Booking Engine',
-        services: [
-          { title: '24/7 WhatsApp AI Customer Agent', description: 'Answers customer inquiries & voice notes automatically.', icon: '🤖' },
-          { title: 'Instant Quote & Sizing Estimator', description: 'Generates branded PDF quotes sent to customer phone.', icon: '⚡' },
-          { title: 'OPay Direct Bank Transfer Gateway', description: 'Collects customer payments straight to your bank.', icon: '💳' }
-        ],
-        aboutText: `${fallbackName} is a top-rated enterprise in Lagos committed to delivering excellence.`,
-        testimonials: [
-          { name: 'Engr. Femi A.', text: 'Outstanding service and 24/7 responsiveness.', rating: 5 }
-        ],
-        ctaText: 'Claim Your Site & AI System'
-      },
+      copy: tailoredCopy,
       paymentConfig: {
         paystackPublicKey: '',
         claimFeeNGN: 150000,

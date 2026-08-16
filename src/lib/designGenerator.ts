@@ -36,14 +36,12 @@ const HERO_IMAGE_BANKS: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1508873696983-2df515122519?w=1400&q=80',
     'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=1400&q=80',
     'https://images.unsplash.com/photo-1545208942-e1c9c916524b?w=1400&q=80',
-    'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1400&q=80',
   ],
   realestate: [
     'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&q=80',
     'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1400&q=80',
     'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1400&q=80',
     'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1400&q=80',
-    'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1400&q=80',
   ],
   automotive: [
     'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1400&q=80',
@@ -55,6 +53,38 @@ const HERO_IMAGE_BANKS: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1400&q=80',
     'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1400&q=80',
     'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=1400&q=80',
+    'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1400&q=80',
+  ],
+  hospitality: [
+    'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1400&q=80',
+    'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=1400&q=80',
+    'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=1400&q=80',
+    'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1400&q=80',
+  ],
+  education: [
+    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1400&q=80',
+    'https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?w=1400&q=80',
+    'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1400&q=80',
+  ],
+  legal: [
+    'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1400&q=80',
+    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1400&q=80',
+    'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80',
+  ],
+  boutique: [
+    'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1400&q=80',
+    'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&q=80',
+    'https://images.unsplash.com/photo-1470309864661-68328b2cd0a5?w=1400&q=80',
+  ],
+  logistics: [
+    'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1400&q=80',
+    'https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=1400&q=80',
+    'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=1400&q=80',
+  ],
+  events: [
+    'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1400&q=80',
+    'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1400&q=80',
+    'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1400&q=80',
   ],
   default: [
     'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80',
@@ -63,51 +93,137 @@ const HERO_IMAGE_BANKS: Record<string, string[]> = {
   ]
 };
 
-const FONT_PAIRINGS = [
-  { headingFont: 'Space Grotesk', bodyFont: 'Outfit' },
-  { headingFont: 'Playfair Display', bodyFont: 'Plus Jakarta Sans' },
-  { headingFont: 'Syne', bodyFont: 'Inter' },
-  { headingFont: 'Outfit', bodyFont: 'Plus Jakarta Sans' },
-  { headingFont: 'DM Serif Display', bodyFont: 'Cabin' },
-  { headingFont: 'Plus Jakarta Sans', bodyFont: 'Inter' }
-];
+const SECTOR_THEME_PROFILES: Record<string, {
+  primary: string;
+  accent: string;
+  bg: string;
+  headingFont: string;
+  bodyFont: string;
+  gradient: string;
+  imageKey: string;
+}> = {
+  solar: {
+    primary: 'hsl(158, 85%, 46%)',
+    accent: 'hsl(45, 95%, 52%)',
+    bg: 'hsl(160, 50%, 3%)',
+    headingFont: 'Space Grotesk',
+    bodyFont: 'Outfit',
+    gradient: 'linear-gradient(135deg, hsl(158, 85%, 46%) 0%, hsl(180, 90%, 42%) 50%, hsl(45, 95%, 52%) 100%)',
+    imageKey: 'solar'
+  },
+  hospitality: {
+    primary: 'hsl(43, 90%, 54%)',
+    accent: 'hsl(198, 95%, 60%)',
+    bg: 'hsl(225, 45%, 4%)',
+    headingFont: 'Playfair Display',
+    bodyFont: 'Plus Jakarta Sans',
+    gradient: 'linear-gradient(135deg, hsl(43, 90%, 54%) 0%, hsl(35, 95%, 55%) 50%, hsl(265, 85%, 60%) 100%)',
+    imageKey: 'hospitality'
+  },
+  realestate: {
+    primary: 'hsl(38, 92%, 50%)',
+    accent: 'hsl(348, 85%, 60%)',
+    bg: 'hsl(30, 35%, 4%)',
+    headingFont: 'Cormorant Garamond',
+    bodyFont: 'Plus Jakarta Sans',
+    gradient: 'linear-gradient(135deg, hsl(38, 92%, 50%) 0%, hsl(25, 95%, 52%) 50%, hsl(348, 85%, 60%) 100%)',
+    imageKey: 'realestate'
+  },
+  medical: {
+    primary: 'hsl(188, 95%, 44%)',
+    accent: 'hsl(158, 75%, 50%)',
+    bg: 'hsl(205, 55%, 4%)',
+    headingFont: 'Outfit',
+    bodyFont: 'Inter',
+    gradient: 'linear-gradient(135deg, hsl(188, 95%, 44%) 0%, hsl(215, 90%, 58%) 50%, hsl(158, 75%, 50%) 100%)',
+    imageKey: 'medical'
+  },
+  automotive: {
+    primary: 'hsl(350, 90%, 56%)',
+    accent: 'hsl(32, 95%, 54%)',
+    bg: 'hsl(240, 20%, 4%)',
+    headingFont: 'Syne',
+    bodyFont: 'Inter',
+    gradient: 'linear-gradient(135deg, hsl(350, 90%, 56%) 0%, hsl(15, 95%, 55%) 50%, hsl(32, 95%, 54%) 100%)',
+    imageKey: 'automotive'
+  },
+  education: {
+    primary: 'hsl(220, 95%, 58%)',
+    accent: 'hsl(45, 95%, 54%)',
+    bg: 'hsl(225, 60%, 4%)',
+    headingFont: 'DM Serif Display',
+    bodyFont: 'Plus Jakarta Sans',
+    gradient: 'linear-gradient(135deg, hsl(220, 95%, 58%) 0%, hsl(255, 90%, 65%) 50%, hsl(45, 95%, 54%) 100%)',
+    imageKey: 'education'
+  },
+  legal: {
+    primary: 'hsl(215, 80%, 54%)',
+    accent: 'hsl(38, 90%, 55%)',
+    bg: 'hsl(220, 35%, 5%)',
+    headingFont: 'Cinzel',
+    bodyFont: 'Inter',
+    gradient: 'linear-gradient(135deg, hsl(215, 80%, 54%) 0%, hsl(240, 75%, 60%) 50%, hsl(38, 90%, 55%) 100%)',
+    imageKey: 'legal'
+  },
+  boutique: {
+    primary: 'hsl(330, 85%, 58%)',
+    accent: 'hsl(45, 95%, 55%)',
+    bg: 'hsl(315, 45%, 4%)',
+    headingFont: 'Playfair Display',
+    bodyFont: 'Outfit',
+    gradient: 'linear-gradient(135deg, hsl(330, 85%, 58%) 0%, hsl(350, 90%, 62%) 50%, hsl(45, 95%, 55%) 100%)',
+    imageKey: 'boutique'
+  },
+  logistics: {
+    primary: 'hsl(35, 95%, 52%)',
+    accent: 'hsl(198, 95%, 54%)',
+    bg: 'hsl(220, 40%, 4%)',
+    headingFont: 'Space Grotesk',
+    bodyFont: 'Inter',
+    gradient: 'linear-gradient(135deg, hsl(35, 95%, 52%) 0%, hsl(15, 90%, 54%) 50%, hsl(198, 95%, 54%) 100%)',
+    imageKey: 'logistics'
+  },
+  events: {
+    primary: 'hsl(275, 85%, 60%)',
+    accent: 'hsl(45, 95%, 55%)',
+    bg: 'hsl(280, 45%, 4%)',
+    headingFont: 'Playfair Display',
+    bodyFont: 'Plus Jakarta Sans',
+    gradient: 'linear-gradient(135deg, hsl(275, 85%, 60%) 0%, hsl(320, 85%, 58%) 50%, hsl(45, 95%, 55%) 100%)',
+    imageKey: 'events'
+  }
+};
 
 export function getDesignTheme(category: string, leadIdSeed?: string): DesignTheme {
   const cat = category.toLowerCase();
   const seed = hashString((leadIdSeed || '') + category);
 
-  let categoryKey = 'default';
-  if (/solar|inverter|energy|battery/.test(cat)) categoryKey = 'solar';
-  else if (/estate|property|home|realty|housing/.test(cat)) categoryKey = 'realestate';
-  else if (/car|auto|motor|vehicle|tokunbo/.test(cat)) categoryKey = 'automotive';
-  else if (/medical|clinic|doctor|health/.test(cat)) categoryKey = 'medical';
+  let sectorKey = 'solar';
+  if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge|dining|lounge|restaurant/.test(cat)) sectorKey = 'hospitality';
+  else if (/estate|property|home|realty|housing|developer|land/.test(cat)) sectorKey = 'realestate';
+  else if (/medical|clinic|doctor|health|hospital|pharmacy|dental|lab/.test(cat)) sectorKey = 'medical';
+  else if (/car|auto|motor|vehicle|tokunbo|dealership|mechanic/.test(cat)) sectorKey = 'automotive';
+  else if (/school|academy|education|college|creche|tutor/.test(cat)) sectorKey = 'education';
+  else if (/law|legal|attorney|solicitor|advocate|barrister|cac/.test(cat)) sectorKey = 'legal';
+  else if (/boutique|fashion|style|beauty|salon|spa|hair|cloth/.test(cat)) sectorKey = 'boutique';
+  else if (/logistics|haulage|courier|dispatch|delivery|freight|cargo|truck/.test(cat)) sectorKey = 'logistics';
+  else if (/event|hall|banquet|decor|cater|party|wedding/.test(cat)) sectorKey = 'events';
+  else if (/solar|inverter|energy|battery|power|lifepo4/.test(cat)) sectorKey = 'solar';
 
-  // Generate unique primary & accent hues per lead seed
-  const primaryHue = (seed * 47) % 360;
-  const accentHue = (primaryHue + 150 + (seed % 60)) % 360;
-
-  const primaryColor = `hsl(${primaryHue}, 85%, 52%)`;
-  const accentColor = `hsl(${accentHue}, 90%, 60%)`;
-  const bgDarkColor = `hsl(${(primaryHue + 25) % 360}, 50%, 4%)`; // Deep obsidian space with subtle hue tint
-
-  const gradientAngle = 110 + (seed % 60);
-  const gradient = `linear-gradient(${gradientAngle}deg, ${primaryColor} 0%, hsl(${(primaryHue + 35) % 360}, 80%, 48%) 50%, ${accentColor} 100%)`;
-
-  const imageBank = HERO_IMAGE_BANKS[categoryKey] || HERO_IMAGE_BANKS['default'];
+  const profile = SECTOR_THEME_PROFILES[sectorKey] || SECTOR_THEME_PROFILES.hospitality;
+  const imageBank = HERO_IMAGE_BANKS[profile.imageKey] || HERO_IMAGE_BANKS.default;
   const heroImage = imageBank[seed % imageBank.length];
 
-  const fontPairing = FONT_PAIRINGS[seed % FONT_PAIRINGS.length];
-
   return {
-    primary: primaryColor,
-    accent: accentColor,
-    bg: bgDarkColor,
+    primary: profile.primary,
+    accent: profile.accent,
+    bg: profile.bg,
     text: '#ffffff',
-    font: fontPairing.headingFont,
-    headingFont: fontPairing.headingFont,
-    bodyFont: fontPairing.bodyFont,
+    font: profile.headingFont,
+    headingFont: profile.headingFont,
+    bodyFont: profile.bodyFont,
     heroImage,
-    gradient,
+    gradient: profile.gradient,
   };
 }
 
@@ -261,27 +377,8 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
     };
   }
 
-  // 3. AUTOMOTIVE & TOKUNBO IMPORTERS
-  if (/car|auto|motor|vehicle|tokunbo|dealership|mechanic/.test(cat)) {
-    return {
-      heroTitle: `${name} — Direct Tokunbo Imports & Instant Duty Quotes`,
-      heroSubtitle: `Provide buyers instant customs duty assessments, trade-in valuations, and 24/7 WhatsApp vehicle inventory updates across Lagos.`,
-      services: [
-        { title: '🚗 Customs Duty Assessment (PAAR) Calculator', description: 'Estimates VIN duty, NAC levy, and port clearing fees accurately for prospective buyers.', icon: '🚗' },
-        { title: '🔄 Car Swap & Trade-In Valuation Engine', description: 'Offers prospective clients instant asset appraisals to capture and close high-value upgrade leads.', icon: '🔄' },
-        { title: '🤖 24/7 WhatsApp Stock & Test Drive Assistant', description: 'Sends live showroom photos, specs, and inspection bookings directly to customer phones.', icon: '📱' }
-      ],
-      aboutText: `${name} is a leading automotive dealership in ${area} providing thoroughly inspected Nigerian used and foreign used (Tokunbo) vehicles with genuine customs documentation.`,
-      testimonials: [
-        { name: 'Capt. Ibrahim M.', text: 'Fair trade-in valuation and transparent customs clearing breakdown. Got my SUV in 48 hours.', rating: 5 },
-        { name: 'Segun Oladipo', text: 'Best dealership experience in Lagos. Verified VIN and clean engine.', rating: 5 }
-      ],
-      ctaText: hasWebsite ? 'Upgrade My Auto Sales Engine' : 'Claim My Auto Dealership Website'
-    };
-  }
-
-  // 4. MEDICAL & HEALTHCARE CLINICS
-  if (/medical|clinic|doctor|health|hospital|pharmacy|dental|lab/.test(cat)) {
+  // 3. MEDICAL & HEALTHCARE CLINICS (Evaluated before auto to avoid 'healthcare' matching 'care')
+  if (/medical|clinic|doctor|health|hospital|pharmacy|dental|dentist|optician|eye|lab|surgery/.test(cat)) {
     return {
       heroTitle: `${name} — 24/7 Patient Triage & HMO Telehealth Portal`,
       heroSubtitle: `Streamline patient appointments, HMO co-pay authorizations, and diagnostic lab package bookings with zero waiting room delays.`,
@@ -296,6 +393,25 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Pastor David E.', text: 'Clean facilities, prompt triage, and seamless HMO verification.', rating: 5 }
       ],
       ctaText: hasWebsite ? 'Upgrade My Clinic Portal' : 'Claim My Medical Clinic Website'
+    };
+  }
+
+  // 4. AUTOMOTIVE & TOKUNBO IMPORTERS
+  if (/(\bcar\b|\bcars\b|auto|motor|vehicle|tokunbo|dealership|mechanic|garage)/.test(cat)) {
+    return {
+      heroTitle: `${name} — Direct Tokunbo Imports & Instant Duty Quotes`,
+      heroSubtitle: `Provide buyers instant customs duty assessments, trade-in valuations, and 24/7 WhatsApp vehicle inventory updates across Lagos.`,
+      services: [
+        { title: '🚗 Customs Duty Assessment (PAAR) Calculator', description: 'Estimates VIN duty, NAC levy, and port clearing fees accurately for prospective buyers.', icon: '🚗' },
+        { title: '🔄 Car Swap & Trade-In Valuation Engine', description: 'Offers prospective clients instant asset appraisals to capture and close high-value upgrade leads.', icon: '🔄' },
+        { title: '🤖 24/7 WhatsApp Stock & Test Drive Assistant', description: 'Sends live showroom photos, specs, and inspection bookings directly to customer phones.', icon: '📱' }
+      ],
+      aboutText: `${name} is a leading automotive dealership in ${area} providing thoroughly inspected Nigerian used and foreign used (Tokunbo) vehicles with genuine customs documentation.`,
+      testimonials: [
+        { name: 'Capt. Ibrahim M.', text: 'Fair trade-in valuation and transparent customs clearing breakdown. Got my SUV in 48 hours.', rating: 5 },
+        { name: 'Segun Oladipo', text: 'Best dealership experience in Lagos. Verified VIN and clean engine.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Upgrade My Auto Sales Engine' : 'Claim My Auto Dealership Website'
     };
   }
 
@@ -338,7 +454,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
   }
 
   // 7. HOTELS & SHORTLET APARTMENTS
-  if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge/.test(cat)) {
+  if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge|dining|lounge|restaurant/.test(cat)) {
     return {
       heroTitle: `${name} — Luxury Stay & Direct Booking Engine`,
       heroSubtitle: `Bypass 20% OTA commissions with direct 24/7 WhatsApp bookings, caution deposit verification, and generator diesel power tracking.`,
@@ -353,6 +469,25 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Tunde Bakare', text: 'Top tier shortlet in Lagos. Seamless caution deposit refund right after checkout.', rating: 5 }
       ],
       ctaText: hasWebsite ? 'Upgrade My Hotel Booking Engine' : 'Claim My Luxury Hospitality Website'
+    };
+  }
+
+  // 8. BOUTIQUES, HAUTE COUTURE & BEAUTY SPAS
+  if (/boutique|fashion|style|beauty|salon|spa|hair|cloth|tailor|apparel/.test(cat)) {
+    return {
+      heroTitle: `${name} — Haute Couture & Bespoke Style Studio`,
+      heroSubtitle: `Showcase lookbooks, collect custom measurement profiles, and accept instant 24/7 WhatsApp wardrobe orders across Lagos.`,
+      services: [
+        { title: '👗 Bespoke Measurement & Fitting Sizer', description: 'Collects customer bust/waist/hip dimensions and fabric selections seamlessly online.', icon: '👗' },
+        { title: '💎 WhatsApp Lookbook & VIP Pre-Order Engine', description: 'Delivers high-res collection catalogs and takes pre-order deposits directly into your bank.', icon: '💎' },
+        { title: '💳 Moniepoint & OPay Checkout Gateway', description: 'Instant transfer verification and dispatch waybill generator for local and worldwide courier.', icon: '💳' }
+      ],
+      aboutText: `${name} is an elite fashion house and beauty sanctuary in ${area} crafting bespoke luxury apparel and delivering transformative styling experiences.`,
+      testimonials: [
+        { name: 'Stephanie Okonkwo', text: 'The online measurement form and WhatsApp catalog made ordering my wedding guest outfit so effortless!', rating: 5 },
+        { name: 'Folake Adeyemi', text: 'Flawless tailoring, exquisite fabrics, and prompt delivery in Lekki. Truly 5-star service.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Upgrade My Fashion Studio Portal' : 'Claim My Boutique & Style Website'
     };
   }
 
