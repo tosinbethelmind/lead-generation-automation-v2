@@ -99,17 +99,8 @@ export default function CustomerAiAgentWidget({
       localStorage.setItem(`bethel_ai_chat_history_${sid}`, JSON.stringify([initMsg]));
     } catch {}
 
-    // Auto-speak the personalized welcome greeting to the lead
-    if (leadData && typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      setTimeout(() => {
-        const cleanText = `Hello ${leadData.name}! Your Google-rated ${leadData.category} business in ${leadData.area || leadData.city || 'Lagos'} is already set up and ready. Let me show you how to activate your 24/7 AI system today.`;
-        const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.rate = 0.92;
-        utterance.pitch = 1.0;
-        utterance.lang = 'en-US';
-        window.speechSynthesis.speak(utterance);
-      }, 2500);
-    }
+    // Auto-speak removed to avoid intrusive unsolicited audio on page load.
+    // User can trigger audio on demand using the 'Listen Voice' button.
   }, [sector, businessName, leadData]);
 
   // Sync messages to localStorage whenever they update
@@ -121,33 +112,39 @@ export default function CustomerAiAgentWidget({
     }
   }, [messages, sessionId]);
 
-  // Exit-Intent Mouseleave & Proactive Auto-Pop Trigger
+  // Non-intrusive Exit-Intent Notification Pill (Does NOT aggressively cover hero content)
+  const [hasExitNudge, setHasExitNudge] = useState(false);
+
   useEffect(() => {
     let triggered = false;
     const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 8 && !triggered && !isOpen) {
+      if (e.clientY <= 5 && !triggered && !isOpen) {
         triggered = true;
-        setIsOpen(true);
+        setHasExitNudge(true);
+        const packagePrice = leadData?.claimFeeNGN || 150000;
+        const depositPrice = Math.round(packagePrice / 2);
         const exitOffer = businessName
-          ? `⚡ Wait, ${businessName}! Before you leave, let me show you how to claim your 24/7 AI Chatbot & Lead Tools with just ₦92,500 50% deposit!`
-          : `⚡ Wait! Before you leave, test our 1-click sector calculators or speak with our 24/7 AI Guide right now!`;
+          ? `⚡ Special Offer for ${businessName}: Claim your 24/7 AI Chatbot & Lead Tools with just ₦${depositPrice.toLocaleString()} 50% deposit!`
+          : `⚡ Special Offer: Claim your 24/7 AI System with a 50% commitment deposit!`;
         
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `msg_exit_${Date.now()}`,
-            sender: 'agent',
-            text: exitOffer,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          },
-        ]);
-        speakText(exitOffer);
+        setMessages((prev) => {
+          if (prev.some(m => m.id.startsWith('msg_exit'))) return prev;
+          return [
+            ...prev,
+            {
+              id: `msg_exit_${Date.now()}`,
+              sender: 'agent',
+              text: exitOffer,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            },
+          ];
+        });
       }
     };
 
     document.addEventListener('mouseleave', handleMouseLeave);
     return () => document.removeEventListener('mouseleave', handleMouseLeave);
-  }, [businessName, isOpen]);
+  }, [businessName, isOpen, leadData]);
 
   useEffect(() => {
     if (isOpen) {
@@ -267,22 +264,49 @@ export default function CustomerAiAgentWidget({
 
   return (
     <div className="customer-ai-widget-container">
-      {/* Floating Trigger Button */}
+      {/* Floating Trigger Button & Non-Intrusive Nudge */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="ai-widget-trigger"
-          aria-label={`Chat with ${displayName}`}
-        >
-          <div className="trigger-icon-wrap">
-            <Bot size={24} />
-            <span className="trigger-pulse"></span>
-          </div>
-          <div className="trigger-text">
-            <span className="trigger-title">{businessName ? `Chat with ${businessName}` : 'Chat with AI Concierge'}</span>
-            <span className="trigger-sub">24/7 Intelligent Assistant</span>
-          </div>
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+          {hasExitNudge && (
+            <div
+              onClick={() => setIsOpen(true)}
+              style={{
+                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                border: '1px solid #10b981',
+                borderRadius: '14px',
+                padding: '8px 14px',
+                color: '#fff',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: 'pointer',
+                pointerEvents: 'auto',
+                animation: 'slideUp 0.3s ease-out',
+                maxWidth: '280px'
+              }}
+            >
+              <span style={{ fontSize: '1rem' }}>⚡</span>
+              <span style={{ color: '#6ee7b7' }}>Special 50% deposit option available for {businessName || 'you'}!</span>
+            </div>
+          )}
+          <button
+            onClick={() => setIsOpen(true)}
+            className="ai-widget-trigger"
+            aria-label={`Chat with ${displayName}`}
+          >
+            <div className="trigger-icon-wrap">
+              <Bot size={24} />
+              <span className="trigger-pulse"></span>
+            </div>
+            <div className="trigger-text">
+              <span className="trigger-title">{businessName ? `Chat with ${businessName}` : 'Chat with AI Concierge'}</span>
+              <span className="trigger-sub">24/7 Intelligent Assistant</span>
+            </div>
+          </button>
+        </div>
       )}
 
       {/* Floating Chat Modal */}

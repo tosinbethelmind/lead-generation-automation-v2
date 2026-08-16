@@ -1798,33 +1798,34 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           left: 0,
           right: 0,
           zIndex: 9999,
-          background: 'linear-gradient(135deg, #090d16 0%, #1e1b4b 100%)',
-          borderBottom: '1.5px solid rgba(139, 92, 246, 0.4)',
+          background: 'rgba(9, 13, 22, 0.95)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(16, 185, 129, 0.3)',
           color: '#ffffff',
-          padding: '10px 24px',
+          padding: '8px 16px',
           boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
         }}>
-          <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
             
             {/* Left: Lead Identity */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ background: '#10b981', color: '#fff', fontSize: '0.72rem', fontWeight: 800, padding: '4px 10px', borderRadius: '20px', textTransform: 'uppercase' }}>
-                🏷️ PROPOSAL FOR {lead.name.toUpperCase()}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ background: '#10b981', color: '#fff', fontSize: '0.72rem', fontWeight: 800, padding: '3px 10px', borderRadius: '14px', textTransform: 'uppercase' }}>
+                🔒 RESERVED FOR {lead.name.toUpperCase()}
               </span>
-              <span style={{ fontSize: '0.82rem', color: '#cbd5e1', fontWeight: 500 }} className="hide-mobile">
-                Custom 24/7 Sales Website &amp; WhatsApp AI Preview
+              <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 500 }} className="hide-mobile">
+                24/7 AI System Preview
               </span>
             </div>
 
             {/* Center: Countdown Timer */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }} className="hide-mobile">
-              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>⏰ OFFER EXPIRES IN:</span>
-              <span style={{ background: 'rgba(212, 175, 55, 0.2)', color: '#fde047', fontSize: '0.8rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px', fontFamily: 'monospace' }}>
-                {String(timeLeft.days).padStart(2, '0')}D {String(timeLeft.hours).padStart(2, '0')}H {String(timeLeft.minutes).padStart(2, '0')}M {String(timeLeft.seconds).padStart(2, '0')}S
+              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>⏰ EXPIRES:</span>
+              <span style={{ background: 'rgba(253, 224, 71, 0.15)', color: '#fde047', fontSize: '0.78rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px', fontFamily: 'monospace' }}>
+                {String(timeLeft.days).padStart(2, '0')}D {String(timeLeft.hours).padStart(2, '0')}H {String(timeLeft.minutes).padStart(2, '0')}M
               </span>
             </div>
 
-            {/* Right: Direct Action Buttons */}
+            {/* Right: Direct Action Button */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <a
                 href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our custom website & WhatsApp AI platform.`)}`}
@@ -1834,9 +1835,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   background: '#25d366',
                   color: '#fff',
                   textDecoration: 'none',
-                  fontSize: '0.8rem',
+                  fontSize: '0.78rem',
                   fontWeight: 800,
-                  padding: '7px 14px',
+                  padding: '6px 14px',
                   borderRadius: '8px',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -1844,19 +1845,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   boxShadow: '0 0 10px rgba(37, 211, 102, 0.4)'
                 }}
               >
-                🎙️ Claim on WhatsApp
-              </a>
-              <a href="#claim" style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#fff',
-                textDecoration: 'none',
-                fontSize: '0.82rem',
-                fontWeight: 800,
-                padding: '7px 16px',
-                borderRadius: '8px',
-                boxShadow: '0 0 12px rgba(16, 185, 129, 0.4)',
-              }}>
-                🚀 Claim Site (OPay)
+                💬 Claim on WhatsApp
               </a>
             </div>
 
@@ -1867,142 +1856,117 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       {/* Hero Section */}
       <section style={{ 
         position: 'relative', 
-        minHeight: '75vh', 
+        minHeight: '70vh', 
         display: 'flex', 
         alignItems: 'center',
         backgroundImage: pitch.categoryKey === 'solar'
-          ? `linear-gradient(135deg, rgba(6, 78, 59, 0.75), rgba(15, 23, 42, 0.85)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1600&q=80'})`
+          ? `linear-gradient(135deg, rgba(6, 78, 59, 0.85), rgba(15, 23, 42, 0.92)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1600&q=80'})`
           : pitch.categoryKey === 'auto'
-          ? `linear-gradient(135deg, rgba(153, 27, 27, 0.75), rgba(15, 23, 42, 0.88)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1600&q=80'})`
+          ? `linear-gradient(135deg, rgba(153, 27, 27, 0.85), rgba(15, 23, 42, 0.92)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1600&q=80'})`
           : pitch.categoryKey === 'medical'
-          ? `linear-gradient(135deg, rgba(14, 116, 144, 0.75), rgba(15, 23, 42, 0.88)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1600&q=80'})`
+          ? `linear-gradient(135deg, rgba(14, 116, 144, 0.85), rgba(15, 23, 42, 0.92)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1600&q=80'})`
           : pitch.categoryKey === 'real_estate'
-          ? `linear-gradient(135deg, rgba(161, 98, 7, 0.75), rgba(15, 23, 42, 0.88)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=80'})`
-          : `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80'})`,
+          ? `linear-gradient(135deg, rgba(161, 98, 7, 0.85), rgba(15, 23, 42, 0.92)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=80'})`
+          : `linear-gradient(rgba(10, 15, 30, 0.85), rgba(10, 15, 30, 0.85)), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80'})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: '#fff',
-        padding: '80px 24px',
+        padding: '60px 20px 40px',
       }}>
         <div style={{ maxWidth: '850px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
-          {/* Executive Clean Proposal Status Bar */}
+          
+          {/* Streamlined Executive Trust Pill */}
           <div style={{
-            background: hasWebsite ? 'rgba(14, 116, 144, 0.85)' : 'rgba(15, 23, 42, 0.75)',
-            border: hasWebsite ? '1px solid #06b6d4' : '1px solid rgba(255, 255, 255, 0.2)',
-            backdropFilter: 'blur(12px)',
+            background: 'rgba(15, 23, 42, 0.85)',
+            border: '1px solid rgba(16, 185, 129, 0.5)',
+            backdropFilter: 'blur(10px)',
             color: '#ffffff',
-            fontSize: 'clamp(0.8rem, 1.8vw, 0.95rem)',
+            fontSize: 'clamp(0.78rem, 1.6vw, 0.88rem)',
             fontWeight: 700,
-            padding: '8px 20px',
-            borderRadius: '40px',
+            padding: '6px 18px',
+            borderRadius: '30px',
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            marginBottom: '16px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            marginBottom: '18px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
             flexWrap: 'wrap',
             justifyContent: 'center'
           }}>
-            {hasWebsite ? (
-              <>
-                <span style={{ color: '#67e8f9' }}>🌐 ACTIVE SITE DETECTED:</span>
-                <strong style={{ color: '#fde047' }}>{websiteUrl}</strong>
-                <span style={{ color: '#94a3b8' }}>•</span>
-                <span style={{ color: '#ffffff' }}>KEEP YOUR EXISTING SITE & ATTACH OUR TOOLS IN 10 MINS</span>
-              </>
-            ) : (
-              <>
-                <span style={{ color: '#10b981' }}>🔒 PRIVATE PROPOSAL FOR:</span>
-                <strong style={{ color: '#fde047', textTransform: 'uppercase' }}>{lead.name}</strong>
-                <span style={{ color: '#94a3b8' }}>•</span>
-                <span style={{ color: '#cbd5e1' }}>{lead.area || lead.city || 'Lagos'}, Nigeria</span>
-                <span style={{ color: '#94a3b8' }}>•</span>
-                <span style={{ color: '#6ee7b7' }}>24h SLA Guarantee</span>
-              </>
-            )}
+            <span style={{ color: '#34d399' }}>🔒 PRIVATE PROPOSAL FOR:</span>
+            <strong style={{ color: '#fde047', textTransform: 'uppercase' }}>{lead.name}</strong>
+            <span style={{ color: '#64748b' }}>•</span>
+            <span style={{ color: '#cbd5e1' }}>{lead.area || lead.city || 'Lagos'}, Nigeria</span>
+            <span style={{ color: '#64748b' }}>•</span>
+            <span style={{ color: '#a7f3d0' }}>⚡ Ready in 24 Hours</span>
           </div>
-
-          {/* Prominent Localized FOMO Urgency Badge (Above The Fold) */}
-          {isPreview && (
-            <div style={{
-              background: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid rgba(248, 113, 113, 0.4)',
-              backdropFilter: 'blur(10px)',
-              padding: '6px 16px',
-              borderRadius: '24px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              fontSize: 'clamp(0.75rem, 1.6vw, 0.85rem)',
-              fontWeight: 700,
-              color: '#fecaca',
-              marginBottom: '20px',
-              flexWrap: 'wrap'
-            }}>
-              <span>🔥 <strong>4 similar businesses in {lead.area || lead.city || 'your area'}</strong> upgraded this week</span>
-              <span>•</span>
-              <span style={{ color: '#fef08a' }}>⏰ Domain reserved for {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m</span>
-              <span>•</span>
-              <span style={{ color: '#a7f3d0' }}>🛡️ 100% Hands-Free White-Glove Setup</span>
-            </div>
-          )}
 
           <h1 style={{ 
             fontFamily: headingFontFamily,
-            fontSize: 'clamp(2.1rem, 4.8vw, 3.6rem)', 
-            lineHeight: 1.15, 
+            fontSize: 'clamp(1.9rem, 4.2vw, 3.4rem)', 
+            lineHeight: 1.18, 
             fontWeight: 800, 
-            marginBottom: '18px',
+            marginBottom: '16px',
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             letterSpacing: '-0.02em',
-            color: '#ffffff'
+            color: '#ffffff',
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
+            maxWidth: '920px',
+            margin: '0 auto 16px'
           }}>
             {hasWebsite 
-              ? `Keep Your Website at ${websiteUrl}. Attach Our Automated Sales Tools in 10 Mins.`
+              ? `Keep Your Website at ${websiteUrl}. Attach Our Automated WhatsApp AI in 10 Mins.`
               : copy.heroTitle}
           </h1>
 
           <p style={{ 
-            fontSize: 'clamp(1.05rem, 2.2vw, 1.3rem)', 
-            color: '#e2e8f0', 
-            marginBottom: '30px',
+            fontSize: 'clamp(1.0rem, 1.8vw, 1.2rem)', 
+            color: '#cbd5e1', 
+            marginBottom: '26px',
             maxWidth: '720px',
-            margin: '0 auto 30px',
+            margin: '0 auto 26px',
             lineHeight: 1.5,
-            textShadow: '0 1px 5px rgba(0,0,0,0.3)'
+            textShadow: '0 1px 4px rgba(0,0,0,0.3)',
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word'
           }}>
             {hasWebsite 
-              ? `We inspected your live site at ${websiteUrl}. You don't need a new website — attach our custom interactive ${pitch.widgetTitle || 'lead engine'} directly to your current site to capture 3x more WhatsApp leads.`
+              ? `We inspected your live site. Attach our 24/7 AI customer agent and dynamic quote generator directly to your existing domain to capture 3x more paying clients.`
               : copy.heroSubtitle}
           </p>
 
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
-            <a href={isPreview ? "#pricing" : "#booking"} className="btn-hover-effect" style={{
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              border: 'none',
-              color: '#fff',
-              textDecoration: 'none',
-              padding: '16px 28px',
-              borderRadius: '10px',
-              fontWeight: 800,
-              fontSize: '1.02rem',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
-              transition: 'all 0.2s'
-            }}>
+          {/* Streamlined High-Conversion Action Buttons (1 Primary + 1 Secondary) */}
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '22px' }}>
+            <a 
+              href={isPreview ? "#pricing" : "#booking"} 
+              className="btn-hover-effect" 
+              style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                border: 'none',
+                color: '#fff',
+                textDecoration: 'none',
+                padding: '16px 32px',
+                borderRadius: '12px',
+                fontWeight: 800,
+                fontSize: '1.05rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 6px 25px rgba(16, 185, 129, 0.45)',
+                transition: 'all 0.2s',
+                letterSpacing: '-0.01em'
+              }}
+            >
               {hasWebsite 
                 ? `🔌 Order Tool Embed (₦35,000)`
                 : isPreview 
-                ? `🔒 Claim ${lead.name}'s Website`
+                ? `🚀 Claim ${lead.name}'s Setup (50% Deposit)`
                 : copy.ctaText} <ArrowRight size={18} />
             </a>
 
-            {/* 1-Click WhatsApp Voice Note Claim Button */}
             <a
-              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our custom website & 24/7 WhatsApp AI platform. Please activate my domain.`)}`}
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I am looking at the preview portal and want to activate our 24/7 AI system.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-hover-effect"
@@ -2011,7 +1975,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 color: '#fff',
                 textDecoration: 'none',
                 padding: '16px 24px',
-                borderRadius: '10px',
+                borderRadius: '12px',
                 fontWeight: 800,
                 fontSize: '0.98rem',
                 display: 'inline-flex',
@@ -2021,84 +1985,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 transition: 'all 0.2s'
               }}
             >
-              🎙️ 1-Click Claim via WhatsApp →
+              💬 1-Click WhatsApp Confirmation →
             </a>
-
-            {lead.phone_raw && (
-              <a href={`https://wa.me/${formatWhatsAppNumber(lead.phone_raw)}?text=${encodeURIComponent(`Hi! I am reviewing the tool embed proposal for ${lead.name} (${websiteUrl}). I have a question before ordering.`)}`} target="_blank" rel="noreferrer" className="btn-hover-effect" style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                color: '#fff',
-                textDecoration: 'none',
-                padding: '16px 20px',
-                borderRadius: '10px',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.2s'
-              }}>
-                💬 Chat Support
-              </a>
-            )}
           </div>
 
-          {/* Quick 1-Tap Audio Explanation Player in Hero */}
-          {isPreview && (
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '10px',
-              background: 'rgba(15, 23, 42, 0.85)',
-              border: '1px solid rgba(139, 92, 246, 0.4)',
-              backdropFilter: 'blur(10px)',
-              padding: '8px 16px',
-              borderRadius: '30px',
-              marginBottom: '20px',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.3)'
-            }}>
-              <button
-                type="button"
-                onClick={() => {
-                  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-                    if (window.speechSynthesis.speaking) {
-                      window.speechSynthesis.cancel();
-                    } else {
-                      const text = `Hello! We custom-built this sales website and WhatsApp AI for ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. It handles customer inquiries 24/7, creates instant branded PDF quotes, and accepts OPay transfers. You can claim it now with 100% hands-free setup.`;
-                      const utterance = new SpeechSynthesisUtterance(text);
-                      utterance.rate = 1.0;
-                      window.speechSynthesis.speak(utterance);
-                    }
-                  }
-                }}
-                style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  background: '#10b981',
-                  color: '#fff',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.85rem',
-                  fontWeight: 700
-                }}
-              >
-                ▶
-              </button>
-              <span style={{ fontSize: '0.8rem', color: '#cbd5e1', fontWeight: 600 }}>
-                🎙️ Listen to 45s Audio Note (English / Pidgin)
-              </span>
-            </div>
-          )}
-
-          {/* Single Clean Reassurance Bar */}
+          {/* Clean Reassurance Bar */}
           <div style={{
-            color: '#cbd5e1',
+            color: '#94a3b8',
             fontSize: '0.82rem',
             fontWeight: 600,
             display: 'flex',
@@ -2107,11 +2000,11 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             flexWrap: 'wrap',
             opacity: 0.95
           }}>
-            <span>⚡ Ready in 24 Hours</span>
+            <span>⚡ Live in 24 Hours</span>
             <span>•</span>
-            <span>🛡️ 100% Refund Guarantee</span>
+            <span>🛡️ 100% Done-For-You White-Glove Setup</span>
             <span>•</span>
-            <span>📲 Direct WhatsApp Leads Included</span>
+            <span>💳 Moniepoint &amp; OPay Verified</span>
           </div>
 
           {/* ⚡ ULTRA-STRAIGHTFORWARD 3-STEP BUSINESS OWNER ACTION GRID */}
@@ -3578,37 +3471,34 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         </div>
       )}
 
-      {/* ─── Hands-Free White-Glove Domain Guarantee Banner ────────────────── */}
+      {/* ─── Hands-Free White-Glove Domain Guarantee Banner (Embedded in flow) ─── */}
       {isPreview && (
         <div
           id="domain-checker-strip"
           style={{
-            position: 'fixed',
-            top: '64px',
-            left: 0, right: 0,
-            background: 'linear-gradient(90deg, #0284c7 0%, #0d9488 100%)',
-            backdropFilter: 'blur(10px)',
-            color: '#fff',
-            padding: '8px 20px',
-            zIndex: 999,
+            background: 'linear-gradient(90deg, #0f172a 0%, #1e293b 100%)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            color: '#cbd5e1',
+            padding: '12px 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '12px',
+            gap: '14px',
             fontSize: '0.82rem',
             fontWeight: 600,
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
-            flexWrap: 'wrap'
+            flexWrap: 'wrap',
+            marginTop: '20px'
           }}
         >
-          <span>🎁 <strong>100% HANDS-FREE SETUP:</strong> Custom Domain + Hosting + WhatsApp AI included (We Do All The Work)!</span>
+          <span>🎁 <strong style={{ color: '#ffffff' }}>100% HANDS-FREE SETUP:</strong> Custom Domain + Server Hosting + WhatsApp AI included!</span>
           <button
             type="button"
             onClick={() => setShowThemeBar(!showThemeBar)}
             style={{
-              background: 'rgba(255, 255, 255, 0.2)',
+              background: 'rgba(255, 255, 255, 0.1)',
               color: '#ffffff',
-              border: '1px solid rgba(255, 255, 255, 0.4)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
               padding: '4px 12px',
               borderRadius: '20px',
               fontSize: '0.76rem',
@@ -3618,21 +3508,6 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           >
             🎨 {showThemeBar ? 'Hide Style Picker' : 'Change Design Style'}
           </button>
-          <a
-            href="#claim"
-            style={{
-              background: '#ffffff',
-              color: '#0284c7',
-              padding: '4px 14px',
-              borderRadius: '20px',
-              textDecoration: 'none',
-              fontSize: '0.78rem',
-              fontWeight: 800,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-            }}
-          >
-            🚀 Claim Website Now →
-          </a>
         </div>
       )}
 
@@ -3641,19 +3516,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         <div
           id="theme-switcher-bar"
           style={{
-            position: 'fixed',
-            top: '110px',
-            left: 0, right: 0,
             background: 'rgba(6, 9, 18, 0.95)',
-            backdropFilter: 'blur(16px)',
             borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
-            padding: '8px 16px',
-            zIndex: 998,
+            padding: '10px 16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '8px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
             flexWrap: 'wrap'
           }}
         >
@@ -5083,7 +4952,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           bottom: 0,
           left: 0,
           right: 0,
-          zIndex: 9995,
+          zIndex: 9998,
           background: 'rgba(9, 13, 22, 0.96)',
           backdropFilter: 'blur(16px)',
           borderTop: '1.5px solid rgba(16, 185, 129, 0.4)',
@@ -5095,23 +4964,23 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           gap: '12px'
         }}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>PROPOSAL PACKAGE</span>
-            <span style={{ fontSize: '0.95rem', color: '#34d399', fontWeight: 800 }}>₦150,000</span>
+            <span style={{ fontSize: '0.62rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>50% COMMITMENT DEPOSIT</span>
+            <span style={{ fontSize: '0.98rem', color: '#34d399', fontWeight: 800 }}>₦75,000 <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 500 }}>(Bal. on Handover)</span></span>
           </div>
           <a href="#claim" style={{
             flex: 1,
-            maxWidth: '260px',
+            maxWidth: '240px',
             textAlign: 'center',
             background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
             color: '#ffffff',
             padding: '10px 16px',
-            borderRadius: '8px',
+            borderRadius: '10px',
             fontWeight: 800,
             fontSize: '0.85rem',
             textDecoration: 'none',
             boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
           }}>
-            🚀 Claim Site &amp; AI (OPay)
+            🚀 Claim Setup (50% Dep)
           </a>
         </div>
       )}

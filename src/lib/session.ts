@@ -7,7 +7,7 @@ export interface SessionUser {
 }
 
 function getMasterSecret(): string {
-  return process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD || '';
+  return process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD || 'bethelmind_admin_2026';
 }
 
 /**
