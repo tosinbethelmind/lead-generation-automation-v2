@@ -60,26 +60,18 @@ export async function GET() {
     const lines: LineStatus[] = [
       {
         lineId: 1,
-        label: 'Line 1 (Primary WhatsApp Outreach)',
-        phone: serviceData?.phone || (serviceData?.connectionStatus === 'connected' ? '+234 803 100 2001' : ''),
-        status: serviceData?.connectionStatus === 'connected' ? 'connected' : (serviceData?.connectionStatus === 'qr' ? 'qr' : (serviceOnline ? 'connecting' : 'disconnected')),
-        qrCodeBase64: serviceData?.qrCodeBase64 || '',
+        label: 'Line 1 (Outreach Line A)',
+        phone: '+234 702 626 6946',
+        status: serviceData?.status === 'connected' ? 'connected' : (serviceData?.status === 'qr' ? 'qr' : (serviceOnline ? 'connecting' : 'disconnected')),
+        qrCodeBase64: serviceData?.qrCodeUrl || '',
         lastActiveWat: getLagosTimeString() + ' WAT'
       },
       {
         lineId: 2,
-        label: 'Line 2 (Secondary Backup SIM)',
-        phone: serviceData?.connectionStatus === 'connected' ? '+234 812 300 4002' : '',
-        status: serviceData?.connectionStatus === 'connected' ? 'connected' : 'qr',
-        qrCodeBase64: serviceData?.qrCodeBase64 || '',
-        lastActiveWat: getLagosTimeString() + ' WAT'
-      },
-      {
-        lineId: 3,
-        label: 'Line 3 (Tertiary Inbound Magnet)',
-        phone: serviceData?.connectionStatus === 'connected' ? '+234 901 500 6003' : '',
-        status: serviceData?.connectionStatus === 'connected' ? 'connected' : 'disconnected',
-        qrCodeBase64: serviceData?.qrCodeBase64 || '',
+        label: 'Line 2 (Outreach Line B)',
+        phone: '+234 904 605 0469',
+        status: serviceData?.status === 'connected' ? 'connected' : (serviceData?.status === 'qr' ? 'qr' : 'disconnected'),
+        qrCodeBase64: serviceData?.qrCodeUrl || '',
         lastActiveWat: getLagosTimeString() + ' WAT'
       }
     ];
