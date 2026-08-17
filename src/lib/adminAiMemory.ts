@@ -2,15 +2,28 @@ import fs from 'fs';
 import path from 'path';
 import { readJsonFileSyncWithRetry, writeJsonFileSyncAtomic } from './atomicIo';
 
+export interface DailySprintQuota {
+  date: string;
+  day_of_sprint: number; // 1 to 7
+  safe_daily_limit: number;
+  dispatched_count: number;
+  replies_count: number;
+  claims_verified: number;
+  channels_used: string[];
+}
+
 export interface AdminAiMemoryStore {
-  admin_phone?: string;
-  admin_email?: string;
-  default_sector?: string;
-  default_location?: string;
-  preferred_sms_gateway?: string;
-  claim_fee_ngn?: number;
+  admin_phone: string;
+  admin_email: string;
+  default_sector: string;
+  default_location: string;
+  preferred_sms_gateway: string;
+  claim_fee_ngn: number;
+  sprint_start_date: string; // '2026-08-17'
+  sprint_end_date: string;   // '2026-08-23'
   custom_preferences: Record<string, string>;
   learned_facts: string[];
+  daily_quotas: Record<string, DailySprintQuota>;
   recent_commands: {
     command: string;
     action: string;
@@ -33,26 +46,54 @@ function getMemoryFilePath(): string {
     : path.join(process.cwd(), 'local_db', 'admin_ai_memory.json');
 }
 
+/**
+ * Calculates current day in the active 1-week sprint (Aug 17 - Aug 23, 2026)
+ * and determines the safe warm-up rate limit.
+ */
+export function getSprintDayInfo(targetDate: Date = new Date()): { dayNumber: number; safeLimit: number; dateStr: string } {
+  const dateStr = targetDate.toISOString().split('T')[0];
+  const sprintStart = new Date('2026-08-17T00:00:00Z');
+  const now = new Date(`${dateStr}T00:00:00Z`);
+
+  const diffDays = Math.floor((now.getTime() - sprintStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  const dayNumber = Math.max(1, Math.min(diffDays, 7));
+
+  // Safe warm-up ramp:
+  // Day 1-2: 30 msgs/day
+  // Day 3-5: 45 msgs/day
+  // Day 6-7: 60 msgs/day
+  let safeLimit = 30;
+  if (dayNumber >= 3 && dayNumber <= 5) safeLimit = 45;
+  else if (dayNumber >= 6) safeLimit = 60;
+
+  return { dayNumber, safeLimit, dateStr };
+}
+
 const DEFAULT_MEMORY: AdminAiMemoryStore = {
   admin_phone: '2348022791227',
   admin_email: 'tosin@bethelmindanalytics.com',
-  default_sector: 'Salons & Healthcare Clinics',
-  default_location: 'Lagos (Ikeja, Lekki, Surulere, Victoria Island)',
+  default_sector: 'Salons, Healthcare Clinics, Auto Repair & Restaurants',
+  default_location: 'Lagos (Ikeja, Lekki, Surulere, Victoria Island, Ikoyi)',
   preferred_sms_gateway: 'http://10.132.90.251:8082',
   claim_fee_ngn: 185000,
+  sprint_start_date: '2026-08-17',
+  sprint_end_date: '2026-08-23',
   custom_preferences: {
     outreach_scope: '10K Lagos Engine ONLY (Exclude SolarQuotePro)',
     sms_gateway: 'Tailscale Android SMS Gateway (10.132.90.251:8082)',
-    safe_ramp: 'Day 1-2: 30 msgs, Day 3-5: 45 msgs, Day 6-7: 60 msgs',
-    active_sprint: 'Monday, August 17, 2026 to Sunday, August 23, 2026'
+    safe_ramp_schedule: 'Day 1-2: 30 msgs/day -> Day 3-5: 45 msgs/day -> Day 6-7: 60 msgs/day',
+    active_sprint: 'Monday, August 17, 2026 to Sunday, August 23, 2026',
+    core_offer: 'Interactive B2B prototype with WhatsApp ordering & Paystack 48h instant setup claim'
   },
   learned_facts: [
+    'Outreach sprint officially launched TODAY: Monday, August 17, 2026 (Runs through August 23, 2026)',
     'User phone number is 2348022791227 (08022791227)',
     'User email is tosin@bethelmindanalytics.com',
-    'Outreach routes strictly through Tailscale Android SMS Gateway (NO Termii)',
-    'Active sprint is August 17 to August 23, 2026',
-    'Standard claim fee is 185,000 NGN via Moniepoint / OPay'
+    'Outreach routes strictly through Tailscale Android SMS Gateway at http://10.132.90.251:8082 (NO Termii)',
+    'Standard website prototype claim fee is 185,000 NGN via Moniepoint / OPay',
+    'Safe warm-up rate limit today is 30 messages/day to protect sender reputation and deliverability'
   ],
+  daily_quotas: {},
   recent_commands: [],
   conversation_history: [],
   updated_at: new Date().toISOString()
@@ -62,7 +103,6 @@ export function getAdminMemory(): AdminAiMemoryStore {
   try {
     const memPath = getMemoryFilePath();
     if (!fs.existsSync(memPath)) {
-      // Ensure dir exists
       const dir = path.dirname(memPath);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       writeJsonFileSyncAtomic(memPath, DEFAULT_MEMORY);
@@ -84,6 +124,7 @@ export function saveAdminMemory(update: Partial<AdminAiMemoryStore>): AdminAiMem
       ...update,
       custom_preferences: { ...current.custom_preferences, ...(update.custom_preferences || {}) },
       learned_facts: Array.from(new Set([...current.learned_facts, ...(update.learned_facts || [])])),
+      daily_quotas: { ...current.daily_quotas, ...(update.daily_quotas || {}) },
       updated_at: new Date().toISOString()
     };
 
@@ -96,6 +137,31 @@ export function saveAdminMemory(update: Partial<AdminAiMemoryStore>): AdminAiMem
     console.warn('Failed to persist admin AI memory:', err);
     return getAdminMemory();
   }
+}
+
+export function trackOutreachDispatch(count: number, channel: string) {
+  try {
+    const mem = getAdminMemory();
+    const { dayNumber, safeLimit, dateStr } = getSprintDayInfo();
+
+    const existingQuota = mem.daily_quotas[dateStr] || {
+      date: dateStr,
+      day_of_sprint: dayNumber,
+      safe_daily_limit: safeLimit,
+      dispatched_count: 0,
+      replies_count: 0,
+      claims_verified: 0,
+      channels_used: []
+    };
+
+    existingQuota.dispatched_count += count;
+    if (!existingQuota.channels_used.includes(channel)) {
+      existingQuota.channels_used.push(channel);
+    }
+
+    mem.daily_quotas[dateStr] = existingQuota;
+    saveAdminMemory({ daily_quotas: mem.daily_quotas });
+  } catch (_) {}
 }
 
 export function recordCommandExecution(command: string, action: string, summary: string) {
@@ -123,19 +189,27 @@ export function learnFact(fact: string) {
 
 export function buildMemoryContextString(): string {
   const mem = getAdminMemory();
+  const { dayNumber, safeLimit, dateStr } = getSprintDayInfo();
+  const todayQuota = mem.daily_quotas[dateStr] || { dispatched_count: 0 };
+  const remaining = Math.max(0, safeLimit - todayQuota.dispatched_count);
+
   return `
-[PERMANENT ADMIN MEMORY & KNOWLEDGE BASE]
+[CAMPAIGN LAUNCH & SPRINT INTELLIGENCE]
+- Active Sprint: Monday, August 17, 2026 – Sunday, August 23, 2026
+- Current Status: Day ${dayNumber} of 7 (Today: ${dateStr})
+- Today's Safe Rate Limit: ${safeLimit} messages/day
+- Dispatched Today: ${todayQuota.dispatched_count} / ${safeLimit} (Remaining Allowance: ${remaining})
 - Admin Contact Phone: ${mem.admin_phone}
 - Admin Contact Email: ${mem.admin_email}
-- Default Sector Focus: ${mem.default_sector}
-- Default Territory: ${mem.default_location}
-- SMS Gateway: ${mem.preferred_sms_gateway}
-- Claim Fee: ₦${(mem.claim_fee_ngn || 185000).toLocaleString()}
-- Active Sprint: ${mem.custom_preferences.active_sprint || 'Aug 17 - Aug 23, 2026'}
-- Core Memory Directives:
+- SMS Routing: Tailscale Android Gateway (${mem.preferred_sms_gateway})
+- Standard Setup Claim Fee: ₦${(mem.claim_fee_ngn || 185000).toLocaleString()}
+- Default Target Sectors: ${mem.default_sector}
+- Target Locations: ${mem.default_location}
+
+[CORE MEMORY DIRECTIVES]
 ${mem.learned_facts.map(f => `  * ${f}`).join('\n')}
 
-[RECENT COMMANDS HISTORY]
+[RECENT COMMANDS]
 ${mem.recent_commands.slice(0, 5).map(c => `  - [${c.timestamp.slice(11, 16)}] "${c.command}" -> ${c.summary}`).join('\n') || '  (None yet)'}
 `.trim();
 }
