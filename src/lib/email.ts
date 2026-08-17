@@ -100,41 +100,48 @@ export async function sendBrevoMessage(to: string, subject: string, body: string
 
 export async function sendSmtpMessage(to: string, subject: string, body: string, config?: any) {
   const host = process.env.SMTP_HOST || config?.smtpHost || 'smtp.hostinger.com';
-  const port = parseInt(process.env.SMTP_PORT || (config?.smtpPort ? String(config.smtpPort) : '465'), 10);
-  const secure = process.env.SMTP_SECURE === 'true' || config?.smtpSecure === true || port === 465;
   const user = process.env.SMTP_USER || config?.smtpUser || 'tosin@bethelmindanalytics.com';
   const pass = process.env.SMTP_PASS || config?.smtpPass || 'Bethelmind@2026';
+  const senderName = process.env.SMTP_SENDER_NAME || config?.smtpSenderName || 'Bethelmind Analytics & Strategy';
+  const fromEmail = process.env.SMTP_FROM || config?.smtpFrom || user;
 
   if (!host || !user || !pass) {
     throw new Error('SMTP Host, User, and Password must be configured.');
   }
 
-  const transporter = nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth: {
-      user,
-      pass,
-    },
-    tls: {
-      rejectUnauthorized: false
-    },
-    connectionTimeout: 5000,
-    greetingTimeout: 5000,
-    socketTimeout: 5000,
-    family: 4
-  } as any);
+  // Try Port 465 SSL first, fallback to Port 587 STARTTLS
+  const configsToTry = [
+    { port: 465, secure: true },
+    { port: 587, secure: false }
+  ];
 
-  const senderName = process.env.SMTP_SENDER_NAME || config?.smtpSenderName || 'Bethelmind Analytics & Strategy';
-  const fromEmail = process.env.SMTP_FROM || config?.smtpFrom || user;
+  let lastError: any = null;
 
-  return await transporter.sendMail({
-    from: `"${senderName}" <${fromEmail}>`,
-    to,
-    subject,
-    text: body,
-  });
+  for (const cfg of configsToTry) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host,
+        port: cfg.port,
+        secure: cfg.secure,
+        auth: { user, pass },
+        tls: { rejectUnauthorized: false },
+        connectionTimeout: 6000,
+        greetingTimeout: 6000,
+        socketTimeout: 6000
+      } as any);
+
+      return await transporter.sendMail({
+        from: `"${senderName}" <${fromEmail}>`,
+        to,
+        subject,
+        text: body,
+      });
+    } catch (err: any) {
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error('Failed to connect to SMTP server on port 465 and 587.');
 }
 
 export async function sendSendGridMessage(to: string, subject: string, body: string, config: RuntimeConfig) {

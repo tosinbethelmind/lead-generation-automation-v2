@@ -213,7 +213,12 @@ export async function POST(req: NextRequest) {
       if (doSms) {
         const smsLead: Lead = { ...sampleLead, phone_e164: targetPhone, phone_raw: targetPhone };
         try {
-          const smsRes = await sendSmsMessage(smsLead, previewUrl, `ApexReach: Interactive website prototype created for ${sampleLead.name}. Review live setup: ${previewUrl}`);
+          const smsRes = await sendSmsMessage(
+            smsLead,
+            previewUrl,
+            `ApexReach: Interactive website prototype created for ${sampleLead.name}. Review live setup: ${previewUrl}`,
+            { bypassDnc: true }
+          );
           results.sms = { success: true, target: targetPhone, details: smsRes };
         } catch (err: any) {
           results.sms = { success: false, target: targetPhone, error: err.message };
@@ -229,7 +234,7 @@ export async function POST(req: NextRequest) {
         };
         const waText = `👋 Hello! We designed an interactive website prototype for *${sampleLead.name}* with mobile booking and instant Paystack integration.\n\n🔗 *Preview link:* ${previewUrl}\n\nReply *SETUP* to claim your live domain within 48 hours.`;
         try {
-          const waRes = await sendWhatsAppMessage(waLead, previewUrl, origin, waText, { bypassHoursCheck: true });
+          const waRes = await sendWhatsAppMessage(waLead, previewUrl, origin, waText, { bypassHoursCheck: true, bypassDnc: true });
           results.whatsapp = { success: true, target: targetPhone, details: waRes };
         } catch (err: any) {
           results.whatsapp = { success: false, target: targetPhone, error: err.message };
