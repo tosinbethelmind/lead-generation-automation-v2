@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
     const user = getAdminUser(token.trim());
 
-    if (!user || user.role !== 'admin_assistant') {
+    if (!user || (user.role !== 'admin_assistant' && user.role !== 'super_admin')) {
       return NextResponse.json({ error: 'Invalid assistant token. Access denied.' }, { status: 401 });
     }
 

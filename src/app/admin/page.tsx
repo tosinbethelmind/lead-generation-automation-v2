@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import Lagos10KOutreachCard from '@/app/dashboard/components/Lagos10KOutreachCard';
 import LeadJourneyTrackerCard from '@/app/dashboard/components/LeadJourneyTrackerCard';
+import AdminAiCommandTerminal from '@/components/AdminAiCommandTerminal';
 import { copyToClipboard } from '@/lib/clipboard';
 
 type DashboardTab = 'outreach' | 'journey' | 'onboarding' | 'crm' | 'deploy';
@@ -868,6 +869,9 @@ Technical Support & Developer Handover: Bethelmind Analytics & Strategy 🚀`;
 
         </div>
       )}
+
+      {/* Floating AI Admin Copilot & Command Prompt */}
+      <AdminAiCommandTerminal />
 
       {/* Scoped CSS animations */}
       <style jsx>{`

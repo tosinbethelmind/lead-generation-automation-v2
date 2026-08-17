@@ -6,6 +6,7 @@ import {
   RefreshCw, ExternalLink, X, Phone, UserCheck, ShieldCheck,
   AlertTriangle, Sparkles, Wrench
 } from 'lucide-react';
+import AdminAiCommandTerminal from '@/components/AdminAiCommandTerminal';
 import { copyToClipboard } from '@/lib/clipboard';
 
 interface AssignedLead {
@@ -429,6 +430,9 @@ export default function AssistantDeskPage() {
           </div>
         </div>
       )}
+
+      {/* Floating AI Admin Copilot & Command Prompt */}
+      <AdminAiCommandTerminal />
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>

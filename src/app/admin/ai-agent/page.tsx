@@ -22,6 +22,7 @@ import {
   FileText,
   Clock,
 } from 'lucide-react';
+import AdminAiCommandTerminal from '@/components/AdminAiCommandTerminal';
 
 interface AgentConfig {
   agent_name: string;
@@ -1147,6 +1148,9 @@ export default function AiAgentAdminPage() {
         .time-tag { font-size: 0.65rem; opacity: 0.5; margin-top: 4px; }
         .select-prompt { padding: 60px; text-align: center; color: #64748b; }
       `}</style>
+
+      {/* Floating AI Admin Copilot & Command Prompt */}
+      <AdminAiCommandTerminal />
     </div>
   );
 }
