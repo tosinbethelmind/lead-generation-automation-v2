@@ -2714,16 +2714,26 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                           </button>
                           <button
                             type="button"
-                            onClick={() => { setActiveWidget(feat.id); setDemoStatus(null); }}
+                            onClick={() => {
+                              setActiveWidget(feat.id);
+                              setDemoStatus(null);
+                              setTimeout(() => {
+                                const el = document.getElementById('demo-sandbox-container');
+                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              }, 50);
+                            }}
                             style={{
-                              padding: '8px 12px',
+                              padding: '8px 14px',
                               borderRadius: '8px',
-                              border: 'none',
-                              background: isActiveDemo ? 'rgba(2, 132, 199, 0.1)' : '#f1f5f9',
-                              color: isActiveDemo ? theme.primary : '#4b5563',
-                              fontSize: '0.8rem',
+                              border: isActiveDemo ? `1.5px solid ${theme.primary}` : 'none',
+                              background: isActiveDemo ? 'rgba(2, 132, 199, 0.15)' : '#f1f5f9',
+                              color: isActiveDemo ? theme.primary : '#1e293b',
+                              fontSize: '0.82rem',
                               fontWeight: 700,
-                              cursor: 'pointer'
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
                             }}
                           >
                             ⚡ Test Demo
@@ -2815,12 +2825,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           )}
 
           {/* Render Active Widget Box */}
-          <div className="frosted-glass" style={{
+          <div id="demo-sandbox-container" className="frosted-glass" style={{
             padding: '30px',
             borderRadius: '16px',
-            boxShadow: '0 4px 20px -2px rgba(0,0,0,0.04)',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
             background: '#ffffff',
-            border: '1px solid #cbd5e1'
+            border: `2px solid ${theme.primary}33`,
+            scrollMarginTop: '100px'
           }}>
             {renderActiveWidget()}
           </div>

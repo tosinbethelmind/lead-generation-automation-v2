@@ -118,6 +118,7 @@ export async function sendWhatsAppMessage(
   customMessage?: string,
   options?: {
     bypassHoursCheck?: boolean;
+    bypassDnc?: boolean;
     isIcebreaker?: boolean;
   }
 ) {
