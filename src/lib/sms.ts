@@ -87,8 +87,9 @@ export async function sendSmsMessage(
   if (provider === 'gateway' || provider === 'cascade') {
     const candidateUrls = Array.from(new Set([
       config.smsGatewayUrl,
-      'http://10.50.220.22:8082',
+      'http://10.132.90.251:8082',
       'http://100.107.243.108:8082',
+      'http://10.50.220.22:8082',
       'http://127.0.0.1:8082',
       'http://192.168.43.1:8082',
       'http://192.168.137.1:8082'
@@ -106,27 +107,35 @@ export async function sendSmsMessage(
     let gatewaySuccess = false;
     let successfulUrl = '';
 
-    for (const url of candidateUrls) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2500);
+    for (const rawUrl of candidateUrls) {
+      const endpointsToTry = [
+        rawUrl.endsWith('/message') ? rawUrl : rawUrl.replace(/\/+$/, '') + '/message',
+        rawUrl
+      ];
 
-        const response = await fetch(url, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(payload),
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
+      for (const endpoint of endpointsToTry) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-        if (response.ok) {
-          gatewaySuccess = true;
-          successfulUrl = url;
-          break;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            gatewaySuccess = true;
+            successfulUrl = endpoint;
+            break;
+          }
+        } catch (_) {
+          // Silently probe next endpoint
         }
-      } catch (_) {
-        // Silently probe next candidate
       }
+      if (gatewaySuccess) break;
     }
 
     if (gatewaySuccess) {

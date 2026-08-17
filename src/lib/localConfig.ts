@@ -83,6 +83,7 @@ export interface LocalConfig {
 
   // ── Local Baileys WhatsApp Service ──────────────────────
   whatsappBaileysUrl?: string;
+  whatsappChannelUrl?: string;
 
   // ── Claiming / Payments ────────────────────────────────
   paystackPublicKey?: string;
@@ -265,6 +266,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
 
   // Baileys Settings
   whatsappBaileysUrl: 'http://localhost:3007',
+  whatsappChannelUrl: 'https://whatsapp.com/channel/0029VbDFgKP4o7qM58yY9v2l',
 
   // Claiming / Payments Defaults
   paystackPublicKey: '',
@@ -451,6 +453,7 @@ export function getRuntimeConfig(): RuntimeConfig {
 
     // Baileys Settings
     whatsappBaileysUrl: process.env.WHATSAPP_BAILEYS_URL || fileConfig.whatsappBaileysUrl || DEFAULT_CONFIG.whatsappBaileysUrl,
+    whatsappChannelUrl: process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL || process.env.WHATSAPP_CHANNEL_URL || fileConfig.whatsappChannelUrl || DEFAULT_CONFIG.whatsappChannelUrl,
 
     // Claiming / Payments
     paystackPublicKey: process.env.PAYSTACK_PUBLIC_KEY || fileConfig.paystackPublicKey || DEFAULT_CONFIG.paystackPublicKey,

@@ -55,6 +55,9 @@ interface PreviewData {
     opayAccountName?: string;
     opayPublicKey?: string;
     opayMerchantId?: string;
+  };
+}
+
 import { getDesignTheme, buildFallbackCopy } from '@/lib/designGenerator';
 
 export default function PreviewPage() {

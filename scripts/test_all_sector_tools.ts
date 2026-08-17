@@ -194,7 +194,7 @@ function runTests() {
       toolName: 'CAMA 2020 Incorporation & Stamp Duty Sizer',
       actionKey: 'cac_fees',
       fn: () => calculateCacFilingFees('company_ltd', 1000000),
-      heroExtractor: (r) => `CAC Fees: ₦${r.cacRegistrationFeeNgn.toLocaleString()} | Total Gov Fees: ₦${r.totalGovernmentFeesNgn.toLocaleString()}`,
+      heroExtractor: (r) => `CAC Fees: ₦${r.cacFilingFee.toLocaleString()} | Total Gov Fees: ₦${r.totalCost.toLocaleString()}`,
     },
 
     // 6. Boutiques & Retail
@@ -217,7 +217,7 @@ function runTests() {
       toolName: 'Lagos & Interstate Delivery Rate Sizer',
       actionKey: 'logistics_delivery',
       fn: () => calculateLogisticsDeliveryFee('Lagos (Ikeja)', 'Lagos (Lekki)', 5),
-      heroExtractor: (r) => `Delivery Rate: ₦${r.totalDeliveryFeeNgn.toLocaleString()}`,
+      heroExtractor: (r) => `Intra-City Delivery Rate: ₦${r.intraCityCourierFeeNgn.toLocaleString()}`,
     },
 
     // 7. Schools
@@ -332,7 +332,7 @@ function runTests() {
       toolName: 'Cold Room Spoilage & Power Cost Sizer',
       actionKey: 'cold_room_spoilage',
       fn: () => calculateColdRoomSpoilageAndPowerCost(10, 14, 1350),
-      heroExtractor: (r) => `Monthly Power Outlay: ₦${r.estimatedMonthlyPowerCostNgn.toLocaleString()}`,
+      heroExtractor: (r) => `Monthly Diesel: ₦${r.monthlyDieselExpenseNgn.toLocaleString()} | Solar Savings: ₦${r.monthlySolarHybridSavingsNgn.toLocaleString()}`,
     },
 
     // 12. Hospitality
@@ -387,7 +387,7 @@ function runTests() {
       toolName: 'Heavy Plant Hour-Meter & Wet/Dry Lease Sizer',
       actionKey: 'machinery_lease_expense',
       fn: () => calculateMachineryLeaseExpense('cat_320_excavator', 8, 'wet', 1350),
-      heroExtractor: (r) => `Daily Wet Lease Cost: ₦${r.totalDailyLeaseCostNgn.toLocaleString()} (Diesel: ₦${r.dailyDieselCostNgn.toLocaleString()})`,
+      heroExtractor: (r) => `Daily Wet Lease Cost: ₦${r.totalDailyLeaseCostNgn.toLocaleString()} (Diesel: ₦${r.dieselExpenseNgn.toLocaleString()})`,
     },
     {
       sector: 'Construction & Heavy Plant',

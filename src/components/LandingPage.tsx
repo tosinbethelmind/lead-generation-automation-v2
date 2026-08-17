@@ -409,19 +409,30 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     }
   };
 
+  // Automatically resolve initial interactive tool matching lead's specific sector
+  const resolveSectorWidget = (): string => {
+    if (data.selectedFeatures && data.selectedFeatures.length > 0) {
+      return data.selectedFeatures[0];
+    }
+    const cat = (lead.category || '').toLowerCase();
+    if (/solar|inverter|energy|battery|power|lifepo4/.test(cat)) return 'solar_calculator';
+    if (/estate|property|home|realty|housing|developer|land/.test(cat)) return 'real_estate_booking';
+    if (/medical|clinic|doctor|health|hospital|pharmacy|dental|dentist|optician|eye|lab|surgery/.test(cat)) return 'patient_intake';
+    if (/car|auto|motor|vehicle|tokunbo|dealership|mechanic|garage/.test(cat)) return 'vehicle_valuation';
+    if (/school|academy|education|college|creche|tutor|university/.test(cat)) return 'school_tuition';
+    if (/law|legal|attorney|solicitor|advocate|barrister|cac/.test(cat)) return 'retainer_estimator';
+    if (/hotel|shortlet|apartment|suite|dining|lounge|restaurant|bar|cafe/.test(cat)) return 'table_reservation';
+    if (/boutique|fashion|style|beauty|salon|spa|cloth/.test(cat)) return 'ecommerce';
+    return pitch.widgetType || 'quote_estimator';
+  };
+
   // Business features selection states
-  const [activeWidget, setActiveWidget] = useState<string>(
-    data.selectedFeatures && data.selectedFeatures.length > 0 
-      ? data.selectedFeatures[0] 
-      : pitch.widgetType || 'quote_estimator'
-  );
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(
-    data.selectedFeatures && data.selectedFeatures.length > 0 
-      ? data.selectedFeatures 
-      : pitch.widgetType 
-        ? [pitch.widgetType] 
-        : ['quote_estimator']
-  );
+  const [activeWidget, setActiveWidget] = useState<string>(() => resolveSectorWidget());
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(() => {
+    if (data.selectedFeatures && data.selectedFeatures.length > 0) return data.selectedFeatures;
+    const initial = resolveSectorWidget();
+    return [initial];
+  });
   const [customInstructions, setCustomInstructions] = useState<string>('');
 
   const toggleFeature = (type: string) => {
@@ -1856,51 +1867,51 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       {/* Hero Section */}
       <section style={{ 
         position: 'relative', 
-        minHeight: '70vh', 
+        minHeight: '75vh', 
         display: 'flex', 
         alignItems: 'center',
-        backgroundImage: `linear-gradient(135deg, rgba(8, 12, 22, 0.88) 0%, rgba(10, 15, 30, 0.94) 100%), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80'})`,
+        backgroundImage: `linear-gradient(135deg, rgba(8, 12, 22, 0.90) 0%, rgba(10, 15, 30, 0.96) 100%), url(${theme.heroImage && theme.heroImage.trim() !== '' ? theme.heroImage : 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80'})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: '#fff',
-        padding: '60px 20px 40px',
+        padding: '60px 20px 50px',
       }}>
-        <div style={{ maxWidth: '850px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
+        <div style={{ maxWidth: '960px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
           
-          {/* Streamlined Executive Trust Pill */}
+          {/* Executive Trust Pill */}
           <div style={{
-            background: 'rgba(15, 23, 42, 0.85)',
-            border: `1px solid ${theme.primary || '#10b981'}`,
-            backdropFilter: 'blur(10px)',
+            background: 'rgba(15, 23, 42, 0.90)',
+            border: `1.5px solid ${theme.primary || '#10b981'}`,
+            backdropFilter: 'blur(12px)',
             color: '#ffffff',
             fontSize: 'clamp(0.78rem, 1.6vw, 0.88rem)',
             fontWeight: 700,
-            padding: '6px 18px',
+            padding: '7px 20px',
             borderRadius: '30px',
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            marginBottom: '18px',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+            marginBottom: '20px',
+            boxShadow: '0 6px 20px rgba(0,0,0,0.5)',
             flexWrap: 'wrap',
             justifyContent: 'center'
           }}>
             <span style={{ color: theme.primary || '#34d399' }}>🔒 PRIVATE PROPOSAL FOR:</span>
-            <strong style={{ color: theme.accent || '#fde047', textTransform: 'uppercase' }}>{lead.name}</strong>
+            <strong style={{ color: theme.accent || '#fde047', textTransform: 'uppercase', letterSpacing: '0.02em' }}>{lead.name}</strong>
             <span style={{ color: '#64748b' }}>•</span>
             <span style={{ color: '#cbd5e1' }}>{lead.area || lead.city || 'Lagos'}, Nigeria</span>
             <span style={{ color: '#64748b' }}>•</span>
-            <span style={{ color: '#a7f3d0' }}>⚡ Ready in 24 Hours</span>
+            <span style={{ color: '#a7f3d0' }}>⚡ Ready in 24–48 Hours</span>
           </div>
 
           <h1 style={{ 
             fontFamily: headingFontFamily,
-            fontSize: 'clamp(1.9rem, 4.2vw, 3.4rem)', 
-            lineHeight: 1.18, 
+            fontSize: 'clamp(2.0rem, 4.4vw, 3.5rem)', 
+            lineHeight: 1.16, 
             fontWeight: 800, 
             marginBottom: '16px',
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-            letterSpacing: '-0.02em',
+            textShadow: '0 3px 12px rgba(0,0,0,0.6)',
+            letterSpacing: '-0.025em',
             color: '#ffffff',
             wordBreak: 'break-word',
             overflowWrap: 'break-word',
@@ -1913,12 +1924,12 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           </h1>
 
           <p style={{ 
-            fontSize: 'clamp(1.0rem, 1.8vw, 1.2rem)', 
+            fontSize: 'clamp(1.0rem, 1.8vw, 1.22rem)', 
             color: '#cbd5e1', 
-            marginBottom: '26px',
-            maxWidth: '720px',
-            margin: '0 auto 26px',
-            lineHeight: 1.5,
+            marginBottom: '24px',
+            maxWidth: '740px',
+            margin: '0 auto 24px',
+            lineHeight: 1.55,
             textShadow: '0 1px 4px rgba(0,0,0,0.3)',
             wordBreak: 'break-word',
             overflowWrap: 'break-word',
@@ -1929,8 +1940,52 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               : copy.heroSubtitle}
           </p>
 
+          {/* Luxury Live Staging Viewport Card */}
+          {isPreview && (
+            <div style={{
+              maxWidth: '680px',
+              margin: '0 auto 28px',
+              background: 'rgba(15, 23, 42, 0.75)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '14px',
+              padding: '10px 16px',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px',
+              flexWrap: 'wrap'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444', display: 'inline-block' }}></span>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b', display: 'inline-block' }}></span>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
+                <div style={{
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  padding: '4px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  fontSize: '0.78rem',
+                  fontFamily: 'monospace',
+                  color: '#93c5fd',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  <span>🔒</span>
+                  <span>https://www.{lead.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com.ng</span>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }}></span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>STAGING READY</span>
+              </div>
+            </div>
+          )}
+
           {/* Streamlined High-Conversion Action Buttons (1 Primary + 1 Secondary) */}
-          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '22px' }}>
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
             <a 
               href={isPreview ? "#pricing" : "#booking"} 
               className="btn-hover-effect" 
@@ -1954,7 +2009,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               {hasWebsite 
                 ? `🔌 Order Tool Embed (₦35,000)`
                 : isPreview 
-                ? `🚀 Claim ${lead.name}'s Setup (50% Deposit)`
+                ? `🚀 Claim ${lead.name}'s Setup (50% Deposit: ₦75k)`
                 : copy.ctaText} <ArrowRight size={18} />
             </a>
 
@@ -1967,7 +2022,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 background: '#25d366',
                 color: '#fff',
                 textDecoration: 'none',
-                padding: '16px 24px',
+                padding: '16px 26px',
                 borderRadius: '12px',
                 fontWeight: 800,
                 fontSize: '0.98rem',
@@ -1993,11 +2048,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             flexWrap: 'wrap',
             opacity: 0.95
           }}>
-            <span>⚡ Live in 24 Hours</span>
+            <span>⚡ Live in 24–48 Hours</span>
             <span>•</span>
             <span>🛡️ 100% Done-For-You White-Glove Setup</span>
             <span>•</span>
             <span>💳 Moniepoint &amp; OPay Verified</span>
+            <span>•</span>
+            <span>🔒 Zero-Risk Handover Guarantee</span>
           </div>
 
           {/* ⚡ ULTRA-STRAIGHTFORWARD 3-STEP BUSINESS OWNER ACTION GRID */}
@@ -2933,6 +2990,117 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             {renderActiveWidget()}
           </div>
 
+          {/* Inline Live Phone Alert Simulator Card (Clean, Non-Intrusive) */}
+          {isPreview && (
+            <div style={{
+              marginTop: '24px',
+              background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '16px',
+              padding: '24px',
+              color: '#ffffff',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.25)',
+              textAlign: 'left'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'linear-gradient(135deg, #10b981, #0284c7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Phone size={20} color="#fff" />
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: '1.05rem', color: '#ffffff', display: 'block' }}>🎯 Test Real-Time Lead Alert on Your Phone</strong>
+                    <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Experience exactly how your sales team receives incoming inquiries</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setTestAlertChannel('whatsapp')}
+                    style={{
+                      padding: '6px 14px',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      border: 'none',
+                      background: testAlertChannel === 'whatsapp' ? '#25d366' : 'rgba(255,255,255,0.08)',
+                      color: testAlertChannel === 'whatsapp' ? '#fff' : '#cbd5e1'
+                    }}
+                  >
+                    💬 WhatsApp Alert
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTestAlertChannel('call')}
+                    style={{
+                      padding: '6px 14px',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      border: 'none',
+                      background: testAlertChannel === 'call' ? '#0284c7' : 'rgba(255,255,255,0.08)',
+                      color: testAlertChannel === 'call' ? '#fff' : '#cbd5e1'
+                    }}
+                  >
+                    📞 Phone Call Alert
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <input
+                  type="tel"
+                  value={testAlertPhone}
+                  onChange={(e) => setTestAlertPhone(e.target.value)}
+                  placeholder="Enter your mobile number (e.g. +234 803 123 4567)"
+                  style={{
+                    flex: '1 1 260px',
+                    padding: '12px 16px',
+                    fontSize: '0.9rem',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '10px',
+                    background: 'rgba(0,0,0,0.3)',
+                    color: '#ffffff',
+                    outline: 'none'
+                  }}
+                />
+                <button
+                  type="button"
+                  id="send-test-alert-inline-btn"
+                  onClick={handleTestAlert}
+                  disabled={testAlertLoading || !testAlertPhone.trim()}
+                  style={{
+                    padding: '12px 24px',
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    cursor: testAlertLoading ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {testAlertLoading ? 'Sending Alert...' : `Send Test ${testAlertChannel === 'call' ? 'Call' : 'WhatsApp'} Now`}
+                </button>
+              </div>
+
+              {testAlertResult && (
+                <div style={{
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  color: testAlertResult.startsWith('❌') ? '#f87171' : '#34d399',
+                  marginTop: '12px',
+                  lineHeight: 1.4
+                }}>
+                  {testAlertResult}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Plain Text Requirements Box (Only in preview/customizer mode) */}
           {isPreview && (
             <div className="frosted-glass" style={{
@@ -3383,88 +3551,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         </a>
       )}
 
-      {/* ─── Test Phone Alert Widget — delayed 12s so it doesn't compete with hero pitch ─── */}
-      {isPreview && !whatsappSimActive && showTestAlert && (
-        <div
-          id="test-alert-widget"
-          style={{
-            position: 'fixed',
-            bottom: '90px',
-            right: '24px',
-            width: '300px',
-            background: 'rgba(255,255,255,0.97)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.6)',
-            borderRadius: '16px',
-            padding: '18px',
-            boxShadow: '0 12px 40px rgba(0,0,0,0.12)',
-            zIndex: 10000,
-            fontFamily: 'system-ui, sans-serif',
-            animation: 'fadeInUp 0.4s ease-out both'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #0284c7, #14b8a6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Phone size={16} color="#fff" />
-            </div>
-            <div>
-              <strong style={{ fontSize: '0.85rem', color: '#1f2937', display: 'block' }}>🎯 Try a Live Alert</strong>
-              <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Get a real notification on your phone</span>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
-            <button
-              type="button"
-              onClick={() => setTestAlertChannel('whatsapp')}
-              style={{
-                flex: 1, padding: '7px', fontSize: '0.75rem', fontWeight: 600, borderRadius: '7px', cursor: 'pointer', border: 'none',
-                background: testAlertChannel === 'whatsapp' ? '#25d366' : '#f1f5f9',
-                color: testAlertChannel === 'whatsapp' ? '#fff' : '#64748b'
-              }}
-            >WhatsApp</button>
-            <button
-              type="button"
-              onClick={() => setTestAlertChannel('call')}
-              style={{
-                flex: 1, padding: '7px', fontSize: '0.75rem', fontWeight: 600, borderRadius: '7px', cursor: 'pointer', border: 'none',
-                background: testAlertChannel === 'call' ? '#0284c7' : '#f1f5f9',
-                color: testAlertChannel === 'call' ? '#fff' : '#64748b'
-              }}
-            >Voice Call</button>
-          </div>
-
-          <input
-            type="tel"
-            value={testAlertPhone}
-            onChange={(e) => setTestAlertPhone(e.target.value)}
-            placeholder="+234 803 123 4567"
-            style={{ width: '100%', padding: '10px', fontSize: '0.85rem', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '10px', boxSizing: 'border-box', outline: 'none' }}
-          />
-
-          {testAlertResult && (
-            <div style={{ fontSize: '0.78rem', color: testAlertResult.startsWith('❌') ? '#ef4444' : '#10b981', marginBottom: '10px', lineHeight: 1.4 }}>
-              {testAlertResult}
-            </div>
-          )}
-
-          <button
-            type="button"
-            id="send-test-alert-btn"
-            onClick={handleTestAlert}
-            disabled={testAlertLoading || !testAlertPhone.trim()}
-            style={{
-              width: '100%', padding: '10px', background: theme.primary, color: '#fff', border: 'none',
-              borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem', cursor: testAlertLoading ? 'not-allowed' : 'pointer',
-              opacity: testAlertLoading ? 0.7 : 1
-            }}
-          >
-            {testAlertLoading ? 'Sending...' : `Send ${testAlertChannel === 'call' ? '📞 Voice Call' : '💬 WhatsApp'} to My Phone`}
-          </button>
-        </div>
-      )}
-
-      {/* ─── Hands-Free White-Glove Domain Guarantee Banner (Embedded in flow) ─── */}
+      {/* Hands-Free White-Glove Domain Guarantee Banner (Embedded in flow) */}
       {isPreview && (
         <div
           id="domain-checker-strip"
@@ -4650,9 +4737,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         </div>
       </footer>
 
-      {/* Floating Sticky CTA Badge */}
+      {/* Floating Sticky CTA Badge (Desktop only to keep mobile 100% clutter-free) */}
       {isPreview && showFloatingCta && (
-        <div style={{
+        <div className="hide-mobile" style={{
           position: 'fixed',
           bottom: '24px',
           left: '24px',

@@ -169,6 +169,8 @@ export async function sendWhatsAppMessage(
     .replace(/{{\s*lead\.area\s*}}/g, lead.area || 'your area')
     .replace(/{{\s*previewUrl\s*}}/g, previewUrl)
     .replace(/{{\s*preview_url\s*}}/g, previewUrl)
+    .replace(/{{\s*whatsappChannelUrl\s*}}/g, config.whatsappChannelUrl || 'https://whatsapp.com/channel/0029VbDFgKP4o7qM58yY9v2l')
+    .replace(/{{\s*channelUrl\s*}}/g, config.whatsappChannelUrl || 'https://whatsapp.com/channel/0029VbDFgKP4o7qM58yY9v2l')
     .replace(/{{\s*businessSignature\s*}}/g, config.businessSignature || 'Bethelmind Analytics Lagos')
     .replace(/{{\s*signature\s*}}/g, config.businessSignature || 'Bethelmind Analytics Lagos');
 
