@@ -27,6 +27,7 @@ import {
   Check
 } from 'lucide-react';
 import AdminAiCommandTerminal from '@/components/AdminAiCommandTerminal';
+import MultiWhatsAppConnectionCard from '@/app/dashboard/components/MultiWhatsAppConnectionCard';
 
 interface LeadItem {
   lead_id: string;
@@ -44,7 +45,7 @@ interface LeadItem {
 }
 
 export default function CleanExecutiveAdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'outreach' | 'leads' | 'settings'>('outreach');
+  const [activeTab, setActiveTab] = useState<'outreach' | 'leads' | 'whatsapp' | 'settings'>('outreach');
 
   // AI Copilot state
   const [copilotOpen, setCopilotOpen] = useState(false);
@@ -676,6 +677,27 @@ export default function CleanExecutiveAdminDashboard() {
           </button>
 
           <button
+            onClick={() => setActiveTab('whatsapp')}
+            style={{
+              background: activeTab === 'whatsapp' ? 'rgba(37, 211, 102, 0.15)' : 'transparent',
+              border: `1.5px solid ${activeTab === 'whatsapp' ? '#25d366' : 'transparent'}`,
+              color: activeTab === 'whatsapp' ? '#ffffff' : '#94a3b8',
+              padding: '10px 20px',
+              borderRadius: '10px',
+              fontSize: '0.86rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <Smartphone size={16} color="#25d366" />
+            <span>WhatsApp Lines (2x Multi-Connect)</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('settings')}
             style={{
               background: activeTab === 'settings' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
@@ -1021,7 +1043,14 @@ export default function CleanExecutiveAdminDashboard() {
           </div>
         )}
 
-        {/* ── TAB 3: GATEWAY & SYSTEM SETTINGS ──────────────────────── */}
+        {/* ── TAB 3: DEDICATED WHATSAPP MULTI-LINE ROTATOR ──────────── */}
+        {activeTab === 'whatsapp' && (
+          <div>
+            <MultiWhatsAppConnectionCard />
+          </div>
+        )}
+
+        {/* ── TAB 4: GATEWAY & SYSTEM SETTINGS ──────────────────────── */}
         {activeTab === 'settings' && (
           <div style={{
             background: 'rgba(15, 23, 42, 0.65)',
