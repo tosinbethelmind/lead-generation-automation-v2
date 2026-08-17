@@ -40,8 +40,31 @@ const PRESET_COMMANDS = [
   '🌐 Show uncontacted clinic leads in Lekki'
 ];
 
-export default function AdminAiCommandTerminal({ initialOpen = false }: { initialOpen?: boolean }) {
-  const [isOpen, setIsOpen] = useState(initialOpen);
+interface AdminAiCommandTerminalProps {
+  initialOpen?: boolean;
+  isOpen?: boolean;
+  onToggle?: (open: boolean) => void;
+  hideFloatingTrigger?: boolean;
+}
+
+export default function AdminAiCommandTerminal({
+  initialOpen = false,
+  isOpen: controlledOpen,
+  onToggle,
+  hideFloatingTrigger = false
+}: AdminAiCommandTerminalProps) {
+  const [internalOpen, setInternalOpen] = useState(initialOpen);
+  const isCurrentlyOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+
+  const setOpenState = (newState: boolean | ((prev: boolean) => boolean)) => {
+    const nextVal = typeof newState === 'function' ? newState(isCurrentlyOpen) : newState;
+    if (onToggle) {
+      onToggle(nextVal);
+    } else {
+      setInternalOpen(nextVal);
+    }
+  };
+
   const [isMinimized, setIsMinimized] = useState(false);
   const [inputCommand, setInputCommand] = useState('');
   const [executing, setExecuting] = useState(false);
@@ -60,25 +83,25 @@ export default function AdminAiCommandTerminal({ initialOpen = false }: { initia
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isOpen && !isMinimized) {
+    if (isCurrentlyOpen && !isMinimized) {
       endRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [logs, isOpen, isMinimized]);
+  }, [logs, isCurrentlyOpen, isMinimized]);
 
   // Global hotkey Ctrl+K / Cmd+K to toggle AI Command Prompt
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setIsOpen(prev => !prev);
-        if (!isOpen) {
+        setOpenState(prev => !prev);
+        if (!isCurrentlyOpen) {
           setTimeout(() => inputRef.current?.focus(), 100);
         }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  }, [isCurrentlyOpen]);
 
   const handleExecute = async (cmdToRun?: string) => {
     const commandText = (cmdToRun || inputCommand).trim();
@@ -178,11 +201,12 @@ export default function AdminAiCommandTerminal({ initialOpen = false }: { initia
     );
   };
 
-  if (!isOpen) {
+  if (!isCurrentlyOpen) {
+    if (hideFloatingTrigger) return null;
     return (
       <button
         onClick={() => {
-          setIsOpen(true);
+          setOpenState(true);
           setTimeout(() => inputRef.current?.focus(), 100);
         }}
         style={{
@@ -277,7 +301,7 @@ export default function AdminAiCommandTerminal({ initialOpen = false }: { initia
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#f0fdf4', letterSpacing: '-0.01em' }}>
-                AI Admin Copilot & Command Prompt
+                AI Admin Copilot Assistant
               </span>
               <span
                 style={{
@@ -289,7 +313,7 @@ export default function AdminAiCommandTerminal({ initialOpen = false }: { initia
                   borderRadius: '4px'
                 }}
               >
-                LIVE
+                ACTIVE
               </span>
             </div>
             {!isMinimized && (
@@ -316,7 +340,7 @@ export default function AdminAiCommandTerminal({ initialOpen = false }: { initia
             {isMinimized ? <Maximize2 style={{ width: 14, height: 14 }} /> : <Minimize2 style={{ width: 14, height: 14 }} />}
           </button>
           <button
-            onClick={() => setIsOpen(false)}
+            onClick={() => setOpenState(false)}
             style={{
               background: 'none',
               border: 'none',

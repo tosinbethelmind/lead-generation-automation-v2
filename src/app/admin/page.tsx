@@ -53,6 +53,9 @@ export default function AdminDashboardHome() {
   const [togglingRunner, setTogglingRunner] = useState<boolean>(false);
   const [runnerMessage, setRunnerMessage] = useState<string>('');
 
+  // AI Copilot Assistant Modal State
+  const [copilotOpen, setCopilotOpen] = useState(false);
+
   // Deploy Action State
   const [deploying, setDeploying] = useState(false);
   const [deployMessage, setDeployMessage] = useState('');
@@ -262,6 +265,40 @@ Technical Support & Developer Handover: Bethelmind Analytics & Strategy 🚀`;
             >
               <UserCheck size={14} /> Assistant Duty Desk
             </Link>
+
+            {/* Dedicated AI Copilot Assistant Button */}
+            <button
+              id="admin-copilot-toggle-btn"
+              onClick={() => setCopilotOpen(prev => !prev)}
+              style={{
+                background: copilotOpen ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'rgba(16, 185, 129, 0.15)',
+                border: `1.5px solid ${copilotOpen ? '#10b981' : 'rgba(16, 185, 129, 0.4)'}`,
+                color: copilotOpen ? '#ffffff' : '#34d399',
+                padding: '8px 16px',
+                borderRadius: '10px',
+                fontSize: '0.8rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: copilotOpen ? '0 0 16px rgba(16, 185, 129, 0.4)' : 'none',
+                transition: 'all 0.2s ease'
+              }}
+              title="Toggle AI Copilot Assistant (Ctrl+K)"
+            >
+              <Sparkles size={15} style={{ color: copilotOpen ? '#fef08a' : '#34d399' }} />
+              <span>AI Copilot Assistant</span>
+              <span style={{
+                fontSize: '0.68rem',
+                background: copilotOpen ? 'rgba(0,0,0,0.3)' : 'rgba(16, 185, 129, 0.2)',
+                padding: '2px 6px',
+                borderRadius: '5px',
+                color: copilotOpen ? '#a7f3d0' : '#86efac'
+              }}>
+                Ctrl+K
+              </span>
+            </button>
 
             {/* Quick Refresh */}
             <button
@@ -892,8 +929,12 @@ Technical Support & Developer Handover: Bethelmind Analytics & Strategy 🚀`;
         </div>
       )}
 
-      {/* Floating AI Admin Copilot & Command Prompt */}
-      <AdminAiCommandTerminal />
+      {/* AI Admin Copilot Assistant Modal Drawer */}
+      <AdminAiCommandTerminal
+        isOpen={copilotOpen}
+        onToggle={setCopilotOpen}
+        hideFloatingTrigger={true}
+      />
 
       {/* Scoped CSS animations */}
       <style jsx>{`
