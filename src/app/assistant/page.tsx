@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   Bell, CheckCircle, Globe, MessageCircle, Copy, Check,
   RefreshCw, ExternalLink, X, Phone, UserCheck, ShieldCheck,
-  AlertTriangle, Sparkles, Wrench
+  AlertTriangle, Sparkles, Wrench, Shield, Terminal, Send
 } from 'lucide-react';
 import AdminAiCommandTerminal from '@/components/AdminAiCommandTerminal';
 import { copyToClipboard } from '@/lib/clipboard';
@@ -168,22 +169,37 @@ export default function AssistantDeskPage() {
               Your manager will alert you when a new task is assigned.
             </p>
           </div>
-          <button
-            id="assistant-refresh-btn"
-            onClick={fetchLeads}
-            disabled={loading}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '9px 16px', borderRadius: 10,
-              background: 'rgba(16,185,129,0.1)',
-              border: '1px solid rgba(16,185,129,0.25)',
-              color: '#10b981', fontSize: '0.78rem', fontWeight: 700,
-              cursor: 'pointer'
-            }}
-          >
-            <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} />
-            Refresh Queue
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <Link
+              href="/admin"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '9px 16px', borderRadius: 10,
+                background: 'rgba(2, 132, 199, 0.15)',
+                border: '1px solid rgba(2, 132, 199, 0.35)',
+                color: '#38bdf8', fontSize: '0.8rem', fontWeight: 700,
+                textDecoration: 'none', transition: 'all 0.2s'
+              }}
+            >
+              <Shield style={{ width: 14, height: 14 }} /> Executive Admin Panel
+            </Link>
+            <button
+              id="assistant-refresh-btn"
+              onClick={fetchLeads}
+              disabled={loading}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '9px 16px', borderRadius: 10,
+                background: 'rgba(16,185,129,0.1)',
+                border: '1px solid rgba(16,185,129,0.25)',
+                color: '#34d399', fontSize: '0.8rem', fontWeight: 700,
+                cursor: loading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} />
+              Sync Desk
+            </button>
+          </div>
         </div>
       </div>
 

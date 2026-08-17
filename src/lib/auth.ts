@@ -13,6 +13,7 @@ export interface AdminUser {
 
 export const ROLE_PERMISSIONS: Record<AdminRole, string[]> = {
   super_admin: ['*'],
+  admin_assistant: ['*'],
   outreach_manager: [
     'view_dashboard',
     'view_leads',
@@ -26,14 +27,6 @@ export const ROLE_PERMISSIONS: Record<AdminRole, string[]> = {
   viewer: [
     'view_dashboard',
     'view_leads'
-  ],
-  admin_assistant: [
-    'view_dashboard',
-    'view_leads',
-    'edit_leads',
-    'verify_claims',
-    'trigger_outreach',
-    'manage_domains'
   ]
 };
 
@@ -90,10 +83,10 @@ export function getAdminUser(token: string | undefined): AdminUser | null {
   if (isAssistant) {
     return {
       id: 'assistant',
-      name: 'Admin Assistant',
-      email: 'assistant@bethelmind.com',
+      name: 'AI Admin Assistant',
+      email: 'assistant@bethelmindanalytics.com',
       role: 'admin_assistant',
-      permissions: ROLE_PERMISSIONS['admin_assistant']
+      permissions: ['*']
     };
   }
 

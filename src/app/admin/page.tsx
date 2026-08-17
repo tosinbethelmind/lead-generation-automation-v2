@@ -35,7 +35,8 @@ import {
   MapPin,
   Clock,
   Radio,
-  FileCode2
+  FileCode2,
+  UserCheck
 } from 'lucide-react';
 import Lagos10KOutreachCard from '@/app/dashboard/components/Lagos10KOutreachCard';
 import LeadJourneyTrackerCard from '@/app/dashboard/components/LeadJourneyTrackerCard';
@@ -240,6 +241,27 @@ Technical Support & Developer Handover: Bethelmind Analytics & Strategy 🚀`;
             >
               <ExternalLink size={14} /> Production Domain
             </a>
+
+            {/* Assistant Duty Desk Quick Link */}
+            <Link
+              href="/assistant"
+              style={{
+                background: 'rgba(16, 185, 129, 0.12)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                color: '#34d399',
+                padding: '8px 14px',
+                borderRadius: '10px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s'
+              }}
+            >
+              <UserCheck size={14} /> Assistant Duty Desk
+            </Link>
 
             {/* Quick Refresh */}
             <button
