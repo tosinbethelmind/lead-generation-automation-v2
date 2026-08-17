@@ -1,19 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X, Clock, FileText } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { TransferRebuildOptions } from '@/components/TransferRebuildOptions';
-import { SocialAdAutomationWidget } from '@/components/SocialAdAutomationWidget';
-import BeforeAfterAuditWidget from '@/components/BeforeAfterAuditWidget';
-import InvoiceModal, { InvoiceItem } from '@/components/InvoiceModal';
-import BusinessOwnerToolSelector from '@/components/BusinessOwnerToolSelector';
-import CustomerJourneyAnalyticsWidget from '@/components/CustomerJourneyAnalyticsWidget';
-import FacebookAdAnalyticsWidget from '@/components/FacebookAdAnalyticsWidget';
-import EmailDripDashboardWidget from '@/components/EmailDripDashboardWidget';
-import SalesIntegrationNarrative from '@/components/SalesIntegrationNarrative';
 import { trackDualMetaEvent } from '@/lib/metaPixel';
 import { CustomerJourneyTracker } from '@/lib/customerJourneyTracker';
+
+// Dynamic lazy-loaded widgets to minimize initial JS bundle size and accelerate load times
+const TransferRebuildOptions = dynamic(() => import('@/components/TransferRebuildOptions').then(m => m.TransferRebuildOptions), { ssr: false });
+const SocialAdAutomationWidget = dynamic(() => import('@/components/SocialAdAutomationWidget').then(m => m.SocialAdAutomationWidget), { ssr: false });
+const BeforeAfterAuditWidget = dynamic(() => import('@/components/BeforeAfterAuditWidget'), { ssr: false });
+const InvoiceModal = dynamic(() => import('@/components/InvoiceModal'), { ssr: false });
+const SalesIntegrationNarrative = dynamic(() => import('@/components/SalesIntegrationNarrative'), { ssr: false });
 
 interface PreviewData {
   lead: {
@@ -1462,7 +1461,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   const [claimLoading, setClaimLoading] = useState(false);
   const [claimMessage, setClaimMessage] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<'paystack' | 'moniepoint' | 'opay'>('paystack');
-  const [loadingOverlay, setLoadingOverlay] = useState(true);
+  const [loadingOverlay, setLoadingOverlay] = useState(false);
   const [showMoniepointFallback, setShowMoniepointFallback] = useState(false);
   const [receiptUploading, setReceiptUploading] = useState(false);
   const [receiptStatus, setReceiptStatus] = useState<string | null>(null);
@@ -1542,14 +1541,6 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
 
     return base + featuresCost;
   };
-
-  // Preloader Overlay timeout
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoadingOverlay(false);
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, []);
 
   // IntersectionObserver for Reveal Animations
   React.useEffect(() => {
@@ -2463,9 +2454,11 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     }
                   } catch (_) {}
                 }
-                return "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80";
+                return "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80&auto=format&fit=crop";
               })()} 
-              alt={lead.name} 
+              alt={lead.name}
+              loading="lazy"
+              decoding="async"
               style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '420px', objectFit: 'cover' }}
             />
             <div className="frosted-glass" style={{ 
@@ -2505,7 +2498,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
                       {photos.slice(0, 4).map((url: string, index: number) => (
                         <div key={index} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', height: '220px' }}>
-                          <img src={url} alt={`Gallery ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img src={url} alt={`Gallery ${index + 1}`} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                       ))}
                     </div>
@@ -3207,7 +3200,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   <video 
                     src="/assets/bethelmind-demo.webm" 
                     controls 
-                    poster="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
+                    preload="none"
+                    poster="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80&auto=format&fit=crop"
                     style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
                   />
                 </div>

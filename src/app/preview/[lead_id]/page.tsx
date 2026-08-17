@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 import { ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import LandingPage from '@/components/LandingPage';
-import { ZeroAgentSandboxingWidget } from '@/components/ZeroAgentSandboxingWidget';
-import { LiveSocialProofTicker } from '@/components/LiveSocialProofTicker';
-import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
+
+// Lazy load non-critical floating AI concierge to accelerate primary landing page load
+const CustomerAiAgentWidget = dynamic(() => import('@/components/CustomerAiAgentWidget'), { ssr: false });
 
 interface PreviewData {
   lead: {
