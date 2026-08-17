@@ -97,16 +97,16 @@ export async function GET(req?: Request) {
     } catch (err: any) {
       console.warn('[LagosAPI] Log fetch warn:', err.message);
     }
-
+    
     // Read local database
     let localLagosCount = 0;
     let localContactedCount = 0;
-    let localRealEstate = 42;
-    let localSchools = 47;
-    let localClinics = 101;
-    let localHotels = 163;
-    let localRetail = 119;
-    let localAuto = 60;
+    let localRealEstate = 0;
+    let localSchools = 0;
+    let localClinics = 0;
+    let localHotels = 0;
+    let localRetail = 0;
+    let localAuto = 0;
 
     try {
       const { getLeads } = await import('@/lib/googleSheets');
@@ -118,23 +118,14 @@ export async function GET(req?: Request) {
         
         localRealEstate = lagosLeads.filter((l: any) => /estate|property/i.test(l.category || '')).length;
         localSchools = lagosLeads.filter((l: any) => /school|academy|college/i.test(l.category || '')).length;
-        localClinics = lagosLeads.filter((l: any) => /clinic|hospital|dental|health/i.test(l.category || '')).length;
+        localClinics = lagosLeads.filter((l: any) => /clinic|hospital|dental|health|salon/i.test(l.category || '')).length;
         localHotels = lagosLeads.filter((l: any) => /hotel|restaurant|lounge|dining/i.test(l.category || '')).length;
         localRetail = lagosLeads.filter((l: any) => /boutique|store|retail|shop/i.test(l.category || '')).length;
         localAuto = lagosLeads.filter((l: any) => /car|auto|motor|repair/i.test(l.category || '')).length;
       }
-      
-      const logsDbPath = path.join(process.cwd(), 'local_db', 'logs_db.json');
-      if (fs.existsSync(logsDbPath) && localContactedCount === 0) {
-        const rawLogs = fs.readFileSync(logsDbPath, 'utf8');
-        const parsedLogs = JSON.parse(rawLogs);
-        if (Array.isArray(parsedLogs)) {
-          localContactedCount = parsedLogs.filter((l: any) => /outreach|contact|submitted/i.test(`${l.message || ''} ${l.step || ''}`)).length;
-        }
-      }
     } catch (_) {}
 
-    // Live counts from Supabase
+    // Live counts from database
     let totalLagosLeads = localLagosCount;
     let totalContacted = localContactedCount;
     let realEstateCount = localRealEstate;
@@ -150,20 +141,20 @@ export async function GET(req?: Request) {
         withTimeout((supabase as any).from('leads').select('*', { count: 'exact', head: true }).eq('status', 'CONTACTED'), 4000),
         withTimeout((supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%estate%,category.ilike.%property%'), 4000),
         withTimeout((supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%school%,category.ilike.%academy%,category.ilike.%college%'), 4000),
-        withTimeout((supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%clinic%,category.ilike.%hospital%,category.ilike.%dental%'), 4000),
+        withTimeout((supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%clinic%,category.ilike.%hospital%,category.ilike.%dental%,category.ilike.%salon%'), 4000),
         withTimeout((supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%hotel%,category.ilike.%restaurant%,category.ilike.%lounge%'), 4000),
         withTimeout((supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%boutique%,category.ilike.%store%,category.ilike.%retail%'), 4000),
         withTimeout((supabase as any).from('leads').select('*', { count: 'exact', head: true }).or('category.ilike.%car%,category.ilike.%auto%,category.ilike.%motor%'), 4000)
       ]);
 
-      if (results[0].status === 'fulfilled' && typeof results[0].value?.count === 'number' && results[0].value.count > 0) totalLagosLeads = results[0].value.count;
-      if (results[1].status === 'fulfilled' && typeof results[1].value?.count === 'number' && results[1].value.count > 0) totalContacted = results[1].value.count;
-      if (results[2].status === 'fulfilled' && typeof results[2].value?.count === 'number' && results[2].value.count > 0) realEstateCount = results[2].value.count;
-      if (results[3].status === 'fulfilled' && typeof results[3].value?.count === 'number' && results[3].value.count > 0) schoolsCount = results[3].value.count;
-      if (results[4].status === 'fulfilled' && typeof results[4].value?.count === 'number' && results[4].value.count > 0) clinicsCount = results[4].value.count;
-      if (results[5].status === 'fulfilled' && typeof results[5].value?.count === 'number' && results[5].value.count > 0) hotelsCount = results[5].value.count;
-      if (results[6].status === 'fulfilled' && typeof results[6].value?.count === 'number' && results[6].value.count > 0) retailCount = results[6].value.count;
-      if (results[7].status === 'fulfilled' && typeof results[7].value?.count === 'number' && results[7].value.count > 0) autoCount = results[7].value.count;
+      if (results[0].status === 'fulfilled' && typeof results[0].value?.count === 'number') totalLagosLeads = results[0].value.count;
+      if (results[1].status === 'fulfilled' && typeof results[1].value?.count === 'number') totalContacted = results[1].value.count;
+      if (results[2].status === 'fulfilled' && typeof results[2].value?.count === 'number') realEstateCount = results[2].value.count;
+      if (results[3].status === 'fulfilled' && typeof results[3].value?.count === 'number') schoolsCount = results[3].value.count;
+      if (results[4].status === 'fulfilled' && typeof results[4].value?.count === 'number') clinicsCount = results[4].value.count;
+      if (results[5].status === 'fulfilled' && typeof results[5].value?.count === 'number') hotelsCount = results[5].value.count;
+      if (results[6].status === 'fulfilled' && typeof results[6].value?.count === 'number') retailCount = results[6].value.count;
+      if (results[7].status === 'fulfilled' && typeof results[7].value?.count === 'number') autoCount = results[7].value.count;
     } catch (_) {}
 
     // Fetch active settings
@@ -191,7 +182,7 @@ export async function GET(req?: Request) {
       delayMs: 3500,
       maxDailyPerLine: 30
     };
-    let dailyQuota = 2000;
+    let dailyQuota = 30;
     let sprintDay = 1;
 
     try {
@@ -213,20 +204,20 @@ export async function GET(req?: Request) {
       }
     } catch (_) {}
 
-    const resolvedLagosCount = Math.max(totalLagosLeads, localLagosCount, 10000);
-    const resolvedContacted = totalContacted || 428;
+    const resolvedLagosCount = totalLagosLeads || localLagosCount || 0;
+    const resolvedContacted = totalContacted || localContactedCount || 0;
 
-    // Calculate A/B Split Metrics
-    const sentA = Math.round(resolvedContacted * (abSplitRatio / 100));
-    const sentB = resolvedContacted - sentA;
+    // Calculate A/B Split Metrics purely from real numbers
+    const sentA = resolvedContacted > 0 ? Math.round(resolvedContacted * (abSplitRatio / 100)) : 0;
+    const sentB = resolvedContacted > 0 ? (resolvedContacted - sentA) : 0;
 
-    const clicksA = Math.round(sentA * 0.32);
-    const repliesA = Math.round(sentA * 0.11);
-    const claimsA = Math.round(sentA * 0.032);
+    const clicksA = 0;
+    const repliesA = 0;
+    const claimsA = 0;
 
-    const clicksB = Math.round(sentB * 0.48);
-    const repliesB = Math.round(sentB * 0.23);
-    const claimsB = Math.round(sentB * 0.058);
+    const clicksB = 0;
+    const repliesB = 0;
+    const claimsB = 0;
 
     const abAnalytics = {
       activeStrategy: abStrategy,
@@ -239,9 +230,9 @@ export async function GET(req?: Request) {
         clicks: clicksA,
         replies: repliesA,
         claims: claimsA,
-        ctr: sentA > 0 ? ((clicksA / sentA) * 100).toFixed(1) + '%' : '32.0%',
-        replyRate: sentA > 0 ? ((repliesA / sentA) * 100).toFixed(1) + '%' : '11.0%',
-        claimRate: sentA > 0 ? ((claimsA / sentA) * 100).toFixed(1) + '%' : '3.2%',
+        ctr: sentA > 0 ? ((clicksA / sentA) * 100).toFixed(1) + '%' : '0.0%',
+        replyRate: sentA > 0 ? ((repliesA / sentA) * 100).toFixed(1) + '%' : '0.0%',
+        claimRate: sentA > 0 ? ((claimsA / sentA) * 100).toFixed(1) + '%' : '0.0%',
         primaryAudience: 'Salons, Spas, Restaurants, Retail, Boutiques'
       },
       methodB: {
@@ -252,14 +243,16 @@ export async function GET(req?: Request) {
         clicks: clicksB,
         replies: repliesB,
         claims: claimsB,
-        ctr: sentB > 0 ? ((clicksB / sentB) * 100).toFixed(1) + '%' : '48.0%',
-        replyRate: sentB > 0 ? ((repliesB / sentB) * 100).toFixed(1) + '%' : '23.0%',
-        claimRate: sentB > 0 ? ((claimsB / sentB) * 100).toFixed(1) + '%' : '5.8%',
+        ctr: sentB > 0 ? ((clicksB / sentB) * 100).toFixed(1) + '%' : '0.0%',
+        replyRate: sentB > 0 ? ((repliesB / sentB) * 100).toFixed(1) + '%' : '0.0%',
+        claimRate: sentB > 0 ? ((claimsB / sentB) * 100).toFixed(1) + '%' : '0.0%',
         primaryAudience: 'Medical, Clinics, Auto Repair, Real Estate, Consultancies'
       },
-      winningVariant: 'B',
-      liftPercentage: '+34.8%',
-      recommendation: 'Method B produces 2.1x higher reply rates & higher Paystack claim intent across Lagos service businesses.'
+      winningVariant: resolvedContacted > 0 ? 'Evaluating' : 'Pending Outreach',
+      liftPercentage: '0.0%',
+      recommendation: resolvedContacted > 0
+        ? 'Evaluating live conversion lift across active channels.'
+        : 'Outreach campaign starting. Live response lift will calculate dynamically upon dispatch.'
     };
 
     const headers = { 'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0' };
@@ -287,12 +280,12 @@ export async function GET(req?: Request) {
         totalLagosLeads: resolvedLagosCount,
         totalContactedOutreach: resolvedContacted,
         sectorBreakdown: {
-          realEstate: realEstateCount || 42,
-          schools: schoolsCount || 47,
-          clinics: clinicsCount || 101,
-          hotelsAndDining: hotelsCount || 163,
-          retailAndBoutiques: retailCount || 119,
-          autoAndLogistics: autoCount || 60
+          realEstate: realEstateCount,
+          schools: schoolsCount,
+          clinics: clinicsCount,
+          hotelsAndDining: hotelsCount,
+          retailAndBoutiques: retailCount,
+          autoAndLogistics: autoCount
         },
         targetMarket: 'Lagos State (Ikeja, Lekki, VI, Yaba, Surulere, Ikoyi, Oshodi, Ikorodu, Epe)',
         outreachChannel: activeStrategy === 'blended'

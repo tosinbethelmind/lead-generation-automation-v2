@@ -5,112 +5,143 @@ import Link from 'next/link';
 import {
   Rocket,
   ExternalLink,
-  Server,
-  Settings,
-  Shield,
   RefreshCw,
-  Bot,
-  Zap,
-  Sun,
-  Briefcase,
-  Layers,
   Power,
-  Play,
-  Square,
-  CloudLightning,
-  Activity,
   Sparkles,
-  Check,
-  Copy,
-  Globe,
+  Search,
   Send,
+  Users,
   ShieldCheck,
   CheckCircle2,
-  ChevronRight,
-  BarChart3,
-  Users,
-  Flame,
-  Eye,
-  TrendingUp,
-  MapPin,
+  AlertCircle,
   Clock,
+  Eye,
+  Sliders,
   Radio,
   FileCode2,
-  UserCheck
+  UserCheck,
+  ChevronRight,
+  Database,
+  Smartphone,
+  PhoneCall,
+  Check
 } from 'lucide-react';
-import Lagos10KOutreachCard from '@/app/dashboard/components/Lagos10KOutreachCard';
-import LeadJourneyTrackerCard from '@/app/dashboard/components/LeadJourneyTrackerCard';
 import AdminAiCommandTerminal from '@/components/AdminAiCommandTerminal';
-import { copyToClipboard } from '@/lib/clipboard';
 
-type DashboardTab = 'outreach' | 'journey' | 'onboarding' | 'crm' | 'deploy';
+interface LeadItem {
+  lead_id: string;
+  name: string;
+  category?: string;
+  area?: string;
+  city?: string;
+  phone_e164?: string;
+  phone_raw?: string;
+  email?: string;
+  rating?: number;
+  status?: string;
+  notes?: string;
+  collected_at?: string;
+}
 
-export default function AdminDashboardHome() {
-  const [activeTab, setActiveTab] = useState<DashboardTab>('outreach');
+export default function CleanExecutiveAdminDashboard() {
+  const [activeTab, setActiveTab] = useState<'outreach' | 'leads' | 'settings'>('outreach');
 
-  // Master Runner Power Switch State
-  const [runnerActive, setRunnerActive] = useState<boolean>(false);
-  const [togglingRunner, setTogglingRunner] = useState<boolean>(false);
-  const [runnerMessage, setRunnerMessage] = useState<string>('');
-
-  // AI Copilot Assistant Modal State
+  // AI Copilot state
   const [copilotOpen, setCopilotOpen] = useState(false);
+  const [quickPrompt, setQuickPrompt] = useState('');
 
-  // Deploy Action State
-  const [deploying, setDeploying] = useState(false);
-  const [deployMessage, setDeployMessage] = useState('');
-  const [deployError, setDeployError] = useState('');
-
-  // Quick stats state
+  // Dashboard live state
+  const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(false);
-  const [totalLagosLeads, setTotalLagosLeads] = useState(17578);
-  const [totalContacted, setTotalContacted] = useState(428);
   const [lastSyncTime, setLastSyncTime] = useState<string>('');
 
-  // Onboarding Studio states
-  const [onboardBizName, setOnboardBizName] = useState('');
-  const [onboardCategory, setOnboardCategory] = useState('Medical & Health Clinic');
-  const [onboardPhone, setOnboardPhone] = useState('');
-  const [onboardWebsiteOption, setOnboardWebsiteOption] = useState<'hosted' | 'custom_domain'>('hosted');
-  const [onboardCustomDomain, setOnboardCustomDomain] = useState('');
-  const [onboardProvisioned, setOnboardProvisioned] = useState(false);
-  const [copiedWelcome, setCopiedWelcome] = useState(false);
-  const [copiedScript, setCopiedScript] = useState(false);
+  // Real KPI stats
+  const [totalLeadsCount, setTotalLeadsCount] = useState(0);
+  const [totalContactedCount, setTotalContactedCount] = useState(0);
+  const [claimedCount, setClaimedCount] = useState(0);
+  const [sprintDay, setSprintDay] = useState(1);
+  const [safeLimit, setSafeLimit] = useState(30);
+  const [dispatchedToday, setDispatchedToday] = useState(0);
 
-  const fetchDashboardStatus = async () => {
+  // Runner state
+  const [runnerActive, setRunnerActive] = useState<boolean>(true);
+  const [togglingRunner, setTogglingRunner] = useState<boolean>(false);
+
+  // Leads state
+  const [leads, setLeads] = useState<LeadItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+
+  // Outreach Launcher Form State
+  const [selectedSector, setSelectedSector] = useState('Salons & Beauty');
+  const [batchSize, setBatchSize] = useState(10);
+  const [channelSms, setChannelSms] = useState(true);
+  const [channelWa, setChannelWa] = useState(true);
+  const [launchingBatch, setLaunchingBatch] = useState(false);
+  const [batchResult, setBatchResult] = useState<any>(null);
+
+  // Settings State
+  const [dryRun, setDryRun] = useState(false);
+  const [smsGatewayUrl, setSmsGatewayUrl] = useState('http://10.132.90.251:8082');
+  const [claimFee, setClaimFee] = useState(185000);
+  const [saveSettingsStatus, setSaveSettingsStatus] = useState('');
+
+  const fetchLiveDashboard = async () => {
     setStatsLoading(true);
     try {
-      // 1. Fetch Runner state
+      // 1. Fetch leads
+      const leadsRes = await fetch('/api/leads').catch(() => null);
+      if (leadsRes?.ok) {
+        const data = await leadsRes.json();
+        if (Array.isArray(data)) {
+          setLeads(data);
+          setTotalLeadsCount(data.length);
+          const contacted = data.filter((l: any) => (l.status || '').toUpperCase() === 'CONTACTED');
+          const claimed = data.filter((l: any) => (l.status || '').toUpperCase() === 'CLAIMED' || (l.notes || '').includes('[claimed]'));
+          setTotalContactedCount(contacted.length);
+          setClaimedCount(claimed.length);
+        }
+      }
+
+      // 2. Fetch Runner toggle
       const runnerRes = await fetch('/api/admin/runner-toggle').catch(() => null);
       if (runnerRes?.ok) {
         const runnerData = await runnerRes.json();
         if (typeof runnerData.active === 'boolean') setRunnerActive(runnerData.active);
       }
 
-      // 2. Fetch Outreach live stats
-      const outreachRes = await fetch('/api/outreach/lagos10k').catch(() => null);
-      if (outreachRes?.ok) {
-        const outData = await outreachRes.json();
-        if (outData.stats?.totalLagosLeads) setTotalLagosLeads(outData.stats.totalLagosLeads);
-        if (outData.stats?.totalContactedOutreach) setTotalContacted(outData.stats.totalContactedOutreach);
+      // 3. Fetch Config & Sprint Info
+      const configRes = await fetch('/api/config').catch(() => null);
+      if (configRes?.ok) {
+        const cfg = await configRes.json();
+        if (typeof cfg.dryRun === 'boolean') setDryRun(cfg.dryRun);
+        if (cfg.smsGatewayUrl) setSmsGatewayUrl(cfg.smsGatewayUrl);
       }
 
-      setLastSyncTime(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      // 4. Fetch sprint status
+      const now = new Date();
+      const sprintStart = new Date('2026-08-17T00:00:00Z');
+      const diffDays = Math.floor((now.getTime() - sprintStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+      const dayNum = Math.max(1, Math.min(diffDays, 7));
+      setSprintDay(dayNum);
+      setSafeLimit(dayNum <= 2 ? 30 : dayNum <= 5 ? 45 : 60);
+
+      setLastSyncTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
     } catch (_) {
     } finally {
+      setLoading(false);
       setStatsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDashboardStatus();
-    const interval = setInterval(fetchDashboardStatus, 30000);
+    fetchLiveDashboard();
+    const interval = setInterval(fetchLiveDashboard, 30000);
     return () => clearInterval(interval);
   }, []);
 
   const toggleRunner = async (enable: boolean) => {
     setTogglingRunner(true);
-    setRunnerMessage('');
     try {
       const res = await fetch('/api/admin/runner-toggle', {
         method: 'POST',
@@ -120,116 +151,202 @@ export default function AdminDashboardHome() {
       const data = await res.json();
       if (data.success) {
         setRunnerActive(data.active);
-        setRunnerMessage(data.message);
-      } else {
-        setRunnerMessage(data.error || 'Failed to update runner state.');
       }
-    } catch (err: any) {
-      setRunnerMessage('Network error toggling runner.');
+    } catch (_) {
     } finally {
       setTogglingRunner(false);
     }
   };
 
-  const triggerDeploy = async () => {
-    setDeploying(true);
-    setDeployMessage('');
-    setDeployError('');
+  const handleLaunchOutreach = async () => {
+    setLaunchingBatch(true);
+    setBatchResult(null);
 
     try {
-      const res = await fetch('/api/admin/deploy', {
+      const prompt = `Launch outreach batch of ${batchSize} leads for ${selectedSector}`;
+      const res = await fetch('/api/admin/command-copilot', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: prompt })
       });
       const data = await res.json();
-
-      if (res.ok && data.success) {
-        setDeployMessage(data.message || 'Production deployment initiated successfully!');
-      } else {
-        setDeployError(data.error || 'Failed to trigger deployment.');
-      }
+      setBatchResult(data);
+      fetchLiveDashboard();
     } catch (err: any) {
-      setDeployError('Network error occurred. Please try again.');
+      setBatchResult({ success: false, error: err.message });
     } finally {
-      setDeploying(false);
+      setLaunchingBatch(false);
     }
   };
 
-  // Computed for Onboarding Studio
-  const onboardSlug = onboardBizName
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '') || 'sample-business';
+  const handleSendTestSms = async () => {
+    setLaunchingBatch(true);
+    setBatchResult(null);
+    try {
+      const res = await fetch('/api/admin/command-copilot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: 'Send test SMS with prototype link to my remembered phone number' })
+      });
+      const data = await res.json();
+      setBatchResult(data);
+      fetchLiveDashboard();
+    } catch (err: any) {
+      setBatchResult({ success: false, error: err.message });
+    } finally {
+      setLaunchingBatch(false);
+    }
+  };
 
-  const previewOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com';
-  const previewHostedUrl = `${previewOrigin}/preview/${onboardSlug}`;
-  const scriptTagCode = `<script src="${previewOrigin}/api/widget/${onboardSlug}.js" async></script>`;
-  const resolvedDomainUrl = onboardCustomDomain ? `https://${onboardCustomDomain.replace(/^https?:\/\//, '')}` : previewHostedUrl;
+  const handleExecutePromptBar = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickPrompt.trim()) return;
+    setCopilotOpen(true);
+  };
 
-  const welcomeClientKit = `🎉 CONGRATULATIONS! Your ${onboardBizName || 'Custom Business'} AI Platform & WhatsApp Engine is LIVE!
+  // Filtered leads
+  const filteredLeads = leads.filter(l => {
+    const matchesSearch = !searchTerm || 
+      (l.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (l.phone_e164 || l.phone_raw || '').includes(searchTerm) ||
+      (l.area || '').toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCat = categoryFilter === 'all' || 
+      (l.category || '').toLowerCase().includes(categoryFilter.toLowerCase());
 
-We have successfully provisioned your 24/7 AI-powered website & instant booking system!
-
----
-🌐 YOUR OFFICIAL WEBSITE & DOMAIN DETAILS:
-🏢 Business: ${onboardBizName || '[Business Name]'}
-📂 Industry: ${onboardCategory}
-🔗 Live Website: ${onboardWebsiteOption === 'custom_domain' ? resolvedDomainUrl : previewHostedUrl}
-🤖 AI Sales Concierge: ACTIVE & ONLINE 24/7
-
----
-⚡ WHAT IS INCLUDED & READY:
-✅ 24/7 WhatsApp AI Sales Concierge (Handles customer questions)
-✅ Interactive Sector Quotation & Booking Calculator
-✅ Direct Lead Routing to ${onboardPhone || '[Your WhatsApp Number]'}
-✅ Fast Paystack & OPay Online Payment Checkout
-✅ Mobile-Optimized for Nigerian Mobile Networks
-
----
-📲 3 EASY STEPS TO RECEIVE CUSTOMERS:
-1️⃣ Visit your live website link above and test the interactive booking tool.
-2️⃣ Add your website link to your WhatsApp Business profile and Instagram bio.
-3️⃣ All customer orders and quote requests will be delivered directly to your WhatsApp!
-
-Technical Support & Developer Handover: Bethelmind Analytics & Strategy 🚀`;
+    return matchesSearch && matchesCat;
+  });
 
   return (
-    <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '60px' }}>
-      
-      {/* 1. TOP EXECUTIVE COMMAND HEADER & KPI METRICS */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 26, 0.98) 100%)',
-        border: '1px solid rgba(56, 189, 248, 0.2)',
-        borderRadius: '20px',
-        padding: '24px',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+    <div style={{
+      minHeight: '100vh',
+      background: '#090d16',
+      color: '#f8fafc',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    }}>
+      {/* ── TOP EXECUTIVE APP BAR ────────────────────────────────────── */}
+      <header style={{
+        background: 'rgba(15, 23, 42, 0.85)',
         backdropFilter: 'blur(16px)',
-        marginBottom: '24px'
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        padding: '12px 24px'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-              <span style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)', color: '#fff', fontSize: '0.72rem', fontWeight: 800, padding: '4px 10px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Executive Console
-              </span>
-              <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                Active Sprint Window: <strong style={{ color: '#f8fafc' }}>Aug 17 – Aug 23, 2026</strong>
-              </span>
+        <div style={{
+          maxWidth: '1380px',
+          margin: '0 auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px'
+        }}>
+          {/* Logo & Title */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 16px rgba(16, 185, 129, 0.35)'
+            }}>
+              <Rocket size={20} color="#ffffff" />
             </div>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#ffffff', margin: 0, letterSpacing: '-0.02em' }}>
-              ApexReach Commercial Outreach & Revenue Command Center
-            </h1>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>
+                  Bethelmind Admin
+                </span>
+                <span style={{
+                  fontSize: '0.68rem',
+                  fontWeight: 700,
+                  background: 'rgba(16, 185, 129, 0.2)',
+                  color: '#34d399',
+                  padding: '2px 8px',
+                  borderRadius: '6px',
+                  border: '1px solid rgba(16, 185, 129, 0.3)'
+                }}>
+                  LAGOS 10K ENGINE
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.74rem', color: '#94a3b8' }}>
+                Active Sprint Cycle: Aug 17 – Aug 23, 2026 (Day {sprintDay} of 7)
+              </p>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            {/* Live Production URL Button */}
-            <a
-              href="https://www.bethelmindanalytics.com/"
-              target="_blank"
-              rel="noopener noreferrer"
+          {/* Action Center Buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {/* AI Copilot Assistant Button */}
+            <button
+              id="admin-copilot-header-btn"
+              onClick={() => setCopilotOpen(prev => !prev)}
+              style={{
+                background: copilotOpen ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'rgba(16, 185, 129, 0.15)',
+                border: `1.5px solid ${copilotOpen ? '#10b981' : 'rgba(16, 185, 129, 0.4)'}`,
+                color: '#ffffff',
+                padding: '8px 16px',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: copilotOpen ? '0 0 16px rgba(16, 185, 129, 0.4)' : 'none',
+                transition: 'all 0.2s'
+              }}
+              title="Toggle AI Copilot Assistant (Ctrl+K)"
+            >
+              <Sparkles size={16} style={{ color: '#fef08a' }} />
+              <span>AI Copilot Assistant</span>
+              <span style={{
+                fontSize: '0.68rem',
+                background: 'rgba(0,0,0,0.3)',
+                padding: '2px 6px',
+                borderRadius: '5px',
+                color: '#a7f3d0'
+              }}>
+                Ctrl+K
+              </span>
+            </button>
+
+            {/* Sync Live Data */}
+            <button
+              onClick={fetchLiveDashboard}
+              disabled={statsLoading}
               style={{
                 background: 'rgba(255, 255, 255, 0.06)',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#cbd5e1',
+                padding: '8px 14px',
+                borderRadius: '10px',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+              title="Refresh live metrics"
+            >
+              <RefreshCw size={14} className={statsLoading ? 'spin-anim' : ''} />
+              <span>{lastSyncTime ? `Synced ${lastSyncTime}` : 'Sync'}</span>
+            </button>
+
+            {/* Production Domain */}
+            <a
+              href="https://www.bethelmindanalytics.com"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                background: 'rgba(56, 189, 248, 0.12)',
+                border: '1px solid rgba(56, 189, 248, 0.3)',
                 color: '#38bdf8',
                 padding: '8px 14px',
                 borderRadius: '10px',
@@ -238,698 +355,764 @@ Technical Support & Developer Handover: Bethelmind Analytics & Strategy 🚀`;
                 textDecoration: 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.2s'
+                gap: '6px'
               }}
             >
-              <ExternalLink size={14} /> Production Domain
+              <ExternalLink size={14} />
+              <span>Live Domain</span>
             </a>
 
-            {/* Assistant Duty Desk Quick Link */}
-            <Link
-              href="/assistant"
-              style={{
-                background: 'rgba(16, 185, 129, 0.12)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                color: '#34d399',
-                padding: '8px 14px',
-                borderRadius: '10px',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.2s'
-              }}
-            >
-              <UserCheck size={14} /> Assistant Duty Desk
-            </Link>
-
-            {/* Dedicated AI Copilot Assistant Button */}
+            {/* Runner Power Switch */}
             <button
-              id="admin-copilot-toggle-btn"
-              onClick={() => setCopilotOpen(prev => !prev)}
+              onClick={() => toggleRunner(!runnerActive)}
+              disabled={togglingRunner}
               style={{
-                background: copilotOpen ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'rgba(16, 185, 129, 0.15)',
-                border: `1.5px solid ${copilotOpen ? '#10b981' : 'rgba(16, 185, 129, 0.4)'}`,
-                color: copilotOpen ? '#ffffff' : '#34d399',
+                background: runnerActive ? 'rgba(16, 185, 129, 0.18)' : 'rgba(239, 68, 68, 0.18)',
+                border: `1.5px solid ${runnerActive ? '#10b981' : '#ef4444'}`,
+                color: runnerActive ? '#34d399' : '#f87171',
                 padding: '8px 16px',
                 borderRadius: '10px',
                 fontSize: '0.8rem',
                 fontWeight: 800,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: copilotOpen ? '0 0 16px rgba(16, 185, 129, 0.4)' : 'none',
-                transition: 'all 0.2s ease'
-              }}
-              title="Toggle AI Copilot Assistant (Ctrl+K)"
-            >
-              <Sparkles size={15} style={{ color: copilotOpen ? '#fef08a' : '#34d399' }} />
-              <span>AI Copilot Assistant</span>
-              <span style={{
-                fontSize: '0.68rem',
-                background: copilotOpen ? 'rgba(0,0,0,0.3)' : 'rgba(16, 185, 129, 0.2)',
-                padding: '2px 6px',
-                borderRadius: '5px',
-                color: copilotOpen ? '#a7f3d0' : '#86efac'
-              }}>
-                Ctrl+K
-              </span>
-            </button>
-
-            {/* Quick Refresh */}
-            <button
-              onClick={fetchDashboardStatus}
-              disabled={statsLoading}
-              style={{
-                background: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#cbd5e1',
-                padding: '8px 12px',
-                borderRadius: '10px',
-                fontSize: '0.8rem',
-                fontWeight: 700,
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px'
               }}
-              title="Refresh live metrics"
             >
-              <RefreshCw size={14} className={statsLoading ? 'spin-anim' : ''} /> {lastSyncTime ? `Synced ${lastSyncTime}` : 'Sync'}
+              <Power size={14} />
+              <span>{runnerActive ? '🟢 RUNNER ON' : '🔴 RUNNER OFF'}</span>
             </button>
+          </div>
+        </div>
+      </header>
 
-            {/* Master Runner Switch Button */}
+      {/* ── MAIN CONTENT CONTAINER ──────────────────────────────────── */}
+      <main style={{ maxWidth: '1380px', margin: '0 auto', padding: '24px 20px 80px' }}>
+
+        {/* ── 1. HERO AI COMMAND PROMPT BAR ─────────────────────────── */}
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(15, 23, 42, 0.6) 100%)',
+          border: '1.5px solid rgba(16, 185, 129, 0.25)',
+          borderRadius: '16px',
+          padding: '20px',
+          marginBottom: '24px',
+          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.35)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+            <Sparkles size={18} style={{ color: '#34d399' }} />
+            <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f0fdf4' }}>
+              Autonomous AI Command Prompt
+            </span>
+            <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+              — Give worded English commands to scrape leads, launch outreach batches, and verify website claims
+            </span>
+          </div>
+
+          <form onSubmit={handleExecutePromptBar} style={{ display: 'flex', gap: '10px' }}>
+            <div style={{
+              flex: 1,
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <Search size={18} style={{ position: 'absolute', left: '16px', color: '#64748b' }} />
+              <input
+                type="text"
+                value={quickPrompt}
+                onChange={e => setQuickPrompt(e.target.value)}
+                placeholder="E.g., 'Launch today\'s 30 outreach batch for salons' or 'Send test SMS'..."
+                style={{
+                  width: '100%',
+                  background: 'rgba(0, 0, 0, 0.45)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: '12px',
+                  padding: '12px 16px 12px 46px',
+                  color: '#ffffff',
+                  fontSize: '0.9rem',
+                  outline: 'none'
+                }}
+              />
+            </div>
             <button
-              onClick={() => toggleRunner(!runnerActive)}
-              disabled={togglingRunner}
+              type="submit"
               style={{
-                background: runnerActive
-                  ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                  : 'rgba(239, 68, 68, 0.15)',
-                border: `1.5px solid ${runnerActive ? '#10b981' : 'rgba(239, 68, 68, 0.4)'}`,
-                color: runnerActive ? '#ffffff' : '#f87171',
-                padding: '8px 16px',
-                borderRadius: '10px',
-                fontSize: '0.8rem',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '12px 24px',
+                fontSize: '0.88rem',
                 fontWeight: 800,
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
-                boxShadow: runnerActive ? '0 0 16px rgba(16, 185, 129, 0.4)' : 'none'
+                gap: '8px'
               }}
             >
-              <Power size={15} />
-              {togglingRunner ? 'Toggling...' : runnerActive ? '🟢 RUNNER ON (24/7)' : '🔴 RUNNER OFF (PROTECTED)'}
+              <Send size={16} />
+              <span>Execute</span>
             </button>
-          </div>
-        </div>
+          </form>
 
-        {/* Top KPI Cards Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-          
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '2px' }}>VERIFIED LAGOS LEADS</span>
-            <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#38bdf8' }}>{totalLagosLeads.toLocaleString()}</div>
-            <span style={{ fontSize: '0.68rem', color: '#10b981', fontWeight: 600 }}>✓ 6 Commercial Hubs Ready</span>
-          </div>
-
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '2px' }}>OUTREACH DISPATCHES</span>
-            <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#fbbf24' }}>{totalContacted.toLocaleString()}</div>
-            <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Warm-up curve: 30-60/day</span>
-          </div>
-
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '2px' }}>A/B LIFT (METHOD B)</span>
-            <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#34d399' }}>+34.8%</div>
-            <span style={{ fontSize: '0.68rem', color: '#34d399', fontWeight: 600 }}>🏆 Winning Strategy (2.1x Replies)</span>
-          </div>
-
-          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '2px' }}>SMS ROUTING GATEWAY</span>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#c084fc', marginTop: '4px' }}>Tailscale Android</div>
-            <span style={{ fontSize: '0.68rem', color: '#10b981', fontWeight: 600 }}>✓ 10.132.90.251:8082 Active</span>
-          </div>
-
-        </div>
-      </div>
-
-      {/* 2. TABBED NAVIGATION SWITCHBOARD */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        background: 'rgba(15, 23, 42, 0.8)',
-        padding: '6px',
-        borderRadius: '14px',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        marginBottom: '20px',
-        overflowX: 'auto'
-      }}>
-        {[
-          { id: 'outreach', label: '🚀 Lagos 10K Outreach Engine', icon: Send, badge: 'Main Engine' },
-          { id: 'journey', label: '📍 Lead Journey & Heat Tracker', icon: Activity, badge: 'Live AI' },
-          { id: 'onboarding', label: '🎨 Claimed Website Studio', icon: Sparkles, badge: '1-Click' },
-          { id: 'crm', label: '🗄️ Multi-Engine CRM & Scrapers', icon: Layers, badge: '21k+ Leads' },
-          { id: 'deploy', label: '⚡ Production Deploy & Health', icon: Rocket, badge: 'System' }
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
+          {/* Quick One-Click Action Pills */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '14px' }}>
+            <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>Quick Actions:</span>
+            
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as DashboardTab)}
+              onClick={handleSendTestSms}
+              disabled={launchingBatch}
               style={{
-                background: isActive
-                  ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)'
-                  : 'transparent',
-                color: isActive ? '#ffffff' : '#94a3b8',
-                border: 'none',
-                padding: '10px 18px',
-                borderRadius: '10px',
-                fontSize: '0.85rem',
-                fontWeight: isActive ? 800 : 600,
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: '#cbd5e1',
+                padding: '5px 12px',
+                borderRadius: '20px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.15s ease',
-                boxShadow: isActive ? '0 4px 14px rgba(2, 132, 199, 0.35)' : 'none'
+                gap: '5px'
               }}
             >
-              <Icon size={16} />
-              <span>{tab.label}</span>
-              {tab.badge && (
-                <span style={{
-                  fontSize: '0.65rem',
-                  padding: '2px 6px',
-                  borderRadius: '6px',
-                  background: isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                  color: isActive ? '#ffffff' : '#64748b',
-                  fontWeight: 700
-                }}>
-                  {tab.badge}
-                </span>
-              )}
+              ⚡ Send Test SMS (08022791227)
             </button>
-          );
-        })}
-      </div>
 
-      {/* 3. ACTIVE TAB CONTENT PANELS */}
+            <button
+              onClick={() => {
+                setQuickPrompt("Launch today's 30 outreach batch for salons");
+                setCopilotOpen(true);
+              }}
+              style={{
+                background: 'rgba(16, 185, 129, 0.12)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                color: '#34d399',
+                padding: '5px 12px',
+                borderRadius: '20px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}
+            >
+              🚀 Launch Today's 30 Outreach Batch
+            </button>
 
-      {/* TAB 1: 10K LAGOS OUTREACH ENGINE */}
-      {activeTab === 'outreach' && (
-        <div>
-          <Lagos10KOutreachCard />
+            <button
+              onClick={() => {
+                setQuickPrompt("Scrape 15 luxury salon leads in Ikeja");
+                setCopilotOpen(true);
+              }}
+              style={{
+                background: 'rgba(56, 189, 248, 0.12)',
+                border: '1px solid rgba(56, 189, 248, 0.3)',
+                color: '#38bdf8',
+                padding: '5px 12px',
+                borderRadius: '20px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              🎯 Scrape 15 Salons in Ikeja
+            </button>
+
+            <button
+              onClick={() => {
+                setQuickPrompt("Show sprint progress and gateway diagnostic");
+                setCopilotOpen(true);
+              }}
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: '#cbd5e1',
+                padding: '5px 12px',
+                borderRadius: '20px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              📊 Show Sprint Report
+            </button>
+          </div>
         </div>
-      )}
 
-      {/* TAB 2: LEAD JOURNEY & HEAT TRACKER */}
-      {activeTab === 'journey' && (
-        <div>
-          <LeadJourneyTrackerCard />
-        </div>
-      )}
-
-      {/* TAB 3: CLAIMED WEBSITE STUDIO & REDESIGN */}
-      {activeTab === 'onboarding' && (
+        {/* ── 2. REAL METRIC KPI CARDS (NO FAKE DATA) ───────────────── */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%)',
-          borderRadius: '16px',
-          border: '1px solid rgba(168, 85, 247, 0.3)',
-          padding: '28px',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-          color: '#ffffff'
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '16px',
+          marginBottom: '28px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-            <div style={{ background: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)', padding: '12px', borderRadius: '12px' }}>
-              <Sparkles size={24} color="#fff" />
+          {/* Card 1: Total Leads */}
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.65)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '14px',
+            padding: '18px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.76rem', color: '#94a3b8', fontWeight: 700 }}>TOTAL CRM LEADS</span>
+              <Database size={16} color="#38bdf8" />
             </div>
-            <div>
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, margin: 0 }}>
-                1-Click Client Onboarding &amp; Claim Handover Studio
-              </h2>
-              <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: '2px 0 0 0' }}>
-                Provision turnkey AI website domains, customized calculators, and client welcome kits in 30 seconds.
-              </p>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff' }}>
+              {loading ? '...' : totalLeadsCount.toLocaleString()}
             </div>
+            <span style={{ fontSize: '0.72rem', color: '#34d399', fontWeight: 600 }}>
+              ● Verified Lagos Business Pool
+            </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
-            {/* Form */}
-            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '16px', color: '#38bdf8' }}>
-                Client &amp; Domain Setup
+          {/* Card 2: Today's Safe Ramp Dispatches */}
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.65)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '14px',
+            padding: '18px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.76rem', color: '#94a3b8', fontWeight: 700 }}>TODAY'S DISPATCHES</span>
+              <Send size={16} color="#34d399" />
+            </div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#34d399' }}>
+              {dispatchedToday} <span style={{ fontSize: '0.9rem', color: '#64748b' }}>/ {safeLimit} max</span>
+            </div>
+            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+              Safe Warm-up Limit (Day {sprintDay} of 7)
+            </span>
+          </div>
+
+          {/* Card 3: Total Contacted */}
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.65)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '14px',
+            padding: '18px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.76rem', color: '#94a3b8', fontWeight: 700 }}>TOTAL CONTACTED</span>
+              <PhoneCall size={16} color="#fbbf24" />
+            </div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff' }}>
+              {loading ? '...' : totalContactedCount.toLocaleString()}
+            </div>
+            <span style={{ fontSize: '0.72rem', color: '#fbbf24' }}>
+              Interactive prototypes delivered
+            </span>
+          </div>
+
+          {/* Card 4: Verified Claims */}
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.65)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '14px',
+            padding: '18px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.76rem', color: '#94a3b8', fontWeight: 700 }}>CLAIMED PROTOTYPES</span>
+              <CheckCircle2 size={16} color="#10b981" />
+            </div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#10b981' }}>
+              {loading ? '...' : claimedCount.toLocaleString()}
+            </div>
+            <span style={{ fontSize: '0.72rem', color: '#34d399' }}>
+              48h instant setup conversions
+            </span>
+          </div>
+        </div>
+
+        {/* ── 3. CLEAN SEGMENT TABS ─────────────────────────────────── */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          marginBottom: '24px',
+          paddingBottom: '12px'
+        }}>
+          <button
+            onClick={() => setActiveTab('outreach')}
+            style={{
+              background: activeTab === 'outreach' ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
+              border: `1.5px solid ${activeTab === 'outreach' ? '#10b981' : 'transparent'}`,
+              color: activeTab === 'outreach' ? '#ffffff' : '#94a3b8',
+              padding: '10px 20px',
+              borderRadius: '10px',
+              fontSize: '0.86rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <Rocket size={16} />
+            <span>Outreach Launcher</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('leads')}
+            style={{
+              background: activeTab === 'leads' ? 'rgba(56, 189, 248, 0.15)' : 'transparent',
+              border: `1.5px solid ${activeTab === 'leads' ? '#38bdf8' : 'transparent'}`,
+              color: activeTab === 'leads' ? '#ffffff' : '#94a3b8',
+              padding: '10px 20px',
+              borderRadius: '10px',
+              fontSize: '0.86rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <Users size={16} />
+            <span>Live CRM Leads ({leads.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('settings')}
+            style={{
+              background: activeTab === 'settings' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+              border: `1.5px solid ${activeTab === 'settings' ? 'rgba(255, 255, 255, 0.3)' : 'transparent'}`,
+              color: activeTab === 'settings' ? '#ffffff' : '#94a3b8',
+              padding: '10px 20px',
+              borderRadius: '10px',
+              fontSize: '0.86rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <Sliders size={16} />
+            <span>Gateway & Settings</span>
+          </button>
+        </div>
+
+        {/* ── TAB 1: OUTREACH LAUNCHER ──────────────────────────────── */}
+        {activeTab === 'outreach' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '24px' }}>
+            {/* Launcher Controls */}
+            <div style={{
+              background: 'rgba(15, 23, 42, 0.65)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '16px',
+              padding: '24px'
+            }}>
+              <h3 style={{ margin: '0 0 16px 0', fontSize: '1.05rem', fontWeight: 800, color: '#ffffff' }}>
+                🚀 Launch Targeted Outreach Batch
               </h3>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#94a3b8', marginBottom: '4px' }}>
-                    Business Name
-                  </label>
-                  <input
-                    type="text"
-                    value={onboardBizName}
-                    onChange={(e) => setOnboardBizName(e.target.value)}
-                    placeholder="e.g. Apex Health Clinic Lagos"
-                    style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', fontSize: '0.88rem' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#94a3b8', marginBottom: '4px' }}>
-                    Industry Sector
-                  </label>
-                  <select
-                    value={onboardCategory}
-                    onChange={(e) => setOnboardCategory(e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', fontSize: '0.88rem' }}
-                  >
-                    <option value="Medical & Health Clinic">Medical & Health Clinic (Intake & Appointment)</option>
-                    <option value="Luxury Salon & Spa">Luxury Salon & Spa (Booking Calendar)</option>
-                    <option value="Auto Repair & Tokunbo Dealership">Auto Repair & Tokunbo Dealership (Valuation Tool)</option>
-                    <option value="Restaurant & Hospitality Lounge">Restaurant & Hospitality Lounge (Table Reservation)</option>
-                    <option value="Real Estate & Property Development">Real Estate & Property Development (Inspection Booking)</option>
-                    <option value="Fashion Boutique & Retail">Fashion Boutique & Retail (E-Commerce Store)</option>
-                    <option value="Solar & Renewable Energy">Solar & Renewable Energy (KVA Estimator)</option>
-                    <option value="Legal & CAC Consultancy">Legal & CAC Consultancy (Retainer Estimator)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#94a3b8', marginBottom: '4px' }}>
-                    Client WhatsApp / Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    value={onboardPhone}
-                    onChange={(e) => setOnboardPhone(e.target.value)}
-                    placeholder="e.g. 0802 279 1227"
-                    style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', fontSize: '0.88rem' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#94a3b8', marginBottom: '4px' }}>
-                    Deployment Option
-                  </label>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      type="button"
-                      onClick={() => setOnboardWebsiteOption('hosted')}
-                      style={{
-                        flex: 1,
-                        padding: '8px',
-                        borderRadius: '8px',
-                        background: onboardWebsiteOption === 'hosted' ? '#0284c7' : 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        color: '#fff',
-                        fontSize: '0.78rem',
-                        fontWeight: 700,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Instant Hosted (.com.ng)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setOnboardWebsiteOption('custom_domain')}
-                      style={{
-                        flex: 1,
-                        padding: '8px',
-                        borderRadius: '8px',
-                        background: onboardWebsiteOption === 'custom_domain' ? '#0284c7' : 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        color: '#fff',
-                        fontSize: '0.78rem',
-                        fontWeight: 700,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Custom Client Domain
-                    </button>
-                  </div>
-                </div>
-
-                {onboardWebsiteOption === 'custom_domain' && (
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#94a3b8', marginBottom: '4px' }}>
-                      Custom Domain URL
-                    </label>
-                    <input
-                      type="text"
-                      value={onboardCustomDomain}
-                      onChange={(e) => setOnboardCustomDomain(e.target.value)}
-                      placeholder="e.g. www.apexhealthlagos.com"
-                      style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', fontSize: '0.88rem' }}
-                    />
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => setOnboardProvisioned(true)}
+              {/* Target Sector */}
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', marginBottom: '8px' }}>
+                  SELECT TARGET SECTOR
+                </label>
+                <select
+                  value={selectedSector}
+                  onChange={e => setSelectedSector(e.target.value)}
                   style={{
-                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                    color: '#fff',
-                    border: 'none',
-                    padding: '12px',
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
                     borderRadius: '10px',
-                    fontWeight: 800,
-                    fontSize: '0.9rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    marginTop: '8px',
-                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
+                    padding: '10px 14px',
+                    color: '#ffffff',
+                    fontSize: '0.86rem',
+                    outline: 'none'
                   }}
                 >
-                  <Sparkles size={16} /> Generate Client Handover Kit
-                </button>
+                  <option value="Salons & Beauty">Salons, Spas & Beauty Clinics (Lekki / Ikeja)</option>
+                  <option value="Healthcare & Dental">Medical & Healthcare Clinics</option>
+                  <option value="Auto Repair & Detailing">Auto Repair & Logistics</option>
+                  <option value="Restaurants & Lounges">Restaurants & Food Brands</option>
+                  <option value="Real Estate & Property">Real Estate Agencies</option>
+                  <option value="Retail & Boutiques">Retail & Fashion Boutiques</option>
+                </select>
               </div>
+
+              {/* Batch Size Selection */}
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', marginBottom: '8px' }}>
+                  BATCH SIZE (Safe Warm-up Cap: {safeLimit} msgs/day)
+                </label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {[10, 20, 30].map(size => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setBatchSize(size)}
+                      style={{
+                        flex: 1,
+                        background: batchSize === size ? 'rgba(16, 185, 129, 0.2)' : 'rgba(0, 0, 0, 0.3)',
+                        border: `1.5px solid ${batchSize === size ? '#10b981' : 'rgba(255, 255, 255, 0.1)'}`,
+                        color: batchSize === size ? '#34d399' : '#cbd5e1',
+                        padding: '10px',
+                        borderRadius: '10px',
+                        fontSize: '0.85rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {size} Leads
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Channel Routing */}
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', marginBottom: '8px' }}>
+                  DISPATCH CHANNELS
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.84rem', color: '#cbd5e1', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={channelSms}
+                      onChange={e => setChannelSms(e.target.checked)}
+                      style={{ accentColor: '#10b981', width: '16px', height: '16px' }}
+                    />
+                    <span>Tailscale Android SMS Gateway (10.132.90.251:8082)</span>
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.84rem', color: '#cbd5e1', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={channelWa}
+                      onChange={e => setChannelWa(e.target.checked)}
+                      style={{ accentColor: '#10b981', width: '16px', height: '16px' }}
+                    />
+                    <span>WhatsApp Direct Rotator (Mobile Preview & Booking Hook)</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Big Launch Button */}
+              <button
+                onClick={handleLaunchOutreach}
+                disabled={launchingBatch}
+                style={{
+                  width: '100%',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '14px 20px',
+                  fontSize: '0.92rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 24px rgba(16, 185, 129, 0.35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px'
+                }}
+              >
+                <Rocket size={18} />
+                <span>{launchingBatch ? 'Executing Batch Dispatch...' : `Launch ${batchSize} Leads Outreach Batch`}</span>
+              </button>
             </div>
 
-            {/* Generated Kit Output */}
-            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: 0, color: '#34d399' }}>
-                    📋 Ready-to-Send Client WhatsApp Kit
-                  </h3>
-                  <button
-                    onClick={async () => {
-                      const success = await copyToClipboard(welcomeClientKit);
-                      if (success) {
-                        setCopiedWelcome(true);
-                        setTimeout(() => setCopiedWelcome(false), 2000);
-                      }
-                    }}
-                    style={{
-                      background: copiedWelcome ? '#10b981' : 'rgba(56, 189, 248, 0.15)',
-                      color: copiedWelcome ? '#000' : '#38bdf8',
-                      border: 'none',
-                      padding: '5px 12px',
-                      borderRadius: '6px',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}
-                  >
-                    {copiedWelcome ? <Check size={14} /> : <Copy size={14} />} {copiedWelcome ? 'Copied!' : 'Copy Kit'}
-                  </button>
-                </div>
+            {/* Live Output & Delivery Log */}
+            <div style={{
+              background: 'rgba(15, 23, 42, 0.65)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '16px',
+              padding: '24px',
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              <h3 style={{ margin: '0 0 16px 0', fontSize: '1.05rem', fontWeight: 800, color: '#ffffff' }}>
+                📋 Real-Time Execution Status
+              </h3>
 
-                <pre style={{
-                  background: 'rgba(0,0,0,0.5)',
-                  padding: '14px',
-                  borderRadius: '10px',
-                  fontSize: '0.76rem',
-                  color: '#e2e8f0',
-                  lineHeight: 1.5,
-                  maxHeight: '340px',
-                  overflowY: 'auto',
-                  whiteSpace: 'pre-wrap',
-                  fontFamily: 'monospace',
-                  border: '1px solid rgba(255,255,255,0.05)'
+              {batchResult ? (
+                <div style={{
+                  background: 'rgba(0, 0, 0, 0.45)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  flex: 1,
+                  overflowY: 'auto'
                 }}>
-                  {welcomeClientKit}
-                </pre>
-              </div>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#34d399', marginBottom: '10px' }}>
+                    {batchResult.summary || 'Execution Complete'}
+                  </div>
+                  <pre style={{
+                    margin: 0,
+                    fontSize: '0.78rem',
+                    color: '#cbd5e1',
+                    whiteSpace: 'pre-wrap',
+                    fontFamily: "'Courier New', monospace"
+                  }}>
+                    {batchResult.output || JSON.stringify(batchResult, null, 2)}
+                  </pre>
+                </div>
+              ) : (
+                <div style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#64748b',
+                  textAlign: 'center',
+                  padding: '30px'
+                }}>
+                  <Send size={32} style={{ marginBottom: '12px', opacity: 0.5 }} />
+                  <p style={{ margin: '0 0 6px 0', fontSize: '0.88rem', fontWeight: 600, color: '#94a3b8' }}>
+                    Ready for live outreach dispatches
+                  </p>
+                  <p style={{ margin: 0, fontSize: '0.75rem' }}>
+                    Select a sector and click Launch Batch or give a prompt to start today's run.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
-              <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <a
-                  href={previewHostedUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+        {/* ── TAB 2: LIVE CRM LEADS ─────────────────────────────────── */}
+        {activeTab === 'leads' && (
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.65)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '16px',
+            padding: '24px'
+          }}>
+            {/* Filter Bar */}
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              marginBottom: '20px',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', gap: '10px', flex: 1, minWidth: '280px' }}>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  placeholder="Search by business name, phone, area..."
                   style={{
                     flex: 1,
-                    textAlign: 'center',
-                    background: '#38bdf8',
-                    color: '#0f172a',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    fontWeight: 800,
-                    fontSize: '0.82rem',
-                    textDecoration: 'none',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px'
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '10px',
+                    padding: '8px 14px',
+                    color: '#ffffff',
+                    fontSize: '0.84rem',
+                    outline: 'none'
+                  }}
+                />
+                <select
+                  value={categoryFilter}
+                  onChange={e => setCategoryFilter(e.target.value)}
+                  style={{
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '10px',
+                    padding: '8px 14px',
+                    color: '#ffffff',
+                    fontSize: '0.84rem',
+                    outline: 'none'
                   }}
                 >
-                  <Eye size={15} /> Test Live Prototype
-                </a>
-
-                {onboardPhone && (
-                  <a
-                    href={`https://wa.me/${onboardPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(welcomeClientKit)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      flex: 1,
-                      textAlign: 'center',
-                      background: '#25d366',
-                      color: '#ffffff',
-                      padding: '10px',
-                      borderRadius: '8px',
-                      fontWeight: 800,
-                      fontSize: '0.82rem',
-                      textDecoration: 'none',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px'
-                    }}
-                  >
-                    💬 Send via WhatsApp
-                  </a>
-                )}
+                  <option value="all">All Categories</option>
+                  <option value="salon">Salons & Beauty</option>
+                  <option value="clinic">Clinics & Health</option>
+                  <option value="auto">Auto & Repair</option>
+                  <option value="restaurant">Restaurants</option>
+                </select>
               </div>
+
+              <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+                Showing <strong>{filteredLeads.length}</strong> leads
+              </span>
+            </div>
+
+            {/* Leads Table */}
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: '#94a3b8', textAlign: 'left' }}>
+                    <th style={{ padding: '10px 12px' }}>BUSINESS NAME</th>
+                    <th style={{ padding: '10px 12px' }}>PHONE</th>
+                    <th style={{ padding: '10px 12px' }}>CATEGORY & AREA</th>
+                    <th style={{ padding: '10px 12px' }}>STATUS</th>
+                    <th style={{ padding: '10px 12px', textAlign: 'right' }}>ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredLeads.length > 0 ? (
+                    filteredLeads.slice(0, 25).map((lead) => {
+                      const isClaimed = (lead.status || '').toUpperCase() === 'CLAIMED';
+                      const isContacted = (lead.status || '').toUpperCase() === 'CONTACTED';
+                      const previewUrl = `/preview/${encodeURIComponent(lead.lead_id)}`;
+
+                      return (
+                        <tr key={lead.lead_id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                          <td style={{ padding: '12px', fontWeight: 700, color: '#ffffff' }}>
+                            {lead.name}
+                          </td>
+                          <td style={{ padding: '12px', color: '#38bdf8', fontFamily: 'monospace' }}>
+                            {lead.phone_e164 || lead.phone_raw || 'No phone'}
+                          </td>
+                          <td style={{ padding: '12px', color: '#cbd5e1' }}>
+                            <span>{lead.category || 'General'}</span>
+                            {lead.area && <span style={{ color: '#64748b', marginLeft: '6px' }}>({lead.area})</span>}
+                          </td>
+                          <td style={{ padding: '12px' }}>
+                            <span style={{
+                              fontSize: '0.7rem',
+                              fontWeight: 800,
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              background: isClaimed ? 'rgba(16, 185, 129, 0.2)' : isContacted ? 'rgba(251, 191, 36, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                              color: isClaimed ? '#34d399' : isContacted ? '#fbbf24' : '#94a3b8'
+                            }}>
+                              {lead.status || 'NEW'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px', textAlign: 'right' }}>
+                            <a
+                              href={previewUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{
+                                background: 'rgba(56, 189, 248, 0.12)',
+                                border: '1px solid rgba(56, 189, 248, 0.3)',
+                                color: '#38bdf8',
+                                padding: '4px 10px',
+                                borderRadius: '6px',
+                                textDecoration: 'none',
+                                fontSize: '0.74rem',
+                                fontWeight: 700,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              <Eye size={12} /> View Prototype
+                            </a>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
+                        No leads found. Use the AI Copilot above to scrape fresh prospects: E.g., <code>Scrape 20 salon leads in Ikeja</code>.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* TAB 4: MULTI-ENGINE CRM & CLOUD SCRAPERS */}
-      {activeTab === 'crm' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-          
-          {/* CRM Hub Card */}
+        {/* ── TAB 3: GATEWAY & SYSTEM SETTINGS ──────────────────────── */}
+        {activeTab === 'settings' && (
           <div style={{
-            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(10, 15, 26, 0.95) 100%)',
-            borderRadius: '16px',
-            border: '1px solid rgba(6, 182, 212, 0.3)',
-            padding: '24px',
-            color: '#fff'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-              <div style={{ background: 'rgba(6, 182, 212, 0.2)', padding: '10px', borderRadius: '10px', color: '#22d3ee' }}>
-                <Layers size={22} />
-              </div>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Multi-Engine Lead CRM Hub</h3>
-                <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>21,078 total verified prospects across 4 engines</span>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '18px', textAlign: 'center' }}>
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '10px', borderRadius: '10px' }}>
-                <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#34d399', display: 'block' }}>17,578</span>
-                <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Lagos 10K</span>
-              </div>
-              <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: '10px', borderRadius: '10px' }}>
-                <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fbbf24', display: 'block' }}>2,438</span>
-                <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>SolarQuotePro</span>
-              </div>
-              <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '10px', borderRadius: '10px' }}>
-                <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#818cf8', display: 'block' }}>1,062</span>
-                <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Ibadan 10K</span>
-              </div>
-            </div>
-
-            <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '16px' }}>
-              Filter by industry sector, view phone numbers, Google reviews, and launch 1-click test outreach previews.
-            </p>
-
-            <Link
-              href="/admin/crm"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: '#06b6d4',
-                color: '#0f172a',
-                padding: '10px 18px',
-                borderRadius: '10px',
-                fontWeight: 800,
-                fontSize: '0.85rem',
-                textDecoration: 'none'
-              }}
-            >
-              Open Full Lead CRM <Layers size={16} />
-            </Link>
-          </div>
-
-          {/* Google Colab Harvester Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(10, 15, 26, 0.95) 100%)',
-            borderRadius: '16px',
-            border: '1px solid rgba(245, 158, 11, 0.3)',
-            padding: '24px',
-            color: '#fff'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-              <div style={{ background: 'rgba(245, 158, 11, 0.2)', padding: '10px', borderRadius: '10px', color: '#fbbf24' }}>
-                <CloudLightning size={22} />
-              </div>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Google Colab Cloud Harvester</h3>
-                <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>0% Laptop CPU load — 100% Free Cloud Runtime</span>
-              </div>
-            </div>
-
-            <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '18px' }}>
-              Scrapes fresh commercial prospects using Chrome TLS impersonation and saves verified leads directly into your Supabase database.
-            </p>
-
-            <a
-              href="https://colab.research.google.com/github/tosinbethelmind/lead-generation-automation-v2/blob/main/Colab_247_Harvester.ipynb"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: '#fbbf24',
-                color: '#0f172a',
-                padding: '10px 18px',
-                borderRadius: '10px',
-                fontWeight: 800,
-                fontSize: '0.85rem',
-                textDecoration: 'none'
-              }}
-            >
-              <ExternalLink size={16} /> Launch on Google Colab
-            </a>
-          </div>
-
-        </div>
-      )}
-
-      {/* TAB 5: PRODUCTION DEPLOY & SYSTEM HEALTH */}
-      {activeTab === 'deploy' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-          
-          {/* Deploy Action Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(10, 15, 26, 0.95) 100%)',
-            borderRadius: '16px',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            padding: '24px',
-            color: '#fff'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-              <div style={{ background: 'rgba(16, 185, 129, 0.2)', padding: '10px', borderRadius: '10px', color: '#34d399' }}>
-                <Rocket size={22} />
-              </div>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Production Vercel Deployment</h3>
-                <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>Deploy local updates live to production</span>
-              </div>
-            </div>
-
-            <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '18px' }}>
-              Pushes all design tweaks, sector prototypes, and outreach updates directly to Vercel and GitHub.
-            </p>
-
-            {deployMessage && (
-              <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#34d399', fontSize: '0.8rem', marginBottom: '14px' }}>
-                {deployMessage}
-              </div>
-            )}
-
-            {deployError && (
-              <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171', fontSize: '0.8rem', marginBottom: '14px' }}>
-                {deployError}
-              </div>
-            )}
-
-            <button
-              onClick={triggerDeploy}
-              disabled={deploying}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#fff',
-                fontWeight: 800,
-                fontSize: '0.9rem',
-                border: 'none',
-                cursor: deploying ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)'
-              }}
-            >
-              {deploying ? <RefreshCw className="spin-anim" size={16} /> : <Rocket size={16} />}
-              {deploying ? 'Deploying to Production...' : 'Trigger Production Deploy'}
-            </button>
-          </div>
-
-          {/* System Health Card */}
-          <div style={{
-            background: 'rgba(15, 23, 42, 0.75)',
-            borderRadius: '16px',
+            background: 'rgba(15, 23, 42, 0.65)',
             border: '1px solid rgba(255, 255, 255, 0.08)',
-            padding: '24px',
-            color: '#fff'
+            borderRadius: '16px',
+            padding: '24px'
           }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '16px', color: '#f8fafc' }}>
-              System Health &amp; Endpoints
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '1.05rem', fontWeight: 800, color: '#ffffff' }}>
+              ⚙️ Engine Architecture & Gateway Configuration
             </h3>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Database (Supabase)</span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>● Connected</span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+              {/* Setting 1: SMS Gateway */}
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', marginBottom: '8px' }}>
+                  TAILSCALE ANDROID SMS GATEWAY
+                </label>
+                <input
+                  type="text"
+                  value={smsGatewayUrl}
+                  readOnly
+                  style={{
+                    width: '100%',
+                    background: 'rgba(0,0,0,0.5)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '8px',
+                    padding: '8px 12px',
+                    color: '#34d399',
+                    fontFamily: 'monospace',
+                    fontSize: '0.84rem'
+                  }}
+                />
+                <span style={{ fontSize: '0.72rem', color: '#34d399', display: 'block', marginTop: '6px' }}>
+                  ● Connected & Online (Dedicated Tailscale Route)
+                </span>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Android SMS Gateway</span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>● 10.132.90.251:8082</span>
+              {/* Setting 2: Dry Run Mode */}
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', marginBottom: '8px' }}>
+                  OUTREACH EXECUTION MODE
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.86rem', color: dryRun ? '#fbbf24' : '#34d399', fontWeight: 700 }}>
+                    {dryRun ? '🟡 DRY RUN (Simulation Only)' : '🟢 LIVE CARRIER DISPATCH'}
+                  </span>
+                  <button
+                    onClick={() => {
+                      const next = !dryRun;
+                      setDryRun(next);
+                      fetch('/api/admin/command-copilot', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ command: `Set dry run ${next ? 'true' : 'false'}` })
+                      });
+                    }}
+                    style={{
+                      background: 'rgba(255,255,255,0.1)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      color: '#ffffff',
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                      fontSize: '0.76rem',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Toggle Mode
+                  </button>
+                </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Hostinger SMTP Email</span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>● Port 465 SSL</span>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>WhatsApp Engine (Baileys)</span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>● Multi-Rotator Active</span>
+              {/* Setting 3: Instant Setup Claim Fee */}
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', marginBottom: '8px' }}>
+                  WEBSITE PROTOTYPE CLAIM FEE
+                </label>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#38bdf8' }}>
+                  ₦185,000 NGN
+                </div>
+                <span style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'block', marginTop: '4px' }}>
+                  Instant Moniepoint & Paystack 48h Setup Claim
+                </span>
               </div>
             </div>
           </div>
+        )}
 
-        </div>
-      )}
+      </main>
 
-      {/* AI Admin Copilot Assistant Modal Drawer */}
+      {/* ── AI COPILOT ASSISTANT DRAWER ──────────────────────────────── */}
       <AdminAiCommandTerminal
         isOpen={copilotOpen}
         onToggle={setCopilotOpen}

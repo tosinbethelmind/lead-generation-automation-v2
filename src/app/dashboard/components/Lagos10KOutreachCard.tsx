@@ -118,15 +118,15 @@ export default function Lagos10KOutreachCard() {
   });
 
   const [stats, setStats] = useState<LagosStats>({
-    totalLagosLeads: 10000,
-    totalContactedOutreach: 428,
+    totalLagosLeads: 0,
+    totalContactedOutreach: 0,
     sectorBreakdown: {
-      realEstate: 42,
-      schools: 47,
-      clinics: 101,
-      hotelsAndDining: 163,
-      retailAndBoutiques: 119,
-      autoAndLogistics: 60
+      realEstate: 0,
+      schools: 0,
+      clinics: 0,
+      hotelsAndDining: 0,
+      retailAndBoutiques: 0,
+      autoAndLogistics: 0
     },
     targetMarket: 'Lagos State (Ikeja, Lekki, VI, Yaba, Surulere, Ikoyi, Oshodi, Ikorodu, Epe)',
     outreachChannel: 'Blended Hybrid: 2-Step WhatsApp Hook + Web Form + B2B Email + AI Voice Notes',
@@ -144,31 +144,31 @@ export default function Lagos10KOutreachCard() {
       id: 'method_a',
       title: 'Method A: Interactive Demo & Reciprocity',
       tagline: 'Upfront Visual Prototype Link',
-      sent: 214,
-      clicks: 68,
-      replies: 24,
-      claims: 7,
-      ctr: '31.8%',
-      replyRate: '11.2%',
-      claimRate: '3.3%',
+      sent: 0,
+      clicks: 0,
+      replies: 0,
+      claims: 0,
+      ctr: '0.0%',
+      replyRate: '0.0%',
+      claimRate: '0.0%',
       primaryAudience: 'Salons, Spas, Restaurants, Retail, Boutiques'
     },
     methodB: {
       id: 'method_b',
       title: 'Method B: Revenue Leak & Micro-Commitment',
       tagline: 'Loss Aversion + Reply "YES" First',
-      sent: 214,
-      clicks: 103,
-      replies: 49,
-      claims: 12,
-      ctr: '48.1%',
-      replyRate: '22.9%',
-      claimRate: '5.6%',
+      sent: 0,
+      clicks: 0,
+      replies: 0,
+      claims: 0,
+      ctr: '0.0%',
+      replyRate: '0.0%',
+      claimRate: '0.0%',
       primaryAudience: 'Medical, Clinics, Auto Repair, Real Estate, Consultancies'
     },
-    winningVariant: 'B',
-    liftPercentage: '+34.8%',
-    recommendation: 'Method B produces 2.1x higher reply rates & higher Paystack claim intent across Lagos service businesses.'
+    winningVariant: 'Pending Launch',
+    liftPercentage: '0.0%',
+    recommendation: 'Awaiting initial outreach dispatches to compute live response lift.'
   });
 
   const [selectedSprintDay, setSelectedSprintDay] = useState<number>(1);
@@ -761,10 +761,10 @@ export default function Lagos10KOutreachCard() {
               <span style={{ fontSize: '1.2rem' }}>🔥</span>
               <div>
                 <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#34d399' }}>
-                  Live Outreach Insight: {abAnalytics?.winningVariant === 'B' ? 'Method B is Leading' : 'Method A is Leading'} with {abAnalytics?.liftPercentage || '+34.8%'} Higher Response Lift
+                  Live Outreach Insight: {abAnalytics?.winningVariant === 'B' ? 'Method B is Leading' : abAnalytics?.winningVariant === 'A' ? 'Method A is Leading' : 'Campaign Warm-up Ready'}
                 </span>
                 <p style={{ margin: '2px 0 0 0', fontSize: '0.73rem', color: '#e2e8f0' }}>
-                  {abAnalytics?.recommendation || 'Method B generates 2.1x higher reply rates & higher Paystack claim intent across Lagos service businesses.'}
+                  {abAnalytics?.recommendation || 'Outreach campaign active. Live performance metrics will compute dynamically upon dispatches.'}
                 </p>
               </div>
             </div>
@@ -776,7 +776,7 @@ export default function Lagos10KOutreachCard() {
               padding: '4px 10px',
               borderRadius: '6px'
             }}>
-              WINNER: VARIANT {abAnalytics?.winningVariant || 'B'}
+              {abAnalytics?.winningVariant === 'B' ? 'WINNER: VARIANT B' : abAnalytics?.winningVariant === 'A' ? 'WINNER: VARIANT A' : 'READY TO LAUNCH'}
             </span>
           </div>
 
@@ -806,19 +806,19 @@ export default function Lagos10KOutreachCard() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', textAlign: 'center', marginBottom: '12px' }}>
                 <div style={{ background: 'rgba(255,255,255,0.04)', padding: '8px 4px', borderRadius: '8px' }}>
                   <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block' }}>Sent</span>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>{abAnalytics?.methodA?.sent || 214}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>{abAnalytics?.methodA?.sent ?? 0}</span>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.04)', padding: '8px 4px', borderRadius: '8px' }}>
                   <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block' }}>CTR</span>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#38bdf8' }}>{abAnalytics?.methodA?.ctr || '31.8%'}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#38bdf8' }}>{abAnalytics?.methodA?.ctr || '0.0%'}</span>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.04)', padding: '8px 4px', borderRadius: '8px' }}>
                   <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block' }}>Reply Rate</span>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#fbbf24' }}>{abAnalytics?.methodA?.replyRate || '11.2%'}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#fbbf24' }}>{abAnalytics?.methodA?.replyRate || '0.0%'}</span>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.04)', padding: '8px 4px', borderRadius: '8px' }}>
                   <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block' }}>Claim Rate</span>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>{abAnalytics?.methodA?.claimRate || '3.3%'}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>{abAnalytics?.methodA?.claimRate || '0.0%'}</span>
                 </div>
               </div>
 
@@ -851,19 +851,19 @@ export default function Lagos10KOutreachCard() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', textAlign: 'center', marginBottom: '12px' }}>
                 <div style={{ background: 'rgba(255,255,255,0.04)', padding: '8px 4px', borderRadius: '8px' }}>
                   <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block' }}>Sent</span>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>{abAnalytics?.methodB?.sent || 214}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc' }}>{abAnalytics?.methodB?.sent ?? 0}</span>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.04)', padding: '8px 4px', borderRadius: '8px' }}>
                   <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block' }}>CTR</span>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#38bdf8' }}>{abAnalytics?.methodB?.ctr || '48.1%'}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#38bdf8' }}>{abAnalytics?.methodB?.ctr || '0.0%'}</span>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.04)', padding: '8px 4px', borderRadius: '8px' }}>
                   <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block' }}>Reply Rate</span>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>{abAnalytics?.methodB?.replyRate || '22.9%'}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>{abAnalytics?.methodB?.replyRate || '0.0%'}</span>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.04)', padding: '8px 4px', borderRadius: '8px' }}>
                   <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block' }}>Claim Rate</span>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>{abAnalytics?.methodB?.claimRate || '5.6%'}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#34d399' }}>{abAnalytics?.methodB?.claimRate || '0.0%'}</span>
                 </div>
               </div>
 
