@@ -37,7 +37,7 @@ export default function CustomerAiAgentWidget({
   const [agentName, setAgentName] = useState(displayName);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Natural Web Speech Synthesis Audio Voice Synthesizer
+  // Natural Web Speech Synthesis Audio Voice Synthesizer (Strictly on user request only)
   const speakText = (text: string) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
@@ -61,25 +61,32 @@ export default function CustomerAiAgentWidget({
   };
 
   useEffect(() => {
-    // Initialize session ID
-    let sid = localStorage.getItem('bethel_ai_session_id');
+    // Ensure speech synthesis is completely stopped on mount & unmount
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  // Compute unique key for current lead to avoid session/history bleeding between different businesses
+  const leadKey = (leadData?.name || businessName || sector || 'guest')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '_');
+  const sessionKey = `bethel_ai_sid_${leadKey}`;
+  const historyKey = `bethel_ai_chat_${leadKey}`;
+
+  useEffect(() => {
+    // Initialize session ID scoped to this specific lead
+    let sid = typeof window !== 'undefined' ? localStorage.getItem(sessionKey) : null;
     if (!sid) {
-      sid = `client_${Math.random().toString(36).substring(2, 10)}`;
-      localStorage.setItem('bethel_ai_session_id', sid);
+      sid = `client_${leadKey}_${Math.random().toString(36).substring(2, 8)}`;
+      if (typeof window !== 'undefined') localStorage.setItem(sessionKey, sid);
     }
     setSessionId(sid);
-
-    // Restore conversation memory from localStorage if present
-    const savedChat = localStorage.getItem(`bethel_ai_chat_history_${sid}`);
-    if (savedChat) {
-      try {
-        const parsed = JSON.parse(savedChat);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setMessages(parsed);
-          return;
-        }
-      } catch (e) {}
-    }
 
     const welcomeGreeting = leadData
       ? `👋 Hello, **${leadData.name}**! 🌟 Your profile is verified in **${leadData.area || leadData.city || 'Lagos'}**. I have already pre-configured this 24/7 AI Lead & Quoting portal specifically for **${leadData.name}**! 🚀 How can I assist you with your instant quote or system setup today?`
@@ -87,7 +94,23 @@ export default function CustomerAiAgentWidget({
       ? `👋 Welcome to ${businessName}! I am your 24/7 AI Business Guide & Virtual Assistant. How can I assist you with our services, instant quotes, or custom domain setup today?`
       : `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`;
 
-    // Initial greeting
+    // Restore conversation memory from localStorage ONLY if it matches the current lead
+    const savedChat = typeof window !== 'undefined' ? localStorage.getItem(historyKey) : null;
+    if (savedChat) {
+      try {
+        const parsed = JSON.parse(savedChat);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Check if first message is relevant to this business
+          const firstMsg = parsed[0]?.text || '';
+          if (!leadData?.name || firstMsg.includes(leadData.name)) {
+            setMessages(parsed);
+            return;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Initial clean greeting
     const initMsg: ChatMessage = {
       id: 'msg_welcome',
       sender: 'agent',
@@ -95,56 +118,24 @@ export default function CustomerAiAgentWidget({
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
     setMessages([initMsg]);
-    try {
-      localStorage.setItem(`bethel_ai_chat_history_${sid}`, JSON.stringify([initMsg]));
-    } catch {}
-
-    // Auto-speak removed to avoid intrusive unsolicited audio on page load.
-    // User can trigger audio on demand using the 'Listen Voice' button.
-  }, [sector, businessName, leadData]);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(historyKey, JSON.stringify([initMsg]));
+      } catch {}
+    }
+  }, [sector, businessName, leadData, leadKey, sessionKey, historyKey]);
 
   // Sync messages to localStorage whenever they update
   useEffect(() => {
-    if (sessionId && messages.length > 0) {
+    if (historyKey && messages.length > 0 && typeof window !== 'undefined') {
       try {
-        localStorage.setItem(`bethel_ai_chat_history_${sessionId}`, JSON.stringify(messages));
+        localStorage.setItem(historyKey, JSON.stringify(messages));
       } catch {}
     }
-  }, [messages, sessionId]);
+  }, [messages, historyKey]);
 
-  // Non-intrusive Exit-Intent Notification Pill (Does NOT aggressively cover hero content)
+  // Non-intrusive small trigger notice
   const [hasExitNudge, setHasExitNudge] = useState(false);
-
-  useEffect(() => {
-    let triggered = false;
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 5 && !triggered && !isOpen) {
-        triggered = true;
-        setHasExitNudge(true);
-        const packagePrice = leadData?.claimFeeNGN || 150000;
-        const depositPrice = Math.round(packagePrice / 2);
-        const exitOffer = businessName
-          ? `⚡ Special Offer for ${businessName}: Claim your 24/7 AI Chatbot & Lead Tools with just ₦${depositPrice.toLocaleString()} 50% deposit!`
-          : `⚡ Special Offer: Claim your 24/7 AI System with a 50% commitment deposit!`;
-        
-        setMessages((prev) => {
-          if (prev.some(m => m.id.startsWith('msg_exit'))) return prev;
-          return [
-            ...prev,
-            {
-              id: `msg_exit_${Date.now()}`,
-              sender: 'agent',
-              text: exitOffer,
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            },
-          ];
-        });
-      }
-    };
-
-    document.addEventListener('mouseleave', handleMouseLeave);
-    return () => document.removeEventListener('mouseleave', handleMouseLeave);
-  }, [businessName, isOpen, leadData]);
 
   useEffect(() => {
     if (isOpen) {

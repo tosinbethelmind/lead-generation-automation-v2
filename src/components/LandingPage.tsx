@@ -2254,7 +2254,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               {[
                 { step: '01', icon: '🔒', title: 'Claim Today', desc: 'Fill in your name and email below and confirm your chosen package. Takes under 60 seconds.' },
                 { step: '02', icon: '⚙️', title: 'We Build & Deploy', desc: 'Our team customises your site, connects your phone number, and deploys it to your own domain within 48 hours.' },
-                { step: '03', icon: '📲', title: 'Customers Find You', desc: 'Patients and clients start booking directly from your website — you receive instant WhatsApp notifications for every lead.' },
+                { step: '03', icon: '📲', title: 'Customers Find You', desc: `${lead.category?.toLowerCase().includes('medical') || lead.category?.toLowerCase().includes('clinic') || lead.category?.toLowerCase().includes('health') ? 'Patients and clients' : 'High-intent clients and buyers'} start requesting quotes and booking directly from your website — you receive instant WhatsApp notifications for every lead.` },
               ].map((item) => (
                 <div key={item.step} style={{
                   background: '#ffffff',

@@ -55,11 +55,6 @@ interface PreviewData {
     opayAccountName?: string;
     opayPublicKey?: string;
     opayMerchantId?: string;
-  };
-}
-
-import { InteractiveFeatureShowcaseModal } from '@/components/InteractiveFeatureShowcaseModal';
-
 import { getDesignTheme, buildFallbackCopy } from '@/lib/designGenerator';
 
 export default function PreviewPage() {
@@ -244,12 +239,6 @@ export default function PreviewPage() {
     <div style={{ minHeight: '100vh', background: '#090d16', position: 'relative' }}>
       {/* Main Interactive Landing Page with Single Clean Sticky Header */}
       <LandingPage data={data} leadId={leadId} isPreview={true} />
-
-      {/* Interactive Feature Showcase Pop-Up Modal */}
-      <InteractiveFeatureShowcaseModal
-        businessName={data.lead.name}
-        leadId={leadId}
-      />
 
       {/* Floating 24/7 AI Concierge Widget — Receives full scraped lead profile for hyper-personalized suggestions */}
       <CustomerAiAgentWidget
