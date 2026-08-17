@@ -22,8 +22,8 @@ const pendingRepliesQueue = [];
 
 async function connectToWhatsApp() {
   const authDir = path.join(__dirname, '../local_db/baileys_auth');
-  if (!fs.existsSync(path.join(__dirname, '../local_db'))) {
-    fs.mkdirSync(path.join(__dirname, '../local_db'), { recursive: true });
+  if (!fs.existsSync(authDir)) {
+    fs.mkdirSync(authDir, { recursive: true });
   }
 
   const { state, saveCreds } = await useMultiFileAuthState(authDir);
