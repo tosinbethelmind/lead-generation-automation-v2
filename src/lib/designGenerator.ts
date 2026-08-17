@@ -194,11 +194,85 @@ const SECTOR_THEME_PROFILES: Record<string, {
   }
 };
 
+const LUXURY_STYLE_MATRICES: Array<{
+  primary: string;
+  accent: string;
+  bg: string;
+  headingFont: string;
+  bodyFont: string;
+  gradient: string;
+}> = [
+  {
+    primary: 'hsl(43, 92%, 54%)',
+    accent: 'hsl(198, 95%, 60%)',
+    bg: 'hsl(225, 45%, 4%)',
+    headingFont: 'Playfair Display',
+    bodyFont: 'Plus Jakarta Sans',
+    gradient: 'linear-gradient(135deg, hsl(43, 92%, 54%) 0%, hsl(35, 95%, 55%) 50%, hsl(265, 85%, 60%) 100%)'
+  },
+  {
+    primary: 'hsl(158, 85%, 46%)',
+    accent: 'hsl(45, 95%, 52%)',
+    bg: 'hsl(160, 50%, 3%)',
+    headingFont: 'Cormorant Garamond',
+    bodyFont: 'Plus Jakarta Sans',
+    gradient: 'linear-gradient(135deg, hsl(158, 85%, 46%) 0%, hsl(180, 90%, 42%) 50%, hsl(45, 95%, 52%) 100%)'
+  },
+  {
+    primary: 'hsl(188, 95%, 44%)',
+    accent: 'hsl(158, 75%, 50%)',
+    bg: 'hsl(205, 55%, 4%)',
+    headingFont: 'Outfit',
+    bodyFont: 'Inter',
+    gradient: 'linear-gradient(135deg, hsl(188, 95%, 44%) 0%, hsl(215, 90%, 58%) 50%, hsl(158, 75%, 50%) 100%)'
+  },
+  {
+    primary: 'hsl(330, 85%, 58%)',
+    accent: 'hsl(45, 95%, 55%)',
+    bg: 'hsl(315, 45%, 4%)',
+    headingFont: 'Playfair Display',
+    bodyFont: 'Outfit',
+    gradient: 'linear-gradient(135deg, hsl(330, 85%, 58%) 0%, hsl(350, 90%, 62%) 50%, hsl(45, 95%, 55%) 100%)'
+  },
+  {
+    primary: 'hsl(350, 90%, 56%)',
+    accent: 'hsl(32, 95%, 54%)',
+    bg: 'hsl(240, 20%, 4%)',
+    headingFont: 'Syne',
+    bodyFont: 'Inter',
+    gradient: 'linear-gradient(135deg, hsl(350, 90%, 56%) 0%, hsl(15, 95%, 55%) 50%, hsl(32, 95%, 54%) 100%)'
+  },
+  {
+    primary: 'hsl(215, 80%, 54%)',
+    accent: 'hsl(38, 90%, 55%)',
+    bg: 'hsl(220, 35%, 5%)',
+    headingFont: 'Cinzel',
+    bodyFont: 'Inter',
+    gradient: 'linear-gradient(135deg, hsl(215, 80%, 54%) 0%, hsl(240, 75%, 60%) 50%, hsl(38, 90%, 55%) 100%)'
+  },
+  {
+    primary: 'hsl(38, 92%, 50%)',
+    accent: 'hsl(348, 85%, 60%)',
+    bg: 'hsl(30, 35%, 4%)',
+    headingFont: 'DM Serif Display',
+    bodyFont: 'Plus Jakarta Sans',
+    gradient: 'linear-gradient(135deg, hsl(38, 92%, 50%) 0%, hsl(25, 95%, 52%) 50%, hsl(348, 85%, 60%) 100%)'
+  },
+  {
+    primary: 'hsl(275, 85%, 60%)',
+    accent: 'hsl(45, 95%, 55%)',
+    bg: 'hsl(280, 45%, 4%)',
+    headingFont: 'Space Grotesk',
+    bodyFont: 'Plus Jakarta Sans',
+    gradient: 'linear-gradient(135deg, hsl(275, 85%, 60%) 0%, hsl(320, 85%, 58%) 50%, hsl(45, 95%, 55%) 100%)'
+  }
+];
+
 export function getDesignTheme(category: string, leadIdSeed?: string): DesignTheme {
   const cat = category.toLowerCase();
   const seed = hashString((leadIdSeed || '') + category);
 
-  let sectorKey = 'solar';
+  let sectorKey = 'hospitality';
   if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge|dining|lounge|restaurant/.test(cat)) sectorKey = 'hospitality';
   else if (/estate|property|home|realty|housing|developer|land/.test(cat)) sectorKey = 'realestate';
   else if (/medical|clinic|doctor|health|hospital|pharmacy|dental|lab/.test(cat)) sectorKey = 'medical';
@@ -210,20 +284,27 @@ export function getDesignTheme(category: string, leadIdSeed?: string): DesignThe
   else if (/event|hall|banquet|decor|cater|party|wedding/.test(cat)) sectorKey = 'events';
   else if (/solar|inverter|energy|battery|power|lifepo4/.test(cat)) sectorKey = 'solar';
 
-  const profile = SECTOR_THEME_PROFILES[sectorKey] || SECTOR_THEME_PROFILES.hospitality;
-  const imageBank = HERO_IMAGE_BANKS[profile.imageKey] || HERO_IMAGE_BANKS.default;
+  // Base profile for sector
+  const baseProfile = SECTOR_THEME_PROFILES[sectorKey] || SECTOR_THEME_PROFILES.hospitality;
+  
+  // Pick luxury style variant deterministically seeded by lead ID
+  const variantIndex = seed % LUXURY_STYLE_MATRICES.length;
+  const styleVariant = LUXURY_STYLE_MATRICES[variantIndex];
+
+  // Pick sector-relevant photography from image bank
+  const imageBank = HERO_IMAGE_BANKS[baseProfile.imageKey] || HERO_IMAGE_BANKS.default;
   const heroImage = imageBank[seed % imageBank.length];
 
   return {
-    primary: profile.primary,
-    accent: profile.accent,
-    bg: profile.bg,
+    primary: styleVariant.primary,
+    accent: styleVariant.accent,
+    bg: styleVariant.bg,
     text: '#ffffff',
-    font: profile.headingFont,
-    headingFont: profile.headingFont,
-    bodyFont: profile.bodyFont,
+    font: styleVariant.headingFont,
+    headingFont: styleVariant.headingFont,
+    bodyFont: styleVariant.bodyFont,
     heroImage,
-    gradient: profile.gradient,
+    gradient: styleVariant.gradient,
   };
 }
 

@@ -516,6 +516,28 @@ export default function CustomerAiAgentWidget({
           100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
+        @media (max-width: 768px) {
+          .customer-ai-widget-container {
+            bottom: 16px;
+            right: 16px;
+          }
+          .ai-widget-trigger {
+            padding: 10px !important;
+            border-radius: 50% !important;
+            width: 48px !important;
+            height: 48px !important;
+            justify-content: center !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+          }
+          .trigger-text {
+            display: none !important;
+          }
+          .trigger-icon-wrap {
+            padding: 0 !important;
+            background: transparent !important;
+          }
+        }
+
         .trigger-text {
           display: flex;
           flex-direction: column;

@@ -195,7 +195,7 @@ function runTests() {
       toolName: 'Boutique Physical Stock vs POS Shrinkage Auditor',
       actionKey: 'boutique_stock_shrinkage',
       fn: () => calculateBoutiqueStockShrinkage(8500000, 7920000, 3800000),
-      heroExtractor: (r) => `Shrinkage Loss: ₦${r.unrecordedShrinkageLossNgn.toLocaleString()} (${r.shrinkageLossPercent}% of stock)`,
+      heroExtractor: (res) => `Shrinkage Loss: ₦${res.unrecordedShrinkageLossNgn?.toLocaleString()} (${res.shrinkagePercentOfInventory}% of stock)`,
     },
     {
       sector: 'Boutiques & E-Commerce',

@@ -94,20 +94,21 @@ async function sendAllPersonalTestOutreach() {
           const previewUrl = `https://www.bethelmindanalytics.com/preview/${targets.demoSlug}?src=live_test_wa`;
           const claimUrl = `https://www.bethelmindanalytics.com/claim?biz=${encodeURIComponent('Eko Grand Hotel & Suites')}`;
 
-          const msgContent = `🧪 *[TRI-CHANNEL LIVE VERIFICATION CONFIRMED]*
+          const msgContent = `🧪 *[APEXREACH LAGOS 10K B2B LIVE TEST DISPATCH]*
 
 Good day Tosin 👋
 
-All 3 automated outreach channels are verified and operational:
-• 📱 *SMS:* Active via Carrier Android Gateway
-• 💬 *WhatsApp:* Active via Multi-Line Baileys Engine
-• 📧 *Email:* Active via Hostinger SMTP SSL
+Here is the exact message copy queued for Day 1 dispatches:
 
-🏢 *Target:* ${targets.companyName}
-🌐 *Interactive Demo:* ${previewUrl}
+*🅰️ METHOD A (The Gift Demo Pitch):*
+"Good day ${targets.companyName} team. We built a fast, interactive mobile website prototype for your brand in Victoria Island, Lagos at zero charge: ${previewUrl}. It already includes automated WhatsApp ordering and Paystack card payments. Take a look and let us know if you would like to claim it for your business."
+
+*🅱️ METHOD B (The Revenue Leak Pitch):*
+"Hello ${targets.companyName}, noticed that customers searching for your services in Victoria Island have to manually DM for prices and bank transfers. We designed an automated system with Paystack checkout. We have a 60-second live demo ready. Reply YES to view."
+
 ⚡ *Claim Portal:* ${claimUrl}
 
-Your automated lead generation engine is ready for 24/7 autonomous outreach! 🚀`;
+All 3 channels (SMS, WhatsApp, Email) are operational! 🚀`;
 
           try {
             const sent = await sock.sendMessage(targets.adminWhatsAppJid, { text: msgContent });

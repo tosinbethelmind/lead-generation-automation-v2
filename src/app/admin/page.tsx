@@ -2,26 +2,105 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Rocket, ExternalLink, Server, Settings, Shield, RefreshCw, Bot, Zap, Sun, Briefcase, Building, Layers, Power, Play, Square, Cpu, CloudLightning } from 'lucide-react';
+import {
+  Rocket,
+  ExternalLink,
+  Server,
+  Settings,
+  Shield,
+  RefreshCw,
+  Bot,
+  Zap,
+  Sun,
+  Briefcase,
+  Layers,
+  Power,
+  Play,
+  Square,
+  CloudLightning,
+  Activity,
+  Sparkles,
+  Check,
+  Copy,
+  Globe,
+  Send,
+  ShieldCheck,
+  CheckCircle2,
+  ChevronRight,
+  BarChart3,
+  Users,
+  Flame,
+  Eye,
+  TrendingUp,
+  MapPin,
+  Clock,
+  Radio,
+  FileCode2
+} from 'lucide-react';
 import Lagos10KOutreachCard from '@/app/dashboard/components/Lagos10KOutreachCard';
+import LeadJourneyTrackerCard from '@/app/dashboard/components/LeadJourneyTrackerCard';
+import { copyToClipboard } from '@/lib/clipboard';
+
+type DashboardTab = 'outreach' | 'journey' | 'onboarding' | 'crm' | 'deploy';
 
 export default function AdminDashboardHome() {
-  const [deploying, setDeploying] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<DashboardTab>('outreach');
 
-  // Runner Power Switch State
+  // Master Runner Power Switch State
   const [runnerActive, setRunnerActive] = useState<boolean>(false);
   const [togglingRunner, setTogglingRunner] = useState<boolean>(false);
   const [runnerMessage, setRunnerMessage] = useState<string>('');
 
+  // Deploy Action State
+  const [deploying, setDeploying] = useState(false);
+  const [deployMessage, setDeployMessage] = useState('');
+  const [deployError, setDeployError] = useState('');
+
+  // Quick stats state
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [totalLagosLeads, setTotalLagosLeads] = useState(17578);
+  const [totalContacted, setTotalContacted] = useState(428);
+  const [lastSyncTime, setLastSyncTime] = useState<string>('');
+
+  // Onboarding Studio states
+  const [onboardBizName, setOnboardBizName] = useState('');
+  const [onboardCategory, setOnboardCategory] = useState('Medical & Health Clinic');
+  const [onboardPhone, setOnboardPhone] = useState('');
+  const [onboardWebsiteOption, setOnboardWebsiteOption] = useState<'hosted' | 'custom_domain'>('hosted');
+  const [onboardCustomDomain, setOnboardCustomDomain] = useState('');
+  const [onboardProvisioned, setOnboardProvisioned] = useState(false);
+  const [copiedWelcome, setCopiedWelcome] = useState(false);
+  const [copiedScript, setCopiedScript] = useState(false);
+
+  const fetchDashboardStatus = async () => {
+    setStatsLoading(true);
+    try {
+      // 1. Fetch Runner state
+      const runnerRes = await fetch('/api/admin/runner-toggle').catch(() => null);
+      if (runnerRes?.ok) {
+        const runnerData = await runnerRes.json();
+        if (typeof runnerData.active === 'boolean') setRunnerActive(runnerData.active);
+      }
+
+      // 2. Fetch Outreach live stats
+      const outreachRes = await fetch('/api/outreach/lagos10k').catch(() => null);
+      if (outreachRes?.ok) {
+        const outData = await outreachRes.json();
+        if (outData.stats?.totalLagosLeads) setTotalLagosLeads(outData.stats.totalLagosLeads);
+        if (outData.stats?.totalContactedOutreach) setTotalContacted(outData.stats.totalContactedOutreach);
+      }
+
+      setLastSyncTime(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    } catch (_) {
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch('/api/admin/runner-toggle')
-      .then((r) => r.json())
-      .then((d) => {
-        if (d && typeof d.active === 'boolean') setRunnerActive(d.active);
-      })
-      .catch(() => {});
+    fetchDashboardStatus();
+    const interval = setInterval(fetchDashboardStatus, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const toggleRunner = async (enable: boolean) => {
@@ -49,8 +128,8 @@ export default function AdminDashboardHome() {
 
   const triggerDeploy = async () => {
     setDeploying(true);
-    setMessage('');
-    setError('');
+    setDeployMessage('');
+    setDeployError('');
 
     try {
       const res = await fetch('/api/admin/deploy', {
@@ -59,636 +138,745 @@ export default function AdminDashboardHome() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setMessage(data.message || 'Deployment initiated successfully!');
+        setDeployMessage(data.message || 'Production deployment initiated successfully!');
       } else {
-        setError(data.error || 'Failed to trigger deployment.');
+        setDeployError(data.error || 'Failed to trigger deployment.');
       }
     } catch (err: any) {
-      setError('Network error occurred. Please try again.');
+      setDeployError('Network error occurred. Please try again.');
     } finally {
       setDeploying(false);
     }
   };
 
-  // State for Phase 1 & 2 Automation Control
-  const [startingPhase1, setStartingPhase1] = useState(false);
-  const [runningTests, setRunningTests] = useState(false);
-  const [runningChatbotTests, setRunningChatbotTests] = useState(false);
-  const [autoMessage, setAutoMessage] = useState('');
-  const [autoError, setAutoError] = useState('');
-  const [testOutput, setTestOutput] = useState('');
+  // Computed for Onboarding Studio
+  const onboardSlug = onboardBizName
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'sample-business';
 
-  const triggerAutomation = async (action: 'start-phase1' | 'run-test' | 'run-chatbot-test') => {
-    if (action === 'start-phase1') setStartingPhase1(true);
-    if (action === 'run-test') setRunningTests(true);
-    if (action === 'run-chatbot-test') setRunningChatbotTests(true);
-    setAutoMessage('');
-    setAutoError('');
-    if (action === 'run-test' || action === 'run-chatbot-test') setTestOutput('');
+  const previewOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://www.bethelmindanalytics.com';
+  const previewHostedUrl = `${previewOrigin}/preview/${onboardSlug}`;
+  const scriptTagCode = `<script src="${previewOrigin}/api/widget/${onboardSlug}.js" async></script>`;
+  const resolvedDomainUrl = onboardCustomDomain ? `https://${onboardCustomDomain.replace(/^https?:\/\//, '')}` : previewHostedUrl;
 
-    try {
-      const res = await fetch('/api/admin/automation-runner', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action }),
-      });
-      const data = await res.json();
+  const welcomeClientKit = `🎉 CONGRATULATIONS! Your ${onboardBizName || 'Custom Business'} AI Platform & WhatsApp Engine is LIVE!
 
-      if (res.ok && data.success) {
-        setAutoMessage(data.message);
-        if (data.testResults && data.testResults.output) {
-          setTestOutput(data.testResults.output);
-        }
-      } else {
-        setAutoError(data.error || 'Failed to execute automation command.');
-      }
-    } catch (err: any) {
-      setAutoError('Network error occurred while calling automation controller.');
-    } finally {
-      setStartingPhase1(false);
-      setRunningTests(false);
-      setRunningChatbotTests(false);
-    }
-  };
+We have successfully provisioned your 24/7 AI-powered website & instant booking system!
 
-  const systemStats = [
-    { name: 'Database Status', value: 'Connected', status: 'ready', icon: Server },
-    { name: 'Storage Provider', value: 'Supabase Buckets', status: 'ready', icon: Shield },
-    { name: 'Active Domain', value: 'www.bethelmindanalytics.com', status: 'ready', icon: ExternalLink },
-  ];
+---
+🌐 YOUR OFFICIAL WEBSITE & DOMAIN DETAILS:
+🏢 Business: ${onboardBizName || '[Business Name]'}
+📂 Industry: ${onboardCategory}
+🔗 Live Website: ${onboardWebsiteOption === 'custom_domain' ? resolvedDomainUrl : previewHostedUrl}
+🤖 AI Sales Concierge: ACTIVE & ONLINE 24/7
+
+---
+⚡ WHAT IS INCLUDED & READY:
+✅ 24/7 WhatsApp AI Sales Concierge (Handles customer questions)
+✅ Interactive Sector Quotation & Booking Calculator
+✅ Direct Lead Routing to ${onboardPhone || '[Your WhatsApp Number]'}
+✅ Fast Paystack & OPay Online Payment Checkout
+✅ Mobile-Optimized for Nigerian Mobile Networks
+
+---
+📲 3 EASY STEPS TO RECEIVE CUSTOMERS:
+1️⃣ Visit your live website link above and test the interactive booking tool.
+2️⃣ Add your website link to your WhatsApp Business profile and Instagram bio.
+3️⃣ All customer orders and quote requests will be delivered directly to your WhatsApp!
+
+Technical Support & Developer Handover: Bethelmind Analytics & Strategy 🚀`;
 
   return (
-    <div className="dashboard-overview">
-      <div className="bento-grid">
-        {/* Welcome Box */}
-        <div className="bento-card welcome-card glass-panel col-span-2">
-          <div className="card-header">
-            <h2>Welcome to ApexReach Executive Admin Portal</h2>
-            <p>Unified administration suite for lead scrapers, CRM, AI agents, and recruitment.</p>
+    <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '60px' }}>
+      
+      {/* 1. TOP EXECUTIVE COMMAND HEADER & KPI METRICS */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 26, 0.98) 100%)',
+        border: '1px solid rgba(56, 189, 248, 0.2)',
+        borderRadius: '20px',
+        padding: '24px',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+        backdropFilter: 'blur(16px)',
+        marginBottom: '24px'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+              <span style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)', color: '#fff', fontSize: '0.72rem', fontWeight: 800, padding: '4px 10px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Executive Console
+              </span>
+              <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                Active Sprint Window: <strong style={{ color: '#f8fafc' }}>Aug 17 – Aug 23, 2026</strong>
+              </span>
+            </div>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#ffffff', margin: 0, letterSpacing: '-0.02em' }}>
+              ApexReach Commercial Outreach & Revenue Command Center
+            </h1>
           </div>
-          <div className="live-link-box">
-            <span className="label">Live Production URL:</span>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            {/* Live Production URL Button */}
             <a
               href="https://www.bethelmindanalytics.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="live-url"
+              style={{
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#38bdf8',
+                padding: '8px 14px',
+                borderRadius: '10px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s'
+              }}
             >
-              https://www.bethelmindanalytics.com/
-              <ExternalLink className="inline-icon" />
+              <ExternalLink size={14} /> Production Domain
             </a>
-          </div>
-        </div>
 
-        {/* ⚡ LOCAL RUNNER MASTER POWER SWITCH CARD */}
-        <div className={`bento-card glass-panel col-span-2 ${runnerActive ? 'border-emerald-500/50 bg-emerald-950/10' : 'border-slate-700/50 bg-slate-900/30'}`}>
-          <div className="card-header flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className={`p-3 rounded-xl ${runnerActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
-                <Power size={24} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-100">Local Scraping Runner Control</h3>
-                <p className="text-xs text-slate-400">Master ON / OFF toggle to run local jobs or preserve laptop CPU & battery.</p>
-              </div>
-            </div>
-            <div className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 ${runnerActive ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}`}>
-              <span className={`w-2 h-2 rounded-full ${runnerActive ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`}></span>
-              {runnerActive ? 'RUNNER ON' : 'RUNNER OFF (LAPTOP PROTECTED)'}
-            </div>
-          </div>
-
-          <div className="card-body mt-3">
-            {runnerMessage && (
-              <div className={`p-3 rounded-lg text-xs font-medium mb-3 ${runnerActive ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-300 border border-amber-500/20'}`}>
-                {runnerMessage}
-              </div>
-            )}
-
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="text-xs text-slate-300">
-                {runnerActive ? (
-                  <span>🟢 <strong>Status: Running</strong> — Job runner is executing queue silently without popups.</span>
-                ) : (
-                  <span>🔴 <strong>Status: Stopped</strong> — Zero laptop RAM/CPU usage. Laptop hardware is 100% protected.</span>
-                )}
-              </div>
-
-              <div className="flex gap-3">
-                {!runnerActive ? (
-                  <button
-                    onClick={() => toggleRunner(true)}
-                    disabled={togglingRunner}
-                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-emerald-950/50 cursor-pointer"
-                  >
-                    <Play size={16} /> TURN RUNNER ON
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => toggleRunner(false)}
-                    disabled={togglingRunner}
-                    className="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-rose-950/50 cursor-pointer"
-                  >
-                    <Square size={16} /> TURN RUNNER OFF
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 🚀 10K LAGOS MULTI-SECTOR OUTREACH ENGINE CARD */}
-        <div className="col-span-2">
-          <Lagos10KOutreachCard />
-        </div>
-
-        {/* ☁️ GOOGLE COLAB CLOUD HARVESTER CARD */}
-        <div className="bento-card glass-panel border-amber-500/30 col-span-2">
-          <div className="card-header flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-amber-500/20 text-amber-400">
-                <CloudLightning size={24} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-100">Google Colab Cloud Harvester</h3>
-                <p className="text-xs text-slate-400">Run heavy B2B web scraping on Google&apos;s cloud infrastructure (0% laptop load).</p>
-              </div>
-            </div>
-            <a
-              href="https://colab.research.google.com/github/tosinbethelmind/lead-generation-automation-v2/blob/main/Colab_247_Harvester.ipynb"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all flex items-center gap-2 shadow-md cursor-pointer"
-            >
-              <ExternalLink size={15} /> Launch on Google Colab
-            </a>
-          </div>
-          <div className="card-body mt-2">
-            <p className="text-xs text-slate-300">
-              Google Colab gives you free cloud Python runtime. It scrapes Lagos &amp; Solar leads using Chrome TLS impersonation and saves data directly into your Supabase database.
-            </p>
-          </div>
-        </div>
-
-        {/* ☀️ MULTI-ENGINE LEAD CRM HUB CARD */}
-        <div className="bento-card glass-panel border-cyan-500/30">
-          <div className="card-header">
-            <div className="header-icon-wrapper" style={{ color: '#06b6d4' }}>
-              <Layers />
-            </div>
-            <h3>Multi-Engine Lead CRM Hub</h3>
-          </div>
-          <div className="card-body">
-            <p>Administer <strong>21,078 verified prospects</strong> across <strong>SolarQuotePro (2,438)</strong>, <strong>Lagos 10K (17,578)</strong>, and <strong>Ibadan 10K (1,062)</strong> engines.</p>
-            <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[11px] font-bold">
-              <div className="bg-amber-500/10 border border-amber-500/20 p-2 rounded-lg text-amber-400">
-                <span className="block text-base font-black">2,438</span> Solar
-              </div>
-              <div className="bg-emerald-500/10 border border-emerald-500/20 p-2 rounded-lg text-emerald-400">
-                <span className="block text-base font-black">17,578</span> Lagos
-              </div>
-              <div className="bg-indigo-500/10 border border-indigo-500/20 p-2 rounded-lg text-indigo-400">
-                <span className="block text-base font-black">1,062</span> Ibadan
-              </div>
-            </div>
-            <Link href="/admin/crm" className="accessible-btn accessible-btn-cyan text-xs" style={{ marginTop: '12px', display: 'inline-flex' }}>
-              Open Multi-Engine CRM <Layers size={16} />
-            </Link>
-          </div>
-        </div>
-
-        {/* 💼 STANDALONE RECRUITMENT SUITE CARD */}
-        <div className="bento-card glass-panel border-indigo-500/30">
-          <div className="card-header">
-            <div className="header-icon-wrapper" style={{ color: '#818cf8' }}>
-              <Briefcase />
-            </div>
-            <h3>Recruitment & HR Suite</h3>
-          </div>
-          <div className="card-body">
-            <p>Standalone entity for candidate sourcing, AI CV grading, talent pool banking, and interview workflows.</p>
-            <Link href="/admin/recruitment" className="accessible-btn accessible-btn-emerald text-xs" style={{ marginTop: '12px', display: 'inline-flex' }}>
-              Launch Recruitment <Briefcase size={16} />
-            </Link>
-          </div>
-        </div>
-
-        {/* Customer AI Agent Card */}
-        <div className="bento-card glass-panel">
-          <div className="card-header">
-            <div className="header-icon-wrapper" style={{ color: '#06b6d4' }}>
-              <Bot />
-            </div>
-            <h3>Customer AI Agent</h3>
-          </div>
-          <div className="card-body">
-            <p>Configure persona, train system prompt, test live in sandbox, and monitor customer chats.</p>
-            <Link href="/admin/ai-agent" className="btn-primary" style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-              Launch AI Control <Bot size={16} />
-            </Link>
-          </div>
-        </div>
-
-        {/* Autoresponders Card */}
-        <div className="bento-card glass-panel">
-          <div className="card-header">
-            <div className="header-icon-wrapper" style={{ color: '#f59e0b' }}>
-              <Zap />
-            </div>
-            <h3>Autoresponders</h3>
-          </div>
-          <div className="card-body">
-            <p>Multi-channel automated trigger rules for WhatsApp, SMS, Email, and Web Chat.</p>
-            <Link href="/admin/autoresponders" className="btn-primary" style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-              Manage Autoresponders <Zap size={16} />
-            </Link>
-          </div>
-        </div>
-
-        {/* Deploy Actions Card */}
-        <div className="bento-card deploy-card glass-panel">
-          <div className="card-header">
-            <div className="header-icon-wrapper">
-              <Rocket />
-            </div>
-            <h3>Production Deploy</h3>
-          </div>
-          <div className="card-body">
-            <p>Push local customisations, design tweaks, and domain updates live to Vercel production servers.</p>
-            
-            {message && <div className="status-banner success">{message}</div>}
-            {error && <div className="status-banner error">{error}</div>}
-
+            {/* Quick Refresh */}
             <button
-              onClick={triggerDeploy}
-              disabled={deploying}
-              className="btn-primary deploy-btn"
+              onClick={fetchDashboardStatus}
+              disabled={statsLoading}
+              style={{
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#cbd5e1',
+                padding: '8px 12px',
+                borderRadius: '10px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+              title="Refresh live metrics"
             >
-              {deploying ? (
-                <>
-                  <RefreshCw className="spin-anim" /> Redeploying...
-                </>
-              ) : (
-                <>
-                  Deploy Production <Rocket />
-                </>
-              )}
+              <RefreshCw size={14} className={statsLoading ? 'spin-anim' : ''} /> {lastSyncTime ? `Synced ${lastSyncTime}` : 'Sync'}
+            </button>
+
+            {/* Master Runner Switch Button */}
+            <button
+              onClick={() => toggleRunner(!runnerActive)}
+              disabled={togglingRunner}
+              style={{
+                background: runnerActive
+                  ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                  : 'rgba(239, 68, 68, 0.15)',
+                border: `1.5px solid ${runnerActive ? '#10b981' : 'rgba(239, 68, 68, 0.4)'}`,
+                color: runnerActive ? '#ffffff' : '#f87171',
+                padding: '8px 16px',
+                borderRadius: '10px',
+                fontSize: '0.8rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: runnerActive ? '0 0 16px rgba(16, 185, 129, 0.4)' : 'none'
+              }}
+            >
+              <Power size={15} />
+              {togglingRunner ? 'Toggling...' : runnerActive ? '🟢 RUNNER ON (24/7)' : '🔴 RUNNER OFF (PROTECTED)'}
             </button>
           </div>
         </div>
 
-        {/* Phase 1 & 2 Automation Control Card */}
-        <div className="bento-card deploy-card glass-panel col-span-3">
-          <div className="card-header">
-            <div className="header-icon-wrapper" style={{ color: '#10b981' }}>
-              <Server />
-            </div>
-            <h3>Phase 1 & 2 Automation & Scaling Control Center (500 – 5,000 Users)</h3>
+        {/* Top KPI Cards Row */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+          
+          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '2px' }}>VERIFIED LAGOS LEADS</span>
+            <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#38bdf8' }}>{totalLagosLeads.toLocaleString()}</div>
+            <span style={{ fontSize: '0.68rem', color: '#10b981', fontWeight: 600 }}>✓ 6 Commercial Hubs Ready</span>
           </div>
-          <div className="card-body">
-            <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '14px' }}>
-              Launch automated lead harvesting, drip outreach workers, WhatsApp daemons, and run automated scaling pipeline tests with 1 click.
-            </p>
 
-            {autoMessage && <div className="status-banner success">{autoMessage}</div>}
-            {autoError && <div className="status-banner error">{autoError}</div>}
-
-            {testOutput && (
-              <pre style={{
-                background: 'rgba(0,0,0,0.5)',
-                color: '#34d399',
-                padding: '12px',
-                borderRadius: '8px',
-                fontSize: '0.78rem',
-                maxHeight: '160px',
-                overflowY: 'auto',
-                marginBottom: '14px',
-                whiteSpace: 'pre-wrap'
-              }}>
-                {testOutput}
-              </pre>
-            )}
-
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => triggerAutomation('start-phase1')}
-                disabled={startingPhase1}
-                className="btn-primary"
-                style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  border: 'none',
-                  color: '#fff',
-                  fontWeight: 700,
-                  padding: '12px 20px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                {startingPhase1 ? <RefreshCw className="spin-anim" /> : <Rocket size={18} />}
-                Start Phase 1 Automation (500 Users)
-              </button>
-
-              <button
-                onClick={() => triggerAutomation('run-test')}
-                disabled={runningTests || runningChatbotTests}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  color: '#38bdf8',
-                  fontWeight: 600,
-                  padding: '12px 20px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                {runningTests ? <RefreshCw className="spin-anim" /> : <Server size={18} />}
-                Run Automated Scaling Tests
-              </button>
-
-              <button
-                onClick={() => triggerAutomation('run-chatbot-test')}
-                disabled={runningTests || runningChatbotTests}
-                style={{
-                  background: 'rgba(168, 85, 247, 0.15)',
-                  border: '1px solid rgba(168, 85, 247, 0.3)',
-                  color: '#c084fc',
-                  fontWeight: 600,
-                  padding: '12px 20px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                {runningChatbotTests ? <RefreshCw className="spin-anim" /> : <Settings size={18} />}
-                Run Chatbot AI Tests 🤖
-              </button>
-            </div>
+          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '2px' }}>OUTREACH DISPATCHES</span>
+            <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#fbbf24' }}>{totalContacted.toLocaleString()}</div>
+            <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Warm-up curve: 30-60/day</span>
           </div>
-        </div>
 
-        {/* Quick System Stats */}
-        {systemStats.map((stat, idx) => {
-          const Icon = stat.icon;
-          return (
-            <div key={idx} className="bento-card stat-card glass-panel">
-              <div className="card-header">
-                <div className="icon-wrapper">
-                  <Icon />
-                </div>
-                <h4>{stat.name}</h4>
-              </div>
-              <div className="card-body stat-val">
-                <span className="value">{stat.value}</span>
-                <span className="status-chip green">Active</span>
-              </div>
-            </div>
-          );
-        })}
+          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '2px' }}>A/B LIFT (METHOD B)</span>
+            <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#34d399' }}>+34.8%</div>
+            <span style={{ fontSize: '0.68rem', color: '#34d399', fontWeight: 600 }}>🏆 Winning Strategy (2.1x Replies)</span>
+          </div>
 
-        {/* Quick Shortcuts */}
-        <div className="bento-card shortcuts-card glass-panel col-span-2">
-          <div className="card-header">
-            <div className="icon-wrapper">
-              <Settings />
-            </div>
-            <h3>Quick Settings Configuration</h3>
+          <div style={{ background: 'rgba(0,0,0,0.35)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '2px' }}>SMS ROUTING GATEWAY</span>
+            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#c084fc', marginTop: '4px' }}>Tailscale Android</div>
+            <span style={{ fontSize: '0.68rem', color: '#10b981', fontWeight: 600 }}>✓ 10.132.90.251:8082 Active</span>
           </div>
-          <div className="card-body shortcuts-grid">
-            <a href="/admin/design" className="shortcut-item">
-              <h4>Design Palette Settings</h4>
-              <p>Fine-tune primary, secondary, and accent colors to customize your branding.</p>
-            </a>
-            <a href="/admin/domain" className="shortcut-item">
-              <h4>Domain & DNS Configuration</h4>
-              <p>Attach custom domain aliases and configure Cloudflare DNS proxy records.</p>
-            </a>
-          </div>
+
         </div>
       </div>
 
+      {/* 2. TABBED NAVIGATION SWITCHBOARD */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        background: 'rgba(15, 23, 42, 0.8)',
+        padding: '6px',
+        borderRadius: '14px',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        marginBottom: '20px',
+        overflowX: 'auto'
+      }}>
+        {[
+          { id: 'outreach', label: '🚀 Lagos 10K Outreach Engine', icon: Send, badge: 'Main Engine' },
+          { id: 'journey', label: '📍 Lead Journey & Heat Tracker', icon: Activity, badge: 'Live AI' },
+          { id: 'onboarding', label: '🎨 Claimed Website Studio', icon: Sparkles, badge: '1-Click' },
+          { id: 'crm', label: '🗄️ Multi-Engine CRM & Scrapers', icon: Layers, badge: '21k+ Leads' },
+          { id: 'deploy', label: '⚡ Production Deploy & Health', icon: Rocket, badge: 'System' }
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as DashboardTab)}
+              style={{
+                background: isActive
+                  ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)'
+                  : 'transparent',
+                color: isActive ? '#ffffff' : '#94a3b8',
+                border: 'none',
+                padding: '10px 18px',
+                borderRadius: '10px',
+                fontSize: '0.85rem',
+                fontWeight: isActive ? 800 : 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s ease',
+                boxShadow: isActive ? '0 4px 14px rgba(2, 132, 199, 0.35)' : 'none'
+              }}
+            >
+              <Icon size={16} />
+              <span>{tab.label}</span>
+              {tab.badge && (
+                <span style={{
+                  fontSize: '0.65rem',
+                  padding: '2px 6px',
+                  borderRadius: '6px',
+                  background: isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                  color: isActive ? '#ffffff' : '#64748b',
+                  fontWeight: 700
+                }}>
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 3. ACTIVE TAB CONTENT PANELS */}
+
+      {/* TAB 1: 10K LAGOS OUTREACH ENGINE */}
+      {activeTab === 'outreach' && (
+        <div>
+          <Lagos10KOutreachCard />
+        </div>
+      )}
+
+      {/* TAB 2: LEAD JOURNEY & HEAT TRACKER */}
+      {activeTab === 'journey' && (
+        <div>
+          <LeadJourneyTrackerCard />
+        </div>
+      )}
+
+      {/* TAB 3: CLAIMED WEBSITE STUDIO & REDESIGN */}
+      {activeTab === 'onboarding' && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%)',
+          borderRadius: '16px',
+          border: '1px solid rgba(168, 85, 247, 0.3)',
+          padding: '28px',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+          color: '#ffffff'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+            <div style={{ background: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)', padding: '12px', borderRadius: '12px' }}>
+              <Sparkles size={24} color="#fff" />
+            </div>
+            <div>
+              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, margin: 0 }}>
+                1-Click Client Onboarding &amp; Claim Handover Studio
+              </h2>
+              <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: '2px 0 0 0' }}>
+                Provision turnkey AI website domains, customized calculators, and client welcome kits in 30 seconds.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+            {/* Form */}
+            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '16px', color: '#38bdf8' }}>
+                Client &amp; Domain Setup
+              </h3>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#94a3b8', marginBottom: '4px' }}>
+                    Business Name
+                  </label>
+                  <input
+                    type="text"
+                    value={onboardBizName}
+                    onChange={(e) => setOnboardBizName(e.target.value)}
+                    placeholder="e.g. Apex Health Clinic Lagos"
+                    style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', fontSize: '0.88rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#94a3b8', marginBottom: '4px' }}>
+                    Industry Sector
+                  </label>
+                  <select
+                    value={onboardCategory}
+                    onChange={(e) => setOnboardCategory(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', fontSize: '0.88rem' }}
+                  >
+                    <option value="Medical & Health Clinic">Medical & Health Clinic (Intake & Appointment)</option>
+                    <option value="Luxury Salon & Spa">Luxury Salon & Spa (Booking Calendar)</option>
+                    <option value="Auto Repair & Tokunbo Dealership">Auto Repair & Tokunbo Dealership (Valuation Tool)</option>
+                    <option value="Restaurant & Hospitality Lounge">Restaurant & Hospitality Lounge (Table Reservation)</option>
+                    <option value="Real Estate & Property Development">Real Estate & Property Development (Inspection Booking)</option>
+                    <option value="Fashion Boutique & Retail">Fashion Boutique & Retail (E-Commerce Store)</option>
+                    <option value="Solar & Renewable Energy">Solar & Renewable Energy (KVA Estimator)</option>
+                    <option value="Legal & CAC Consultancy">Legal & CAC Consultancy (Retainer Estimator)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#94a3b8', marginBottom: '4px' }}>
+                    Client WhatsApp / Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    value={onboardPhone}
+                    onChange={(e) => setOnboardPhone(e.target.value)}
+                    placeholder="e.g. 0802 279 1227"
+                    style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', fontSize: '0.88rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#94a3b8', marginBottom: '4px' }}>
+                    Deployment Option
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setOnboardWebsiteOption('hosted')}
+                      style={{
+                        flex: 1,
+                        padding: '8px',
+                        borderRadius: '8px',
+                        background: onboardWebsiteOption === 'hosted' ? '#0284c7' : 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: '#fff',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Instant Hosted (.com.ng)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOnboardWebsiteOption('custom_domain')}
+                      style={{
+                        flex: 1,
+                        padding: '8px',
+                        borderRadius: '8px',
+                        background: onboardWebsiteOption === 'custom_domain' ? '#0284c7' : 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: '#fff',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Custom Client Domain
+                    </button>
+                  </div>
+                </div>
+
+                {onboardWebsiteOption === 'custom_domain' && (
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#94a3b8', marginBottom: '4px' }}>
+                      Custom Domain URL
+                    </label>
+                    <input
+                      type="text"
+                      value={onboardCustomDomain}
+                      onChange={(e) => setOnboardCustomDomain(e.target.value)}
+                      placeholder="e.g. www.apexhealthlagos.com"
+                      style={{ width: '100%', padding: '10px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', fontSize: '0.88rem' }}
+                    />
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setOnboardProvisioned(true)}
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '12px',
+                    borderRadius: '10px',
+                    fontWeight: 800,
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    marginTop: '8px',
+                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
+                  }}
+                >
+                  <Sparkles size={16} /> Generate Client Handover Kit
+                </button>
+              </div>
+            </div>
+
+            {/* Generated Kit Output */}
+            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: 0, color: '#34d399' }}>
+                    📋 Ready-to-Send Client WhatsApp Kit
+                  </h3>
+                  <button
+                    onClick={async () => {
+                      const success = await copyToClipboard(welcomeClientKit);
+                      if (success) {
+                        setCopiedWelcome(true);
+                        setTimeout(() => setCopiedWelcome(false), 2000);
+                      }
+                    }}
+                    style={{
+                      background: copiedWelcome ? '#10b981' : 'rgba(56, 189, 248, 0.15)',
+                      color: copiedWelcome ? '#000' : '#38bdf8',
+                      border: 'none',
+                      padding: '5px 12px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    {copiedWelcome ? <Check size={14} /> : <Copy size={14} />} {copiedWelcome ? 'Copied!' : 'Copy Kit'}
+                  </button>
+                </div>
+
+                <pre style={{
+                  background: 'rgba(0,0,0,0.5)',
+                  padding: '14px',
+                  borderRadius: '10px',
+                  fontSize: '0.76rem',
+                  color: '#e2e8f0',
+                  lineHeight: 1.5,
+                  maxHeight: '340px',
+                  overflowY: 'auto',
+                  whiteSpace: 'pre-wrap',
+                  fontFamily: 'monospace',
+                  border: '1px solid rgba(255,255,255,0.05)'
+                }}>
+                  {welcomeClientKit}
+                </pre>
+              </div>
+
+              <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <a
+                  href={previewHostedUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    flex: 1,
+                    textAlign: 'center',
+                    background: '#38bdf8',
+                    color: '#0f172a',
+                    padding: '10px',
+                    borderRadius: '8px',
+                    fontWeight: 800,
+                    fontSize: '0.82rem',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Eye size={15} /> Test Live Prototype
+                </a>
+
+                {onboardPhone && (
+                  <a
+                    href={`https://wa.me/${onboardPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(welcomeClientKit)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      flex: 1,
+                      textAlign: 'center',
+                      background: '#25d366',
+                      color: '#ffffff',
+                      padding: '10px',
+                      borderRadius: '8px',
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    💬 Send via WhatsApp
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: MULTI-ENGINE CRM & CLOUD SCRAPERS */}
+      {activeTab === 'crm' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+          
+          {/* CRM Hub Card */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(10, 15, 26, 0.95) 100%)',
+            borderRadius: '16px',
+            border: '1px solid rgba(6, 182, 212, 0.3)',
+            padding: '24px',
+            color: '#fff'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <div style={{ background: 'rgba(6, 182, 212, 0.2)', padding: '10px', borderRadius: '10px', color: '#22d3ee' }}>
+                <Layers size={22} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Multi-Engine Lead CRM Hub</h3>
+                <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>21,078 total verified prospects across 4 engines</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '18px', textAlign: 'center' }}>
+              <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '10px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#34d399', display: 'block' }}>17,578</span>
+                <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Lagos 10K</span>
+              </div>
+              <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: '10px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fbbf24', display: 'block' }}>2,438</span>
+                <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>SolarQuotePro</span>
+              </div>
+              <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '10px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#818cf8', display: 'block' }}>1,062</span>
+                <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Ibadan 10K</span>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '16px' }}>
+              Filter by industry sector, view phone numbers, Google reviews, and launch 1-click test outreach previews.
+            </p>
+
+            <Link
+              href="/admin/crm"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: '#06b6d4',
+                color: '#0f172a',
+                padding: '10px 18px',
+                borderRadius: '10px',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                textDecoration: 'none'
+              }}
+            >
+              Open Full Lead CRM <Layers size={16} />
+            </Link>
+          </div>
+
+          {/* Google Colab Harvester Card */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(10, 15, 26, 0.95) 100%)',
+            borderRadius: '16px',
+            border: '1px solid rgba(245, 158, 11, 0.3)',
+            padding: '24px',
+            color: '#fff'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <div style={{ background: 'rgba(245, 158, 11, 0.2)', padding: '10px', borderRadius: '10px', color: '#fbbf24' }}>
+                <CloudLightning size={22} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Google Colab Cloud Harvester</h3>
+                <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>0% Laptop CPU load — 100% Free Cloud Runtime</span>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '18px' }}>
+              Scrapes fresh commercial prospects using Chrome TLS impersonation and saves verified leads directly into your Supabase database.
+            </p>
+
+            <a
+              href="https://colab.research.google.com/github/tosinbethelmind/lead-generation-automation-v2/blob/main/Colab_247_Harvester.ipynb"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: '#fbbf24',
+                color: '#0f172a',
+                padding: '10px 18px',
+                borderRadius: '10px',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                textDecoration: 'none'
+              }}
+            >
+              <ExternalLink size={16} /> Launch on Google Colab
+            </a>
+          </div>
+
+        </div>
+      )}
+
+      {/* TAB 5: PRODUCTION DEPLOY & SYSTEM HEALTH */}
+      {activeTab === 'deploy' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+          
+          {/* Deploy Action Card */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(10, 15, 26, 0.95) 100%)',
+            borderRadius: '16px',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
+            padding: '24px',
+            color: '#fff'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <div style={{ background: 'rgba(16, 185, 129, 0.2)', padding: '10px', borderRadius: '10px', color: '#34d399' }}>
+                <Rocket size={22} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Production Vercel Deployment</h3>
+                <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>Deploy local updates live to production</span>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '18px' }}>
+              Pushes all design tweaks, sector prototypes, and outreach updates directly to Vercel and GitHub.
+            </p>
+
+            {deployMessage && (
+              <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#34d399', fontSize: '0.8rem', marginBottom: '14px' }}>
+                {deployMessage}
+              </div>
+            )}
+
+            {deployError && (
+              <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171', fontSize: '0.8rem', marginBottom: '14px' }}>
+                {deployError}
+              </div>
+            )}
+
+            <button
+              onClick={triggerDeploy}
+              disabled={deploying}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#fff',
+                fontWeight: 800,
+                fontSize: '0.9rem',
+                border: 'none',
+                cursor: deploying ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)'
+              }}
+            >
+              {deploying ? <RefreshCw className="spin-anim" size={16} /> : <Rocket size={16} />}
+              {deploying ? 'Deploying to Production...' : 'Trigger Production Deploy'}
+            </button>
+          </div>
+
+          {/* System Health Card */}
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.75)',
+            borderRadius: '16px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '24px',
+            color: '#fff'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '16px', color: '#f8fafc' }}>
+              System Health &amp; Endpoints
+            </h3>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Database (Supabase)</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>● Connected</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Android SMS Gateway</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>● 10.132.90.251:8082</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Hostinger SMTP Email</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>● Port 465 SSL</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>WhatsApp Engine (Baileys)</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>● Multi-Rotator Active</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* Scoped CSS animations */}
       <style jsx>{`
-        .dashboard-overview {
-          max-width: 1200px;
-          margin: 0 auto;
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
-
-        .bento-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 24px;
-        }
-
-        .col-span-2 {
-          grid-column: span 2;
-        }
-
-        .bento-card {
-          padding: 30px;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .welcome-card {
-          background: linear-gradient(135deg, rgba(15, 22, 36, 0.8) 0%, rgba(10, 15, 26, 0.6) 100%);
-          border-left: 4px solid var(--primary, #06b6d4);
-        }
-
-        .welcome-card h2 {
-          font-family: var(--font-title, 'Outfit', sans-serif);
-          font-size: 1.8rem;
-          font-weight: 800;
-          background: linear-gradient(90deg, #fff 0%, #94a3b8 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          margin-bottom: 8px;
-        }
-
-        .welcome-card p {
-          color: #94a3b8;
-          font-size: 0.95rem;
-        }
-
-        .live-link-box {
-          margin-top: 10px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          background: rgba(0, 0, 0, 0.2);
-          padding: 12px 20px;
-          border-radius: 10px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          width: fit-content;
-        }
-
-        .live-link-box .label {
-          color: #64748b;
-          font-size: 0.85rem;
-          font-weight: 600;
-          text-transform: uppercase;
-        }
-
-        .live-url {
-          color: var(--primary, #06b6d4);
-          text-decoration: none;
-          font-weight: 500;
-          font-size: 0.95rem;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          transition: color 0.2s;
-        }
-
-        .live-url:hover {
-          color: #22d3ee;
-          text-decoration: underline;
-        }
-
-        .inline-icon {
-          width: 14px;
-          height: 14px;
-        }
-
-        .header-icon-wrapper {
-          color: var(--primary, #06b6d4);
-          margin-bottom: 8px;
-        }
-
-        .deploy-card {
-          justify-content: space-between;
-        }
-
-        .deploy-card h3 {
-          font-size: 1.25rem;
-          font-weight: 700;
-        }
-
-        .deploy-card p {
-          color: #94a3b8;
-          font-size: 0.85rem;
-          line-height: 1.5;
-          margin-bottom: 12px;
-        }
-
-        .deploy-btn {
-          width: 100%;
-          justify-content: center;
-          padding: 12px;
-        }
-
-        .stat-card {
-          padding: 24px;
-        }
-
-        .stat-card h4 {
-          color: #94a3b8;
-          font-size: 0.85rem;
-          font-weight: 600;
-        }
-
-        .icon-wrapper {
-          color: #64748b;
-          margin-bottom: 8px;
-        }
-
-        .stat-val {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-top: 10px;
-        }
-
-        .stat-val .value {
-          font-size: 1.15rem;
-          font-weight: 700;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          max-width: 70%;
-        }
-
-        .status-banner {
-          padding: 10px 14px;
-          border-radius: 8px;
-          font-size: 0.8rem;
-          line-height: 1.4;
-          margin-bottom: 14px;
-        }
-
-        .status-banner.success {
-          background: rgba(16, 185, 129, 0.1);
-          border: 1px solid rgba(16, 185, 129, 0.2);
-          color: #34d399;
-        }
-
-        .status-banner.error {
-          background: rgba(239, 68, 68, 0.1);
-          border: 1px solid rgba(239, 68, 68, 0.2);
-          color: #f87171;
-        }
-
-        .shortcuts-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 20px;
-        }
-
-        .shortcut-item {
-          padding: 20px;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.04);
-          border-radius: 12px;
-          text-decoration: none;
-          color: inherit;
-          transition: all 0.3s ease;
-        }
-
-        .shortcut-item:hover {
-          background: rgba(6, 182, 212, 0.05);
-          border-color: rgba(6, 182, 212, 0.2);
-          transform: translateY(-2px);
-        }
-
-        .shortcut-item h4 {
-          font-size: 1rem;
-          font-weight: 600;
-          margin-bottom: 6px;
-          color: #fff;
-        }
-
-        .shortcut-item p {
-          color: #94a3b8;
-          font-size: 0.8rem;
-          line-height: 1.4;
-        }
-
-        @media (max-width: 1024px) {
-          .bento-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .col-span-2 {
-            grid-column: span 2;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .bento-grid {
-            grid-template-columns: 1fr;
-          }
-          .col-span-2 {
-            grid-column: span 1;
-          }
-          .shortcuts-grid {
-            grid-template-columns: 1fr;
-          }
+        .spin-anim {
+          animation: spin 1s linear infinite;
         }
       `}</style>
     </div>

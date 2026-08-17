@@ -48,6 +48,7 @@ export interface LocalConfig {
   smsProvider?: 'twilio' | 'termii' | 'africastalking' | 'gateway';
   smsMessageTemplate?: string;
   smsGatewayUrl?: string;
+  smsGatewayToken?: string;
   termiiApiKey?: string;
   termiiSenderId?: string;
   africastalkingUsername?: string;
@@ -287,6 +288,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   smsProvider: 'gateway',
   smsMessageTemplate: '',
   smsGatewayUrl: '',
+  smsGatewayToken: '',
   termiiApiKey: '',
   termiiSenderId: '',
   africastalkingUsername: '',
@@ -474,6 +476,7 @@ export function getRuntimeConfig(): RuntimeConfig {
     smsProvider: (process.env.SMS_PROVIDER as any) || fileConfig.smsProvider || DEFAULT_CONFIG.smsProvider,
     smsMessageTemplate: process.env.SMS_MESSAGE_TEMPLATE || fileConfig.smsMessageTemplate || DEFAULT_CONFIG.smsMessageTemplate,
     smsGatewayUrl: process.env.SMS_GATEWAY_URL || fileConfig.smsGatewayUrl || DEFAULT_CONFIG.smsGatewayUrl,
+    smsGatewayToken: process.env.SMS_GATEWAY_TOKEN || fileConfig.smsGatewayToken || DEFAULT_CONFIG.smsGatewayToken,
     termiiApiKey: process.env.TERMII_API_KEY || fileConfig.termiiApiKey || DEFAULT_CONFIG.termiiApiKey,
     termiiSenderId: process.env.TERMII_SENDER_ID || fileConfig.termiiSenderId || DEFAULT_CONFIG.termiiSenderId,
     africastalkingUsername: process.env.AFRICASTALKING_USERNAME || fileConfig.africastalkingUsername || DEFAULT_CONFIG.africastalkingUsername,
@@ -668,6 +671,7 @@ export function saveLocalConfig(config: Partial<RuntimeConfig>): RuntimeConfig {
       smsProvider: updated.smsProvider,
       smsMessageTemplate: updated.smsMessageTemplate,
       smsGatewayUrl: updated.smsGatewayUrl,
+      smsGatewayToken: updated.smsGatewayToken,
       termiiApiKey: updated.termiiApiKey,
       termiiSenderId: updated.termiiSenderId,
       africastalkingUsername: updated.africastalkingUsername,
