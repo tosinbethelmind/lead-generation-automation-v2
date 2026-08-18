@@ -23,3 +23,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 3. SCHEDULE CYCLE
 - Active 1-week campaign runs from **Monday, August 17, 2026 to Sunday, August 23, 2026**.
+
+## 4. ADMIN NOTIFICATIONS
+- **Admin Channels:** **WhatsApp** (`0802 279 1227`) & **Email** (`bethelmindrecruit@gmail.com`) ONLY.
+- **NO Admin SMS:** Do NOT send admin alerts or status updates via SMS (preserves carrier airtime).
+

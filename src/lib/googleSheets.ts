@@ -1128,6 +1128,7 @@ class LocalJsonLeadRepository implements ILeadRepository {
         leads[index].last_contacted_at = lastContactedAt;
       }
       
+      _cachedLeadsList = leads;
       await writeJsonFile<Lead[]>(LEADS_FILE, leads);
       return true;
     });
@@ -1144,6 +1145,7 @@ class LocalJsonLeadRepository implements ILeadRepository {
         ...fields
       };
       
+      _cachedLeadsList = leads;
       await writeJsonFile<Lead[]>(LEADS_FILE, leads);
       return true;
     });

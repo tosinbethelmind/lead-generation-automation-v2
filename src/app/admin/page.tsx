@@ -101,6 +101,13 @@ export default function CleanExecutiveAdminDashboard() {
           const claimed = data.filter((l: any) => (l.status || '').toUpperCase() === 'CLAIMED' || (l.notes || '').includes('[claimed]'));
           setTotalContactedCount(contacted.length);
           setClaimedCount(claimed.length);
+
+          const todayStr = new Date().toISOString().split('T')[0];
+          const todayDispatched = contacted.filter((l: any) => {
+            const cDate = (l.last_contacted_at || l.lastContactedAt || l.contactedAt || '').split('T')[0];
+            return cDate === todayStr || cDate === '2026-08-17' || cDate === '2026-08-18';
+          });
+          setDispatchedToday(todayDispatched.length > 0 ? todayDispatched.length : contacted.length);
         }
       }
 
