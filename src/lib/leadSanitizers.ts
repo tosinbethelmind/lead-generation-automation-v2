@@ -21,11 +21,13 @@ export function sanitizeDisplayName(rawName: string, category: string = 'Commerc
   const isSpacedUuid = /^[0-9a-f]{8}\s+[0-9a-f]{4}\s+[0-9a-f]{4}\s+[0-9a-f]{4}\s+[0-9a-f]{12}$/i.test(trimmed);
   const isPureHex32 = /^[0-9a-f]{32}$/i.test(stripped);
   const isLongHex = /^[0-9a-f]{16,}$/i.test(stripped);
-  const isPrefixId = /^(lagos_det_|solar_det_|ibadan_det_|lead_|sim_test_|mock_|test-moniepoint|rule_)/i.test(trimmed);
-  const isHexGroupTokens = trimmed.split(/\s+/).filter(w => /^[0-9a-fA-F]{4,8}$/.test(w)).length >= 3;
+  const isPrefixId = /^(lagos_det_|solar_det_|ibadan_det_|lead_|sim_test_|mock_|test|sample|unknown|lead-|preview)/i.test(trimmed);
+  const isHexGroupTokens = trimmed.split(/[\s\-_]+/).filter(w => /^[0-9a-fA-F]{4,8}$/.test(w)).length >= 2;
+  const isSlugWithHyphens = /^[a-z0-9]+(-[a-z0-9]+){3,}$/i.test(trimmed);
   const isGenericValued = /^(valued business|valued enterprise|client company|commercial business|sample business|client business)$/i.test(trimmed);
 
-  const isInvalidName = isStandardUuid || isSpacedUuid || isPureHex32 || isLongHex || isPrefixId || isHexGroupTokens || isGenericValued;
+  const isInvalidName = isStandardUuid || isSpacedUuid || isPureHex32 || isLongHex || isPrefixId || isHexGroupTokens || isSlugWithHyphens || isGenericValued;
+
 
   if (isInvalidName) {
     const combinedContext = `${category} ${trimmed}`.toLowerCase();
