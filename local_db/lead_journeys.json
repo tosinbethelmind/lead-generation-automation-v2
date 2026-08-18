@@ -1,0 +1,1669 @@
+{
+  "lead_test_1785406586572": {
+    "leadId": "lead_test_1785406586572",
+    "leadName": "Lekki Solar Energy Systems Ltd",
+    "category": "Solar Energy",
+    "phone": "2348039281048",
+    "email": "info@lekkisolar.ng",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 92,
+    "previewUrl": "https://lead-generation-automation-e0oitxcsi.vercel.app/preview/lekkisolar",
+    "createdAt": "2026-07-30T10:16:26.643Z",
+    "lastUpdatedWat": "11:16:26 am WAT (30 Jul)",
+    "events": [
+      {
+        "id": "j_evt_1785406587017_dzzy",
+        "leadId": "lead_test_1785406586572",
+        "leadName": "Lekki Solar Energy Systems Ltd",
+        "businessCategory": "Solar Energy",
+        "phone": "2348039281048",
+        "email": "info@lekkisolar.ng",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Strategy Alpha Form & Email Sent",
+        "description": "Custom Solar BOQ preview sent via Web Contact Form & Resend Email",
+        "channelUsed": "Strategy Alpha",
+        "timestamp": "2026-07-30T10:16:26.643Z",
+        "timestampWat": "11:16:26 am WAT (30 Jul)",
+        "metadata": {}
+      }
+    ]
+  },
+  "lead_test_deal_1785407887179": {
+    "leadId": "lead_test_deal_1785407887179",
+    "leadName": "Victoria Island Motors Ltd",
+    "category": "Automotive Imports",
+    "phone": "2348029104820",
+    "email": "sales@vimotors.ng",
+    "currentStage": "DEAL_WON",
+    "score": 95,
+    "previewUrl": "https://lead-generation-automation-e0oitxcsi.vercel.app/preview/lead_test_deal_1785407887179",
+    "createdAt": "2026-07-30T10:38:07.181Z",
+    "lastUpdatedWat": "11:38:07 am WAT (30 Jul)",
+    "events": [
+      {
+        "id": "j_evt_1785407887711_2rvt",
+        "leadId": "lead_test_deal_1785407887179",
+        "leadName": "Victoria Island Motors Ltd",
+        "businessCategory": "Automotive Imports",
+        "phone": "2348029104820",
+        "email": "sales@vimotors.ng",
+        "stage": "DEAL_WON",
+        "title": "Closed ₦150,000/mo SaaS Deal 🎉",
+        "description": "Converted after 5-Day Done-For-You Tokunbo Duty Pilot!",
+        "channelUsed": "Strategy Alpha Form + WhatsApp AI Chatbot",
+        "timestamp": "2026-07-30T10:38:07.181Z",
+        "timestampWat": "11:38:07 am WAT (30 Jul)",
+        "metadata": {}
+      }
+    ]
+  },
+  "test-moniepoint-opay-lead": {
+    "leadId": "test-moniepoint-opay-lead",
+    "leadName": "Apex Solar Solutions Ltd",
+    "category": "Solar Business",
+    "phone": "+2348012345678",
+    "email": "bethel@testlead.com",
+    "currentStage": "DEAL_LOST",
+    "score": 40,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/test-moniepoint-opay-lead",
+    "createdAt": "2026-08-05T17:12:41.401Z",
+    "lastUpdatedWat": "06:43:45 pm WAT (14 Aug)",
+    "events": [
+      {
+        "id": "j_evt_1786729425789_pa19",
+        "leadId": "test-moniepoint-opay-lead",
+        "leadName": "Apex Solar Solutions Ltd",
+        "businessCategory": "Solar Business",
+        "phone": "+2348012345678",
+        "email": "bethel@testlead.com",
+        "stage": "DEAL_LOST",
+        "title": "Checkout Abandoned at Payment Step",
+        "description": "Prospect opened payment options but closed browser window without completing transfer.",
+        "channelUsed": "Checkout Drop-out Monitor",
+        "timestamp": "2026-08-14T17:43:45.787Z",
+        "timestampWat": "06:43:45 pm WAT (14 Aug)",
+        "metadata": {
+          "reason": "Payment step abandoned",
+          "dripTriggered": true,
+          "reengagementSequence": "24h_whatsapp_followup"
+        }
+      },
+      {
+        "id": "j_evt_1786729415536_107r",
+        "leadId": "test-moniepoint-opay-lead",
+        "leadName": "Apex Solar Solutions Ltd",
+        "businessCategory": "Solar Business",
+        "phone": "+2348012345678",
+        "email": "bethel@testlead.com",
+        "stage": "INBOUND_REPLY",
+        "title": "Prospect Asked AI Chatbot About Solar BOQ",
+        "description": "Prospect submitted technical inquiry for 5kVA solar installation.",
+        "channelUsed": "Website AI Chatbot",
+        "timestamp": "2026-08-14T17:43:35.068Z",
+        "timestampWat": "06:43:35 pm WAT (14 Aug)",
+        "metadata": {
+          "inquiryType": "solar_boq",
+          "kva": 5
+        }
+      },
+      {
+        "id": "j_evt_1786729326774_x28w",
+        "leadId": "test-moniepoint-opay-lead",
+        "leadName": "Apex Solar Solutions Ltd",
+        "businessCategory": "Solar Business",
+        "phone": "+2348012345678",
+        "email": "bethel@testlead.com",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Prospect Opened Live Custom Landing Page",
+        "description": "Lead clicked personalized WhatsApp preview link and spent 2+ mins on landing page.",
+        "channelUsed": "WhatsApp Direct Link",
+        "timestamp": "2026-08-14T17:42:06.707Z",
+        "timestampWat": "06:42:06 pm WAT (14 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1785949966177_jze6",
+        "leadId": "test-moniepoint-opay-lead",
+        "leadName": "Apex Solar Solutions Ltd",
+        "businessCategory": "Solar Business",
+        "phone": "+2348012345678",
+        "email": "bethel@testlead.com",
+        "stage": "DEAL_LOST",
+        "title": "Checkout Abandoned at Payment Step",
+        "description": "Prospect opened payment options but closed browser window without completing transfer.",
+        "channelUsed": "Checkout Drop-out Monitor",
+        "timestamp": "2026-08-05T17:12:46.176Z",
+        "timestampWat": "06:12:46 pm WAT (5 Aug)",
+        "metadata": {
+          "reason": "Payment step abandoned",
+          "dripTriggered": true,
+          "reengagementSequence": "24h_whatsapp_followup"
+        }
+      },
+      {
+        "id": "j_evt_1785949964368_alyi",
+        "leadId": "test-moniepoint-opay-lead",
+        "leadName": "Apex Solar Solutions Ltd",
+        "businessCategory": "Solar Business",
+        "phone": "+2348012345678",
+        "email": "bethel@testlead.com",
+        "stage": "INBOUND_REPLY",
+        "title": "Prospect Asked AI Chatbot About Solar BOQ",
+        "description": "Prospect submitted technical inquiry for 5kVA solar installation.",
+        "channelUsed": "Website AI Chatbot",
+        "timestamp": "2026-08-05T17:12:44.368Z",
+        "timestampWat": "06:12:44 pm WAT (5 Aug)",
+        "metadata": {
+          "inquiryType": "solar_boq",
+          "kva": 5
+        }
+      },
+      {
+        "id": "j_evt_1785949961420_896y",
+        "leadId": "test-moniepoint-opay-lead",
+        "leadName": "Apex Solar Solutions Ltd",
+        "businessCategory": "Solar Business",
+        "phone": "+2348012345678",
+        "email": "bethel@testlead.com",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Prospect Opened Live Custom Landing Page",
+        "description": "Lead clicked personalized WhatsApp preview link and spent 2+ mins on landing page.",
+        "channelUsed": "WhatsApp Direct Link",
+        "timestamp": "2026-08-05T17:12:41.401Z",
+        "timestampWat": "06:12:41 pm WAT (5 Aug)",
+        "metadata": {}
+      }
+    ]
+  },
+  "test_solar_1786770408290": {
+    "leadId": "test_solar_1786770408290",
+    "leadName": "SolarPower Solutions Ikeja",
+    "category": "Solar Energy & Inverter Dealer",
+    "phone": "+2348022791227",
+    "email": "info@solarpowerikeja.ng",
+    "area": "Ikeja",
+    "currentStage": "CALCULATOR_USED",
+    "score": 75,
+    "heatScore": 40,
+    "intentLevel": "HOT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/test_solar_1786770408290",
+    "createdAt": "2026-08-15T05:06:48.291Z",
+    "lastActiveIso": "2026-08-15T05:06:53.849Z",
+    "lastUpdatedWat": "06:06:53 am WAT (15 Aug)",
+    "metrics": {
+      "pageViews": 1,
+      "calculatorInteractions": 1,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0,
+      "lastCalculationSummary": "7.5KVA Solar Inverter Setup (8 Panels, 4 Lithium Batteries)"
+    },
+    "events": [
+      {
+        "id": "j_evt_1786770413850_umtd",
+        "leadId": "test_solar_1786770408290",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "CALCULATOR_USED",
+        "title": "Configured 7.5KVA Solar Sizing",
+        "description": "Calculated ₦3.8M setup with 8 panels",
+        "channelUsed": "Solar Sizing Estimator",
+        "timestamp": "2026-08-15T05:06:53.849Z",
+        "timestampWat": "06:06:53 am WAT (15 Aug)",
+        "metadata": {
+          "calculationSummary": "7.5KVA Solar Inverter Setup (8 Panels, 4 Lithium Batteries)"
+        }
+      },
+      {
+        "id": "j_evt_1786770412424_hzkh",
+        "leadId": "test_solar_1786770408290",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Interactive Prototype",
+        "description": "Visited /preview/test_solar_1786770408290",
+        "channelUsed": "Client Browser",
+        "timestamp": "2026-08-15T05:06:52.424Z",
+        "timestampWat": "06:06:52 am WAT (15 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786770411803_mksu",
+        "leadId": "test_solar_1786770408290",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "Solar Energy & Inverter Dealer",
+        "phone": "+2348022791227",
+        "email": "info@solarpowerikeja.ng",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched Strategy Beta WhatsApp",
+        "description": "Initial icebreaker sent",
+        "channelUsed": "WHATSAPP",
+        "timestamp": "2026-08-15T05:06:48.291Z",
+        "timestampWat": "06:06:48 am WAT (15 Aug)",
+        "metadata": {}
+      }
+    ]
+  },
+  "test_solar_1786770904641": {
+    "leadId": "test_solar_1786770904641",
+    "leadName": "SolarPower Solutions Ikeja",
+    "category": "Solar Energy & Inverter Dealer",
+    "phone": "+2348022791227",
+    "email": "info@solarpowerikeja.ng",
+    "area": "Ikeja",
+    "currentStage": "CALCULATOR_USED",
+    "score": 75,
+    "heatScore": 50,
+    "intentLevel": "HOT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/test_solar_1786770904641",
+    "createdAt": "2026-08-15T05:15:04.641Z",
+    "lastActiveIso": "2026-08-15T05:15:12.672Z",
+    "lastUpdatedWat": "06:15:12 am WAT (15 Aug)",
+    "metrics": {
+      "pageViews": 1,
+      "calculatorInteractions": 1,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0,
+      "lastCalculationSummary": "7.5KVA Solar Inverter Setup (8 Panels, 4 Lithium Batteries)"
+    },
+    "events": [
+      {
+        "id": "j_evt_1786770912673_qjc9",
+        "leadId": "test_solar_1786770904641",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "CALCULATOR_USED",
+        "title": "Configured 7.5KVA Solar Sizing",
+        "description": "Calculated ₦3.8M setup with 8 panels",
+        "channelUsed": "Solar Sizing Estimator",
+        "timestamp": "2026-08-15T05:15:12.672Z",
+        "timestampWat": "06:15:12 am WAT (15 Aug)",
+        "metadata": {
+          "calculationSummary": "7.5KVA Solar Inverter Setup (8 Panels, 4 Lithium Batteries)"
+        }
+      },
+      {
+        "id": "j_evt_1786770911010_q1fe",
+        "leadId": "test_solar_1786770904641",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Interactive Prototype",
+        "description": "Visited /preview/test_solar_1786770904641",
+        "channelUsed": "Client Browser",
+        "timestamp": "2026-08-15T05:15:11.009Z",
+        "timestampWat": "06:15:11 am WAT (15 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786770906343_ty1l",
+        "leadId": "test_solar_1786770904641",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "Solar Energy & Inverter Dealer",
+        "phone": "+2348022791227",
+        "email": "info@solarpowerikeja.ng",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched Strategy Beta WhatsApp",
+        "description": "Initial icebreaker sent",
+        "channelUsed": "WHATSAPP",
+        "timestamp": "2026-08-15T05:15:04.641Z",
+        "timestampWat": "06:15:04 am WAT (15 Aug)",
+        "metadata": {}
+      }
+    ]
+  },
+  "test_solar_1786771268339": {
+    "leadId": "test_solar_1786771268339",
+    "leadName": "SolarPower Solutions Ikeja",
+    "category": "Solar Energy & Inverter Dealer",
+    "phone": "+2348022791227",
+    "email": "info@solarpowerikeja.ng",
+    "area": "Ikeja",
+    "currentStage": "CALCULATOR_USED",
+    "score": 75,
+    "heatScore": 75,
+    "intentLevel": "HOT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/test_solar_1786771268339",
+    "createdAt": "2026-08-15T05:21:08.340Z",
+    "lastActiveIso": "2026-08-15T04:21:08.581Z",
+    "lastUpdatedWat": "06:21:08 am WAT (15 Aug)",
+    "metrics": {
+      "pageViews": 1,
+      "calculatorInteractions": 1,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0,
+      "lastCalculationSummary": "7.5KVA Solar Inverter Setup (8 Panels, 4 Lithium Batteries)"
+    },
+    "events": [
+      {
+        "id": "j_evt_1786771268565_4s29",
+        "leadId": "test_solar_1786771268339",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "CALCULATOR_USED",
+        "title": "Configured 7.5KVA Solar Sizing",
+        "description": "Calculated ₦3.8M setup with 8 panels",
+        "channelUsed": "Solar Sizing Estimator",
+        "timestamp": "2026-08-15T05:21:08.564Z",
+        "timestampWat": "06:21:08 am WAT (15 Aug)",
+        "metadata": {
+          "calculationSummary": "7.5KVA Solar Inverter Setup (8 Panels, 4 Lithium Batteries)"
+        }
+      },
+      {
+        "id": "j_evt_1786771268557_obb4",
+        "leadId": "test_solar_1786771268339",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Interactive Prototype",
+        "description": "Visited /preview/test_solar_1786771268339",
+        "channelUsed": "Client Browser",
+        "timestamp": "2026-08-15T05:21:08.556Z",
+        "timestampWat": "06:21:08 am WAT (15 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786771268528_ojzh",
+        "leadId": "test_solar_1786771268339",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "Solar Energy & Inverter Dealer",
+        "phone": "+2348022791227",
+        "email": "info@solarpowerikeja.ng",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched Strategy Beta WhatsApp",
+        "description": "Initial icebreaker sent",
+        "channelUsed": "WHATSAPP",
+        "timestamp": "2026-08-15T05:21:08.340Z",
+        "timestampWat": "06:21:08 am WAT (15 Aug)",
+        "metadata": {}
+      }
+    ]
+  },
+  "test_solar_1786772208678": {
+    "leadId": "test_solar_1786772208678",
+    "leadName": "SolarPower Solutions Ikeja",
+    "category": "Solar Energy & Inverter Dealer",
+    "phone": "+2348022791227",
+    "email": "info@solarpowerikeja.ng",
+    "area": "Ikeja",
+    "currentStage": "CALCULATOR_USED",
+    "score": 75,
+    "heatScore": 75,
+    "intentLevel": "HOT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/test_solar_1786772208678",
+    "createdAt": "2026-08-15T05:36:48.679Z",
+    "lastActiveIso": "2026-08-15T04:36:48.864Z",
+    "lastUpdatedWat": "06:36:48 am WAT (15 Aug)",
+    "metrics": {
+      "pageViews": 1,
+      "calculatorInteractions": 1,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0,
+      "lastCalculationSummary": "7.5KVA Solar Inverter Setup (8 Panels, 4 Lithium Batteries)"
+    },
+    "events": [
+      {
+        "id": "j_evt_1786772208856_zeaz",
+        "leadId": "test_solar_1786772208678",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "CALCULATOR_USED",
+        "title": "Configured 7.5KVA Solar Sizing",
+        "description": "Calculated ₦3.8M setup with 8 panels",
+        "channelUsed": "Solar Sizing Estimator",
+        "timestamp": "2026-08-15T05:36:48.856Z",
+        "timestampWat": "06:36:48 am WAT (15 Aug)",
+        "metadata": {
+          "calculationSummary": "7.5KVA Solar Inverter Setup (8 Panels, 4 Lithium Batteries)"
+        }
+      },
+      {
+        "id": "j_evt_1786772208814_1knn",
+        "leadId": "test_solar_1786772208678",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Interactive Prototype",
+        "description": "Visited /preview/test_solar_1786772208678",
+        "channelUsed": "Client Browser",
+        "timestamp": "2026-08-15T05:36:48.813Z",
+        "timestampWat": "06:36:48 am WAT (15 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786772208763_13nj",
+        "leadId": "test_solar_1786772208678",
+        "leadName": "SolarPower Solutions Ikeja",
+        "businessCategory": "Solar Energy & Inverter Dealer",
+        "phone": "+2348022791227",
+        "email": "info@solarpowerikeja.ng",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched Strategy Beta WhatsApp",
+        "description": "Initial icebreaker sent",
+        "channelUsed": "WHATSAPP",
+        "timestamp": "2026-08-15T05:36:48.679Z",
+        "timestampWat": "06:36:48 am WAT (15 Aug)",
+        "metadata": {}
+      }
+    ]
+  },
+  "lagos-solar-solutions": {
+    "leadId": "lagos-solar-solutions",
+    "leadName": "Lead lagos-solar-solutions",
+    "category": "General",
+    "phone": "+2348022791227",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "PREVIEW_VIEWED",
+    "score": 75,
+    "heatScore": 55,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lagos-solar-solutions",
+    "createdAt": "2026-08-17T06:18:28.503Z",
+    "lastActiveIso": "2026-08-17T06:26:37.545Z",
+    "lastUpdatedWat": "07:26:37 am WAT (17 Aug)",
+    "metrics": {
+      "pageViews": 17,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "j_evt_1786947997500_5pbv",
+        "leadId": "lagos-solar-solutions",
+        "leadName": "Lead lagos-solar-solutions",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Action: click",
+        "description": "{}",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T06:26:37.499Z",
+        "timestampWat": "07:26:37 am WAT (17 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786947948843_62oq",
+        "leadId": "lagos-solar-solutions",
+        "leadName": "Lead lagos-solar-solutions",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Action: click",
+        "description": "{}",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T06:25:48.842Z",
+        "timestampWat": "07:25:48 am WAT (17 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786947915601_rye5",
+        "leadId": "lagos-solar-solutions",
+        "leadName": "Lead lagos-solar-solutions",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Action: click",
+        "description": "{}",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T06:25:15.580Z",
+        "timestampWat": "07:25:15 am WAT (17 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786947841570_jvoq",
+        "leadId": "lagos-solar-solutions",
+        "leadName": "Lead lagos-solar-solutions",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Action: click",
+        "description": "{}",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T06:24:01.570Z",
+        "timestampWat": "07:24:01 am WAT (17 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786947828168_w40m",
+        "leadId": "lagos-solar-solutions",
+        "leadName": "Lead lagos-solar-solutions",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Action: click",
+        "description": "{}",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T06:23:48.167Z",
+        "timestampWat": "07:23:48 am WAT (17 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786947804022_gww5",
+        "leadId": "lagos-solar-solutions",
+        "leadName": "Lead lagos-solar-solutions",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Action: click",
+        "description": "{}",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T06:23:24.021Z",
+        "timestampWat": "07:23:24 am WAT (17 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786947734556_ncpj",
+        "leadId": "lagos-solar-solutions",
+        "leadName": "Lead lagos-solar-solutions",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Action: scroll_depth",
+        "description": "{}",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T06:22:14.490Z",
+        "timestampWat": "07:22:14 am WAT (17 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1786947522213_ctkt",
+        "leadId": "lagos-solar-solutions",
+        "leadName": "Lead lagos-solar-solutions",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T06:18:42.212Z",
+        "timestampWat": "07:18:42 am WAT (17 Aug)",
+        "metadata": {
+          "referrer": "",
+          "screenWidth": 1270
+        }
+      },
+      {
+        "id": "j_evt_1786947508554_tgvt",
+        "leadId": "lagos-solar-solutions",
+        "leadName": "Lead lagos-solar-solutions",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T06:18:28.503Z",
+        "timestampWat": "07:18:28 am WAT (17 Aug)",
+        "metadata": {
+          "referrer": "",
+          "screenWidth": 1270
+        }
+      }
+    ]
+  },
+  "eko-luxury-suites": {
+    "leadId": "eko-luxury-suites",
+    "leadName": "Lead eko-luxury-suites",
+    "category": "General",
+    "phone": "+2348022791227",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "PREVIEW_VIEWED",
+    "score": 75,
+    "heatScore": 55,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/eko-luxury-suites",
+    "createdAt": "2026-08-17T12:52:40.147Z",
+    "lastActiveIso": "2026-08-17T12:52:44.488Z",
+    "lastUpdatedWat": "01:52:44 pm WAT (17 Aug)",
+    "metrics": {
+      "pageViews": 3,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "j_evt_1786971164524_zrkc",
+        "leadId": "eko-luxury-suites",
+        "leadName": "Lead eko-luxury-suites",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T12:52:44.488Z",
+        "timestampWat": "01:52:44 pm WAT (17 Aug)",
+        "metadata": {
+          "referrer": "",
+          "screenWidth": 1254
+        }
+      },
+      {
+        "id": "j_evt_1786971160162_cmw4",
+        "leadId": "eko-luxury-suites",
+        "leadName": "Lead eko-luxury-suites",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-17T12:52:40.147Z",
+        "timestampWat": "01:52:40 pm WAT (17 Aug)",
+        "metadata": {
+          "referrer": "",
+          "screenWidth": 1254
+        }
+      }
+    ]
+  },
+  "63c18de9-8d08-4027-9ab4-0362fa5ec1d0": {
+    "leadId": "63c18de9-8d08-4027-9ab4-0362fa5ec1d0",
+    "leadName": "Ikeja INSTAGRAM Brand",
+    "category": "E-Commerce Business",
+    "phone": "+2348066677788",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/ikeja-instagram-brand",
+    "createdAt": "2026-06-26T20:47:26.795753+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866895_qnnw",
+        "leadId": "63c18de9-8d08-4027-9ab4-0362fa5ec1d0",
+        "leadName": "Ikeja INSTAGRAM Brand",
+        "businessCategory": "E-Commerce Business",
+        "phone": "+2348066677788",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Ikeja INSTAGRAM Brand",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/ikeja-instagram-brand"
+        }
+      }
+    ]
+  },
+  "2bc0457b-365e-4b4f-80e6-40c76c395faa": {
+    "leadId": "2bc0457b-365e-4b4f-80e6-40c76c395faa",
+    "leadName": "Lekki Dental Clinic",
+    "category": "dentist",
+    "phone": "+2348088899900",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lekki-dental-clinic",
+    "createdAt": "2026-06-26T20:44:38.072738+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866895_z2j8",
+        "leadId": "2bc0457b-365e-4b4f-80e6-40c76c395faa",
+        "leadName": "Lekki Dental Clinic",
+        "businessCategory": "dentist",
+        "phone": "+2348088899900",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Lekki Dental Clinic",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lekki-dental-clinic"
+        }
+      }
+    ]
+  },
+  "9939cd77-74c6-40aa-a1fa-8c6c902303ed": {
+    "leadId": "9939cd77-74c6-40aa-a1fa-8c6c902303ed",
+    "leadName": "Yaba Dental Suite",
+    "category": "dentist",
+    "phone": "+2348077788899",
+    "email": "contact@yabadental.com",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/yaba-dental-suite",
+    "createdAt": "2026-06-26T20:44:38.072738+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866896_n3uw",
+        "leadId": "9939cd77-74c6-40aa-a1fa-8c6c902303ed",
+        "leadName": "Yaba Dental Suite",
+        "businessCategory": "dentist",
+        "phone": "+2348077788899",
+        "email": "contact@yabadental.com",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Yaba Dental Suite",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/yaba-dental-suite"
+        }
+      }
+    ]
+  },
+  "257ababe-c33b-4fa2-84b2-aa7be3450e47": {
+    "leadId": "257ababe-c33b-4fa2-84b2-aa7be3450e47",
+    "leadName": "Ikeja Dental Clinic",
+    "category": "dentist",
+    "phone": "+2348044455566",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/ikeja-dental-clinic",
+    "createdAt": "2026-06-26T20:44:17.8225+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866896_uwns",
+        "leadId": "257ababe-c33b-4fa2-84b2-aa7be3450e47",
+        "leadName": "Ikeja Dental Clinic",
+        "businessCategory": "dentist",
+        "phone": "+2348044455566",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Ikeja Dental Clinic",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/ikeja-dental-clinic"
+        }
+      }
+    ]
+  },
+  "4f343ddd-9183-40fa-aca4-9aba47392425": {
+    "leadId": "4f343ddd-9183-40fa-aca4-9aba47392425",
+    "leadName": "Lagos Medical Center",
+    "category": "dentist",
+    "phone": "+2348033344455",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lagos-medical-center",
+    "createdAt": "2026-06-26T20:44:17.8225+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866898_7ijl",
+        "leadId": "4f343ddd-9183-40fa-aca4-9aba47392425",
+        "leadName": "Lagos Medical Center",
+        "businessCategory": "dentist",
+        "phone": "+2348033344455",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Lagos Medical Center",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lagos-medical-center"
+        }
+      }
+    ]
+  },
+  "6b7d64ae-0a36-45db-bda4-158dd0cb728f": {
+    "leadId": "6b7d64ae-0a36-45db-bda4-158dd0cb728f",
+    "leadName": "Lagos Island Dental Care",
+    "category": "dentist",
+    "phone": "+2348055566677",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lagos-island-dental-care",
+    "createdAt": "2026-06-26T20:43:47.826411+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866898_k1mj",
+        "leadId": "6b7d64ae-0a36-45db-bda4-158dd0cb728f",
+        "leadName": "Lagos Island Dental Care",
+        "businessCategory": "dentist",
+        "phone": "+2348055566677",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Lagos Island Dental Care",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lagos-island-dental-care"
+        }
+      }
+    ]
+  },
+  "8361e314-0f29-43b3-b07a-39921dd26281": {
+    "leadId": "8361e314-0f29-43b3-b07a-39921dd26281",
+    "leadName": "Victoria Island Dental Suite",
+    "category": "dentist",
+    "phone": "+2348099988877",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/victoria-island-dental-suite",
+    "createdAt": "2026-06-26T20:43:47.826411+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866899_8hse",
+        "leadId": "8361e314-0f29-43b3-b07a-39921dd26281",
+        "leadName": "Victoria Island Dental Suite",
+        "businessCategory": "dentist",
+        "phone": "+2348099988877",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Victoria Island Dental Suite",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/victoria-island-dental-suite"
+        }
+      }
+    ]
+  },
+  "bb3cf232-3ac0-4192-89e8-eb5eacc81c0b": {
+    "leadId": "bb3cf232-3ac0-4192-89e8-eb5eacc81c0b",
+    "leadName": "Lagos Dental Clinic",
+    "category": "dentist",
+    "phone": "+2348012345678",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lagos-dental-clinic",
+    "createdAt": "2026-06-26T20:43:30.405527+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866899_tmxq",
+        "leadId": "bb3cf232-3ac0-4192-89e8-eb5eacc81c0b",
+        "leadName": "Lagos Dental Clinic",
+        "businessCategory": "dentist",
+        "phone": "+2348012345678",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Lagos Dental Clinic",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lagos-dental-clinic"
+        }
+      }
+    ]
+  },
+  "1dd26118-4d25-465f-a162-778310b59872": {
+    "leadId": "1dd26118-4d25-465f-a162-778310b59872",
+    "leadName": "Ikeja Dental Care",
+    "category": "dentist",
+    "phone": "+2348023456789",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/ikeja-dental-care",
+    "createdAt": "2026-06-26T20:43:30.405527+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866899_b6j6",
+        "leadId": "1dd26118-4d25-465f-a162-778310b59872",
+        "leadName": "Ikeja Dental Care",
+        "businessCategory": "dentist",
+        "phone": "+2348023456789",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Ikeja Dental Care",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/ikeja-dental-care"
+        }
+      }
+    ]
+  },
+  "109fa974-2869-4227-b1ae-87b6b2389339": {
+    "leadId": "109fa974-2869-4227-b1ae-87b6b2389339",
+    "leadName": "Smile Best Dental || Dental Clinic in Lagos || Dental Clinic in ikeja.",
+    "category": "dentist lagos sandbox",
+    "phone": "+2347038057170",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/smile-best-dental-dental-clinic-in-lagos-dental-clinic-in-ikeja",
+    "createdAt": "2026-06-26T20:21:26.973281+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866900_v3kp",
+        "leadId": "109fa974-2869-4227-b1ae-87b6b2389339",
+        "leadName": "Smile Best Dental || Dental Clinic in Lagos || Dental Clinic in ikeja.",
+        "businessCategory": "dentist lagos sandbox",
+        "phone": "+2347038057170",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Smile Best Dental || Dental Clinic in Lagos || Dental Clinic in ikeja.",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/smile-best-dental-dental-clinic-in-lagos-dental-clinic-in-ikeja"
+        }
+      }
+    ]
+  },
+  "b0a7f2c3-a3c8-4c70-994f-735e5d103b2c": {
+    "leadId": "b0a7f2c3-a3c8-4c70-994f-735e5d103b2c",
+    "leadName": "Teethcity Dental Specialists Clinics",
+    "category": "dentist lagos sandbox",
+    "phone": "+2348033485981",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/teethcity-dental-specialists-clinics",
+    "createdAt": "2026-06-26T20:21:26.973281+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866900_554g",
+        "leadId": "b0a7f2c3-a3c8-4c70-994f-735e5d103b2c",
+        "leadName": "Teethcity Dental Specialists Clinics",
+        "businessCategory": "dentist lagos sandbox",
+        "phone": "+2348033485981",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Teethcity Dental Specialists Clinics",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/teethcity-dental-specialists-clinics"
+        }
+      }
+    ]
+  },
+  "5b99f7d1-f894-4902-aa24-e2276613e5a4": {
+    "leadId": "5b99f7d1-f894-4902-aa24-e2276613e5a4",
+    "leadName": "TOP DENTAL CLINIC",
+    "category": "dentist lagos sandbox",
+    "phone": "+2349066679155",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/top-dental-clinic",
+    "createdAt": "2026-06-26T20:21:26.973281+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866900_ixdq",
+        "leadId": "5b99f7d1-f894-4902-aa24-e2276613e5a4",
+        "leadName": "TOP DENTAL CLINIC",
+        "businessCategory": "dentist lagos sandbox",
+        "phone": "+2349066679155",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to TOP DENTAL CLINIC",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/top-dental-clinic"
+        }
+      }
+    ]
+  },
+  "47b98ca0-61a6-41fe-85ec-2e69f0ed4aee": {
+    "leadId": "47b98ca0-61a6-41fe-85ec-2e69f0ed4aee",
+    "leadName": "Beaconhill Smile Clinic Ikeja",
+    "category": "dentist lagos sandbox",
+    "phone": "+2348165723353",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/beaconhill-smile-clinic-ikeja",
+    "createdAt": "2026-06-26T20:21:26.973281+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866900_bgpp",
+        "leadId": "47b98ca0-61a6-41fe-85ec-2e69f0ed4aee",
+        "leadName": "Beaconhill Smile Clinic Ikeja",
+        "businessCategory": "dentist lagos sandbox",
+        "phone": "+2348165723353",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Beaconhill Smile Clinic Ikeja",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/beaconhill-smile-clinic-ikeja"
+        }
+      }
+    ]
+  },
+  "2a535b27-5552-4ea2-b9c7-549448812fa1": {
+    "leadId": "2a535b27-5552-4ea2-b9c7-549448812fa1",
+    "leadName": "Luxe Dental Clinic | Dental Clinic in Ikeja | Dental Clinic in Lagos",
+    "category": "dentist lagos sandbox",
+    "phone": "+2349044374007",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/luxe-dental-clinic-dental-clinic-in-ikeja-dental-clinic-in-lagos",
+    "createdAt": "2026-06-26T20:21:26.973281+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866901_0fmw",
+        "leadId": "2a535b27-5552-4ea2-b9c7-549448812fa1",
+        "leadName": "Luxe Dental Clinic | Dental Clinic in Ikeja | Dental Clinic in Lagos",
+        "businessCategory": "dentist lagos sandbox",
+        "phone": "+2349044374007",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Luxe Dental Clinic | Dental Clinic in Ikeja | Dental Clinic in Lagos",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/luxe-dental-clinic-dental-clinic-in-ikeja-dental-clinic-in-lagos"
+        }
+      }
+    ]
+  },
+  "d25aab03-3fde-48ca-8d41-8d423a3f2da2": {
+    "leadId": "d25aab03-3fde-48ca-8d41-8d423a3f2da2",
+    "leadName": "Optimist Dental Clinic Lagos",
+    "category": "dentist lagos sandbox",
+    "phone": "+2347081650482",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/optimist-dental-clinic-lagos",
+    "createdAt": "2026-06-26T20:21:26.973281+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866901_5kp2",
+        "leadId": "d25aab03-3fde-48ca-8d41-8d423a3f2da2",
+        "leadName": "Optimist Dental Clinic Lagos",
+        "businessCategory": "dentist lagos sandbox",
+        "phone": "+2347081650482",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Optimist Dental Clinic Lagos",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/optimist-dental-clinic-lagos"
+        }
+      }
+    ]
+  },
+  "2e5a61d4-0f3e-44b5-a21d-4fe760d3d4a6": {
+    "leadId": "2e5a61d4-0f3e-44b5-a21d-4fe760d3d4a6",
+    "leadName": "Smile Plug Dental Clinic- Ikeja",
+    "category": "dentist lagos sandbox",
+    "phone": "+2347030060837",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/smile-plug-dental-clinic-ikeja",
+    "createdAt": "2026-06-26T20:21:26.973281+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866901_bvab",
+        "leadId": "2e5a61d4-0f3e-44b5-a21d-4fe760d3d4a6",
+        "leadName": "Smile Plug Dental Clinic- Ikeja",
+        "businessCategory": "dentist lagos sandbox",
+        "phone": "+2347030060837",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Smile Plug Dental Clinic- Ikeja",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/smile-plug-dental-clinic-ikeja"
+        }
+      }
+    ]
+  },
+  "0b1941a1-c76f-4196-b8b1-ab1c9217427b": {
+    "leadId": "0b1941a1-c76f-4196-b8b1-ab1c9217427b",
+    "leadName": "PHIL DENTAL CLINIC",
+    "category": "dentist lagos sandbox",
+    "phone": "+2348066310546",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/phil-dental-clinic",
+    "createdAt": "2026-06-26T20:21:26.973281+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866901_u75m",
+        "leadId": "0b1941a1-c76f-4196-b8b1-ab1c9217427b",
+        "leadName": "PHIL DENTAL CLINIC",
+        "businessCategory": "dentist lagos sandbox",
+        "phone": "+2348066310546",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to PHIL DENTAL CLINIC",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/phil-dental-clinic"
+        }
+      }
+    ]
+  },
+  "e86c7609-1cd2-4715-9e37-72eaeb7ce8f6": {
+    "leadId": "e86c7609-1cd2-4715-9e37-72eaeb7ce8f6",
+    "leadName": "COLDENT DENTAL CLINIC",
+    "category": "dentist lagos sandbox",
+    "phone": "+2348035469428",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/coldent-dental-clinic",
+    "createdAt": "2026-06-26T20:21:26.973281+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866902_f2dt",
+        "leadId": "e86c7609-1cd2-4715-9e37-72eaeb7ce8f6",
+        "leadName": "COLDENT DENTAL CLINIC",
+        "businessCategory": "dentist lagos sandbox",
+        "phone": "+2348035469428",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to COLDENT DENTAL CLINIC",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/coldent-dental-clinic"
+        }
+      }
+    ]
+  },
+  "15ec0c94-a548-46f0-a235-04ff0a60129c": {
+    "leadId": "15ec0c94-a548-46f0-a235-04ff0a60129c",
+    "leadName": "Yanga Dental Clinic",
+    "category": "dentist lagos sandbox",
+    "phone": "+2347025030034",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/yanga-dental-clinic",
+    "createdAt": "2026-06-26T20:21:26.973281+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866902_g0hh",
+        "leadId": "15ec0c94-a548-46f0-a235-04ff0a60129c",
+        "leadName": "Yanga Dental Clinic",
+        "businessCategory": "dentist lagos sandbox",
+        "phone": "+2347025030034",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Yanga Dental Clinic",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/yanga-dental-clinic"
+        }
+      }
+    ]
+  },
+  "1695d430-d89c-4bdd-92a8-0565773ddd44": {
+    "leadId": "1695d430-d89c-4bdd-92a8-0565773ddd44",
+    "leadName": "Calens Dental Clinic Lekki, Lagos - Scaling & Polishing, Teeth Whitening, Dental Implants & Orthodontics",
+    "category": "dentist Ikeja",
+    "phone": "+2348062908387",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/calens-dental-clinic-lekki-lagos-scaling-polishing-teeth-whitening-dental-implants-orthodontics",
+    "createdAt": "2026-06-26T20:06:01.712538+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866902_9p9y",
+        "leadId": "1695d430-d89c-4bdd-92a8-0565773ddd44",
+        "leadName": "Calens Dental Clinic Lekki, Lagos - Scaling & Polishing, Teeth Whitening, Dental Implants & Orthodontics",
+        "businessCategory": "dentist Ikeja",
+        "phone": "+2348062908387",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Calens Dental Clinic Lekki, Lagos - Scaling & Polishing, Teeth Whitening, Dental Implants & Orthodontics",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/calens-dental-clinic-lekki-lagos-scaling-polishing-teeth-whitening-dental-implants-orthodontics"
+        }
+      }
+    ]
+  },
+  "c63d8c89-a2db-4c89-9fff-a8d39e07eca2": {
+    "leadId": "c63d8c89-a2db-4c89-9fff-a8d39e07eca2",
+    "leadName": "KING GHALI TRADING.CO LIMITED",
+    "category": "Cars",
+    "phone": "+2349161310717",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/king-ghali-trading-co-limited",
+    "createdAt": "2026-06-26T19:51:39.137763+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866903_ib4s",
+        "leadId": "c63d8c89-a2db-4c89-9fff-a8d39e07eca2",
+        "leadName": "KING GHALI TRADING.CO LIMITED",
+        "businessCategory": "Cars",
+        "phone": "+2349161310717",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to KING GHALI TRADING.CO LIMITED",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/king-ghali-trading-co-limited"
+        }
+      }
+    ]
+  },
+  "94c0a295-1ce4-40a2-a2a8-1d6da7991656": {
+    "leadId": "94c0a295-1ce4-40a2-a2a8-1d6da7991656",
+    "leadName": "Fola H",
+    "category": "Cars",
+    "phone": "+2347059978547",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/fola-h",
+    "createdAt": "2026-06-26T19:51:39.137763+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866903_1nuu",
+        "leadId": "94c0a295-1ce4-40a2-a2a8-1d6da7991656",
+        "leadName": "Fola H",
+        "businessCategory": "Cars",
+        "phone": "+2347059978547",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Fola H",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/fola-h"
+        }
+      }
+    ]
+  },
+  "20c990b4-d625-4372-810f-fa3f14bed2c6": {
+    "leadId": "20c990b4-d625-4372-810f-fa3f14bed2c6",
+    "leadName": "Abu Lukeman",
+    "category": "Cars",
+    "phone": "+2347036376864",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/abu-lukeman",
+    "createdAt": "2026-06-26T19:51:39.137763+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866903_5ycr",
+        "leadId": "20c990b4-d625-4372-810f-fa3f14bed2c6",
+        "leadName": "Abu Lukeman",
+        "businessCategory": "Cars",
+        "phone": "+2347036376864",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Abu Lukeman",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/abu-lukeman"
+        }
+      }
+    ]
+  },
+  "303d46bf-bacb-4dba-ac77-01caacfb6600": {
+    "leadId": "303d46bf-bacb-4dba-ac77-01caacfb6600",
+    "leadName": "Tramast",
+    "category": "Garden",
+    "phone": "+2348131670062",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/tramast",
+    "createdAt": "2026-06-26T19:51:15.723809+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866903_zf9o",
+        "leadId": "303d46bf-bacb-4dba-ac77-01caacfb6600",
+        "leadName": "Tramast",
+        "businessCategory": "Garden",
+        "phone": "+2348131670062",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Tramast",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/tramast"
+        }
+      }
+    ]
+  },
+  "e2050569-b954-4196-9839-675520a3d771": {
+    "leadId": "e2050569-b954-4196-9839-675520a3d771",
+    "leadName": "Kia",
+    "category": "car",
+    "phone": "+2348036768888",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/kia",
+    "createdAt": "2026-06-26T19:42:26.735393+00:00",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866904_oxp6",
+        "leadId": "e2050569-b954-4196-9839-675520a3d771",
+        "leadName": "Kia",
+        "businessCategory": "car",
+        "phone": "+2348036768888",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Kia",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/kia"
+        }
+      }
+    ]
+  },
+  "lagos_1786799282954_f6pyf9": {
+    "leadId": "lagos_1786799282954_f6pyf9",
+    "leadName": "Commercial Business",
+    "category": "Commercial Enterprise",
+    "phone": "+2348022791227",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/commercial-business",
+    "createdAt": "2026-08-15T13:08:02.954Z",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866904_n05v",
+        "leadId": "lagos_1786799282954_f6pyf9",
+        "leadName": "Commercial Business",
+        "businessCategory": "Commercial Enterprise",
+        "phone": "+2348022791227",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Commercial Business",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/commercial-business"
+        }
+      }
+    ]
+  },
+  "lagos_det_e184d441b2e202b4": {
+    "leadId": "lagos_det_e184d441b2e202b4",
+    "leadName": "Bain & Company",
+    "category": "office",
+    "phone": "+23417000506",
+    "email": "info@livinglandlao.org",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/bain-company",
+    "createdAt": "2026-08-15T13:08:09.747Z",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866904_wgx0",
+        "leadId": "lagos_det_e184d441b2e202b4",
+        "leadName": "Bain & Company",
+        "businessCategory": "office",
+        "phone": "+23417000506",
+        "email": "info@livinglandlao.org",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Bain & Company",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/bain-company"
+        }
+      }
+    ]
+  },
+  "lagos_det_ed7d4fc62bb36542": {
+    "leadId": "lagos_det_ed7d4fc62bb36542",
+    "leadName": "Macmed Integrated Farms",
+    "category": "Commercial B2B Enterprise",
+    "phone": "+2348033316905",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/macmed-integrated-farms",
+    "createdAt": "2026-08-15T13:08:09.747Z",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866904_vcva",
+        "leadId": "lagos_det_ed7d4fc62bb36542",
+        "leadName": "Macmed Integrated Farms",
+        "businessCategory": "Commercial B2B Enterprise",
+        "phone": "+2348033316905",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Macmed Integrated Farms",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/macmed-integrated-farms"
+        }
+      }
+    ]
+  },
+  "lagos_det_1093be7087f2b410": {
+    "leadId": "lagos_det_1093be7087f2b410",
+    "leadName": "Aerologistics and Travels Ltd",
+    "category": "Commercial B2B Enterprise",
+    "phone": "+2344610300",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/aerologistics-and-travels-ltd",
+    "createdAt": "2026-08-15T13:08:09.747Z",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866905_a8re",
+        "leadId": "lagos_det_1093be7087f2b410",
+        "leadName": "Aerologistics and Travels Ltd",
+        "businessCategory": "Commercial B2B Enterprise",
+        "phone": "+2344610300",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Aerologistics and Travels Ltd",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/aerologistics-and-travels-ltd"
+        }
+      }
+    ]
+  },
+  "lagos_det_d33d59dfa07d595b": {
+    "leadId": "lagos_det_d33d59dfa07d595b",
+    "leadName": "Jacio International Company Ltd",
+    "category": "Commercial B2B Enterprise",
+    "phone": "+2348185587222",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 80,
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/jacio-international-company-ltd",
+    "createdAt": "2026-08-15T13:08:09.747Z",
+    "lastUpdatedWat": "04:47:46",
+    "events": [
+      {
+        "id": "j_evt_1787024866905_h2j4",
+        "leadId": "lagos_det_d33d59dfa07d595b",
+        "leadName": "Jacio International Company Ltd",
+        "businessCategory": "Commercial B2B Enterprise",
+        "phone": "+2348185587222",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Dispatched ApexReach Interactive Preview",
+        "description": "Personalized Prototype Link & Paystack Instant Claim sent to Jacio International Company Ltd",
+        "channelUsed": "WhatsApp & SMS Gateway",
+        "timestamp": "2026-08-18T03:47:39.577Z",
+        "timestampWat": "04:47:46",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/jacio-international-company-ltd"
+        }
+      }
+    ]
+  }
+}

@@ -41,7 +41,12 @@ yarn-error.log*
 next-env.d.ts
 
 # local databases & system configs
-/local_db/
+/local_db/*
+!local_db/leads_db.json
+!local_db/crm_leads.json
+!local_db/activities.json
+!local_db/lead_journeys.json
+!local_db/whatsapp_warmup_state.json
 /config.json
 .env
 .env.local

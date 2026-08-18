@@ -1740,33 +1740,42 @@ class SupabaseLogRepository implements ILogRepository {
 
 export function getActiveLeadRepository(): ILeadRepository {
   const config = getRuntimeConfig();
+  if (config.supabaseUrl && config.supabaseKey && (config.storageMode as string) !== 'sheets') {
+    return new SupabaseLeadRepository();
+  }
+  if ((config.storageMode as string) === 'supabase' || (config.storageMode as string) === 'cloud') {
+    return new SupabaseLeadRepository();
+  }
   if ((config.storageMode as string) === 'local' || shouldUseLocalSandbox(config)) {
     return new LocalJsonLeadRepository();
-  }
-  if ((config.storageMode as string) === 'supabase' || (config.supabaseUrl && config.supabaseKey && (config.storageMode as string) !== 'local')) {
-    return new SupabaseLeadRepository();
   }
   return new GoogleSheetsLeadRepository();
 }
 
 export function getActiveDncRepository(): IDncRepository {
   const config = getRuntimeConfig();
+  if (config.supabaseUrl && config.supabaseKey && (config.storageMode as string) !== 'sheets') {
+    return new SupabaseDncRepository();
+  }
+  if ((config.storageMode as string) === 'supabase' || (config.storageMode as string) === 'cloud') {
+    return new SupabaseDncRepository();
+  }
   if ((config.storageMode as string) === 'local' || shouldUseLocalSandbox(config)) {
     return new LocalJsonDncRepository();
-  }
-  if ((config.storageMode as string) === 'supabase' || (config.supabaseUrl && config.supabaseKey && (config.storageMode as string) !== 'local')) {
-    return new SupabaseDncRepository();
   }
   return new GoogleSheetsDncRepository();
 }
 
 export function getActiveLogRepository(): ILogRepository {
   const config = getRuntimeConfig();
+  if (config.supabaseUrl && config.supabaseKey && (config.storageMode as string) !== 'sheets') {
+    return new SupabaseLogRepository();
+  }
+  if ((config.storageMode as string) === 'supabase' || (config.storageMode as string) === 'cloud') {
+    return new SupabaseLogRepository();
+  }
   if ((config.storageMode as string) === 'local' || shouldUseLocalSandbox(config)) {
     return new LocalJsonLogRepository();
-  }
-  if ((config.storageMode as string) === 'supabase' || (config.supabaseUrl && config.supabaseKey && (config.storageMode as string) !== 'local')) {
-    return new SupabaseLogRepository();
   }
   return new GoogleSheetsLogRepository();
 }
