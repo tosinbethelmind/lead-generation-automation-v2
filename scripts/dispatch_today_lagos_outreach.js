@@ -211,19 +211,22 @@ async function executeOutreach(batchSize = 30, dryRun = false) {
     const name = lead.name;
     const area = lead.area || lead.city || 'Lagos';
     const category = lead.category || 'Business';
-    const lineId = (i % 2 === 0) ? 1 : 2;
+    const leadId = lead.lead_id || lead.id;
+    const previewUrl = `https://www.bethelmindanalytics.com/preview/${encodeURIComponent(leadId)}`;
 
     const message = `Hello Management Team @ *${name}* 👋\n\n` +
-      `We noticed your business profile in ${area} and built a modern, fast interactive website prototype & WhatsApp instant customer booking system tailored specifically for ${name}.\n\n` +
+      `We noticed your business profile in ${area} and built a modern, fast interactive website prototype & WhatsApp instant customer booking system tailored specifically for *${name}*.\n\n` +
+      `🔗 *Live Prototype Link:* ${previewUrl}\n\n` +
       `Would you like to preview the interactive demo today? (Zero obligation/free to claim).\n\n` +
       `Best regards,\n` +
-      `*ApexReach Lagos B2B Engine*`;
+      `*Bethelmind Analytics Lagos Team*`;
 
     console.log(`[${i + 1}/${batch.length}] 🏢 ${name.padEnd(30)} | 📱 ${phone.padEnd(16)} | Line ${lineId}`);
+    console.log(`   🔗 URL: ${previewUrl}`);
 
     if (!dryRun) {
       const waRes = await sendWhatsApp(phone, message, lineId);
-      const smsRes = await sendCarrierSms(phone, `Hello ${name}, your custom Lagos website prototype & WhatsApp ordering system is ready. Reply YES to preview.`);
+      const smsRes = await sendCarrierSms(phone, `Hello ${name}, your custom website prototype & WhatsApp ordering system is ready: ${previewUrl}. Reply YES to claim.`);
       
       const isSent = waRes.success || smsRes.success;
       if (isSent) {

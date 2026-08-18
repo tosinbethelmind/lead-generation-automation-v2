@@ -7,8 +7,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # PERMANENT AGENT MEMORY & OPERATING RULES
 
 ## 1. SCOPE & ENGINE
-- **10K Lagos Engine ONLY**: All lead generation, scraping, enrichment, and outreach are focused strictly on the 10K Lagos Engine.
-- **EXCLUDE SolarQuotePro.ng**: Do NOT include `solarquotepro.ng` or SolarQuotePro pitches in outreach campaigns. All outreach is dedicated solely to **ApexReach B2B Website Prototype & Instant Setup Claims**.
+- **EXCLUDE SolarQuotePro.ng**: Do NOT include `solarquotepro.ng` or SolarQuotePro pitches in outreach campaigns. All outreach is dedicated solely to **Bethelmind Analytics B2B Website Prototype & Instant Setup Claims**.
+- **STRICT BRANDING (BETHELMIND ANALYTICS ONLY)**: All outreach messages, signatures, SMS, and emails MUST strictly use **Bethelmind Analytics** (e.g. `*Bethelmind Analytics Lagos Team*` or `*Bethelmind Analytics B2B Engine*`). NEVER use `ApexReach` anywhere in outreach, templates, or signatures.
 
 ## 2. OUTREACH STRATEGY (100% REGULAR LAGOS BUSINESSES)
 - Target sectors: Salons, Clinics, Auto Repair, Restaurants, Retail, Professional Services, Real Estate, Gyms, Consultancies in Lagos.
@@ -24,8 +24,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## 3. SCHEDULE CYCLE
 - Active 1-week campaign runs from **Monday, August 17, 2026 to Sunday, August 23, 2026**.
 
-## 4. ADMIN NOTIFICATIONS
-- **Admin Channels:** **WhatsApp** (`0802 279 1227`) & **Email** (`bethelmindrecruit@gmail.com`) ONLY.
+## 4. PHONE LINE ARCHITECTURE & ADMIN NOTIFICATIONS
+- **ADMIN LINE (ALERTS & APPROVALS ONLY):** `0802 279 1227` (`ADMIN_WA_PHONE`) & Email (`bethelmindrecruit@gmail.com`). NEVER dispatch cold outreach from this number.
+- **COLD OUTREACH LINE 1 (PRIMARY OUTREACH):** `0702 626 6946` (`OUTREACH_WA_PHONE_1`, Port `3007`, session: `local_db/baileys_auth`).
+- **COLD OUTREACH LINE 2 (ROTATOR OUTREACH):** `0904 605 0469` (`OUTREACH_WA_PHONE_2`, Port `3009`, session: `local_db/baileys_auth_line2`).
 - **NO Admin SMS:** Do NOT send admin alerts or status updates via SMS (preserves carrier airtime).
 
 ## 5. ZERO-TOLERANCE SYNTHETIC / MOCK LEAD POLICY

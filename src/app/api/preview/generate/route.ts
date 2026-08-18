@@ -82,30 +82,13 @@ export async function GET(req: NextRequest) {
       lead.embedNote = lead.embed_note || lead.embedNote || '';
 
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 500); // Super-fast 500ms max timeout
-        const analysisResp = await fetch(`${origin}/api/analysis/website`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: lead.website }),
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-        if (analysisResp.ok) {
-          websiteInfo = await analysisResp.json();
-          // Attach basic metadata
-          lead.websiteTitle = websiteInfo.title;
-          lead.websiteMeta = websiteInfo.metaDescription;
-          lead.websiteColor = websiteInfo.dominantColor;
-          // Attach CMS platform intelligence
-          lead.cmsPlatform = websiteInfo.cms || lead.cmsPlatform || 'custom';
-          lead.cmsConfidence = websiteInfo.confidence || lead.cmsConfidence || 'low';
-          lead.upgradeStrategy = websiteInfo.upgradeStrategy || lead.upgradeStrategy || 'script_embed';
-          lead.pluginSuggestions = websiteInfo.pluginSuggestions || lead.pluginSuggestions || [];
-          lead.embedNote = websiteInfo.embedNote || lead.embedNote || '';
-        }
+        const { detectCMS, resolveUpgradeStrategy } = await import('@/lib/websiteAnalysis');
+        const resolved = resolveUpgradeStrategy(lead.cmsPlatform);
+        if (!lead.upgradeStrategy) lead.upgradeStrategy = resolved.upgradeStrategy;
+        if (!lead.pluginSuggestions || lead.pluginSuggestions.length === 0) lead.pluginSuggestions = resolved.pluginSuggestions;
+        if (!lead.embedNote) lead.embedNote = resolved.embedNote;
       } catch (e) {
-        console.warn('Website analysis timed out or failed:', e);
+        console.warn('Website strategy resolution notice:', e);
       }
     } else {
       lead.upgradeStrategy = lead.upgrade_strategy || lead.upgradeStrategy || 'basic_presence';

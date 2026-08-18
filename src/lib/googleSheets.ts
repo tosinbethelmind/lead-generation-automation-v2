@@ -683,7 +683,19 @@ class GoogleSheetsLeadRepository implements ILeadRepository {
 
   async getLeadById(leadId: string): Promise<Lead | null> {
     const leads = await this.getLeads();
-    return leads.find(l => l.lead_id === leadId) || null;
+    if (!leadId) return null;
+    const exact = leads.find(l => l.lead_id === leadId || (l as any).id === leadId);
+    if (exact) return exact;
+
+    const cleanQuery = leadId.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (cleanQuery.length >= 3) {
+      return leads.find(l => {
+        if (!l.name) return false;
+        const cleanName = l.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        return cleanName === cleanQuery || cleanName.startsWith(cleanQuery) || cleanQuery.startsWith(cleanName);
+      }) || null;
+    }
+    return null;
   }
 
   async saveLeads(newLeads: Partial<Lead>[]): Promise<{ added: number; skipped: number }> {
@@ -951,8 +963,22 @@ class LocalJsonLeadRepository implements ILeadRepository {
 
   async getLeadById(leadId: string): Promise<Lead | null> {
     const leads = await this.getLeads();
-    const found = leads.find(l => l.lead_id === leadId);
-    if (found) return found;
+    if (!leadId) return null;
+
+    // 1. Exact Lead ID match
+    const exactMatch = leads.find(l => l.lead_id === leadId || (l as any).id === leadId);
+    if (exactMatch) return exactMatch;
+
+    // 2. Clean normalized slug matching (e.g. "luxe-dental-clinic" matches "Luxe Dental Clinic | Dental Clinic in Ikeja...")
+    const cleanQuery = leadId.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (cleanQuery.length >= 3) {
+      const slugMatch = leads.find(l => {
+        if (!l.name) return false;
+        const cleanName = l.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        return cleanName === cleanQuery || cleanName.startsWith(cleanQuery) || cleanQuery.startsWith(cleanName);
+      });
+      if (slugMatch) return slugMatch;
+    }
 
     // Return fallback synthetic lead for testing / mock IDs if missing
     if (leadId.startsWith('mock_') || leadId.includes('test') || leadId.includes('verification')) {
