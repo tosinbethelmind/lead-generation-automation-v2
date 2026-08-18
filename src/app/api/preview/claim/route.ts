@@ -57,9 +57,12 @@ export async function POST(req: NextRequest) {
         business_summary: 'Verified Local Business Enterprise',
         notes: '[PREVIEW_DEMO] Synthetic lead created during interactive claim preview.'
       };
+    } else {
+      lead.name = sanitizeDisplayName(lead.name, lead.category);
     }
 
-    const activeLead = lead!;
+    const activeLead: any = lead;
+
 
     // 1. Update lead's status/notes in sheet/Supabase
     const { parseScalingConfig } = require('@/lib/scalingHelper');
