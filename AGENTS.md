@@ -28,3 +28,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Admin Channels:** **WhatsApp** (`0802 279 1227`) & **Email** (`bethelmindrecruit@gmail.com`) ONLY.
 - **NO Admin SMS:** Do NOT send admin alerts or status updates via SMS (preserves carrier airtime).
 
+## 5. ZERO-TOLERANCE SYNTHETIC / MOCK LEAD POLICY
+- **NEVER generate, seed, or dispatch synthetic, template, or placeholder phone numbers or leads.**
+- **Strict Phone Number Validation Before Any Dispatch:**
+  - Phone MUST be a genuine 10-14 digit Nigerian number (MTN, Airtel, Glo, 9mobile).
+  - REJECT any number containing sequential zeros (`0000`, `0001`), repeating digit quads (`1111`, `8888`), consecutive triplets (`666777`), or sequential runs (`123456`).
+  - REJECT template business names (e.g. `[Area] Premium [Sector] [Number]`, `Lead [slug]`, `mock_`, `synthetic_`).
+  - REJECT placeholder email domains (`@example.com`, `@test.com`, `@testlead.com`, `@*premiumsalon.com`).
+- **All outreach MUST be dispatched to 100% genuine, verified Nigerian commercial businesses.**
+- **Day 2+ Outreach Dispatches Require Explicit User Approval Before Firing.**
+
