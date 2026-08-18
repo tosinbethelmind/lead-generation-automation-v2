@@ -468,38 +468,47 @@ app.post('/reject-reply', (req, res) => {
 });
 
 // REST Endpoint to send message with human-like typing simulation
-app.post('/send', async (req, res) => {
-  const { phone, message } = req.body;
-  if (!phone || !message) {
+const sendHandlerLine1 = async (req, res) => {
+  const { phone, message, text } = req.body;
+  const outboundText = message || text;
+  if (!phone || !outboundText) {
     return res.status(400).json({ error: "Missing phone or message in payload" });
   }
 
   if (connectionStatus !== 'connected' || !sock) {
-    return res.status(400).json({ error: `WhatsApp client is not connected. Current status: ${connectionStatus}` });
+    return res.status(503).json({ error: `WhatsApp Line 1 client is not connected. Current status: ${connectionStatus}` });
   }
 
   try {
-    const cleanPhone = phone.replace(/\D/g, '');
+    let cleanPhone = String(phone).replace(/\D/g, '');
+    if (cleanPhone.startsWith('0') && cleanPhone.length === 11) {
+      cleanPhone = '234' + cleanPhone.slice(1);
+    } else if (!cleanPhone.startsWith('234') && cleanPhone.length === 10) {
+      cleanPhone = '234' + cleanPhone;
+    }
     const jid = `${cleanPhone}@s.whatsapp.net`;
     
     // Simulate human typing
     try {
       await sock.sendPresenceUpdate('composing', jid);
-      const typingDuration = Math.min(Math.max(message.length * 15, 1500), 4000);
+      const typingDuration = Math.min(Math.max(outboundText.length * 15, 1200), 3000);
       await new Promise(resolve => setTimeout(resolve, typingDuration));
       await sock.sendPresenceUpdate('paused', jid);
     } catch (presenceErr) {
       console.warn("[Baileys Service] Failed to send presence update, sending message anyway:", presenceErr.message);
     }
 
-    await sock.sendMessage(jid, { text: message });
-    console.log(`[Baileys Service] Message successfully sent to ${cleanPhone}`);
-    return res.json({ success: true, message: `Message sent to ${cleanPhone}` });
+    const result = await sock.sendMessage(jid, { text: outboundText });
+    console.log(`[Baileys Service Line 1] Message successfully sent to ${cleanPhone}`);
+    return res.json({ success: true, lineId: 1, messageId: result?.key?.id, message: `Message sent to ${cleanPhone}` });
   } catch (err) {
-    console.error("[Baileys Service] Send error:", err);
+    console.error("[Baileys Service Line 1] Send error:", err.message);
     return res.status(500).json({ error: err.message });
   }
-});
+};
+
+app.post('/send', sendHandlerLine1);
+app.post('/api/send', sendHandlerLine1);
 
 // REST Endpoint to send WhatsApp Push-To-Talk (PTT) Nigerian Accent Voice Notes
 app.post('/send-voicenote', async (req, res) => {

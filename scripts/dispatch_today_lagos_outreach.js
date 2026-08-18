@@ -78,14 +78,19 @@ function normalizeToInternational(phone) {
   return digits;
 }
 
-async function sendWhatsApp(phone, message, lineId) {
-  const targetUrl = lineId === 1 ? LINE1_URL : LINE2_URL;
+function isNigerianMobile(phone) {
+  const digits = normalizeToInternational(phone);
+  // Nigerian mobile numbers are 13 digits starting with 2347, 2348, 2349
+  return /^234[789][01]\d{8}$/.test(digits);
+}
+
+async function sendSingleWhatsApp(url, phone, message, lineId) {
   const intlPhone = normalizeToInternational(phone);
   const payload = JSON.stringify({ phone: intlPhone, message, text: message });
 
   return new Promise((resolve) => {
     try {
-      const urlObj = new URL(targetUrl);
+      const urlObj = new URL(url);
       const req = http.request({
         hostname: urlObj.hostname,
         port: urlObj.port,
@@ -95,27 +100,46 @@ async function sendWhatsApp(phone, message, lineId) {
           'Content-Type': 'application/json',
           'Content-Length': Buffer.byteLength(payload)
         },
-        timeout: 10000
+        timeout: 12000
       }, (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
         res.on('end', () => {
           try {
             const parsed = JSON.parse(data);
-            resolve({ success: parsed.success || res.statusCode === 200, lineId, error: parsed.error });
+            resolve({ success: (parsed.success === true) || res.statusCode === 200, lineId, error: parsed.error });
           } catch (_) {
             resolve({ success: res.statusCode === 200, lineId });
           }
         });
       });
       req.on('error', (e) => resolve({ success: false, lineId, error: e.message }));
-      req.on('timeout', () => { req.destroy(); resolve({ success: false, lineId, error: 'Timeout' }); });
+      req.on('timeout', () => { req.destroy(); resolve({ success: false, lineId, error: 'Timeout (12s)' }); });
       req.write(payload);
       req.end();
     } catch (err) {
       resolve({ success: false, lineId, error: err.message });
     }
   });
+}
+
+async function sendWhatsApp(phone, message, preferredLineId = 1) {
+  if (!isNigerianMobile(phone)) {
+    return { success: false, lineId: preferredLineId, error: 'Non-mobile or landline (skipped WA, SMS/Email only)' };
+  }
+
+  const primaryUrl = preferredLineId === 1 ? LINE1_URL : LINE2_URL;
+  const fallbackUrl = preferredLineId === 1 ? LINE2_URL : LINE1_URL;
+  const fallbackLineId = preferredLineId === 1 ? 2 : 1;
+
+  // 1. Try Primary Line
+  let res = await sendSingleWhatsApp(primaryUrl, phone, message, preferredLineId);
+  if (res.success) return res;
+
+  // 2. Auto-Failover to Secondary Line
+  console.log(`      ↳ Line ${preferredLineId} unavailable/err (${res.error || 'Failed'}). Auto-failing over to Line ${fallbackLineId}...`);
+  res = await sendSingleWhatsApp(fallbackUrl, phone, message, fallbackLineId);
+  return res;
 }
 
 async function sendCarrierSms(phone, message) {

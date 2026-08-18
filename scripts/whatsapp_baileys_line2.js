@@ -31,57 +31,70 @@ async function connectToWhatsApp() {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
   }
 
-  const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
-  const { version } = await fetchLatestBaileysVersion();
+  try {
+    const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
+    const { version } = await fetchLatestBaileysVersion();
 
-  sock = makeWASocket({
-    version,
-    logger: pino({ level: 'silent' }),
-    auth: state,
-    printQRInTerminal: true,
-    browser: ['Ubuntu', 'Chrome', '20.0.04']
-  });
-
-  sock.ev.on('connection.update', async (update) => {
-    const { connection, lastDisconnect, qr } = update;
-    
-    if (qr) {
-      qrCodeRaw = qr;
-      connectionStatus = "qr";
-      console.log("\n--- WHATSAPP LINE 2 QR CODE ---");
-      qrcodeTerminal.generate(qr, { small: true });
+    if (sock) {
       try {
-        qrCodeBase64 = await QRCode.toDataURL(qr);
-      } catch (err) {
-        console.error("Failed to generate QR data URL:", err);
+        sock.ev.removeAllListeners();
+        sock.end(new Error('Reconnecting'));
+      } catch (_) {}
+    }
+
+    sock = makeWASocket({
+      version,
+      logger: pino({ level: 'silent' }),
+      auth: state,
+      printQRInTerminal: true,
+      browser: ['ApexReach Engine', 'Chrome', '124.0.0']
+    });
+
+    sock.ev.on('connection.update', async (update) => {
+      const { connection, lastDisconnect, qr } = update;
+      
+      if (qr) {
+        qrCodeRaw = qr;
+        connectionStatus = "qr";
+        console.log("\n--- WHATSAPP LINE 2 QR CODE ---");
+        qrcodeTerminal.generate(qr, { small: true });
+        try {
+          qrCodeBase64 = await QRCode.toDataURL(qr);
+        } catch (err) {
+          console.error("Failed to generate QR data URL:", err);
+        }
       }
-    }
 
-    if (connection === 'connecting') {
-      connectionStatus = 'connecting';
-      console.log('Connecting WhatsApp Line 2 (+234 904 605 0469)...');
-    }
-
-    if (connection === 'open') {
-      connectionStatus = 'connected';
-      qrCodeBase64 = "";
-      qrCodeRaw = "";
-      console.log('✅ WhatsApp Line 2 connection opened successfully!');
-    }
-
-    if (connection === 'close') {
-      connectionStatus = 'disconnected';
-      qrCodeBase64 = "";
-      qrCodeRaw = "";
-      const shouldReconnect = (lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-      console.log(`WhatsApp Line 2 connection closed. Reconnecting: ${shouldReconnect}`, lastDisconnect?.error);
-      if (shouldReconnect) {
-        setTimeout(connectToWhatsApp, 3000);
+      if (connection === 'connecting') {
+        connectionStatus = 'connecting';
+        console.log('Connecting WhatsApp Line 2 (+234 904 605 0469)...');
       }
-    }
-  });
 
-  sock.ev.on('creds.update', saveCreds);
+      if (connection === 'open') {
+        connectionStatus = 'connected';
+        qrCodeBase64 = "";
+        qrCodeRaw = "";
+        console.log('✅ WhatsApp Line 2 (+234 904 605 0469) connected & online!');
+      }
+
+      if (connection === 'close') {
+        connectionStatus = 'disconnected';
+        qrCodeBase64 = "";
+        qrCodeRaw = "";
+        const statusCode = (lastDisconnect?.error)?.output?.statusCode;
+        const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+        console.log(`WhatsApp Line 2 connection closed (Code: ${statusCode}). Reconnecting: ${shouldReconnect}`);
+        if (shouldReconnect) {
+          setTimeout(connectToWhatsApp, 3000);
+        }
+      }
+    });
+
+    sock.ev.on('creds.update', saveCreds);
+  } catch (err) {
+    console.error('Failed to initialize Line 2 socket:', err.message);
+    setTimeout(connectToWhatsApp, 5000);
+  }
 }
 
 // ── Web UI Root ─────────────────────────────────────────────────────────────
@@ -216,26 +229,45 @@ app.all('/request-pairing-code', async (req, res) => {
   }
 });
 
-app.post('/api/send', async (req, res) => {
+const sendHandler = async (req, res) => {
   const { phone, message, text } = req.body;
   const outboundText = message || text;
   if (!phone || !outboundText) {
-    return res.status(400).json({ error: "Missing phone or message" });
+    return res.status(400).json({ error: "Missing phone or message in payload" });
   }
 
   if (connectionStatus !== 'connected' || !sock) {
-    return res.status(400).json({ error: `WhatsApp Line 2 not connected. Status: ${connectionStatus}` });
+    return res.status(503).json({ error: `WhatsApp Line 2 not connected. Status: ${connectionStatus}` });
   }
 
   try {
-    const cleanPhone = phone.replace(/\D/g, '');
+    let cleanPhone = String(phone).replace(/\D/g, '');
+    if (cleanPhone.startsWith('0') && cleanPhone.length === 11) {
+      cleanPhone = '234' + cleanPhone.slice(1);
+    } else if (!cleanPhone.startsWith('234') && cleanPhone.length === 10) {
+      cleanPhone = '234' + cleanPhone;
+    }
     const jid = `${cleanPhone}@s.whatsapp.net`;
+
+    // Simulate natural human typing
+    try {
+      await sock.sendPresenceUpdate('composing', jid);
+      const typingDuration = Math.min(Math.max(outboundText.length * 15, 1200), 3000);
+      await new Promise(resolve => setTimeout(resolve, typingDuration));
+      await sock.sendPresenceUpdate('paused', jid);
+    } catch (_) {}
+
     const result = await sock.sendMessage(jid, { text: outboundText });
-    return res.json({ success: true, lineId: 2, messageId: result.key.id });
+    console.log(`[Baileys Line 2] Message sent to ${cleanPhone}`);
+    return res.json({ success: true, lineId: 2, messageId: result?.key?.id, phone: cleanPhone });
   } catch (err) {
+    console.error("[Baileys Line 2 Send Error]:", err.message);
     return res.status(500).json({ error: err.message });
   }
-});
+};
+
+app.post('/api/send', sendHandler);
+app.post('/send', sendHandler);
 
 app.listen(PORT, () => {
   console.log(`🚀 Baileys WhatsApp Line 2 running on http://localhost:${PORT}`);

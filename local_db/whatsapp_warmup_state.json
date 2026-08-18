@@ -1,0 +1,21 @@
+{
+  "campaignStartDate": "2026-08-14T20:19:55.331Z",
+  "dailyCounts": {
+    "2026-08-14": {
+      "LINE_1": 0,
+      "LINE_2": 0,
+      "TOTAL": 0
+    },
+    "2026-08-15": {
+      "LINE_1": 0,
+      "LINE_2": 0,
+      "TOTAL": 0
+    },
+    "2026-08-17": {
+      "LINE_1": 15,
+      "LINE_2": 15,
+      "TOTAL": 30
+    }
+  },
+  "optOutList": {}
+}
