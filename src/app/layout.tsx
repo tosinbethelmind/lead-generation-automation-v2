@@ -126,7 +126,7 @@ const jsonLdSchema = {
     {
       '@type': 'SoftwareApplication',
       '@id': 'https://www.bethelmindanalytics.com/#software',
-      name: 'ApexReach AI Business Automation Suite',
+      name: 'Bethelmind Analytics B2B Suite',
       operatingSystem: 'All',
       applicationCategory: 'BusinessApplication',
       offers: {

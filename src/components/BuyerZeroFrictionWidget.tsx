@@ -295,7 +295,7 @@ export function BuyerZeroFrictionWidget({
             <div>
               <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>MONIEPOINT MICROFINANCE BANK</div>
               <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', fontFamily: 'monospace' }}>7034297995</div>
-              <div style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>Name: ApexReach / {businessName}</div>
+              <div style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>Name: Bethelmind Analytics / {businessName}</div>
             </div>
             <button
               onClick={handleCopyAccount}

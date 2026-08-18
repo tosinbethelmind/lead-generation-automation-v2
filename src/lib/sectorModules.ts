@@ -734,10 +734,10 @@ export function generateVirtualAccountDva(
   return {
     bankName: 'Moniepoint Microfinance Bank',
     accountNumber: randomAcc,
-    accountName: `ApexReach / ${merchantName.substring(0, 15)}`,
+    accountName: `Bethelmind Analytics / ${merchantName.substring(0, 15)}`,
     merchantReference,
     expiresInMinutes: 60,
-    paymentInstructionsText: `Transfer ₦${amountNgn.toLocaleString()} to ${randomAcc} (Moniepoint MFB). Account Name: ApexReach / ${merchantName}. Payment auto-verifies in 10 seconds!`,
+    paymentInstructionsText: `Transfer ₦${amountNgn.toLocaleString()} to ${randomAcc} (Moniepoint MFB). Account Name: Bethelmind Analytics / ${merchantName}. Payment auto-verifies in 10 seconds!`,
   };
 }
 

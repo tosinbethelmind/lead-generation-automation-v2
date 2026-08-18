@@ -188,7 +188,7 @@ export function MoniepointDvaClaimBox({
 
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#94a3b8' }}>
           <span>ACCOUNT NAME</span>
-          <span style={{ color: '#f8fafc', fontWeight: 600 }}>{dvaData?.dva?.accountName || `ApexReach / ${businessName}`}</span>
+          <span style={{ color: '#f8fafc', fontWeight: 600 }}>{dvaData?.dva?.accountName || `Bethelmind Analytics / ${businessName}`}</span>
         </div>
 
         <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: 700 }}>

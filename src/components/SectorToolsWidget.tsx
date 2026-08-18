@@ -13,7 +13,7 @@ interface SectorToolsWidgetProps {
 
 export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitle: string; toolSlug: string; description: string }) {
   const [copied, setCopied] = useState(false);
-  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/tools/${toolSlug}` : `https://apexreach.app/tools/${toolSlug}`;
+  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/tools/${toolSlug}` : `https://www.bethelmindanalytics.com/tools/${toolSlug}`;
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out this free 24-Hour ${toolTitle} Tool (${description}): ${shareUrl}`)}`;
 
   const handleCopy = () => {
@@ -54,7 +54,7 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
 
 export function SectorToolsWidget({
   businessCategory = 'Solar',
-  businessName = 'ApexReach Demo',
+  businessName = 'Bethelmind Demo',
   merchantPhone = '08012345678',
 }: SectorToolsWidgetProps) {
   const [activeTab, setActiveTab] = useState<
@@ -120,7 +120,7 @@ export function SectorToolsWidget({
         <div className="flex items-center justify-between">
           <div>
             <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold uppercase tracking-wider text-white mb-2">
-              ApexReach Revenue Engine 2026
+              Bethelmind Revenue Engine 2026
             </span>
             <h2 className="text-2xl font-bold text-white">Interactive Sector Calculator & Trust Suite</h2>
             <p className="text-blue-100 text-sm mt-1">

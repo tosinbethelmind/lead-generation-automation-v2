@@ -141,15 +141,32 @@ async function run() {
   const nowIso = new Date().toISOString();
 
   for (let i = 0; i < targetLeads.length; i++) {
-    const lead = targetLeads[i];
-    const phone = lead.phone_e164 || lead.phone || lead.phone_raw;
-    const name = lead.name;
-    const area = lead.area || lead.city || 'Lagos';
+    const rawName = lead.name || '';
+    const rawCategory = lead.category || 'Commercial Enterprise';
+    
+    // Clean noisy directory titles
+    let cleanName = rawName
+      .replace(/\|\|.*$/, '')
+      .replace(/\|.*$/, '')
+      .replace(/ - .*$/, '')
+      .replace(/\(.*?\)/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!cleanName || /^(lagos_det_|lead_|mock_|test)/i.test(cleanName)) {
+      cleanName = rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1) + ' Enterprise';
+    }
+
+    let cleanArea = (lead.area || lead.city || 'Lagos')
+      .replace(/^[^\w\s]+/, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
     const leadId = lead.lead_id || lead.id;
     const previewUrl = `https://www.bethelmindanalytics.com/preview/${encodeURIComponent(leadId)}`;
     const lineId = (i % 2 === 0) ? 1 : 2;
 
-    console.log(`[${i + 1}/${targetLeads.length}] 🏢 ${name.slice(0, 35).padEnd(35)} | 📱 ${phone.padEnd(16)} | Line ${lineId}`);
+    console.log(`[${i + 1}/${targetLeads.length}] 🏢 ${cleanName.slice(0, 35).padEnd(35)} | 📱 ${phone.padEnd(16)} | Line ${lineId}`);
     console.log(`   🔗 Prototype Link: ${previewUrl}`);
 
     if (!isNigerianMobile(phone)) {
@@ -158,10 +175,10 @@ async function run() {
       continue;
     }
 
-    const message = `Hello Management Team @ *${name}* 👋\n\n` +
-      `We noticed your business profile in ${area} and custom-built a modern, fast interactive website prototype & WhatsApp instant customer booking system tailored specifically for *${name}*.\n\n` +
+    const message = `Hello Management Team @ *${cleanName}* 👋\n\n` +
+      `We updated and fully configured your custom interactive website prototype & 24/7 WhatsApp quote engine:\n\n` +
       `🔗 *Live Prototype Link:* ${previewUrl}\n\n` +
-      `You can test the live demo on your phone today (Zero obligation / free to claim for your business).\n\n` +
+      `You can test the live demo directly on your phone today.\n\n` +
       `Best regards,\n` +
       `*Bethelmind Analytics Lagos Team*`;
 

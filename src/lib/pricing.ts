@@ -24,9 +24,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     simplicityHighlights: [
       '⚡ 0 Setup Complexity (Instant Launch)',
       '📲 Orders & inquiries drop straight to your personal WhatsApp',
-      '🎯 500 Verified Lagos B2B Small Business Contacts Included',
-      '⚡ Multi-Channel Autoresponder Engine (Instant Welcome & Keyword Replies)',
-      '🌐 Free Subdomain (yourname.apexreach.site)',
+      '🌐 Free Custom Staging Subdomain',
     ],
     features: [
       'Interactive Product / Service Catalog',
@@ -478,7 +476,7 @@ export interface CompetitorBenchmark {
   competitorsList: string[];
   typicalPriceRangeNGN: string;
   keyWeaknessInNigeria: string;
-  apexReachAdvantage: string;
+  bethelmindAdvantage: string;
 }
 
 export const NIGERIAN_COMPETITOR_BENCHMARKS: CompetitorBenchmark[] = [
@@ -487,21 +485,21 @@ export const NIGERIAN_COMPETITOR_BENCHMARKS: CompetitorBenchmark[] = [
     competitorsList: ['Bumpa', 'Selar.co', 'Catlog'],
     typicalPriceRangeNGN: '₦5,000 – ₦15,000 / month (₦50k – ₦120k / yr)',
     keyWeaknessInNigeria: 'Basic link-in-bio catalogs with NO sector calculation tools (Solar BOQ, Tokunbo Duty, CAC Fees), NO automated lead scraping, NO Voice AI, and NO custom landing page previews.',
-    apexReachAdvantage: 'ApexReach offers high-converting, sector-tailored calculation engines + instant Moniepoint DVAs + auto WhatsApp bot at the same or lower entry price.',
+    bethelmindAdvantage: 'Bethelmind Analytics offers high-converting, sector-tailored calculation engines + instant Moniepoint DVAs + auto WhatsApp bot at the same or lower entry price.',
   },
   {
     categoryName: 'Local Web Agencies & Freelancers (WordPress/Elementor)',
     competitorsList: ['Lagos/Abuja Web Agencies', 'Fiverr Freelancers'],
     typicalPriceRangeNGN: '₦150,000 – ₦450,000 one-time + ₦30k/yr hosting',
     keyWeaknessInNigeria: 'Takes 2 to 4 weeks to deliver, frequently non-responsive on mobile, requires technical maintenance, NO instant virtual accounts, NO Google Sheets CRM sync.',
-    apexReachAdvantage: 'Instant sub-second landing page generation with pre-populated lead data, 1-click zero-touch deployment for ₦45,000 (75% lower cost than agencies).',
+    bethelmindAdvantage: 'Instant sub-second landing page generation with pre-populated lead data, 1-click zero-touch deployment for ₦45,000 (75% lower cost than agencies).',
   },
   {
     categoryName: 'US / Global Marketing SaaS (GoHighLevel, HubSpot)',
     competitorsList: ['GoHighLevel ($97-$297/mo)', 'HubSpot'],
     typicalPriceRangeNGN: '$97 – $297 / month (₦155,000 – ₦475,000 / month)',
     keyWeaknessInNigeria: 'Prohibitively expensive due to USD rates, requires dollar cards (which frequently fail in Nigeria), NO Moniepoint/OPay DVA integration, NO Pidgin AI, NO local sector tools.',
-    apexReachAdvantage: 'Priced natively in Naira with Moniepoint DVA transfer support, Nigerian Pidgin AI tones, and built-in NCS Customs Duty & DISCO Tariff engines.',
+    bethelmindAdvantage: 'Priced natively in Naira with Moniepoint DVA transfer support, Nigerian Pidgin AI tones, and built-in NCS Customs Duty & DISCO Tariff engines.',
   },
 ];
 

@@ -189,7 +189,7 @@ export function SocialAdAutomationWidget({
                     💰 Maximum Cost Efficiency Math
                   </span>
                   <h4 className="text-xl font-extrabold text-white mt-1">
-                    Traditional Agency Ads vs ApexReach AI Ad Engine
+                    Traditional Agency Ads vs Bethelmind Analytics AI Ad Engine
                   </h4>
                 </div>
                 <div className="bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 px-4 py-2 rounded-xl text-xs font-bold">
@@ -207,7 +207,7 @@ export function SocialAdAutomationWidget({
                 </div>
 
                 <div className="bg-slate-900/80 p-4 rounded-2xl border border-emerald-500/40">
-                  <span className="text-xs text-emerald-400 block font-bold">ApexReach AI Cost / Lead</span>
+                  <span className="text-xs text-emerald-400 block font-bold">Bethelmind AI Cost / Lead</span>
                   <span className="text-2xl font-black text-emerald-300 mt-1 block">
                     ₦{campaign.efficiencyMetrics.aiOptimizedCostPerLeadNGN.toLocaleString()}
                   </span>
