@@ -105,9 +105,9 @@ export default function CleanExecutiveAdminDashboard() {
           const todayStr = new Date().toISOString().split('T')[0];
           const todayDispatched = contacted.filter((l: any) => {
             const cDate = (l.last_contacted_at || l.lastContactedAt || l.contactedAt || '').split('T')[0];
-            return cDate === todayStr || cDate === '2026-08-17' || cDate === '2026-08-18';
+            return cDate === todayStr;
           });
-          setDispatchedToday(todayDispatched.length > 0 ? todayDispatched.length : contacted.length);
+          setDispatchedToday(todayDispatched.length);
         }
       }
 
