@@ -60,7 +60,8 @@ interface PreviewData {
 }
 
 import { getDesignTheme, buildFallbackCopy } from '@/lib/designGenerator';
-import { sanitizeDisplayName, sanitizeCopyText } from '@/lib/leadsBundle';
+import { sanitizeDisplayName, sanitizeCopyText } from '@/lib/leadSanitizers';
+
 
 export default function PreviewPage() {
   const params = useParams();

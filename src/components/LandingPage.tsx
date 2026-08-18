@@ -6,7 +6,8 @@ import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus,
 import confetti from 'canvas-confetti';
 import { trackDualMetaEvent } from '@/lib/metaPixel';
 import { CustomerJourneyTracker } from '@/lib/customerJourneyTracker';
-import { sanitizeDisplayName, formatStagingDomain, sanitizeCopyText } from '@/lib/leadsBundle';
+import { sanitizeDisplayName, formatStagingDomain, sanitizeCopyText } from '@/lib/leadSanitizers';
+
 
 
 // Dynamic lazy-loaded widgets to minimize initial JS bundle size and accelerate load times
