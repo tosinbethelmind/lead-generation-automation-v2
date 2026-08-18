@@ -79,9 +79,11 @@ export async function POST(req: NextRequest) {
     
     try {
       if (!activeLead.notes?.includes('[PREVIEW_DEMO]')) {
+        const repo = getActiveLeadRepository();
         await repo.updateLeadStatus(leadId, 'CONTACTED', newNotes, timestamp);
       }
     } catch (repoErr: any) {
+
       console.warn('[ClaimRoute] Lead status update notice:', repoErr.message);
     }
 
