@@ -60,6 +60,7 @@ interface PreviewData {
 }
 
 import { getDesignTheme, buildFallbackCopy } from '@/lib/designGenerator';
+import { sanitizeDisplayName, sanitizeCopyText } from '@/lib/leadsBundle';
 
 export default function PreviewPage() {
   const params = useParams();
@@ -68,8 +69,6 @@ export default function PreviewPage() {
 
   // Pre-populate instant preview shell with luxury sector visual theme
   const [data, setData] = useState<PreviewData | null>(() => {
-    const fallbackName = leadId ? leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase() : 'VALUED BUSINESS';
-    
     let category = 'Professional Services';
     const lowerId = leadId.toLowerCase();
     if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge|dining|lounge|restaurant|bar|cafe/.test(lowerId)) {
@@ -94,6 +93,7 @@ export default function PreviewPage() {
       category = 'Solar & Renewable Energy';
     }
 
+    const fallbackName = sanitizeDisplayName(leadId, category);
     const luxuryTheme = getDesignTheme(category, leadId);
     const tailoredCopy = buildFallbackCopy({
       name: fallbackName,
@@ -143,11 +143,23 @@ export default function PreviewPage() {
         return null;
       })
       .then((fullData) => {
-        if (fullData) setData(fullData);
+        if (fullData) {
+          if (fullData.lead?.name) {
+            fullData.lead.name = sanitizeDisplayName(fullData.lead.name, fullData.lead.category || '');
+          }
+          if (fullData.copy) {
+            const safe = fullData.lead?.name || 'Premier Lagos Enterprise';
+            if (fullData.copy.heroTitle) fullData.copy.heroTitle = sanitizeCopyText(fullData.copy.heroTitle, safe);
+            if (fullData.copy.heroSubtitle) fullData.copy.heroSubtitle = sanitizeCopyText(fullData.copy.heroSubtitle, safe);
+            if (fullData.copy.aboutText) fullData.copy.aboutText = sanitizeCopyText(fullData.copy.aboutText, safe);
+          }
+          setData(fullData);
+        }
       })
       .catch((err: unknown) => {
         console.warn('Background preview hydration notice:', err);
       });
+
 
     // Defer non-critical journey tracking to idle time (0ms blocking)
     const runTracking = () => {

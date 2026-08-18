@@ -3,6 +3,8 @@ import { getRuntimeConfig } from '@/lib/localConfig';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
 import { calculateLeadClaimFee } from '@/lib/pricing';
 import { initiateOPay } from '@/lib/payments/opay';
+import { findBundledLead, sanitizeDisplayName } from '@/lib/leadsBundle';
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,20 +41,29 @@ export async function POST(req: NextRequest) {
     const secretKey = index !== -1 ? secretKeys[index] : (publicKey === 'mock' ? 'mock' : (secretKeys[0] || 'mock'));
     const merchantId = index !== -1 ? merchantIds[index] : (publicKey === 'mock' ? 'mock' : (merchantIds[0] || 'mock'));
 
-    const repo = getActiveLeadRepository();
-    let lead: any = (await repo.getLeadById(leadId)) as any;
+    let lead: any = findBundledLead(leadId);
     if (!lead) {
-      const formattedName = leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase();
+      try {
+        const repo = getActiveLeadRepository();
+        lead = (await repo.getLeadById(leadId)) as any;
+      } catch (_) {}
+    }
+
+    if (!lead) {
+      const safeName = sanitizeDisplayName(leadId, 'Professional Services');
       lead = {
         id: leadId,
-        name: formattedName || 'VALUED ENTERPRISE',
+        name: safeName,
         email: email || 'admin@bethelmindanalytics.com',
         phone: '+2348022791227',
         category: 'Professional Services',
         address: 'Lagos, Nigeria',
         city: 'Lagos'
       };
+    } else {
+      lead.name = sanitizeDisplayName(lead.name, lead.category);
     }
+
 
     // Assign chosen strategy and features in-memory for correct pricing
     if (upgradeStrategy) {

@@ -5,7 +5,9 @@ import { getPitchDetails } from '@/lib/pitchHelper';
 import { getOverridesDir } from '@/lib/overrides';
 import { calculateLeadClaimFee } from '@/lib/pricing';
 import { getDesignTheme, buildFallbackCopy, DesignTheme, GeneratedCopy } from '@/lib/designGenerator';
+import { findBundledLead, sanitizeDisplayName, sanitizeCopyText } from '@/lib/leadsBundle';
 import fs from 'fs';
+
 import path from 'path';
 
 export const dynamic = 'force-dynamic';
@@ -19,24 +21,34 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Missing leadId parameter' }, { status: 400 });
     }
 
-    const repo = getActiveLeadRepository();
-    let lead = (await repo.getLeadById(leadId)) as any;
+    // 1. Instant zero-latency bundled lead lookup (always available on Vercel/Edge)
+    let lead = findBundledLead(leadId) as any;
 
+    // 2. Database lookup fallback
     if (!lead) {
-      const formattedName = leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase();
+      try {
+        const repo = getActiveLeadRepository();
+        lead = (await repo.getLeadById(leadId)) as any;
+      } catch (_) {}
+    }
+
+    // 3. Guaranteed clean display fallback (NEVER expose raw UUIDs)
+    if (!lead) {
       let category = 'Professional Services';
       const lowerId = leadId.toLowerCase();
       if (/solar|inverter|energy|battery/.test(lowerId)) category = 'Solar Energy & Inverter Dealer';
       else if (/estate|property|home|realty|housing/.test(lowerId)) category = 'Real Estate & Luxury Property';
       else if (/car|auto|motor|vehicle|tokunbo/.test(lowerId)) category = 'Automotive & Tokunbo Importer';
-      else if (/medical|clinic|doctor|health/.test(lowerId)) category = 'Medical & Clinics';
+      else if (/medical|clinic|doctor|health|dental|dentist/.test(lowerId)) category = 'Medical & Healthcare Clinics';
       else if (/school|academy|education/.test(lowerId)) category = 'Schools & Education';
-      else if (/boutique|fashion|style|beauty/.test(lowerId)) category = 'Boutique & Fashion';
+      else if (/boutique|fashion|style|beauty|salon|spa/.test(lowerId)) category = 'Boutique & Luxury Fashion';
+
+      const safeName = sanitizeDisplayName(leadId, category);
 
       lead = {
         lead_id: leadId,
         source: 'GOOGLE',
-        name: formattedName || 'VALUED BUSINESS',
+        name: safeName,
         category,
         address: 'Commercial Hub, Lagos',
         area: 'Lekki Phase 1',
@@ -56,8 +68,11 @@ export async function GET(req: NextRequest) {
         last_contacted_at: '',
         duplicate_of_lead_id: '',
         business_summary: `Verified ${category} Enterprise in Lagos`,
-        notes: '[PREVIEW_DEMO] Synthetic lead created during interactive claim preview.'
+        notes: '[PREVIEW_DEMO] Interactive claim preview.'
       };
+    } else {
+      // Ensure existing lead name is never raw hex
+      lead.name = sanitizeDisplayName(lead.name, lead.category);
     }
 
     // If lead has a website, fetch analysis + CMS fingerprint data to enrich AI prompt
@@ -208,7 +223,15 @@ export async function GET(req: NextRequest) {
       };
     }
 
+    if (copy) {
+      const safe = lead.name || 'Premier Lagos Enterprise';
+      if (copy.heroTitle) copy.heroTitle = sanitizeCopyText(copy.heroTitle, safe);
+      if (copy.heroSubtitle) copy.heroSubtitle = sanitizeCopyText(copy.heroSubtitle, safe);
+      if (copy.aboutText) copy.aboutText = sanitizeCopyText(copy.aboutText, safe);
+    }
+
     const keys = getRotatedPaystackKeys(config.paystackPublicKey, config.paystackSecretKey);
+
 
     const responsePayload = {
       lead,

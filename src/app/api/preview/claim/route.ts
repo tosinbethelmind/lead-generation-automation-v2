@@ -4,6 +4,7 @@ import { getRuntimeConfig } from '@/lib/localConfig';
 import { sendNotificationEmail } from '@/lib/email';
 import { sendAdminPaymentWhatsAppAlert } from '@/lib/whatsapp';
 import { commitFileToGitHub } from '@/lib/github';
+import { findBundledLead, sanitizeDisplayName } from '@/lib/leadsBundle';
 import fs from 'fs';
 import path from 'path';
 
@@ -20,15 +21,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required parameters: leadId, clientName, or clientEmail' }, { status: 400 });
     }
 
-    const repo = getActiveLeadRepository();
-    let lead = await repo.getLeadById(leadId);
+    let lead: any = findBundledLead(leadId);
+    if (!lead) {
+      try {
+        const repo = getActiveLeadRepository();
+        lead = await repo.getLeadById(leadId);
+      } catch (_) {}
+    }
 
     if (!lead) {
-      const formattedName = leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase();
+      const safeName = sanitizeDisplayName(leadId, 'Professional Services');
       lead = {
         lead_id: leadId,
         source: 'GOOGLE',
-        name: formattedName || 'VALUED BUSINESS',
+        name: safeName,
         category: 'Professional Services',
         address: 'Commercial Hub, Lagos',
         area: 'Lekki Phase 1',
@@ -36,6 +42,7 @@ export async function POST(req: NextRequest) {
         phone_e164: '+2348022791227',
         phone_raw: '0802 279 1227',
         email: clientEmail,
+
         website: '',
         rating: 4.9,
         reviews_count: 38,

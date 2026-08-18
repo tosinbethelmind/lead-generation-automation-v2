@@ -125,6 +125,16 @@ async function run() {
   const targetLeads = allLeads.filter(l => l.status === 'CONTACTED');
   console.log(`🎯 Found ${targetLeads.length} Day 2 Contacted Leads to process.\n`);
 
+  // MANDATORY PRE-FLIGHT QA GATE
+  const { runPreFlightQA } = require('./qa_outreach_preflight');
+  const qa = await runPreFlightQA(targetLeads);
+  if (!qa.approved) {
+    console.error('\n🛑 DISPATCH ABORTED BY QUALITY ASSURANCE GATEKEEPER.');
+    console.error(`Failed Leads: ${qa.failed} / ${qa.total}. Fix all highlighted issues before proceeding.\n`);
+    return;
+  }
+  console.log('✅ QUALITY ASSURANCE PASSED: All leads and URLs verified 100% genuine and leak-free.\n');
+
   let dispatchedCount = 0;
   let skippedCount = 0;
   let errorCount = 0;

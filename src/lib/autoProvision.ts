@@ -1,6 +1,8 @@
 import { sendNotificationEmail } from '@/lib/email';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
 import { getLocalConfig } from '@/lib/localConfig';
+import { findBundledLead, sanitizeDisplayName } from '@/lib/leadsBundle';
+
 
 export interface ProvisionPayload {
   leadId: string;
@@ -79,15 +81,20 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
 
   console.log(`[AutoProvision] Initiating zero-touch deployment for lead ${leadId} (${clientName}). Payment: ₦${claimFeeNGN.toLocaleString()} via ${paymentMethod}`);
 
-  const repo = getActiveLeadRepository();
-  let lead = await repo.getLeadById(leadId);
+  let lead: any = findBundledLead(leadId);
+  if (!lead) {
+    try {
+      const repo = getActiveLeadRepository();
+      lead = await repo.getLeadById(leadId);
+    } catch (_) {}
+  }
 
   if (!lead) {
-    const formattedName = leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase();
+    const safeName = sanitizeDisplayName(leadId, 'Professional Services');
     lead = {
       lead_id: leadId,
       source: 'GOOGLE',
-      name: formattedName || 'CLIENT BUSINESS',
+      name: safeName,
       category: 'Professional Services',
       address: 'Commercial Hub, Lagos',
       area: 'Lekki Phase 1',
@@ -95,6 +102,7 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
       phone_e164: '+2348022791227',
       phone_raw: '0802 279 1227',
       email: clientEmail,
+
       website: '',
       rating: 4.9,
       reviews_count: 38,

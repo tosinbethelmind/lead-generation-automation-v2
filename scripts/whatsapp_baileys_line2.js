@@ -19,6 +19,7 @@ app.use(cors());
 
 const PORT = process.env.LINE2_PORT || 3009;
 const AUTH_DIR = path.join(__dirname, '../local_db/baileys_auth_line2');
+const BACKUP_DIR = path.join(__dirname, '../local_db/baileys_auth_line2_solidified_backup');
 
 let sock = null;
 let connectionStatus = "disconnected";
@@ -26,9 +27,35 @@ let qrCodeBase64 = "";
 let qrCodeRaw = "";
 let lastPairingCode = "";
 
+function syncDirSync(src, dest) {
+  try {
+    if (!fs.existsSync(src)) return;
+    if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+    const entries = fs.readdirSync(src);
+    for (const entry of entries) {
+      const srcPath = path.join(src, entry);
+      const destPath = path.join(dest, entry);
+      const stat = fs.statSync(srcPath);
+      if (stat.isFile()) {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+  } catch (err) {
+    console.error('[Line 2 Sync Error]:', err.message);
+  }
+}
+
 async function connectToWhatsApp() {
   if (!fs.existsSync(AUTH_DIR)) {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
+  }
+
+  // Self-Healing Session Solidification: Auto-restore if creds missing
+  if (!fs.existsSync(path.join(AUTH_DIR, 'creds.json'))) {
+    if (fs.existsSync(path.join(BACKUP_DIR, 'creds.json'))) {
+      console.log('🔄 [Baileys Line 2] Restoring authenticated session from solidified backup...');
+      syncDirSync(BACKUP_DIR, AUTH_DIR);
+    }
   }
 
   try {
@@ -47,7 +74,7 @@ async function connectToWhatsApp() {
       logger: pino({ level: 'silent' }),
       auth: state,
       printQRInTerminal: true,
-      browser: ['ApexReach Engine', 'Chrome', '124.0.0']
+      browser: ['Bethelmind Analytics', 'Chrome', '124.0.0']
     });
 
     sock.ev.on('connection.update', async (update) => {
@@ -56,7 +83,7 @@ async function connectToWhatsApp() {
       if (qr) {
         qrCodeRaw = qr;
         connectionStatus = "qr";
-        console.log("\n--- WHATSAPP LINE 2 QR CODE ---");
+        console.log("\n--- WHATSAPP LINE 2 (+234 904 605 0469) QR CODE ---");
         qrcodeTerminal.generate(qr, { small: true });
         try {
           qrCodeBase64 = await QRCode.toDataURL(qr);
@@ -75,6 +102,7 @@ async function connectToWhatsApp() {
         qrCodeBase64 = "";
         qrCodeRaw = "";
         console.log('✅ WhatsApp Line 2 (+234 904 605 0469) connected & online!');
+        syncDirSync(AUTH_DIR, BACKUP_DIR);
       }
 
       if (connection === 'close') {
@@ -85,12 +113,23 @@ async function connectToWhatsApp() {
         const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
         console.log(`WhatsApp Line 2 connection closed (Code: ${statusCode}). Reconnecting: ${shouldReconnect}`);
         if (shouldReconnect) {
-          setTimeout(connectToWhatsApp, 3000);
+          setTimeout(connectToWhatsApp, 2500);
+        } else {
+          console.log('⚠️ WhatsApp Line 2 logged out. Attempting recovery from solidified backup in 5s...');
+          setTimeout(() => {
+            if (fs.existsSync(path.join(BACKUP_DIR, 'creds.json'))) {
+              syncDirSync(BACKUP_DIR, AUTH_DIR);
+            }
+            connectToWhatsApp();
+          }, 5000);
         }
       }
     });
 
-    sock.ev.on('creds.update', saveCreds);
+    sock.ev.on('creds.update', () => {
+      saveCreds();
+      syncDirSync(AUTH_DIR, BACKUP_DIR);
+    });
   } catch (err) {
     console.error('Failed to initialize Line 2 socket:', err.message);
     setTimeout(connectToWhatsApp, 5000);
@@ -187,15 +226,95 @@ app.get('/', (req, res) => {
 });
 
 // REST Endpoints
-app.get('/status', (req, res) => {
+const getStatusHandler = (req, res) => {
+  const actualPhone = sock?.user?.id ? ('+' + sock.user.id.split(':')[0]) : '+234 904 605 0469';
   res.json({
     lineId: 2,
-    phone: '+234 904 605 0469',
+    phone: actualPhone,
     status: connectionStatus,
     qrCodeUrl: qrCodeBase64,
     qrRaw: qrCodeRaw,
     lastPairingCode
   });
+};
+
+app.get('/status', getStatusHandler);
+app.get('/api/status', getStatusHandler);
+
+// GET /on-whatsapp helper
+app.get('/on-whatsapp', async (req, res) => {
+  const phone = req.query.phone || '';
+  if (!phone) return res.json({ active: false, existsOnWhatsApp: false });
+
+  if (connectionStatus !== 'connected' || !sock) {
+    return res.json({ active: true, existsOnWhatsApp: true, fallback: true });
+  }
+
+  try {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const jid = `${cleanPhone}@s.whatsapp.net`;
+    const results = await sock.onWhatsApp(jid);
+    const exists = results && results.length > 0 && results[0].exists;
+    return res.json({ active: true, existsOnWhatsApp: Boolean(exists) });
+  } catch (_) {
+    return res.json({ active: true, existsOnWhatsApp: true, fallback: true });
+  }
+});
+
+// REST Endpoint to check if phone number has active WhatsApp account
+app.post('/check-whatsapp', async (req, res) => {
+  const { phone } = req.body;
+  if (!phone) {
+    return res.status(400).json({ error: "Missing phone in payload" });
+  }
+
+  if (connectionStatus !== 'connected' || !sock) {
+    const cleanDigits = phone.replace(/\D/g, '');
+    const isValidNg = cleanDigits.startsWith('234') && cleanDigits.length === 13;
+    return res.json({ 
+      phone: phone,
+      exists: isValidNg, 
+      verified_via: 'syntax_fallback',
+      message: 'Baileys client not connected, checked syntax.' 
+    });
+  }
+
+  try {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const jid = `${cleanPhone}@s.whatsapp.net`;
+    const results = await sock.onWhatsApp(jid);
+    
+    if (results && results.length > 0 && results[0].exists) {
+      return res.json({
+        phone: phone,
+        exists: true,
+        jid: results[0].jid,
+        verified_via: 'baileys_live'
+      });
+    } else {
+      return res.json({
+        phone: phone,
+        exists: false,
+        verified_via: 'baileys_live'
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: err.message, exists: false });
+  }
+});
+
+// Endpoint to reconnect or reset connection gracefully
+app.post('/reconnect', (req, res) => {
+  try {
+    connectionStatus = "connecting";
+    if (sock) {
+      sock.end();
+    }
+    setTimeout(connectToWhatsApp, 1000);
+    return res.json({ success: true, message: "Reconnection initiated" });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
 });
 
 app.all('/request-pairing-code', async (req, res) => {

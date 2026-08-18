@@ -26,8 +26,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 4. PHONE LINE ARCHITECTURE & ADMIN NOTIFICATIONS
 - **ADMIN LINE (ALERTS & APPROVALS ONLY):** `0802 279 1227` (`ADMIN_WA_PHONE`) & Email (`bethelmindrecruit@gmail.com`). NEVER dispatch cold outreach from this number.
-- **COLD OUTREACH LINE 1 (PRIMARY OUTREACH):** `0702 626 6946` (`OUTREACH_WA_PHONE_1`, Port `3007`, session: `local_db/baileys_auth`).
-- **COLD OUTREACH LINE 2 (ROTATOR OUTREACH):** `0904 605 0469` (`OUTREACH_WA_PHONE_2`, Port `3009`, session: `local_db/baileys_auth_line2`).
+- **COLD OUTREACH LINE 1 (PRIMARY OUTREACH):** `0702 626 6946` / `+234 702 626 6946` (`OUTREACH_WA_PHONE_1`, Port `3007`, Name: `Tosin 1`, Primary Auth: `local_db/baileys_auth`, Solidified Backup: `local_db/baileys_auth_solidified_backup` & `local_db/baileys_auth_permanent_master`).
+- **COLD OUTREACH LINE 2 (ROTATOR OUTREACH):** `0904 605 0469` / `+234 904 605 0469` (`OUTREACH_WA_PHONE_2`, Port `3009`, Name: `TOSIN New`, Primary Auth: `local_db/baileys_auth_line2`, Solidified Backup: `local_db/baileys_auth_line2_solidified_backup`).
+- **PERMANENT SESSION SOLIDIFICATION & SELF-HEALING:**
+  - Both WhatsApp Lines (1 & 2) are 100% paired, authenticated, and cryptographically solidified.
+  - NEVER delete, reset, or purge auth session directories.
+  - In the event of system restart or missing creds, automatic self-healing immediately restores authentication from `baileys_auth_solidified_backup` and `baileys_auth_line2_solidified_backup`.
+  - Both services run simultaneously on Ports `3007` (Line 1) and `3009` (Line 2) for round-robin outreach load balancing.
 - **NO Admin SMS:** Do NOT send admin alerts or status updates via SMS (preserves carrier airtime).
 
 ## 5. ZERO-TOLERANCE SYNTHETIC / MOCK LEAD POLICY

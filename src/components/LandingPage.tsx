@@ -6,6 +6,8 @@ import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus,
 import confetti from 'canvas-confetti';
 import { trackDualMetaEvent } from '@/lib/metaPixel';
 import { CustomerJourneyTracker } from '@/lib/customerJourneyTracker';
+import { sanitizeDisplayName, formatStagingDomain, sanitizeCopyText } from '@/lib/leadsBundle';
+
 
 // Dynamic lazy-loaded widgets to minimize initial JS bundle size and accelerate load times
 const TransferRebuildOptions = dynamic(() => import('@/components/TransferRebuildOptions').then(m => m.TransferRebuildOptions), { ssr: false });
@@ -148,7 +150,16 @@ const LUXURY_PRESETS = [
 
 export default function LandingPage({ data, leadId, isPreview = false }: LandingPageProps) {
   const { lead, copy, paymentConfig } = data;
+  if (lead) {
+    lead.name = sanitizeDisplayName(lead.name || leadId, lead.category || '');
+  }
+  if (copy && lead) {
+    if (copy.heroTitle) copy.heroTitle = sanitizeCopyText(copy.heroTitle, lead.name);
+    if (copy.heroSubtitle) copy.heroSubtitle = sanitizeCopyText(copy.heroSubtitle, lead.name);
+    if (copy.aboutText) copy.aboutText = sanitizeCopyText(copy.aboutText, lead.name);
+  }
   const [selectedTheme, setSelectedTheme] = useState(data.theme);
+
   const [showThemeBar, setShowThemeBar] = useState(false);
   const theme = selectedTheme || data.theme;
 
@@ -1966,8 +1977,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   wordBreak: 'break-all'
                 }}>
                   <span>🔒</span>
-                  <span>https://www.{lead.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com.ng</span>
+                  <span>{formatStagingDomain(lead.name)}</span>
                 </div>
+
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }}></span>

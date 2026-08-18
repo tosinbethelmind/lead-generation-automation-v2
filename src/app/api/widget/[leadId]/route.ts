@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
+import { findBundledLead, sanitizeDisplayName } from '@/lib/leadsBundle';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -21,17 +23,20 @@ export async function GET(
       leadId = leadId.replace(/\.js$/, '');
     }
 
-    let lead = null;
-    try {
-      const repo = getActiveLeadRepository();
-      lead = await Promise.race([
-        repo.getLeadById(leadId),
-        new Promise((resolve) => setTimeout(() => resolve(null), 2500))
-      ]) as any;
-    } catch (_) {}
+    let lead: any = findBundledLead(leadId);
+    if (!lead) {
+      try {
+        const repo = getActiveLeadRepository();
+        lead = await Promise.race([
+          repo.getLeadById(leadId),
+          new Promise((resolve) => setTimeout(() => resolve(null), 2500))
+        ]) as any;
+      } catch (_) {}
+    }
 
-    const businessName = lead ? lead.name : leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase();
+    const businessName = sanitizeDisplayName(lead ? lead.name : leadId, lead?.category || 'B2B Services');
     const sector = lead ? lead.category || 'B2B Services' : 'General Business';
+
     let appOrigin = process.env.NEXT_PUBLIC_APP_URL || '';
     if (!appOrigin || appOrigin.includes('localhost') || appOrigin.includes('127.0.0.1')) {
       const host = req.headers.get('x-forwarded-host') || req.headers.get('host');

@@ -20,10 +20,42 @@ let requireHumanApproval = true; // DEFAULT: Human-in-the-loop enabled
 
 const pendingRepliesQueue = [];
 
+function syncDirSync(src, dest) {
+  try {
+    if (!fs.existsSync(src)) return;
+    if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+    const entries = fs.readdirSync(src);
+    for (const entry of entries) {
+      const srcPath = path.join(src, entry);
+      const destPath = path.join(dest, entry);
+      const stat = fs.statSync(srcPath);
+      if (stat.isFile()) {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+  } catch (err) {
+    console.error('[Baileys Sync Error]:', err.message);
+  }
+}
+
 async function connectToWhatsApp() {
   const authDir = path.join(__dirname, '../local_db/baileys_auth');
+  const backupDir = path.join(__dirname, '../local_db/baileys_auth_solidified_backup');
+  const masterBackupDir = path.join(__dirname, '../local_db/baileys_auth_permanent_master');
+
   if (!fs.existsSync(authDir)) {
     fs.mkdirSync(authDir, { recursive: true });
+  }
+
+  // Self-Healing Session Solidification: Auto-restore if creds missing
+  if (!fs.existsSync(path.join(authDir, 'creds.json'))) {
+    if (fs.existsSync(path.join(backupDir, 'creds.json'))) {
+      console.log('🔄 [Baileys Line 1] Restoring authenticated session from solidified backup...');
+      syncDirSync(backupDir, authDir);
+    } else if (fs.existsSync(path.join(masterBackupDir, 'creds.json'))) {
+      console.log('🔄 [Baileys Line 1] Restoring authenticated session from permanent master backup...');
+      syncDirSync(masterBackupDir, authDir);
+    }
   }
 
   const { state, saveCreds } = await useMultiFileAuthState(authDir);
@@ -34,7 +66,7 @@ async function connectToWhatsApp() {
     logger: pino({ level: 'silent' }),
     auth: state,
     printQRInTerminal: true,
-    browser: ['Ubuntu', 'Chrome', '20.0.04']
+    browser: ['Bethelmind Analytics', 'Chrome', '124.0.0']
   });
 
   sock.ev.on('connection.update', async (update) => {
@@ -43,7 +75,7 @@ async function connectToWhatsApp() {
     if (qr) {
       qrCodeRaw = qr;
       connectionStatus = "qr";
-      console.log("\n--- WHATSAPP QR CODE ---");
+      console.log("\n--- WHATSAPP LINE 1 (+234 702 626 6946) QR CODE ---");
       qrcodeTerminal.generate(qr, { small: true });
       console.log("Scan this QR code with your phone to connect custom Baileys API.");
       
@@ -56,29 +88,45 @@ async function connectToWhatsApp() {
 
     if (connection === 'connecting') {
       connectionStatus = 'connecting';
-      console.log('Connecting to WhatsApp...');
+      console.log('Connecting WhatsApp Line 1 (+234 702 626 6946)...');
     }
 
     if (connection === 'open') {
       connectionStatus = 'connected';
       qrCodeBase64 = "";
       qrCodeRaw = "";
-      console.log('WhatsApp connection opened successfully!');
+      console.log('✅ WhatsApp Line 1 (+234 702 626 6946) connected & online!');
+      // Solidify backup on open
+      syncDirSync(authDir, backupDir);
     }
 
     if (connection === 'close') {
       connectionStatus = 'disconnected';
       qrCodeBase64 = "";
       qrCodeRaw = "";
-      const shouldReconnect = (lastDisconnect.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-      console.log(`Connection closed. Reconnecting: ${shouldReconnect}`, lastDisconnect.error);
+      const statusCode = (lastDisconnect?.error)?.output?.statusCode;
+      const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+      console.log(`WhatsApp Line 1 connection closed (Code: ${statusCode}). Reconnecting: ${shouldReconnect}`);
       if (shouldReconnect) {
         setTimeout(connectToWhatsApp, 3000);
+      } else {
+        console.log('⚠️ WhatsApp Line 1 logged out. Attempting recovery from solidified backup in 5s...');
+        setTimeout(() => {
+          if (fs.existsSync(path.join(backupDir, 'creds.json'))) {
+            syncDirSync(backupDir, authDir);
+          }
+          connectToWhatsApp();
+        }, 5000);
       }
     }
   });
 
-  sock.ev.on('creds.update', saveCreds);
+  sock.ev.on('creds.update', () => {
+    saveCreds();
+    // Synchronize to persistent backup automatically
+    syncDirSync(authDir, backupDir);
+    syncDirSync(authDir, masterBackupDir);
+  });
 
   // ── WhatsApp AI Auto-Reply Listener ──────────────────────────────────────
   sock.ev.on('messages.upsert', async (m) => {
@@ -233,7 +281,7 @@ async function connectToWhatsApp() {
         const lowerMsg = textMessage.toLowerCase();
 
         if (lowerMsg.includes('price') || lowerMsg.includes('cost') || lowerMsg.includes('how much') || lowerMsg.includes('plan') || lowerMsg.includes('package')) {
-          replyText = `Hello! 👋 Thanks for reaching out to ApexReach.\n\nOur Growth Packages start at ₦75,000 for Starter WhatsApp Catalogs and ₦185,000 for full Business Portals with virtual bank transfer. Would you like to view a live preview for your business?`;
+          replyText = `Hello! 👋 Thanks for reaching out to Bethelmind Analytics.\n\nOur Growth Packages start at ₦75,000 for Starter WhatsApp Catalogs and ₦185,000 for full Business Portals with virtual bank transfer. Would you like to view a live preview for your business?`;
           isTier1StandardFaq = true;
         } else if (lowerMsg.includes('preview') || lowerMsg.includes('site') || lowerMsg.includes('website') || lowerMsg.includes('link') || lowerMsg.includes('demo')) {
           replyText = `Great! 🌐 You can view your business preview live at: https://www.bethelmindanalytics.com/\n\nReply with 'CLAIM' when you are ready to launch!`;
@@ -243,7 +291,7 @@ async function connectToWhatsApp() {
           isTier1StandardFaq = true;
         } else {
           // Tier 2: Custom lead question or specialized inquiry
-          replyText = `Hello! 👋 Thank you for contacting ApexReach B2B Growth Engine.\nHow can we assist your business today? (Reply 'PRICE' for packages, 'PREVIEW' for website samples, or 'CLAIM' to activate your portal).`;
+          replyText = `Hello! 👋 Thank you for contacting Bethelmind Analytics B2B Growth Engine.\nHow can we assist your business today? (Reply 'PRICE' for packages, 'PREVIEW' for website samples, or 'CLAIM' to activate your portal).`;
           isTier1StandardFaq = false;
         }
 
@@ -591,7 +639,7 @@ app.get('/', (req, res) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>ApexReach — Baileys WhatsApp Connection Console</title>
+      <title>Bethelmind Analytics — WhatsApp Line 1 (+234 702 626 6946)</title>
       <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px; max-width: 520px; width: 100%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
@@ -616,8 +664,8 @@ app.get('/', (req, res) => {
     </head>
     <body>
       <div class="card">
-        <h1>📱 WhatsApp Baileys Gateway</h1>
-        <p>ApexReach Lead Outreach & Pre-Verification Engine</p>
+        <h1>📱 WhatsApp Line 1 Gateway</h1>
+        <p>Bethelmind Analytics — +234 702 626 6946</p>
         <div id="statusBadge" class="status-badge status-disconnected">Checking...</div>
 
         <div class="tab-buttons">
@@ -627,7 +675,7 @@ app.get('/', (req, res) => {
 
         <div id="pairingTab" class="pairing-box">
           <label for="phoneInput">Enter your WhatsApp Phone Number (with Country Code):</label>
-          <input type="text" id="phoneInput" class="pairing-input" placeholder="e.g. 2348022791227 or 08022791227" value="2348022791227" />
+          <input type="text" id="phoneInput" class="pairing-input" placeholder="e.g. 2347026266946 or 07026266946" value="2347026266946" />
           <button class="btn" onclick="getPairingCode()">🚀 Get 8-Digit Pairing Code</button>
           <div id="codeDisplay" class="code-display"></div>
           <div id="codeInstruction" style="font-size:0.8rem; color:#94a3b8; margin-top:10px; display:none;">
@@ -695,7 +743,7 @@ app.get('/', (req, res) => {
               badge.innerText = 'STATUS: CONNECTED';
               document.getElementById('pairingTab').style.display = 'none';
               document.getElementById('qrTab').style.display = 'block';
-              container.innerHTML = '<div style="color:#059669; font-weight:bold; font-size:1.2rem; padding: 40px 10px;">✅ WhatsApp Active & Connected!<br/><span style="font-size:0.85rem; color:#475569;">Ready for Lead Pre-Verification & Outreach</span></div>';
+              container.innerHTML = '<div style="color:#059669; font-weight:bold; font-size:1.2rem; padding: 40px 10px;">✅ WhatsApp Line 1 Active & Connected!<br/><span style="font-size:0.85rem; color:#475569;">+234 702 626 6946 — Ready for Outreach</span></div>';
             } else if (data.qrCodeUrl) {
               container.innerHTML = '<img src="' + data.qrCodeUrl + '" alt="WhatsApp QR Code"/><p style="color:#334155; font-size:0.8rem; margin-top:8px;">Scan with WhatsApp on your phone</p>';
             } else {
@@ -713,16 +761,20 @@ app.get('/', (req, res) => {
   `);
 });
 
-// REST Endpoint to query connection status and get pairing QR code
-app.get('/status', (req, res) => {
+const getStatusHandler = (req, res) => {
+  const actualPhone = sock?.user?.id ? ('+' + sock.user.id.split(':')[0]) : '+234 702 626 6946';
   res.json({
+    lineId: 1,
+    phone: actualPhone,
     status: connectionStatus,
     qrCodeUrl: qrCodeBase64,
     qrRaw: qrCodeRaw,
     lastPairingCode
   });
-});
+};
 
+app.get('/status', getStatusHandler);
+app.get('/api/status', getStatusHandler);
 
 // GET /on-whatsapp helper
 app.get('/on-whatsapp', async (req, res) => {
@@ -787,22 +839,15 @@ app.post('/check-whatsapp', async (req, res) => {
   }
 });
 
-
-// Endpoint to force logout and reset session
-app.post('/logout', (req, res) => {
+// Endpoint to reconnect or reset connection gracefully (without deleting solidified session)
+app.post('/reconnect', (req, res) => {
   try {
-    const authDir = path.join(__dirname, '../local_db/baileys_auth');
-    if (fs.existsSync(authDir)) {
-      fs.rmSync(authDir, { recursive: true, force: true });
-    }
-    connectionStatus = "disconnected";
-    qrCodeBase64 = "";
-    qrCodeRaw = "";
+    connectionStatus = "connecting";
     if (sock) {
       sock.end();
     }
     setTimeout(connectToWhatsApp, 1000);
-    return res.json({ success: true, message: "Session reset initiated" });
+    return res.json({ success: true, message: "Reconnection initiated" });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -810,6 +855,6 @@ app.post('/logout', (req, res) => {
 
 const PORT = process.env.WHATSAPP_BAILEYS_PORT || 3007;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Baileys Custom WhatsApp service running on http://localhost:${PORT}`);
+  console.log(`Baileys WhatsApp Line 1 (+234 702 626 6946) service running on http://localhost:${PORT}`);
   connectToWhatsApp().catch(err => console.error("Error starting Baileys connect process:", err));
 });

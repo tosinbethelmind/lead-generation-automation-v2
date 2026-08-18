@@ -299,26 +299,62 @@ export async function sendWhatsAppMessage(
       throw new Error(`Whapi.cloud error (${resp.status}): ${txt}`);
     }
   } else if (provider === 'baileys') {
-    // ── Local Baileys API Wrapper ──
-    const baseUrl = config.whatsappBaileysUrl || 'http://localhost:3007';
-    const url = `${baseUrl.replace(/\/+$/, '')}/send`;
+    // ── Local Dual-Line Baileys Dynamic Rotator & Failover ──
+    const line1Url = 'http://localhost:3007/send';
+    const line2Url = 'http://localhost:3009/send';
+
+    const primaryUrl = rotatedLine.lineId === 'LINE_2' ? line2Url : line1Url;
+    const secondaryUrl = rotatedLine.lineId === 'LINE_2' ? line1Url : line2Url;
+    const primaryLineName = rotatedLine.lineId === 'LINE_2' ? 'Line 2 (+234 904 605 0469)' : 'Line 1 (+234 702 626 6946)';
+    const secondaryLineName = rotatedLine.lineId === 'LINE_2' ? 'Line 1 (+234 702 626 6946)' : 'Line 2 (+234 904 605 0469)';
 
     const payload = {
       phone: cleanPhone,
       message: message
     };
 
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    let dispatchSuccess = false;
+    let usedLine = rotatedLine.lineId;
+    let lastError = '';
 
-    if (!resp.ok) {
-      const txt = await resp.text();
-      throw new Error(`Local Baileys service error (${resp.status}): ${txt}`);
+    // 1. Try Primary Rotated Line
+    try {
+      const resp = await fetch(primaryUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(12000)
+      });
+      if (resp.ok) {
+        dispatchSuccess = true;
+      } else {
+        const txt = await resp.text();
+        lastError = `${primaryLineName} error (${resp.status}): ${txt}`;
+      }
+    } catch (err: any) {
+      lastError = `${primaryLineName} unreachable: ${err.message}`;
+    }
+
+    // 2. Seamless Automatic Failover to Secondary Line
+    if (!dispatchSuccess) {
+      console.warn(`[WhatsApp Rotator] Primary ${primaryLineName} failed (${lastError}). Failing over to ${secondaryLineName}...`);
+      try {
+        const resp2 = await fetch(secondaryUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(12000)
+        });
+        if (resp2.ok) {
+          dispatchSuccess = true;
+          usedLine = rotatedLine.lineId === 'LINE_1' ? 'LINE_2' : 'LINE_1';
+        } else {
+          const txt2 = await resp2.text();
+          throw new Error(`Dual failover failed. ${primaryLineName}: ${lastError} | ${secondaryLineName} error (${resp2.status}): ${txt2}`);
+        }
+      } catch (failoverErr: any) {
+        throw new Error(`Dual-line dispatch failed. ${lastError} | Secondary ${secondaryLineName}: ${failoverErr.message}`);
+      }
     }
   } else {
     throw new Error(`Unknown WhatsApp Provider: ${provider}`);
@@ -333,30 +369,33 @@ export async function sendWhatsAppMessage(
 }
 
 /**
- * Pre-verifies whether a phone number is registered on WhatsApp using local Baileys endpoint.
+ * Pre-verifies whether a phone number is registered on WhatsApp using local Baileys endpoints (with dual-line fallback).
  */
 export async function checkWhatsAppNumber(phone: string): Promise<{ active: boolean; existsOnWhatsApp: boolean }> {
   if (!phone) return { active: false, existsOnWhatsApp: false };
   const cleanPhone = cleanPhoneNumber(phone);
   if (cleanPhone.length < 10) return { active: false, existsOnWhatsApp: false };
 
-  try {
-    const config = getRuntimeConfig();
-    const baseUrl = config.whatsappBaileysUrl || 'http://localhost:3007';
-    const url = `${baseUrl.replace(/\/+$/, '')}/on-whatsapp?phone=${cleanPhone}`;
+  const endpoints = [
+    `http://localhost:3007/on-whatsapp?phone=${cleanPhone}`,
+    `http://localhost:3009/on-whatsapp?phone=${cleanPhone}`
+  ];
 
-    const resp = await fetch(url, {
-      headers: { 'Accept': 'application/json' },
-      signal: AbortSignal.timeout(2000),
-    });
+  for (const url of endpoints) {
+    try {
+      const resp = await fetch(url, {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(2000),
+      });
 
-    if (resp.ok) {
-      const data = await resp.json();
-      const exists = data.exists ?? data.registered ?? data.onWhatsApp ?? true;
-      return { active: true, existsOnWhatsApp: Boolean(exists) };
+      if (resp.ok) {
+        const data = await resp.json();
+        const exists = data.exists ?? data.registered ?? data.onWhatsApp ?? true;
+        return { active: true, existsOnWhatsApp: Boolean(exists) };
+      }
+    } catch (_) {
+      // Continue to next line endpoint
     }
-  } catch (_) {
-    // Service offline or unconfigured - fallback to permissive check
   }
 
   return { active: true, existsOnWhatsApp: true };

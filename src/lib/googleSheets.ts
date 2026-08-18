@@ -4,6 +4,7 @@ import { promises as fsPromises } from 'fs';
 import path from 'path';
 import { getRuntimeConfig, RuntimeConfig } from './localConfig';
 import { getSupabaseClient } from './supabaseClient';
+import { findBundledLead } from './leadsBundle';
 
 // ============================================================================
 // TypeScript Interfaces & Types
@@ -962,14 +963,19 @@ class LocalJsonLeadRepository implements ILeadRepository {
   }
 
   async getLeadById(leadId: string): Promise<Lead | null> {
-    const leads = await this.getLeads();
     if (!leadId) return null;
 
-    // 1. Exact Lead ID match
+    // 1. Instant bundled dictionary lookup (works offline & in serverless)
+    const bundled = findBundledLead(leadId);
+    if (bundled) return bundled;
+
+    const leads = await this.getLeads();
+
+    // 2. Exact Lead ID match
     const exactMatch = leads.find(l => l.lead_id === leadId || (l as any).id === leadId);
     if (exactMatch) return exactMatch;
 
-    // 2. Clean normalized slug matching (e.g. "luxe-dental-clinic" matches "Luxe Dental Clinic | Dental Clinic in Ikeja...")
+    // 3. Clean normalized slug matching (e.g. "luxe-dental-clinic" matches "Luxe Dental Clinic | Dental Clinic in Ikeja...")
     const cleanQuery = leadId.toLowerCase().replace(/[^a-z0-9]/g, '');
     if (cleanQuery.length >= 3) {
       const slugMatch = leads.find(l => {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
 import { getRuntimeConfig, saveLocalConfig } from '@/lib/localConfig';
 import { getValidAccessToken } from '@/lib/googleAuth';
+import { findBundledLead, sanitizeDisplayName } from '@/lib/leadsBundle';
+
 
 // ============================================================================
 // Send Gmail Message
@@ -53,24 +55,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required parameters: leadId, name, or email' }, { status: 400 });
     }
 
-    // Load lead from CRM Database
-    const repo = getActiveLeadRepository();
-    let lead: any = (await repo.getLeadById(leadId)) as any;
-
-    // Fallback resolution for dynamic preview slugs (e.g. bethelmind-analytics, lekki-luxury-homes)
+    // Load lead from CRM Database or Bundled Store
+    let lead: any = findBundledLead(leadId) as any;
     if (!lead) {
-      const formattedName = leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase();
+      try {
+        const repo = getActiveLeadRepository();
+        lead = (await repo.getLeadById(leadId)) as any;
+      } catch (_) {}
+    }
+
+    // Fallback resolution for dynamic preview slugs
+    if (!lead) {
       let category = 'Professional Services';
       const lowerId = leadId.toLowerCase();
       if (/solar|inverter|energy|battery/.test(lowerId)) category = 'Solar Energy & Inverter Dealer';
       else if (/estate|property|home|realty|housing/.test(lowerId)) category = 'Real Estate & Luxury Property';
       else if (/car|auto|motor|vehicle|tokunbo/.test(lowerId)) category = 'Automotive & Tokunbo Importer';
-      else if (/medical|clinic|doctor|health/.test(lowerId)) category = 'Medical & Clinics';
+      else if (/medical|clinic|doctor|health|dental/.test(lowerId)) category = 'Medical & Clinics';
       else if (/school|academy|education/.test(lowerId)) category = 'Schools & Education';
+
+      const safeName = sanitizeDisplayName(leadId, category);
 
       lead = {
         id: leadId,
-        name: formattedName || 'BETHELMIND ANALYTICS',
+        name: safeName,
         email: email || 'admin@bethelmindanalytics.com',
         phone: phone || '+2348022791227',
         category,
@@ -78,7 +86,10 @@ export async function POST(req: NextRequest) {
         city: 'Lagos',
         notes: ''
       };
+    } else {
+      lead.name = sanitizeDisplayName(lead.name, lead.category);
     }
+
 
     const config = getRuntimeConfig();
     const isDryRun = config.dryRun;

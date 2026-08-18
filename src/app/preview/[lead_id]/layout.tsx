@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { getActiveLeadRepository } from '@/lib/googleSheets';
+import { findBundledLead, sanitizeDisplayName } from '@/lib/leadsBundle';
 
 interface Props {
   params: Promise<{ lead_id: string }>;
@@ -10,25 +11,21 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lead_id } = await params;
   const leadId = lead_id || '';
-  const formattedName = leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase() || 'VALUED BUSINESS';
 
-  let leadName = formattedName;
-  let category = 'Business Automation & Lead Engine';
-  let location = 'Lagos, Nigeria';
-  let hasWebsite = false;
-  let websiteUrl = '';
+  let lead: any = findBundledLead(leadId);
+  if (!lead) {
+    try {
+      const repo = getActiveLeadRepository();
+      lead = await repo.getLeadById(leadId);
+    } catch (_) {}
+  }
 
-  try {
-    const repo = getActiveLeadRepository();
-    const lead = await repo.getLeadById(leadId);
-    if (lead) {
-      leadName = lead.name || formattedName;
-      category = lead.category || category;
-      location = `${lead.area || lead.city || 'Lagos'}, Nigeria`;
-      hasWebsite = !!(lead.website && lead.website.trim() && lead.website.toLowerCase() !== 'none');
-      websiteUrl = lead.website || '';
-    }
-  } catch (_) {}
+  let category = lead?.category || 'Business Automation & Lead Engine';
+  const leadName = sanitizeDisplayName(lead?.name || leadId, category);
+  let location = `${lead?.area || lead?.city || 'Lagos'}, Nigeria`;
+  let hasWebsite = !!(lead?.website && lead.website.trim() && lead.website.toLowerCase() !== 'none');
+  let websiteUrl = lead?.website || '';
+
 
   const title = hasWebsite
     ? `${leadName} — 24/7 AI Sales & Automation Upgrade Preview`
@@ -89,25 +86,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PreviewLayout({ params, children }: Props) {
   const { lead_id } = await params;
   const leadId = lead_id || '';
-  const formattedName = leadId.replace(/[^a-zA-Z0-9]+/g, ' ').toUpperCase() || 'VALUED BUSINESS';
 
-  let leadName = formattedName;
-  let category = 'Commercial Enterprise';
-  let address = 'Lagos, Nigeria';
-  let rating = 4.9;
-  let reviewsCount = 38;
+  let lead: any = findBundledLead(leadId);
+  if (!lead) {
+    try {
+      const repo = getActiveLeadRepository();
+      lead = await repo.getLeadById(leadId);
+    } catch (_) {}
+  }
 
-  try {
-    const repo = getActiveLeadRepository();
-    const lead = await repo.getLeadById(leadId);
-    if (lead) {
-      leadName = lead.name || formattedName;
-      category = lead.category || category;
-      address = `${lead.address || ''}, ${lead.area || ''}, ${lead.city || 'Lagos'}`;
-      rating = lead.rating || 4.9;
-      reviewsCount = lead.reviews_count || 38;
-    }
-  } catch (_) {}
+  let category = lead?.category || 'Commercial Enterprise';
+  const leadName = sanitizeDisplayName(lead?.name || leadId, category);
+  let address = `${lead?.address || ''}, ${lead?.area || ''}, ${lead?.city || 'Lagos'}`;
+  let rating = lead?.rating || 4.9;
+  let reviewsCount = lead?.reviews_count || 38;
+
 
   const schemaJson = {
     '@context': 'https://schema.org',
