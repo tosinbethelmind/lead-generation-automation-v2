@@ -48,24 +48,24 @@ export default function IntegrationBlueprintDashboard() {
   ]);
 
   const platformSnippets = {
-    wordpress: `<!-- ApexReach WordPress & WooCommerce Embed Code -->
+    wordpress: `<!-- Bethelmind Analytics WordPress & WooCommerce Embed Code -->
 <script>
   (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
   var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;
-  j.src='https://apexreach-leads.vercel.app/sdk/apex-integration-sdk.js';
+  j.src='https://www.bethelmindanalytics.com/sdk/bethel-integration-sdk.js';
   j.setAttribute('data-site-id','wp_site_master');
   f.parentNode.insertBefore(j,f);
-  })(window,document,'script','ApexSDK');
+  })(window,document,'script','BethelmindSDK');
 </script>`,
 
-    shopify: `<!-- ApexReach Shopify Theme Liquid Snippet (paste inside theme.liquid before </head>) -->
-<script src="https://apexreach-leads.vercel.app/sdk/apex-integration-sdk.js"
+    shopify: `<!-- Bethelmind Analytics Shopify Theme Liquid Snippet (paste inside theme.liquid before </head>) -->
+<script src="https://www.bethelmindanalytics.com/sdk/bethel-integration-sdk.js"
         data-site-id="shopify_{{ shop.permanent_domain }}"
         data-enable-capi="true"
         async></script>`,
 
-    webflow: `<!-- ApexReach Webflow Custom Code (Paste into Project Settings -> Custom Code -> Header) -->
-<script src="https://apexreach-leads.vercel.app/sdk/apex-integration-sdk.js"
+    webflow: `<!-- Bethelmind Analytics Webflow Custom Code (Paste into Project Settings -> Custom Code -> Header) -->
+<script src="https://www.bethelmindanalytics.com/sdk/bethel-integration-sdk.js"
         data-site-id="webflow_site_id"
         data-enable-heatmaps="true"
         async></script>`,
@@ -78,7 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <Script
-          src="https://apexreach-leads.vercel.app/sdk/apex-integration-sdk.js"
+          src="https://www.bethelmindanalytics.com/sdk/bethel-integration-sdk.js"
           data-site-id="nextjs_client_app"
           strategy="afterInteractive"
         />
@@ -89,9 +89,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }`,
 
     html: `<!-- Universal HTML & Static Site Script Tag -->
-<script src="https://apexreach-leads.vercel.app/sdk/apex-integration-sdk.js"
+<script src="https://www.bethelmindanalytics.com/sdk/bethel-integration-sdk.js"
         data-site-id="html_site_client"
-        data-api-key="pk_live_apexreach_universal"
+        data-api-key="pk_live_bethelmind_universal"
         async></script>`
   };
 
@@ -114,7 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           body: JSON.stringify({
             siteId: 'test_simulation_site',
             eventName: 'lead_form_submit',
-            eventData: { email: 'test_prospect@apexreach.io', phone: '+2348123456789' }
+            eventData: { email: 'test_prospect@bethelmindanalytics.com', phone: '+2348022791227' }
           })
         });
         const data = await res.json();
@@ -126,7 +126,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           body: JSON.stringify({
             siteId: 'test_simulation_site',
             eventName: 'Lead',
-            userData: { email: 'meta_lead@apexreach.io', phone: '+2348099887766' }
+            userData: { email: 'meta_lead@bethelmindanalytics.com', phone: '+2348022791227' }
           })
         });
         const data = await res.json();
@@ -137,7 +137,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'full_stack_connect',
-            lead: { name: 'Apex Simulation Lead', email: 'sim@apex.io', phone: '+2348000001111' }
+            lead: { name: 'Bethelmind Simulation Lead', email: 'sim@bethelmindanalytics.com', phone: '+2348022791227' }
           })
         });
         const data = await res.json();

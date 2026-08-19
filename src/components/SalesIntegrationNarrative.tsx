@@ -121,7 +121,7 @@ export default function SalesIntegrationNarrative({ clientName = 'Your Business'
 
   const categories = ['All', 'Website', 'Analytics', 'Automation', 'CRM', 'Messaging', 'Payments'];
 
-  const sampleEmbedScript = `<script src="https://apexreach-leads.vercel.app/sdk/apex-integration-sdk.js" data-site-id="client_${clientName.toLowerCase().replace(/[^a-z0-9]/g, '-')}" async></script>`;
+  const sampleEmbedScript = `<script src="https://www.bethelmindanalytics.com/sdk/bethel-integration-sdk.js" data-site-id="client_${clientName.toLowerCase().replace(/[^a-z0-9]/g, '-')}" async></script>`;
 
   const filteredTools = selectedCategory === 'All' 
     ? SUPPORTED_TOOLS 
