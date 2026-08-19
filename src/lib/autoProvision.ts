@@ -181,8 +181,8 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
   }
 
   const dnsInstructions = [
-    { type: 'CNAME', host: '@', target: 'apexreach.site' },
-    { type: 'CNAME', host: 'www', target: 'apexreach.site' },
+    { type: 'CNAME', host: '@', target: 'bethelmindanalytics.com' },
+    { type: 'CNAME', host: 'www', target: 'bethelmindanalytics.com' },
   ];
 
   // 3. Mark lead status as CONTACTED / CLAIMED with Payment Ref in DB
@@ -191,6 +191,7 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
   
   if (!activeLead.notes?.includes('[PREVIEW_DEMO]')) {
     try {
+      const repo = getActiveLeadRepository();
       await repo.updateLeadStatus(leadId, 'CONTACTED', notesUpdate, timestamp);
     } catch (_) {}
   }
@@ -218,7 +219,7 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
       `Payment Ref: ${paymentReference || 'N/A'}\n\n` +
       `Our engineering team is on standby to assist with DNS setup.\n\n` +
       `Best regards,\n` +
-      `ApexReach Engineering Team`;
+      `Bethelmind Analytics Engineering Team`;
     
     await sendNotificationEmail(clientEmail, emailSubject, emailBody);
   } catch (e: any) {

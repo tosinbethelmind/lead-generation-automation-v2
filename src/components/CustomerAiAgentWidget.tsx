@@ -518,16 +518,16 @@ export default function CustomerAiAgentWidget({
 
         @media (max-width: 768px) {
           .customer-ai-widget-container {
-            bottom: 16px;
-            right: 16px;
+            bottom: 85px !important;
+            right: 14px !important;
           }
           .ai-widget-trigger {
-            padding: 10px !important;
+            padding: 8px !important;
             border-radius: 50% !important;
-            width: 48px !important;
-            height: 48px !important;
+            width: 44px !important;
+            height: 44px !important;
             justify-content: center !important;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
           }
           .trigger-text {
             display: none !important;

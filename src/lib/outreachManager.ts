@@ -209,8 +209,12 @@ export class OutreachManager {
     const email = lead.email;
     const isDryRun = options.isDryRun ?? !!config.dryRun;
 
-    const previewUrl = `${origin}/preview/${leadId}`;
-    const pitch = getPitchDetails(lead, origin, config.businessSignature || '');
+    const effectiveOrigin = (origin && !origin.includes('localhost') && !origin.includes('127.0.0.1'))
+      ? origin.replace(/\/+$/, '')
+      : (process.env.NEXT_PUBLIC_APP_URL || config.liveLink || 'https://www.bethelmindanalytics.com').replace(/\/+$/, '');
+
+    const previewUrl = `${effectiveOrigin}/preview/${leadId}`;
+    const pitch = getPitchDetails(lead, effectiveOrigin, config.businessSignature || '');
 
     logs.push(`[OutreachManager] Starting campaign for lead: ${lead.name} (${leadId}) [Simultaneous: ${simultaneous}]`);
     

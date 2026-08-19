@@ -65,6 +65,17 @@ export function sanitizeCopyText(text: string, safeName: string): string {
     .replace(/\bVALUED ENTERPRISE\b/gi, safeName);
 }
 
+export function cleanWebsiteDomain(rawUrl: string): string {
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
+  return rawUrl
+    .trim()
+    .replace(/^https?:\/\//i, '')
+    .replace(/^www\./i, '')
+    .replace(/\/+$/, '')
+    .split('/')[0]
+    .split('?')[0];
+}
+
 export function formatStagingDomain(businessName: string): string {
   if (!businessName || typeof businessName !== 'string') {
     return 'https://www.lagosenterprise.com.ng';

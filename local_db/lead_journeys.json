@@ -1665,5 +1665,221 @@
         }
       }
     ]
+  },
+  "solar_det_0a83ede7d494b11b": {
+    "leadId": "solar_det_0a83ede7d494b11b",
+    "leadName": "Lead solar_det_0a83ede7d494b11b",
+    "category": "General",
+    "phone": "+2348022791227",
+    "email": "",
+    "area": "Lekki Phase 1",
+    "currentStage": "PREVIEW_VIEWED",
+    "score": 75,
+    "heatScore": 55,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_det_0a83ede7d494b11b",
+    "createdAt": "2026-08-19T13:25:21.900Z",
+    "lastActiveIso": "2026-08-19T13:32:48.003Z",
+    "lastUpdatedWat": "02:32:48 pm WAT (19 Aug)",
+    "metrics": {
+      "pageViews": 18,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "j_evt_1787146368004_lh0c",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Apex Solar & Renewable Energy",
+        "businessCategory": "Solar & Renewable Energy",
+        "phone": "+2348022791227",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /preview/solar_det_0a83ede7d494b11b",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:32:48.003Z",
+        "timestampWat": "02:32:48 pm WAT (19 Aug)",
+        "metadata": {
+          "path": "/preview/solar_det_0a83ede7d494b11b",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"
+        }
+      },
+      {
+        "id": "j_evt_1787146353759_whls",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Lead solar_det_0a83ede7d494b11b",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Action: scroll_depth",
+        "description": "{}",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:32:33.758Z",
+        "timestampWat": "02:32:33 pm WAT (19 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1787146270736_d0vp",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Lead solar_det_0a83ede7d494b11b",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Action: scroll_depth",
+        "description": "{}",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:31:10.735Z",
+        "timestampWat": "02:31:10 pm WAT (19 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1787146190625_n7fg",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Lead solar_det_0a83ede7d494b11b",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Action: scroll_depth",
+        "description": "{}",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:29:50.623Z",
+        "timestampWat": "02:29:50 pm WAT (19 Aug)",
+        "metadata": {}
+      },
+      {
+        "id": "j_evt_1787146089445_3cjk",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Apex Solar & Renewable Energy",
+        "businessCategory": "Solar & Renewable Energy",
+        "phone": "+2348022791227",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /preview/solar_det_0a83ede7d494b11b",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:28:09.441Z",
+        "timestampWat": "02:28:09 pm WAT (19 Aug)",
+        "metadata": {
+          "path": "/preview/solar_det_0a83ede7d494b11b",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"
+        }
+      },
+      {
+        "id": "j_evt_1787146070309_1mwt",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Lead solar_det_0a83ede7d494b11b",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:27:50.307Z",
+        "timestampWat": "02:27:50 pm WAT (19 Aug)",
+        "metadata": {
+          "referrer": "",
+          "screenWidth": 1254
+        }
+      },
+      {
+        "id": "j_evt_1787146061717_9w5y",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Lead solar_det_0a83ede7d494b11b",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:27:41.715Z",
+        "timestampWat": "02:27:41 pm WAT (19 Aug)",
+        "metadata": {
+          "referrer": "",
+          "screenWidth": 1254
+        }
+      },
+      {
+        "id": "j_evt_1787146019432_0thy",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Lead solar_det_0a83ede7d494b11b",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:26:59.431Z",
+        "timestampWat": "02:26:59 pm WAT (19 Aug)",
+        "metadata": {
+          "referrer": "",
+          "screenWidth": 1254
+        }
+      },
+      {
+        "id": "j_evt_1787146016047_wn93",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Lead solar_det_0a83ede7d494b11b",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:26:56.045Z",
+        "timestampWat": "02:26:56 pm WAT (19 Aug)",
+        "metadata": {
+          "referrer": "",
+          "screenWidth": 1254
+        }
+      },
+      {
+        "id": "j_evt_1787145944376_7rxr",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Lead solar_det_0a83ede7d494b11b",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:25:44.375Z",
+        "timestampWat": "02:25:44 pm WAT (19 Aug)",
+        "metadata": {
+          "referrer": "",
+          "screenWidth": 0
+        }
+      },
+      {
+        "id": "j_evt_1787145921942_5jhu",
+        "leadId": "solar_det_0a83ede7d494b11b",
+        "leadName": "Lead solar_det_0a83ede7d494b11b",
+        "businessCategory": "General",
+        "phone": "",
+        "email": "",
+        "stage": "PREVIEW_VIEWED",
+        "title": "Opened Website Preview",
+        "description": "Visited path: /",
+        "channelUsed": "Client Interactive Portal",
+        "timestamp": "2026-08-19T13:25:21.900Z",
+        "timestampWat": "02:25:21 pm WAT (19 Aug)",
+        "metadata": {
+          "referrer": "",
+          "screenWidth": 0
+        }
+      }
+    ]
   }
 }

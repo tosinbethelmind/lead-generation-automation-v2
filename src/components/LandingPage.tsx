@@ -6,7 +6,7 @@ import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus,
 import confetti from 'canvas-confetti';
 import { trackDualMetaEvent } from '@/lib/metaPixel';
 import { CustomerJourneyTracker } from '@/lib/customerJourneyTracker';
-import { sanitizeDisplayName, formatStagingDomain, sanitizeCopyText } from '@/lib/leadSanitizers';
+import { sanitizeDisplayName, formatStagingDomain, sanitizeCopyText, cleanWebsiteDomain } from '@/lib/leadSanitizers';
 
 
 
@@ -93,8 +93,8 @@ const LUXURY_PRESETS = [
     accent: 'hsl(198, 95%, 60%)',
     bg: 'hsl(225, 45%, 4%)',
     text: '#ffffff',
-    font: 'Playfair Display',
-    headingFont: 'Playfair Display',
+    font: 'Outfit',
+    headingFont: 'Outfit',
     bodyFont: 'Plus Jakarta Sans',
     heroImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&q=80',
     gradient: 'linear-gradient(135deg, hsl(45, 90%, 55%) 0%, hsl(38, 95%, 55%) 50%, hsl(265, 85%, 60%) 100%)'
@@ -141,8 +141,8 @@ const LUXURY_PRESETS = [
     accent: 'hsl(43, 96%, 56%)',
     bg: 'hsl(315, 45%, 4%)',
     text: '#ffffff',
-    font: 'Playfair Display',
-    headingFont: 'Playfair Display',
+    font: 'Outfit',
+    headingFont: 'Outfit',
     bodyFont: 'Plus Jakarta Sans',
     heroImage: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1400&q=80',
     gradient: 'linear-gradient(135deg, hsl(330, 81%, 60%) 0%, hsl(348, 89%, 60%) 50%, hsl(43, 96%, 56%) 100%)'
@@ -180,7 +180,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   }, [data, leadId]);
 
   const hasWebsite = !!(lead.website && lead.website.trim() && lead.website.toLowerCase() !== 'none');
-  const websiteUrl = lead.website || '';
+  const rawWebsite = lead.website || '';
+  const cleanDomain = cleanWebsiteDomain(rawWebsite);
+  const websiteUrl = cleanDomain || rawWebsite;
 
   const pitch = data.pitch || {
     categoryKey: 'general',
@@ -1777,34 +1779,20 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     }
   };
 
-  const headingFontFamily = theme.headingFont || 'Cormorant Garamond';
-  const bodyFontFamily = theme.bodyFont || theme.font || 'Inter';
+  const headingFontFamily = theme.headingFont || 'Outfit';
+  const bodyFontFamily = theme.bodyFont || theme.font || 'Plus Jakarta Sans';
 
   return (
     <div className="font-body premium-mesh-bg" style={{ 
       background: theme.bg || '#050505', 
       color: theme.text || '#f8fafc',
-      fontFamily: bodyFontFamily,
+      fontFamily: `${bodyFontFamily}, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`,
       minHeight: '100vh',
       position: 'relative',
       paddingTop: '0px',
       overflowX: 'hidden'
     }}>
-      {/* Preloader Overlay */}
-      {loadingOverlay && (
-        <div className="preloader-overlay">
-          <div className="preloader-spinner"></div>
-          <div className="preloader-logo font-heading" style={{ fontFamily: headingFontFamily }}>{lead.name}</div>
-        </div>
-      )}
 
-      {/* Dynamic Font Import */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link 
-        href={`https://fonts.googleapis.com/css2?family=${headingFontFamily.replace(/\s+/g, '+')}:ital,wght@0,300..700;1,300..700&family=${bodyFontFamily.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`} 
-        rel="stylesheet" 
-      />
 
       {/* Single Clean Sticky Proposal Banner */}
       {isPreview && (
@@ -1889,14 +1877,14 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             border: `1.5px solid ${theme.primary || '#10b981'}`,
             backdropFilter: 'blur(12px)',
             color: '#ffffff',
-            fontSize: 'clamp(0.72rem, 1.4vw, 0.84rem)',
+            fontSize: 'clamp(0.7rem, 1.2vw, 0.82rem)',
             fontWeight: 700,
-            padding: '5px 16px',
+            padding: '4px 12px',
             borderRadius: '30px',
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            marginBottom: '16px',
+            marginBottom: '14px',
             boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
             flexWrap: 'wrap',
             justifyContent: 'center'
@@ -1909,37 +1897,39 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
 
           <h1 className="hero-main-heading" style={{ 
             fontFamily: headingFontFamily,
-            fontSize: 'clamp(1.45rem, 3.8vw, 3.0rem)', 
+            fontSize: 'clamp(1.15rem, 3.2vw, 2.15rem)', 
             lineHeight: 1.22, 
             fontWeight: 800, 
-            marginBottom: '14px',
+            marginBottom: '12px',
             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
             letterSpacing: '-0.02em',
             color: '#ffffff',
+            maxWidth: '800px',
+            margin: '0 auto 12px',
+            padding: '0 8px',
             wordBreak: 'break-word',
-            overflowWrap: 'break-word',
-            maxWidth: '860px',
-            margin: '0 auto 14px'
+            overflowWrap: 'break-word'
           }}>
             {hasWebsite 
-              ? `Keep Your Website at ${websiteUrl}. Attach Our Automated WhatsApp AI in 10 Mins.`
+              ? `${lead.name} — 24/7 AI Sales & Automation Engine`
               : copy.heroTitle}
           </h1>
 
           <p className="hero-main-sub" style={{ 
-            fontSize: 'clamp(0.92rem, 1.6vw, 1.15rem)', 
+            fontSize: 'clamp(0.85rem, 1.4vw, 1.02rem)', 
             color: '#cbd5e1', 
-            marginBottom: '20px',
-            maxWidth: '700px',
-            margin: '0 auto 20px',
+            marginBottom: '18px',
+            maxWidth: '680px',
+            margin: '0 auto 18px',
+            padding: '0 8px',
             lineHeight: 1.5,
             textShadow: '0 1px 4px rgba(0,0,0,0.3)',
+            fontFamily: bodyFontFamily,
             wordBreak: 'break-word',
-            overflowWrap: 'break-word',
-            fontFamily: bodyFontFamily
+            overflowWrap: 'break-word'
           }}>
             {hasWebsite 
-              ? `We inspected your live site. Attach our 24/7 AI customer agent and dynamic quote generator directly to your existing domain to capture 3x more paying clients.`
+              ? `Keep your live website at ${cleanDomain || 'your existing domain'}. Attach our automated WhatsApp auto-responders, instant quote generators, and direct bank payments to capture 3.5x more local clients in ${lead.area || lead.city || 'Lagos'}.`
               : copy.heroSubtitle}
           </p>
 
@@ -1992,53 +1982,51 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           {/* Streamlined High-Conversion Action Buttons (1 Primary + 1 Secondary) */}
           <div className="hero-btn-group" style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
             <a 
-              href={isPreview ? "#pricing" : "#booking"} 
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our live custom website & WhatsApp auto-responder.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-hover-effect hero-cta-btn" 
               style={{
-                background: theme.gradient || 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                background: '#25d366',
                 border: 'none',
                 color: '#fff',
                 textDecoration: 'none',
                 padding: '16px 32px',
                 borderRadius: '12px',
-                fontWeight: 800,
+                fontWeight: 900,
                 fontSize: '1.05rem',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: `0 6px 25px rgba(0, 0, 0, 0.4)`,
+                boxShadow: `0 6px 25px rgba(37, 211, 102, 0.45)`,
                 transition: 'all 0.2s',
                 letterSpacing: '-0.01em'
               }}
             >
-              {hasWebsite 
-                ? `🔌 Order Tool Embed (₦35,000)`
-                : isPreview 
-                ? `🚀 Claim ${lead.name}'s Setup (50% Deposit: ₦75k)`
-                : copy.ctaText} <ArrowRight size={18} />
+              💬 Claim on WhatsApp (₦0 Upfront Preview) <ArrowRight size={18} />
             </a>
 
             <a
-              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I am looking at the preview portal and want to activate our 24/7 AI system.`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#claim"
               className="btn-hover-effect hero-wa-btn"
               style={{
-                background: '#25d366',
+                background: 'rgba(255, 255, 255, 0.08)',
                 color: '#fff',
                 textDecoration: 'none',
                 padding: '16px 26px',
                 borderRadius: '12px',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '0.98rem',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 6px 20px rgba(37, 211, 102, 0.35)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)',
                 transition: 'all 0.2s'
               }}
             >
-              💬 1-Click WhatsApp Confirmation →
+              ⚡ Instant Setup Details &amp; Pricing ↓
             </a>
           </div>
 
@@ -2766,11 +2754,15 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 </span>
                 <h3 className="font-heading" style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1f2937', marginTop: '6px', marginBottom: '6px' }}>
                   Test-Driving: {
-                    activeWidget === 'quote_estimator' ? 'Project Quote Estimator' :
-                    activeWidget === 'patient_intake' ? 'Booking & Health Intake Portal' :
-                    activeWidget === 'ecommerce' ? 'Paystack Checkout Shopping Cart' :
-                    activeWidget === 'vehicle_valuation' ? 'Trade-In Valuation Calculator' :
-                    'Table & Seat Reservation System'
+                    interactiveFeatures.find(f => f.id === activeWidget)?.name ||
+                    (activeWidget === 'solar_calculator' ? 'Solar Sizing & Inverter BOQ Estimator' :
+                     activeWidget === 'quote_estimator' ? 'Project Quote Estimator' :
+                     activeWidget === 'patient_intake' ? 'Booking & Health Intake Portal' :
+                     activeWidget === 'ecommerce' ? 'Paystack Checkout Shopping Cart' :
+                     activeWidget === 'vehicle_valuation' ? 'Trade-In Valuation Calculator' :
+                     activeWidget === 'table_reservation' ? 'Table & Seat Reservation System' :
+                     activeWidget ? activeWidget.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) :
+                     'Interactive Sector Automation')
                   }
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
@@ -4563,43 +4555,53 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             display: none !important;
           }
           .hero-main-heading {
-            font-size: 1.55rem !important;
-            line-height: 1.25 !important;
-            margin-bottom: 10px !important;
-            letter-spacing: -0.01em !important;
+            font-size: 1.45rem !important;
+            line-height: 1.22 !important;
+            margin-bottom: 12px !important;
+            letter-spacing: -0.02em !important;
+            font-weight: 800 !important;
+            word-break: normal !important;
+            overflow-wrap: break-word !important;
           }
           .hero-main-sub {
             font-size: 0.88rem !important;
-            line-height: 1.45 !important;
-            margin-bottom: 16px !important;
+            line-height: 1.48 !important;
+            margin-bottom: 18px !important;
+            word-break: normal !important;
           }
           .hero-btn-group {
             flex-direction: column !important;
-            align-items: center !important;
+            align-items: stretch !important;
             width: 100% !important;
             gap: 10px !important;
           }
           .hero-cta-btn, .hero-wa-btn {
             width: 100% !important;
             max-width: 100% !important;
-            padding: 14px 18px !important;
-            font-size: 0.90rem !important;
+            padding: 14px 20px !important;
+            font-size: 0.92rem !important;
+            font-weight: 800 !important;
             justify-content: center !important;
             box-sizing: border-box !important;
+            border-radius: 12px !important;
+            text-align: center !important;
           }
           .staging-box-wrap {
-            padding: 8px 12px !important;
-            margin-bottom: 20px !important;
-            font-size: 0.72rem !important;
+            padding: 10px 14px !important;
+            margin-bottom: 22px !important;
+            font-size: 0.75rem !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 8px !important;
           }
         }
 
         .font-heading {
-          font-family: '${theme.headingFont || theme.font || 'Outfit'}', serif !important;
+          font-family: '${theme.headingFont || theme.font || 'Outfit'}', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         }
         
         .font-body {
-          font-family: '${theme.bodyFont || theme.font || 'Inter'}', sans-serif !important;
+          font-family: '${theme.bodyFont || theme.font || 'Plus Jakarta Sans'}', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         }
 
         .preloader-overlay {
@@ -4841,23 +4843,28 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           gap: '12px'
         }}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '0.62rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>50% COMMITMENT DEPOSIT</span>
-            <span style={{ fontSize: '0.98rem', color: '#34d399', fontWeight: 800 }}>₦75,000 <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 500 }}>(Bal. on Handover)</span></span>
+            <span style={{ fontSize: '0.62rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>⚡ LIVE PREVIEW FOR {lead.name.toUpperCase()}</span>
+            <span style={{ fontSize: '0.92rem', color: '#34d399', fontWeight: 800 }}>₦0 Upfront <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 500 }}>(Claim on WhatsApp)</span></span>
           </div>
-          <a href="#claim" style={{
-            flex: 1,
-            maxWidth: '240px',
-            textAlign: 'center',
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-            color: '#ffffff',
-            padding: '10px 16px',
-            borderRadius: '10px',
-            fontWeight: 800,
-            fontSize: '0.85rem',
-            textDecoration: 'none',
-            boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
-          }}>
-            🚀 Claim Setup (50% Dep)
+          <a
+            href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our custom website and WhatsApp AI platform.`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              flex: 1,
+              maxWidth: '220px',
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: '#ffffff',
+              padding: '10px 16px',
+              borderRadius: '10px',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              textDecoration: 'none',
+              boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
+            }}
+          >
+            🚀 Claim on WhatsApp
           </a>
         </div>
       )}

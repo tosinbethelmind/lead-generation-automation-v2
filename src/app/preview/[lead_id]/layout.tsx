@@ -24,15 +24,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const leadName = sanitizeDisplayName(lead?.name || leadId, category);
   let location = `${lead?.area || lead?.city || 'Lagos'}, Nigeria`;
   let hasWebsite = !!(lead?.website && lead.website.trim() && lead.website.toLowerCase() !== 'none');
-  let websiteUrl = lead?.website || '';
-
+  let rawWebsite = lead?.website || '';
+  let cleanDomain = '';
+  if (hasWebsite) {
+    try {
+      const urlObj = new URL(rawWebsite.startsWith('http') ? rawWebsite : `https://${rawWebsite}`);
+      cleanDomain = urlObj.hostname.replace(/^www\./i, '');
+    } catch (_) {
+      cleanDomain = rawWebsite.replace(/^https?:\/\//i, '').replace(/^www\./i, '').split('/')[0].split('?')[0];
+    }
+  }
 
   const title = hasWebsite
     ? `${leadName} — 24/7 AI Sales & Automation Upgrade Preview`
     : `${leadName} — Pre-Built Website & 24/7 AI Lead Engine Preview`;
 
   const description = hasWebsite
-    ? `Private interactive upgrade preview for ${leadName} (${location}). Keep your live website at ${websiteUrl} and attach automated WhatsApp quoting, PDF BOQ generators, and Moniepoint/Paystack instant verification.`
+    ? `Private interactive upgrade preview for ${leadName} (${location}). Keep your live website at ${cleanDomain} and attach automated WhatsApp quoting, PDF BOQ generators, and Moniepoint/Paystack instant verification.`
     : `Exclusive pre-configured website & AI lead generation system reserved for ${leadName} in ${location}. Capture 3.5x more clients with instant WhatsApp autoresponder, interactive calculators, and automated payment receipts.`;
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';

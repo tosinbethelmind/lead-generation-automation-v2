@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { Lead } from '@/types';
+import { Lead } from './googleSheets';
 
 let cachedBundle: Record<string, any> | null = null;
 

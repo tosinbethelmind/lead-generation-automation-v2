@@ -63,6 +63,9 @@ import { getDesignTheme, buildFallbackCopy } from '@/lib/designGenerator';
 import { sanitizeDisplayName, sanitizeCopyText } from '@/lib/leadSanitizers';
 
 
+// High-performance client-side in-memory cache for instant 0ms transitions
+const previewCache = new Map<string, PreviewData>();
+
 export default function PreviewPage() {
   const params = useParams();
   const rawLeadId = params?.lead_id;
@@ -70,6 +73,10 @@ export default function PreviewPage() {
 
   // Pre-populate instant preview shell with luxury sector visual theme
   const [data, setData] = useState<PreviewData | null>(() => {
+    if (previewCache.has(leadId)) {
+      return previewCache.get(leadId)!;
+    }
+
     let category = 'Professional Services';
     const lowerId = leadId.toLowerCase();
     if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge|dining|lounge|restaurant|bar|cafe/.test(lowerId)) {
@@ -103,7 +110,7 @@ export default function PreviewPage() {
       city: 'Lagos'
     });
 
-    return {
+    const initialPayload: PreviewData = {
       lead: {
         name: fallbackName,
         category,
@@ -129,6 +136,9 @@ export default function PreviewPage() {
         opayAccountName: 'Oyelakin Tosin Matthew'
       }
     };
+
+    previewCache.set(leadId, initialPayload);
+    return initialPayload;
   });
 
   const [loading, setLoading] = useState(false);
@@ -137,8 +147,8 @@ export default function PreviewPage() {
   const loadPreview = () => {
     if (!leadId) return;
 
-    // Fetch full enriched lead preview data immediately
-    fetch(`/api/preview/generate?leadId=${encodeURIComponent(leadId)}`)
+    // Fetch full enriched lead preview data immediately with cached response fallback
+    fetch(`/api/preview/generate?leadId=${encodeURIComponent(leadId)}`, { cache: 'default' })
       .then((res) => {
         if (res.ok) return res.json();
         return null;
@@ -154,6 +164,7 @@ export default function PreviewPage() {
             if (fullData.copy.heroSubtitle) fullData.copy.heroSubtitle = sanitizeCopyText(fullData.copy.heroSubtitle, safe);
             if (fullData.copy.aboutText) fullData.copy.aboutText = sanitizeCopyText(fullData.copy.aboutText, safe);
           }
+          previewCache.set(leadId, fullData);
           setData(fullData);
         }
       })

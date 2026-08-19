@@ -340,9 +340,9 @@ export async function submitContactForm(
   const pitchDetails = getPitchDetails(lead, origin, signature);
   const messageBody = pitchDetails.emailBody; // use custom email template as the pitch message
   const pitchPayload = {
-    name: signature || 'ApexReach Digital',
-    email: 'outreach@apexreach.io',
-    phone: '+2348000000000',
+    name: signature || 'Bethelmind Analytics Lagos Team',
+    email: 'contact@bethelmindanalytics.com',
+    phone: '+2348022791227',
     message: messageBody
   };
 

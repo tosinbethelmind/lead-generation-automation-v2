@@ -177,6 +177,7 @@ export async function GET(req: NextRequest) {
 
       // Save generated copy and theme to database for caching
       try {
+        const repo = getActiveLeadRepository();
         await repo.updateLeadFields(leadId, {
           generated_copy: copy,
           design_theme: theme
@@ -255,7 +256,10 @@ export async function GET(req: NextRequest) {
     };
 
     return NextResponse.json(responsePayload, {
-      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0' }
+      headers: {
+        'Cache-Control': 'public, max-age=1800, s-maxage=3600, stale-while-revalidate=86400',
+        'Vary': 'Accept-Encoding'
+      }
     });
   } catch (err: any) {
     console.error('Preview Generation API Error:', err);
