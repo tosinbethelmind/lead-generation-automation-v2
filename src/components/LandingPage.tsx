@@ -2754,15 +2754,14 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 </span>
                 <h3 className="font-heading" style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1f2937', marginTop: '6px', marginBottom: '6px' }}>
                   Test-Driving: {
-                    interactiveFeatures.find(f => f.id === activeWidget)?.name ||
-                    (activeWidget === 'solar_calculator' ? 'Solar Sizing & Inverter BOQ Estimator' :
-                     activeWidget === 'quote_estimator' ? 'Project Quote Estimator' :
-                     activeWidget === 'patient_intake' ? 'Booking & Health Intake Portal' :
-                     activeWidget === 'ecommerce' ? 'Paystack Checkout Shopping Cart' :
-                     activeWidget === 'vehicle_valuation' ? 'Trade-In Valuation Calculator' :
-                     activeWidget === 'table_reservation' ? 'Table & Seat Reservation System' :
-                     activeWidget ? activeWidget.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) :
-                     'Interactive Sector Automation')
+                    activeWidget === 'solar_calculator' ? 'Solar Sizing & Inverter BOQ Estimator' :
+                    activeWidget === 'quote_estimator' ? 'Project Quote Estimator' :
+                    activeWidget === 'patient_intake' ? 'Booking & Health Intake Portal' :
+                    activeWidget === 'ecommerce' ? 'Paystack Checkout Shopping Cart' :
+                    activeWidget === 'vehicle_valuation' ? 'Trade-In Valuation Calculator' :
+                    activeWidget === 'table_reservation' ? 'Table & Seat Reservation System' :
+                    activeWidget ? activeWidget.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) :
+                    'Interactive Sector Automation'
                   }
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>

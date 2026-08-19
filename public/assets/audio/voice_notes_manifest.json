@@ -1,0 +1,47 @@
+[
+  {
+    "id": "universal_followup_day2",
+    "title": "Universal Day 2 Soft Persuasive Follow-Up",
+    "voice": "en-NG-EzinneNeural",
+    "gender": "female",
+    "ogg_url": "/assets/audio/universal_followup_day2.ogg",
+    "text": "Hello, good day! I know how busy running a business in Lagos can be, and how easy it is to miss customer inquiries when your desk is occupied or after closing hours. My team at Bethelmind Analytics took the time to build a private interactive website prototype for your brand, complete with a 24/7 WhatsApp quoting and booking engine so you never lose another paying client. I've placed your private preview link right below this note. It is completely free to review on your phone. Please take a look whenever you have a moment, and let us know what you think!",
+    "file_size_kb": 141.0
+  },
+  {
+    "id": "step2_permission_reply",
+    "title": "Step 2 Warm Permission Response",
+    "voice": "en-NG-EzinneNeural",
+    "gender": "female",
+    "ogg_url": "/assets/audio/step2_permission_reply.ogg",
+    "text": "Thank you so much for getting back to me! Rather than sending you a long pitch, we actually built a live interactive website prototype with an automated WhatsApp quote and booking engine specifically tailored for your business. The preview link is right below this note. Please tap it to test how effortlessly your clients can book and calculate quotes with zero upfront risk. We would love to hear your thoughts!",
+    "file_size_kb": 98.7
+  },
+  {
+    "id": "dental_clinic_intake",
+    "title": "Healthcare & Dental Clinic Soft Intake",
+    "voice": "en-NG-EzinneNeural",
+    "gender": "female",
+    "ogg_url": "/assets/audio/dental_clinic_intake.ogg",
+    "text": "Hello Doctor, good day! We know patient inquiries come in at all hours, and timely response is everything for your clinic. We created a private digital patient booking and consultation portal that attaches seamlessly to your WhatsApp desk and confirms appointments automatically. You can test the interactive patient intake system at the preview link right below. We hope this makes patient management much easier for your team!",
+    "file_size_kb": 104.5
+  },
+  {
+    "id": "solar_epc_calculator",
+    "title": "Solar & Inverter EPC Persuasive Calculator",
+    "voice": "en-NG-EzinneNeural",
+    "gender": "female",
+    "ogg_url": "/assets/audio/solar_epc_calculator.ogg",
+    "text": "Good day Engineer! High-ticket solar buyers love knowing their exact power requirements before making a decision. We custom-built an interactive load sizing calculator branded for your company, where clients can select their appliances, calculate KVA ratings, and receive an instant PDF quote on WhatsApp. You can test drive the calculator at the link right below. Take a quick look and see how easily it converts prospective buyers!",
+    "file_size_kb": 109.5
+  },
+  {
+    "id": "commercial_turnkey_deployment",
+    "title": "Commercial Turnkey Done-For-You Soft Pitch",
+    "voice": "en-NG-EzinneNeural",
+    "gender": "female",
+    "ogg_url": "/assets/audio/commercial_turnkey_deployment.ogg",
+    "text": "Hello Management team, good day! To help your business capture more clients across Lagos, our engineering team prepared a private interactive website prototype featuring Google Maps SEO discovery and a 24/7 WhatsApp booking desk. There is zero upfront commitment\u2014we simply wanted you to experience what an automated online portal can do for your sales. Your private preview link is attached right below. Please take a look!",
+    "file_size_kb": 111.9
+  }
+]

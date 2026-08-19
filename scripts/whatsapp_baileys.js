@@ -583,10 +583,33 @@ app.post('/send-voicenote', async (req, res) => {
     } catch (_) {}
 
     // Send native WhatsApp Push-To-Talk Voice Note (Audio with ptt: true)
-    // Supports audio url / buffer or speech text
-    await sock.sendMessage(jid, {
-      text: `🎙️ *Voice Note Response (Nigerian English):*\n\n"${text}"`,
-    });
+    let audioBuffer = null;
+    let mimetype = 'audio/ogg; codecs=opus';
+    if (req.body.audioPath && fs.existsSync(req.body.audioPath)) {
+      audioBuffer = fs.readFileSync(req.body.audioPath);
+    } else if (req.body.voiceNoteId) {
+      const oggPath = path.join(__dirname, `../public/assets/audio/${req.body.voiceNoteId}.ogg`);
+      const mp3Path = path.join(__dirname, `../public/assets/audio/${req.body.voiceNoteId}.mp3`);
+      if (fs.existsSync(oggPath)) {
+        audioBuffer = fs.readFileSync(oggPath);
+        mimetype = 'audio/ogg; codecs=opus';
+      } else if (fs.existsSync(mp3Path)) {
+        audioBuffer = fs.readFileSync(mp3Path);
+        mimetype = 'audio/mpeg';
+      }
+    }
+
+    if (audioBuffer) {
+      await sock.sendMessage(jid, {
+        audio: audioBuffer,
+        mimetype: mimetype,
+        ptt: true
+      });
+    } else {
+      await sock.sendMessage(jid, {
+        text: `🎙️ *Voice Note Response (Nigerian English):*\n\n"${text}"`,
+      });
+    }
 
     console.log(`✅ [Baileys Voice Note] Sent Nigerian Accent Voice Note to ${cleanPhone}`);
     return res.json({ success: true, message: `Nigerian Voice Note sent to ${cleanPhone}` });

@@ -74,7 +74,11 @@ async function connectToWhatsApp() {
       logger: pino({ level: 'silent' }),
       auth: state,
       printQRInTerminal: true,
-      browser: ['Bethelmind Analytics', 'Chrome', '124.0.0']
+      browser: ['Bethelmind Line 2 Desk', 'Safari', '17.4'],
+      keepAliveIntervalMs: 25000,
+      connectTimeoutMs: 60000,
+      defaultQueryTimeoutMs: undefined,
+      markOnlineOnConnect: true
     });
 
     sock.ev.on('connection.update', async (update) => {
@@ -112,23 +116,25 @@ async function connectToWhatsApp() {
         const statusCode = (lastDisconnect?.error)?.output?.statusCode;
         const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
         console.log(`WhatsApp Line 2 connection closed (Code: ${statusCode}). Reconnecting: ${shouldReconnect}`);
+        
         if (shouldReconnect) {
           setTimeout(connectToWhatsApp, 2500);
         } else {
-          console.log('⚠️ WhatsApp Line 2 logged out. Attempting recovery from solidified backup in 5s...');
-          setTimeout(() => {
-            if (fs.existsSync(path.join(BACKUP_DIR, 'creds.json'))) {
-              syncDirSync(BACKUP_DIR, AUTH_DIR);
-            }
-            connectToWhatsApp();
-          }, 5000);
+          console.log('⚠️ WhatsApp Line 2 logged out (401). Purging stale auth directories for clean pairing...');
+          try {
+            if (fs.existsSync(AUTH_DIR)) fs.rmSync(AUTH_DIR, { recursive: true, force: true });
+            if (fs.existsSync(BACKUP_DIR)) fs.rmSync(BACKUP_DIR, { recursive: true, force: true });
+          } catch (_) {}
+          setTimeout(connectToWhatsApp, 2000);
         }
       }
     });
 
     sock.ev.on('creds.update', () => {
       saveCreds();
-      syncDirSync(AUTH_DIR, BACKUP_DIR);
+      if (connectionStatus === 'connected') {
+        syncDirSync(AUTH_DIR, BACKUP_DIR);
+      }
     });
   } catch (err) {
     console.error('Failed to initialize Line 2 socket:', err.message);
