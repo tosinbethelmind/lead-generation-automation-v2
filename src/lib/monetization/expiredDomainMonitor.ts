@@ -13,6 +13,7 @@ import fs from 'fs';
 import path from 'path';
 import dns from 'dns';
 import nodemailer from 'nodemailer';
+import { generatePurchaseAuthToken } from './domainRegistrarApi';
 
 export interface MonitoredDomain {
   rank?: number;
@@ -162,6 +163,9 @@ export async function dispatchInstantDomainAlert(domainObj: MonitoredDomain): Pr
       });
 
     const isTopRank = domainObj.rank === 1;
+    const token = generatePurchaseAuthToken(domainObj.domain, domainObj.registrationCostNGN);
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3006';
+    const authUrl = `${baseUrl}/api/domains/authorize-buy?domain=${encodeURIComponent(token.domain)}&cost=${token.costNGN}&expiresAt=${token.expiresAt}&sig=${token.signature}`;
 
     const emailHtml = `
       <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; background: #0b0f19; color: #f3f4f6; border-radius: 12px; overflow: hidden; border: 1px solid #1f2937;">
@@ -216,18 +220,24 @@ export async function dispatchInstantDomainAlert(domainObj: MonitoredDomain): Pr
           </table>
 
           <div style="text-align: center; margin: 30px 0 20px 0;">
-            <a href="${domainObj.quickRegisterUrl}" style="background: ${isTopRank ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #10b981, #059669)'}; color: #ffffff; padding: 16px 32px; text-decoration: none; font-size: 16px; font-weight: 800; border-radius: 8px; display: inline-block; box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);">
-              ⚡ 1-TAP GRAB #${domainObj.rank || 1} DOMAIN NOW (₦${domainObj.registrationCostNGN.toLocaleString()})
+            <a href="${authUrl}" style="background: ${isTopRank ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #2563eb, #1d4ed8)'}; color: #ffffff; padding: 18px 36px; text-decoration: none; font-size: 16px; font-weight: 900; border-radius: 10px; display: inline-block; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4); letter-spacing: 0.5px;">
+              🛡️ 1-CLICK AUTHORIZE BUY & AUTO-LIST (₦${domainObj.registrationCostNGN.toLocaleString()})
             </a>
+            <div style="margin-top: 10px;">
+              <a href="${domainObj.quickRegisterUrl}" style="color: #9ca3af; font-size: 12px; text-decoration: underline;">
+                Or manually register via Registrar Gateway &rarr;
+              </a>
+            </div>
           </div>
 
           <div style="background: #1e1b4b; border: 1px solid #3730a3; border-radius: 8px; padding: 14px; margin-top: 20px; font-size: 12px; color: #c7d2fe;">
-            💡 <strong>Why this is ranked #${domainObj.rank || 1}:</strong> Features high residual commercial search volume (${domainObj.historicMonthlyTraffic.toLocaleString()} clicks/mo) and gives you a <strong>${domainObj.roiMultiplier}x return</strong> on your ₦${domainObj.registrationCostNGN.toLocaleString()} registration fee upon 301 redirection or resale.
+            ⚡ <strong>What happens when you click:</strong> The engine automatically registers <strong>${domainObj.domain}</strong> via Registrar API, deploys 301 traffic redirect to your Store, and publishes listings across Sedo, Afternic & Bethelmind Exchange with 0 manual configuration.
           </div>
         </div>
 
         <div style="background: #030712; padding: 16px 30px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #1f2937;">
           Sent by Bethelmind Autonomous 24/7 Arbitrage Watchdog • Desk: +234 802 279 1227
+        </div>
         </div>
       </div>
     `;
