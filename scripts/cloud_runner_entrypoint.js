@@ -71,6 +71,9 @@ launchProcess('Lead Harvester & Pipeline Runner', 'node', ['scripts/keep_alive_r
 // Worker B: Autonomous Traffic Generation & Google Indexing (Runs every 6 hours)
 launchProcess('Autonomous Traffic & Google Indexing Engine', 'node', ['scripts/autonomous_traffic_daemon.js'], 15000);
 
+// Worker C: Autonomous Expired Domain Sniping & Instant Alert Watchdog
+launchProcess('Expired Domain Sniping & Instant Alert Daemon', 'npx', ['tsx', 'scripts/run_domain_sniping_daemon.js'], 20000);
+
 // ── 4. Scheduled Strategic AI Decision Briefings (08:00 AM & 08:00 PM WAT) ──
 let lastBriefingTime = '';
 setInterval(() => {
