@@ -67,6 +67,14 @@ const nextConfig: NextConfig = {
     '@crawlee/core',
     'ws'
   ],
+  outputFileTracingExcludes: {
+    '*': [
+      './local_db/**/*',
+      './data/**/*',
+      './public/assets/audio/**/*',
+      './.git/**/*'
+    ]
+  },
   async headers() {
     return [
       {
