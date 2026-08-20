@@ -91,7 +91,7 @@ export default async function DomainInquiryPage({ params }: DomainInquiryPagePro
               className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-sm px-6 py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 text-center transition-all duration-200 flex items-center justify-center gap-2"
             >
               <span>💬</span>
-              <span>Inquire & Reclaim Domain (WhatsApp)</span>
+              <span>1-Tap Reclaim on WhatsApp (Instant)</span>
             </a>
             <a
               href={`mailto:bethelmindrecruit@gmail.com?subject=Domain Reinstatement Request: ${decodedDomain}`}
@@ -99,6 +99,11 @@ export default async function DomainInquiryPage({ params }: DomainInquiryPagePro
             >
               Email Desk
             </a>
+          </div>
+
+          <div className="mt-6 pt-6 border-t border-slate-800/80 text-xs text-slate-400 flex items-center justify-between">
+            <span>Corporate Desk: <strong className="text-slate-200">+234 802 279 1227</strong></span>
+            <span>Escrow Protocol: <strong className="text-emerald-400">EPP Fast-Track</strong></span>
           </div>
         </div>
 
