@@ -102,6 +102,13 @@ export default function AdminLayout({
           badge: 'Workstation',
         },
         {
+          name: 'Traffic & Viral Growth Engine',
+          path: '/admin/traffic',
+          icon: Globe,
+          visible: true,
+          badge: '5 Channels',
+        },
+        {
           name: 'AI Approvals & Outreach',
           path: '/admin/approvals',
           icon: Send,
@@ -131,6 +138,13 @@ export default function AdminLayout({
     {
       title: 'PLATFORM MANAGEMENT',
       items: [
+        {
+          name: 'Authority Portal & Diaspora Hub',
+          path: '/admin/authority-portal',
+          icon: Globe,
+          visible: true,
+          badge: 'Monetization',
+        },
         {
           name: 'Settings & Integrations',
           path: '/admin/settings',

@@ -516,6 +516,58 @@ app.post('/reject-reply', (req, res) => {
 });
 
 // REST Endpoint to send message with human-like typing simulation
+// REST Endpoint to broadcast directly into WhatsApp Channel / Newsletter & Status 100% autonomously
+app.post('/broadcast-channel', async (req, res) => {
+  const { text, message, inviteCode } = req.body;
+  const broadcastText = message || text;
+  if (!broadcastText) {
+    return res.status(400).json({ error: "Missing message/text in payload" });
+  }
+
+  if (connectionStatus !== 'connected' || !sock) {
+    return res.status(503).json({ error: `WhatsApp Line 1 is not connected. Status: ${connectionStatus}` });
+  }
+
+  try {
+    const code = inviteCode || '0029VbDFgKP4o7qM58yY9v2l';
+    let channelJid = null;
+    try {
+      if (typeof sock.newsletterMetadata === 'function') {
+        const meta = await sock.newsletterMetadata('invite', code);
+        if (meta && meta.id) channelJid = meta.id;
+      }
+    } catch (e) {
+      console.warn('[Baileys] Newsletter metadata lookup warning:', e.message);
+    }
+
+    let channelResult = null;
+    if (channelJid) {
+      channelResult = await sock.sendMessage(channelJid, { text: broadcastText });
+      console.log(`📢 [Baileys] Successfully posted directly to WhatsApp Channel (${channelJid})`);
+    }
+
+    // Also post to Status Broadcast autonomously
+    let statusResult = null;
+    try {
+      statusResult = await sock.sendMessage('status@broadcast', { text: broadcastText });
+      console.log('📢 [Baileys] Successfully posted to WhatsApp Status Broadcast');
+    } catch (statusErr) {
+      console.warn('[Baileys] Status broadcast warning:', statusErr.message);
+    }
+
+    return res.json({
+      success: true,
+      autonomous: true,
+      channelJid,
+      channelResult: channelResult?.key?.id,
+      statusResult: statusResult?.key?.id
+    });
+  } catch (err) {
+    console.error('[Baileys] Autonomous broadcast error:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 const sendHandlerLine1 = async (req, res) => {
   const { phone, message, text } = req.body;
   const outboundText = message || text;

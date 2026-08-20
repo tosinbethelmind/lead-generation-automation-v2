@@ -98,14 +98,24 @@ export async function POST(req: NextRequest) {
       for (const lead of selectedLeads) {
         const previewUrl = `${origin}/preview/${encodeURIComponent(lead.lead_id)}`;
         const phone = lead.phone_e164 || lead.phone_raw;
-        const msg = `ApexReach: Interactive website prototype created for ${lead.name}. Review live mobile & WhatsApp setup at: ${previewUrl} (48h Instant Claim)`;
+        const msg = `Good day ${lead.name} team, we built a 24/7 client booking website for your ${lead.area || 'Lagos'} branch: ${previewUrl} — Claim with ₦0 setup or WhatsApp our desk: 08022791227. - Bethelmind Analytics`;
 
         try {
           if (!config.dryRun) {
+            // 1. Dispatch SMS
             await sendSmsMessage(lead, previewUrl, msg);
+
+            // 2. Dispatch B2B Email if lead has an email address
+            if (lead.email && lead.email.includes('@')) {
+              try {
+                const emailSubject = `Automating 24/7 Inquiries & Online Bookings for ${lead.name}`;
+                const emailBody = `Good day Management Team at ${lead.name},\n\nWe engineered a custom interactive website prototype & 24/7 WhatsApp AI agent tailored for your business in ${lead.area || 'Lagos'}.\n\n▶️ Test your live demo & 35s voice note here: ${previewUrl}\n\nPrefer WhatsApp? Chat directly with our desk: https://wa.me/2348022791227\n\nWarm regards,\nTosin & The Bethelmind Analytics Lagos Team\nDirect WhatsApp Desk: +234 802 279 1227`;
+                await sendSmtpMessage(lead.email, emailSubject, emailBody);
+              } catch (_) {}
+            }
           }
-          await repo.updateLeadStatus(lead.lead_id, 'CONTACTED', `${lead.notes || ''}\n[OUTREACH_DISPATCHED: ${timestamp}] via AI Copilot Batch`, timestamp);
-          dispatchResults.push({ name: lead.name, phone, status: config.dryRun ? 'Simulated' : 'Dispatched', previewUrl });
+          await repo.updateLeadStatus(lead.lead_id, 'CONTACTED', `${lead.notes || ''}\n[OUTREACH_DISPATCHED: ${timestamp}] via High-Volume SMS & Email Batch (2026-08-20)`, timestamp);
+          dispatchResults.push({ name: lead.name, phone, email: lead.email, status: config.dryRun ? 'Simulated' : 'Dispatched', previewUrl });
           successCount++;
         } catch (err: any) {
           dispatchResults.push({ name: lead.name, phone, status: 'Failed', error: err.message });

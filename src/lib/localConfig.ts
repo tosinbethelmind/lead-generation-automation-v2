@@ -184,6 +184,7 @@ export interface LocalConfig {
   lagosDailyLeadTarget?: number;
   nigeriaSolarDailyTarget?: number;
   backendHosts?: string[];
+  adminWhatsAppPhone?: string;
 }
 
 export interface TeamMember {
@@ -201,6 +202,7 @@ export interface RuntimeConfig extends LocalConfig {
 }
 
 const DEFAULT_CONFIG: RuntimeConfig = {
+  adminWhatsAppPhone: '+2348022791227',
   // Google auth
   googleClientId: '',
   googleClientSecret: '',

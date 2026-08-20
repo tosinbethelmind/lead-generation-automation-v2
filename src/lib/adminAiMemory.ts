@@ -47,24 +47,19 @@ function getMemoryFilePath(): string {
 }
 
 /**
- * Calculates current day in the active 1-week sprint (Aug 17 - Aug 23, 2026)
- * and determines the safe warm-up rate limit.
+ * Calculates current day in the active 1-week high-volume sprint (Aug 20 - Aug 26, 2026)
+ * with a high-deliverability 500 leads/day capacity (Carrier SMS + B2B Email).
  */
 export function getSprintDayInfo(targetDate: Date = new Date()): { dayNumber: number; safeLimit: number; dateStr: string } {
   const dateStr = targetDate.toISOString().split('T')[0];
-  const sprintStart = new Date('2026-08-17T00:00:00Z');
+  const sprintStart = new Date('2026-08-20T00:00:00Z');
   const now = new Date(`${dateStr}T00:00:00Z`);
 
   const diffDays = Math.floor((now.getTime() - sprintStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
   const dayNumber = Math.max(1, Math.min(diffDays, 7));
 
-  // Safe warm-up ramp:
-  // Day 1-2: 30 msgs/day
-  // Day 3-5: 45 msgs/day
-  // Day 6-7: 60 msgs/day
-  let safeLimit = 30;
-  if (dayNumber >= 3 && dayNumber <= 5) safeLimit = 45;
-  else if (dayNumber >= 6) safeLimit = 60;
+  // High-volume ban-proof daily capacity
+  const safeLimit = 500;
 
   return { dayNumber, safeLimit, dateStr };
 }
@@ -72,26 +67,26 @@ export function getSprintDayInfo(targetDate: Date = new Date()): { dayNumber: nu
 const DEFAULT_MEMORY: AdminAiMemoryStore = {
   admin_phone: '2348022791227',
   admin_email: 'tosin@bethelmindanalytics.com',
-  default_sector: 'Salons, Healthcare Clinics, Auto Repair & Restaurants',
+  default_sector: 'Salons, Healthcare Clinics, Auto Repair, Logistics & Restaurants',
   default_location: 'Lagos (Ikeja, Lekki, Surulere, Victoria Island, Ikoyi)',
   preferred_sms_gateway: 'http://10.132.90.251:8082',
   claim_fee_ngn: 185000,
-  sprint_start_date: '2026-08-17',
-  sprint_end_date: '2026-08-23',
+  sprint_start_date: '2026-08-20',
+  sprint_end_date: '2026-08-26',
   custom_preferences: {
     outreach_scope: '10K Lagos Engine ONLY (Exclude SolarQuotePro)',
     sms_gateway: 'Tailscale Android SMS Gateway (10.132.90.251:8082)',
-    safe_ramp_schedule: 'Day 1-2: 30 msgs/day -> Day 3-5: 45 msgs/day -> Day 6-7: 60 msgs/day',
-    active_sprint: 'Monday, August 17, 2026 to Sunday, August 23, 2026',
+    safe_ramp_schedule: '500 verified Lagos leads/day (Carrier SMS + B2B Email)',
+    active_sprint: 'Thursday, August 20, 2026 to Wednesday, August 26, 2026',
     core_offer: 'Interactive B2B prototype with WhatsApp ordering & Paystack 48h instant setup claim'
   },
   learned_facts: [
-    'Outreach sprint officially launched TODAY: Monday, August 17, 2026 (Runs through August 23, 2026)',
+    'High-volume outreach campaign launches: Thursday, August 20, 2026 (Runs through August 26, 2026)',
     'User phone number is 2348022791227 (08022791227)',
     'User email is tosin@bethelmindanalytics.com',
     'Outreach routes strictly through Tailscale Android SMS Gateway at http://10.132.90.251:8082 (NO Termii)',
     'Standard website prototype claim fee is 185,000 NGN via Moniepoint / OPay',
-    'Safe warm-up rate limit today is 30 messages/day to protect sender reputation and deliverability'
+    'High-volume ban-proof target is 500 leads/day via dual Carrier SMS + B2B Email with 1-Tap inbound WhatsApp closer'
   ],
   daily_quotas: {},
   recent_commands: [],

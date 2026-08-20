@@ -24,7 +24,7 @@ export default function Navbar() {
   const navLinks = [
     { label: 'How It Works', href: '#how-it-works' },
     { label: 'Sector Tools', href: '#sector-tools' },
-    { label: 'Add-ons', href: '#addon-modules', badge: 'NEW' },
+    { label: 'Digital Assets', href: '/store', badge: 'STORE' },
     { label: 'Marketplace', href: '/marketplace', badge: 'LIVE' },
     { label: 'Recruitment AI', href: '/recruitment', badge: 'PRO' },
     { label: 'Pricing', href: '#pricing' },

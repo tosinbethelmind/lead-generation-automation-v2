@@ -10,30 +10,27 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **EXCLUDE SolarQuotePro.ng**: Do NOT include `solarquotepro.ng` or SolarQuotePro pitches in outreach campaigns. All outreach is dedicated solely to **Bethelmind Analytics B2B Website Prototype & Instant Setup Claims**.
 - **STRICT BRANDING (BETHELMIND ANALYTICS ONLY)**: All outreach messages, signatures, SMS, and emails MUST strictly use **Bethelmind Analytics** (e.g. `*Bethelmind Analytics Lagos Team*` or `*Bethelmind Analytics B2B Engine*`). NEVER use `ApexReach` anywhere in outreach, templates, or signatures.
 
-## 2. OUTREACH STRATEGY (100% REGULAR LAGOS BUSINESSES)
-- Target sectors: Salons, Clinics, Auto Repair, Restaurants, Retail, Professional Services, Real Estate, Gyms, Consultancies in Lagos.
+## 2. OUTREACH STRATEGY (100% BAN-PROOF HIGH-VOLUME LAGOS BUSINESS DISCOVERY)
+- **High-Volume Daily Capacity**: **500 verified Lagos commercial leads contacted per day** via dual Carrier SMS + B2B Email.
+- **Abortion of Previous Sprint**: All previous cold WhatsApp sprint queues are aborted and reset. The fresh 7-day cycle commences **Thursday, August 20, 2026 to Wednesday, August 26, 2026**.
+- Target sectors: Salons & Spas, Dental & Healthcare Clinics, Auto Repair & Detailing, Restaurants, Logistics, Real Estate, Retail, Professional Services in Lagos.
 - Core value proposition:
   1. Custom-tailored interactive website prototype (`preview_url`).
-  2. Mobile responsiveness & Google Maps SEO integration.
-  3. WhatsApp direct customer ordering & contact integration.
-  4. Paystack instant setup claim & online payments.
-- Outreach channels: WhatsApp (Baileys / Rotator), B2B Email (Hostinger SMTP), Automated Web Contact Forms, and SMS via **Tailscale Android SMS Gateway** (`http://10.132.90.251:8082`).
+  2. Mobile responsiveness & Google Maps SEO discovery.
+  3. 24/7 WhatsApp AI Customer Intake & Ordering Closer.
+  4. Instant Moniepoint & Paystack 48h setup claim.
+- Outreach channels & Ban-Proof Strategy:
+  - **Carrier SMS (Primary Wave - 500/day)**: Dispatched via **Tailscale Android SMS Gateway** (`http://10.132.90.251:8082`) using GSM airtime (4–7s throttle delay to prevent SIM burst blocks).
+  - **B2B Email (Hostinger SMTP)**: 4-Pillar Executive Proposals + 35s Audio Voice Note Teaser dispatched to all verified business inboxes.
+  - **Inbound-Only WhatsApp Conversion Bridge**: Zero cold outbound WhatsApp. Inbound inquiries route directly to CEO / Admin Desk (`0802 279 1227` / `+234 802 279 1227`) with 0% ban penalty.
 - **NO Termii**: Termii is NOT used. All SMS dispatches route through the Tailscale Android SMS Gateway.
-- Safe Warm-up Limits: Day 1-2: 30 msgs/day -> Day 3-5: 45 msgs/day -> Day 6-7: 60 msgs/day.
 
 ## 3. SCHEDULE CYCLE
-- Active 1-week campaign runs from **Monday, August 17, 2026 to Sunday, August 23, 2026**.
+- Active 7-day high-volume campaign runs from **Thursday, August 20, 2026 to Wednesday, August 26, 2026** (500 leads/day).
 
 ## 4. PHONE LINE ARCHITECTURE & ADMIN NOTIFICATIONS
-- **ADMIN LINE (ALERTS & APPROVALS ONLY):** `0802 279 1227` (`ADMIN_WA_PHONE`) & Email (`bethelmindrecruit@gmail.com`). NEVER dispatch cold outreach from this number.
-- **COLD OUTREACH LINE 1 (PRIMARY OUTREACH):** `0702 626 6946` / `+234 702 626 6946` (`OUTREACH_WA_PHONE_1`, Port `3007`, Name: `Tosin 1`, Primary Auth: `local_db/baileys_auth`, Solidified Backup: `local_db/baileys_auth_solidified_backup` & `local_db/baileys_auth_permanent_master`).
-- **COLD OUTREACH LINE 2 (ROTATOR OUTREACH):** `0904 605 0469` / `+234 904 605 0469` (`OUTREACH_WA_PHONE_2`, Port `3009`, Name: `TOSIN New`, Primary Auth: `local_db/baileys_auth_line2`, Solidified Backup: `local_db/baileys_auth_line2_solidified_backup`).
-- **PERMANENT SESSION SOLIDIFICATION & SELF-HEALING:**
-  - Both WhatsApp Lines (1 & 2) are 100% paired, authenticated, and cryptographically solidified.
-  - NEVER delete, reset, or purge auth session directories.
-  - In the event of system restart or missing creds, automatic self-healing immediately restores authentication from `baileys_auth_solidified_backup` and `baileys_auth_line2_solidified_backup`.
-  - Both services run simultaneously on Ports `3007` (Line 1) and `3009` (Line 2) for round-robin outreach load balancing.
-- **NO Admin SMS:** Do NOT send admin alerts or status updates via SMS (preserves carrier airtime).
+- **ADMIN & CLOSER DESK (INBOUND INQUIRIES ONLY):** `0802 279 1227` (`ADMIN_WA_PHONE`) & Email (`bethelmindrecruit@gmail.com`). All SMS & Email CTA links connect directly to this desk (`wa.me/2348022791227`). NEVER dispatch cold outbound outreach from this number.
+- **COLD OUTREACH LINES 1 & 2:** Standby / Warm follow-ups only for prospects who actively click/engage on prototypes. Cold spam blasting is strictly disabled.
 
 ## 5. ZERO-TOLERANCE SYNTHETIC / MOCK LEAD POLICY
 - **NEVER generate, seed, or dispatch synthetic, template, or placeholder phone numbers or leads.**
@@ -82,7 +79,61 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Zero Render-Blocking Font Links**: All Google Fonts (Outfit, Plus Jakarta Sans, Inter) are preloaded and preconnected in the root layout `<head>`, eliminating duplicate in-body `<link>` stylesheet parse pauses.
 - **Deferred Telemetry**: Non-critical analytics and Meta CAPI tracking execute on `requestIdleCallback` to maintain 0ms blocking on the prospect's mobile main thread.
 
+## 11. AUTONOMOUS VIRAL WHATSAPP CHANNEL & CLIENT CONVERSION ENGINE
+- **Automated 7-Day Content Rotation Matrix**:
+  - **Monday:** Industry Teardown & Leak Audit (High Group Forwards).
+  - **Tuesday:** Plug-and-Play Swipe File & Scripts (High Saves & Shares).
+  - **Wednesday:** Live Case Studies & ROI Breakdown (Authority Proof).
+  - **Thursday:** Interactive Polls & Reaction Spikes (Boosts Directory Rank).
+  - **Friday:** 1-Tap DM Conversion Offers (3 DFY Slots, ₦0 Upfront Preview).
+  - **Saturday:** Behind-The-Scenes Tech Architecture (Build In Public).
+  - **Sunday:** Weekly Master Asset Pack & Strategy Recap.
+- **Hands-Off Execution**: The autonomous engine automatically generates and queues daily broadcasts at **10:00 AM WAT** with matching WhatsApp Status teasers, X (Twitter) threads, and LinkedIn posts.
+- **Direct 1-Tap DM Bridges**: All conversion CTAs embed pre-filled `wa.me` links pointing to the CEO/Admin Desk (`0802 279 1227`).
 
+## 12. PERMANENT 24/7 CLOUD RUNNING (GOOGLE COLAB & KOYEB ACTIVATED)
+- **Google Colab Continuous Harvester (`colab_lagos_10k_runner.py`)**: Activated for continuous, high-throughput cloud lead harvesting and automated deduplication against Supabase Cloud.
+- **Koyeb 24/7 Cloud Runner & Microservices**: Activated as the permanent cloud infrastructure host for continuous background tasks, webhook receivers, and API schedulers with zero sleep/downtime.
+- **Persistent Local Daemon (`autonomous_growth_engine.js`)**: Runs 24/7 as a background watchdog overseeing lead queues, daily WhatsApp Channel broadcasts, and real-time Google Indexing pings.
 
+## 13. AUTONOMOUS 24/7 INBOUND ENGINE VS. USER-CONTROLLED OUTREACH DISPATCH
+- **100% Fully Automated Inbound & Infrastructure**:
+  - Lead scraping, phone verification, and deduplication into Supabase Cloud run 24/7.
+  - Multi-channel traffic packages and daily action plans (`DAILY_TRAFFIC_ACTION_PLAN.md`) generate automatically.
+  - Google Indexing API submissions execute automatically.
+  - Selar Webhooks (`/api/webhooks/selar`) process 24/7 and dispatch instant digital asset access via Tailscale SMS + Email.
+- **Strict Manual Trigger for Outbound Cold Outreach**:
+  - Outbound Carrier SMS and B2B Cold Email campaigns are NEVER dispatched automatically without explicit user trigger.
+  - Leads remain in a verified `STAGED_FOR_DISPATCH` queue awaiting manual confirmation via `TRIGGER_OUTREACH_MANUAL.bat`.
+
+## 14. ZERO-FAILURE QUALITY ASSURANCE & PREFLIGHT WATCHDOG
+- **Preflight Infrastructure Health Check**: Before any batch execution or outreach dispatch, `scripts/qa_traffic_and_outreach_watchdog.js` must verify:
+  1. Supabase Cloud read/write connectivity (`leads`, `preview_data`, `crm_leads`).
+  2. Selar checkout URL integrity across all 16 digital products.
+  3. Tailscale Android SMS Gateway status (`http://10.132.90.251:8082`).
+  4. Hostinger SMTP credentials & port availability (465/587).
+  5. 0% synthetic/placeholder lead compliance (strictly enforcing Section 5).
+- **Automated Fallback**: If SMS Gateway is offline, the system safely queues the batch without dropping leads and alerts the Admin Desk (`0802 279 1227`).
+
+## 15. HIGH-INTELLIGENCE STRATEGIC AI DECISION & EXECUTIVE BRIEFING LAYER
+- **Autonomous Intelligence Formulation (`src/lib/executiveAiDecisionEngine.ts`)**:
+  - Continuously evaluates Supabase lead volume, high-intent commercial corridors (Lekki Phase 1, Victoria Island, Ikeja GRA), and Selar checkout conversion metrics.
+  - Automatically synthesizes actionable strategic directives (revenue maximization, optimal outreach timing windows, post-purchase up-sell tuning).
+- **Automated Twice-Daily Executive Email Briefings**:
+  - Dispatches high-level strategic intelligence and 1-click action recommendations to **`bethelmindrecruit@gmail.com`** twice daily:
+    - **Morning Briefing:** 08:00 AM WAT (Daily priority focus products & staged lead review).
+    - **Evening Briefing:** 08:00 PM WAT (Daily traffic digest, Selar orders & next-day directives).
+- **On-Demand Execution**:
+  - Leadership can trigger an instant strategic decision analysis at any time via `npx tsx scripts/dispatch_ai_decision_briefing.js`.
+
+## 16. THE 8-PILLAR ALGORITHMIC MONETIZATION & ARBITRAGE ARCHITECTURE
+- **Pillar 1: Expired .com.ng Domain Sniping & 301 Redirects (`expiredDomainMonitor.ts`)**: Snipes expired commercial domains for 301 traffic hijacking or ₦150k–₦350k buyback flips.
+- **Pillar 2: Unclaimed GMB Security Rescue Engine (`gmbRescueEngine.ts`)**: Alerts high-rated Lagos businesses with unclaimed Google Maps listings to claim & lock their profile for ₦35k–₦65k.
+- **Pillar 3: B2B Verified Lead Data Bundler (`leadBundlePackager.ts`)**: Packages verified sector databases into downloadable Selar packs (₦15k–₦30k).
+- **Pillar 4: Brand Shield & Trademark Squatting Alert (`trademarkShieldEngine.ts`)**: Scrapes unprotected Instagram brands and secures CAC/trademark filings (₦65k).
+- **Pillar 5: Programmatic Micro-SaaS Paywalls (`/api/tools/micro-paywall`)**: ₦2,500 impulse unlocks for PDF calculations (Solar Sizer, Land Cadastral, SCUML).
+- **Pillar 6: Shadow B2B Pay-Per-Appointment Lead Router (`appointmentLeadRouter.ts`)**: Routes high-budget commercial quote leads to vetted installers/clinics for ₦35k–₦50k/appointment.
+- **Pillar 7: Diaspora Milestone Escrow & 4K Verification Protocol (`diasporaEscrowEngine.ts`)**: Collects 2.5%–5% transaction verification royalty on ₦20M–₦100M Diaspora construction builds.
+- **Pillar 8: Turnkey White-Label Agency Licensing (`whitelabelLicensingEngine.ts`)**: Licenses the Bethelmind growth engine to third-party agencies (₦150k setup + ₦35k/mo MRR).
 
 

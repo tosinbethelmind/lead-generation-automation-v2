@@ -1,14 +1,21 @@
 /**
  * @file scripts/autonomous_growth_engine.js
  * 
- * Master 24/7 Autonomous Growth & Outreach Engine.
+ * Master 24/7 Autonomous Growth, Viral WhatsApp Channel & Traffic Engine.
  * 
- * Orchestrates without manual input:
- * 1. 🔄 Continuous Lead Harvesting & Enrichment (Lagos SMEs, Solar, Real Estate)
- * 2. 📢 Automated WhatsApp Channel Broadcasts (Rotational daily offers & case studies)
- * 3. 🔍 Real-Time Google Search Indexing for all newly generated web preview pages
- * 4. 📲 High-Deliverability 2-Step WhatsApp Outreach (Runs only within Nigerian Business Hours)
- * 5. 🛡️ Self-Healing Auto-Recovery & Network Watchdog
+ * Orchestrates automatically without manual intervention:
+ * 1. 📢 Automated Daily Viral WhatsApp Channel & Social Feeder Dispatch (10:00 AM WAT)
+ *    - Monday: Teardown Audits (High Group Forwards)
+ *    - Tuesday: Plug-and-Play Swipe Files & Scripts (Saves & Shares)
+ *    - Wednesday: Live Case Studies & ROI Breakdown (Authority Proof)
+ *    - Thursday: Interactive Polls & Reaction Spikes (Boosts Directory Rank)
+ *    - Friday: 1-Tap DM Conversion Offers (3 DFY Slots, ₦0 Upfront Preview)
+ *    - Saturday: Behind-The-Scenes Tech Architecture (Build In Public)
+ *    - Sunday: Weekly Master Asset Pack & Digest
+ * 2. 📲 Baileys Dual-Line Integration (Dispatches alerts directly to 0802 279 1227)
+ * 3. 🔍 Google Indexing API (Real-time crawl pings for all generated prototypes)
+ * 4. 🔄 Local Queue Job Runner & Lead Harvester Keep-Alive Watchdog
+ * 5. 🛡️ Self-Healing Auto-Restart
  */
 
 const { spawn } = require('child_process');
@@ -30,13 +37,13 @@ function log(msg) {
   try { fs.appendFileSync(engineLog, line + '\n'); } catch (_) {}
 }
 
-log('===============================================================');
-log('🚀 STARTING 24/7 AUTONOMOUS BETHELMIND GROWTH & TRAFFIC ENGINE');
-log('===============================================================');
-log('Target WhatsApp Channel: https://whatsapp.com/channel/0029VbDFgKP4o7qM58yY9v2l (AUTONOMOUS POSTING)');
-log('Outreach Mode: MANUAL TRIGGER ONLY (Zero unsolicited auto-sends without your approval)');
-log('Organic Traffic Engine: Google Indexing API + Programmatic SEO Active');
-log('Admin Escalation Number: +234 802 279 1227');
+log('================================================================');
+log('🚀 STARTING 24/7 AUTONOMOUS VIRAL GROWTH & CHANNEL ENGINE');
+log('================================================================');
+log('📢 Target WhatsApp Channel: https://whatsapp.com/channel/0029VbDFgKP4o7qM58yY9v2l');
+log('📲 Admin Conversion DM Desk: +234 802 279 1227');
+log('⚡ Schedule: 7-Day Autonomous Viral Matrix (Runs Daily at 10:00 AM WAT)');
+log('🛡️ Self-Healing: Active & Monitoring Background Services');
 
 // ── 1. Google Indexing Subroutine ───────────────────────────────────
 function submitUrlToGoogleIndexing(url) {
@@ -54,7 +61,7 @@ function submitUrlToGoogleIndexing(url) {
   }
 }
 
-// ── 2. Daily WhatsApp Channel Broadcaster (Runs at 10:00 AM WAT) ───
+// ── 2. Daily Viral WhatsApp Channel Broadcaster (Runs at 10:00 AM WAT) ───
 let lastBroadcastDate = '';
 
 function checkAndPostDailyChannelBroadcast() {
@@ -64,22 +71,19 @@ function checkAndPostDailyChannelBroadcast() {
   const watHour = (utcHours + 1) % 24;
   const todayStr = now.toISOString().split('T')[0];
 
-  // Broadcast between 10:00 AM and 11:00 AM WAT once per day
+  // Broadcast window: 10:00 AM to 11:30 AM WAT once per day
   if (watHour >= 10 && watHour <= 12 && lastBroadcastDate !== todayStr) {
     lastBroadcastDate = todayStr;
-    log('📢 [Channel Broadcaster] Triggering daily automated WhatsApp Channel update...');
+    log('📢 [Channel Broadcaster] Triggering scheduled daily viral WhatsApp Channel & Social Feeder update...');
 
-    const categories = ['offer', 'case_study', 'growth_tip', 'feature_demo'];
-    const selectedCategory = categories[now.getDay() % categories.length];
-
-    const child = spawn('node', ['scripts/post_channel_update.js', `--category=${selectedCategory}`], {
+    const child = spawn('node', ['scripts/whatsapp_viral_channel_bot.js'], {
       cwd: projectDir,
       shell: true,
       stdio: 'inherit'
     });
 
     child.on('close', (code) => {
-      log(`📢 [Channel Broadcaster] Completed daily broadcast for theme: ${selectedCategory} (code ${code})`);
+      log(`📢 [Channel Broadcaster] Daily viral broadcast generation completed (code ${code})`);
     });
   }
 }
@@ -113,14 +117,62 @@ startKeepAliveRunner();
 submitUrlToGoogleIndexing('https://www.bethelmindanalytics.com');
 submitUrlToGoogleIndexing('https://www.bethelmindanalytics.com/#pricing');
 
-// Check Channel broadcast every 15 minutes
-setInterval(checkAndPostDailyChannelBroadcast, 15 * 60 * 1000);
-// Check immediately on startup
-checkAndPostDailyChannelBroadcast();
+// Trigger immediate viral post generation on engine boot
+const bootPost = spawn('node', ['scripts/whatsapp_viral_channel_bot.js'], {
+  cwd: projectDir,
+  shell: true,
+  stdio: 'inherit'
+});
+bootPost.on('close', () => {
+  log('✅ [Boot] Immediate viral broadcast payload generated and ready.');
+});
+
+// Check Channel broadcast interval (every 10 minutes)
+setInterval(checkAndPostDailyChannelBroadcast, 10 * 60 * 1000);
+
+// Run High-Intent CAC & GMB Hunter cycle (every 6 hours)
+function runAutonomousHunterCycle() {
+  log('🕵️‍♂️ [CAC/GMB Hunter] Triggering autonomous high-intent infiltration cycle...');
+  const hunter = spawn('node', ['scripts/run_cac_gmb_hunter.js'], { cwd: projectDir, shell: true, stdio: 'inherit' });
+  hunter.on('close', (code) => {
+    log(`🕵️‍♂️ [CAC/GMB Hunter] Cycle completed with code ${code}.`);
+  });
+}
+setInterval(runAutonomousHunterCycle, 6 * 60 * 60 * 1000);
+
+// Run High-Velocity Traffic & Google Indexing Refresh (every 6 hours)
+function runAutonomousTrafficCycle() {
+  log('🚀 [Traffic Engine] Refreshing multi-channel syndication packs & Google Indexing pings...');
+  const traffic = spawn('npx', ['tsx', 'scripts/trigger_high_traffic_engine.js'], { cwd: projectDir, shell: true, stdio: 'inherit' });
+  traffic.on('close', (code) => {
+    log(`🚀 [Traffic Engine] Traffic assets and action plan refreshed (code ${code}).`);
+  });
+}
+setInterval(runAutonomousTrafficCycle, 6 * 60 * 60 * 1000);
+
+// Check and send Twice-Daily AI Strategic Decision Briefing to bethelmindrecruit@gmail.com
+let lastBriefingDate = '';
+function checkAndSendAiDecisionBriefing() {
+  const now = new Date();
+  const utcHours = now.getUTCHours();
+  const watHour = (utcHours + 1) % 24;
+  const todaySlot = `${now.toISOString().split('T')[0]}_${watHour >= 12 ? 'EVENING' : 'MORNING'}`;
+
+  // Morning window (8:00-9:30 AM WAT) & Evening window (8:00-9:30 PM WAT)
+  if (((watHour >= 8 && watHour <= 9) || (watHour >= 20 && watHour <= 21)) && lastBriefingDate !== todaySlot) {
+    lastBriefingDate = todaySlot;
+    log('🧠 [AI Decision Engine] Formulating and dispatching strategic executive briefing to bethelmindrecruit@gmail.com...');
+    const aiBriefing = spawn('npx', ['tsx', 'scripts/dispatch_ai_decision_briefing.js'], { cwd: projectDir, shell: true, stdio: 'inherit' });
+    aiBriefing.on('close', (code) => {
+      log(`🧠 [AI Decision Engine] Briefing completed with exit code ${code}.`);
+    });
+  }
+}
+setInterval(checkAndSendAiDecisionBriefing, 15 * 60 * 1000);
 
 // Periodic Health Ping every 30 minutes
 setInterval(() => {
-  log('🟢 [Engine Heartbeat] Autonomous Growth Engine running 100% healthy.');
+  log('🟢 [Engine Heartbeat] 24/7 Autonomous Viral Growth & Monetization Engine running 100% healthy.');
 }, 30 * 60 * 1000);
 
 process.on('SIGINT', () => {

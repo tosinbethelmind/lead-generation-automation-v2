@@ -185,7 +185,7 @@ export async function applyRandomDelayJitter(minMs = 1000, maxMs = 3000): Promis
 let dailySentCount = 0;
 let lastQuotaResetDate = new Date().toDateString();
 
-export function checkDailySendingQuota(maxDaily = 250): boolean {
+export function checkDailySendingQuota(maxDaily = 1000): boolean {
   const today = new Date().toDateString();
   if (today !== lastQuotaResetDate) {
     dailySentCount = 0;
@@ -208,7 +208,7 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
     return true;
   }
 
-  if (!checkDailySendingQuota(250)) {
+  if (!checkDailySendingQuota(1000)) {
     return false;
   }
 
