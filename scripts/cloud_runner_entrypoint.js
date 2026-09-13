@@ -71,8 +71,41 @@ launchProcess('Lead Harvester & Pipeline Runner', 'node', ['scripts/keep_alive_r
 // Worker B: Autonomous Traffic Generation & Google Indexing (Runs every 6 hours)
 launchProcess('Autonomous Traffic & Google Indexing Engine', 'node', ['scripts/autonomous_traffic_daemon.js'], 15000);
 
-// Worker C: Autonomous Expired Domain Sniping & Instant Alert Watchdog
-launchProcess('Expired Domain Sniping & Instant Alert Daemon', 'npx', ['tsx', 'scripts/run_domain_sniping_daemon.js'], 20000);
+// Worker C1: Dedicated 24/7 B2B Monetization Engine (7 Scaled Pillars with 3-Hour AI Action Briefings)
+launchProcess('24/7 B2B Commercial Monetization Supervisor', 'npx', ['tsx', 'scripts/autonomous_b2b_monetization_daemon.ts'], 20000);
+
+// Worker C2: Dedicated 24/7 Quantitative Crypto & Arbitrage Supervisor (3-Hour AI Action Briefings)
+launchProcess('24/7 Quantitative Crypto Revenue Supervisor', 'npx', ['tsx', 'scripts/autonomous_golden_crypto_daemon.ts'], 20000);
+
+// Worker D: Autonomous Headless Sybil Testnet Cluster (10x Faucet Multiplier)
+launchProcess('Headless Colab Testnet Cluster', 'python', ['scripts/colab_testnet_sybil_cluster.py'], 60000);
+
+// Worker E: Autonomous Abandoned DEX Smart Contract Liquidity Sweeper
+launchProcess('Abandoned DEX Liquidity Sweeper', 'python', ['scripts/abandoned_dex_liquidity_sweeper.py'], 90000);
+
+// Worker F: 24/7 Crypto & Arbitrage Supervisor (Dispatches 3-Hour Executive Briefings)
+launchProcess('Crypto & Arbitrage 3-Hour Supervisor', 'npx', ['tsx', 'scripts/run_crypto_arbitrage_supervisor.ts'], 30000);
+
+// Worker G: Atomic Flash Loan Arbitrage Engine ($0-Capital Zero-Risk Harvest)
+launchProcess('Atomic Flash Loan Arbitrage', 'python', ['scripts/atomic_flash_loan_arbitrage_engine.py'], 120000);
+
+// Worker H: Jito-Solana & Base L2 High-Frequency Atomic Arbitrage (August 2026 Guru)
+launchProcess('Jito-Solana & Base L2 Arbitrage', 'python', ['scripts/jito_solana_atomic_arbitrage_engine.py'], 60000);
+
+// Worker I: Multi-Pool CEX-DEX Liquidity Backrun Flash Arbitrage (Sub-50ms WebSocket Ingestion)
+launchProcess('CEX-DEX Flash Backrun Engine', 'python', ['scripts/cex_dex_flash_backrun_engine.py'], 45000);
+
+// Worker J: Unclaimed Merkle Airdrop & Bounty Reclaimer (1,850+ Dormant Contracts)
+launchProcess('Merkle Airdrop & Bounty Reclaimer', 'python', ['scripts/merkle_airdrop_bounty_reclaimer.py'], 180000);
+
+// Worker K: DeFi Bad-Debt Liquidation Sniping (Aave V3 & Morpho Blue $1M Flash Loans)
+launchProcess('DeFi Bad-Debt Liquidation Sniper', 'python', ['scripts/defi_liquidation_bad_debt_sniper.py'], 120000);
+
+// Workers 12 to 31: Consolidated 20-Engine Quantitative Arbitrage Cluster (< 45MB RAM Micro-Process)
+launchProcess('Consolidated 20-Engine Arbitrage Suite', 'python', ['scripts/batch_quantitative_arbitrage_cluster_v20.py'], 180000);
+
+// Research-Backed Engine: High-Precision Base L2 & Dead LP Invariant Arbitrage (Sub-Cent Gas Advantage)
+launchProcess('High-Precision Base L2 & Invariant Sweeper', 'python', ['scripts/base_l2_high_precision_arbitrage_engine.py'], 60000);
 
 // ── 4. Scheduled Strategic AI Decision Briefings (08:00 AM & 08:00 PM WAT) ──
 let lastBriefingTime = '';

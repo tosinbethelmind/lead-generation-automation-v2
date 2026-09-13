@@ -4823,49 +4823,95 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         </div>
       )}
 
-      {/* Sticky Mobile Bottom Action Bar (1-Tap Mobile Conversion) */}
+      {/* Sticky Mobile Bottom Action Bar & Glowing Voice Note Player (1-Tap Mobile Conversion) */}
       {isPreview && (
-        <div style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 9998,
-          background: 'rgba(9, 13, 22, 0.96)',
-          backdropFilter: 'blur(16px)',
-          borderTop: '1.5px solid rgba(16, 185, 129, 0.4)',
-          padding: '10px 16px',
-          boxShadow: '0 -4px 20px rgba(0,0,0,0.6)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px'
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '0.62rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>⚡ LIVE PREVIEW FOR {lead.name.toUpperCase()}</span>
-            <span style={{ fontSize: '0.92rem', color: '#34d399', fontWeight: 800 }}>₦0 Upfront <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 500 }}>(Claim on WhatsApp)</span></span>
+        <>
+          {/* Floating Audio Voice Note Pill */}
+          <div style={{
+            position: 'fixed',
+            bottom: '72px',
+            right: '16px',
+            zIndex: 9997,
+            background: 'linear-gradient(135deg, rgba(30, 58, 138, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(59, 130, 246, 0.5)',
+            borderRadius: '30px',
+            padding: '8px 14px',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            cursor: 'pointer',
+            animation: 'pulse 2s infinite'
+          }}
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('customer_journey_event', {
+                detail: {
+                  eventType: 'audio_played',
+                  metadata: { audioFile: 'ezinne_35s_pitch.mp3', leadName: lead.name }
+                }
+              }));
+              alert(`🎙️ Playing 35s Audio Briefing from Bethelmind Analytics Lagos Team for ${lead.name}...`);
+            }
+          }}>
+            <span style={{ fontSize: '1rem' }}>🎙️</span>
+            <span style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: 700 }}>Listen to 35s Audio Pitch</span>
           </div>
-          <a
-            href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our custom website and WhatsApp AI platform.`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              flex: 1,
-              maxWidth: '220px',
-              textAlign: 'center',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              color: '#ffffff',
-              padding: '10px 16px',
-              borderRadius: '10px',
-              fontWeight: 800,
-              fontSize: '0.85rem',
-              textDecoration: 'none',
-              boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
-            }}
-          >
-            🚀 Claim on WhatsApp
-          </a>
-        </div>
+
+          {/* Sticky Mobile Conversion Bar */}
+          <div style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 9998,
+            background: 'rgba(9, 13, 22, 0.96)',
+            backdropFilter: 'blur(16px)',
+            borderTop: '1.5px solid rgba(16, 185, 129, 0.4)',
+            padding: '10px 16px',
+            boxShadow: '0 -4px 20px rgba(0,0,0,0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px'
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: '0.62rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>⚡ LIVE PREVIEW FOR {lead.name.toUpperCase()}</span>
+              <span style={{ fontSize: '0.92rem', color: '#34d399', fontWeight: 800 }}>₦0 Upfront <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 500 }}>(Claim on WhatsApp)</span></span>
+            </div>
+            <a
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our custom website and WhatsApp AI platform.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('customer_journey_event', {
+                    detail: {
+                      eventType: 'checkout_click',
+                      metadata: { cta: 'Claim on WhatsApp', leadName: lead.name }
+                    }
+                  }));
+                }
+              }}
+              style={{
+                flex: 1,
+                maxWidth: '220px',
+                textAlign: 'center',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#ffffff',
+                padding: '10px 16px',
+                borderRadius: '10px',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                textDecoration: 'none',
+                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
+              }}
+            >
+              🚀 Claim on WhatsApp
+            </a>
+          </div>
+        </>
       )}
 
       {/* Universal Integration & Tool Compatibility Sales Narrative */}

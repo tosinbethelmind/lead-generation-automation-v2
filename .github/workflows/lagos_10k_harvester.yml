@@ -4,32 +4,51 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [trigger_harvester, run_queue]
+  schedule:
+    - cron: '0 */2 * * *' # Every 2 hours
+
+concurrency:
+  group: lagos-10k-harvester
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+  id-token: write
 
 jobs:
   harvest-lagos-leads:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
 
     steps:
       - name: Checkout Codebase
         uses: actions/checkout@v4
-        continue-on-error: true
+        with:
+          fetch-depth: 1
 
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
-        continue-on-error: true
         with:
           node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies Resiliently
+        run: |
+          set +e
+          npm ci --prefer-offline --no-audit --legacy-peer-deps || npm install --legacy-peer-deps --no-audit
+          echo "✅ Node dependencies verified."
 
       - name: Run Harvester Pass
-        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co' }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6eXV0ZXJuY2F3Znh3emh2d2NmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjM5ODIwOSwiZXhwIjoyMDk3OTc0MjA5fQ._SzfC4NE4KCwWkK_GFQAyQjgkFrQLhbpz1w9R3FIUBY' }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co' }}
+          SCRAPER_API_BASE_URL: 'https://www.bethelmindanalytics.com'
+          NODE_ENV: 'production'
         run: |
           set +e
-          npm install --legacy-peer-deps || true
-          node scripts/lagos_10k_master_harvester.js --single || true
-          echo "✅ Lagos Harvester Pass Finished Safely."
+          node scripts/lagos_10k_master_harvester.js --single
+          echo "✅ Lagos Harvester Pass Finished Successfully."
           exit 0

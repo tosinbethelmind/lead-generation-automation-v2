@@ -4,23 +4,20 @@ const dns = require('dns');
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
-dns.lookup(config.smtpHost || 'smtp.hostinger.com', { family: 4 }, async (err, address) => {
-  if (err) {
-    console.error('DNS Lookup Error:', err.message);
-    return;
-  }
-  console.log(`Resolved ${config.smtpHost} to IPv4: ${address}`);
+try {
+  dns.setDefaultResultOrder('ipv4first');
+} catch (_) {}
 
+async function sendEmail() {
   const transporter = nodemailer.createTransport({
-    host: address,
-    port: 587,
-    secure: false,
+    host: 'smtp.hostinger.com',
+    port: 465,
+    secure: true,
     auth: {
-      user: config.smtpUser,
-      pass: config.smtpPass
+      user: config.smtpUser || 'tosin@bethelmindanalytics.com',
+      pass: config.smtpPass || 'Bethelmind@2026'
     },
     tls: {
-      servername: config.smtpHost || 'smtp.hostinger.com',
       rejectUnauthorized: false
     }
   });
@@ -75,4 +72,6 @@ dns.lookup(config.smtpHost || 'smtp.hostinger.com', { family: 4 }, async (err, a
     console.error('❌ Email dispatch error:', mailErr.message);
     process.exit(1);
   }
-});
+}
+
+sendEmail();

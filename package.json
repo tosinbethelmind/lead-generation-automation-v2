@@ -36,7 +36,14 @@
     "outreach:lagos": "node scripts/unified_outreach_master.js --engine=1",
     "outreach:lagos:dry": "node scripts/unified_outreach_master.js --engine=1 --dry-run",
     "outreach:nigeria": "node scripts/unified_outreach_master.js --engine=2",
-    "outreach:nigeria:dry": "node scripts/unified_outreach_master.js --engine=2 --dry-run"
+    "outreach:nigeria:dry": "node scripts/unified_outreach_master.js --engine=2 --dry-run",
+    "quant:test": "npx tsx scripts/test_quantitative_arbitrage_suite.ts",
+    "quant:resilience": "npx tsx scripts/test_opensource_resilience_suite.ts",
+    "quant:daemon": "npx tsx scripts/autonomous_golden_crypto_daemon.ts",
+    "quant:cexdex": "python scripts/cex_dex_live_latency_engine.py",
+    "quant:funding": "python scripts/delta_neutral_funding_harvester.py",
+    "quant:solver": "python scripts/intent_based_order_flow_solver.py",
+    "quant:jito": "python scripts/jito_solana_live_bundle_engine.py"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",

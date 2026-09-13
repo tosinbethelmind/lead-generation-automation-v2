@@ -167,7 +167,7 @@ export async function scanExpiringNigerianDomains(): Promise<{
  */
 export async function dispatchDailyDomainTop5Digest(): Promise<{ success: boolean; messageId?: string; error?: string }> {
   const scanData = await scanExpiringNigerianDomains();
-  const baseUrl = process.env.BASE_URL || 'http://localhost:3006';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'https://www.bethelmindanalytics.com';
 
   let config: any = {};
   try {

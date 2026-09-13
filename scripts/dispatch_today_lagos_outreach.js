@@ -214,19 +214,23 @@ async function executeOutreach(batchSize = 30, dryRun = false) {
     const leadId = lead.lead_id || lead.id;
     const previewUrl = `https://www.bethelmindanalytics.com/preview/${encodeURIComponent(leadId)}`;
 
-    const message = `Hello Management Team @ *${name}* 👋\n\n` +
-      `We noticed your business profile in ${area} and built a modern, fast interactive website prototype & WhatsApp instant customer booking system tailored specifically for *${name}*.\n\n` +
-      `🔗 *Live Prototype Link:* ${previewUrl}\n\n` +
-      `Would you like to preview the interactive demo today? (Zero obligation/free to claim).\n\n` +
-      `Best regards,\n` +
-      `*Bethelmind Analytics Lagos Team*`;
+    const message = `⚡ *[BETHELMIND INSTITUTIONAL FX & ESCROW DESK]*\n` +
+      `Attn: Management Team, *${name}* (${area})\n\n` +
+      `We know your company already has an existing channel for China & Asia container shipments. For today's factory orders, our desk has reserved a locked wholesale rate of *₦1,375 / USD* with under 15-minute factory clearance.\n\n` +
+      `🛡️ *100% INSTITUTIONAL ESCROW & COLLATERAL PROTECTION:*\n` +
+      `• *Settlement Corridors:* Victoria Island Commercial Core & Trade Fair Complex Hubs\n` +
+      `• *Bonded Security Collateral:* ₦450,000,000 to ₦600,000,000 Platform Vault Guarantee\n` +
+      `• *Trade Clearance:* < 15-Minute Direct China Factory Wire / TRC-20 USDT\n` +
+      `• *Zero-Capital Risk:* Funds release strictly upon verified Swift MT103 confirmation receipt.\n\n` +
+      `👉 *To lock today's allocation, reply directly or message our CEO/Admin Desk on WhatsApp:*\n` +
+      `https://wa.me/2348022791227\n\n` +
+      `*Bethelmind Institutional FX & Liquidity Desk*`;
 
-    console.log(`[${i + 1}/${batch.length}] 🏢 ${name.padEnd(30)} | 📱 ${phone.padEnd(16)} | Line ${lineId}`);
-    console.log(`   🔗 URL: ${previewUrl}`);
+    console.log(`[${i + 1}/${batch.length}] 🏢 ${name.padEnd(30)} | 📱 ${phone.padEnd(16)}`);
 
     if (!dryRun) {
-      const waRes = await sendWhatsApp(phone, message, lineId);
-      const smsRes = await sendCarrierSms(phone, `Hello ${name}, your custom website prototype & WhatsApp ordering system is ready: ${previewUrl}. Reply YES to claim.`);
+      const waRes = await sendWhatsApp(phone, message, 1);
+      const smsRes = await sendCarrierSms(phone, `[Bethelmind Desk] Attn: ${name}. Locked wholesale China factory FX rate today: ₦1,375/$. 100% bonded Diamond Escrow (₦450M-₦600M collateral). <15-min Swift MT103 receipt. WhatsApp 08022791227 to lock.`);
       
       const isSent = waRes.success || smsRes.success;
       if (isSent) {

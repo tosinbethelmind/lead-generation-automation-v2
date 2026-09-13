@@ -28,7 +28,7 @@ echo [1/2] Verifying Supabase sync and preflight checks...
 echo [2/2] Firing Carrier SMS + B2B Email Outreach...
 echo.
 
-node scripts/dispatch_today_lagos_outreach.js
+node --max-old-space-size=4096 scripts/dispatch_today_lagos_outreach.js --live
 
 echo.
 echo ========================================================================

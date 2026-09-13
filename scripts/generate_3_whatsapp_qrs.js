@@ -13,6 +13,7 @@ const fs = require('fs');
 
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '../public')));
 
 const LINES = [
   { id: 1, name: 'Admin Tier 2 Line', phone: '+234 802 279 1227', authSubDir: 'baileys_auth_line1' },
@@ -74,6 +75,46 @@ app.post('/api/send', async (req, res) => {
     return res.json({ success: true, lineId: selectedLineId, messageId: sent.key.id, recipient: cleanPhone });
   } catch (err) {
     console.error(`❌ [Outreach Send Error Line ${selectedLineId}]:`, err.message);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/send-audio', async (req, res) => {
+  const { phone, filePath, lineId, caption } = req.body || {};
+  if (!phone || !filePath || !fs.existsSync(filePath)) {
+    return res.status(400).json({ error: 'Missing valid phone or audio filePath' });
+  }
+
+  const cleanPhone = String(phone).replace(/\D/g, '');
+  const activeLineIds = Object.keys(socketMap).filter(id => stateMap[id]?.status === 'open' && socketMap[id]);
+  if (activeLineIds.length === 0) {
+    return res.status(530).json({ error: 'No WhatsApp line connected.' });
+  }
+
+  let selectedLineId = lineId || activeLineIds[0];
+  const sock = socketMap[selectedLineId];
+
+  try {
+    let targetJid = `${cleanPhone}@s.whatsapp.net`;
+    try {
+      const [onWa] = await sock.onWhatsApp(cleanPhone);
+      if (onWa && onWa.jid) targetJid = onWa.jid;
+    } catch (_) {}
+
+    const audioBuffer = fs.readFileSync(filePath);
+    const fileName = path.basename(filePath);
+
+    const sent = await sock.sendMessage(targetJid, {
+      document: audioBuffer,
+      mimetype: 'audio/wav',
+      fileName: fileName,
+      caption: caption || `🎙️ Bethelmind Audio Voice Note: ${fileName}`
+    });
+
+    console.log(`📤 [Audio File Sent via Line ${selectedLineId}] to +${cleanPhone}`);
+    return res.json({ success: true, lineId: selectedLineId, messageId: sent.key.id, recipient: cleanPhone });
+  } catch (err) {
+    console.error(`❌ [Audio Send Error Line ${selectedLineId}]:`, err.message);
     return res.status(500).json({ error: err.message });
   }
 });
@@ -358,12 +399,47 @@ async function startLineSocket(line) {
       console.log(`🎉 Line ${line.id} (${line.name} - ${line.phone}): LINKED & ACTIVE! ✅`);
     } else if (connection === 'close') {
       const statusCode = lastDisconnect?.error?.output?.statusCode;
-      if (stateMap[line.id].status !== 'open') {
-        if (statusCode === DisconnectReason.loggedOut) {
-          stateMap[line.id].status = 'disconnected';
-          if (fs.existsSync(authDir)) fs.rmSync(authDir, { recursive: true, force: true });
-        }
-        setTimeout(() => startLineSocket(line), 3000);
+      const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+      console.log(`⚠️ Line ${line.id} (${line.name}) connection closed. Code: ${statusCode}. Reconnecting: ${shouldReconnect}`);
+      
+      if (statusCode === DisconnectReason.loggedOut) {
+        stateMap[line.id].status = 'disconnected';
+        if (fs.existsSync(authDir)) fs.rmSync(authDir, { recursive: true, force: true });
+      } else {
+        stateMap[line.id].status = 'connecting';
+      }
+
+      if (shouldReconnect) {
+        setTimeout(() => startLineSocket(line), 2000);
+      }
+    }
+  });
+
+  // Intelligent Inbound Message Listener & Closer
+  sock.ev.on('messages.upsert', async ({ messages, type }) => {
+    if (type !== 'notify') return;
+    for (const msg of messages) {
+      if (!msg.message || msg.key.fromMe) continue; // Skip own messages
+
+      const senderJid = msg.key.remoteJid || '';
+      const cleanSenderPhone = senderJid.split('@')[0];
+      const incomingText = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
+
+      if (!incomingText || cleanSenderPhone === '2348022791227') continue;
+
+      console.log(`\n📥 [INCOMING WHATSAPP MESSAGE on Line ${line.id}] from +${cleanSenderPhone}: "${incomingText}"`);
+
+      // Forward instant high-priority alert to Admin Phone
+      const adminAlert = `🚨 *[INCOMING CLIENT INQUIRY on Line ${line.id}]*\n` +
+        `• From: \`+${cleanSenderPhone}\`\n` +
+        `• Message: "${incomingText}"\n` +
+        `• Status: Lead active on WhatsApp. Review or reply directly.`;
+
+      try {
+        await sock.sendMessage('2348022791227@s.whatsapp.net', { text: adminAlert });
+        console.log(`✅ Admin alerted for incoming inquiry from +${cleanSenderPhone}`);
+      } catch (err) {
+        console.error('Failed to forward alert to admin:', err.message);
       }
     }
   });

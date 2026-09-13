@@ -53,9 +53,10 @@ export async function generateExecutiveAiIntelligence(): Promise<ExecutiveIntell
       .limit(1000);
 
     if (!error && leads) {
-      totalLeads = leads.length;
-      stagedCount = leads.filter(l => l.status === 'STAGED_FOR_DISPATCH' || l.status === 'pending').length;
-      leads.forEach(l => {
+      const leadsList = leads as any[];
+      totalLeads = leadsList.length;
+      stagedCount = leadsList.filter(l => l.status === 'STAGED_FOR_DISPATCH' || l.status === 'pending').length;
+      leadsList.forEach(l => {
         const sec = l.sector || 'General Business';
         sectorCounts[sec] = (sectorCounts[sec] || 0) + 1;
       });

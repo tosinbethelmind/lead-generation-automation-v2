@@ -36,6 +36,7 @@ logMaster('==================================================');
 
 let pyProcess = null;
 let queueProcess = null;
+let cryptoDaemonProcess = null;
 
 function startPythonHarvester() {
   logMaster('⚡ Starting Python 10K Lagos 24/7 Harvester Loop...');
@@ -75,18 +76,39 @@ function startQueueRunner() {
   });
 }
 
-// Launch both processes
+function startCryptoRevenueDaemon() {
+  logMaster('⚡ Starting 24/7 Autonomous Golden Crypto Revenue Daemon...');
+  cryptoDaemonProcess = spawn('npx', ['tsx', 'scripts/autonomous_golden_crypto_daemon.ts'], {
+    cwd: rootDir,
+    stdio: 'inherit',
+    shell: true
+  });
+
+  cryptoDaemonProcess.on('exit', (code) => {
+    logMaster(`⚠️ Crypto Revenue Daemon exited with code ${code}. Restarting in 10s...`);
+    setTimeout(startCryptoRevenueDaemon, 10000);
+  });
+
+  cryptoDaemonProcess.on('error', (err) => {
+    logMaster(`❌ Crypto Revenue Daemon error: ${err.message}. Restarting in 15s...`);
+    setTimeout(startCryptoRevenueDaemon, 15000);
+  });
+}
+
+// Launch all processes
 startPythonHarvester();
 startQueueRunner();
+startCryptoRevenueDaemon();
 
 // Heartbeat every 10 minutes
 setInterval(() => {
-  logMaster('🟢 [Master 24/7 Heartbeat] All background scrapers and runners active and healthy.');
+  logMaster('🟢 [Master 24/7 Heartbeat] All background scrapers, queue runners, and crypto revenue daemons active and healthy.');
 }, 10 * 60 * 1000);
 
 process.on('SIGINT', () => {
   logMaster('Stopping master supervisor...');
   if (pyProcess) try { pyProcess.kill(); } catch (_) {}
   if (queueProcess) try { queueProcess.kill(); } catch (_) {}
+  if (cryptoDaemonProcess) try { cryptoDaemonProcess.kill(); } catch (_) {}
   process.exit(0);
 });

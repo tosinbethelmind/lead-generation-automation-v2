@@ -93,7 +93,7 @@ export async function stageHighIntentLeads(leads: HighIntentLead[]): Promise<{ i
           recommendedProduct: lead.recommendedProduct,
           harvestedAt: new Date().toISOString()
         }
-      });
+      } as any);
       inserted++;
     } catch (_) {
       skipped++;

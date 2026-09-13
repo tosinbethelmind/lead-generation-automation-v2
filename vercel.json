@@ -23,12 +23,19 @@
     },
     "src/app/api/outreach/regular-business/route.ts": {
       "maxDuration": 60
+    },
+    "src/app/api/cron/autonomous-blog/route.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [
     {
       "path": "/api/cron/harvest",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/autonomous-blog",
+      "schedule": "0 */4 * * *"
     }
   ]
 }

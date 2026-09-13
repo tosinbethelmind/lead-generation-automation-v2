@@ -1,12 +1,14 @@
 import { MetadataRoute } from 'next';
+import { BlogEngine } from '@/lib/blog/blogEngine';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.bethelmindanalytics.com';
   const currentDate = new Date().toISOString();
 
-  const routes = [
+  const staticRoutes = [
     '',
     '/home',
+    '/blog',
     '/marketplace',
     '/recruitment',
     '/tools/solar-quote-pro',
@@ -22,11 +24,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/legal/acceptable-use',
   ];
 
-  return routes.map((route) => {
+  const staticEntries: MetadataRoute.Sitemap = staticRoutes.map((route) => {
     let priority = 0.8;
     let changeFrequency: 'daily' | 'weekly' | 'monthly' = 'weekly';
 
-    if (route === '' || route === '/home') {
+    if (route === '' || route === '/home' || route === '/blog') {
       priority = 1.0;
       changeFrequency = 'daily';
     } else if (route === '/marketplace' || route.startsWith('/tools/')) {
@@ -44,4 +46,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority,
     };
   });
+
+  // Dynamically include all published blog posts for Google #1 Indexing
+  const blogPosts = BlogEngine.getAllPosts();
+  const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: post.created_at || currentDate,
+    changeFrequency: 'daily' as const,
+    priority: 0.9,
+  }));
+
+  return [...staticEntries, ...blogEntries];
 }
