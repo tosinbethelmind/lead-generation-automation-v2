@@ -71,3 +71,12 @@ jobs:
           set +e
           npx tsx scripts/execute_today_300_emails_and_webforms.ts || true
           echo "✅ Daily Email & Webform Outreach Pass finished successfully in the cloud."
+
+      - name: Commit & Sync Harvested Leads & Telemetry Back to Repository
+        if: always()
+        run: |
+          git config --global user.name "Bethelmind Autonomous Cloud Bot"
+          git config --global user.email "bot@bethelmindanalytics.com"
+          git add local_db/leads_db.json local_db/real_webform_submissions.json local_db/email_daemon_state.json local_db/crm_leads.json local_db/activities.json || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(cloud-engine): persist autonomous scraped leads & outreach telemetry [skip ci]" && git push origin main) || true
+          echo "✅ Autonomous cloud harvest & outreach state synced to GitHub repository."
