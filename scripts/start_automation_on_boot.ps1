@@ -1,5 +1,5 @@
 # Lead Generation Automation Boot Handler
-# Spawns services automatically and ensures a stable internet connection before running.
+# Spawns services automatically with strict Memory-Safe (<=512MB) and Data-Saver protection.
 
 $WorkDir = "c:\Users\HomePC\Desktop\website Projects\lead generation automation"
 
@@ -10,9 +10,22 @@ function Log-Msg($msg) {
     Write-Host $logLine
 }
 
-Log-Msg "System startup detected. Initiating connection check..."
+Log-Msg "System startup detected. Performing pre-flight memory and resource safety check..."
 
-# 1. Loop until internet connection is available
+# 0. Pre-flight Cleanup & Memory Check
+try {
+    # Terminate any orphaned node processes consuming excessive memory (>600MB) from past crashed sessions
+    Get-CimInstance Win32_Process -Filter "name = 'node.exe'" -ErrorAction SilentlyContinue | Where-Object {
+        $_.WS -gt 600MB -and $_.CommandLine -notlike "*antigravity*"
+    } | ForEach-Object {
+        Log-Msg "Terminating orphaned high-memory node process (PID $($_.ProcessId), WS: $($_.WS / 1MB) MB)"
+        Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+} catch {
+    Log-Msg "Warning during pre-flight memory cleanup: $($_.Exception.Message)"
+}
+
+# 1. Loop until internet connection is available (using relaxed 20s backoff to save bandwidth)
 $online = $false
 $retryCount = 0
 while (-not $online) {
@@ -24,42 +37,48 @@ while (-not $online) {
             Log-Msg "Internet connection active!"
         } else {
             $retryCount++
-            Log-Msg "Offline. Retrying connection check (Attempt $retryCount) in 5 seconds..."
-            Start-Sleep -Seconds 5
+            Log-Msg "Offline. Retrying connection check (Attempt $retryCount) in 20 seconds (Data-Saver mode)..."
+            Start-Sleep -Seconds 20
         }
     } catch {
         $retryCount++
-        Log-Msg "Network interface not ready. Retrying (Attempt $retryCount) in 5 seconds..."
-        Start-Sleep -Seconds 5
+        Log-Msg "Network interface not ready. Retrying (Attempt $retryCount) in 20 seconds..."
+        Start-Sleep -Seconds 20
     }
 }
 
-# 2. Launch automation stack
-Log-Msg "Starting pipeline dev server and local queue runner..."
+# 2. Launch automation stack in Silent Background Mode with BelowNormal CPU Priority
+Log-Msg "Starting pipeline dev server and master autopilot in background..."
 cd $WorkDir
 
-# Check if process is already running to prevent duplicate spawns
+$NodeExe = (Get-Command node -ErrorAction SilentlyContinue).Source
+if (-not $NodeExe) { $NodeExe = "node.exe" }
+$NpmCmd = (Get-Command npm -ErrorAction SilentlyContinue).Source
+if (-not $NpmCmd) { $NpmCmd = "npm.cmd" }
+
+# Check if port 3006 is already in use
 $portInUse = Get-NetTCPConnection -LocalPort 3006 -ErrorAction SilentlyContinue
 if ($portInUse) {
     Log-Msg "Port 3006 is already in use. Dev server is already running."
 } else {
-    # Start Next.js dev server in a minimized window
-    Start-Process -FilePath "cmd.exe" -ArgumentList "/k title ApexReach-DevServer && npm run dev" -WorkingDirectory $WorkDir -WindowStyle Minimized
-    Log-Msg "Dev server launched on port 3006."
-    Start-Sleep -Seconds 8
+    # Start Next.js dev server with capped 384MB memory in hidden background window
+    $devProc = Start-Process -FilePath $NodeExe -ArgumentList "--max-old-space-size=384", "node_modules\next\dist\bin\next", "dev", "-p", "3006" -WorkingDirectory $WorkDir -WindowStyle Hidden -PassThru
+    try { $devProc.PriorityClass = 'BelowNormal' } catch {}
+    Log-Msg "Dev server launched in silent background mode on port 3006 (RAM capped at 384MB, CPU: BelowNormal)."
+    Start-Sleep -Seconds 4
 }
 
 # Check if master autopilot is already running
-$autopilotRunning = Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object {
+$autopilotRunning = Get-CimInstance Win32_Process -Filter "name = 'node.exe'" -ErrorAction SilentlyContinue | Where-Object {
     $_.CommandLine -like "*unified_master_autopilot*"
 }
 
 if ($autopilotRunning) {
     Log-Msg "Unified Master Autopilot is already running. Skipping duplicate launch."
 } else {
-    # Start Unified Master Autopilot in a separate background minimized window
-    Start-Process -FilePath "cmd.exe" -ArgumentList "/k title Bethelmind-MasterAutopilot && node scripts/unified_master_autopilot.js" -WorkingDirectory $WorkDir -WindowStyle Minimized
-    Log-Msg "Unified Master Autopilot launched (Traffic + Google Indexing + Lead Pipeline + Broadcaster)."
+    # Launch Master Autopilot using detached rock-solid Node launcher
+    & $NodeExe "$WorkDir\scripts\launch_background_autopilot.js"
+    Log-Msg "Unified Master Autopilot launched via detached background launcher (RAM capped <= 384MB, CPU: BelowNormal)."
 }
 
-Log-Msg "Bethelmind Analytics 24/7 Autopilot stack started successfully. Dev server: port 3006. All 5 workers active."
+Log-Msg "Bethelmind Analytics Autopilot stack started successfully with strict Anti-Crash and Data-Saver protection active."

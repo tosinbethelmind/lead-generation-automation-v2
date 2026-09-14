@@ -66,7 +66,10 @@
     "scrape:low-resource": "node --max-old-space-size=512 node_modules/tsx/dist/cli.mjs scripts/run_low_resource_lead_automation.ts --target=500 --continuous --webforms=50",
     "scrape:test": "node --max-old-space-size=512 node_modules/tsx/dist/cli.mjs scripts/run_low_resource_lead_automation.ts --test",
     "db:sanity": "npx tsx scripts/clean_leads_db_sanity.ts",
-    "bundle:rebuild": "node scripts/build_leads_bundle.js"
+    "bundle:rebuild": "node scripts/build_leads_bundle.js",
+    "autopilot:start": "node scripts/launch_background_autopilot.js",
+    "autopilot:status": "node scripts/check_autopilot_status.js",
+    "autopilot:stop": "powershell -ExecutionPolicy Bypass -File scripts/stop_automation.ps1"
   },
   "dependencies": {
     "@google/genai": "^2.8.0",
