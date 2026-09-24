@@ -6,16 +6,33 @@ import DbHealthCheck from "@/components/DbHealthCheck";
 import { ThemeProvider } from "./ThemeContext";
 
 export const viewport: Viewport = {
-  themeColor: "#070a12",
+  themeColor: "#0284c7",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
   title: "Bethelmind Analytics | AI Lead Generation & Business Automation Nigeria",
   description: "Capture 3.5x more paying clients with AI-assisted WhatsApp enquiry handling, Lagos B2B lead harvesting, Solar Quote Pro, and automated Moniepoint/Paystack payment verification.",
   metadataBase: new URL('https://www.bethelmindanalytics.com'),
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Bethelmind',
+  },
+  icons: {
+    icon: [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/icons/icon.svg', type: 'image/svg+xml' }
+    ],
+    apple: [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }
+    ],
+  },
   alternates: {
     canonical: 'https://www.bethelmindanalytics.com',
   },

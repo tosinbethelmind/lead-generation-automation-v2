@@ -74,20 +74,24 @@ export default function PaymentSection({
     setTimeout(() => setCopied(null), 3000);
   };
 
+  const isDeposit = plan.balanceAmountNGN > 0;
+  const depositText = isDeposit
+    ? `50% Milestone Deposit: ₦${plan.depositAmountNGN.toLocaleString()} (Total Value: ₦${plan.totalAmountNGN.toLocaleString()})`
+    : `One-Time Setup: ₦${plan.setupFeeNGN.toLocaleString()}`;
+
   const waMessage =
-    `Hello Bethelmind Analytics,\n\n` +
-    `I have made a payment by OPay transfer.\n\n` +
+    `Hello Bethelmind Lagos Desk,\n\n` +
+    `I am ready to proceed with my website & AI sales assistant setup.\n\n` +
     `Business Name: ${businessName || 'My Business'}\n` +
     `Industry: ${selectedIndustry}\n` +
-    `Lagos District: ${targetDistrict}\n` +
-    `Package: ${plan.name}\n` +
-    `Monthly Fee: ₦${plan.monthlyNGN.toLocaleString()}/month\n` +
-    `Setup Fee: ₦${plan.setupFeeNGN.toLocaleString()} (one-time)\n` +
+    `Lagos District/Region: ${targetDistrict}\n` +
+    `Selected Package: ${plan.name}\n` +
+    `Milestone Deposit to Start: ₦${plan.depositAmountNGN.toLocaleString()} NGN (Total: ₦${plan.totalAmountNGN.toLocaleString()} NGN)\n` +
+    `Delivery SLA: Guaranteed ${plan.slaHours} Hours\n` +
     `Payment Reference: ${paymentRef}\n\n` +
-    `I will attach my payment receipt/screenshot below.\n` +
-    `Please confirm my payment and send my onboarding instructions.`;
+    `Please confirm receipt and dispatch my deployment onboarding pack!`;
 
-  const waLink = buildWhatsAppLink(paymentConfig.whatsappNumber, waMessage);
+  const waLink = buildWhatsAppLink('2348022791227', waMessage);
 
   const handleWhatsAppClick = () => setWhatsappOpened(true);
 
@@ -128,32 +132,41 @@ export default function PaymentSection({
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 20, padding: '4px 14px', marginBottom: 14 }}>
-            <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 800 }}>Manual Confirmation: reviewed before setup begins</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 20, padding: '5px 16px', marginBottom: 14 }}>
+            <ShieldCheck size={14} style={{ color: '#10b981' }} />
+            <span style={{ fontSize: '0.76rem', color: '#34d399', fontWeight: 800 }}>
+              Official Bethelmind Settlement Desk • 50% Milestone Escrow Protection
+            </span>
           </div>
           <h2
             id="payment-heading"
-            style={{ fontSize: 'clamp(1.3rem, 3vw, 1.7rem)', fontWeight: 800, margin: '0 0 8px', color: '#fff', fontFamily: "'Outfit', sans-serif" }}
+            style={{ fontSize: 'clamp(1.4rem, 3.2vw, 1.85rem)', fontWeight: 800, margin: '0 0 10px', color: '#fff', fontFamily: "'Outfit', sans-serif" }}
           >
-            Pay by Bank / OPay Transfer
+            Milestone Settlement & Official Invoicing
           </h2>
-          <p style={{ color: '#94a3b8', fontSize: '0.88rem', margin: 0, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.6 }}>
-            Transfer the exact amount to the account below, then send your payment screenshot through WhatsApp for manual confirmation. Onboarding begins after payment is confirmed.
+          <p style={{ color: '#94a3b8', fontSize: '0.88rem', margin: 0, maxWidth: 580, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.6 }}>
+            Your investment is 100% protected. Pay the 50% milestone deposit to commence your build. The remaining balance is paid <strong>ONLY</strong> after you inspect and approve your live staging website.
           </p>
         </div>
 
         {/* Selected plan summary */}
-        <div style={{ background: 'rgba(7,9,14,0.6)', border: `2px solid ${getPlanById(selectedPlanId).color}40`, borderRadius: 16, padding: '14px 18px', marginBottom: 20 }}>
+        <div style={{ background: 'rgba(7,9,14,0.6)', border: `2px solid ${getPlanById(selectedPlanId).color}40`, borderRadius: 16, padding: '16px 20px', marginBottom: 20 }}>
           <p style={{ margin: '0 0 4px', fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>Selected Package</p>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-            <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc', fontFamily: "'Outfit', sans-serif" }}>{plan.name}</span>
+            <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', fontFamily: "'Outfit', sans-serif" }}>{plan.name}</span>
             <div style={{ textAlign: 'right' }}>
-              <span style={{ fontSize: '1.4rem', fontWeight: 900, color: getPlanById(selectedPlanId).color, fontFamily: "'Outfit', sans-serif" }}>
-                ₦{plan.monthlyNGN.toLocaleString()}
+              <span style={{ fontSize: '1.6rem', fontWeight: 900, color: getPlanById(selectedPlanId).color, fontFamily: "'Outfit', sans-serif" }}>
+                ₦{plan.depositAmountNGN.toLocaleString()}
               </span>
-              <span style={{ color: '#64748b', fontSize: '0.78rem' }}>/month</span>
+              <span style={{ color: '#34d399', fontSize: '0.8rem', fontWeight: 800, marginLeft: 6 }}>
+                {plan.balanceAmountNGN > 0 ? '(50% Deposit to Start)' : '(Complete 1-Time Setup)'}
+              </span>
               <br />
-              <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>+ ₦{plan.setupFeeNGN.toLocaleString()} setup (once)</span>
+              <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                {plan.balanceAmountNGN > 0
+                  ? `Total Investment: ₦${plan.totalAmountNGN.toLocaleString()} • Balance of ₦${plan.balanceAmountNGN.toLocaleString()} paid ONLY after live approval`
+                  : `Guaranteed ${plan.slaHours}h Live Handover`}
+              </span>
             </div>
           </div>
         </div>
@@ -242,6 +255,32 @@ export default function PaymentSection({
 
         {/* Primary Action Buttons */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center', marginBottom: 20 }}>
+          <a
+            id="payment-whatsapp-cta"
+            href={waLink}
+            target="_blank"
+            rel="noreferrer noopener"
+            onClick={handleWhatsAppClick}
+            style={{
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: '#fff',
+              textDecoration: 'none',
+              borderRadius: 14,
+              padding: '16px 32px',
+              fontWeight: 900,
+              fontSize: '1rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 10,
+              boxShadow: '0 8px 30px rgba(16,185,129,0.3)',
+              border: '1px solid rgba(255,255,255,0.2)',
+            }}
+            aria-label="Request Settlement Account & Invoice on WhatsApp"
+          >
+            <MessageSquare style={{ width: 20, height: 20 }} aria-hidden="true" />
+            👉 Request Verified Settlement Account & Invoice on WhatsApp
+          </a>
+
           <button
             onClick={() => setShowInvoiceModal(true)}
             style={{
@@ -251,28 +290,15 @@ export default function PaymentSection({
               borderRadius: 12,
               padding: '12px 24px',
               fontWeight: 800,
-              fontSize: '0.9rem',
+              fontSize: '0.88rem',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
             }}
           >
-            <FileText size={16} /> Generate Pro-Forma Invoice First
+            <FileText size={16} /> Preview Instant Pro-Forma Invoice (PDF)
           </button>
-
-          <a
-            id="payment-whatsapp-cta"
-            href={waLink}
-            target="_blank"
-            rel="noreferrer noopener"
-            onClick={handleWhatsAppClick}
-            style={{ background: '#25d366', color: '#fff', textDecoration: 'none', borderRadius: 14, padding: '14px 28px', fontWeight: 800, fontSize: '0.95rem', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 6px 24px rgba(37,211,102,0.25)' }}
-            aria-label="Open WhatsApp to send payment receipt"
-          >
-            <MessageSquare style={{ width: 18, height: 18 }} aria-hidden="true" />
-            I Have Made Payment — Send Receipt on WhatsApp
-          </a>
         </div>
 
         {/* Post-click note */}

@@ -214,23 +214,23 @@ async function executeOutreach(batchSize = 30, dryRun = false) {
     const leadId = lead.lead_id || lead.id;
     const previewUrl = `https://www.bethelmindanalytics.com/preview/${encodeURIComponent(leadId)}`;
 
-    const message = `⚡ *[BETHELMIND INSTITUTIONAL FX & ESCROW DESK]*\n` +
+    const message = `⚡ *[BETHELMIND COMMERCIAL AUTOMATION DESK]*\n` +
       `Attn: Management Team, *${name}* (${area})\n\n` +
-      `We know your company already has an existing channel for China & Asia container shipments. For today's factory orders, our desk has reserved a locked wholesale rate of *₦1,375 / USD* with under 15-minute factory clearance.\n\n` +
-      `🛡️ *100% INSTITUTIONAL ESCROW & COLLATERAL PROTECTION:*\n` +
-      `• *Settlement Corridors:* Victoria Island Commercial Core & Trade Fair Complex Hubs\n` +
-      `• *Bonded Security Collateral:* ₦450,000,000 to ₦600,000,000 Platform Vault Guarantee\n` +
-      `• *Trade Clearance:* < 15-Minute Direct China Factory Wire / TRC-20 USDT\n` +
-      `• *Zero-Capital Risk:* Funds release strictly upon verified Swift MT103 confirmation receipt.\n\n` +
-      `👉 *To lock today's allocation, reply directly or message our CEO/Admin Desk on WhatsApp:*\n` +
-      `https://wa.me/2348022791227\n\n` +
-      `*Bethelmind Institutional FX & Liquidity Desk*`;
+      `During our operational review of ${category} businesses in ${area}, we identified that clients inquiring after hours often wait hours for quotes. Our engineering desk pre-built an interactive 24/7 AI WhatsApp Quoting Assistant and custom portal specifically for ${name}.\n\n` +
+      `🛠️ *WHAT WE PRE-BUILT FOR ${name.toUpperCase()}:*\n` +
+      `• 24/7 AI WhatsApp Quoting Assistant (< 3s response speed, Nigerian business tone)\n` +
+      `• Specialized ${category} Instant Quote & Calculation Engine\n` +
+      `• Automated Paystack & Moniepoint Payment Verification\n\n` +
+      `👉 *Test drive your live private prototype (₦0 Upfront Commitment):*\n` +
+      `${previewUrl}\n\n` +
+      `• WhatsApp Closer Desk: https://wa.me/2348022791227 (0802 279 1227)\n\n` +
+      `*Bethelmind Analytics Lagos Desk*`;
 
     console.log(`[${i + 1}/${batch.length}] 🏢 ${name.padEnd(30)} | 📱 ${phone.padEnd(16)}`);
 
     if (!dryRun) {
       const waRes = await sendWhatsApp(phone, message, 1);
-      const smsRes = await sendCarrierSms(phone, `[Bethelmind Desk] Attn: ${name}. Locked wholesale China factory FX rate today: ₦1,375/$. 100% bonded Diamond Escrow (₦450M-₦600M collateral). <15-min Swift MT103 receipt. WhatsApp 08022791227 to lock.`);
+      const smsRes = await sendCarrierSms(phone, `Hello ${name}! We built a 24/7 WhatsApp quote tool for your firm: ${previewUrl} (Chat: wa.me/2348022791227?text=${encodeURIComponent(name.slice(0, 15))})`);
       
       const isSent = waRes.success || smsRes.success;
       if (isSent) {

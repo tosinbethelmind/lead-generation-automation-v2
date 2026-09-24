@@ -165,7 +165,10 @@ export default function CustomerJourneyAnalyticsPage() {
 
   useEffect(() => {
     fetchAnalytics();
-    const interval = setInterval(fetchAnalytics, 5000);
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      fetchAnalytics();
+    }, 20000);
     return () => clearInterval(interval);
   }, []);
 

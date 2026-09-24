@@ -47,15 +47,19 @@ function buildPlanWhatsAppLink(plan: Plan, businessName?: string, industry?: str
   const biz = businessName ? ` for *${businessName}*` : '';
   const ind = industry ? ` in *${industry}*` : '';
   const dist = district ? ` (${district})` : '';
-  const msg = `Hello Bethelmind Team,\n\nI want to subscribe to the *${plan.name}* (₦${plan.monthlyNGN.toLocaleString()}/mo + ₦${plan.setupFeeNGN.toLocaleString()} setup)${biz}${ind}${dist}.\n\nPlease guide me through onboarding and payment!`;
-  return `https://wa.me/2347034297995?text=${encodeURIComponent(msg)}`;
+  const isDeposit = plan.setupFeeNGN === 75_000 || plan.setupFeeNGN === 125_000 || plan.setupFeeNGN === 175_000;
+  const priceText = isDeposit
+    ? `₦${plan.setupFeeNGN.toLocaleString()} Milestone Deposit (50% to start, balance on live approval)`
+    : `₦${plan.setupFeeNGN.toLocaleString()} one-time setup`;
+  const msg = `Hello Bethelmind Lagos Desk,\n\nI want to order the *${plan.name}* (${priceText})${biz}${ind}${dist}.\n\nPlease guide me through onboarding and prototype delivery!`;
+  return `https://wa.me/2348022791227?text=${encodeURIComponent(msg)}`;
 }
 
 function buildOutrightWhatsAppLink(pkg: OutrightPackage, businessName?: string, industry?: string): string {
   const biz = businessName ? ` for *${businessName}*` : '';
   const ind = industry ? ` (${industry})` : '';
-  const msg = `Hello Bethelmind Team,\n\nI want to order the *1-Time Outright Purchase & Source Code Handover* for *${pkg.name}* (₦${pkg.priceNGN.toLocaleString()} one-off, ₦0 monthly)${biz}${ind}.\n\nPlease provide payment details and repository delivery!`;
-  return `https://wa.me/2347034297995?text=${encodeURIComponent(msg)}`;
+  const msg = `Hello Bethelmind Lagos Desk,\n\nI want to order the *1-Time Outright Purchase & Source Code Handover* for *${pkg.name}* (₦${pkg.priceNGN.toLocaleString()} one-off, ₦0 monthly)${biz}${ind}.\n\nPlease provide payment details and repository delivery!`;
+  return `https://wa.me/2348022791227?text=${encodeURIComponent(msg)}`;
 }
 
 function scrollToPayment() {
@@ -82,11 +86,16 @@ export default function PricingSection({
   };
 
   const currentInvoicePlan = invoicePlanId && websiteMode !== 'outright_buyout' ? getPlanById(invoicePlanId, websiteMode) : null;
+  const isDeposit = currentInvoicePlan && currentInvoicePlan.balanceAmountNGN > 0;
   const invoiceItems: InvoiceItem[] = customInvoiceItems || (currentInvoicePlan
-    ? [
-        { name: `${currentInvoicePlan.name} Subscription (1st Month)`, price: currentInvoicePlan.monthlyNGN, qty: 1 },
-        { name: 'Initial System & Workflow Setup Fee', price: currentInvoicePlan.setupFeeNGN, qty: 1 },
-      ]
+    ? isDeposit
+      ? [
+          { name: `${currentInvoicePlan.name} (50% Milestone Deposit to Start)`, price: currentInvoicePlan.depositAmountNGN, qty: 1 },
+          { name: 'Milestone Balance (Payable ONLY after live preview inspection & approval)', price: currentInvoicePlan.balanceAmountNGN, qty: 1 },
+        ]
+      : [
+          { name: `${currentInvoicePlan.name} (Complete 1-Line Integration)`, price: currentInvoicePlan.setupFeeNGN, qty: 1 },
+        ]
     : []);
 
   return (
@@ -271,7 +280,7 @@ export default function PricingSection({
       {/* RENDER CONDITIONAL PRICING GRIDS */}
       {websiteMode === 'outright_buyout' ? (
         /* 📦 1-TIME OUTRIGHT CODEBASE HANDOVER CARDS */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 56 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 20, marginBottom: 56 }}>
           {OUTRIGHT_PACKAGES.map((pkg) => {
             const waOutrightLink = buildOutrightWhatsAppLink(pkg, businessName, selectedIndustry);
             const isHighlight = pkg.id === 'outright_complete';
@@ -366,7 +375,7 @@ export default function PricingSection({
         </div>
       ) : (
         /* STANDARD MANAGED SUBSCRIPTION PLANS GRID */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: 20, marginBottom: 56 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 20, marginBottom: 56 }}>
           {activePlans.map((plan) => {
             const isSelected = selectedPlanId === plan.id;
             const planWaLink = buildPlanWhatsAppLink(plan, businessName, selectedIndustry, targetDistrict);
@@ -409,23 +418,33 @@ export default function PricingSection({
                 </h3>
                 <p style={{ color: '#64748b', fontSize: '0.78rem', margin: '0 0 16px', lineHeight: 1.4 }}>{plan.tagline}</p>
 
-                <div style={{ marginBottom: 18 }}>
-                  <p style={{ margin: '0 0 4px' }}>
-                    <span style={{ fontSize: '2rem', fontWeight: 900, color: plan.color, fontFamily: "'Outfit', sans-serif" }}>
-                      ₦{plan.monthlyNGN.toLocaleString()}
+                <div style={{ marginBottom: 18, background: 'rgba(255,255,255,0.02)', padding: '14px 16px', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ margin: '0 0 6px', display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '2.1rem', fontWeight: 900, color: plan.color, fontFamily: "'Outfit', sans-serif" }}>
+                      ₦{plan.depositAmountNGN.toLocaleString()}
                     </span>
-                    <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 400 }}>/month</span>
+                    <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 800, background: 'rgba(52,211,153,0.12)', padding: '2px 8px', borderRadius: 6 }}>
+                      {plan.balanceAmountNGN > 0 ? '50% Deposit to Start' : 'Complete 1-Time Setup'}
+                    </span>
                   </p>
-                  <p style={{ margin: 0, fontSize: '0.78rem', color: '#94a3b8' }}>
-                    + ₦{plan.setupFeeNGN.toLocaleString()} <span style={{ color: '#64748b' }}>one-time setup fee</span>
+                  <p style={{ margin: '0 0 4px', fontSize: '0.82rem', color: '#cbd5e1', fontWeight: 600 }}>
+                    Total Project Investment: <strong style={{ color: '#fff' }}>₦{plan.totalAmountNGN.toLocaleString()}</strong>
                   </p>
+                  <p style={{ margin: 0, fontSize: '0.76rem', color: '#94a3b8', lineHeight: 1.4 }}>
+                    {plan.balanceAmountNGN > 0
+                      ? `🛡️ Balance of ₦${plan.balanceAmountNGN.toLocaleString()} strictly due ONLY after you inspect & approve your live preview on your phone.`
+                      : '⚡ Zero forced monthly subscriptions. Complete same-day integration.'}
+                  </p>
+                  <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.76rem', color: '#38bdf8', fontWeight: 700 }}>
+                    <span>⏱️ Guaranteed {plan.slaHours}-Hour Live Delivery SLA</span>
+                  </div>
                 </div>
 
                 <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, marginBottom: 20 }}>
                   {plan.features.map((f) => (
                     <div key={f.text} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
                       <CheckCircle style={{ width: 14, height: 14, color: plan.color, flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
-                      <span style={{ color: '#94a3b8', fontSize: '0.82rem', lineHeight: 1.4 }}>{f.text}</span>
+                      <span style={{ color: '#cbd5e1', fontSize: '0.82rem', lineHeight: 1.4 }}>{f.text}</span>
                     </div>
                   ))}
                 </div>
@@ -450,9 +469,28 @@ export default function PricingSection({
                     }}
                     aria-label={`Select ${plan.name} and proceed to payment`}
                   >
-                    {isSelected ? 'Selected — See Payment Details' : `Select ${plan.name}`}
+                    {isSelected ? '✓ Plan Selected — Proceed to Settlement' : `Select ${plan.name}`}
                     <ArrowRight style={{ width: 14, height: 14 }} aria-hidden="true" />
                   </button>
+
+                  <a
+                    href={planWaLink}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                      width: '100%', padding: '10px 0', borderRadius: 10,
+                      background: 'rgba(37,211,102,0.12)',
+                      color: '#25d366',
+                      border: '1px solid rgba(37,211,102,0.3)',
+                      fontWeight: 800, fontSize: '0.82rem', textDecoration: 'none',
+                      textAlign: 'center',
+                    }}
+                    aria-label={`Order ${plan.name} via WhatsApp`}
+                  >
+                    💬 Order via 1-Tap WhatsApp (0802 279 1227) →
+                  </a>
 
                   <button
                     onClick={(e) => {
@@ -464,28 +502,15 @@ export default function PricingSection({
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                       width: '100%', padding: '8px 0', borderRadius: 10,
-                      background: 'rgba(56,189,248,0.1)',
+                      background: 'rgba(56,189,248,0.08)',
                       color: '#38bdf8',
-                      border: '1px solid rgba(56,189,248,0.25)',
+                      border: '1px solid rgba(56,189,248,0.2)',
                       fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
                     }}
                   >
                     <FileText size={14} /> Preview Instant Pro-Forma Invoice
                   </button>
                 </div>
-
-                {isSelected && (
-                  <a
-                    href={planWaLink}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    onClick={(e) => e.stopPropagation()}
-                    style={{ display: 'block', textAlign: 'center', marginTop: 10, fontSize: '0.76rem', color: '#64748b', textDecoration: 'none' }}
-                    aria-label={`Ask about ${plan.name} on WhatsApp`}
-                  >
-                    Or ask about this plan on WhatsApp →
-                  </a>
-                )}
               </div>
             );
           })}
@@ -520,7 +545,7 @@ export default function PricingSection({
         </div>
 
         {/* Maintenance Cards Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginBottom: 28 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: 16, marginBottom: 28 }}>
           {MAINTENANCE_OPTIONS.map((opt) => (
             <div
               key={opt.id}

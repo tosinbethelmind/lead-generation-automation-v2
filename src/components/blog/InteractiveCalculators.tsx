@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { MASTER_PAYOUT } from '@/data/monetizationCatalog';
 
 interface CalculatorProps {
+  category?: string;
   niche?: string;
   articleTitle?: string;
 }
@@ -11,7 +12,8 @@ interface CalculatorProps {
 type TabType = 'solar' | 'realestate' | 'b2bleadgen' | 'clinic';
 
 export const InteractiveCalculators: React.FC<CalculatorProps> = ({ 
-  niche = 'solar', 
+  category,
+  niche = category || 'solar', 
   articleTitle = 'Commercial Analysis' 
 }) => {
   // Determine initial tab based on niche

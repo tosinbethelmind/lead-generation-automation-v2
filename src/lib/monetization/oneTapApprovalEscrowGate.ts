@@ -9,7 +9,7 @@
  * 3. System sends a 1-Tap Approval Card to Admin WhatsApp (0802 279 1227).
  * 4. UPON USER 1-TAP APPROVAL:
  *    - Automatically sends verified Merchant Escrow Clearing Account to Client.
- *    - Simultaneously notifies Diamond Merchant Desk Head (Alhaji Kabir +234 809 112 4022) with trade payload.
+ *    - Simultaneously notifies Institutional Merchant Desk Head with trade payload.
  *    - Activates NIBSS Real-Time Escrow Credit Monitor.
  *    - Upon factory clearance & MT103 receipt, routes +₦25/USD spread to OPay (7034297995).
  */

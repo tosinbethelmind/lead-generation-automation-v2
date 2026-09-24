@@ -20,7 +20,8 @@ function runChildScript(scriptName, args = []) {
 
     const child = spawn('node', [scriptPath, ...args], {
       stdio: 'inherit',
-      shell: true
+      shell: true,
+      windowsHide: true
     });
 
     child.on('close', (code) => {

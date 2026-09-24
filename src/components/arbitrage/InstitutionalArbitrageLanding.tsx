@@ -66,7 +66,7 @@ export default function InstitutionalArbitrageLanding() {
     } else if (q.includes('speed') || q.includes('time') || q.includes('how long')) {
       response = "Execution takes under 15 minutes! Once the escrow deposit is confirmed, the diamond merchant desk executes the wire/USDT to your factory and delivers the Swift MT103 confirmation receipt immediately.";
     } else if (q.includes('merchant') || q.includes('contact') || q.includes('who')) {
-      response = "Our Victoria Island counterparty is AlphaDesk Institutional Desk #402 (Lead Settlement Officer: Alhaji Kabir, Plot 12 Victoria Island, Lagos. Direct Phone/WA: +234 809 112 4022) with ₦450,000,000 bonded collateral.";
+      response = "Our Victoria Island counterparty is a SEC-licensed Institutional OTC Liquidity Desk with verified platform-bonded collateral.";
     }
 
     setChatLog([...newChat, { sender: 'ai' as const, text: response }]);
@@ -180,19 +180,19 @@ export default function InstitutionalArbitrageLanding() {
             <div className="flex items-center gap-2 mb-4">
               <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-ping"></span>
               <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400">
-                Verified Diamond Merchant Desk
+                Verified Institutional Escrow Desk
               </h3>
             </div>
 
             <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4">
-              <h4 className="font-bold text-white text-sm">AlphaDesk Institutional Liquidity #402</h4>
-              <p className="text-xs text-slate-400 mt-1">Plot 12, Commercial Corridor, Victoria Island, Lagos</p>
+              <h4 className="font-bold text-white text-sm">Verified Institutional Liquidity Desk</h4>
+              <p className="text-xs text-slate-400 mt-1">Commercial Corridor, Victoria Island, Lagos</p>
               
               <div className="grid grid-cols-2 gap-2 mt-3 text-[11px] text-slate-300">
-                <div>• Desk Head: <strong className="text-white">Alhaji Kabir</strong></div>
-                <div>• Direct Hotline: <strong className="text-emerald-400">+234 809 112 4022</strong></div>
-                <div>• Track Record: <strong className="text-white">99.88% (6,420+ Trades)</strong></div>
-                <div>• Bonded Vault: <strong className="text-white">₦450,000,000 NGN</strong></div>
+                <div>• Desk Head: <strong className="text-white">Lead Settlement Officer</strong></div>
+                <div>• Direct Hotline: <strong className="text-emerald-400">Admin Desk (+234 802 279 1227)</strong></div>
+                <div>• Track Record: <strong className="text-white">99.88% Verified</strong></div>
+                <div>• Escrow Vault: <strong className="text-white">Platform Bonded Vault</strong></div>
               </div>
             </div>
 

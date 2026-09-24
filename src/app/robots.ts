@@ -23,7 +23,19 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: ['/admin/', '/api/', '/portal/', '/preview/'],
       },
+      // Explicit Generative AI Crawlers for GEO (Google Gemini, ChatGPT, Perplexity, Claude)
+      {
+        userAgent: ['GPTBot', 'ChatGPT-User', 'Google-Extended', 'PerplexityBot', 'ClaudeBot', 'anthropic-ai', 'cohere-ai'],
+        allow: ['/', '/blog/', '/llms.txt', '/llms-full.txt', '/marketplace', '/tools/'],
+        disallow: ['/admin/', '/api/', '/portal/', '/preview/'],
+      },
+      {
+        userAgent: 'Bingbot',
+        allow: '/',
+        disallow: ['/admin/', '/api/', '/portal/', '/preview/'],
+      },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }

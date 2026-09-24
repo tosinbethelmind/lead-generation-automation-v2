@@ -435,7 +435,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Engr. Femi Adeleke', text: 'The instant solar sizing calculator saved our sales team hours of site assessments. Clients love the fast PDF proposals!', rating: 5 },
         { name: 'Dr. (Mrs) Alabi', text: 'Clean 10kVA hybrid setup. Responsive 24/7 WhatsApp support and transparent pricing.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Upgrade My Solar Quoting Engine' : 'Claim My Solar Lead & Quoting Website'
+      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
     };
   }
 
@@ -454,7 +454,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Chief Olumide B.', text: 'The virtual tour and installment schedule gave us complete peace of mind investing from the UK.', rating: 5 },
         { name: 'Barr. Folake T.', text: 'Transparent documentation and seamless buying experience. Excellent team in Lagos.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Upgrade My Real Estate Portal' : 'Claim My Luxury Property Portal'
+      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
     };
   }
 
@@ -473,7 +473,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Mrs. Kemi Johnson', text: 'Booking our family consultation via WhatsApp saved us hours at the reception. Superb doctors!', rating: 5 },
         { name: 'Pastor David E.', text: 'Clean facilities, prompt triage, and seamless HMO verification.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Upgrade My Clinic Portal' : 'Claim My Medical Clinic Website'
+      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
     };
   }
 
@@ -492,7 +492,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Capt. Ibrahim M.', text: 'Fair trade-in valuation and transparent customs clearing breakdown. Got my SUV in 48 hours.', rating: 5 },
         { name: 'Segun Oladipo', text: 'Best dealership experience in Lagos. Verified VIN and clean engine.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Upgrade My Auto Sales Engine' : 'Claim My Auto Dealership Website'
+      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
     };
   }
 
@@ -511,7 +511,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Dr. (Mrs) Okafor', text: 'The online fee breakdown and instant result PIN access make termly registration stress-free.', rating: 5 },
         { name: 'Engr. Taiwo B.', text: 'Outstanding academic standards and very responsive administration.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Upgrade My School Portal' : 'Claim My Academy Website'
+      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
     };
   }
 
@@ -530,7 +530,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'MD, Global Tech Ltd', text: 'Prompt CAC corporate filing and seamless retainer invoicing. Essential legal partners for our business.', rating: 5 },
         { name: 'Alhaji Sanusi K.', text: 'Thorough due diligence and contract negotiation. Highly recommended legal team.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Upgrade My Law Firm Portal' : 'Claim My Legal Practice Portal'
+      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
     };
   }
 
@@ -549,7 +549,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Amaka Eze', text: 'Loved the fast WhatsApp booking and instant check-in. The apartment was immaculate with 24/7 power!', rating: 5 },
         { name: 'Tunde Bakare', text: 'Top tier shortlet in Lagos. Seamless caution deposit refund right after checkout.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Upgrade My Hotel Booking Engine' : 'Claim My Luxury Hospitality Website'
+      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
     };
   }
 
@@ -568,7 +568,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Stephanie Okonkwo', text: 'The online measurement form and WhatsApp catalog made ordering my wedding guest outfit so effortless!', rating: 5 },
         { name: 'Folake Adeyemi', text: 'Flawless tailoring, exquisite fabrics, and prompt delivery in Lekki. Truly 5-star service.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Upgrade My Fashion Studio Portal' : 'Claim My Boutique & Style Website'
+      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
     };
   }
 
@@ -587,7 +587,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Boutique Owner, Lekki', text: 'Their automated delivery fee quote makes customer checkout effortless on our WhatsApp page.', rating: 5 },
         { name: 'Manager, FMCG Distributors', text: 'Reliable haulage dispatch and transparent diesel reconciliation for our interstate fleet.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Upgrade My Logistics Engine' : 'Claim My Logistics Website'
+      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
     };
   }
 
@@ -606,7 +606,7 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
         { name: 'Mrs. Yetunde A.', text: 'Our wedding reception was spectacular! The decor pricing calculator gave us complete budget clarity.', rating: 5 },
         { name: 'Corporate Events Lead', text: 'Prime location, impeccable facilities, and easy date reservation system.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Upgrade My Event Hall Engine' : 'Claim My Event Center Website'
+      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
     };
   }
 
@@ -624,8 +624,9 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
       { name: 'Chukwuemeka A.', text: 'The WhatsApp AI autoresponder responded to our late-night inquiry instantly. Exceptional setup!', rating: 5 },
       { name: 'Adaeze O.', text: 'Transparent quotes and very smooth payment process. Highly recommended business in Lagos.', rating: 5 }
     ],
-    ctaText: hasWebsite ? 'Upgrade My Business System' : 'Claim My Business Website & AI Engine'
+    ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
   };
+
 }
 
 export async function generateCopyWithVertexAI(

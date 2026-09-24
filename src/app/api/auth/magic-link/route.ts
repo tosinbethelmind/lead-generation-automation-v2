@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
     magicTokens.set(token, { leadId, expiresAt });
 
-    const origin = req.nextUrl?.origin || 'https://apexreach.site';
+    const origin = req.nextUrl?.origin || 'https://www.bethelmindanalytics.com';
     const magicUrl = `${origin}/admin/magic?token=${token}&leadId=${encodeURIComponent(leadId)}`;
 
     return NextResponse.json({

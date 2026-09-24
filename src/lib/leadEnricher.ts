@@ -89,6 +89,47 @@ export async function crawlWebsiteContactInfo(websiteUrl: string): Promise<{ pho
   }
 }
 
+/**
+ * Enrich lead context using Agent-Reach zero-cost internet layer
+ */
+export async function enrichLeadContextWithAgentReach(lead: {
+  name: string;
+  category?: string;
+  area?: string;
+  phone?: string;
+  website?: string;
+}): Promise<{
+  bio: string;
+  socials: Record<string, string>;
+  catalogHighlights: string[];
+  painPoints: string[];
+  waUrl?: string;
+  pitchHook: string;
+}> {
+  try {
+    const { agentReachEngine } = await import('./scraping/agentReachEngine');
+    const res = await agentReachEngine.enrichLeadWithAgentReach(lead);
+    return {
+      bio: res.enrichedBio,
+      socials: res.socialHandles,
+      catalogHighlights: res.catalogItems,
+      painPoints: res.customerPainPoints,
+      waUrl: res.whatsAppDirectUrl,
+      pitchHook: res.pitchHook
+    };
+  } catch (_) {
+    return {
+      bio: `${lead.name} operates in ${lead.area || 'Nigeria'}.`,
+      socials: {},
+      catalogHighlights: [],
+      painPoints: [],
+      waUrl: lead.phone ? `https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}` : undefined,
+      pitchHook: `24/7 AI WhatsApp Sales Closer with instant quotations for ${lead.name}.`
+    };
+  }
+}
+
+
 
 /** Phone Carrier Validation for Nigerian Networks (MTN, Airtel, Glo, 9mobile) */
 export function validateNigerianCarrier(phone: string): { valid: boolean; carrier?: string } {

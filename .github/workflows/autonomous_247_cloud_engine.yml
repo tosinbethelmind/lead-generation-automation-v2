@@ -52,7 +52,8 @@ jobs:
           npx tsx scripts/run_heavy_10k_nigeria_scraper.ts --target=1000 || true
           node scripts/master_five_engine_high_speed_scraper.js || true
           npx tsx scripts/run_heavy_b2b_email_harvester.ts || true
-          echo "✅ High-Speed Nationwide Harvester & 5-Engine Pass complete."
+          npx tsx scripts/harvest_instagram_and_tiktok_leads.ts || true
+          echo "✅ High-Speed Nationwide Harvester, Social Scraper & 5-Engine Pass complete."
 
       - name: Execute Daily B2B Email (300 Quota) & Webform Outreach Pass
         env:

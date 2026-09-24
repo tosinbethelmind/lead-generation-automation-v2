@@ -52,15 +52,19 @@ async function runTests() {
   // 6. Test Views Increment
   const initialViews = sample.views_count;
   const updatedViews = BlogEngine.incrementViews(sample.slug);
-  console.log(`✅ View Increment Verified: ${initialViews} -> ${updatedViews}`);
+  console.log(`✅ Real View Increment Verified: ${initialViews} -> ${updatedViews}`);
   if (updatedViews !== initialViews + 1) {
     throw new Error('View count failed to increment');
   }
 
   // 7. Test Generation of New Batch
-  console.log(`\n⚡ Testing Autonomous Batch Generation Cycle...`);
+  console.log(`\n⚡ Testing Autonomous Batch Generation Cycle (Zero Synthetic Views Invariant)...`);
   const batchRes = AutonomousViralBlogDaemon.generateDailyBatch(2);
   console.log(`✅ Batch Cycle Result: Synthesized ${batchRes.generated} additional articles.`);
+  if (batchRes.posts.some(p => p.views_count !== 0)) {
+    throw new Error('VIOLATION: Generated posts must strictly start with 0 real views');
+  }
+  console.log(`✅ Verified: All synthesized articles strictly initialized with 0 views.`);
 
   const finalCount = BlogEngine.getAllPosts(true).length;
   console.log(`📊 Final Total Published Articles: ${finalCount}`);

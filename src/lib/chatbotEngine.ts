@@ -210,6 +210,27 @@ export async function processChatMessage(
         description: `Chatbot captured lead: ${session.visitor_name || 'Visitor'} (${session.visitor_phone || session.visitor_email})`,
         metadata: { sector, session_id: sessionId },
       });
+
+      // Forward to Unified WhatsApp Closer / Admin Desk (Port 3007)
+      try {
+        const hubUrls = [process.env.COMMAND_CENTER_URL, 'http://127.0.0.1:3007', 'http://127.0.0.1:3008'].filter(Boolean) as string[];
+        for (const hubUrl of hubUrls) {
+          fetch(`${hubUrl}/chatbot-inquiry`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              session_id: sessionId,
+              visitor_name: session.visitor_name,
+              visitor_phone: session.visitor_phone,
+              visitor_email: session.visitor_email,
+              sector,
+              business_name: businessName,
+              message: userMessage
+            }),
+            signal: AbortSignal.timeout(2000)
+          }).catch(() => {});
+        }
+      } catch (_) {}
     } catch (e) {
       console.error('[ChatbotEngine] Lead conversion error:', e);
     }

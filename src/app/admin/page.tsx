@@ -25,10 +25,12 @@ import {
   Smartphone,
   PhoneCall,
   MessageCircle,
-  Check
+  Check,
+  Globe
 } from 'lucide-react';
 import AdminAiCommandTerminal from '@/components/AdminAiCommandTerminal';
 import MultiWhatsAppConnectionCard from '@/app/dashboard/components/MultiWhatsAppConnectionCard';
+import Nigeria10KScraperConsole from '@/app/dashboard/components/Nigeria10KScraperConsole';
 
 interface LeadItem {
   lead_id: string;
@@ -46,7 +48,7 @@ interface LeadItem {
 }
 
 export default function CleanExecutiveAdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'outreach' | 'analytics' | 'leads' | 'whatsapp' | 'settings'>('analytics');
+  const [activeTab, setActiveTab] = useState<'outreach' | 'analytics' | 'leads' | 'whatsapp' | 'scraper' | 'settings'>('analytics');
   const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
 
@@ -751,6 +753,27 @@ export default function CleanExecutiveAdminDashboard() {
           </button>
 
           <button
+            onClick={() => setActiveTab('scraper')}
+            style={{
+              background: activeTab === 'scraper' ? 'rgba(56, 189, 248, 0.15)' : 'transparent',
+              border: `1.5px solid ${activeTab === 'scraper' ? '#38bdf8' : 'transparent'}`,
+              color: activeTab === 'scraper' ? '#ffffff' : '#94a3b8',
+              padding: '10px 20px',
+              borderRadius: '10px',
+              fontSize: '0.86rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <Globe size={16} color="#38bdf8" />
+            <span>🇳🇬 10K Scraper Suite</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('settings')}
             style={{
               background: activeTab === 'settings' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
@@ -1415,6 +1438,13 @@ export default function CleanExecutiveAdminDashboard() {
         {activeTab === 'whatsapp' && (
           <div>
             <MultiWhatsAppConnectionCard />
+          </div>
+        )}
+
+        {/* ── TAB 3B: ACCELERATED 10K NIGERIA-WIDE SCRAPER SUITE ─────── */}
+        {activeTab === 'scraper' && (
+          <div>
+            <Nigeria10KScraperConsole />
           </div>
         )}
 

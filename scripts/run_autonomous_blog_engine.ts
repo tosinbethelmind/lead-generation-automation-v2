@@ -35,6 +35,33 @@ async function main() {
     
     const allPosts = BlogEngine.getAllPosts(true);
     console.log(`📊 Total Active Published Blog Articles: ${allPosts.length}`);
+
+    // Automate LLM Machine-Readable Index Update (GEO)
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const llmsPath = path.join(process.cwd(), 'public', 'llms-full.txt');
+      let content = '# Bethelmind Analytics Lagos Desk - Complete Knowledge Base (LLMs Full Index)\n';
+      content += '> Real-time repository of verified Nigerian commercial playbooks, sector calculators, and B2B automation systems.\n';
+      content += '> Website: https://www.bethelmindanalytics.com\n';
+      content += '> Desk: wa.me/2348022791227 (+234 802 279 1227)\n\n';
+      content += '## Master Directory of Commercial Intelligence Guides\n\n';
+
+      let currentCat = '';
+      allPosts.forEach((p, idx) => {
+        if (p.category !== currentCat) {
+          currentCat = p.category;
+          content += '\n### ' + currentCat + '\n\n';
+        }
+        content += `${idx + 1}. **${p.title}**\n`;
+        content += `   - URL: https://www.bethelmindanalytics.com/blog/${p.slug}\n`;
+        content += `   - Summary: ${(p.excerpt || '').replace(/\n/g, ' ')}\n\n`;
+      });
+      fs.writeFileSync(llmsPath, content, 'utf-8');
+      console.log(`🤖 [GEO Automation]: Synced ${allPosts.length} articles to public/llms-full.txt for AI search crawlers.`);
+    } catch (llmErr: any) {
+      console.warn('[GEO Automation Warning]:', llmErr.message);
+    }
     
     if (res.posts.length > 0) {
       console.log('\n📄 Newly Published Headlines:');

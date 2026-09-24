@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     let businessName = 'Your Business';
     let category = sector || 'general';
 
-    const origin = req.nextUrl?.origin || 'https://apexreach.site';
+    const origin = req.nextUrl?.origin || 'https://www.bethelmindanalytics.com';
 
     const mockLead = {
       lead_id: leadId || `sim-${Date.now()}`,

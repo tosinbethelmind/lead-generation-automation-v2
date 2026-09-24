@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file scripts/nigeria_solar_5k_scraper.js
  * High-performance lead extraction pipeline targeting 10,000 daily
  * solar leads across all 36 States of Nigeria + FCT (Abuja).
@@ -58,11 +58,11 @@ function getCleanCredential(env1, env2, fallback) {
   return v1 || v2 || fallback;
 }
 
-const MAIN_SUPABASE_URL = getCleanCredential(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL, 'https://pnsrjsyiygxdcxkpgbzx.supabase.co');
-const MAIN_SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.SUPABASE_KEY, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8');
+const MAIN_SUPABASE_URL = getCleanCredential(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL, 'https://rcaamfaqkxvgbjlfuhki.supabase.co');
+const MAIN_SUPABASE_KEY = getCleanCredential(process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.SUPABASE_KEY, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWFtZmFxa3h2Z2JqbGZ1aGtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzUyNDI0OCwiZXhwIjoyMTAzMTAwMjQ4fQ.9KKQ52VdE8b-jxy2QmOAAxuBMKpGyncwDDEyMGfe9fw');
 
-const SOLARQUOTEPRO_URL = getCleanCredential(process.env.SOLARQUOTEPRO_SUPABASE_URL, null, 'https://pnsrjsyiygxdcxkpgbzx.supabase.co');
-const SOLARQUOTEPRO_KEY = getCleanCredential(process.env.SOLARQUOTEPRO_SUPABASE_KEY, null, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8');
+const SOLARQUOTEPRO_URL = getCleanCredential(process.env.SOLARQUOTEPRO_SUPABASE_URL, null, 'https://rcaamfaqkxvgbjlfuhki.supabase.co');
+const SOLARQUOTEPRO_KEY = getCleanCredential(process.env.SOLARQUOTEPRO_SUPABASE_KEY, null, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWFtZmFxa3h2Z2JqbGZ1aGtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzUyNDI0OCwiZXhwIjoyMTAzMTAwMjQ4fQ.9KKQ52VdE8b-jxy2QmOAAxuBMKpGyncwDDEyMGfe9fw');
 
 const supabaseMain = createClient(MAIN_SUPABASE_URL, MAIN_SUPABASE_KEY, { auth: { persistSession: false }, realtime: { transport: ws } });
 const supabaseSolarQuotePro = createClient(SOLARQUOTEPRO_URL, SOLARQUOTEPRO_KEY, { auth: { persistSession: false }, realtime: { transport: ws } });

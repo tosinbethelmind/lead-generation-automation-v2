@@ -259,7 +259,7 @@ export async function fetchJijiMerchantLeads(query: string, seedTag = 'nigeria_n
                   if (detailResp.data) {
                     const html = typeof detailResp.data === 'string' ? detailResp.data : JSON.stringify(detailResp.data);
                     const phones = html.match(/(?:(?:\+?234)|0)\s*[789][01](?:[\s.-]?\d){8}/g) || [];
-                    if (phones.length > 0) {
+                    if (phones.length > 0 && phones[0]) {
                       const normPhone = normalizePhone(phones[0], 'NG');
                       if (normPhone && !seenLocalPhones.has(normPhone)) {
                         seenLocalPhones.add(normPhone);
@@ -274,8 +274,8 @@ export async function fetchJijiMerchantLeads(query: string, seedTag = 'nigeria_n
                           area: ad.region_name || 'Commercial Hub',
                           city: ad.region_name || 'Commercial Hub',
                           phone_e164: normPhone,
-                          phone_raw: phones[0],
-                          email: detectedEmail,
+                          phone_raw: phones[0] || normPhone,
+                          email: detectedEmail || '',
                           website: detailUrl,
                           rating: 4.9,
                           reviews_count: 15,

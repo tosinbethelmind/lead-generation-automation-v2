@@ -1,7 +1,10 @@
+import dns from 'dns';
+try { dns.setDefaultResultOrder('ipv4first'); } catch (_) {}
+
 import twilio from 'twilio';
-import { getRuntimeConfig, getRotatedTwilioKeys, rotateKey } from '@/lib/localConfig';
-import { isOptedOut, cleanPhoneNumber as cleanWaPhone } from '@/lib/whatsappRotator';
-import { isPhoneOnDnc } from '@/lib/googleSheets';
+import { getRuntimeConfig, getRotatedTwilioKeys, rotateKey } from './localConfig';
+import { isOptedOut, cleanPhoneNumber as cleanWaPhone } from './whatsappRotator';
+import { isPhoneOnDnc } from './googleSheets';
 
 /**
  * Clean phone numbers to E.164 format.
@@ -49,7 +52,80 @@ export function replaceSmsPlaceholders(template: string, lead: any, previewUrl: 
     formatted += ' (STOP to end)';
   }
   
+  // Guarantee strict <= 158 character single-credit limit
+  if (formatted.length > 158) {
+    formatted = formatted.substring(0, 155) + '...';
+  }
+  
   return formatted;
+}
+
+let cachedWorkingGatewayEndpoint: string | null = null;
+let cachedGatewayEndpointExpiry: number = 0;
+
+/**
+ * Probes candidate URLs or scans local subnets (e.g. 10.226.108.x) to locate live Android SMS Gateway
+ */
+async function discoverWorkingGatewayUrl(preferredUrl?: string): Promise<string | null> {
+  if (cachedWorkingGatewayEndpoint && Date.now() < cachedGatewayEndpointExpiry) {
+    return cachedWorkingGatewayEndpoint;
+  }
+
+  const staticCandidates = Array.from(new Set([
+    preferredUrl,
+    'http://10.226.108.45:8082',
+    'http://10.132.90.251:8082',
+    'http://192.168.0.121:8082',
+    'http://100.107.243.108:8082',
+    'http://127.0.0.1:8082'
+  ].filter(Boolean))) as string[];
+
+  // 1. Fast probe static candidate list
+  for (const rawUrl of staticCandidates) {
+    const endpoint = rawUrl.endsWith('/message') ? rawUrl : rawUrl.replace(/\/+$/, '') + '/message';
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch(rawUrl.replace(/\/message$/, ''), { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (res.status >= 200 && res.status < 500) {
+        cachedWorkingGatewayEndpoint = endpoint;
+        cachedGatewayEndpointExpiry = Date.now() + 5 * 60 * 1000;
+        return endpoint;
+      }
+    } catch (_) {}
+  }
+
+  // 2. Parallel sweep across local Wi-Fi subnet (10.226.108.x and 192.168.0.x)
+  const subnets = ['10.226.108.', '192.168.0.', '192.168.1.'];
+  for (const base of subnets) {
+    const promises: Promise<string | null>[] = [];
+    for (let i = 1; i <= 254; i++) {
+      const testIp = `${base}${i}`;
+      promises.push((async () => {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 1000);
+          const res = await fetch(`http://${testIp}:8082`, { signal: controller.signal });
+          clearTimeout(timeoutId);
+          if (res.status >= 200 && res.status < 500) {
+            return `http://${testIp}:8082/message`;
+          }
+        } catch (_) {}
+        return null;
+      })());
+    }
+
+    const results = await Promise.all(promises);
+    const found = results.find(Boolean);
+    if (found) {
+      cachedWorkingGatewayEndpoint = found;
+      cachedGatewayEndpointExpiry = Date.now() + 10 * 60 * 1000;
+      return found;
+    }
+  }
+
+  return null;
 }
 
 /**
@@ -87,16 +163,6 @@ export async function sendSmsMessage(
   const messageText = replaceSmsPlaceholders(rawTemplate, lead, previewUrl);
 
   if (provider === 'gateway' || provider === 'cascade') {
-    const candidateUrls = Array.from(new Set([
-      config.smsGatewayUrl,
-      'http://10.132.90.251:8082',
-      'http://100.107.243.108:8082',
-      'http://10.50.220.22:8082',
-      'http://127.0.0.1:8082',
-      'http://192.168.43.1:8082',
-      'http://192.168.137.1:8082'
-    ].filter(Boolean)));
-
     const payload = {
       to: phone,
       message: messageText
@@ -106,42 +172,27 @@ export async function sendSmsMessage(
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = token;
 
-    let gatewaySuccess = false;
-    let successfulUrl = '';
+    const workingEndpoint = await discoverWorkingGatewayUrl(config.smsGatewayUrl);
+    if (workingEndpoint) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-    for (const rawUrl of candidateUrls) {
-      const endpointsToTry = [
-        rawUrl.endsWith('/message') ? rawUrl : rawUrl.replace(/\/+$/, '') + '/message',
-        rawUrl
-      ];
+        const response = await fetch(workingEndpoint, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
 
-      for (const endpoint of endpointsToTry) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 2000);
-
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(payload),
-            signal: controller.signal
-          });
-          clearTimeout(timeoutId);
-
-          if (response.ok) {
-            gatewaySuccess = true;
-            successfulUrl = endpoint;
-            break;
-          }
-        } catch (_) {
-          // Silently probe next endpoint
+        if (response.ok) {
+          return `Sent via Carrier Android Gateway (${workingEndpoint}) to ${phone}`;
         }
+      } catch (gatewayErr: any) {
+        cachedWorkingGatewayEndpoint = null;
+        cachedGatewayEndpointExpiry = 0;
       }
-      if (gatewaySuccess) break;
-    }
-
-    if (gatewaySuccess) {
-      return `Sent via Carrier Android Gateway (${successfulUrl}) to ${phone}`;
     }
 
     // Termii Fallback

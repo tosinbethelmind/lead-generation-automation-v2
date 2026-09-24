@@ -1,4 +1,4 @@
-/**
+﻿/**
  * master_lead_consolidation.js
  * 
  * Merges all fragmented lead databases, backup temp files, CSVs, and Excel sheets
@@ -197,7 +197,7 @@ async function runMasterConsolidation() {
         }
       });
 
-      const url = env.NEXT_PUBLIC_SUPABASE_URL || 'https://szyuterncawfxwzhvwcf.supabase.co';
+      const url = env.NEXT_PUBLIC_SUPABASE_URL || 'https://rcaamfaqkxvgbjlfuhki.supabase.co';
       const key = env.SUPABASE_SERVICE_ROLE_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
       if (url && key) {

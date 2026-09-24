@@ -27,7 +27,10 @@ export default function RevenueAnalyticsCard() {
 
   useEffect(() => {
     loadAnalytics();
-    const interval = setInterval(loadAnalytics, 10000);
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      loadAnalytics();
+    }, 30000);
     return () => clearInterval(interval);
   }, [opex]);
 

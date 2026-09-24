@@ -15,15 +15,9 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Post not found' }, { status: 404 });
     }
 
-    // Increment real views count
-    const updatedViews = BlogEngine.incrementViews(slug);
-
     return NextResponse.json({
       success: true,
-      post: {
-        ...post,
-        views_count: updatedViews
-      }
+      post
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

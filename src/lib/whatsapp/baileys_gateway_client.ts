@@ -34,7 +34,7 @@ export interface SendMessageOptions {
 export class BaileysGatewayClient {
   private gatewayUrls: string[];
 
-  constructor(gatewayUrls: string[] = ['http://localhost:3007', 'http://localhost:3009']) {
+  constructor(gatewayUrls: string[] = ['http://localhost:8080', 'http://localhost:3007', 'http://localhost:3009']) {
     this.gatewayUrls = gatewayUrls.map(u => u.replace(/\/$/, ''));
   }
 

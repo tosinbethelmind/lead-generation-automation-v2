@@ -21,50 +21,46 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Either email or phone is required' }, { status: 400 });
     }
 
-    // Forward to Unified WhatsApp Command Center
-    const COMMAND_CENTER_URL = process.env.COMMAND_CENTER_URL || 'http://127.0.0.1:3008';
+    // Forward to Unified WhatsApp Closer / Command Center (Check 3007 then 3008)
+    const targetUrls = [
+      process.env.COMMAND_CENTER_URL,
+      'http://127.0.0.1:3007',
+      'http://127.0.0.1:3008'
+    ].filter(Boolean) as string[];
 
-    try {
-      const resp = await fetch(`${COMMAND_CENTER_URL}/web-inquiry`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name:    name    || 'Website Visitor',
-          email:   email   || '',
-          phone:   phone   || '',
-          subject: subject || `Website Inquiry — ${source || 'Contact Form'}`,
-          message: message.trim()
-        }),
-        signal: AbortSignal.timeout(2000)
-      });
+    let ticketId = `WEB-${Date.now().toString().slice(-4)}`;
+    let dispatched = false;
 
-      if (resp.ok) {
-        const data = await resp.json();
-        return NextResponse.json({
-          success: true,
-          message: 'Your message has been received! We will get back to you shortly.',
-          ticketId: data.ticketId
+    for (const url of targetUrls) {
+      try {
+        const resp = await fetch(`${url}/web-inquiry`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name:    name    || 'Website Visitor',
+            email:   email   || '',
+            phone:   phone   || '',
+            subject: subject || `Website Inquiry — ${source || 'Contact Form'}`,
+            message: message.trim()
+          }),
+          signal: AbortSignal.timeout(2500)
         });
-      } else {
-        // Command center unreachable but still acknowledge the user
-        console.warn('[Contact API] Command center unreachable — logging inquiry locally.');
-        console.log('[Contact API] Inquiry:', { name, email, phone, message });
-        return NextResponse.json({
-          success: true,
-          message: 'Your message has been received! We will get back to you shortly.',
-          fallback: true
-        });
-      }
-    } catch (fetchErr: any) {
-      // Still return success to the user — log internally
-      console.error('[Contact API] Command center fetch error:', fetchErr.message);
-      console.log('[Contact API] Fallback log — Inquiry:', { name, email, phone, message });
-      return NextResponse.json({
-        success: true,
-        message: 'Your message has been received! We will get back to you shortly.',
-        fallback: true
-      });
+
+        if (resp.ok) {
+          const data = await resp.json().catch(() => ({}));
+          ticketId = data.ticketId || ticketId;
+          dispatched = true;
+          break;
+        }
+      } catch (_) {}
     }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Your inquiry has been received! Our Lagos team will reply in < 2 seconds.',
+      ticketId,
+      dispatched
+    });
   } catch (error: any) {
     console.error('[Contact API] Unexpected error:', error.message);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });

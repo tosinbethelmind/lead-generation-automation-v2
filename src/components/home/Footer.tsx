@@ -21,7 +21,7 @@ const LEGAL_LINKS = [
 
 const NAV_LINKS = [
   { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Solutions', href: '#solutions' },
+  { label: 'Solutions Suite', href: '/solutions' },
   { label: 'Sector Tools', href: '#sector-tools' },
   { label: 'Digital Assets Store', href: '/store' },
   { label: 'Pricing', href: '#pricing' },

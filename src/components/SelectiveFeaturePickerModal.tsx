@@ -14,7 +14,7 @@ interface SelectiveFeaturePickerModalProps {
 
 export function SelectiveFeaturePickerModal({
   businessName = 'My Business Website',
-  clientPhone = '08012345678',
+  clientPhone = '08022791227',
   leadId = 'lead_123',
   isOpen = true,
   onClose,

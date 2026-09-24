@@ -43,7 +43,10 @@ export default function LeadJourneyTrackerCard() {
 
   useEffect(() => {
     fetchJourneys();
-    const interval = setInterval(fetchJourneys, 5000);
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      fetchJourneys();
+    }, 20000);
     return () => clearInterval(interval);
   }, []);
 
@@ -354,37 +357,110 @@ export default function LeadJourneyTrackerCard() {
         {activeRecord ? (
           <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '12px', padding: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
             
-            {/* Active Lead Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            {/* Active Lead Header & Contact Identity */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '12px', paddingBottom: '14px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
-                  {activeRecord.leadName}
-                </h3>
-                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                  {activeRecord.category} • Scored {activeRecord.score}/100 • Updated {activeRecord.lastUpdatedWat}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#f8fafc' }}>
+                    {activeRecord.leadName}
+                  </h3>
+                  <span style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 800,
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    textTransform: 'uppercase',
+                    background: activeRecord.intentLevel === 'CRITICAL' ? 'rgba(239, 68, 68, 0.2)' : activeRecord.intentLevel === 'HOT' ? 'rgba(249, 115, 22, 0.2)' : activeRecord.intentLevel === 'WARM' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(148, 163, 184, 0.2)',
+                    color: activeRecord.intentLevel === 'CRITICAL' ? '#f87171' : activeRecord.intentLevel === 'HOT' ? '#fb923c' : activeRecord.intentLevel === 'WARM' ? '#60a5fa' : '#94a3b8',
+                    border: `1px solid ${activeRecord.intentLevel === 'CRITICAL' ? 'rgba(239, 68, 68, 0.4)' : activeRecord.intentLevel === 'HOT' ? 'rgba(249, 115, 22, 0.4)' : activeRecord.intentLevel === 'WARM' ? 'rgba(59, 130, 246, 0.4)' : 'rgba(148, 163, 184, 0.3)'}`
+                  }}>
+                    {activeRecord.intentLevel === 'CRITICAL' ? '🚨 CRITICAL INTENT' : activeRecord.intentLevel === 'HOT' ? '🔥 HOT PROSPECT' : activeRecord.intentLevel === 'WARM' ? '⚡ WARM TOUCHPOINT' : '❄️ COLD LEAD'} (Score: {activeRecord.heatScore || activeRecord.score || 20}/100)
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '4px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  <span>🏢 {activeRecord.category}</span>
+                  {activeRecord.area && <span>📍 {activeRecord.area}</span>}
+                  {activeRecord.email && <span>✉️ {activeRecord.email}</span>}
+                </div>
               </div>
 
-              <a
-                href={activeRecord.previewUrl}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  color: '#c084fc',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  textDecoration: 'none',
-                  background: 'rgba(168, 85, 247, 0.15)',
-                  padding: '4px 10px',
-                  borderRadius: '6px',
-                  border: '1px solid rgba(168, 85, 247, 0.3)'
-                }}
-              >
-                View Live Preview <ExternalLink size={12} />
-              </a>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {activeRecord.phone && (
+                  <a
+                    href={`https://wa.me/${activeRecord.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(activeRecord.leadName)}%20team,%20following%20up%20on%20your%2024/7%20AI%20prototype`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: '#4ade80',
+                      background: 'rgba(34, 197, 94, 0.15)',
+                      padding: '5px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid rgba(34, 197, 94, 0.3)',
+                      textDecoration: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    💬 WhatsApp Client
+                  </a>
+                )}
+                <a
+                  href={activeRecord.previewUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    color: '#c084fc',
+                    background: 'rgba(168, 85, 247, 0.15)',
+                    padding: '5px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(168, 85, 247, 0.3)',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  View Prototype <ExternalLink size={12} />
+                </a>
+              </div>
+            </div>
+
+            {/* Micro-Interaction Behavioral Telemetry Gauges */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))',
+              gap: '8px',
+              marginBottom: '18px',
+              background: 'rgba(0, 0, 0, 0.25)',
+              padding: '12px',
+              borderRadius: '10px',
+              border: '1px solid rgba(255,255,255,0.05)'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Page Views</span>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc' }}>{activeRecord.metrics?.pageViews || 0}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Sizer / BOQ</span>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fb923c' }}>{activeRecord.metrics?.calculatorInteractions || 0}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Voice Note (sec)</span>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#a855f7' }}>{activeRecord.metrics?.videoWatchSec || 0}s</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>WA Chat Clicks</span>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#4ade80' }}>{activeRecord.metrics?.chatMessages || 0}</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Checkout Orders</span>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ec4899' }}>{activeRecord.metrics?.checkoutAttempts || 0}</div>
+              </div>
             </div>
 
             {/* 7-Stage Milestone Stepper */}
@@ -435,6 +511,50 @@ export default function LeadJourneyTrackerCard() {
               </div>
             </div>
 
+            {/* Commercial Monetization Recommendation & Payout */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%)',
+              border: '1px solid rgba(168, 85, 247, 0.2)',
+              borderRadius: '10px',
+              padding: '12px 16px',
+              marginBottom: '16px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '10px'
+            }}>
+              <div>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#c084fc', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  💰 Recommended Commercial Offer:
+                </span>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', marginTop: '2px' }}>
+                  Turnkey DFY Build (₦150,000 / ₦75,000 50% Milestone Deposit) or 1-Line Embed Upgrade (₦35,000)
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>
+                  Paves Direct-to-OPay NIP Transfer: <strong style={{ color: '#4ade80' }}>7034297995</strong> (Oyelakin Tosin Matthew)
+                </div>
+              </div>
+
+              <a
+                href={`https://wa.me/2348022791227?text=Hello+Tosin+Admin+Desk+Please+issue+commercial+invoice+for+${encodeURIComponent(activeRecord.leadName)}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  background: '#0284c7',
+                  color: '#fff',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Send Invoice Card →
+              </a>
+            </div>
+
             {/* Quick Action Stage Advancer */}
             <div style={{ background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
               <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
@@ -446,7 +566,7 @@ export default function LeadJourneyTrackerCard() {
                   disabled={advancingStage}
                   style={{ fontSize: '0.7rem', padding: '4px 8px', borderRadius: '4px', background: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38bdf8', color: '#38bdf8', cursor: 'pointer' }}
                 >
-                  ✓ Mark Form Sent
+                  ✓ Mark Dispatched
                 </button>
                 <button
                   onClick={() => handleAdvanceStage(activeRecord, 'INBOUND_REPLY', 'Inbound WhatsApp Inquiry')}

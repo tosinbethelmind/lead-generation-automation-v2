@@ -35,11 +35,11 @@ export default function ArbitragePortalClient({ dealId }: Props) {
     wholesaleRate: 1350,
     spreadProfitUSD: 25,
     totalNairaDeposit: 68750000,
-    merchantDesk: 'AlphaDesk Institutional Liquidity Desk #402',
-    merchantHead: 'Alhaji Kabir (Lead Settlement Officer)',
-    merchantHotline: '+234 809 112 4022',
-    merchantOffice: 'Plot 12, Commercial Corridor, Victoria Island, Lagos',
-    bondedVault: '₦450,000,000 NGN in Platform Vault'
+    merchantDesk: 'Verified Institutional Liquidity Desk',
+    merchantHead: 'Lead Settlement Officer',
+    merchantHotline: '+234 802 279 1227',
+    merchantOffice: 'Commercial Corridor, Victoria Island, Lagos',
+    bondedVault: 'Platform Bonded Vault'
   };
 
   const waText = encodeURIComponent(

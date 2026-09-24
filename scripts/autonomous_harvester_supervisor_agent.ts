@@ -55,7 +55,7 @@ export class AutonomousHarvesterSupervisorAgent {
       // 1. Run Scraper Worker
       console.log('\n🔍 [Step 1/3]: Executing multi-corridor scraper (ASPAMDA, Alaba, Apapa, Computer Village)...');
       try {
-        await execAsync('python scripts/colab_lagos_10k_runner.py --batch-size=30');
+        await execAsync('python scripts/colab_lagos_10k_runner.py --batch-size=30', { windowsHide: true });
       } catch (err: any) {
         console.warn('Scraper worker note (recovering safely):', err.message.slice(0, 100));
       }
@@ -83,7 +83,7 @@ export class AutonomousHarvesterSupervisorAgent {
       // 3. Auto-Synthesize Personalized Voice Notes for New Targets
       console.log('\n🎙️ [Step 3/3]: Auto-synthesizing personalized Cool Nigerian Female voice notes...');
       try {
-        await execAsync('python scripts/batch_generate_personalized_importer_voice_notes.py --limit=20');
+        await execAsync('python scripts/batch_generate_personalized_importer_voice_notes.py --limit=20', { windowsHide: true });
         console.log('   ✓ Personalized voice notes synthesized & manifest updated!');
       } catch (err: any) {
         console.warn('Voice note worker note:', err.message.slice(0, 100));

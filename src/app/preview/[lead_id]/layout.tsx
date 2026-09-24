@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       images: [
         {
-          url: `${appUrl}/og-image.png`,
+          url: `${appUrl}/preview/${encodeURIComponent(leadId)}/opengraph-image`,
           width: 1200,
           height: 630,
           alt: `${leadName} Interactive Automation Preview`,
@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      images: [`${appUrl}/og-image.png`],
+      images: [`${appUrl}/preview/${encodeURIComponent(leadId)}/opengraph-image`],
     },
     robots: {
       index: false,

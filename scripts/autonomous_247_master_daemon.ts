@@ -21,8 +21,10 @@ import nodemailer from 'nodemailer';
 import { createClient } from '@supabase/supabase-js';
 import { masterNigeria10kHarvester } from '../src/lib/scraping/masterNigeria10kHarvester';
 import { heavyNationwideB2BEmailHarvester } from '../src/lib/scraping/heavyNationwideB2BEmailHarvester';
+import { turbo1000WebformEngine } from '../src/lib/outreach/turbo1000WebformEngine';
 import { BrevoClient } from '../src/lib/integrations/brevoClient';
 import { submitContactForm } from '../src/lib/contactFormSubmitter';
+import { localVibeProspector } from '../src/lib/scraping/localVibeProspectorEngine';
 
 const LOCAL_DB = path.join(process.cwd(), 'local_db');
 if (!fs.existsSync(LOCAL_DB)) {
@@ -258,59 +260,15 @@ async function executeDailyOutreachPass() {
 
   log(`🎉 Email Outreach Batch Complete: ${emailDelivered}/${pendingEmailLeads.length} successfully delivered.`);
 
-  // 2. Dispatch Web Contact Forms (Cap at 300 unsent per day)
-  const pendingWebformLeads = leads.filter(l => {
-    const isUnsent = !l.webform_submitted && !l.webform_dispatched;
-    const hasWeb = Boolean(l.has_website || (l.website && l.website.startsWith('http')));
-    return isUnsent && hasWeb;
-  }).slice(0, 300);
-
-  log(`🌐 Queued ${pendingWebformLeads.length} commercial websites for web contact form submissions...`);
-
-  let webformSubmitted = 0;
-  for (let i = 0; i < pendingWebformLeads.length; i++) {
-    const lead = pendingWebformLeads[i];
-    const targetUrl = lead.website || lead.name;
-
-    try {
-      const res = await submitContactForm(
-        {
-          name: lead.name,
-          category: lead.category || 'Commercial Enterprise',
-          address: lead.address || lead.area || 'Lagos',
-          phone: lead.phone || '08022791227',
-          website: lead.website || `https://${lead.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.ng`,
-          status: 'NEW',
-          hasWebsite: true
-        },
-        'WebContactForm',
-        'Bethelmind Analytics Lagos Desk'
-      );
-
-      if (res.success) {
-        webformSubmitted++;
-        lead.webform_submitted = true;
-        lead.webform_notes = res.notes;
-        log(`   [Webform ${i + 1}/${pendingWebformLeads.length}] ✅ Form Submitted: ${lead.name} (${res.methodUsed})`);
-      } else {
-        log(`   [Webform ${i + 1}/${pendingWebformLeads.length}] ℹ️ Webform Note: ${lead.name} (${res.notes})`);
-      }
-    } catch (err: any) {
-      log(`   [Webform ${i + 1}/${pendingWebformLeads.length}] ⚠️ Form Error: ${lead.name} (${err.message})`);
-    }
-
-    await new Promise(r => setTimeout(r, 300));
-  }
-
-  // Save updated local database state atomically
-  try {
-    fs.writeFileSync(LEADS_DB_PATH, JSON.stringify(leads, null, 2), 'utf8');
-  } catch (_) {}
+  // 2. Dispatch Web Contact Forms (Upgraded to 1,000 per day via 30-worker parallel HTTP pool)
+  log('🌐 PART 2: Executing Turbo 1,000 Web Contact Form Submissions in Parallel...');
+  const webformStats = await turbo1000WebformEngine.execute1000WebformCampaign(1000);
+  log(`✅ Webform Outreach Complete: ${webformStats.successful.toLocaleString()} successfully delivered out of ${webformStats.processed.toLocaleString()} processed.`);
 
   try { hostinger.close(); } catch (_) {}
 
   log('========================================================================');
-  log(`✅ [OUTREACH SUMMARY] Emails Delivered: ${emailDelivered} | Webforms Submitted: ${webformSubmitted}`);
+  log(`✅ [OUTREACH SUMMARY] Emails Delivered: ${emailDelivered} | Webforms Submitted: ${webformStats.successful}`);
   log('========================================================================\n');
 }
 
@@ -337,6 +295,24 @@ async function executeScrapingCycle() {
     log(`✅ Harvester Pass 2 (B2B Emails & Webforms): ${emailStats.harvestedCount.toLocaleString()} leads gathered (${emailStats.withEmailCount.toLocaleString()} with emails, ${emailStats.withWebformCount.toLocaleString()} with webforms).`);
   } catch (err: any) {
     log(`❌ Harvester Pass 2 Note: ${err.message}. Self-healing in progress.`);
+  }
+
+  // Pass 3: Autonomous Local Vibe Prospecting Swarms (Zero Sign-Up Natural Language Lead Discovery)
+  try {
+    const vibeRotations = [
+      'Find 15 solar inverter suppliers in Ikeja and Alaba Lagos',
+      'Find 15 private dental and specialist clinics in Victoria Island Lagos',
+      'Find 15 commercial real estate agencies in Lekki Phase 1',
+      'Find 15 auto dealerships and repair centers in Berger Lagos',
+      'Find 15 private schools and academies in Ikeja Lagos',
+      'Find 15 solar energy companies in Abuja FCT'
+    ];
+    const activePrompt = vibeRotations[Math.floor(Math.random() * vibeRotations.length)];
+    log(`🎯 Harvester Pass 3 (Local Vibe Prospector): Swarming footprint "${activePrompt}"...`);
+    const vibeLeads = await localVibeProspector.prospect(activePrompt, 15);
+    log(`✅ Harvester Pass 3 (Local Vibe Prospector): Gathered ${vibeLeads.length} genuine Nigerian commercial leads.`);
+  } catch (err: any) {
+    log(`❌ Harvester Pass 3 Note: ${err.message}. Continuing...`);
   }
 }
 

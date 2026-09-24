@@ -22,7 +22,8 @@ function startProcess(command, args, label) {
   const proc = spawn(command, args, {
     stdio: 'inherit',
     cwd: projectDir,
-    shell: true
+    shell: true,
+    windowsHide: true
   });
 
   proc.on('close', (code) => {

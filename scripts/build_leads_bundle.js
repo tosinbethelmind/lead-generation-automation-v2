@@ -79,11 +79,16 @@ allLeads.forEach(l => {
   // Index by primary ID
   lookup[id] = entry;
 
-  // Also index by clean slug if length >= 3
+  // Also index by clean slug (both hyphenated and non-hyphenated)
   if (l.name && typeof l.name === 'string') {
-    const slug = l.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (slug.length >= 3 && !lookup[slug]) {
-      lookup[slug] = entry;
+    const cleanName = l.name.split('||')[0].split('|')[0].split('-')[0].trim();
+    const slugHyphen = cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const slugNoHyphen = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (slugHyphen && slugHyphen.length >= 3) {
+      lookup[slugHyphen] = entry;
+    }
+    if (slugNoHyphen && slugNoHyphen.length >= 3) {
+      lookup[slugNoHyphen] = entry;
     }
   }
 });

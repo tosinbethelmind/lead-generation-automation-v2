@@ -14,6 +14,7 @@
  */
 
 import { TOP_RATED_DIAMOND_MERCHANTS } from './topRatedMerchantVault';
+import { getLiveMarketRatesSync } from './autonomousLiveRateOracle';
 
 export interface WholesaleConfirmationResult {
   isConfirmed: boolean;
@@ -28,20 +29,28 @@ export interface WholesaleConfirmationResult {
 }
 
 /**
- * Pre-flight verification of wholesale price and liquidity before trade commitment
+ * Pre-flight verification of wholesale price and liquidity before trade commitment.
+ * Uses the Autonomous Live Rate Oracle as the single source of truth for the
+ * wholesale floor — eliminating the risk of stale hardcoded rates causing
+ * slippage or rate mismatch errors during trade execution.
  */
 export async function confirmWholesalePriceBeforeJump(
   orderUSD: number = 65000,
-  targetQuotedRate: number = 1375,
+  targetQuotedRate: number = 0, // 0 = auto-compute from live oracle
   merchantKey: string = 'ALPHADESK_OTC'
 ): Promise<WholesaleConfirmationResult> {
   console.log(`\n🔍 [Wholesale Guard]: Pre-flight verification of wholesale price for $${orderUSD.toLocaleString()} USD...`);
 
   const merchant = TOP_RATED_DIAMOND_MERCHANTS[merchantKey] || TOP_RATED_DIAMOND_MERCHANTS['ALPHADESK_OTC'];
 
-  // Simulate live order book ask query from institutional desk
-  // Benchmark floor: ₦1,350 / USD for volume >= $50k
-  const liveWholesaleAsk = 1350; 
+  // ✅ FIX: Pull wholesale floor from Live Rate Oracle (single source of truth)
+  const liveRates = getLiveMarketRatesSync();
+  const liveWholesaleAsk = liveRates.wholesaleFloorNGN; // e.g. ₦1,348 from CoinGecko
+  const spread = liveRates.spreadProfitPerUSD; // ₦25/USD
+
+  // If no targetQuotedRate passed, auto-derive from oracle
+  const resolvedQuotedRate = targetQuotedRate > 0 ? targetQuotedRate : liveWholesaleAsk + spread;
+
   const availableLiquidity = 250000; // $250k USD depth available
 
   if (availableLiquidity < orderUSD) {
@@ -50,7 +59,7 @@ export async function confirmWholesalePriceBeforeJump(
       merchantName: merchant.corporateName,
       confirmedWholesaleRateNGN: liveWholesaleAsk,
       availableLiquidityUSD: availableLiquidity,
-      quotedRateNGN: targetQuotedRate,
+      quotedRateNGN: resolvedQuotedRate,
       verifiedSpreadPerUSD: 0,
       projectedProfitNGN: 0,
       lockExpiryMinutes: 0,
@@ -58,7 +67,7 @@ export async function confirmWholesalePriceBeforeJump(
     };
   }
 
-  const verifiedSpread = targetQuotedRate - liveWholesaleAsk;
+  const verifiedSpread = resolvedQuotedRate - liveWholesaleAsk;
 
   if (verifiedSpread < 15) {
     return {
@@ -66,7 +75,7 @@ export async function confirmWholesalePriceBeforeJump(
       merchantName: merchant.corporateName,
       confirmedWholesaleRateNGN: liveWholesaleAsk,
       availableLiquidityUSD: availableLiquidity,
-      quotedRateNGN: targetQuotedRate,
+      quotedRateNGN: resolvedQuotedRate,
       verifiedSpreadPerUSD: verifiedSpread,
       projectedProfitNGN: 0,
       lockExpiryMinutes: 0,
@@ -76,14 +85,14 @@ export async function confirmWholesalePriceBeforeJump(
 
   const projectedProfit = Math.round(orderUSD * verifiedSpread);
 
-  console.log(`✅ [Wholesale Guard]: Confirmed! Wholesale Floor: ₦${liveWholesaleAsk}/$ | Quoted: ₦${targetQuotedRate}/$ | Spread: +₦${verifiedSpread}/$ (+₦${projectedProfit.toLocaleString()} NGN profit)`);
+  console.log(`✅ [Wholesale Guard]: Confirmed! Wholesale Floor: ₦${liveWholesaleAsk}/$ | Quoted: ₦${resolvedQuotedRate}/$ | Spread: +₦${verifiedSpread}/$ (+₦${projectedProfit.toLocaleString()} NGN profit)`);
 
   return {
     isConfirmed: true,
     merchantName: merchant.corporateName,
     confirmedWholesaleRateNGN: liveWholesaleAsk,
     availableLiquidityUSD: availableLiquidity,
-    quotedRateNGN: targetQuotedRate,
+    quotedRateNGN: resolvedQuotedRate,
     verifiedSpreadPerUSD: verifiedSpread,
     projectedProfitNGN: projectedProfit,
     lockExpiryMinutes: 30

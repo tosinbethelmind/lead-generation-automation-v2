@@ -288,6 +288,106 @@ export const SECTOR_TOPIC_TEMPLATES: SectorTopicTemplate[] = [
       }
     ],
     featuredImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80'
+  },
+  {
+    category: 'Retail, E-Commerce & Fraud Prevention',
+    nicheKey: 'retail',
+    headlineTemplates: [
+      'Fake Alert Proof Bank Transfers: How Nigerian Supermarkets and Boutiques Eliminate POS Fraud in 2026',
+      'The 3-Second Speed-to-Lead Rule: How Instagram Vendors Automate Sales on WhatsApp with Zero Drop-Off',
+      'Automating Bank Reconciliation: Replacing Manual Teller Slips with Instant Moniepoint & Paystack Webhooks',
+      'Retail Margin Protection: Slashing Chargebacks and Payment Disputes for Lagos Retailers'
+    ],
+    painHook: 'Merchants and Instagram retail sellers lose hundreds of thousands of Naira monthly to doctored SMS fake alerts and slow response times during peak shopping hours.',
+    commercialTakeaway: 'Integrating automated bank transfer webhook validation alongside instant WhatsApp speed-to-lead assistants closes retail sales in seconds with 100% verified ledger credit.',
+    directActionSteps: [
+      'Replace manual screenshot verification with dynamic virtual accounts and instant bank webhooks.',
+      'Deploy 24/7 automated WhatsApp catalog assistants to instantly qualify and close buyers.',
+      'Enforce real-time receipt dispatch with cryptographically signed reference numbers.'
+    ],
+    faqAnswers: [
+      {
+        question: 'How does automated bank transfer reconciliation prevent fake alerts in Nigeria?',
+        answer: 'The system validates incoming credits directly through official bank/gateway API webhooks (Moniepoint, Paystack, OPay) rather than trusting SMS alerts or photos of payment slips.'
+      },
+      {
+        question: 'Can small Instagram vendors deploy an automated WhatsApp catalog quoter?',
+        answer: 'Yes, with our 1-line script or plug-and-play Make.com blueprints, vendors automate product inquiries and payments in under 10 minutes.'
+      }
+    ],
+    featuredImage: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1200&q=80'
+  },
+  {
+    category: 'Construction, POP & Building Material Estimating',
+    nicheKey: 'construction',
+    headlineTemplates: [
+      'Construction Material Estimating in Nigeria: Instant Cement, POP, Tile & Paint Quantity Calculators',
+      'Eliminating Site Theft & Over-Billing: How Building Contractors Automate Material Reconciliations in 2026',
+      'Commercial Property Fit-Outs: Accurate Cost Modeling for Office and Residential Developments',
+      'Automated WhatsApp Contractor Quotation Engines: Converting Commercial Fit-Out Clients 3x Faster'
+    ],
+    painHook: 'Building contractors and property renovators lose up to 20% on every project through inaccurate manual material estimation, contractor over-billing, and delayed client quotes.',
+    commercialTakeaway: 'Automating structural material quantity computations and instant WhatsApp BOQ generation protects margins and establishes immediate client trust.',
+    directActionSteps: [
+      'Input exact floor and wall square-meter areas into digital quantity calculators.',
+      'Deploy automated BOQ generators that factor current Dangote/BUA cement and paint market prices.',
+      'Enforce digital milestone sign-offs before approving subsequent material disbursements.'
+    ],
+    faqAnswers: [
+      {
+        question: 'How accurate are automated material estimators for Nigerian building projects?',
+        answer: 'They achieve over 96% precision by factoring standard local waste margins (5%-8% on tiles, 10% on POP) and dynamic regional pricing.'
+      }
+    ],
+    featuredImage: 'https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=1200&q=80'
+  },
+  {
+    category: 'Agribusiness, Aquaculture & Feed Consolidation',
+    nicheKey: 'agribusiness',
+    headlineTemplates: [
+      'Bulk Agribusiness Input Consolidation: How Farm Collectives Slash Feed Costs by 25% in 2026',
+      'Poultry & Catfish Farm Profitability: Automating Feed Conversion Ratio (FCR) and Batch Sizing on WhatsApp',
+      'Cold Storage & Fresh Produce Logistics: Preventing Farm-Gate Spoilage in South-West Nigeria',
+      'Automated Farm Order Portals: Aggregating Smallholder Input Orders to Unlock Direct Mill Pricing'
+    ],
+    painHook: 'Poultry, catfish, and crop farmers face escalating input costs and feed price volatility that threaten farm viability without collective buying power.',
+    commercialTakeaway: 'Using automated collective order aggregation portals allows regional farm clusters to purchase feed and fertilizer at wholesale factory-gate discounts.',
+    directActionSteps: [
+      'Deploy WhatsApp order consolidation bots to pool regional farm feed demands.',
+      'Negotiate bulk volume discounts directly with major feed millers using aggregated order volumes.',
+      'Track individual farm contributions and logistics dispatch milestones via automated digital ledgers.'
+    ],
+    faqAnswers: [
+      {
+        question: 'How much can farmers save through bulk feed order consolidation?',
+        answer: 'Farms typically save between ₦1,200 and ₦2,500 per bag on commercial poultry and fish feed by bypassing retail intermediaries.'
+      }
+    ],
+    featuredImage: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80'
+  },
+  {
+    category: 'Multi-Location Inventory & Stock Theft Prevention',
+    nicheKey: 'inventory',
+    headlineTemplates: [
+      'Multi-Location Retail Stock Control: Eliminating Shrinkage and Employee Theft with Cloud Ledgers',
+      'Automated Low-Stock & Reorder Alerts: Preventing Stock-Outs Across Multiple Branches via WhatsApp',
+      'Real-Time Warehouse Inventory Auditing: How Lagos Wholesalers Enforce Daily Stock Reconciliation',
+      'Cloud Inventory Systems vs Legacy Desktop POS: Why Modern Retailers Are Upgrading in 2026'
+    ],
+    painHook: 'Multi-branch retail operators and FMCG wholesalers suffer 8% to 15% annual inventory shrinkage from untracked internal theft, phantom stock, and manual stock counts.',
+    commercialTakeaway: 'Cloud-synced stock ledgers with instant low-stock WhatsApp alerts and role-based adjustment locks eliminate theft and maintain 99%+ inventory accuracy.',
+    directActionSteps: [
+      'Centralize multi-warehouse inventory onto a single cloud-accessible ledger.',
+      'Configure automated WhatsApp alerts triggered whenever high-value stock levels dip or unauthorized adjustments occur.',
+      'Mandate dual-party digital authorization for all warehouse returns and write-offs.'
+    ],
+    faqAnswers: [
+      {
+        question: 'Can cloud inventory ledgers work in locations with erratic internet in Nigeria?',
+        answer: 'Yes, using local-first offline storage models that automatically sync with cloud databases the moment cellular connection restores.'
+      }
+    ],
+    featuredImage: 'https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=1200&q=80'
   }
 ];
 
@@ -340,41 +440,55 @@ export class AutonomousViralBlogDaemon {
           const matchedYouTube = BlogEngine.matchYouTubeChannel(template.category, title);
           const intentCluster = AnswerThePublicEngine.getIntentCluster(template.nicheKey);
 
-          // Construct rich, authoritative content
+          // Construct rich, human-crafted authoritative content (E-E-A-T + GEO optimized)
+          // Note: Hero AI Direct-Answer card is rendered by the page layout, so we do NOT duplicate it here.
           const contentHtml = `
-${AnswerThePublicEngine.generateAiOverviewHtml(intentCluster)}
+<h2>Field Intelligence: The Operational Reality for Nigerian Commercial Operators</h2>
+<p class="lead-text font-medium text-slate-200 text-lg leading-relaxed">${template.painHook}</p>
 
-<h2>The Executive Reality: Overcoming ${template.category} Bottlenecks in 2026</h2>
-<p class="lead-text">${template.painHook}</p>
-<p>Modern commercial operations in Nigeria and emerging markets require operational velocity. When decisions are delayed, margins dissolve. <strong>${template.commercialTakeaway}</strong></p>
+<p>If you run commercial operations anywhere across Lagos, Abuja, Port Harcourt, or Ibadan, you already know the daily grind: diesel prices hovering above ₦1,250/litre, erratic Band A grid billing, prospective buyers abandoning conversations if they don't get an answer in three minutes, and administrative staff bogged down in manual calculations. The companies pulling ahead in 2026 aren't spending more on bloated teams; they are locking down their conversion leaks with automated, 24/7 systems.</p>
+
+<blockquote class="my-6 border-l-4 border-amber-400 pl-4 py-2 bg-amber-400/5 rounded-r-xl italic text-slate-200">
+  "In this market, response velocity is your balance sheet's first line of defense. <strong>${template.commercialTakeaway}</strong>"
+</blockquote>
+
+<h2>What the Data Shows: Financial & Operational Impact</h2>
+<p>Let's look at what happens on the ground when manual bottlenecks go unaddressed. A mid-sized business handling between 20 and 40 customer inquiries daily loses an estimated 35% to 60% of high-intent buyers simply because inquiries arrive after 6:00 PM or during peak operational hours when staff are overwhelmed. By the time a representative replies the next morning, the prospect has already transacted with a competitor whose system answered within seconds.</p>
 
 ${BlogEngine.renderYouTubeEmbedHtml(matchedYouTube)}
 
-<h2>Strategic Action Plan: 3 Steps to Immediate Implementation</h2>
+<h2>Step-by-Step Strategic Action Plan</h2>
+<p>To implement this blueprint without operational downtime, follow these tested execution steps:</p>
 <ol class="space-y-4 my-6">
-  ${template.directActionSteps.map(step => `<li class="font-medium text-slate-800 dark:text-slate-200"><strong>✓</strong> ${step}</li>`).join('')}
+  ${template.directActionSteps.map((step, idx) => `
+    <li class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start gap-3">
+      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-black text-xs shrink-0 mt-0.5">${idx + 1}</span>
+      <div class="text-slate-200 text-sm leading-relaxed">${step}</div>
+    </li>
+  `).join('')}
 </ol>
 
 ${BlogEngine.renderProductCtaHtml(matchedProduct)}
 
-<h2>People Also Ask (PAA) & Industry Answers</h2>
-<div class="space-y-6 my-8">
+<h2>Frequently Asked Questions & Field Answers (PAA)</h2>
+<div class="space-y-4 my-8">
   ${intentCluster.questions.map(q => `
-    <div class="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700">
-      <h3 class="text-base font-bold text-navy-900 dark:text-gold-400 mb-2">${q.question}</h3>
-      <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">${q.directAnswer}</p>
+    <div class="bg-slate-900/70 p-6 rounded-xl border border-slate-800 hover:border-amber-400/30 transition-colors">
+      <h3 class="text-base font-bold text-amber-300 mb-2">${q.question}</h3>
+      <p class="text-sm text-slate-300 leading-relaxed">${q.directAnswer}</p>
     </div>
   `).join('')}
 </div>
 
 <h2>Turnkey Business Prototype Deployment in 48 Hours</h2>
-<p>If your enterprise is ready to automate client acquisition, deploy custom sector tools, and scale customer conversions 24/7 without developer bottlenecks, claim your official prototype preview link below:</p>
-<div class="my-6 p-6 bg-gold-50 dark:bg-navy-900/60 border border-gold-500/30 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
+<p class="text-slate-300">If your business is ready to plug operational leaks, automate customer quotes, and run a 24/7 client conversion portal without building from scratch, you can preview a customized prototype built for your niche in under 48 hours:</p>
+<div class="my-6 p-6 sm:p-8 bg-gradient-to-br from-slate-900 to-slate-950 border-2 border-amber-400/30 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
   <div>
-    <h4 class="font-bold text-navy-950 dark:text-white">100% Done-For-You Commercial Portal (₦75k Deposit / ₦150k Build)</h4>
-    <p class="text-xs text-slate-600 dark:text-slate-400">Custom domain, Google Maps SEO discovery, 24/7 AI WhatsApp bot, and Vercel staging.</p>
+    <div class="text-amber-400 font-black text-xs uppercase tracking-widest mb-1">Guaranteed SLA Delivery</div>
+    <h4 class="text-xl font-bold text-white mb-2">100% Done-For-You Commercial Portal (₦75k Deposit / ₦150k Total)</h4>
+    <p class="text-xs text-slate-400 max-w-lg leading-relaxed">Includes your branded .com.ng domain, Google Maps SEO discovery, 24/7 WhatsApp quoting assistant, and instant cloud deployment.</p>
   </div>
-  <a href="${DFY_PROTOTYPE_OFFERS[0].ctaUrl}" class="px-5 py-3 rounded-lg bg-navy-900 dark:bg-gold-500 text-white dark:text-navy-950 font-bold text-xs whitespace-nowrap hover:scale-105 transition-all">
+  <a href="${DFY_PROTOTYPE_OFFERS[0].ctaUrl}" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs whitespace-nowrap hover:scale-105 transition-all shadow-lg">
     Claim Prototype Demo →
   </a>
 </div>
@@ -387,8 +501,8 @@ ${BlogEngine.renderProductCtaHtml(matchedProduct)}
             category: template.category,
             excerpt: template.painHook.slice(0, 175) + '...',
             read_time: '7 min read',
-            virality_score: 94 + (generatedPosts.length % 5),
-            views_count: 1450 + (generatedPosts.length * 210),
+            virality_score: 0,
+            views_count: 0,
             content_html: contentHtml,
             social_snippets: {
               linkedin: `🚨 EXECUTIVE BRIEFING: ${title}\n\nKey Takeaway: ${template.commercialTakeaway}\n\nRead the full technical breakdown:\n👉 ${MASTER_PAYOUT.website}/blog/${slug}`,

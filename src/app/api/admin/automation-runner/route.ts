@@ -54,7 +54,8 @@ export async function POST(req: NextRequest) {
       const child = spawn('node', [runnerScript], {
         cwd: projectDir,
         detached: true,
-        stdio: 'ignore'
+        stdio: 'ignore',
+        windowsHide: true
       });
       child.unref();
       activeRunnerPid = child.pid || null;
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
       const { exec } = require('child_process');
       const testScript = path.join(projectDir, 'scripts', 'test_scaling_pipeline.js');
       const testResult = await new Promise<{ success: boolean; output: string }>((resolve) => {
-        exec(`node "${testScript}"`, { cwd: projectDir }, (error: any, stdout: string, stderr: string) => {
+        exec(`node "${testScript}"`, { cwd: projectDir, windowsHide: true }, (error: any, stdout: string, stderr: string) => {
           if (error) {
             resolve({ success: false, output: stdout + '\n' + stderr });
           } else {

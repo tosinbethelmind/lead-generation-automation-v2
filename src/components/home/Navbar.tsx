@@ -22,14 +22,16 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { label: 'How It Works', href: '#how-it-works' },
-    { label: 'Sector Tools', href: '#sector-tools' },
-    { label: 'Digital Assets', href: '/store', badge: 'STORE' },
+    { label: 'Growth Suite', href: '/solutions', badge: 'CLIENTS' },
+    { label: 'Solar Engine', href: '/solar', badge: 'SEPARATE' },
+    { label: '5 Engines', href: '/monetization', badge: 'ENGINES' },
+    { label: 'GMB Shield', href: '/gmb/sample-audit', badge: 'RANKING' },
+    { label: 'Data Packs', href: '/store', badge: 'STORE' },
     { label: 'Marketplace', href: '/marketplace', badge: 'LIVE' },
-    { label: 'Recruitment AI', href: '/recruitment', badge: 'PRO' },
     { label: 'Pricing', href: '#pricing' },
     { label: 'FAQ', href: '#faq' },
   ];
+
 
   const waLink = buildWhatsAppLink(
     paymentConfig.whatsappNumber,
@@ -186,11 +188,11 @@ export default function Navbar() {
           <MessageSquare style={{ width: 14, height: 14 }} aria-hidden="true" /> WhatsApp Us
         </a>
 
-        {/* Primary CTA Button */}
+        {/* Primary CTA Button (Desktop only, mobile has sticky conversion bar) */}
         <a
           id="nav-demo-cta"
           href="#how-it-works"
-          className="luxury-btn-primary"
+          className="desktop-only luxury-btn-primary"
           style={{
             color: '#ffffff',
             textDecoration: 'none',

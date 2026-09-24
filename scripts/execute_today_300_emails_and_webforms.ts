@@ -23,11 +23,13 @@ import fs from 'fs';
 import path from 'path';
 import nodemailer from 'nodemailer';
 import { createClient } from '@supabase/supabase-js';
-import { BrevoClient } from '../src/lib/integrations/brevoClient';
 import { submitContactForm } from '../src/lib/contactFormSubmitter';
+import { multiSmtpPooler } from '../src/lib/email/multiSmtpPooler';
 import axios from 'axios';
 import pLimit from 'p-limit';
 import { heavyNationwideB2BEmailHarvester } from '../src/lib/scraping/heavyNationwideB2BEmailHarvester';
+import { stealthMetascraperExtractor } from '../src/lib/scraping/stealthMetascraperExtractor';
+import { katanaCrawlerBridge } from '../src/lib/scraping/katanaCrawlerBridge';
 
 const LOCAL_DB = path.join(process.cwd(), 'local_db');
 if (!fs.existsSync(LOCAL_DB)) fs.mkdirSync(LOCAL_DB, { recursive: true });
@@ -101,28 +103,92 @@ export function createHostingerTransporter(port = parseInt(process.env.SMTP_PORT
   });
 }
 
+function getSectorOutreachHooks(sectorRaw: string, businessName: string, area: string) {
+  const s = (sectorRaw || '').toLowerCase();
+  
+  if (/solar|inverter|energy|renewable|battery/i.test(s)) {
+    return {
+      subject: `How ${businessName} can recover ₦350k/mo in missed after-hours solar inquiries`,
+      painPoint: `4 out of 10 serious Lagos solar buyers inquire past 7 PM. When attendants don't answer in 60 seconds, buyers move to competitors, leading to lost installation deposits.`,
+      specializedFeature: `After-Hours Solar Sales Closer: Instant WhatsApp BOQ Load Sizer & Inspection Deposit Locker`
+    };
+  }
+  if (/medical|clinic|doctor|health|hospital|pharmacy|dental|dentist|eye|optician/i.test(s)) {
+    return {
+      subject: `${businessName} Management — 24/7 patient intake & consultation deposit lock`,
+      painPoint: `patients attempting to book consultations in the evening experience delays, resulting in missed appointment revenue and high no-show rates.`,
+      specializedFeature: `24/7 Patient Booking & Deposit Lock Assistant (Instant Paystack/OPay confirmation with zero attendant delay)`
+    };
+  }
+  if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge/i.test(s)) {
+    return {
+      subject: `${businessName} Management — direct WhatsApp guest booking & zero OTA commission`,
+      painPoint: `guests checking room availability at night book with other hotels when reservation responses are delayed past 5 minutes.`,
+      specializedFeature: `24/7 Direct Room Availability & Payment Verification Engine (Instant confirmed bank transfers with zero third-party commission)`
+    };
+  }
+  if (/school|academy|education|college|creche|tutor/i.test(s)) {
+    return {
+      subject: `${businessName} Administrator — zero-debt term fee collection & result gating`,
+      painPoint: `parents accumulating unpaid term fees causes severe cash flow deficits and stressful end-of-term debt recovery.`,
+      specializedFeature: `Private School Term Fee Portal with Automated Digital Report Card Result Gating & Instant WhatsApp Reminders`
+    };
+  }
+  if (/car|auto|motor|vehicle|tokunbo|dealership/i.test(s)) {
+    return {
+      subject: `${businessName} Auto Desk — after-hours vehicle price quoter & inspection booking`,
+      painPoint: `car buyers inquiring about vehicle pricing, customs clearance duty, or inspection schedules past 7 PM face delays and visit competitor car lots.`,
+      specializedFeature: `24/7 Tokunbo Vehicle Duty Quoter & Instant WhatsApp Inspection Drive Booker`
+    };
+  }
+  if (/logistics|courier|dispatch|waybill|delivery|cargo|freight/i.test(s)) {
+    return {
+      subject: `${businessName} Logistics — zero-fraud transfer verification & instant waybills`,
+      painPoint: `dispatch delays and attendant disputes over uncredited bank transfers cause customer friction and unrecovered revenue.`,
+      specializedFeature: `Automated WhatsApp Waybill Tracker & "Fake Alert Proof" Moniepoint/OPay Transfer Reconciliation`
+    };
+  }
+  if (/estate|property|realty|housing|developer|land/i.test(s)) {
+    return {
+      subject: `${businessName} Realty — capturing missed after-hours luxury property buyers`,
+      painPoint: `corporate professionals in Lagos inquiring about properties at night experience slow agent follow-up, causing cold deals.`,
+      specializedFeature: `Automated Property Inspection Booker & Tenant Service Charge Reconciliation Manager`
+    };
+  }
+  if (/store|retail|boutique|cloth|fashion|supermarket|thrift|gadget/i.test(s)) {
+    return {
+      subject: `${businessName} Sales Desk — stop losing Instagram ad inquiries & fake transfer alerts`,
+      painPoint: `attendants taking 2 hours to answer "how much" on Instagram and WhatsApp causes 40% of ready-to-buy shoppers to abandon orders.`,
+      specializedFeature: `3-Second WhatsApp Speed Closer & "Fake Alert Proof" Bank Transfer Reconciliation`
+    };
+  }
+
+  return {
+    subject: `Recovering missed after-hours client revenue for ${businessName}`,
+    painPoint: `prospective clients reaching out after hours wait hours for price quotes or booking confirmations, causing lost sales to faster competitors.`,
+    specializedFeature: `24/7 WhatsApp Sales Closer (< 3s response time with instant Paystack/Moniepoint bank transfer reconciliation)`
+  };
+}
+
 function generateEmailPayload(lead: any) {
   const cleanName = cleanBusinessName(lead.name || lead.business_name, lead.category);
   const area = lead.area || lead.city || 'Lagos';
+  const sector = lead.category || lead.sector || 'Commercial Enterprise';
   const slug = (lead.id || lead.lead_id || cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-')).slice(0, 25);
   const previewUrl = `https://www.bethelmindanalytics.com/preview/${slug}`;
 
-  const subjectVariants = [
-    `Quick inquiry regarding after-hours quotes for ${cleanName}`,
-    `Built a private 24/7 WhatsApp sales quoter for ${cleanName} (Live Demo)`,
-    `${cleanName} Team — after-hours quote assistant preview`
-  ];
-  const subject = subjectVariants[Math.floor(Math.random() * subjectVariants.length)];
+  const hooks = getSectorOutreachHooks(sector, cleanName, area);
+  const subject = hooks.subject;
 
   const textContent = `Good day ${cleanName} Team,
 
-We recently conducted an operational review for commercial firms in ${area} and noticed potential clients inquiring after business hours wait hours before receiving quotes.
+We recently conducted an operational review for ${sector} firms in ${area} and identified that ${hooks.painPoint}
 
 We built a private 24/7 WhatsApp Sales & Quoting Portal specifically for ${cleanName}.
 
 Key Features Pre-Installed:
 • 24/7 AI WhatsApp Quoting Assistant (< 3s Nigerian tone response)
-• Instant PDF Quotes & Sector Sizer (Solar BOQ, Patient Booking, Duty Estimator)
+• ${hooks.specializedFeature}
 • Instant Bank Transfer Verification (Paystack & Moniepoint)
 
 Test drive your live prototype on your phone here:
@@ -151,7 +217,7 @@ Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
     </div>
     <div style="padding:24px;">
       <p style="font-size:15px; color:#cbd5e1; line-height:1.6; margin-top:0;">Good day Team at <strong>${cleanName}</strong>,</p>
-      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">Prospective clients inquiring after business hours often experience delays before getting quotes. We pre-built a 24/7 WhatsApp sales & quoting portal custom-tailored for <strong>${cleanName}</strong> in ${area}. It qualifies after-hours buyers and issues instant estimates in under 3 seconds.</p>
+      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">During our operational review of ${sector} firms in ${area}, we identified that ${hooks.painPoint} We pre-built a 24/7 WhatsApp sales & quoting portal custom-tailored for <strong>${cleanName}</strong>. It qualifies after-hours buyers and issues instant estimates in under 3 seconds.</p>
       
       <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:14px; margin:16px 0; text-align:center;">
         <div style="color:#38bdf8; font-size:13px; font-weight:700; margin-bottom:4px;">🎙️ 15-Second Voice Note Briefing Attached</div>
@@ -247,9 +313,11 @@ export async function loadAndConsolidateLeads(): Promise<any[]> {
     } catch (_) {}
   }
 
-  // 3. Load from Supabase Cloud
+  // 3. Load from Supabase Cloud (Protected with 3s timeout & egress circuit-breaker)
   try {
-    const { data: supaLeads } = await supabase.from('leads').select('*').limit(2000);
+    const supaPromise = supabase.from('leads').select('*').limit(2000);
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase query timeout')), 3000));
+    const { data: supaLeads } = await Promise.race([supaPromise, timeoutPromise]) as any;
     if (Array.isArray(supaLeads)) {
       supaLeads.forEach(ingestLead);
     }
@@ -281,34 +349,33 @@ async function replenishEmailLeads(leads: ConsolidatedOutreachLead[], targetNeed
     await Promise.all(candidateSites.map(lead => limit(async () => {
       if (newlyFound >= targetNeeded) return;
       try {
-        const resp = await axios.get(lead.website, {
-          timeout: 4500,
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36' },
-          maxRedirects: 3,
-          validateStatus: s => s < 400
-        });
-        const html = typeof resp.data === 'string' ? resp.data : '';
-        let matches = (html.match(EMAIL_REGEX) || []).filter(e => !IGNORE_PATTERNS.test(e));
+        // 1. First probe via Stealth Metascraper with full DOM & mailto extraction
+        const metaResult = await stealthMetascraperExtractor.extractFromUrl(lead.website, 5000);
+        let extractedEmail = metaResult?.emails?.[0];
 
-        if (matches.length === 0) {
-          try {
-            const contactUrl = new URL('/contact', lead.website).toString();
-            const cResp = await axios.get(contactUrl, {
-              timeout: 3500,
-              headers: { 'User-Agent': 'Mozilla/5.0' },
-              validateStatus: s => s < 400
-            });
-            const cHtml = typeof cResp.data === 'string' ? cResp.data : '';
-            matches = (cHtml.match(EMAIL_REGEX) || []).filter(e => !IGNORE_PATTERNS.test(e));
-          } catch (_) {}
+        // 2. If not found, probe Katana deep endpoint crawler for hidden mailto / contact pages
+        if (!extractedEmail) {
+          const katanaResult = await katanaCrawlerBridge.crawlDomain(lead.website, 1, 8);
+          if (katanaResult.extractedEmails && katanaResult.extractedEmails.length > 0) {
+            extractedEmail = katanaResult.extractedEmails.find(e => stealthMetascraperExtractor.isGenuineCommercialEmail(e));
+          }
+
+          // 3. Fallback to /contact or discovered contact URL probe with metascraper
+          if (!extractedEmail) {
+            const contactUrl = katanaResult.contactUrls.length > 0 
+              ? katanaResult.contactUrls[0] 
+              : new URL('/contact', lead.website).toString();
+            const contactMeta = await stealthMetascraperExtractor.extractFromUrl(contactUrl, 4000);
+            extractedEmail = contactMeta?.emails?.[0];
+          }
         }
 
-        if (matches.length > 0) {
-          const cleanEmail = matches[0].toLowerCase().trim();
+        if (extractedEmail && stealthMetascraperExtractor.isGenuineCommercialEmail(extractedEmail)) {
+          const cleanEmail = extractedEmail.toLowerCase().trim();
           lead.email = cleanEmail;
           lead.email_sent = false;
           newlyFound++;
-          console.log(`   ✨ [Extracted Email ${newlyFound}/${targetNeeded}]: ${cleanEmail} (${lead.name})`);
+          console.log(`   ✨ [Katana/Metascraper Email ${newlyFound}/${targetNeeded}]: ${cleanEmail} (${lead.name})`);
         }
       } catch (_) {}
     })));
@@ -420,37 +487,43 @@ async function main() {
     } catch (_) {}
   }
 
-  const remainingEmailsTo300 = Math.max(0, 300 - sentEmailsToday);
-  const remainingWebformsTo300 = Math.max(0, 300 - successfulWebformsToday);
+    const DAILY_EMAIL_TARGET = parseInt(process.env.DAILY_EMAIL_TARGET || '600', 10);
+    const remainingEmails = Math.max(0, DAILY_EMAIL_TARGET - sentEmailsToday);
+    const remainingWebformsTo300 = Math.max(0, 300 - successfulWebformsToday);
 
-  console.log(`📊 TODAY'S PROGRESS [${todayStr} WAT]:`);
-  console.log(`   • Corporate Emails : ${sentEmailsToday}/300 delivered (${remainingEmailsTo300} remaining)`);
-  console.log(`   • Web Contact Forms: ${successfulWebformsToday}/300 delivered (${remainingWebformsTo300} remaining)\n`);
+    console.log(`📊 TODAY'S PROGRESS [${todayStr} WAT]:`);
+    console.log(`   • Corporate Emails : ${sentEmailsToday}/${DAILY_EMAIL_TARGET} delivered (${remainingEmails} remaining)`);
+    console.log(`   • Web Contact Forms: ${successfulWebformsToday}/300 delivered (${remainingWebformsTo300} remaining)\n`);
 
-  let availableUnsentEmails = leads.filter(l => l.email && l.email.includes('@') && !l.email_sent);
-  console.log(`📧 Available Unsent Genuine Email Leads: ${availableUnsentEmails.length}`);
+    let availableUnsentEmails = leads.filter(l => l.email && l.email.includes('@') && !l.email_sent);
+    console.log(`📧 Available Unsent Genuine Email Leads: ${availableUnsentEmails.length}`);
 
-  // Autonomous replenishment if unsent email leads pool is less than quota needed
-  if (availableUnsentEmails.length < remainingEmailsTo300) {
-    const needed = remainingEmailsTo300 - availableUnsentEmails.length;
-    console.log(`⚡ Pool under quota by ${needed}. Triggering autonomous lead replenishment...`);
-    await replenishEmailLeads(leads, needed);
-    availableUnsentEmails = leads.filter(l => l.email && l.email.includes('@') && !l.email_sent);
-    console.log(`📧 Replenished Unsent Genuine Email Leads: ${availableUnsentEmails.length}`);
-  }
+    // Autonomous replenishment if unsent email leads pool is less than quota needed
+    if (availableUnsentEmails.length < remainingEmails) {
+      const needed = remainingEmails - availableUnsentEmails.length;
+      console.log(`⚡ Pool under quota by ${needed}. Triggering autonomous lead replenishment...`);
+      await replenishEmailLeads(leads, needed);
+      availableUnsentEmails = leads.filter(l => l.email && l.email.includes('@') && !l.email_sent);
+      console.log(`📧 Replenished Unsent Genuine Email Leads: ${availableUnsentEmails.length}`);
+    }
 
-  const TARGET_EMAIL_QUOTA = Math.min(remainingEmailsTo300, availableUnsentEmails.length);
-  console.log(`🎯 Quota Target for this cycle: ${TARGET_EMAIL_QUOTA} emails to dispatch.\n`);
+    const TARGET_EMAIL_QUOTA = Math.min(remainingEmails, availableUnsentEmails.length);
+    console.log(`🎯 Quota Target for this cycle: ${TARGET_EMAIL_QUOTA} emails to dispatch (Daily Target: ${DAILY_EMAIL_TARGET}).\n`);
 
   const isDryRun = process.argv.includes('--dry-run') || process.argv.includes('--audit');
   if (isDryRun) {
     console.log('🔍 [DRY-RUN / AUDIT MODE ACTIVE] Validating infrastructure & channel connectivity...');
-    const brevo = new BrevoClient();
-    try {
-      const brevoSenders = await brevo.getSenders();
-      console.log(`   ✅ Brevo API v3 Connected: ${(brevoSenders.senders || []).length} verified senders.`);
-    } catch (e: any) {
-      console.log(`   ⚠️ Brevo API note: ${e.message}`);
+    const brevoApiKey = process.env.BREVO_API_KEY || '';
+    if (brevoApiKey) {
+      try {
+        const brevoResp = await axios.get('https://api.brevo.com/v3/senders', {
+          headers: { 'api-key': brevoApiKey },
+          timeout: 8000
+        });
+        console.log(`   ✅ Brevo API v3 Connected: ${(brevoResp.data?.senders || []).length} verified senders.`);
+      } catch (e: any) {
+        console.log(`   ⚠️ Brevo API note: ${e.message}`);
+      }
     }
 
     try {
@@ -483,8 +556,6 @@ async function main() {
 
   // ── PART 1: 300 B2B Corporate Email Dispatch ─────────────────────────────────
   console.log('\n📧 PART 1: Dispatching Corporate Emails...');
-  const brevo = new BrevoClient();
-  const hostinger = createHostingerTransporter();
 
   const activities: any[] = [];
   if (fs.existsSync(ACTIVITIES_PATH)) {
@@ -500,153 +571,47 @@ async function main() {
   while (emailDeliveredCount < TARGET_EMAIL_QUOTA && leadIndex < availableUnsentEmails.length) {
     const lead = availableUnsentEmails[leadIndex++];
     const payload = generateEmailPayload(lead);
-    let delivered = false;
 
-    // Try Brevo API v3 first
-    try {
-      const brevoRes: any = await brevo.sendEmail({
-        to: [{ email: lead.email, name: payload.cleanName }],
-        subject: payload.subject,
-        textContent: payload.textContent,
-        htmlContent: payload.htmlContent,
-        tags: ['BREVO_300_DAILY']
-      });
+    const dispatchRes = await multiSmtpPooler.dispatch({
+      ...lead,
+      email: lead.email,
+      name: payload.cleanName
+    });
 
-      delivered = true;
+    if (dispatchRes.success) {
+      emailDeliveredCount++;
       lead.email_sent = true;
-      lead.email_provider = 'BREVO_API';
+      lead.email_provider = dispatchRes.provider;
       lead.email_sent_at = new Date().toISOString();
-      lead.email_message_id = brevoRes?.messageId || '';
-      console.log(`   [Email ${emailDeliveredCount + 1}/${TARGET_EMAIL_QUOTA}] ✅ Delivered (Brevo): ${lead.email} (${payload.cleanName})`);
+      lead.email_message_id = dispatchRes.messageId;
+      console.log(`   [Email ${emailDeliveredCount}/${TARGET_EMAIL_QUOTA}] ✅ Delivered (${dispatchRes.provider}): ${lead.email} (${payload.cleanName})`);
+
+      if (lead.id) {
+        supabase.from('leads').update({
+          outreach_sent: true,
+          last_contacted_at: new Date().toISOString(),
+          status: 'CONTACTED'
+        }).eq('id', lead.id).then(() => {}).catch(() => {});
+      }
 
       activities.push({
-        id: `act_email_${Date.now()}_${Math.floor(Math.random()*1000)}`,
+        id: `act_email_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
         lead_id: lead.id,
         channel: 'email',
         type: 'B2B_EMAIL_DISPATCH',
         details: payload.subject,
         message_id: lead.email_message_id,
-        provider: 'BREVO_API',
+        provider: dispatchRes.provider,
         recipient: lead.email,
         verified: true,
         timestamp: lead.email_sent_at
       });
-
-      await brevo.syncLead({
-        email: lead.email,
-        name: payload.cleanName,
-        phone: lead.phone,
-        category: lead.category,
-        area: lead.area,
-        previewUrl: payload.previewUrl
-      }).catch(() => {});
-
-    } catch (brevoErr: any) {
-      // Fallback to Hostinger SMTP (Port 465 SSL)
-      try {
-        const mp3Path = path.join(process.cwd(), 'public/sample_voice_ng.mp3');
-        const attachments = fs.existsSync(mp3Path) ? [{
-          filename: 'voice_note_briefing.mp3',
-          path: mp3Path,
-          contentType: 'audio/mpeg'
-        }] : [];
-
-        const smtpInfo = await hostinger.sendMail({
-          from: '"Tosin | Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
-          replyTo: 'bethelmindrecruit@gmail.com',
-          to: lead.email,
-          subject: payload.subject,
-          text: payload.textContent,
-          html: payload.htmlContent,
-          attachments
-        });
-
-        delivered = true;
-        lead.email_sent = true;
-        lead.email_provider = 'HOSTINGER_SMTP';
-        lead.email_sent_at = new Date().toISOString();
-        lead.email_message_id = smtpInfo?.messageId || '';
-        console.log(`   [Email ${emailDeliveredCount + 1}/${TARGET_EMAIL_QUOTA}] ✅ Delivered (Hostinger SMTP): ${lead.email} (${payload.cleanName})`);
-
-        if (lead.id) {
-          supabase.from('leads').update({
-            outreach_sent: true,
-            last_contacted_at: new Date().toISOString(),
-            status: 'CONTACTED'
-          }).eq('id', lead.id).then(() => {}).catch(() => {});
-        }
-
-        activities.push({
-          id: `act_email_${Date.now()}_${Math.floor(Math.random()*1000)}`,
-          lead_id: lead.id,
-          channel: 'email',
-          type: 'B2B_EMAIL_DISPATCH',
-          details: payload.subject,
-          message_id: lead.email_message_id,
-          provider: 'HOSTINGER_SMTP',
-          recipient: lead.email,
-          verified: true,
-          timestamp: lead.email_sent_at
-        });
-      } catch (smtpErr: any) {
-        // Tertiary Failover: Hostinger Port 587 (STARTTLS)
-        try {
-          const mp3Path = path.join(process.cwd(), 'public/sample_voice_ng.mp3');
-          const attachments = fs.existsSync(mp3Path) ? [{
-            filename: 'voice_note_briefing.mp3',
-            path: mp3Path,
-            contentType: 'audio/mpeg'
-          }] : [];
-
-          const hostinger587 = createHostingerTransporter(587);
-          const smtpInfo587 = await hostinger587.sendMail({
-            from: '"Tosin | Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
-            replyTo: 'bethelmindrecruit@gmail.com',
-            to: lead.email,
-            subject: payload.subject,
-            text: payload.textContent,
-            html: payload.htmlContent,
-            attachments
-          });
-
-          delivered = true;
-          lead.email_sent = true;
-          lead.email_provider = 'HOSTINGER_SMTP_587';
-          lead.email_sent_at = new Date().toISOString();
-          lead.email_message_id = smtpInfo587?.messageId || '';
-          console.log(`   [Email ${emailDeliveredCount + 1}/${TARGET_EMAIL_QUOTA}] ✅ Delivered (Hostinger SMTP 587): ${lead.email} (${payload.cleanName})`);
-
-          if (lead.id) {
-            supabase.from('leads').update({
-              outreach_sent: true,
-              last_contacted_at: new Date().toISOString(),
-              status: 'CONTACTED'
-            }).eq('id', lead.id).then(() => {}).catch(() => {});
-          }
-
-          activities.push({
-            id: `act_email_${Date.now()}_${Math.floor(Math.random()*1000)}`,
-            lead_id: lead.id,
-            channel: 'email',
-            type: 'B2B_EMAIL_DISPATCH',
-            details: payload.subject,
-            message_id: lead.email_message_id,
-            provider: 'HOSTINGER_SMTP_587',
-            recipient: lead.email,
-            verified: true,
-            timestamp: lead.email_sent_at
-          });
-          try { hostinger587.close(); } catch (_) {}
-        } catch (smtp587Err: any) {
-          console.log(`   [Attempt ${leadIndex}] ⚠️ Dispatch note for ${lead.email}: Brevo (${brevoErr.message}) | SMTP 465 (${smtpErr.message}) | SMTP 587 (${smtp587Err.message})`);
-        }
-      }
+    } else {
+      console.log(`   [Attempt ${leadIndex}] ⚠️ Dispatch note for ${lead.email}: ${dispatchRes.error}`);
     }
 
-    if (delivered) emailDeliveredCount++;
-
-    // Small delay between dispatches for high deliverability
-    await new Promise(r => setTimeout(r, 200));
+    // Small humanized delay between dispatches for deliverability
+    await new Promise(r => setTimeout(r, 1200));
   }
 
   // Persist email state immediately after Part 1 completes

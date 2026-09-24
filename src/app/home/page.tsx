@@ -2,12 +2,13 @@
 
 /**
  * @file src/app/home/page.tsx
- * High-Performance Public Homepage — Bethelmind Analytics & Strategy
+ * High-Converting Nigerian B2B Homepage — Bethelmind Analytics Lagos Desk
  *
  * Performance Optimized:
- * - Dynamic import code-splitting for below-the-fold components
- * - Optimized font display variables (no render-blocking @import fonts)
- * - Zero hydration lag
+ * - Streamlined 6-step conversion journey: Hero -> How It Works -> Sector Tools -> Solutions -> Trust -> Pricing -> Settlement -> FAQ
+ * - 0% distraction: Removed low-converting developer tools (Relume, Source code buyout clutter)
+ * - Pinned Sticky Mobile Conversion Bar for 1-tap WhatsApp closing
+ * - Zero hydration lag & edge-optimized
  */
 
 import React, { useState } from 'react';
@@ -15,26 +16,24 @@ import dynamic from 'next/dynamic';
 import Navbar from '@/components/home/Navbar';
 import HeroSection from '@/components/home/HeroSection';
 import HowItWorksSection from '@/components/home/HowItWorksSection';
-import SolutionsSection from '@/components/home/SolutionsSection';
 import SectorToolsSection from '@/components/home/SectorToolsSection';
+import SolutionsSection from '@/components/home/SolutionsSection';
 import Footer from '@/components/home/Footer';
 import { getSectorById } from '@/config/sectors';
 
 // Dynamic Lazy Code-Splitting for Below-the-Fold Sections
-const CrmPreviewSection = dynamic(() => import('@/components/home/CrmPreviewSection'), { ssr: true });
 const TrustSection = dynamic(() => import('@/components/home/TrustSection'), { ssr: true });
 const PricingSection = dynamic(() => import('@/components/home/PricingSection'), { ssr: true });
 const PaymentSection = dynamic(() => import('@/components/home/PaymentSection'), { ssr: true });
 const FaqSection = dynamic(() => import('@/components/home/FaqSection'), { ssr: true });
 const CustomerAiAgentWidget = dynamic(() => import('@/components/CustomerAiAgentWidget'), { ssr: false });
-
-const RelumeSiteGeneratorSection = dynamic(() => import('@/components/home/RelumeSiteGeneratorSection'), { ssr: false });
-const LeadMarketplaceSection = dynamic(() => import('@/components/home/LeadMarketplaceSection'), { ssr: false });
-const AddonModulesSection = dynamic(() => import('@/components/home/AddonModulesSection'), { ssr: false });
+const StickyMobileConversionBar = dynamic(() => import('@/components/StickyMobileConversionBar'), { ssr: false });
+const LiveSocialProofTicker = dynamic(() => import('@/components/LiveSocialProofTicker').then(m => m.LiveSocialProofTicker), { ssr: false });
+const ExitIntentAndIdleModal = dynamic(() => import('@/components/ExitIntentAndIdleModal'), { ssr: false });
 
 export default function HomePage() {
   const [businessName, setBusinessName] = useState('My Business');
-  const [selectedIndustry, setSelectedIndustry] = useState('general');
+  const [selectedIndustry, setSelectedIndustry] = useState('solar');
   const [targetDistrict, setTargetDistrict] = useState('Ikeja');
   const [selectedPlanId, setSelectedPlanId] = useState('pro');
 
@@ -48,6 +47,7 @@ export default function HomePage() {
         color: '#f8fafc',
         fontFamily: "var(--font-inter), 'Inter', sans-serif",
         overflowX: 'hidden',
+        paddingBottom: 70, // Buffer for mobile sticky bar
       }}
     >
       <Navbar />
@@ -64,20 +64,12 @@ export default function HomePage() {
 
         <HowItWorksSection />
 
-        <SolutionsSection />
-
-        <RelumeSiteGeneratorSection />
-
-        <LeadMarketplaceSection />
-
         <SectorToolsSection
           selectedIndustry={selectedIndustry}
           setSelectedIndustry={setSelectedIndustry}
         />
 
-        <AddonModulesSection />
-
-        <CrmPreviewSection />
+        <SolutionsSection />
 
         <TrustSection />
 
@@ -100,6 +92,23 @@ export default function HomePage() {
       </main>
 
       <CustomerAiAgentWidget sector={sectorProfile.name} />
+
+      <StickyMobileConversionBar
+        businessName={businessName}
+        area={targetDistrict}
+        category={sectorProfile.name}
+        hasWebsite={false}
+        adminPhone="2348022791227"
+      />
+
+      <LiveSocialProofTicker />
+
+      <ExitIntentAndIdleModal
+        businessName={businessName}
+        category={sectorProfile.name}
+        area={targetDistrict}
+        adminPhone="2348022791227"
+      />
 
       <Footer />
 

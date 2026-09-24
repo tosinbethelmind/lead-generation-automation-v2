@@ -6,6 +6,8 @@
  * extracts tel:, mailto:, wa.me/ links, and updates master database local_db/leads_db.json.
  */
 
+const dns = require('dns');
+try { dns.setDefaultResultOrder('ipv4first'); } catch (_) {}
 const fs = require('fs');
 const path = require('path');
 const cheerio = require('cheerio');
@@ -111,6 +113,50 @@ async function fetchWebsiteContact(url, timeoutMs = 4000) {
       }
     }
 
+    if (!extractedEmail) {
+      // Single-hop check: if homepage has a direct contact/about link, check that subpage only
+      let contactLink = null;
+      $('a[href]').each((_, el) => {
+        if (contactLink) return;
+        const href = $(el).attr('href') || '';
+        const hrefLower = href.toLowerCase();
+        if ((hrefLower.includes('contact') || hrefLower.includes('about')) && !hrefLower.startsWith('mailto:') && !hrefLower.startsWith('tel:')) {
+          try {
+            contactLink = new URL(href, url).href;
+          } catch (_) {}
+        }
+      });
+
+      if (contactLink) {
+        try {
+          const subRes = await fetch(contactLink, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            },
+            signal: AbortSignal.timeout(3500)
+          });
+          if (subRes.ok) {
+            const subHtml = await subRes.text();
+            const sub$ = cheerio.load(subHtml);
+            sub$('a[href^="mailto:"]').each((_, el) => {
+              if (!extractedEmail) {
+                extractedEmail = cleanEmail($(el).attr('href').replace('mailto:', '').split('?')[0]);
+              }
+            });
+            if (!extractedEmail) {
+              const subMatches = sub$('body').text().match(EMAIL_REGEX);
+              if (subMatches && subMatches.length > 0) {
+                for (const em of subMatches) {
+                  const cl = cleanEmail(em);
+                  if (cl) { extractedEmail = cl; break; }
+                }
+              }
+            }
+          }
+        } catch (_) {}
+      }
+    }
+
     return { phone: extractedPhone, email: extractedEmail };
   } catch (_) {
     clearTimeout(timer);
@@ -120,7 +166,7 @@ async function fetchWebsiteContact(url, timeoutMs = 4000) {
 
 async function runBatchEnrichment() {
   console.log('====================================================');
-  console.log('⚡ APEXREACH HIGH-SPEED CONTACT ENRICHMENT PIPELINE');
+  console.log('⚡ BETHELMIND ANALYTICS CONTACT ENRICHMENT PIPELINE');
   console.log('====================================================\n');
 
   const filePath = path.join(process.cwd(), 'local_db', 'leads_db.json');
@@ -132,12 +178,13 @@ async function runBatchEnrichment() {
   const leads = JSON.parse(fs.readFileSync(filePath, 'utf8'));
   console.log(`📊 Loaded ${leads.length} total master leads.`);
 
-  // Find leads missing phone or email that have valid website URLs
+  // Find leads missing phone or email that have valid website URLs (excluding social/directories)
   const targetLeads = leads.filter(l => {
     const missingPhone = !l.phone || l.phone.trim().length < 6;
     const missingEmail = !l.email || !l.email.includes('@');
     const hasWebsite = l.website && typeof l.website === 'string' && l.website.startsWith('http');
-    return (missingPhone || missingEmail) && hasWebsite;
+    const isSocialOrDir = /google\.com|instagram\.com|facebook\.com|wa\.me|wa\.link|tiktok\.com|businesslist|jiji\.ng|linktr\.ee|bing\.com/i.test(l.website || '');
+    return (missingPhone || missingEmail) && hasWebsite && !isSocialOrDir;
   });
 
   console.log(`🎯 Found ${targetLeads.length} leads with valid website URLs ready for contact enrichment.\n`);
@@ -151,11 +198,11 @@ async function runBatchEnrichment() {
   let newPhonesCount = 0;
   let newEmailsCount = 0;
 
-  // Process in concurrent pools of 20
-  const CONCURRENCY_POOL = 20;
-  const maxToProcess = Math.min(targetLeads.length, 500); // Enrich up to 500 leads per batch run
+  // Process in high-throughput concurrent pools of 35
+  const CONCURRENCY_POOL = 35;
+  const maxToProcess = targetLeads.length; // Process all remaining un-enriched websites at peak
 
-  console.log(`🚀 Starting parallel crawler pool (${CONCURRENCY_POOL} worker connections)...`);
+  console.log(`🚀 Starting parallel crawler pool (${CONCURRENCY_POOL} worker connections)... Processing ${maxToProcess} leads at PEAK capacity...`);
 
   for (let i = 0; i < maxToProcess; i += CONCURRENCY_POOL) {
     const chunk = targetLeads.slice(i, i + CONCURRENCY_POOL);
@@ -181,10 +228,15 @@ async function runBatchEnrichment() {
     });
 
     await Promise.all(promises);
-    console.log(`   Processed batch ${Math.min(i + CONCURRENCY_POOL, maxToProcess)}/${maxToProcess} (Enriched: +${enrichedCount} leads)...`);
+    console.log(`   Processed batch ${Math.min(i + CONCURRENCY_POOL, maxToProcess)}/${maxToProcess} (Enriched: +${enrichedCount} leads, New Emails: +${newEmailsCount})...`);
+
+    // Micro-persist every 100 leads to safeguard against crashes
+    if ((i + CONCURRENCY_POOL) % 105 === 0 || i + CONCURRENCY_POOL >= maxToProcess) {
+      fs.writeFileSync(filePath, JSON.stringify(leads, null, 2), 'utf8');
+    }
   }
 
-  // Save updated master database
+  // Final save of master database
   fs.writeFileSync(filePath, JSON.stringify(leads, null, 2), 'utf8');
 
   console.log('\n====================================================');

@@ -242,7 +242,7 @@ export default function CustomerAiAgentWidget({
       : leadData.category?.toLowerCase().includes('medical') || leadData.category?.toLowerCase().includes('clinic')
       ? `🏥 Clinic Appointment Booking AI for ${leadData.name}`
       : `🎯 How ${leadData.name} Gets 4x More Leads`,
-    `🚀 Activate My Portal for ₦92,500`,
+    `🚀 Activate My Portal for ₦75,000 (50% Deposit)`,
     `💳 View Pricing Plans`,
     `📞 How to Send Payment Receipt`,
   ] : [

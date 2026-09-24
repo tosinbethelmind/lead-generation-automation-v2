@@ -3,12 +3,14 @@
  * High-Speed & Resilient Automated Contact Form Submitter
  * 
  * Features:
- * 1. Fast HTTP / DNS Preflight check (<= 3.5s) to skip dead/unresolvable domains instantly.
- * 2. Parallel Cheerio Discovery for contact subpages (/contact, /contact-us, /get-in-touch, /about).
- * 3. Smart Form Field Mapping (Standard HTML, WordPress CF7/WPForms/Elementor, Gravity Forms).
- * 4. Lightweight Direct Fetch POST with AJAX nonce & hidden input preservation.
- * 5. Smart Skip: If candidate URL returns 404/403/500, skips heavy browser rendering.
- * 6. Reusable Pooled Puppeteer fallback ONLY for active pages with dynamic client-side JS forms.
+ * 1. Fast HTTP / DNS Preflight check (<= 7s) to handle Nigerian hosting TTFB with automatic protocol failover.
+ * 2. URL Sanitization: Strips concatenated URLs, commas, spaces, and normalizes endpoints.
+ * 3. Parallel Cheerio Discovery for contact subpages (/contact, /contact-us, /get-in-touch, /about).
+ * 4. Smart Form Field Mapping (Standard HTML, WordPress CF7/WPForms/Elementor, Gravity Forms).
+ * 5. Lightweight Direct Fetch POST with AJAX nonce & hidden input preservation.
+ * 6. ZERO-FAILURE CASCADE: If form is protected by reCAPTCHA, Cloudflare 403, or lacks form elements,
+ *    it extracts discovered emails (or verified lead.email) and delivers proposal directly via Multi-SMTP Pooler!
+ * 7. Reusable Pooled Puppeteer fallback for dynamic JS forms.
  */
 
 import dns from 'dns';
@@ -19,11 +21,12 @@ import http from 'http';
 import https from 'https';
 import axios from 'axios';
 import { getLocalChromePath } from './browserLauncher';
+import { multiSmtpPooler } from './email/multiSmtpPooler';
 
 export interface SubmissionResult {
   success: boolean;
   notes: string;
-  methodUsed: 'fetch' | 'browser' | 'none';
+  methodUsed: 'fetch' | 'browser' | 'smtp_pool_cascade' | 'none';
 }
 
 export interface WebformLeadTarget {
@@ -46,14 +49,16 @@ const COMMON_CONTACT_PATHS = [
   '/about'
 ];
 
+const EXCLUDED_AGGREGATORS = /jiji\.ng|finelib\.com|businesslist\.com\.ng|vconnect\.com|bing\.com|google\.com|facebook\.com|instagram\.com|twitter\.com|x\.com|tiktok\.com|youtube\.com|linkedin\.com|wa\.me|t\.me|tariffnumber\.com|jaspector\.com|houzz\.com|taplink\.ws|linktr\.ee|carrd\.co|bio\.link|beacons\.ai|wa\.link|solo\.to|heylink\.me/i;
+
 const keepAliveHttpAgent = new http.Agent({ keepAlive: true, maxSockets: 25 });
 const keepAliveHttpsAgent = new https.Agent({ keepAlive: true, maxSockets: 25, rejectUnauthorized: false });
 
 const fastHttpClient = axios.create({
   httpAgent: keepAliveHttpAgent,
   httpsAgent: keepAliveHttpsAgent,
-  timeout: 6000,
-  maxRedirects: 4,
+  timeout: 7000,
+  maxRedirects: 5,
   headers: {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -131,23 +136,45 @@ function releaseBrowserTask() {
 }
 
 /**
- * Fast Preflight Check with automatic HTTP/HTTPS failover & resilient timeout.
+ * Strips concatenated URLs, commas, and trailing garbage.
  */
-async function preflightDomainCheck(urlStr: string): Promise<{ ok: boolean; finalUrl: string; html?: string }> {
-  let cleanUrl = (urlStr || '').trim().replace(/[\s,].*$/, '');
-  if (!cleanUrl) return { ok: false, finalUrl: urlStr };
+export function sanitizeWebsiteUrl(raw: string): string {
+  if (!raw || typeof raw !== 'string') return '';
+  let clean = raw.trim();
+  if (clean.includes(',')) clean = clean.split(',')[0].trim();
+  if (clean.includes(';')) clean = clean.split(';')[0].trim();
+  if (clean.includes(' ')) clean = clean.split(' ')[0].trim();
+  clean = clean.replace(/['"]+/g, '').replace(/\/+$/, '');
+  return clean;
+}
+
+export function extractEmailsFromHtml(html: string): string[] {
+  if (!html) return [];
+  const matches = html.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
+  const excluded = /example\.com|test\.com|sentry|bootstrap|w3\.org|wp-content|placeholder|\.png|\.jpg|\.webp|schema\.org/i;
+  return Array.from(new Set(matches.map(m => m.toLowerCase().trim()).filter(m => !excluded.test(m))));
+}
+
+/**
+ * Fast Preflight Check with automatic HTTP/HTTPS failover & resilient 7s timeout.
+ */
+async function preflightDomainCheck(urlStr: string): Promise<{ ok: boolean; finalUrl: string; html?: string; discoveredEmails: string[] }> {
+  let cleanUrl = sanitizeWebsiteUrl(urlStr);
+  if (!cleanUrl) return { ok: false, finalUrl: urlStr, discoveredEmails: [] };
   if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
     cleanUrl = `https://${cleanUrl}`;
   }
 
   // 1. Try initial URL
   try {
-    const resp = await fastHttpClient.get(cleanUrl, { timeout: 6000 });
+    const resp = await fastHttpClient.get(cleanUrl, { timeout: 7000 });
     if (resp.status >= 200 && resp.status < 400) {
+      const html = typeof resp.data === 'string' ? resp.data : '';
       return {
         ok: true,
         finalUrl: resp.request?.res?.responseUrl || cleanUrl,
-        html: typeof resp.data === 'string' ? resp.data : ''
+        html,
+        discoveredEmails: extractEmailsFromHtml(html)
       };
     }
   } catch (_) {}
@@ -158,17 +185,19 @@ async function preflightDomainCheck(urlStr: string): Promise<{ ok: boolean; fina
     : cleanUrl.replace('https://', 'http://');
 
   try {
-    const resp = await fastHttpClient.get(alternateUrl, { timeout: 6000 });
+    const resp = await fastHttpClient.get(alternateUrl, { timeout: 7000 });
     if (resp.status >= 200 && resp.status < 400) {
+      const html = typeof resp.data === 'string' ? resp.data : '';
       return {
         ok: true,
         finalUrl: resp.request?.res?.responseUrl || alternateUrl,
-        html: typeof resp.data === 'string' ? resp.data : ''
+        html,
+        discoveredEmails: extractEmailsFromHtml(html)
       };
     }
   } catch (_) {}
 
-  return { ok: false, finalUrl: cleanUrl };
+  return { ok: false, finalUrl: cleanUrl, discoveredEmails: [] };
 }
 
 /**
@@ -180,7 +209,7 @@ function extractSingleContactLink(homepageHtml: string, baseUrlStr: string): str
     const $ = cheerio.load(homepageHtml);
     const baseUrl = new URL(baseUrlStr);
 
-    // 1. Check if homepage itself has an embedded contact form (must have textarea/message AND email)
+    // 1. Check if homepage itself has an embedded contact form
     let homepageHasContactForm = false;
     $('form').each((_i: number, f: any) => {
       const $f = $(f);
@@ -233,22 +262,24 @@ function extractSingleContactLink(homepageHtml: string, baseUrlStr: string): str
 async function tryFetchFormSubmit(
   contactUrl: string,
   pitch: { name: string; email: string; phone: string; message: string }
-): Promise<{ success: boolean; is404OrDead: boolean; isDynamicPage: boolean; notes: string }> {
+): Promise<{ success: boolean; is404OrDead: boolean; isDynamicPage: boolean; notes: string; discoveredEmails: string[] }> {
   try {
-    const resp = await fastHttpClient.get(contactUrl, { timeout: 4000 });
+    const resp = await fastHttpClient.get(contactUrl, { timeout: 5000 });
     if (resp.status >= 400) {
-      return { success: false, is404OrDead: true, isDynamicPage: false, notes: `HTTP ${resp.status}` };
+      return { success: false, is404OrDead: true, isDynamicPage: false, notes: `HTTP ${resp.status}`, discoveredEmails: [] };
     }
 
     const html = typeof resp.data === 'string' ? resp.data : '';
+    const emailsOnContactPage = extractEmailsFromHtml(html);
+
     if (!html) {
-      return { success: false, is404OrDead: false, isDynamicPage: false, notes: 'Empty response' };
+      return { success: false, is404OrDead: false, isDynamicPage: false, notes: 'Empty response', discoveredEmails: [] };
     }
 
     const $ = cheerio.load(html);
     let targetForm: any = null;
 
-    // 1. Locate form with strict contact signature (textarea/message + email, not search)
+    // 1. Locate form with strict contact signature
     $('form').each((_i: number, f: any) => {
       const $f = $(f);
       const hasTextarea = $f.find('textarea').length > 0 || $f.find('input[name*="message" i], input[name*="msg" i], input[name*="comment" i]').length > 0;
@@ -262,7 +293,7 @@ async function tryFetchFormSubmit(
       }
     });
 
-    // 2. Fallback: Form with at least textarea or message input, excluding search/login
+    // 2. Fallback: Form with at least textarea or message input
     if (!targetForm) {
       $('form').each((_i: number, f: any) => {
         const $f = $(f);
@@ -279,7 +310,7 @@ async function tryFetchFormSubmit(
 
     if (!targetForm) {
       const hasJsApp = html.includes('root') || html.includes('__next') || html.includes('lovable') || html.includes('elementor');
-      return { success: false, is404OrDead: false, isDynamicPage: hasJsApp, notes: 'No contact form element found on page' };
+      return { success: false, is404OrDead: false, isDynamicPage: hasJsApp, notes: 'No contact form element found on page', discoveredEmails: emailsOnContactPage };
     }
 
     const formEl: any = targetForm;
@@ -303,9 +334,30 @@ async function tryFetchFormSubmit(
       let val = $(elem).attr('value') || '';
       const nameLower = name.toLowerCase();
 
-      // STRICT RULE: Preserve all hidden tokens (CSRF, _wpcf7, nonces, form_id) untouched!
+      // Preserve all hidden tokens (CSRF, _wpcf7, nonces, form_id) untouched!
       if (type === 'hidden') {
         inputs.push({ name, value: val });
+        return;
+      }
+
+      // Honeypot Protection: Detect hidden anti-spam fields (WPForms, CF7, Gravity Forms, Elementor)
+      const style = ($(elem).attr('style') || '').toLowerCase();
+      const parentStyle = ($(elem).parent().attr('style') || '').toLowerCase();
+      const elemClass = ($(elem).attr('class') || '').toLowerCase();
+      const parentClass = ($(elem).parent().attr('class') || '').toLowerCase();
+      const id = ($(elem).attr('id') || '').toLowerCase();
+
+      const isHiddenViaCss = style.includes('display:none') || style.includes('display: none') || 
+                             style.includes('visibility:hidden') || style.includes('visibility: hidden') ||
+                             parentStyle.includes('display:none') || parentStyle.includes('display: none');
+      const isHoneypotName = /hp|honeypot|botcheck|antispam|extra_field|_wpcf7_honeypot|wpforms\[hp\]/i.test(nameLower) ||
+                             /hp|honeypot|botcheck/i.test(id) ||
+                             /honeypot|hp-field|gform_validation/i.test(elemClass) ||
+                             /honeypot|hp-field|gform_validation/i.test(parentClass);
+
+      if (isHiddenViaCss || isHoneypotName) {
+        // Leave completely blank to avoid tripping spam traps
+        inputs.push({ name, value: '' });
         return;
       }
 
@@ -325,7 +377,7 @@ async function tryFetchFormSubmit(
     });
 
     if (inputs.length === 0) {
-      return { success: false, is404OrDead: false, isDynamicPage: true, notes: 'Form contains no visible input fields' };
+      return { success: false, is404OrDead: false, isDynamicPage: true, notes: 'Form contains no visible input fields', discoveredEmails: emailsOnContactPage };
     }
 
     const bodyParams = new URLSearchParams();
@@ -341,18 +393,18 @@ async function tryFetchFormSubmit(
         'Referer': contactUrl,
         'Origin': domainOrigin
       },
-      timeout: 4500,
+      timeout: 6000,
       validateStatus: () => true
     });
 
     if (postResp.status >= 200 && postResp.status < 400) {
-      return { success: true, is404OrDead: false, isDynamicPage: false, notes: `Form POSTed to ${action} (Status ${postResp.status})` };
+      return { success: true, is404OrDead: false, isDynamicPage: false, notes: `Form POSTed to ${action} (Status ${postResp.status})`, discoveredEmails: emailsOnContactPage };
     } else {
-      return { success: false, is404OrDead: false, isDynamicPage: false, notes: `Form POST returned HTTP ${postResp.status}` };
+      return { success: false, is404OrDead: false, isDynamicPage: false, notes: `Form POST returned HTTP ${postResp.status}`, discoveredEmails: emailsOnContactPage };
     }
   } catch (err: any) {
     const is404 = err.response && err.response.status >= 400;
-    return { success: false, is404OrDead: Boolean(is404), isDynamicPage: false, notes: `Fetch error: ${err.message}` };
+    return { success: false, is404OrDead: Boolean(is404), isDynamicPage: false, notes: `Fetch error: ${err.message}`, discoveredEmails: [] };
   }
 }
 
@@ -375,7 +427,7 @@ async function tryBrowserFormSubmit(
       page.on('request', (req: any) => {
         try {
           const resourceType = req.resourceType();
-          if (['image', 'media'].includes(resourceType)) {
+          if (['image', 'media', 'font'].includes(resourceType)) {
             req.abort().catch(() => {});
           } else {
             req.continue().catch(() => {});
@@ -386,8 +438,8 @@ async function tryBrowserFormSubmit(
       });
     } catch (_) {}
 
-    await page.goto(contactUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
-    await new Promise(r => setTimeout(r, 800));
+    await page.goto(contactUrl, { waitUntil: 'domcontentloaded', timeout: 12000 });
+    await new Promise(r => setTimeout(r, 600));
 
     const filled = await page.evaluate((payload: any) => {
       const inputs = Array.from(document.querySelectorAll('input, textarea, select')) as HTMLElement[];
@@ -406,6 +458,15 @@ async function tryBrowserFormSubmit(
         const tag = el.tagName.toLowerCase();
 
         if (type === 'hidden' || type === 'submit' || type === 'button') return;
+
+        // Honeypot Protection: Detect hidden fields or anti-spam honeypot classes/names
+        const computed = window.getComputedStyle(el);
+        if (computed.display === 'none' || computed.visibility === 'hidden' || computed.opacity === '0' || el.offsetParent === null) {
+          return;
+        }
+        if (/hp|honeypot|botcheck|antispam|extra_field|_wpcf7_honeypot|wpforms\[hp\]/i.test(name) || /hp|honeypot|botcheck/i.test(id) || /honeypot|hp-field|gform_validation/i.test(el.className || '')) {
+          return;
+        }
 
         const isNameMatch = name.includes('name') || id.includes('name') || placeholder.includes('name') || name.includes('author');
         const isEmailMatch = type === 'email' || name.includes('email') || id.includes('email') || placeholder.includes('email') || name.includes('mail');
@@ -472,7 +533,7 @@ async function tryBrowserFormSubmit(
       return { success: false, notes: 'Submit button not located' };
     }
 
-    await new Promise(r => setTimeout(r, 1200));
+    await new Promise(r => setTimeout(r, 1000));
     return { success: true, notes: 'Browser submit completed and dispatched.' };
 
   } catch (err: any) {
@@ -486,7 +547,8 @@ async function tryBrowserFormSubmit(
 }
 
 /**
- * Main function to submit a proposal through the target website's contact form.
+ * Main function to submit a proposal through the target website's contact form,
+ * with ZERO-FAILURE cascade to Multi-SMTP Pooler when forms are inaccessible or protected.
  */
 export async function submitContactForm(
   lead: WebformLeadTarget,
@@ -499,23 +561,46 @@ export async function submitContactForm(
     methodUsed: 'none'
   };
 
-  const website = (lead.website || '').trim();
-  if (!website || !website.startsWith('http')) {
-    result.notes = 'Skip: No valid website URL provided.';
-    return result;
-  }
+  const rawWebsite = (lead.website || '').trim();
+  const website = sanitizeWebsiteUrl(rawWebsite);
 
-  // Filter out non-form platforms
-  const isExcluded = /jiji\.ng|bing\.com|google\.com|facebook\.com|instagram\.com|twitter\.com|x\.com|tiktok\.com|youtube\.com|linkedin\.com|wa\.me|t\.me/i.test(website);
-  if (isExcluded) {
-    result.notes = 'Skip: Marketplace/Social/Aggregator URL does not host standalone contact forms.';
+  // If website is an aggregator, directory, or invalid, check if we can contact via verified email
+  if (!website || !website.startsWith('http') || EXCLUDED_AGGREGATORS.test(website)) {
+    if (lead.email && lead.email.includes('@')) {
+      const emailRes = await multiSmtpPooler.dispatch({
+        ...lead,
+        email: lead.email,
+        name: lead.name || lead.business_name
+      });
+      if (emailRes.success) {
+        result.success = true;
+        result.methodUsed = 'smtp_pool_cascade';
+        result.notes = `Delivered directly to verified email via ${emailRes.provider} (MsgId: ${emailRes.messageId})`;
+        return result;
+      }
+    }
+    result.notes = 'Skip: Aggregator / Social / Directory URL without contact form.';
     return result;
   }
 
   // Preflight check domain
   const preflight = await preflightDomainCheck(website);
   if (!preflight.ok) {
-    result.notes = 'Skip: Website domain DNS unresolvable or server unresponsive (<= 6s).';
+    // If domain preflight fails (e.g. DNS or offline site), but lead has verified email, fallback to SMTP pool!
+    if (lead.email && lead.email.includes('@')) {
+      const emailRes = await multiSmtpPooler.dispatch({
+        ...lead,
+        email: lead.email,
+        name: lead.name || lead.business_name
+      });
+      if (emailRes.success) {
+        result.success = true;
+        result.methodUsed = 'smtp_pool_cascade';
+        result.notes = `Website offline -> proposal delivered directly to verified email via ${emailRes.provider} (MsgId: ${emailRes.messageId})`;
+        return result;
+      }
+    }
+    result.notes = 'Skip: Website domain DNS unresolvable or server unresponsive (<= 7s).';
     return result;
   }
 
@@ -523,23 +608,12 @@ export async function submitContactForm(
   const slug = (lead.lead_id || cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-')).slice(0, 25);
   const previewUrl = `https://www.bethelmindanalytics.com/preview/${slug}`;
 
-  const messageBody = `Good day Team at ${cleanName},
-
-My name is Tosin from Bethelmind Analytics Lagos Desk. We recently reviewed commercial websites in ${lead.area || 'Nigeria'} and prepared a custom 24/7 AI WhatsApp Sales & Quoting prototype for ${cleanName}.
-
-Key Features Pre-Installed:
-- 24/7 AI WhatsApp Assistant (< 3s response time)
-- Custom Quoting Engine & Instant PDF Invoicing
-- Automated Paystack & Moniepoint Bank Transfer Verification
-
-You can test-drive your pre-built prototype live on your phone here:
+  const messageBody = `Good day Team ${cleanName},
+We noticed after-hours clients often wait hours for quotes. We pre-built a 24/7 AI WhatsApp quoting assistant custom for ${cleanName}.
+Test drive live prototype (₦0 Upfront):
 ${previewUrl}
-
-Direct WhatsApp Desk: +234 802 279 1227
-Email: tosin@bethelmindanalytics.com
-
-Best regards,
-${signature}`;
+WhatsApp Closer Desk: wa.me/2348022791227 (0802 279 1227)
+— Bethelmind Analytics Lagos Desk`;
 
   const pitchPayload = {
     name: signature,
@@ -559,16 +633,42 @@ ${signature}`;
     return result;
   }
 
-  // 2. Resilient Browser Fallback (whenever fetch failed or form requires dynamic JS/CSRF)
-  const browserTarget = fetchResult.is404OrDead ? preflight.finalUrl : targetContactUrl;
-  const browserResult = await tryBrowserFormSubmit(browserTarget, pitchPayload);
-  if (browserResult.success) {
-    result.success = true;
-    result.notes = `Delivered via Browser Automation on ${browserTarget}: ${browserResult.notes}`;
-    result.methodUsed = 'browser';
-    return result;
+  // 2. Resilient Browser Fallback (if form requires dynamic JS/CSRF)
+  if (fetchResult.isDynamicPage) {
+    const browserTarget = fetchResult.is404OrDead ? preflight.finalUrl : targetContactUrl;
+    const browserResult = await tryBrowserFormSubmit(browserTarget, pitchPayload);
+    if (browserResult.success) {
+      result.success = true;
+      result.notes = `Delivered via Browser Automation on ${browserTarget}: ${browserResult.notes}`;
+      result.methodUsed = 'browser';
+      return result;
+    }
   }
 
-  result.notes = `Fetch: ${fetchResult.notes} | Browser: ${browserResult.notes}`;
+  // 3. ZERO-FAILURE CASCADE: Form is protected, blocked by WAF/403, or lacks form inputs
+  // Deliver proposal directly to business email (either scraped from website or from lead record)
+  const candidateEmails = [
+    lead.email,
+    ...(fetchResult.discoveredEmails || []),
+    ...(preflight.discoveredEmails || [])
+  ].filter(e => e && typeof e === 'string' && e.includes('@'));
+
+  if (candidateEmails.length > 0) {
+    const targetEmail = candidateEmails[0]!;
+    const emailRes = await multiSmtpPooler.dispatch({
+      ...lead,
+      email: targetEmail,
+      name: cleanName
+    });
+
+    if (emailRes.success) {
+      result.success = true;
+      result.methodUsed = 'smtp_pool_cascade';
+      result.notes = `Zero-Failure Delivery: Form unavailable/protected -> proposal delivered directly to business email (${targetEmail}) via ${emailRes.provider} (MsgId: ${emailRes.messageId})`;
+      return result;
+    }
+  }
+
+  result.notes = `Fetch: ${fetchResult.notes}`;
   return result;
 }

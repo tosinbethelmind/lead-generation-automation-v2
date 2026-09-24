@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { Calculator, Loader2, X, CheckCircle2, Zap, ArrowRight, Share2, Copy, MessageSquare, Sparkles, ShieldCheck, Check } from 'lucide-react';
 import { ORDERED_SECTORS, getSectorById, type SectorTool } from '@/config/sectors';
 import { buildWhatsAppLink, paymentConfig } from '@/config/payment';
@@ -922,12 +923,69 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
         ))}
       </div>
 
+      {/* Standalone Solar Engine Banner */}
+      {selectedIndustry === 'solar' && (
+        <div
+          style={{
+            background: 'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(217,119,6,0.06) 100%)',
+            border: '1px solid rgba(245,158,11,0.35)',
+            borderRadius: 18,
+            padding: '20px 24px',
+            marginBottom: 28,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 16,
+            boxShadow: '0 8px 30px rgba(245,158,11,0.1)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: 900, fontSize: '1.25rem', flexShrink: 0 }}>
+              ⚡
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#fbbf24' }}>
+                  Complete Standalone Solar WebApp Available
+                </h3>
+                <span style={{ fontSize: '0.65rem', fontWeight: 800, padding: '2px 7px', borderRadius: 6, background: '#f59e0b25', color: '#fbbf24', border: '1px solid #f59e0b50' }}>
+                  SOVEREIGN ENGINE
+                </span>
+              </div>
+              <p style={{ margin: '3px 0 0', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                Full 3-tier proposal builder, load sizing, dynamic inverter & lithium battery calculator, PDF generation & WhatsApp BOQ.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/solar"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px 20px',
+              borderRadius: 12,
+              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              color: '#000',
+              fontWeight: 800,
+              fontSize: '0.88rem',
+              textDecoration: 'none',
+              boxShadow: '0 4px 16px rgba(245,158,11,0.3)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Launch Dedicated Solar WebApp <ArrowRight style={{ width: 16, height: 16 }} />
+          </Link>
+        </div>
+      )}
+
       {/* Tool Cards */}
       <div
         id={`sector-panel-${selectedIndustry}`}
         role="tabpanel"
         aria-labelledby={`sector-tab-${selectedIndustry}`}
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 20 }}
       >
         {profile.tools.map((tool) => (
           <div

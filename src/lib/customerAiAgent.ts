@@ -119,26 +119,43 @@ function getAgentSessionsPath(): string {
 
 const WEBAPP_KNOWLEDGE_BASE = `
 SYSTEM ARCHITECTURE & CAPABILITIES KNOWLEDGE GRAPH:
-You possess complete human-level understanding of all platform features, landing pages, claiming options, pricing, and sector tools. This knowledge base is ALWAYS current — updated with every website change.
+You possess complete human-level understanding of all platform features, landing pages, claiming options, pricing, and the 5 Monetization Engines.
 
-1. SCRAPED LEAD WEBSITE & PORTAL CLAIMING WORKFLOW:
-   - What happens when a business lead receives a preview link: We pre-generated a complete, custom, high-converting AI website and sector tools specifically for their business using their Google Business data (name, category, location, rating, services).
-   - The AI Concierge greets each lead by their business name, mentions their Google rating & location, and immediately explains the value of activating.
-   - Claiming Options:
-     * Option A (Has Existing Website): They claim by adding 1 line of code to their WordPress, Wix, Squarespace, or custom site in 60 seconds: <script src="https://www.bethelmindanalytics.com/api/widget/their-lead-id.js"></script>
-     * Option B (No Website): We host their complete portal on a custom subdomain (e.g. businessname.bethelmindanalytics.com) or map their own domain (e.g. www.businessname.com) with free SSL auto-provisioning.
-   - Pricing & Claim Fees:
-     * One-time setup fee: ₦185,000 NGN (full claim — own domain + complete system).
-     * 50% Deposit Option: ₦92,500 NGN to start onboarding immediately today.
-     * Monthly Subscription (after first 30 days): ₦35,000/month.
-   - Bank Payment Details (Moniepoint MFB / OPay):
-     * Bank: Moniepoint Microfinance Bank / OPay Digital Services
-     * Account Number: 7034297995
-     * Account Name: Oyelakin Tosin Matthew (Bethelmind Analytics)
-     * WhatsApp Receipt Verification: Send transfer receipt to 2348022791227 for 1-minute activation.
+THE 5 CORE COMMERCIAL MONETIZATION ENGINES (2026):
+1. ENGINE 1: GOOGLE BUSINESS PROFILE (GMB) SECURITY RESCUE (₦45,000 – ₦65,000 NGN)
+   - Route: /gmb/[slug]
+   - Solves: Unclaimed Google Maps listings exposed to competitor phone number hijacks, review erasure, or 3-month NIPOST postcard delays.
+   - Deliverables: Instant Phone/SMS OTP primary ownership verification, 1-tap WhatsApp button on Maps, anti-hijack edit lock, local 3-pack SEO optimization, and printable review QR flyer.
+   - Fee: ₦45,000 one-time (or ₦65,000 for large profiles >50 reviews).
 
-2. AI CONCIERGE & NIGERIAN ACCENT VOICE NOTE AI SUITE:
+2. ENGINE 2: COMMERCIAL SOLAR & FACILITY QUOTE MULTI-ROUTER (₦70,000 – ₦90,000 NGN Yield)
+   - Route: /tools/solar-quote-pro
+   - Solves: Heavy energy consumers (hospitals, hotels, factories, cold storage) spending >₦1.5M/mo on NEPA/Diesel.
+   - Deliverables: Free 2-minute inverter/battery load sizing calculation & automated bankable PDF project proposal.
+   - Monetization: Routes the verified high-budget quote to 2 non-competing vetted Tier-1 EPC contractors simultaneously (₦35k–₦45k x 2).
+
+3. ENGINE 3: EXPIRED .COM.NG DOMAIN REGISTRY & SOVEREIGN CUSTODY (₦150,000 – ₦350,000 NGN)
+   - Route: /domains/[domain]
+   - Solves: Protects dropped high-authority Nigerian commercial domains (acquired for ₦1,800) and preserves organic Google search rankings.
+   - Deliverables: 1-click ownership reinstatement transfer (EPP code) or automated 301 traffic forwarding to active funnels. Supports dual registrar automation (QServers + Whogohost/GO54).
+
+4. ENGINE 4: VERIFIED B2B SECTOR CONTACT BUNDLES (₦15,000 – ₦35,000 NGN)
+   - Route: /store (Selar Digital Checkout)
+   - Solves: Provides sales teams, brokers, and solar installers with 100% verified decision-maker phone numbers in Lekki, VI, Ikeja, and ASPAMDA Trade Fair.
+
+5. ENGINE 5: INTERACTIVE CLIENT PROTOTYPES & 48-HOUR DFY PORTALS (₦75,000 Dep / ₦150,000 NGN)
+   - Route: /preview/[id]
+   - Solves: Commercial importers, auto parts dealers, and logistics firms needing automated 24/7 client booking and online payment verification.
+   - Options: ₦150k turnkey build (₦75k 50% milestone deposit) OR ₦35k / ₦65k (1-Line Embed on existing website).
+
+PAYMENT & VERIFIED SETTLEMENT DESTINATION:
+- Bank Name: OPay Digital Services
+- Account Number: 7034297995
+- Account Name: Oyelakin Tosin Matthew (Bethelmind Analytics Lagos)
+- Closer Desk & WhatsApp Verification: 0802 279 1227 (+234 802 279 1227)
+
    - Full 24/7 WhatsApp Voice Note Sales Specialist: Our AI is NOT merely a voice calculator — it is a complete, human-like Nigerian Accent Voice Sales Closer that:
+
      * Greets prospects in authentic, warm Nigerian English on WhatsApp.
      * Explains custom offers, product features, and sector solutions in audio voice notes.
      * Speaks real-time price quotes, BOQ cost estimates, and ROI calculations to buyers.
@@ -235,7 +252,7 @@ HOW YOU RESOLVE THINGS:
   custom_faq: [
     {
       question: 'How do I claim my pre-generated website & AI tools?',
-      answer: 'If you have a site, embed our 1-line script tag in 60s. If not, we host your full site on custom domain! Transfer ₦92,500 deposit to Moniepoint 7034297995 to activate.',
+      answer: 'If you have a site, embed our 1-line script tag in 60s. If not, we host your full site on custom domain! Transfer ₦75,000 (50% commitment deposit) to OPay 7034297995 to activate.',
     },
     {
       question: 'How fast can a 5kVA Solar System be installed?',
@@ -748,14 +765,24 @@ export function extractAndSyncConversationMemory(
   const mem = session.context_memory;
   const lower = userMsg.toLowerCase();
 
-  // 1. Scraped Lead Preload
+  // 1. Scraped Lead & Agent-Reach Preload
   if (leadData) {
     if (leadData.name && !mem.business_name) mem.business_name = leadData.name;
     if (leadData.category && !mem.business_type) mem.business_type = leadData.category;
     if ((leadData.area || leadData.city || leadData.address) && !mem.location) {
       mem.location = leadData.area || leadData.city || leadData.address;
     }
+    if (leadData.catalog_items && Array.isArray(leadData.catalog_items) && leadData.catalog_items.length > 0) {
+      mem.appliances_or_specs = Array.from(new Set([...(mem.appliances_or_specs || []), ...leadData.catalog_items]));
+    }
+    if (leadData.customer_pain_points && Array.isArray(leadData.customer_pain_points)) {
+      mem.key_requirements = Array.from(new Set([...(mem.key_requirements || []), ...leadData.customer_pain_points]));
+    }
+    if (leadData.pitch_hook && !mem.custom_notes?.some(n => n.startsWith('Pitch Hook:'))) {
+      mem.custom_notes = [...(mem.custom_notes || []), `Pitch Hook: ${leadData.pitch_hook}`];
+    }
   }
+
 
   // 2. Customer Name Extraction
   extractCustomerInfo(userMsg, session);
@@ -819,8 +846,8 @@ export function extractAndSyncConversationMemory(
   }
 
   // 6. Discussed Budget & Plan Intent
-  if (lower.includes('50%') || lower.includes('deposit') || lower.includes('92,500') || lower.includes('92500')) {
-    mem.discussed_budget_or_plan = '50% Initial Deposit (₦92,500)';
+  if (lower.includes('50%') || lower.includes('deposit') || lower.includes('75,000') || lower.includes('75000') || lower.includes('92,500')) {
+    mem.discussed_budget_or_plan = '50% Initial Deposit (₦75,000)';
   } else if (lower.includes('135,000') || lower.includes('135k') || lower.includes('embed bundle')) {
     mem.discussed_budget_or_plan = 'Starter 1-Time Embed Bundle (₦135,000)';
   } else if (lower.includes('325,000') || lower.includes('325k') || lower.includes('outright') || lower.includes('full source')) {
@@ -991,11 +1018,11 @@ Latest Customer Query: "${userMsg}"`,
 
   // 5. 50% Initial Deposit & Milestone Payment Fallback
   if (lower.includes('50%') || lower.includes('deposit') || lower.includes('part payment') || lower.includes('installment')) {
-    return `${nameGreeting}⚡ Yes, absolutely! You can start onboarding immediately today with our **50% initial commitment deposit (₦92,500)**${specsSnippet}${locSnippet}!\n\n• Bank: **${payment.bankName}**\n• Account Number: **${payment.accountNumber}**\n• Account Name: **${payment.accountName}**\n• Balance: ₦92,500 due upon final deployment and 24h handover verification.\n\nOnce transferred, send your receipt screenshot to our WhatsApp (+${payment.whatsappNumber}) for instant activation!`;
+    return `${nameGreeting}⚡ Yes, absolutely! You can start onboarding immediately today with our **50% initial commitment deposit (₦75,000)**${specsSnippet}${locSnippet}!\n\n• Bank: **${payment.bankName}**\n• Account Number: **${payment.accountNumber}**\n• Account Name: **${payment.accountName}**\n• Balance: ₦75,000 due upon final deployment and 48h handover verification.\n\nOnce transferred, send your receipt screenshot to our WhatsApp (+${payment.whatsappNumber}) for instant activation!`;
   }
 
   if (lower.includes('bank') || lower.includes('account') || lower.includes('transfer') || lower.includes('pay') || lower.includes('payment')) {
-    return `${nameGreeting}💳 Here are the official payment details to activate your system today${locSnippet}:\n\n• Bank: ${payment.bankName}\n• Account Number: ${payment.accountNumber}\n• Account Name: ${payment.accountName}\n• Setup Fee: ₦185,000 (or ₦92,500 50% deposit to begin immediately)\n\nOnce transferred, send your receipt screenshot to our WhatsApp (+${payment.whatsappNumber}) for instant activation!`;
+    return `${nameGreeting}💳 Here are the official payment details to activate your system today${locSnippet}:\n\n• Bank: ${payment.bankName}\n• Account Number: ${payment.accountNumber}\n• Account Name: ${payment.accountName}\n• Setup Fee: ₦150,000 (or ₦75,000 50% deposit to begin immediately)\n\nOnce transferred, send your receipt screenshot to our WhatsApp (+${payment.whatsappNumber}) for instant activation!`;
   }
 
   if (lower.includes('price') || lower.includes('cost') || lower.includes('how much') || lower.includes('plan') || lower.includes('package')) {

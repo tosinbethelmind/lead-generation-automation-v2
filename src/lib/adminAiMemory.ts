@@ -74,14 +74,18 @@ const DEFAULT_MEMORY: AdminAiMemoryStore = {
   sprint_start_date: '2026-08-20',
   sprint_end_date: '2026-08-26',
   custom_preferences: {
-    outreach_scope: '10K Lagos Engine ONLY (Exclude SolarQuotePro)',
+    outreach_scope: 'Heavy Nigeria-Wide Multi-Sector Engine (Lagos, Abuja, PH, Ibadan, Kano, Aba, Onitsha, Enugu, Benin)',
+    scraping_strategy: 'Unified 10,000 Leads/Day Multi-Engine Harvester (Jiji Nuxt, BusinessList, Finelib, VConnect, CAC, SERP Dorks, Social Multi-Channel, OSM)',
     sms_gateway: 'Tailscale Android SMS Gateway (10.132.90.251:8082)',
-    safe_ramp_schedule: '500 verified Lagos leads/day (Carrier SMS + B2B Email)',
-    active_sprint: 'Thursday, August 20, 2026 to Wednesday, August 26, 2026',
+    safe_ramp_schedule: '10,000 verified Nigerian commercial leads/day staged & synced to Supabase Cloud',
+    active_sprint: 'Continuous 24/7 Heavy Nigeria-Wide Harvester',
     core_offer: 'Interactive B2B prototype with WhatsApp ordering & Paystack 48h instant setup claim'
   },
   learned_facts: [
-    'High-volume outreach campaign launches: Thursday, August 20, 2026 (Runs through August 26, 2026)',
+    'PERMANENT MEMORY: Unified Heavy Nigeria-Wide Scraping Target is 10,000 genuine commercial leads/day across all 36 States + FCT.',
+    'COMBINED STRATEGY: Orchestrates Jiji Nuxt/REST API, BusinessList, Finelib, VConnect, CAC Registry, DDG/Google SERP Dorks, OpenStreetMap, Social Multi-Channel, and Unified Python Cluster.',
+    'COVERAGE: Covers Lagos (all LGAs), Abuja FCT, Port Harcourt, Ibadan, Kano, Aba, Onitsha, Enugu, Benin City, Kaduna, Warri, Calabar, Uyo, etc.',
+    'ZERO-REPETITION: Never require the user to repeat the 10,000 leads/day heavy scraping instruction.',
     'User phone number is 2348022791227 (08022791227)',
     'User email is tosin@bethelmindanalytics.com',
     'Outreach routes strictly through Tailscale Android SMS Gateway at http://10.132.90.251:8082 (NO Termii)',

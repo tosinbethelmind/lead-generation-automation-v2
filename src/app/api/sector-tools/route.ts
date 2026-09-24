@@ -64,6 +64,7 @@ import {
   calculateEstateVisitorPassCapacity,
   calculateB2bProformaInvoice,
 } from '@/lib/sectorModules';
+import { TEN_SECTOR_MONETIZATION_TOOLS } from '@/lib/monetization/tenSectorMonetizationTools';
 import { SECTOR_PROFILES } from '@/config/sectors';
 
 export const dynamic = 'force-dynamic';
@@ -87,7 +88,7 @@ export async function GET() {
   return NextResponse.json(
     {
       success: true,
-      service: 'Bethelmind Analytics / ApexReach Sector Engines API',
+      service: 'Bethelmind Analytics Sector Engines API',
       version: '2026.1',
       totalSectors: Object.keys(SECTOR_PROFILES).length,
       sectors: SECTOR_PROFILES,
@@ -156,7 +157,7 @@ export async function POST(req: NextRequest) {
 
     if (action === 'cac_name_check') {
       const { proposedName } = body;
-      const result = checkCacNameAvailability(proposedName || 'APEXREACH TECHNOLOGIES');
+      const result = checkCacNameAvailability(proposedName || 'BETHELMIND ANALYTICS LAGOS LTD');
       return NextResponse.json({ success: true, result });
     }
 
@@ -164,7 +165,7 @@ export async function POST(req: NextRequest) {
       const { contractType, partyA, partyB, termsValueNgn } = body;
       const result = generateLegalContractTemplate(
         contractType || 'memart',
-        partyA || 'ApexReach Client',
+        partyA || 'Bethelmind Analytics Client',
         partyB || 'Partner Enterprise',
         Number(termsValueNgn || 500000)
       );
@@ -775,6 +776,27 @@ export async function POST(req: NextRequest) {
         Number(deliveryOrReimbursableNgn || 120000)
       );
       return NextResponse.json({ success: true, result });
+    }
+
+    // ── 10 High-Conversion Sector Monetization Tools Handler ──────────────────
+    if (action === 'list_ten_tools') {
+      return NextResponse.json({ success: true, tools: TEN_SECTOR_MONETIZATION_TOOLS });
+    }
+
+    if (action && TEN_SECTOR_MONETIZATION_TOOLS[action]) {
+      const tool = TEN_SECTOR_MONETIZATION_TOOLS[action];
+      const result = tool.sampleCalculation(body);
+      const whatsappPitchUrl = tool.buildWhatsAppPitchUrl(body.businessName || 'Valued Business', body.area || 'Lagos');
+      return NextResponse.json({ 
+        success: true, 
+        toolId: tool.id,
+        toolName: tool.name,
+        targetAudience: tool.targetAudience,
+        painPoint: tool.painPoint,
+        monetizationPitch: tool.monetizationPitch,
+        result,
+        whatsappPitchUrl
+      });
     }
 
     return NextResponse.json({ success: false, error: 'Unknown action parameter' }, { status: 400 });

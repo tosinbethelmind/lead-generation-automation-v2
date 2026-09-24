@@ -36,7 +36,10 @@ export default function SelfHealingDiagnosticsCard() {
 
   useEffect(() => {
     fetchSelfHealingStatus();
-    const interval = setInterval(fetchSelfHealingStatus, 5000);
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      fetchSelfHealingStatus();
+    }, 20000);
     return () => clearInterval(interval);
   }, []);
 

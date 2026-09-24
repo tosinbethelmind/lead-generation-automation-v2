@@ -4,7 +4,7 @@
  * Runs on Port 3009 with Live Web UI and Pairing Code Generator
  */
 
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, Browsers } = require('@whiskeysockets/baileys');
 const qrcodeTerminal = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const pino = require('pino');
@@ -26,6 +26,39 @@ let connectionStatus = "disconnected";
 let qrCodeBase64 = "";
 let qrCodeRaw = "";
 let lastPairingCode = "";
+const processedMsgIds = new Set();
+
+function extractMessageText(msg) {
+  if (!msg || !msg.message) return '';
+  let m = msg.message;
+  if (m.ephemeralMessage?.message) m = m.ephemeralMessage.message;
+  if (m.viewOnceMessage?.message) m = m.viewOnceMessage.message;
+  if (m.viewOnceMessageV2?.message) m = m.viewOnceMessageV2.message;
+  if (m.documentWithCaptionMessage?.message) m = m.documentWithCaptionMessage.message;
+
+  if (m.conversation) return m.conversation;
+  if (m.extendedTextMessage?.text) return m.extendedTextMessage.text;
+  if (m.buttonsResponseMessage?.selectedButtonId) return m.buttonsResponseMessage.selectedButtonId;
+  if (m.buttonsResponseMessage?.selectedDisplayText) return m.buttonsResponseMessage.selectedDisplayText;
+  if (m.templateButtonReplyMessage?.selectedId) return m.templateButtonReplyMessage.selectedId;
+  if (m.templateButtonReplyMessage?.selectedDisplayText) return m.templateButtonReplyMessage.selectedDisplayText;
+  if (m.interactiveResponseMessage?.nativeFlowResponseMessage?.paramsJson) {
+    try {
+      const parsed = JSON.parse(m.interactiveResponseMessage.nativeFlowResponseMessage.paramsJson);
+      return parsed.id || parsed.title || JSON.stringify(parsed);
+    } catch (_) {}
+  }
+  if (m.interactiveResponseMessage?.body?.text) return m.interactiveResponseMessage.body.text;
+  if (m.listResponseMessage?.singleSelectReply?.selectedRowId) return m.listResponseMessage.singleSelectReply.selectedRowId;
+  if (m.listResponseMessage?.title) return m.listResponseMessage.title;
+  if (m.imageMessage?.caption) return m.imageMessage.caption;
+  if (m.videoMessage?.caption) return m.videoMessage.caption;
+  if (m.documentMessage?.caption) return m.documentMessage.caption;
+  if (m.audioMessage) return '[Voice Note Received]';
+  if (m.locationMessage) return `[Location Shared: ${m.locationMessage.name || m.locationMessage.address || 'GPS'}]`;
+  if (m.contactMessage?.vcard) return `[Contact Shared: ${m.contactMessage.displayName || 'Contact'}]`;
+  return '';
+}
 
 function syncDirSync(src, dest) {
   try {
@@ -50,11 +83,17 @@ async function connectToWhatsApp() {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
   }
 
-  // Self-Healing Session Solidification: Auto-restore if creds missing
+  // Self-Healing Session Solidification: Auto-restore ONLY if backup creds are valid and registered
   if (!fs.existsSync(path.join(AUTH_DIR, 'creds.json'))) {
-    if (fs.existsSync(path.join(BACKUP_DIR, 'creds.json'))) {
-      console.log('🔄 [Baileys Line 2] Restoring authenticated session from solidified backup...');
-      syncDirSync(BACKUP_DIR, AUTH_DIR);
+    const backupCreds = path.join(BACKUP_DIR, 'creds.json');
+    if (fs.existsSync(backupCreds)) {
+      try {
+        const c = JSON.parse(fs.readFileSync(backupCreds, 'utf8'));
+        if (c && c.registered !== false && c.me?.id) {
+          console.log('🔄 [Baileys Line 2] Restoring authenticated session from solidified backup...');
+          syncDirSync(BACKUP_DIR, AUTH_DIR);
+        }
+      } catch (_) {}
     }
   }
 
@@ -73,12 +112,13 @@ async function connectToWhatsApp() {
       version,
       logger: pino({ level: 'silent' }),
       auth: state,
+      syncFullHistory: false,
+      markOnlineOnConnect: false,
       printQRInTerminal: true,
-      browser: ['Bethelmind Line 2 Desk', 'Safari', '17.4'],
-      keepAliveIntervalMs: 25000,
+      browser: Browsers.windows('Desktop'),
+      keepAliveIntervalMs: 30000,
       connectTimeoutMs: 60000,
-      defaultQueryTimeoutMs: undefined,
-      markOnlineOnConnect: true
+      defaultQueryTimeoutMs: 60000
     });
 
     sock.ev.on('connection.update', async (update) => {
@@ -114,19 +154,22 @@ async function connectToWhatsApp() {
         qrCodeBase64 = "";
         qrCodeRaw = "";
         const statusCode = (lastDisconnect?.error)?.output?.statusCode;
-        const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
-        console.log(`WhatsApp Line 2 connection closed (Code: ${statusCode}). Reconnecting: ${shouldReconnect}`);
+        const isFatal = statusCode === DisconnectReason.loggedOut || statusCode === 401 || statusCode === 403;
+        console.log(`WhatsApp Line 2 connection closed (Code: ${statusCode}). Fatal logout: ${isFatal}`);
         
-        if (shouldReconnect) {
-          setTimeout(connectToWhatsApp, 2500);
-        } else {
-          console.log('⚠️ WhatsApp Line 2 logged out (401). Purging stale auth directories for clean pairing...');
+        if (isFatal) {
+          console.log('⚠️ WhatsApp Line 2 session unlinked/logged out (Code ' + statusCode + '). Purging dead auth files...');
           try {
             if (fs.existsSync(AUTH_DIR)) fs.rmSync(AUTH_DIR, { recursive: true, force: true });
             if (fs.existsSync(BACKUP_DIR)) fs.rmSync(BACKUP_DIR, { recursive: true, force: true });
+            fs.mkdirSync(AUTH_DIR, { recursive: true });
           } catch (_) {}
-          setTimeout(connectToWhatsApp, 2000);
+          // Stop reconnecting on fatal unlinking
+          return;
         }
+
+        // Temporary network drop: wait 5 seconds before reconnecting
+        setTimeout(connectToWhatsApp, 5000);
       }
     });
 
@@ -136,9 +179,187 @@ async function connectToWhatsApp() {
         syncDirSync(AUTH_DIR, BACKUP_DIR);
       }
     });
+
+    // ── WhatsApp AI Auto-Reply Listener (Line 2) ──────────────────────────────
+    sock.ev.on('messages.upsert', async (m) => {
+      try {
+        if (m.type !== 'notify' && m.type !== 'append') return;
+        for (const msg of m.messages) {
+          if (!msg.message || msg.key.fromMe) continue; // Ignore own messages
+          if (msg.key.id && processedMsgIds.has(msg.key.id)) continue;
+          if (msg.key.id) {
+            processedMsgIds.add(msg.key.id);
+            if (processedMsgIds.size > 2000) {
+              const firstKey = processedMsgIds.values().next().value;
+              processedMsgIds.delete(firstKey);
+            }
+          }
+
+          const senderJid = msg.key.remoteJid;
+          if (!senderJid || senderJid === 'status@broadcast' || senderJid.endsWith('@broadcast') || senderJid.endsWith('@g.us')) continue; // Ignore statuses and groups
+
+          const textMessage = extractMessageText(msg);
+          if (!textMessage.trim()) continue;
+
+          console.log(`\n📩 [Line 2 WhatsApp Message Received] From ${senderJid}: "${textMessage}"`);
+
+          await executeCloserReply(senderJid, textMessage, msg);
+        }
+      } catch (err) {
+        console.error('[WhatsApp Line 2 AutoReply Error]:', err.message);
+      }
+    });
   } catch (err) {
     console.error('Failed to initialize Line 2 socket:', err.message);
     setTimeout(connectToWhatsApp, 5000);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚡ AUTONOMOUS NIGERIAN AI CLOSER & INBOUND CONVERSION (Line 2)
+// ─────────────────────────────────────────────────────────────────────────────
+async function executeCloserReply(targetRecipient, incomingText = '', rawMsg = null) {
+  let targetJid = '';
+  let cleanPhone = '';
+
+  if (typeof targetRecipient === 'string' && targetRecipient.includes('@')) {
+    targetJid = targetRecipient;
+    if (targetRecipient.endsWith('@s.whatsapp.net')) {
+      cleanPhone = targetRecipient.replace('@s.whatsapp.net', '');
+    }
+  } else {
+    cleanPhone = String(targetRecipient || '').replace(/\D/g, '');
+    if (cleanPhone.startsWith('0') && cleanPhone.length === 11) {
+      cleanPhone = '234' + cleanPhone.slice(1);
+    } else if (!cleanPhone.startsWith('234') && cleanPhone.length === 10) {
+      cleanPhone = '234' + cleanPhone;
+    }
+    targetJid = `${cleanPhone}@s.whatsapp.net`;
+  }
+
+  // Check participant for phone number if target is LID or Group
+  if (rawMsg?.key?.participant && rawMsg.key.participant.endsWith('@s.whatsapp.net')) {
+    cleanPhone = rawMsg.key.participant.replace('@s.whatsapp.net', '');
+  }
+
+  let replyText = '';
+  let intent = 'GENERAL_INQUIRY';
+  let directPaymentEligible = false;
+  let customerName = cleanPhone ? `Business Owner (+${cleanPhone})` : 'Valued Business Owner';
+  let customerArea = 'Nigeria';
+  let customerCategory = 'Commercial Business';
+  const vercelBase = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.bethelmindanalytics.com';
+  let customerPreviewUrl = `${vercelBase}/preview/${cleanPhone || 'demo'}`;
+
+  // 1. Resolve Lead Identity from Local DB
+  try {
+    const leadsDbPath = path.join(__dirname, '../local_db/leads_db.json');
+    if (fs.existsSync(leadsDbPath)) {
+      const rawLeads = JSON.parse(fs.readFileSync(leadsDbPath, 'utf8'));
+      const leadsList = Array.isArray(rawLeads) ? rawLeads : Object.values(rawLeads);
+
+      let matched = null;
+
+      if (incomingText) {
+        const linkMatch = incomingText.match(/preview\/([a-zA-Z0-9_-]+)/i);
+        if (linkMatch) {
+          const targetSlug = linkMatch[1];
+          matched = leadsList.find(l =>
+            (l.id && l.id === targetSlug) ||
+            (l.lead_id && l.lead_id === targetSlug) ||
+            (l.slug && l.slug === targetSlug)
+          );
+          if (matched) {
+            customerPreviewUrl = `${vercelBase}/preview/${targetSlug}`;
+          } else {
+            customerPreviewUrl = linkMatch[0].startsWith('http') ? linkMatch[0] : `${vercelBase}/preview/${targetSlug}`;
+          }
+        }
+      }
+
+      if (!matched && cleanPhone) {
+        matched = leadsList.find(l => {
+          const lp = (l.phone || l.phone_e164 || l.phone_raw || '').replace(/\D/g, '');
+          return lp && (cleanPhone.endsWith(lp.slice(-10)) || lp.endsWith(cleanPhone.slice(-10)));
+        });
+      }
+
+      if (matched) {
+        customerName = matched.business_name || matched.name || customerName;
+        customerArea = matched.area || matched.city || customerArea;
+        customerCategory = matched.category || matched.sector || customerCategory;
+        const slug = (matched.id || matched.lead_id || customerName.toLowerCase().replace(/[^a-z0-9]+/g, '-')).slice(0, 40);
+        if (!incomingText || !incomingText.includes(slug)) {
+          customerPreviewUrl = `${vercelBase}/preview/${slug}`;
+        }
+        if (matched.phone || matched.phone_e164) {
+          cleanPhone = (matched.phone || matched.phone_e164).replace(/\D/g, '');
+        }
+      }
+    }
+  } catch (_) {}
+
+  // 2. Generate Simple, Natural Nigerian AI Closer Response
+  try {
+    try { delete require.cache[require.resolve('./lib/closer_engine')]; } catch (_) {}
+    const { handlePostContactInquiry } = require('./lib/closer_engine');
+    const closerRes = handlePostContactInquiry(incomingText || 'Hello I am inquiring about website', {
+      businessName: customerName,
+      category: customerCategory,
+      area: customerArea,
+      phone: cleanPhone,
+      hasWebsite: false,
+      previewUrl: customerPreviewUrl
+    });
+    replyText = closerRes.messageText;
+    intent = closerRes.intent;
+    directPaymentEligible = closerRes.directPaymentEligible;
+  } catch (_) {
+    replyText = `Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*${customerName}*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\n${customerPreviewUrl}\n\nOur setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Bank: OPay Digital Services | Account: 7034297995 | Name: Oyelakin Tosin Matthew. Please send your receipt once transferred!`;
+  }
+
+  if (connectionStatus !== 'connected' || !sock) {
+    console.warn(`[Line 2 AutoReply] Socket not connected (Status: ${connectionStatus}). Cannot dispatch to ${targetJid}`);
+    return;
+  }
+
+  // 3. Simulate Typing & Send Instant Autonomous AI Response (< 2.5s) to targetJid
+  try {
+    await sock.sendPresenceUpdate('composing', targetJid);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    await sock.sendPresenceUpdate('paused', targetJid);
+    await sock.sendMessage(targetJid, { text: replyText });
+    console.log(`⚡ [Line 2 AI Auto-Reply] Successfully replied to ${targetJid} (${customerName}) (Intent: ${intent})`);
+  } catch (sendErr) {
+    console.error(`❌ [Line 2 AI Auto-Reply Error] Failed to send message to ${targetJid}:`, sendErr.message);
+  }
+
+  // 4. Real-Time Admin Notification to 0802 279 1227
+  try {
+    const adminPhone = process.env.ADMIN_WA_PHONE || '2348022791227';
+    const adminJid = `${adminPhone.replace(/\D/g, '')}@s.whatsapp.net`;
+    const adminAlertText =
+`🔔 *INBOUND CHAT ON LINE 2 (AI AGENT RESPONDED)*
+━━━━━━━━━━━━━━━━━━━━━━
+🏢 *Business:* ${customerName} (${customerArea})
+📱 *Identifier / Phone:* ${cleanPhone ? '+' + cleanPhone : targetJid}
+🎯 *Intent:* ${intent}
+🔗 *Customer Demo Link:* 
+${customerPreviewUrl}
+━━━━━━━━━━━━━━━━━━━━━━
+💬 *Customer Said:* 
+"${incomingText || 'Direct Inquiry'}"
+━━━━━━━━━━━━━━━━━━━━━━
+🤖 *AI Agent Sent:*
+"${replyText.slice(0, 250)}..."
+━━━━━━━━━━━━━━━━━━━━━━
+⚡ *Direct Chat Link:* ${cleanPhone ? `wa.me/${cleanPhone}` : `WhatsApp (${targetJid})`}`;
+
+    if (adminJid !== targetJid) {
+      await sock.sendMessage(adminJid, { text: adminAlertText });
+    }
+  } catch (e) {
+    console.warn('[Line 2 Admin Alert Error]:', e.message);
   }
 }
 
@@ -390,6 +611,18 @@ const sendHandler = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+app.get('/pair', async (req, res) => {
+  const targetPhone = req.query.phone || '2349046050469';
+  try {
+    if (!sock) return res.status(500).json({ error: 'Socket not initialized' });
+    const code = await sock.requestPairingCode(targetPhone.replace(/\D/g, ''));
+    console.log(`🔑 [PAIRING CODE] Generated WhatsApp Line 2 Pairing Code for ${targetPhone}: ${code}`);
+    return res.json({ success: true, phone: targetPhone, pairingCode: code });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
 
 app.post('/api/send', sendHandler);
 app.post('/send', sendHandler);

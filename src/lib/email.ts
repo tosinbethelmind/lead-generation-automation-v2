@@ -1,6 +1,11 @@
+import dns from 'dns';
+try { dns.setDefaultResultOrder('ipv4first'); } catch (_) {}
+
 import { getRuntimeConfig, saveLocalConfig, RuntimeConfig, rotateKey } from './localConfig';
 import { getValidAccessToken } from './googleAuth';
 import nodemailer from 'nodemailer';
+import { parseSpintax } from './outreach/spintaxEngine';
+import { wrapTrackingLink, wrapAllHtmlLinks } from './outreach/customTrackingDomain';
 
 // ============================================================================
 // Email Sender Helpers
@@ -66,36 +71,48 @@ export async function sendResendMessage(to: string, subject: string, body: strin
   }
 }
 
+import { BrevoClient } from './integrations/brevoClient';
+
 export async function sendBrevoMessage(to: string, subject: string, body: string, config: RuntimeConfig) {
-  const activeKey = rotateKey(config.brevoApiKey);
-  if (!activeKey) {
+  const apiKey = rotateKey(config.brevoApiKey) || process.env.BREVO_API_KEY || '';
+  if (!apiKey) {
     throw new Error('Brevo API Key is not configured.');
   }
-  const senderName = config.brevoSenderName || 'Bethelmind Analytics & Strategy';
-  const senderEmail = config.brevoSenderEmail;
-  if (!senderEmail) {
-    throw new Error('Brevo Sender Email is not configured.');
-  }
+  const senderName = config.brevoSenderName || process.env.BREVO_SENDER_NAME || 'Bethelmind Analytics & Strategy';
+  const senderEmail = config.brevoSenderEmail || process.env.BREVO_SENDER_EMAIL || 'tosin@bethelmindanalytics.com';
 
-  const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
-    method: 'POST',
-    headers: {
-      'api-key': activeKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      sender: { name: senderName, email: senderEmail },
-      to: [{ email: to }],
-      subject,
-      textContent: body,
-    }),
-    signal: AbortSignal.timeout(3000)
+  const client = new BrevoClient(apiKey, senderEmail, senderName);
+  await client.sendEmail({
+    to: [{ email: to }],
+    subject,
+    textContent: body
   });
+}
 
-  if (!resp.ok) {
-    const data = await resp.json();
-    throw new Error(data.message || resp.statusText);
+const smtpTransporters: Map<string, nodemailer.Transporter> = new Map();
+
+function getOrCreatePooledTransporter(host: string, port: number, secure: boolean, user: string, pass: string): nodemailer.Transporter {
+  const key = `${host}:${port}:${user}`;
+  let transporter = smtpTransporters.get(key);
+  if (!transporter) {
+    transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: { user, pass },
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
+      rateDelta: 1000,
+      rateLimit: 5,
+      tls: { rejectUnauthorized: false },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 8000
+    } as any);
+    smtpTransporters.set(key, transporter);
   }
+  return transporter;
 }
 
 export async function sendSmtpMessage(to: string, subject: string, body: string, config?: any) {
@@ -119,25 +136,28 @@ export async function sendSmtpMessage(to: string, subject: string, body: string,
 
   for (const cfg of configsToTry) {
     try {
-      const transporter = nodemailer.createTransport({
-        host,
-        port: cfg.port,
-        secure: cfg.secure,
-        auth: { user, pass },
-        tls: { rejectUnauthorized: false },
-        connectionTimeout: 6000,
-        greetingTimeout: 6000,
-        socketTimeout: 6000
-      } as any);
+      const transporter = getOrCreatePooledTransporter(host, cfg.port, cfg.secure, user, pass);
+      const unsubscribeUrl = `https://www.bethelmindanalytics.com/api/dnc?email=${encodeURIComponent(to)}`;
 
       return await transporter.sendMail({
         from: `"${senderName}" <${fromEmail}>`,
         to,
         subject,
         text: body,
+        headers: {
+          'List-Unsubscribe': `<mailto:unsubscribe@bethelmindanalytics.com>, <${unsubscribeUrl}>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          'X-Entity-Ref-ID': `bm_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
+        }
       });
     } catch (err: any) {
       lastError = err;
+      // Invalidate connection pool on socket closure or auth failure to prevent stale connection reuse
+      smtpTransporters.delete(`${host}:${cfg.port}:${user}`);
+      if (err.message && (err.message.includes('451') || err.message.includes('Ratelimit'))) {
+        console.warn(`[SMTP RateLimit] Hostinger 451 Ratelimit Exceeded on port ${cfg.port}. Throttling required.`);
+        break; // Stop attempting this host immediately to respect rate limit backoff
+      }
     }
   }
 
@@ -203,8 +223,12 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
   const config = getRuntimeConfig();
   const primaryProvider = config.emailProvider || 'smtp';
 
+  // Apply Spintax permutation to guarantee non-duplicate email hashes across batches
+  const finalSubject = parseSpintax(subject);
+  let finalBody = parseSpintax(body);
+
   if (!bypassDryRun && (process.env.DRY_RUN === 'true' || process.env.MOCK_SCRAPER === 'true' || config.dryRun)) {
-    console.log(`[DRY RUN] Email notification to ${to} ("${subject}") simulated.`);
+    console.log(`[DRY RUN] Email notification to ${to} ("${finalSubject}") simulated.`);
     return true;
   }
 
@@ -214,8 +238,8 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
 
   // Apply jitter before sending
   const appUrl = (config as any).appUrl || process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
-  if (!body.toLowerCase().includes('unsubscribe') && !body.toLowerCase().includes('opt out')) {
-    body += `\n\n---\nTo unsubscribe from future updates, click here: ${appUrl}/api/dnc?email=${encodeURIComponent(to)}`;
+  if (!finalBody.toLowerCase().includes('unsubscribe') && !finalBody.toLowerCase().includes('opt out')) {
+    finalBody += `\n\n---\nTo unsubscribe from future updates, click here: ${appUrl}/api/dnc?email=${encodeURIComponent(to)}`;
   }
 
   // Ordered provider fallback sequence starting with primary provider
@@ -223,30 +247,34 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
 
   for (const provider of candidateProviders) {
     try {
-      if (provider === 'smtp' || process.env.SMTP_HOST || config.smtpHost) {
-        await sendSmtpMessage(to, subject, body, config);
-        console.log(`[sendNotificationEmail] ✅ Sent via SMTP to ${to}`);
-        return true;
-      }
-      if (provider === 'resend' && config.resendApiKey) {
-        await sendResendMessage(to, subject, body, config);
-        console.log(`[sendNotificationEmail] ✅ Sent via Resend to ${to}`);
-        return true;
-      }
-      if (provider === 'brevo' && config.brevoApiKey) {
-        await sendBrevoMessage(to, subject, body, config);
-        console.log(`[sendNotificationEmail] ✅ Sent via Brevo to ${to}`);
-        return true;
-      }
-      if (provider === 'sendgrid' && config.sendgridApiKey) {
-        await sendSendGridMessage(to, subject, body, config);
-        console.log(`[sendNotificationEmail] ✅ Sent via SendGrid to ${to}`);
-        return true;
-      }
-      if (provider === 'gmail') {
+      if (provider === 'smtp') {
+        if (process.env.SMTP_HOST || config.smtpHost) {
+          await sendSmtpMessage(to, finalSubject, finalBody, config);
+          console.log(`[sendNotificationEmail] ✅ Sent via SMTP to ${to}`);
+          return true;
+        }
+      } else if (provider === 'resend') {
+        if (config.resendApiKey || process.env.RESEND_API_KEY) {
+          await sendResendMessage(to, finalSubject, finalBody, config);
+          console.log(`[sendNotificationEmail] ✅ Sent via Resend to ${to}`);
+          return true;
+        }
+      } else if (provider === 'brevo') {
+        if (config.brevoApiKey || process.env.BREVO_API_KEY) {
+          await sendBrevoMessage(to, finalSubject, finalBody, config);
+          console.log(`[sendNotificationEmail] ✅ Sent via Brevo to ${to}`);
+          return true;
+        }
+      } else if (provider === 'sendgrid') {
+        if (config.sendgridApiKey || process.env.SENDGRID_API_KEY) {
+          await sendSendGridMessage(to, finalSubject, finalBody, config);
+          console.log(`[sendNotificationEmail] ✅ Sent via SendGrid to ${to}`);
+          return true;
+        }
+      } else if (provider === 'gmail') {
         const accessToken = await getValidAccessToken();
         if (accessToken) {
-          await sendGmailMessage(to, subject, body, accessToken);
+          await sendGmailMessage(to, finalSubject, finalBody, accessToken);
           console.log(`[sendNotificationEmail] ✅ Sent via Gmail to ${to}`);
           return true;
         }
@@ -267,8 +295,8 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
  */
 export async function sendMarketingEmail(to: string, subject?: string, body?: string): Promise<boolean> {
   const config = getRuntimeConfig();
-  const finalSubject = subject || config.marketingSubject || 'Special Offer from Bethelmind Analytics & Strategy';
-  const finalBody = body || config.marketingBody || 'Hello,\n\nWe have exciting new services you might be interested in. Check them out at https://bethelmind.com/offers.';
+  const finalSubject = subject || config.marketingSubject || 'Special Offer from Bethelmind Analytics Lagos Desk';
+  const finalBody = body || config.marketingBody || 'Hello,\n\nWe have exciting 24/7 quoting and WhatsApp conversion tools built for your business. Check your live preview at https://www.bethelmindanalytics.com.';
   return sendNotificationEmail(to, finalSubject, finalBody);
 }
 

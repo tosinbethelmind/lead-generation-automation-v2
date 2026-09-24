@@ -49,7 +49,8 @@ export interface BlogPostData {
   matched_youtube?: YouTubeEmbedChannel;
 }
 
-const POSTS_DIR = path.join(process.cwd(), 'data', 'blog_posts');
+const BUNDLED_POSTS_DIR = path.join(process.cwd(), 'data', 'blog_posts');
+const TMP_POSTS_DIR = path.join(process.env.TEMP || process.env.TMP || '/tmp', 'bethelmind_blog_posts');
 
 export class BlogEngine {
   private static cachedPosts: BlogPostData[] | null = null;
@@ -57,11 +58,22 @@ export class BlogEngine {
   private static CACHE_TTL_MS = 60 * 1000; // 1 minute in-memory cache
 
   /**
-   * Ensures the data/blog_posts directory exists
+   * Ensures the data directories exist safely
    */
   private static ensureDirectory() {
-    if (!fs.existsSync(POSTS_DIR)) {
-      fs.mkdirSync(POSTS_DIR, { recursive: true });
+    try {
+      if (!fs.existsSync(BUNDLED_POSTS_DIR)) {
+        fs.mkdirSync(BUNDLED_POSTS_DIR, { recursive: true });
+      }
+    } catch {
+      // Expected in read-only serverless environment
+    }
+    try {
+      if (!fs.existsSync(TMP_POSTS_DIR)) {
+        fs.mkdirSync(TMP_POSTS_DIR, { recursive: true });
+      }
+    } catch {
+      // Ignored
     }
   }
 
@@ -82,7 +94,12 @@ export class BlogEngine {
     if (text.includes('video') || text.includes('faceless') || text.includes('shorts') || text.includes('youtube')) {
       return SELAR_DIGITAL_PRODUCTS.find(p => p.id === 'da-faceless') || SELAR_DIGITAL_PRODUCTS[5];
     }
-    if (text.includes('lead') || text.includes('b2b') || text.includes('outreach') || text.includes('sales')) {
+    if (text.includes('lead') || text.includes('b2b') || text.includes('outreach') || text.includes('sales') ||
+        text.includes('fake alert') || text.includes('reconciliation') || text.includes('retail') || text.includes('fraud') ||
+        text.includes('pos') || text.includes('inventory') || text.includes('theft') || text.includes('construction') ||
+        text.includes('contractor') || text.includes('agribusiness') || text.includes('feed') || text.includes('farm') ||
+        text.includes('school') || text.includes('clinic') || text.includes('patient') || text.includes('logistics') ||
+        text.includes('haulage') || text.includes('freight') || text.includes('customs') || text.includes('auto')) {
       return SELAR_DIGITAL_PRODUCTS.find(p => p.id === 'da-b2bleadgen') || SELAR_DIGITAL_PRODUCTS[0];
     }
     // Default fallback to VidRush AI Tools Suite
@@ -113,16 +130,39 @@ export class BlogEngine {
     }
 
     this.ensureDirectory();
-    const files = fs.readdirSync(POSTS_DIR).filter(f => f.endsWith('.json') && !f.startsWith('~'));
+    const filesToRead: { dir: string; file: string }[] = [];
+    if (fs.existsSync(BUNDLED_POSTS_DIR)) {
+      try {
+        fs.readdirSync(BUNDLED_POSTS_DIR)
+          .filter(f => f.endsWith('.json') && !f.startsWith('~'))
+          .forEach(file => filesToRead.push({ dir: BUNDLED_POSTS_DIR, file }));
+      } catch (err) {
+        console.warn('[BlogEngine] Failed reading bundled posts:', err);
+      }
+    }
+    if (fs.existsSync(TMP_POSTS_DIR)) {
+      try {
+        fs.readdirSync(TMP_POSTS_DIR)
+          .filter(f => f.endsWith('.json') && !f.startsWith('~'))
+          .forEach(file => {
+            if (!filesToRead.some(item => item.file === file)) {
+              filesToRead.push({ dir: TMP_POSTS_DIR, file });
+            }
+          });
+      } catch (err) {
+        console.warn('[BlogEngine] Failed reading tmp posts:', err);
+      }
+    }
+
     const posts: BlogPostData[] = [];
 
-    for (const file of files) {
+    for (const item of filesToRead) {
       try {
-        const fullPath = path.join(POSTS_DIR, file);
+        const fullPath = path.join(item.dir, item.file);
         const raw = fs.readFileSync(fullPath, 'utf-8');
         const data = JSON.parse(raw);
 
-        const slug = data.slug || file.replace('.json', '');
+        const slug = data.slug || item.file.replace('.json', '');
         const matchedProduct = this.matchProduct(data.category || '', data.title || '');
         const matchedYouTube = this.matchYouTubeChannel(data.category || '', data.title || '');
         const intentCluster = AnswerThePublicEngine.getIntentCluster(data.category || 'solar');
@@ -142,8 +182,8 @@ export class BlogEngine {
           category: data.category || 'AI & Enterprise Automation',
           excerpt,
           read_time: data.read_time || '6 min read',
-          virality_score: data.virality_score || 94,
-          views_count: data.views_count || 1240,
+          virality_score: typeof data.virality_score === 'number' ? data.virality_score : 0,
+          views_count: typeof data.views_count === 'number' ? data.views_count : 0,
           content_html: data.content_html || '',
           social_snippets: data.social_snippets || {
             linkedin: '',
@@ -159,7 +199,7 @@ export class BlogEngine {
           matched_youtube: matchedYouTube
         });
       } catch (err) {
-        console.error(`[BlogEngine] Failed parsing post file ${file}:`, err);
+        console.error(`[BlogEngine] Failed parsing post file ${item.file}:`, err);
       }
     }
 
@@ -188,20 +228,29 @@ export class BlogEngine {
    */
   public static incrementViews(slug: string): number {
     this.ensureDirectory();
-    const filePath = path.join(POSTS_DIR, `${slug}.json`);
-    if (fs.existsSync(filePath)) {
-      try {
-        const raw = fs.readFileSync(filePath, 'utf-8');
-        const data = JSON.parse(raw);
-        data.views_count = (data.views_count || 0) + 1;
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-        if (this.cachedPosts) {
-          const match = this.cachedPosts.find(p => p.slug === slug);
-          if (match) match.views_count = data.views_count;
+    const candidateDirs = [BUNDLED_POSTS_DIR, TMP_POSTS_DIR];
+    for (const dir of candidateDirs) {
+      if (fs.existsSync(dir)) {
+        const filePath = path.join(dir, `${slug}.json`);
+        if (fs.existsSync(filePath)) {
+          try {
+            const raw = fs.readFileSync(filePath, 'utf-8');
+            const data = JSON.parse(raw);
+            data.views_count = (data.views_count || 0) + 1;
+            try {
+              fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+            } catch {
+              // Read-only filesystem, continue with memory update
+            }
+            if (this.cachedPosts) {
+              const match = this.cachedPosts.find(p => p.slug === slug);
+              if (match) match.views_count = data.views_count;
+            }
+            return data.views_count;
+          } catch (err) {
+            console.error(`[BlogEngine] Failed updating views for ${slug}:`, err);
+          }
         }
-        return data.views_count;
-      } catch (err) {
-        console.error(`[BlogEngine] Failed updating views for ${slug}:`, err);
       }
     }
     return 1;
@@ -212,15 +261,28 @@ export class BlogEngine {
    */
   public static savePost(post: BlogPostData): boolean {
     this.ensureDirectory();
-    const filePath = path.join(POSTS_DIR, `${post.slug}.json`);
+    let saved = false;
+
+    // Try saving to BUNDLED_POSTS_DIR first (local development or persistent storage)
     try {
+      const filePath = path.join(BUNDLED_POSTS_DIR, `${post.slug}.json`);
       fs.writeFileSync(filePath, JSON.stringify(post, null, 2), 'utf-8');
-      this.cachedPosts = null; // Invalidate cache
-      return true;
-    } catch (err) {
-      console.error(`[BlogEngine] Failed saving post ${post.slug}:`, err);
-      return false;
+      saved = true;
+    } catch {
+      // In read-only serverless environment (Vercel), fall back to TMP_POSTS_DIR
+      try {
+        const tmpPath = path.join(TMP_POSTS_DIR, `${post.slug}.json`);
+        fs.writeFileSync(tmpPath, JSON.stringify(post, null, 2), 'utf-8');
+        saved = true;
+      } catch (err) {
+        console.error(`[BlogEngine] Failed saving post to tmp directory:`, err);
+      }
     }
+
+    if (saved) {
+      this.cachedPosts = null; // Invalidate cache
+    }
+    return saved;
   }
 
   /**

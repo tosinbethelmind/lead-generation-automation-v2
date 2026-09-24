@@ -17,9 +17,25 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 
-const { ALL_PRODUCTS_DATA } = require(path.join(process.cwd(), 'src', 'lib', 'productsData.ts'));
-const { generateAllTrafficPackages } = require(path.join(process.cwd(), 'src', 'lib', 'trafficAutomationMaster.ts'));
-const { getSupabaseClient } = require(path.join(process.cwd(), 'src', 'lib', 'supabaseClient.ts'));
+let ALL_PRODUCTS_DATA = [];
+let generateAllTrafficPackages = () => [];
+let getSupabaseClient = null;
+
+try {
+  const prodModule = require(path.join(process.cwd(), 'src', 'lib', 'productsData'));
+  ALL_PRODUCTS_DATA = prodModule.ALL_PRODUCTS_DATA || [];
+} catch (_) {}
+
+try {
+  const trafficModule = require(path.join(process.cwd(), 'src', 'lib', 'trafficAutomationMaster'));
+  generateAllTrafficPackages = trafficModule.generateAllTrafficPackages || (() => []);
+} catch (_) {}
+
+const { createClient } = require('@supabase/supabase-js');
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rcaamfaqkxvgbjlfuhki.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWFtZmFxa3h2Z2JqbGZ1aGtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzUyNDI0OCwiZXhwIjoyMTAzMTAwMjQ4fQ.9KKQ52VdE8b-jxy2QmOAAxuBMKpGyncwDDEyMGfe9fw';
+
+getSupabaseClient = () => createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function checkUrlReachability(urlStr, timeoutMs = 3000) {
   return new Promise((resolve) => {

@@ -54,13 +54,13 @@ export const paymentConfig: PaymentConfig = {
   paymentMode: 'manual_opay_transfer',
 
   bankName:
-    process.env.NEXT_PUBLIC_PAYMENT_BANK_NAME || process.env.MONIEPOINT_BANK_NAME || 'Moniepoint Microfinance Bank / OPay',
+    process.env.NEXT_PUBLIC_PAYMENT_BANK_NAME || 'OPay Digital Services',
 
   accountName:
-    process.env.NEXT_PUBLIC_PAYMENT_ACCOUNT_NAME || process.env.MONIEPOINT_ACCOUNT_NAME || 'Oyelakin Tosin Matthew (Bethelmind Analytics)',
+    process.env.NEXT_PUBLIC_PAYMENT_ACCOUNT_NAME || 'Oyelakin Tosin Matthew (Bethelmind Analytics)',
 
   accountNumber:
-    process.env.NEXT_PUBLIC_PAYMENT_ACCOUNT_NUMBER || process.env.MONIEPOINT_ACCOUNT_NUMBER || '7034297995',
+    process.env.NEXT_PUBLIC_PAYMENT_ACCOUNT_NUMBER || '7034297995',
 
   whatsappNumber:
     process.env.NEXT_PUBLIC_BUSINESS_WHATSAPP_NUMBER || process.env.ADMIN_WA_PHONE || '2348022791227',

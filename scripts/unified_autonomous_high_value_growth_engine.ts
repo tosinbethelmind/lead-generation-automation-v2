@@ -24,10 +24,11 @@ import { OPAY_BENEFICIARY_CONFIG } from '../src/lib/monetization/directNairaAuto
 import { scanHighVolumeLagosImporters } from '../src/lib/monetization/smeFxLiquidityRadar';
 import { scanAndAggregateBestLiquidityDealAsync } from '../src/lib/monetization/bestRateLiquidityAggregator';
 import { generateAutomated3WayHandshake } from '../src/lib/monetization/whatsappAutomatedBridgeEngine';
+import { runHighThroughputInboxDispatcher } from './automated_jiji_and_social_inbox_dispatcher';
 
 const PROD_BASE_URL = 'https://www.bethelmindanalytics.com';
-const SUPABASE_URL = 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
+const SUPABASE_URL = 'https://rcaamfaqkxvgbjlfuhki.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWFtZmFxa3h2Z2JqbGZ1aGtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzUyNDI0OCwiZXhwIjoyMTAzMTAwMjQ4fQ.9KKQ52VdE8b-jxy2QmOAAxuBMKpGyncwDDEyMGfe9fw';
 
 // Gateway & SMTP Credentials
 const GATEWAY_URLS = [
@@ -230,37 +231,50 @@ export async function runUnifiedAutonomousGrowthEngine() {
   let smsSent = 0;
   let emailSent = 0;
 
-  for (const item of highValueQueue.slice(0, 5)) {
-    const phone = item.lead.phone_e164 || item.lead.phone_raw;
-    const smsMessage = `Good day ${item.cleanName}, we built a custom 24/7 AI quote & booking portal for your business: ${item.previewUrl} - Bethelmind Lagos (wa.me/2348022791227)`;
-
-    console.log(`\n📤 DISPATCHING TARGET: ${item.cleanName} (${item.scoreResult.verifiedHub})`);
+  for (const item of highValueQueue.slice(0, 50)) {
+    const rawSms = `Good day ${item.cleanName.slice(0, 15)}, test your custom 24/7 AI web & booking portal: ${item.previewUrl} (wa.me/2348022791227)`;
+    const smsMessage = rawSms.slice(0, 158);
+    const phone = item.lead.phone_e164 || item.lead.phone || item.lead.phone_raw || '';
     
-    // Wave A: Carrier SMS
-    if (phone) {
+    // Wave A: Carrier SMS (Strict <= 158 chars & 1 SMS per client)
+    if (phone && !item.lead.sms_sent && !item.lead.sms_dispatched) {
       const smsOk = await sendSmsViaGateway(phone, smsMessage);
       if (smsOk) {
         smsSent++;
-        console.log(`   ✓ Carrier SMS Wave: Sent via Tailscale Gateway -> ${phone}`);
+        item.lead.sms_sent = true;
+        item.lead.sms_dispatched = true;
+        console.log(`   ✓ Carrier SMS Wave: Sent via Tailscale Gateway -> ${phone} (${smsMessage.length} chars)`);
       } else {
         console.log(`   ⚠️ Carrier SMS Wave: Gateway queued for batch delivery -> ${phone}`);
       }
     }
 
-    // Wave B: Hostinger B2B Email
-    if (item.lead.email) {
+    // Wave B: Hostinger B2B Email (Strict 1 Email per client)
+    if (item.lead.email && !item.lead.email_sent && !item.lead.email_dispatched) {
       const emailOk = await sendExecutiveEmail(item.lead, item.previewUrl, item.cleanName);
       if (emailOk) {
         emailSent++;
+        item.lead.email_sent = true;
+        item.lead.email_dispatched = true;
         console.log(`   ✓ B2B Email Wave: 4-Pillar Executive Proposal Delivered -> ${item.lead.email}`);
       }
     }
 
-    await sleep(2000); // 2s throttle between dispatches
+    await sleep(500); // 0.5s throttle for high-throughput batch dispatches
   }
 
   console.log(`\n   -> Wave Dispatch Summary: ${smsSent} Carrier SMS + ${emailSent} Executive Emails Dispatched.`);
   console.log(`   -> Inbound Conversion Bridge: Active 24/7 at wa.me/2348022791227 (Admin Desk: 0802 279 1227)`);
+
+  // ── 4. CONTINUOUS JIJI & SOCIAL MEDIA INBOX DISPATCHER ──
+  console.log('\n───────────────────────────────────────────────────────────────────────────────────────────');
+  console.log('💬 [PILLAR 4] CONTINUOUS JIJI & SOCIAL MEDIA INBOX DISPATCHER (SPINTAX + SIGNAL MATCHED)');
+  console.log('───────────────────────────────────────────────────────────────────────────────────────────');
+  try {
+    await runHighThroughputInboxDispatcher();
+  } catch (err: any) {
+    console.log(`⚠️ Social Inbox Dispatch Notice: ${err.message}`);
+  }
 
   console.log('\n' + '='.repeat(95));
   console.log(`✅ [UNIFIED ENGINE CYCLE #${cycleCount} COMPLETE] 100% Autonomous • Live Verified`);

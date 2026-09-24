@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --font-sans: var(--font-inter, 'Inter', sans-serif);
   --font-title: var(--font-outfit, 'Outfit', sans-serif);
@@ -89,10 +91,23 @@
   --onboarding-border: rgba(0, 0, 0, 0.1);
 }
 
-* {
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  max-width: 100%;
+}
+
+img, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
 }
 
 body {
@@ -100,7 +115,9 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   min-height: 100vh;
-  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden !important;
   position: relative;
   /* Deep space animated gradient mesh */
   background-image:
@@ -108,6 +125,13 @@ body {
     radial-gradient(ellipse 70% 50% at 90% 90%, rgba(139, 92, 246, 0.20) 0%, transparent 60%),
     radial-gradient(ellipse 60% 40% at 50% 50%, rgba(99, 102, 241, 0.10) 0%, transparent 70%),
     linear-gradient(160deg, #050812 0%, #070a14 40%, #060910 100%);
+}
+
+@media (max-width: 640px) {
+  .luxury-glass-panel, .glass-panel {
+    padding: 16px !important;
+    border-radius: 16px !important;
+  }
 }
 
 /* Animated aurora orb — top left cyan */
@@ -599,14 +623,14 @@ select option {
     margin-left: 0 !important;
   }
 
-  /* Header adjustments */
-  header {
+  /* Header adjustments for admin/dashboard pages only */
+  .admin-header, .dashboard-header, .app-header {
     flex-direction: column !important;
     gap: 12px !important;
     padding-top: 48px !important;
   }
 
-  header h1 {
+  .admin-header h1, .dashboard-header h1, .app-header h1 {
     font-size: 1.3rem !important;
   }
 
@@ -1660,6 +1684,19 @@ select option {
 
 .luxury-btn-primary:hover::after {
   left: 140%;
+}
+
+/* Responsive visibility utilities */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
 }
 
 

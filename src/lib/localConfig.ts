@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export type StorageMode = 'cloud' | 'local' | 'hybrid' | 'supabase';
 
@@ -57,7 +57,7 @@ export interface LocalConfig {
   
   // ── Alternative Outreach Channels ───────────────────────
   emailProvider?: 'gmail' | 'resend' | 'brevo' | 'smtp' | 'sendgrid';
-  whatsappProvider?: 'cloud' | 'evolution' | 'whapi' | 'baileys';
+  whatsappProvider?: 'cloud' | 'evolution' | 'whapi' | 'baileys' | 'meta_cloud';
   resendApiKey?: string;
   resendFromEmail?: string;
   brevoApiKey?: string;
@@ -306,8 +306,8 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   whatsappTemplateLanguageCode: 'en_US',
   whatsappDailyCap: 50,
   whatsappEnabled: false,
-  supabaseUrl: 'https://pnsrjsyiygxdcxkpgbzx.supabase.co',
-  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8',
+  supabaseUrl: 'https://rcaamfaqkxvgbjlfuhki.supabase.co',
+  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWFtZmFxa3h2Z2JqbGZ1aGtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzUyNDI0OCwiZXhwIjoyMTAzMTAwMjQ4fQ.9KKQ52VdE8b-jxy2QmOAAxuBMKpGyncwDDEyMGfe9fw',
   antigravityApiKey: '',
   antigravityApiKeys: [],
   antigravityModels: [],
@@ -488,8 +488,8 @@ export function getRuntimeConfig(): RuntimeConfig {
     // Legacy
     apifyToken: process.env.APIFY_TOKEN || fileConfig.apifyToken || DEFAULT_CONFIG.apifyToken,
     apifyDatasetId: process.env.APIFY_DATASET_ID || fileConfig.apifyDatasetId || DEFAULT_CONFIG.apifyDatasetId,
-    whatsappPhoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || fileConfig.whatsappPhoneNumberId || DEFAULT_CONFIG.whatsappPhoneNumberId,
-    whatsappAccessToken: process.env.WHATSAPP_ACCESS_TOKEN || fileConfig.whatsappAccessToken || DEFAULT_CONFIG.whatsappAccessToken,
+    whatsappPhoneNumberId: process.env.WHATSAPP_CLOUD_PHONE_NUMBER_ID || process.env.WHATSAPP_PHONE_NUMBER_ID || fileConfig.whatsappPhoneNumberId || DEFAULT_CONFIG.whatsappPhoneNumberId,
+    whatsappAccessToken: process.env.WHATSAPP_CLOUD_ACCESS_TOKEN || process.env.WHATSAPP_ACCESS_TOKEN || fileConfig.whatsappAccessToken || DEFAULT_CONFIG.whatsappAccessToken,
     whatsappTemplateName: process.env.WHATSAPP_TEMPLATE_NAME || fileConfig.whatsappTemplateName || DEFAULT_CONFIG.whatsappTemplateName,
     whatsappTemplateLanguageCode: process.env.WHATSAPP_TEMPLATE_LANGUAGE_CODE || fileConfig.whatsappTemplateLanguageCode || DEFAULT_CONFIG.whatsappTemplateLanguageCode,
     whatsappDailyCap: Number(process.env.WHATSAPP_DAILY_CAP) || Number(fileConfig.whatsappDailyCap) || DEFAULT_CONFIG.whatsappDailyCap,

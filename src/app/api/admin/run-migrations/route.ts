@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { Client } from 'pg';
 import fs from 'fs';
 import path from 'path';
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   }
 
   const password = process.env.DATABASE_PASSWORD || 'pHqrTQc2gpdSqnAx';
-  const projectRef = 'pnsrjsyiygxdcxkpgbzx';
+  const projectRef = 'rcaamfaqkxvgbjlfuhki';
 
   const { getPgClient } = await import('@/lib/dbConnect');
   console.log("Connecting to Supabase...");

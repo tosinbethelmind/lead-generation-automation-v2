@@ -35,8 +35,11 @@ function loadBundle(): Record<string, any> {
           const clean = String(id).toLowerCase().replace(/[^a-z0-9]/g, '');
           if (clean) dict[clean] = l;
           if (l.name) {
-            const nameClean = String(l.name).toLowerCase().replace(/[^a-z0-9]/g, '');
+            const cleanName = String(l.name).split('||')[0].split('|')[0].split('-')[0].trim();
+            const nameClean = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const nameHyphen = cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
             if (nameClean) dict[nameClean] = l;
+            if (nameHyphen) dict[nameHyphen] = l;
           }
         }
       });

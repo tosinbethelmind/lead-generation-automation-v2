@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file scripts/mass_solar_scraper.js
  * Standalone Node.js CLI script to perform high-concurrency mass lead collection
  * from OpenStreetMap (Overpass API) or high-fidelity synthetic generation (NDPA compliant)
@@ -40,7 +40,7 @@ function loadEnv() {
 
   // Also read from sibling Solar ROI Proposal Builder if database credentials are not set
   const currentUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  if (!currentUrl || currentUrl.includes('szyuterncawfxwzhvwcf')) {
+  if (!currentUrl || currentUrl.includes('rcaamfaqkxvgbjlfuhki')) {
     const siblingEnvPath = path.join(__dirname, '../../Solar ROI Proposal Builder/.env.local');
     if (fs.existsSync(siblingEnvPath)) {
       console.log(`Targeting production Supabase from sibling project env: ${siblingEnvPath}`);

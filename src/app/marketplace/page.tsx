@@ -28,7 +28,7 @@ const TIERS = [
       '📲 WhatsApp Catalog & Checkout Builder',
       '500 Verified Lagos B2B Contacts Export',
       '🤖 AI Customer Assistant Widget',
-      '🌐 Free Subdomain (yourname.apexreach.site)',
+      '🌐 Free Subdomain (yourname.bethelmindanalytics.com)',
     ],
     features: {
       lead_harvester: false,
@@ -192,7 +192,8 @@ export default function MarketplacePage() {
             <Sparkles style={{ width: 20, height: 20, color: '#fff' }} />
           </div>
           <div>
-            <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>ApexReach</span>
+            <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bethelmind Analytics</span>
+
             <span style={{ fontSize: '0.7rem', color: '#64748b', display: 'block', marginTop: -2 }}>AI Lead Platform</span>
           </div>
         </div>
@@ -449,7 +450,7 @@ export default function MarketplacePage() {
             Ready to Grow Your Business?
           </h2>
           <p style={{ color: '#94a3b8', marginBottom: 32, fontSize: '1rem', lineHeight: 1.6 }}>
-            Join 38+ Lagos businesses already using ApexReach to generate leads and close deals on autopilot.
+            Join 38+ Lagos businesses already using Bethelmind Analytics to generate leads and close deals on autopilot.
           </p>
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={scrollToPricing} style={{ background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', color: '#fff', border: 'none', borderRadius: 12, padding: '16px 32px', fontWeight: 800, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>

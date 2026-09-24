@@ -405,12 +405,13 @@ async function startLineSocket(line) {
       if (statusCode === DisconnectReason.loggedOut) {
         stateMap[line.id].status = 'disconnected';
         if (fs.existsSync(authDir)) fs.rmSync(authDir, { recursive: true, force: true });
+        console.log(`🔄 Resetting expired session for Line ${line.id}. Generating fresh QR code...`);
+        setTimeout(() => startLineSocket(line), 1500);
       } else {
         stateMap[line.id].status = 'connecting';
-      }
-
-      if (shouldReconnect) {
-        setTimeout(() => startLineSocket(line), 2000);
+        if (shouldReconnect) {
+          setTimeout(() => startLineSocket(line), 2000);
+        }
       }
     }
   });

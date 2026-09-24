@@ -77,3 +77,9 @@ startup_log.txt
 
 # Local Netlify folder
 .netlify
+
+# Session credentials & pids
+sessions/
+*.pid
+*.tmp*
+local_runner_heartbeat.json*

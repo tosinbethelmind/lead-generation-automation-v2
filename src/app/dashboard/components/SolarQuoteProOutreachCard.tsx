@@ -69,7 +69,10 @@ export default function SolarQuoteProOutreachCard() {
 
   useEffect(() => {
     fetchPipelineStatus();
-    const interval = setInterval(fetchPipelineStatus, 2000);
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      fetchPipelineStatus();
+    }, 15000);
 
     // Live Stream SSE Connection for Real-Time Updates
     let eventSource: EventSource | null = null;

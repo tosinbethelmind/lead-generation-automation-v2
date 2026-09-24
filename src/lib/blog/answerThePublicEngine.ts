@@ -141,6 +141,170 @@ export class AnswerThePublicEngine {
         'Audited CleanTech Vault vs Apollo.io Generic Data Accuracy',
         'Cold Email Deliverability with Dedicated SMTP vs Shared Hostinger'
       ]
+    },
+    healthcare: {
+      sector: 'Healthcare & Clinic Management',
+      primaryKeyword: 'Clinic Appointment Automation Lagos 2026',
+      questions: [
+        {
+          question: 'How do private clinics in Nigeria automate patient appointment booking and reduce no-shows?',
+          directAnswer: 'Private clinics deploy 24/7 automated WhatsApp booking bots that instantly collect patient symptoms, issue time-slot confirmations, and collect small commitment deposits via Paystack/Moniepoint, eliminating after-hours appointment loss and reducing no-shows by 92%.',
+          searchVolumeScore: 94,
+          intentType: 'commercial'
+        },
+        {
+          question: 'Can HMO claims reconciliation be automated for Nigerian diagnostic centers?',
+          directAnswer: 'Yes. By integrating digital pre-authorization logging and automated patient eligibility checks at intake, clinics reduce claims rejection rates by up to 85% and cut reimbursement lag from 60 days to under 14 days.',
+          searchVolumeScore: 89,
+          intentType: 'informational'
+        }
+      ],
+      relatedComparisons: [
+        'WhatsApp Clinic Booking vs Traditional Receptionist Queue',
+        'Manual Paper Records vs Automated EMR Invoicing Nigeria'
+      ]
+    },
+    hospitality: {
+      sector: 'Hospitality & Luxury Shortlets',
+      primaryKeyword: 'Direct Booking Engine vs Airbnb Lagos',
+      questions: [
+        {
+          question: 'How can boutique hotels and shortlet owners in Lagos avoid high Airbnb commissions?',
+          directAnswer: 'Shortlet operators deploy direct 24/7 WhatsApp booking engines on their custom domain. Guests check live room availability, receive custom seasonal quotes, and make direct bank transfers without the operator losing 15%-25% in intermediary platform commissions.',
+          searchVolumeScore: 95,
+          intentType: 'commercial'
+        },
+        {
+          question: 'How do Lekki and Victoria Island shortlets automate guest verification and caution deposits?',
+          directAnswer: 'Automated booking systems collect digital ID verification (NIN / International Passport) and authorize refundable caution deposits via Moniepoint/Paystack before issuing smart lock codes, preventing room damages and unauthorized parties.',
+          searchVolumeScore: 91,
+          intentType: 'transactional'
+        }
+      ],
+      relatedComparisons: [
+        'Direct Website Booking vs Airbnb Revenue Margins',
+        'Dynamic Midweek Pricing vs Flat Weekend Rates in Lagos'
+      ]
+    },
+    education: {
+      sector: 'Private Education & Schools',
+      primaryKeyword: 'Private School Admissions Automation Nigeria',
+      questions: [
+        {
+          question: 'How do private schools in Lagos automate prospective parent admissions?',
+          directAnswer: 'Schools deploy 24/7 WhatsApp admissions copilots that instantly respond to prospective parents, provide digital fee prospectuses, schedule campus tours, and collect admission entrance exam fees via instant bank transfer.',
+          searchVolumeScore: 92,
+          intentType: 'commercial'
+        },
+        {
+          question: 'How can schools eliminate manual bank teller audits for school fee collection?',
+          directAnswer: 'By assigning unique virtual bank accounts to each enrolled student, fees paid by parents are automatically reconciled in real-time against school accounting registers, eliminating fraud, lost teller slips, and manual ledger cross-checks.',
+          searchVolumeScore: 88,
+          intentType: 'informational'
+        }
+      ],
+      relatedComparisons: [
+        'Virtual Bank Accounts vs Manual Teller Receipts for Schools',
+        'Automated Parent Communication via WhatsApp vs School Portals'
+      ]
+    },
+    logistics: {
+      sector: 'Logistics, Haulage & Supply Chain',
+      primaryKeyword: 'Interstate Haulage Cost Optimization Nigeria',
+      questions: [
+        {
+          question: 'How do haulage fleet operators in Nigeria cut diesel waste and dispatch delays?',
+          directAnswer: 'Fleet managers implement automated real-time waybill tracking and WhatsApp dispatch milestones, providing live location updates to cargo owners and cutting idle turnaround times by 35% while curbing unauthorized route diversions.',
+          searchVolumeScore: 93,
+          intentType: 'commercial'
+        },
+        {
+          question: 'How can last-mile delivery companies in Lagos solve COD (Cash-on-Delivery) reconciliation?',
+          directAnswer: 'Delivery fleets integrate digital POS and instant dynamic transfer accounts on dispatch riders’ mobile devices, ensuring funds clear directly into the merchant account before parcels are released, eliminating rider cash holding risks.',
+          searchVolumeScore: 90,
+          intentType: 'transactional'
+        }
+      ],
+      relatedComparisons: [
+        'Digital POD Tracking vs Paper Waybills in Interstate Haulage',
+        'Direct Wire Settlement vs Cash-on-Delivery for Dispatch Fleets'
+      ]
+    },
+    retail: {
+      sector: 'Retail, E-Commerce & Fraud Prevention',
+      primaryKeyword: 'Fake Alert Proof Bank Transfer Reconciliation Nigeria',
+      questions: [
+        {
+          question: 'How do Nigerian merchants prevent fake alert scams on bank transfers?',
+          directAnswer: 'Merchants eliminate fake alert losses by switching from SMS/screenshot verification to real-time API webhooks (Moniepoint, Paystack, OPay) that generate unique transaction reference codes and verify ledger credit in under 3 seconds.',
+          searchVolumeScore: 97,
+          intentType: 'commercial'
+        },
+        {
+          question: 'How can Instagram vendors automate customer checkout on WhatsApp?',
+          directAnswer: 'Vendors deploy 24/7 automated WhatsApp catalog closers that answer product inquiries, calculate delivery fees by location, and generate instant bank transfer payment accounts automatically without human delay.',
+          searchVolumeScore: 92,
+          intentType: 'transactional'
+        }
+      ],
+      relatedComparisons: [
+        'Instant Bank Transfer Webhooks vs POS Terminal Printing',
+        'WhatsApp Catalog Bot vs Instagram DM Manual Selling'
+      ]
+    },
+    construction: {
+      sector: 'Construction, POP & Building Material Estimating',
+      primaryKeyword: 'Building Material Cost Estimator Nigeria 2026',
+      questions: [
+        {
+          question: 'How can building contractors avoid material over-billing and site theft in Nigeria?',
+          directAnswer: 'Contractors use computerized material quantity calculators for cement, POP, tile, and paint that compute exact square-meter coverage and factor standard 5%-8% waste margins, cross-referencing daily site deliveries against dynamic BOQs.',
+          searchVolumeScore: 94,
+          intentType: 'commercial'
+        },
+        {
+          question: 'How fast can an automated contractor BOQ quoter close commercial fit-out clients?',
+          directAnswer: 'By generating instant professional WhatsApp estimates with itemized material and labor rates in under 5 minutes, contractors close property owners before competitors even complete their site visits.',
+          searchVolumeScore: 89,
+          intentType: 'commercial'
+        }
+      ],
+      relatedComparisons: [
+        'Automated Quantity Estimation vs Manual Surveyor Take-Offs',
+        'Milestone Payment Escrow vs Advance Contractor Mobilization'
+      ]
+    },
+    agribusiness: {
+      sector: 'Agribusiness, Aquaculture & Feed Consolidation',
+      primaryKeyword: 'Bulk Agribusiness Feed Order Consolidation Nigeria',
+      questions: [
+        {
+          question: 'How do farm collectives reduce commercial feed prices in Nigeria?',
+          directAnswer: 'By pooling smallholder feed orders through an automated order consolidation portal, farm clusters aggregate 500 to 2,000 bags per batch to negotiate direct wholesale factory-gate pricing with major millers, saving ₦1,200 to ₦2,500 per bag.',
+          searchVolumeScore: 91,
+          intentType: 'commercial'
+        }
+      ],
+      relatedComparisons: [
+        'Direct Mill Feed Sourcing vs Local Agro-Dealer Retail Pricing',
+        'Automated Order Aggregation vs Manual Cooperative Registers'
+      ]
+    },
+    inventory: {
+      sector: 'Multi-Location Inventory & Stock Theft Prevention',
+      primaryKeyword: 'Multi-Location Retail Stock Theft Prevention Cloud Ledger',
+      questions: [
+        {
+          question: 'How do multi-branch retailers in Lagos prevent internal inventory shrinkage?',
+          directAnswer: 'Retailers deploy cloud-synced inventory ledgers with dual-party authorization for stock adjustments and real-time WhatsApp alerts that trigger whenever high-value stock moves or inventory registers diverge from physical counts.',
+          searchVolumeScore: 95,
+          intentType: 'commercial'
+        }
+      ],
+      relatedComparisons: [
+        'Cloud Inventory Ledgers vs Standalone Desktop POS Software',
+        'Automated WhatsApp Low-Stock Alerts vs Manual Weekly Audits'
+      ]
     }
   };
 

@@ -132,12 +132,11 @@ export default function HeroSection({
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent'
             }}>
-              ⚡ 24/7 AI Sales Closer & Lead Automation
+              ⚡ Luxury Business Websites & 24/7 AI WhatsApp Quoters
             </span>
-            <span style={{ color: '#475569', fontSize: '0.75rem' }}>•</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#fbbf24', fontSize: '0.78rem', fontWeight: 800 }}>
-              <Star size={13} fill="#fbbf24" />
-              <span>4.9/5 Rating (1,200+ Businesses)</span>
+            <span className="hidden sm:inline" style={{ color: '#475569', fontSize: '0.75rem' }}>•</span>
+            <div className="hidden sm:flex" style={{ alignItems: 'center', gap: 4, color: '#34d399', fontSize: '0.78rem', fontWeight: 800 }}>
+              <span>₦0 Upfront Preview • 48h Handover</span>
             </div>
           </div>
         </div>
@@ -147,33 +146,33 @@ export default function HeroSection({
           id="hero-heading"
           style={{
             textAlign: 'center',
-            fontSize: 'clamp(2.1rem, 4.8vw, 3.5rem)',
+            fontSize: 'clamp(1.75rem, 4.2vw, 3.5rem)',
             fontWeight: 900,
             lineHeight: 1.15,
-            margin: '0 auto 18px',
+            margin: '0 auto 14px',
             maxWidth: 960,
             fontFamily: "'Outfit', sans-serif",
             color: '#ffffff',
-            letterSpacing: '-0.035em',
+            letterSpacing: '-0.03em',
             textShadow: '0 2px 20px rgba(0, 0, 0, 0.9)'
           }}
         >
           Never Lose Another Customer To Slow Replies.<br />
           <span className="luxury-gradient-text">
-            Turn Every WhatsApp Inquiry & Click Into Cash 24/7.
+            24/7 WhatsApp AI Quoting Assistant & Luxury Business Website.
           </span>
         </h1>
 
         <p style={{
           textAlign: 'center',
           color: '#94a3b8',
-          fontSize: 'clamp(0.98rem, 1.8vw, 1.14rem)',
-          maxWidth: 760,
-          margin: '0 auto 24px',
-          lineHeight: 1.6,
+          fontSize: 'clamp(0.92rem, 1.6vw, 1.12rem)',
+          maxWidth: 720,
+          margin: '0 auto 20px',
+          lineHeight: 1.5,
           fontWeight: 400
         }}>
-          Capture verified B2B leads across Lagos, Abuja, and Port Harcourt. Qualify prospects instantly with human-like Nigerian accent voice notes, calculate automated PDF quotes in 2 minutes, and verify bank payments on autopilot.
+          Convert customers on autopilot. We build your custom website + 24/7 WhatsApp assistant that replies in &lt; 2.4s with natural Nigerian voice notes, calculates prices, and takes verified orders while you sleep.
         </p>
 
         {/* Trust Badges Bar */}
@@ -181,23 +180,21 @@ export default function HeroSection({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          gap: 14,
+          gap: 12,
           flexWrap: 'wrap',
           color: '#94a3b8',
-          fontSize: '0.82rem',
-          marginBottom: 32
+          fontSize: '0.8rem',
+          marginBottom: 28
         }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#f1f5f9', fontWeight: 600 }}>
-            <ShieldCheck size={15} style={{ color: '#10b981' }} /> Moniepoint & Paystack Payment Auto-Verification
+            <ShieldCheck size={15} style={{ color: '#10b981' }} /> 50% Milestone Deposit • 48-Hour Live Handover
           </span>
-          <span style={{ color: '#334155' }}>•</span>
-          <span style={{ color: '#f1f5f9', fontWeight: 600 }}>Nigerian Accent WhatsApp Voice Note AI</span>
-          <span style={{ color: '#334155' }}>•</span>
-          <span style={{ color: '#f1f5f9', fontWeight: 600 }}>10,000+ Verified B2B Lagos Leads</span>
+          <span className="hidden sm:inline" style={{ color: '#334155' }}>•</span>
+          <span className="hidden sm:inline" style={{ color: '#f1f5f9', fontWeight: 600 }}>Lagos Closer Desk (0802 279 1227)</span>
         </div>
 
         {/* High-Ticket CTA Buttons */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 14, flexWrap: 'wrap', marginBottom: 48 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 40 }}>
           <a
             id="hero-demo-cta"
             href={demoWaLink}
@@ -208,21 +205,30 @@ export default function HeroSection({
               color: '#ffffff',
               textDecoration: 'none',
               borderRadius: 14,
-              padding: '14px 32px',
+              padding: '14px 28px',
               fontWeight: 900,
               fontSize: '0.96rem',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 10,
+              justifyContent: 'center',
+              gap: 8,
               letterSpacing: '0.01em',
-              border: '1px solid rgba(255, 255, 255, 0.3)'
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: '0 10px 30px rgba(6, 182, 212, 0.35)',
+              boxSizing: 'border-box',
+              maxWidth: '100%',
+              textAlign: 'center'
             }}
           >
-            See a Live Demo on WhatsApp <ArrowRight style={{ width: 18, height: 18 }} aria-hidden="true" />
+            🟢 Test 2-Sec WhatsApp Demo →
           </a>
           <button
             id="hero-setup-cta"
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {
+              const el = document.getElementById('sector-tools');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+              else setIsModalOpen(true);
+            }}
             style={{
               background: 'rgba(255,255,255,0.05)',
               color: '#ffffff',
@@ -234,10 +240,14 @@ export default function HeroSection({
               border: '1px solid rgba(255,255,255,0.18)',
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: 8,
               backdropFilter: 'blur(16px)',
               boxShadow: '0 8px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
-              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxSizing: 'border-box',
+              maxWidth: '100%',
+              textAlign: 'center'
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.1)';
@@ -250,7 +260,7 @@ export default function HeroSection({
               (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
             }}
           >
-            Get 60-Sec Recommended Setup
+            Explore Specialized Sector Tools ↓
           </button>
         </div>
 
@@ -282,7 +292,7 @@ export default function HeroSection({
           </div>
 
           {/* Two-Column Interactive Simulation Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 16, marginBottom: 20 }}>
 
             {/* Left: WhatsApp Voice Closer Simulation Card */}
             <div style={{
@@ -359,7 +369,7 @@ export default function HeroSection({
                   <Sparkles size={14} /> Instant Business Profiler
                 </span>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: 10, marginBottom: 12 }}>
                   <div>
                     <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.74rem', fontWeight: 600, marginBottom: 4 }}>Industry Sector</label>
                     <select

@@ -131,8 +131,8 @@ export class SelfHealingSupervisor {
   ): Promise<boolean> {
     try {
       if (process.platform === 'win32') {
-        try { execSync('taskkill /F /IM chrome.exe /T', { stdio: 'ignore' }); } catch (_) {}
-        try { execSync('taskkill /F /IM chromedriver.exe /T', { stdio: 'ignore' }); } catch (_) {}
+        try { execSync('taskkill /F /IM chrome.exe /T', { stdio: 'ignore', windowsHide: true }); } catch (_) {}
+        try { execSync('taskkill /F /IM chromedriver.exe /T', { stdio: 'ignore', windowsHide: true }); } catch (_) {}
       } else {
         try { execSync('pkill -f chrome', { stdio: 'ignore' }); } catch (_) {}
       }
@@ -175,7 +175,8 @@ export class SelfHealingSupervisor {
       const child = spawn('node', [scriptPath, ...args], {
         detached: true,
         stdio: 'ignore',
-        shell: true
+        shell: true,
+        windowsHide: true
       });
       child.unref();
 

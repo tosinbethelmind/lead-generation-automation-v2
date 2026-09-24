@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import { spawn } from 'child_process';
-import path from 'path';
-import fs from 'fs';
-import { getAppCwd } from '@/lib/getCwd';
+import * as path from 'path';
+import * as fs from 'fs';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,74 +10,99 @@ interface LineStatus {
   phone: string;
   status: 'connected' | 'qr' | 'connecting' | 'disconnected';
   qrCodeBase64?: string;
+  pairingCode?: string;
   lastActiveWat?: string;
 }
 
-const BAILEYS_URL = 'http://localhost:3007';
+const EVOLUTION_URL = 'http://localhost:8080';
 
 function getLagosTimeString(date: Date = new Date()): string {
   return date.toLocaleTimeString('en-NG', { timeZone: 'Africa/Lagos', hour12: true });
 }
 
-// Automatically ensure Baileys service is running
-function ensureBaileysServiceRunning() {
-  if (process.env.VERCEL) return;
-  try {
-    const cwd = getAppCwd();
-    const scriptPath = path.join(cwd, 'scripts', 'whatsapp_baileys.js');
-    if (fs.existsSync(scriptPath)) {
-      const child = spawn('node', [scriptPath], {
-        detached: true,
-        stdio: 'ignore',
-        shell: true
-      });
-      child.unref();
+const ALL_7_LINES = [
+  { id: 1, label: 'Line 1: Admin / Closer Desk', phone: '+234 802 279 1227', phoneRaw: '2348022791227' },
+  { id: 2, label: 'Line 2: Outreach Desk 1', phone: '+234 702 626 6946', phoneRaw: '2347026266946' },
+  { id: 3, label: 'Line 3: Outreach Desk 2', phone: '+234 904 605 0469', phoneRaw: '2349046050469' },
+  { id: 4, label: 'Line 4: Outreach Desk 3', phone: '+234 913 512 9625', phoneRaw: '2349135129625' },
+  { id: 5, label: 'Line 5: Outreach Desk 4', phone: '+234 703 055 6877', phoneRaw: '2347030556877' },
+  { id: 6, label: 'Line 6: Outreach Desk 5', phone: '+234 811 934 6518', phoneRaw: '2348119346518' },
+  { id: 7, label: 'Line 7: Outreach Desk 6', phone: '+234 814 160 9564', phoneRaw: '2348141609564' }
+];
+
+function inspectLocalLine(lineNum: number, defaultPhone: string, label: string): LineStatus {
+  const cwd = process.cwd();
+  const dirName = `baileys_auth_line${lineNum}`;
+  const credsFile = path.join(cwd, 'local_db', dirName, 'creds.json');
+
+  let isConnected = false;
+  let detectedPhone = defaultPhone;
+
+  if (fs.existsSync(credsFile)) {
+    try {
+      const creds = JSON.parse(fs.readFileSync(credsFile, 'utf8'));
+      if (creds && creds.registered === true && creds.me && creds.me.id) {
+        const rawPhone = creds.me.id.split(':')[0].split('@')[0];
+        detectedPhone = `+${rawPhone}`;
+        isConnected = true;
+      }
+    } catch (_) {}
+  }
+
+  // Check registry backup
+  if (!isConnected) {
+    const regFile = path.join(cwd, 'local_db', 'whatsapp_lines_registry.json');
+    if (fs.existsSync(regFile)) {
+      try {
+        const reg = JSON.parse(fs.readFileSync(regFile, 'utf8'));
+        const entry = reg[`line_${lineNum}`];
+        if (entry && entry.connected && entry.phone) {
+          detectedPhone = `+${entry.phone}`;
+          isConnected = true;
+        }
+      } catch (_) {}
     }
-  } catch (_) {}
+  }
+
+  return {
+    lineId: lineNum,
+    label,
+    phone: detectedPhone,
+    status: isConnected ? 'connected' : 'disconnected',
+    lastActiveWat: getLagosTimeString() + ' WAT'
+  };
 }
 
 export async function GET() {
   try {
-    let serviceOnline = false;
-    let serviceData: any = null;
-
+    let evolutionData: any = null;
     try {
-      const resp = await fetch(`${BAILEYS_URL}/status`, {
-        signal: AbortSignal.timeout(2000),
-        headers: { 'Accept': 'application/json' }
-      });
-      if (resp.ok) {
-        serviceOnline = true;
-        serviceData = await resp.json();
+      const evoRes = await fetch(`${EVOLUTION_URL}/status`, { cache: 'no-store', signal: AbortSignal.timeout(2000) });
+      if (evoRes.ok) {
+        evolutionData = await evoRes.json();
       }
-    } catch (_) {
-      ensureBaileysServiceRunning();
-    }
+    } catch (_) {}
 
-    // Default status for 3 Numbers
-    const lines: LineStatus[] = [
-      {
-        lineId: 1,
-        label: 'Line 1 (Outreach Line A)',
-        phone: '+234 702 626 6946',
-        status: serviceData?.status === 'connected' ? 'connected' : (serviceData?.status === 'qr' ? 'qr' : (serviceOnline ? 'connecting' : 'disconnected')),
-        qrCodeBase64: serviceData?.qrCodeUrl || '',
-        lastActiveWat: getLagosTimeString() + ' WAT'
-      },
-      {
-        lineId: 2,
-        label: 'Line 2 (Outreach Line B)',
-        phone: '+234 904 605 0469',
-        status: serviceData?.status === 'connected' ? 'connected' : (serviceData?.status === 'qr' ? 'qr' : 'disconnected'),
-        qrCodeBase64: serviceData?.qrCodeUrl || '',
-        lastActiveWat: getLagosTimeString() + ' WAT'
+    const lines: LineStatus[] = ALL_7_LINES.map(cfg => {
+      const local = inspectLocalLine(cfg.id, cfg.phone, cfg.label);
+      if (evolutionData?.instances) {
+        const live = evolutionData.instances.find((i: any) => i.id === cfg.id);
+        if (live) {
+          if (live.state === 'open') {
+            local.status = 'connected';
+            if (live.phone) local.phone = `+${live.phone}`;
+          } else if (live.state === 'connecting') {
+            local.status = 'connecting';
+          }
+        }
       }
-    ];
+      return local;
+    });
 
     return NextResponse.json({
       success: true,
-      serviceOnline,
-      totalLines: 3,
+      serviceOnline: !!evolutionData,
+      totalLines: ALL_7_LINES.length,
       connectedCount: lines.filter(l => l.status === 'connected').length,
       lines,
       lastUpdated: getLagosTimeString() + ' WAT'
@@ -92,36 +115,51 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { lineId, action } = body; // action: 'connect' | 'disconnect' | 'refresh'
+    const { lineId, action, phone } = body; // action: 'connect' | 'disconnect' | 'pairing_code' | 'request_qr'
 
-    ensureBaileysServiceRunning();
-
-    if (action === 'disconnect') {
+    if (action === 'pairing_code') {
       try {
-        await fetch(`${BAILEYS_URL}/disconnect`, { method: 'POST' });
-      } catch (_) {}
-      return NextResponse.json({ success: true, message: `Line ${lineId} disconnected and session reset.` });
+        const targetPhone = phone || ALL_7_LINES.find(l => l.id === lineId)?.phoneRaw || '2348022791227';
+        const resp = await fetch(`${EVOLUTION_URL}/instance/pairingCode/bethelmind_instance_${lineId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phoneNumber: targetPhone })
+        });
+        const data = await resp.json();
+        return NextResponse.json({
+          success: true,
+          lineId,
+          pairingCode: data.pairingCode,
+          phone: data.phone,
+          message: '8-digit pairing code generated successfully.'
+        });
+      } catch (err: any) {
+        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+      }
     }
 
-    // Connect / Trigger QR Code generation
-    let qrCodeBase64 = '';
-    let status = 'qr';
-
-    try {
-      const resp = await fetch(`${BAILEYS_URL}/qr`, { signal: AbortSignal.timeout(3000) });
-      if (resp.ok) {
+    if (action === 'request_qr' || action === 'connect') {
+      try {
+        const resp = await fetch(`${EVOLUTION_URL}/instance/request-qr/bethelmind_instance_${lineId}`, {
+          method: 'POST'
+        });
         const data = await resp.json();
-        qrCodeBase64 = data.qrCodeBase64 || '';
-        status = data.status || 'qr';
-      }
-    } catch (_) {}
+        return NextResponse.json({
+          success: true,
+          lineId,
+          status: 'qr',
+          qrCodeBase64: data.qr || '',
+          message: `Line ${lineId} live QR code generated.`
+        });
+      } catch (_) {}
+    }
 
     return NextResponse.json({
       success: true,
-      message: `Line ${lineId} QR Code generated. Scan with WhatsApp Business to pair.`,
+      message: `Line ${lineId} ready for pairing on Port 8080.`,
       lineId,
-      status,
-      qrCodeBase64
+      status: 'qr',
+      pairingTip: `Open http://localhost:8080/pair/${lineId} for direct live pairing.`
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

@@ -54,7 +54,7 @@ function submitUrlToGoogleIndexing(url) {
         .then(res => console.log('Google Indexing:', res.success ? 'SUCCESS' : 'FAILED', res.message))
         .catch(e => console.warn('Google Indexing Warning:', e.message));
     `;
-    const child = spawn('node', ['-e', script], { cwd: projectDir, shell: true });
+    const child = spawn('node', ['-e', script], { cwd: projectDir, shell: true, windowsHide: true });
     child.on('error', () => {});
   } catch (err) {
     log(`Google Indexing trigger error: ${err.message}`);
@@ -79,7 +79,8 @@ function checkAndPostDailyChannelBroadcast() {
     const child = spawn('node', ['scripts/whatsapp_viral_channel_bot.js'], {
       cwd: projectDir,
       shell: true,
-      stdio: 'inherit'
+      stdio: 'inherit',
+      windowsHide: true
     });
 
     child.on('close', (code) => {
@@ -96,7 +97,8 @@ function startKeepAliveRunner() {
   runnerProcess = spawn('node', ['scripts/keep_alive_runner.js'], {
     cwd: projectDir,
     shell: true,
-    stdio: 'inherit'
+    stdio: 'inherit',
+    windowsHide: true
   });
 
   runnerProcess.on('exit', (code) => {
@@ -121,7 +123,8 @@ submitUrlToGoogleIndexing('https://www.bethelmindanalytics.com/#pricing');
 const bootPost = spawn('node', ['scripts/whatsapp_viral_channel_bot.js'], {
   cwd: projectDir,
   shell: true,
-  stdio: 'inherit'
+  stdio: 'inherit',
+  windowsHide: true
 });
 bootPost.on('close', () => {
   log('✅ [Boot] Immediate viral broadcast payload generated and ready.');
@@ -133,7 +136,7 @@ setInterval(checkAndPostDailyChannelBroadcast, 10 * 60 * 1000);
 // Run High-Intent CAC & GMB Hunter cycle (every 6 hours)
 function runAutonomousHunterCycle() {
   log('🕵️‍♂️ [CAC/GMB Hunter] Triggering autonomous high-intent infiltration cycle...');
-  const hunter = spawn('node', ['scripts/run_cac_gmb_hunter.js'], { cwd: projectDir, shell: true, stdio: 'inherit' });
+  const hunter = spawn('node', ['scripts/run_cac_gmb_hunter.js'], { cwd: projectDir, shell: true, stdio: 'inherit', windowsHide: true });
   hunter.on('close', (code) => {
     log(`🕵️‍♂️ [CAC/GMB Hunter] Cycle completed with code ${code}.`);
   });
@@ -143,7 +146,7 @@ setInterval(runAutonomousHunterCycle, 6 * 60 * 60 * 1000);
 // Run High-Velocity Traffic & Google Indexing Refresh (every 6 hours)
 function runAutonomousTrafficCycle() {
   log('🚀 [Traffic Engine] Refreshing multi-channel syndication packs & Google Indexing pings...');
-  const traffic = spawn('npx', ['tsx', 'scripts/trigger_high_traffic_engine.js'], { cwd: projectDir, shell: true, stdio: 'inherit' });
+  const traffic = spawn('npx', ['tsx', 'scripts/trigger_high_traffic_engine.js'], { cwd: projectDir, shell: true, stdio: 'inherit', windowsHide: true });
   traffic.on('close', (code) => {
     log(`🚀 [Traffic Engine] Traffic assets and action plan refreshed (code ${code}).`);
   });
@@ -162,7 +165,7 @@ function checkAndSendAiDecisionBriefing() {
   if (((watHour >= 8 && watHour <= 9) || (watHour >= 20 && watHour <= 21)) && lastBriefingDate !== todaySlot) {
     lastBriefingDate = todaySlot;
     log('🧠 [AI Decision Engine] Formulating and dispatching strategic executive briefing to bethelmindrecruit@gmail.com...');
-    const aiBriefing = spawn('npx', ['tsx', 'scripts/dispatch_ai_decision_briefing.js'], { cwd: projectDir, shell: true, stdio: 'inherit' });
+    const aiBriefing = spawn('npx', ['tsx', 'scripts/dispatch_ai_decision_briefing.js'], { cwd: projectDir, shell: true, stdio: 'inherit', windowsHide: true });
     aiBriefing.on('close', (code) => {
       log(`🧠 [AI Decision Engine] Briefing completed with exit code ${code}.`);
     });

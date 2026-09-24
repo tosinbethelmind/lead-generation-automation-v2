@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
       // Turn OFF: Kill runner processes
       if (!process.env.VERCEL) {
         const killCmd = `powershell -Command "Stop-Process -Name comet, tor -Force -ErrorAction SilentlyContinue; Get-Process -Name node -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like '*keep_alive*' -or $_.CommandLine -like '*local_job_runner*' } | Stop-Process -Force -ErrorAction SilentlyContinue"`;
-        exec(killCmd, () => {});
+        exec(killCmd, { windowsHide: true }, () => {});
       }
 
       // Remove heartbeat file

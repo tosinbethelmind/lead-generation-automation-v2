@@ -210,8 +210,8 @@ export default function AdminLayout({
     return true;
   };
 
-  // If we are on the login page, don't show the layout frame
-  if (pathname === '/admin/login') {
+  // If we are on the login page or mobile command center, don't show the desktop layout frame
+  if (pathname === '/admin/login' || pathname?.startsWith('/admin/mobile')) {
     return <>{children}</>;
   }
 

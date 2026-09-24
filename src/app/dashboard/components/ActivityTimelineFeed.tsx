@@ -8,8 +8,9 @@ export default function ActivityTimelineFeed() {
   const [loading, setLoading] = useState<boolean>(true);
   const [filterChannel, setFilterChannel] = useState<string>('all');
 
-  const loadActivities = async () => {
-    setLoading(true);
+  const loadActivities = async (isAutoRefresh = false) => {
+    if (isAutoRefresh && typeof document !== 'undefined' && document.hidden) return;
+    if (!isAutoRefresh) setLoading(true);
     try {
       const res = await fetch('/api/activities?limit=50').then(r => r.json());
       if (res.success) {
@@ -18,13 +19,13 @@ export default function ActivityTimelineFeed() {
     } catch (e) {
       console.error('Failed to load activities:', e);
     } finally {
-      setLoading(false);
+      if (!isAutoRefresh) setLoading(false);
     }
   };
 
   useEffect(() => {
     loadActivities();
-    const interval = setInterval(loadActivities, 3000); // Live poll every 3s
+    const interval = setInterval(() => loadActivities(true), 15000);
     return () => clearInterval(interval);
   }, []);
 

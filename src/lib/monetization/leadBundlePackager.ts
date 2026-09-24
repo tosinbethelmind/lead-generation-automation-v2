@@ -20,6 +20,11 @@ export interface LeadBundle {
   sector: string;
   leadCount: number;
   priceNGN: number;
+  oneTimePriceNGN: number;
+  microUnlockPriceNGN: number;
+  dataProtectionAddonNGN: number;
+  quarterlyRefreshPriceNGN: number;
+  campaignExecutionFeeNGN: number;
   projectedSalesValueNGN: number;
   selarUrl: string;
   tierBadge: '👑 #1 BEST-SELLING BUNDLE' | '💎 HIGH DEMAND SECTOR' | '⚡ RAPID TURNOVER';
@@ -27,11 +32,22 @@ export interface LeadBundle {
 
 export function calculateAndRankLeadBundles(rawBundles: any[]): LeadBundle[] {
   const scored = rawBundles.map(b => {
-    // Project revenue assuming 20 automated purchases per pack
-    const projectedSalesValueNGN = b.priceNGN * 20;
+    const oneTimePriceNGN = b.priceNGN || 25000;
+    const microUnlockPriceNGN = 3500;
+    const dataProtectionAddonNGN = 3500;
+    const quarterlyRefreshPriceNGN = 5000;
+    const campaignExecutionFeeNGN = 25000;
+
+    // Projected sales assumes 20 direct downloads + 15 protection add-ons + 3 campaign executions
+    const projectedSalesValueNGN = (oneTimePriceNGN * 20) + (dataProtectionAddonNGN * 15) + (campaignExecutionFeeNGN * 3);
 
     return {
       ...b,
+      oneTimePriceNGN,
+      microUnlockPriceNGN,
+      dataProtectionAddonNGN,
+      quarterlyRefreshPriceNGN,
+      campaignExecutionFeeNGN,
       projectedSalesValueNGN
     };
   });
@@ -110,111 +126,76 @@ export async function generateLeadBundlesFromDatabase(): Promise<{
   };
 }
 
+import { dispatchSecureEmail, OFFICIAL_PRODUCTION_DOMAIN } from './smtpTransporterPool';
+
 /**
  * Dispatches the Consolidated Daily Top 5 Lead Bundles Digest.
  */
 export async function dispatchDailyLeadBundleDigest(): Promise<{ success: boolean; messageId?: string }> {
   const data = await generateLeadBundlesFromDatabase();
 
-  let config: any = {};
-  try {
-    config = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'config.json'), 'utf8'));
-  } catch (_) {}
+  const cardsHtml = data.top5Bundles.map(b => {
+    const isTop = b.rank === 1;
 
-  return new Promise((resolve) => {
-    if (dns.setDefaultResultOrder) {
-      dns.setDefaultResultOrder('ipv4first');
-    }
-
-    const host = config.smtpHost || 'smtp.hostinger.com';
-    const port = config.smtpPort || 587;
-    const user = config.smtpUser || 'tosin@bethelmindanalytics.com';
-    const pass = config.smtpPass || 'Bethelmind@2026';
-
-    dns.lookup(host, { family: 4 }, async (err, address) => {
-      const resolvedHost = (!err && address) ? address : 'smtp.hostinger.com';
-
-      const transporter = nodemailer.createTransport({
-        host: resolvedHost,
-        port: 587,
-        secure: false,
-        auth: { user, pass },
-        tls: { servername: host, rejectUnauthorized: false },
-        connectionTimeout: 15000
-      });
-
-      const cardsHtml = data.top5Bundles.map(b => {
-        const isTop = b.rank === 1;
-
-        return `
-          <div style="background: #111827; border: 1px solid ${isTop ? '#a855f7' : '#1f2937'}; border-radius: 10px; padding: 20px; margin-bottom: 18px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-              <div>
-                <span style="display: inline-block; background: ${isTop ? '#9333ea' : '#374151'}; color: #ffffff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px;">
-                  ${b.tierBadge} (RANK #${b.rank})
-                </span>
-                <div style="font-size: 18px; font-weight: 800; color: #ffffff;">${b.title}</div>
-                <div style="font-size: 13px; color: #c084fc;">📦 ${b.leadCount} Clean CSV/Excel Contacts | Sector: <strong>${b.sector}</strong></div>
-              </div>
-              <div style="text-align: right;">
-                <div style="font-size: 20px; font-weight: 900; color: #34d399;">₦${b.priceNGN.toLocaleString()}</div>
-                <div style="font-size: 11px; color: #9ca3af;">Price / Download</div>
-              </div>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; background: #030712; padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px;">
-              <div><span style="color: #9ca3af;">Deliverability:</span> <strong style="color: #34d399;">100% Genuine Numbers</strong></div>
-              <div><span style="color: #9ca3af;">Projected Monthly Yield:</span> <strong style="color: #a855f7;">₦${b.projectedSalesValueNGN.toLocaleString()}</strong></div>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-              <a href="${b.selarUrl}" style="background: ${isTop ? '#9333ea' : '#2563eb'}; color: #ffffff; padding: 10px 18px; text-decoration: none; font-size: 13px; font-weight: 800; border-radius: 6px; display: inline-block;">
-                ⚡ 1-Click View Selar Store Listing &rarr;
-              </a>
-            </div>
+    return `
+      <div style="background: #111827; border: 1px solid ${isTop ? '#a855f7' : '#1f2937'}; border-radius: 10px; padding: 20px; margin-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+          <div>
+            <span style="display: inline-block; background: ${isTop ? '#9333ea' : '#374151'}; color: #ffffff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px;">
+              ${b.tierBadge} (RANK #${b.rank})
+            </span>
+            <div style="font-size: 18px; font-weight: 800; color: #ffffff;">${b.title}</div>
+            <div style="font-size: 13px; color: #c084fc;">📦 ${b.leadCount} Clean CSV/Excel Contacts | Sector: <strong>${b.sector}</strong></div>
           </div>
-        `;
-      }).join('');
-
-      const emailHtml = `
-        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto; background: #0b0f19; color: #f3f4f6; border-radius: 12px; overflow: hidden; border: 1px solid #1f2937;">
-          <div style="background: linear-gradient(135deg, #581c87, #0f172a); padding: 26px 30px; text-align: left; border-bottom: 1px solid #a855f7;">
-            <div style="font-size: 12px; font-weight: 800; color: #c084fc; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
-              VERIFIED B2B LEAD DATA PACKS • 08:00 AM WAT
-            </div>
-            <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800;">
-              📦 ${data.totalLeadsPackaged.toLocaleString()} Verified Nigerian Decision-Makers Ready
-            </h1>
-            <p style="color: #e9d5ff; margin: 6px 0 0 0; font-size: 13px;">
-              Total Bundles: <strong>${data.totalBundles} packages</strong> | Automated Selar Paystack & Moniepoint Fulfillment
-            </p>
-          </div>
-
-          <div style="padding: 26px;">
-            ${cardsHtml}
-          </div>
-
-          <div style="background: #030712; padding: 16px 30px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #1f2937;">
-            Sent daily by Bethelmind Autonomous 24/7 Lead Bundler Watchdog • Desk: +234 802 279 1227
+          <div style="text-align: right;">
+            <div style="font-size: 20px; font-weight: 900; color: #34d399;">₦${b.priceNGN.toLocaleString()}</div>
+            <div style="font-size: 11px; color: #9ca3af;">Price / Download</div>
           </div>
         </div>
-      `;
 
-      const mailOptions = {
-        from: `"Bethelmind Lead Packager" <${user}>`,
-        to: 'bethelmindrecruit@gmail.com',
-        subject: `📦 Daily Lead Bundles Digest: ${data.totalLeadsPackaged.toLocaleString()} Decision-Makers Packaged (Top 5 Ranked)`,
-        html: emailHtml
-      };
+        <div style="display: flex; justify-content: space-between; background: #030712; padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px;">
+          <div><span style="color: #9ca3af;">Deliverability:</span> <strong style="color: #34d399;">100% Genuine Numbers</strong></div>
+          <div><span style="color: #9ca3af;">Projected Monthly Yield:</span> <strong style="color: #a855f7;">₦${b.projectedSalesValueNGN.toLocaleString()}</strong></div>
+        </div>
 
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          resolve({ success: false });
-        } else {
-          console.log(`✅ [LeadBundleWatchdog]: Daily Lead Bundle Digest dispatched (ID: ${info.messageId})`);
-          resolve({ success: true, messageId: info.messageId });
-        }
-      });
-    });
+        <div style="display: flex; gap: 10px;">
+          <a href="${b.selarUrl}" style="background: ${isTop ? '#9333ea' : '#2563eb'}; color: #ffffff; padding: 10px 18px; text-decoration: none; font-size: 13px; font-weight: 800; border-radius: 6px; display: inline-block;">
+            ⚡ 1-Click View Selar Store Listing &rarr;
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const emailHtml = `
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto; background: #0b0f19; color: #f3f4f6; border-radius: 12px; overflow: hidden; border: 1px solid #1f2937;">
+      <div style="background: linear-gradient(135deg, #581c87, #0f172a); padding: 26px 30px; text-align: left; border-bottom: 1px solid #a855f7;">
+        <div style="font-size: 12px; font-weight: 800; color: #c084fc; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
+          VERIFIED B2B LEAD DATA PACKS • 08:00 AM WAT
+        </div>
+        <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800;">
+          📦 ${data.totalLeadsPackaged.toLocaleString()} Verified Nigerian Decision-Makers Ready
+        </h1>
+        <p style="color: #e9d5ff; margin: 6px 0 0 0; font-size: 13px;">
+          Total Bundles: <strong>${data.totalBundles} packages</strong> | Automated Selar Paystack & Moniepoint Fulfillment
+        </p>
+      </div>
+
+      <div style="padding: 26px;">
+        ${cardsHtml}
+      </div>
+
+      <div style="background: #030712; padding: 16px 30px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #1f2937;">
+        Sent daily by Bethelmind Autonomous 24/7 Lead Bundler Watchdog • Desk: +234 802 279 1227
+      </div>
+    </div>
+  `;
+
+  return dispatchSecureEmail({
+    to: 'bethelmindrecruit@gmail.com',
+    subject: `📦 Daily Lead Bundles Digest: ${data.totalLeadsPackaged.toLocaleString()} Decision-Makers Packaged (Top 5 Ranked)`,
+    html: emailHtml,
+    fromName: 'Bethelmind Lead Packager'
   });
 }
+

@@ -43,7 +43,8 @@ function startPythonHarvester() {
   pyProcess = spawn('python', ['scripts/colab_lagos_10k_runner.py', '--loop'], {
     cwd: rootDir,
     stdio: 'inherit',
-    shell: true
+    shell: true,
+    windowsHide: true
   });
 
   pyProcess.on('exit', (code) => {
@@ -62,7 +63,8 @@ function startQueueRunner() {
   queueProcess = spawn('node', ['scripts/keep_alive_runner.js'], {
     cwd: rootDir,
     stdio: 'inherit',
-    shell: true
+    shell: true,
+    windowsHide: true
   });
 
   queueProcess.on('exit', (code) => {
@@ -81,7 +83,8 @@ function startCryptoRevenueDaemon() {
   cryptoDaemonProcess = spawn('npx', ['tsx', 'scripts/autonomous_golden_crypto_daemon.ts'], {
     cwd: rootDir,
     stdio: 'inherit',
-    shell: true
+    shell: true,
+    windowsHide: true
   });
 
   cryptoDaemonProcess.on('exit', (code) => {
@@ -95,10 +98,10 @@ function startCryptoRevenueDaemon() {
   });
 }
 
-// Launch all processes
+// Launch B2B commercial processes only (Crypto Engine is strictly paused per directive)
 startPythonHarvester();
 startQueueRunner();
-startCryptoRevenueDaemon();
+// startCryptoRevenueDaemon(); // PAUSED: Zero messages dispatched to crypto engine per directive
 
 // Heartbeat every 10 minutes
 setInterval(() => {

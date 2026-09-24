@@ -47,21 +47,31 @@ async function requestPairingCode() {
   const authDir = path.join(__dirname, '../local_db', lineConfig.dir);
   if (!fs.existsSync(authDir)) {
     fs.mkdirSync(authDir, { recursive: true });
+  } else {
+    // Check if creds is already registered
+    const credsPath = path.join(authDir, 'creds.json');
+    if (fs.existsSync(credsPath)) {
+      try {
+        const existing = JSON.parse(fs.readFileSync(credsPath, 'utf8'));
+        if (!existing.registered) {
+          // Stale / unlinked session: clean up for fresh pairing
+          fs.readdirSync(authDir).forEach(f => fs.unlinkSync(path.join(authDir, f)));
+        }
+      } catch (_) {
+        fs.readdirSync(authDir).forEach(f => fs.unlinkSync(path.join(authDir, f)));
+      }
+    }
   }
 
   const { state, saveCreds } = await useMultiFileAuthState(authDir);
-  let version = [2, 3000, 1035194821];
-  try {
-    const v = await fetchLatestBaileysVersion();
-    version = v.version;
-  } catch (_) {}
+  const version = [2, 3000, 1043857760];
 
   const sock = makeWASocket({
     version,
     logger: pino({ level: 'silent' }),
     auth: state,
     printQRInTerminal: false,
-    browser: ['Windows', 'Chrome', '125.0.0.0']
+    connectTimeoutMs: 30000
   });
 
   sock.ev.on('creds.update', saveCreds);
@@ -70,7 +80,22 @@ async function requestPairingCode() {
     const { connection } = update;
     if (connection === 'open') {
       console.log(`\n🎉 LINE ${selectedLineKey} (${lineConfig.name} - +${cleanPhone}) IS LINKED & ACTIVE! ✅\n`);
-      process.exit(0);
+      
+      // Update registry
+      const regPath = path.join(__dirname, '../local_db/whatsapp_lines_registry.json');
+      try {
+        let reg = fs.existsSync(regPath) ? JSON.parse(fs.readFileSync(regPath, 'utf8')) : {};
+        reg[`line_${selectedLineKey}`] = {
+          line: parseInt(selectedLineKey),
+          phone: cleanPhone,
+          name: lineConfig.name,
+          connected: true,
+          lastChecked: new Date().toISOString()
+        };
+        fs.writeFileSync(regPath, JSON.stringify(reg, null, 2), 'utf8');
+      } catch (_) {}
+
+      setTimeout(() => process.exit(0), 2000);
     }
   });
 
@@ -89,10 +114,19 @@ async function requestPairingCode() {
         console.log(`2. Tap Settings (iOS) or 3 dots (Android) → Linked Devices`);
         console.log(`3. Tap "Link a Device" → "Link with phone number instead"`);
         console.log(`4. Enter the code above: ${formattedCode}\n`);
+        console.log(`⏳ Waiting for phone authorization (listening for 3 minutes)...`);
       } catch (err) {
         console.error(`❌ Error requesting pairing code:`, err.message);
       }
-    }, 4000);
+    }, 4500);
+
+    // Keep event loop alive for 3 minutes waiting for user input on phone
+    const keepAlive = setInterval(() => {}, 5000);
+    setTimeout(() => {
+      clearInterval(keepAlive);
+      console.log('\n⏱️ Pairing code expired after 3 minutes.');
+      process.exit(0);
+    }, 180000);
   } else {
     console.log(`✅ Line ${selectedLineKey} is ALREADY linked and active!`);
   }

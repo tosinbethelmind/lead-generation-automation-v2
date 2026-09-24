@@ -15,8 +15,8 @@
  * 9. 🏦 100% Direct Settlement to OPay: 7034297995 (Oyelakin Tosin Matthew)
  */
 
-import { scanExpiringNigerianDomains } from '../src/lib/monetization/expiredDomainMonitor';
-import { scanUnclaimedGmbBusinesses } from '../src/lib/monetization/gmbRescueEngine';
+import { scanTurnkeyWebsiteLeads } from '../src/lib/monetization/turnkeyWebsiteEngine';
+import { scanFreightArbitrageLeads } from '../src/lib/monetization/smeFreightArbitrageEngine';
 import { scanPendingAppointmentLeads } from '../src/lib/monetization/appointmentLeadRouter';
 import { scanDiasporaEscrowProjects } from '../src/lib/monetization/diasporaEscrowEngine';
 import { generateLeadBundlesFromDatabase } from '../src/lib/monetization/leadBundlePackager';
@@ -36,13 +36,13 @@ async function executeB2BAutonomousCycle(isInitialRun: boolean = false) {
   console.log(`🛡️ Architecture: 7 High-Scale Active B2B Pillars (CAC Excluded)\n`);
 
   try {
-    // ── 1. Expired Domains & 301 Parking ─────────────────────────────────────
-    const domainData = await scanExpiringNigerianDomains();
-    console.log(`🏛️ [Pillar 1: Expired Domains] Scanned ${domainData.totalOpportunities} drops | Top ROI: +₦${domainData.top5Prospects[0]?.netProfitNGN.toLocaleString() || '280,000'}`);
+    // ── 1. Turnkey DFY Prototypes & Commercial Websites ────────────────────
+    const websiteData = await scanTurnkeyWebsiteLeads();
+    console.log(`🌐 [Engine 1: Turnkey Websites] Staged ${websiteData.totalQualified} lead prototypes | Deposit Yield: ₦${websiteData.top5Targets.reduce((a, w) => a + w.depositFeeNGN, 0).toLocaleString()}`);
 
-    // ── 2. Unclaimed GMB Vulnerabilities ────────────────────────────────────
-    const gmbData = await scanUnclaimedGmbBusinesses();
-    console.log(`📍 [Pillar 2: GMB Rescues] Identified ${gmbData.totalVulnerable} vulnerable profiles | Target Rescue Fee: ₦${gmbData.top5Targets[0]?.recommendedFeeNGN.toLocaleString() || '45,000'}`);
+    // ── 2. B2B Freight Importer Escrow & Spread Arbitrage ─────────────────
+    const freightData = await scanFreightArbitrageLeads();
+    console.log(`🚢 [Engine 2: Freight Arbitrage] Scored ${freightData.totalQualified} importer deals | Arbitrage Spread Yield: ₦${freightData.top5Targets.reduce((a, f) => a + f.totalCommissionNgn, 0).toLocaleString()}`);
 
     // ── 3. Lead Bundles on Selar ─────────────────────────────────────────────
     const leadBundles = await generateLeadBundlesFromDatabase();

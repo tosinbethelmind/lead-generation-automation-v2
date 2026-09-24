@@ -19,6 +19,52 @@ if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder('ipv4first');
 }
 
+// 🛡️ SUPREME LAW OF DATA & BANDWIDTH CONSERVATION: Single-Instance Mutex Guard
+const LOCK_FILE = path.join(process.cwd(), '.local_runner.pid');
+const HEARTBEAT_FILE = path.join(process.cwd(), 'local_runner_heartbeat.json');
+function acquireSingletonLock() {
+  try {
+    if (fs.existsSync(LOCK_FILE)) {
+      const existingPid = parseInt(fs.readFileSync(LOCK_FILE, 'utf8').trim(), 10);
+      if (existingPid && existingPid !== process.pid) {
+        let isAlive = false;
+        try {
+          if (fs.existsSync(HEARTBEAT_FILE)) {
+            const hb = JSON.parse(fs.readFileSync(HEARTBEAT_FILE, 'utf8'));
+            // If heartbeat was updated within last 90s, process is genuinely active
+            if (hb && hb.last_seen && (Date.now() - hb.last_seen < 90 * 1000)) {
+              isAlive = true;
+            }
+          }
+        } catch (_) {}
+
+        if (isAlive) {
+          try {
+            process.kill(existingPid, 0);
+            console.log(`🔒 [Singleton Guard] Runner genuinely active (PID ${existingPid}). Exiting duplicate process.`);
+            process.exit(0);
+          } catch (_) {
+            // Process not alive, stale lock - can proceed
+          }
+        }
+      }
+    }
+    fs.writeFileSync(LOCK_FILE, String(process.pid), 'utf8');
+    const cleanup = () => {
+      try {
+        if (fs.existsSync(LOCK_FILE)) {
+          const recorded = parseInt(fs.readFileSync(LOCK_FILE, 'utf8').trim(), 10);
+          if (recorded === process.pid) fs.unlinkSync(LOCK_FILE);
+        }
+      } catch (_) {}
+    };
+    process.on('exit', cleanup);
+    process.on('SIGINT', () => { cleanup(); process.exit(0); });
+    process.on('SIGTERM', () => { cleanup(); process.exit(0); });
+  } catch (_) {}
+}
+acquireSingletonLock();
+
 // Intercept all unhandled exceptions and promise rejections to prevent crashing the daemon
 process.on('uncaughtException', (err) => {
   console.error('🔥 [Runner UncaughtException] Fatal error caught globally:', err.stack || err.message || err);
@@ -44,15 +90,15 @@ function isValidKey(key: string): boolean {
     if (parts.length === 3) {
       const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
       // Accept either the active project or any valid-looking JWT
-      return payload.ref === 'pnsrjsyiygxdcxkpgbzx' || payload.ref === 'szyuterncawfxwzhvwcf' || !!payload.ref;
+      return payload.ref === 'rcaamfaqkxvgbjlfuhki' || payload.ref === 'rcaamfaqkxvgbjlfuhki' || !!payload.ref;
     }
   } catch (_) {}
   return key.length > 30;
 }
 
-// Active Supabase project fallback credentials (pnsrjsyiygxdcxkpgbzx)
-const FALLBACK_SUPABASE_URL = 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
-const FALLBACK_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
+// Active Supabase project fallback credentials (rcaamfaqkxvgbjlfuhki)
+const FALLBACK_SUPABASE_URL = 'https://rcaamfaqkxvgbjlfuhki.supabase.co';
+const FALLBACK_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWFtZmFxa3h2Z2JqbGZ1aGtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzUyNDI0OCwiZXhwIjoyMTAzMTAwMjQ4fQ.9KKQ52VdE8b-jxy2QmOAAxuBMKpGyncwDDEyMGfe9fw';
 
 // Resolve environment configuration
 function loadConfig() {
@@ -60,7 +106,7 @@ function loadConfig() {
   let envKey = cleanEnvVal(process.env.SUPABASE_SERVICE_ROLE_KEY) || cleanEnvVal(process.env.SUPABASE_KEY) || cleanEnvVal(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
   // Filter out the old offline project URL
-  if (envUrl && envUrl.includes('szyuterncawfxwzhvwcf')) envUrl = '';
+  if (envUrl && envUrl.includes('rcaamfaqkxvgbjlfuhki')) envUrl = '';
 
   let supabaseUrl = (envUrl && envUrl.length > 10) ? envUrl : FALLBACK_SUPABASE_URL;
   let supabaseKey = (envKey && isValidKey(envKey)) ? envKey : FALLBACK_SUPABASE_KEY;
@@ -84,6 +130,10 @@ let lastActiveRunnerCheck = 0;
 // Throttle failover log so it only prints once every 5 minutes
 let lastFailoverLogTime = 0;
 const FAILOVER_LOG_THROTTLE_MS = 5 * 60 * 1000;
+
+// Fair Usage of Data: Supabase Egress Circuit-Breaker
+let supabaseCooldownUntil = 0;
+let lastDbHeartbeatTime = 0;
 
 async function checkActiveRunnerBackend(): Promise<string> {
   const now = Date.now();
@@ -283,16 +333,22 @@ function readLocalJobs(): Record<string, any> {
 }
 
 function safeWriteJsonAtomic(filePath: string, data: any) {
+  const tempPath = `${filePath}.tmp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   try {
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    const tempPath = `${filePath}.tmp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), 'utf-8');
-    fs.renameSync(tempPath, filePath);
+    try {
+      fs.renameSync(tempPath, filePath);
+    } catch (_) {
+      fs.copyFileSync(tempPath, filePath);
+      try { fs.unlinkSync(tempPath); } catch (_) {}
+    }
   } catch (_) {
     try {
+      if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
       fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
     } catch (_) {}
   }
@@ -632,6 +688,10 @@ async function pollQueue() {
           break; // No more local queued jobs
         }
       } else if (supabase) {
+        if (Date.now() < supabaseCooldownUntil) {
+          break; // In cooldown to protect network data & Supabase egress quota
+        }
+
         // Try to dequeue atomically via RPC
         const { data: job, error: rpcError } = await supabaseWithRetry(() => supabase!.rpc('dequeue_next_scrape_job'));
 
@@ -645,7 +705,16 @@ async function pollQueue() {
         }
 
         if (rpcError) {
-          if (rpcError.message?.includes('does not exist')) {
+          if (
+            rpcError.message?.includes('exceed_egress_quota') ||
+            rpcError.message?.includes('restricted') ||
+            rpcError.message?.includes('violat') ||
+            (rpcError as any).code === '429'
+          ) {
+            supabaseCooldownUntil = Date.now() + 15 * 60 * 1000;
+            console.warn(`⚠️ [Supabase Egress Circuit-Breaker] Quota restricted (${rpcError.message}). Resting cloud polling for 15 minutes to conserve data.`);
+            break;
+          } else if (rpcError.message?.includes('does not exist')) {
             console.warn('⚠️ dequeue_next_scrape_job RPC not found. Falling back to non-atomic queue polling...');
           } else {
             console.error('Error calling dequeue_next_scrape_job RPC:', rpcError.message);
@@ -662,7 +731,16 @@ async function pollQueue() {
         );
 
         if (error) {
-          console.error('Error polling queue from Supabase (fallback):', error.message);
+          if (
+            error.message?.includes('exceed_egress_quota') ||
+            error.message?.includes('restricted') ||
+            error.message?.includes('violat')
+          ) {
+            supabaseCooldownUntil = Date.now() + 15 * 60 * 1000;
+            console.warn(`⚠️ [Supabase Egress Circuit-Breaker] Egress restricted (${error.message}). Resting cloud polling for 15 minutes to conserve data.`);
+          } else {
+            console.error('Error polling queue from Supabase (fallback):', error.message);
+          }
           break;
         }
 
@@ -1034,11 +1112,11 @@ async function checkLagosDailyScraper() {
   await checkScheduledCampaigns();
   await checkLagosDailyScraper();
   
-  // Poll queue for new jobs rapidly (every 500ms) with multi-worker parallel execution
-  setInterval(pollQueue, 500);
-  console.log(`🔍 Polling queue every 500ms (High-Speed Multi-Worker Mode: ${MAX_CONCURRENT_JOBS} parallel threads)...`);
+  // Poll queue for new jobs (every 60s) adhering to Strict Fair Usage of Data policy
+  setInterval(pollQueue, 60000);
+  console.log(`🔍 Polling queue every 60s (Strict Fair Data Usage Mode: ${MAX_CONCURRENT_JOBS} parallel threads)...`);
 
-  // Write heartbeat file and database entry every 3 seconds to let Next.js dashboard know we are alive
+  // Write heartbeat file locally (every 5s) and database entry (every 15 mins) to conserve data
   setInterval(async () => {
     const heartbeatData = { 
       last_seen: Date.now(), 
@@ -1047,7 +1125,7 @@ async function checkLagosDailyScraper() {
       port: LOCAL_API_PORT
     };
     
-    // 1. Local file write
+    // 1. Local file write (instant, 0 data usage)
     try {
       const heartbeatPath = path.resolve(process.cwd(), 'local_runner_heartbeat.json');
       safeWriteJsonAtomic(heartbeatPath, heartbeatData);
@@ -1055,52 +1133,79 @@ async function checkLagosDailyScraper() {
       console.error('❌ Heartbeat file write error:', err.message);
     }
 
-    // 2. Database write
-    try {
-      if (supabase) {
-        const runId = isHuggingFaceEnv ? 'huggingface_runner' : 'local_runner';
-        // Delete older heartbeats to avoid table bloating
-        await supabaseWithRetry(() => supabase!
-          .from('logs')
-          .delete()
-          .eq('run_id', runId)
-          .eq('step', 'heartbeat')
-        );
+    // 2. Database write throttled to 15 minutes to eliminate continuous network polling
+    const now = Date.now();
+    if (now - lastDbHeartbeatTime >= 15 * 60 * 1000) {
+      lastDbHeartbeatTime = now;
+      try {
+        if (supabase && now >= supabaseCooldownUntil) {
+          const runId = isHuggingFaceEnv ? 'huggingface_runner' : 'local_runner';
+          await supabaseWithRetry(() => supabase!
+            .from('logs')
+            .delete()
+            .eq('run_id', runId)
+            .eq('step', 'heartbeat')
+          );
 
-        // Insert new heartbeat
-        await supabaseWithRetry(() => supabase!
-          .from('logs')
-          .insert([{
-            run_id: runId,
-            step: 'heartbeat',
-            status: 'INFO',
-            message: JSON.stringify(heartbeatData)
-          }])
-        );
+          await supabaseWithRetry(() => supabase!
+            .from('logs')
+            .insert([{
+              run_id: runId,
+              step: 'heartbeat',
+              status: 'INFO',
+              message: JSON.stringify(heartbeatData)
+            }])
+          );
+        }
+      } catch (err: any) {
+        // Fail silently
       }
-    } catch (err: any) {
-      // Fail silently to avoid clogging stdout on intermittent network issues
     }
-  }, 3000);
+  }, 5000);
   
-  // Scan for stuck jobs every 5 minutes
-  setInterval(checkAndRecoverStuckJobs, 5 * 60 * 1000);
-  console.log('⏰ Scheduled stuck job recovery checks every 5 minutes.');
+  // Scan for stuck jobs every 15 minutes (Data-Saver mode)
+  setInterval(checkAndRecoverStuckJobs, 15 * 60 * 1000);
+  console.log('⏰ Scheduled stuck job recovery checks every 15 minutes.');
 
-  // Check scheduled campaigns every 5 minutes
-  setInterval(checkScheduledCampaigns, 5 * 60 * 1000);
-  console.log('⏰ Scheduled campaign checks every 5 minutes.');
+  // Check scheduled campaigns every 15 minutes
+  setInterval(checkScheduledCampaigns, 15 * 60 * 1000);
+  console.log('⏰ Scheduled campaign checks every 15 minutes.');
 
-  // Check Lagos daily automated scraper every 5 minutes
-  setInterval(checkLagosDailyScraper, 5 * 60 * 1000);
-  console.log('⏰ Scheduled Lagos daily automated scraper checks every 5 minutes.');
+  // Check Lagos daily automated scraper every 4 hours (Strict Fair Data Usage)
+  setInterval(checkLagosDailyScraper, 4 * 60 * 60 * 1000);
+  console.log('⏰ Scheduled Lagos automated scraper checks every 4 hours (Data-Saver).');
 
-  // Autonomous 30-Second Continuous Multi-Source Lead Harvest Daemon
+  // Autonomous Bounded Lead Harvest Daemon (Strict Data-Saver: 4-Hour Cooldown)
+  let lastLocalHarvestTime = 0;
   async function runAutonomousLeadHarvest() {
     try {
       const isActive = await isActiveRunner();
       if (!isActive) return;
       
+      const now = Date.now();
+      if (now - lastLocalHarvestTime < 4 * 60 * 60 * 1000 && lastLocalHarvestTime !== 0) {
+        return; // Observe 4-hour cooldown
+      }
+
+      // Check if local leads database already has sufficient unsent leads
+      try {
+        const leadsDbPath = path.join(process.cwd(), 'local_db', 'leads_db.json');
+        if (fs.existsSync(leadsDbPath)) {
+          const raw = fs.readFileSync(leadsDbPath, 'utf8');
+          const data = JSON.parse(raw);
+          const list = Array.isArray(data) ? data : data.leads || [];
+          const unsentCount = list.filter((l: any) => !l.contacted && !l.email_sent && !l.sms_sent).length;
+          if (unsentCount >= 50) {
+            console.log(`📶 [Data-Saver Mode Active] Local pool already contains ${unsentCount} unsent leads. Heavy scraping is 100% offloaded to GitHub Actions Cloud.`);
+            lastLocalHarvestTime = now;
+            return;
+          }
+        }
+      } catch (_) {}
+
+      console.log('📶 [Data-Saver] Running small bounded local harvest batch (<= 25 leads)...');
+      lastLocalHarvestTime = now;
+
       const [solarRes, lagosRes, ibadanRes] = await Promise.allSettled([
         harvestLiveSolarLeads(),
         harvestLiveLagosLeads(),
@@ -1119,15 +1224,15 @@ async function checkLagosDailyScraper() {
     } catch (_) {}
   }
 
-  // Initial trigger on startup
+  // Initial trigger with cooldown
   runAutonomousLeadHarvest();
   await triggerBatchSync();
 
-  // Run Autonomous Harvest Daemon every 30 seconds
-  setInterval(runAutonomousLeadHarvest, 30 * 1000);
-  console.log('⚡ Scheduled autonomous 30-second continuous multi-source lead harvest daemon.');
+  // Run Autonomous Harvest Daemon with 4-hour cooldown (Strict Rule 2B)
+  setInterval(runAutonomousLeadHarvest, 4 * 60 * 60 * 1000);
+  console.log('⚡ Scheduled bounded lead harvest with 4-hour cooldown (Heavy scraping 100% cloud-offloaded).');
 
-  // Run Batch Sync check every 1 minute
-  setInterval(triggerBatchSync, 60 * 1000);
-  console.log('⏰ Scheduled background Git-batch synchronization every 1 minute.');
+  // Run Batch Sync check every 15 minutes (conserve network)
+  setInterval(triggerBatchSync, 15 * 60 * 1000);
+  console.log('⏰ Scheduled background Git-batch synchronization every 15 minutes.');
 })();

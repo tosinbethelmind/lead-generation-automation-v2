@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X, Clock, FileText } from 'lucide-react';
+import { Star, Phone, MapPin, Award, CheckCircle, ArrowRight, ShieldCheck, Plus, Minus, Printer, Receipt, X, Clock, FileText, MessageCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { trackDualMetaEvent } from '@/lib/metaPixel';
 import { CustomerJourneyTracker } from '@/lib/customerJourneyTracker';
@@ -16,6 +16,7 @@ const SocialAdAutomationWidget = dynamic(() => import('@/components/SocialAdAuto
 const BeforeAfterAuditWidget = dynamic(() => import('@/components/BeforeAfterAuditWidget'), { ssr: false });
 const InvoiceModal = dynamic(() => import('@/components/InvoiceModal'), { ssr: false });
 const SalesIntegrationNarrative = dynamic(() => import('@/components/SalesIntegrationNarrative'), { ssr: false });
+const VoiceNotePlayer = dynamic(() => import('@/components/VoiceNotePlayer'), { ssr: false });
 
 interface PreviewData {
   lead: {
@@ -1143,6 +1144,33 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           </div>
           <div>
             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Inverter System Capacity</label>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+              {[
+                { val: 3.5, label: '⚡ 3.5KVA Basic' },
+                { val: 5, label: '🔋 5KVA Standard' },
+                { val: 10, label: '👑 10KVA Premium' }
+              ].map(chip => (
+                <button
+                  key={chip.val}
+                  type="button"
+                  onClick={() => setSolarKva(chip.val)}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '20px',
+                    border: '1px solid',
+                    borderColor: solarKva === chip.val ? theme.primary : '#cbd5e1',
+                    background: solarKva === chip.val ? `${theme.primary}10` : '#fff',
+                    color: solarKva === chip.val ? theme.primary : '#4b5563',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
             <select value={solarKva} onChange={(e) => setSolarKva(Number(e.target.value))} style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', background: '#fff' }}>
               <option value="3.5">3.5KVA System (Lighting, TV, Fridge, Fans)</option>
               <option value="5">5KVA System (1x AC, Fridge, TV, Freezer, Pumping Machine)</option>
@@ -1172,6 +1200,33 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             ₦{totalSolarQuote.toLocaleString()}
           </div>
           <span style={{ fontSize: '0.78rem', color: '#475569', marginTop: '2px', display: 'block' }}>Includes Paystack 10% Commitment Deposit Option & Free Engineer Site Survey</span>
+          
+          <a
+            href={`https://wa.me/2348022791227?text=${encodeURIComponent(
+              `Hi! I just configured a custom ${solarKva}KVA Hybrid Solar Quote (₦${totalSolarQuote.toLocaleString()}) for my business ${lead.name} on the site. We would like to confirm this order and book our free engineering site survey.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              marginTop: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              background: '#10b981',
+              color: '#fff',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              textDecoration: 'none',
+              transition: 'all 0.2s',
+              boxShadow: '0 4px 12px rgba(16,185,129,0.2)'
+            }}
+          >
+            <MessageCircle size={16} style={{ fill: 'currentColor' }} />
+            1-Tap WhatsApp Claim (₦0 Deposit)
+          </a>
         </div>
 
         <button type="submit" disabled={demoLoading} style={{ background: theme.primary, color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, cursor: demoLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
@@ -1832,7 +1887,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             {/* Right: Direct Action Button */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <a
-                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our custom website & WhatsApp AI platform.`)}`}
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am looking at the sample website you made for: *${lead.name}* (${lead.area || lead.city || 'Nigeria'}).\n\nLink: https://www.bethelmindanalytics.com/preview/${leadId}\n\nI want to see how it works for my business.`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -1933,6 +1988,18 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               : copy.heroSubtitle}
           </p>
 
+          {/* Elevated Voice Note Briefing directly below Sub-headline (Friction Point 2) */}
+          {isPreview && (
+            <div style={{ margin: '20px auto 28px', maxWidth: '680px' }}>
+              <VoiceNotePlayer
+                businessName={lead.name}
+                category={lead.category}
+                area={lead.area || lead.city || 'Lagos'}
+                adminPhone="2348022791227"
+              />
+            </div>
+          )}
+
           {/* Luxury Live Staging Viewport Card */}
           {isPreview && (
             <div className="staging-box-wrap" style={{
@@ -1982,7 +2049,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           {/* Streamlined High-Conversion Action Buttons (1 Primary + 1 Secondary) */}
           <div className="hero-btn-group" style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
             <a 
-              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our live custom website & WhatsApp auto-responder.`)}`}
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am looking at the sample website you made for: *${lead.name}* (${lead.area || lead.city || 'Nigeria'}).\n\nLink: https://www.bethelmindanalytics.com/preview/${leadId}\n\nPlease tell me how much it costs and how to launch it live.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-hover-effect hero-cta-btn" 
@@ -2199,10 +2266,10 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             <p style={{ color: '#64748b', maxWidth: '600px', margin: '0 auto' }}>We specialize in delivering high-quality, professional solutions designed to meet your needs in {lead.area}.</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '24px' }}>
             {copy.services.map((service, idx) => (
               <div key={idx} style={{ 
-                padding: '36px', 
+                padding: '28px', 
                 borderRadius: '12px', 
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 cursor: 'default'
@@ -2227,8 +2294,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       </section>
 
       {/* About Us Section */}
-      <section className="reveal" style={{ background: '#ffffff', padding: '80px 24px', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '50px', alignItems: 'center' }}>
+      <section className="reveal" style={{ background: '#ffffff', padding: 'clamp(40px, 6vw, 80px) clamp(16px, 4vw, 24px)', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '40px', alignItems: 'center' }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: theme.primary, fontWeight: 600, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
               <Award size={18} /> Award-Winning Reputation
@@ -2362,10 +2429,10 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             <p style={{ color: '#64748b' }}>Here is what actual clients think of our work in {lead.area}.</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '30px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '24px' }}>
             {copy.testimonials.map((test, idx) => (
               <div key={idx} className="frosted-glass" style={{ 
-                padding: '30px', 
+                padding: '24px', 
                 borderRadius: '12px'
               }}>
                 <div style={{ display: 'flex', gap: '4px', marginBottom: '16px' }}>
@@ -2383,12 +2450,12 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
 
       {/* Mid-page Persuasion CTA Card */}
       {isPreview && (
-        <section className="reveal" style={{ padding: '60px 24px', background: '#fafaf9', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+        <section className="reveal" style={{ padding: 'clamp(36px, 5vw, 60px) clamp(14px, 3vw, 24px)', background: '#fafaf9', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <div style={{
               background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.accent || theme.primary} 100%)`,
               borderRadius: '24px',
-              padding: '50px 40px',
+              padding: 'clamp(28px, 5vw, 44px) clamp(16px, 4vw, 36px)',
               color: '#ffffff',
               boxShadow: '0 20px 40px -10px rgba(0,0,0,0.15)',
               textAlign: 'center',
@@ -2420,45 +2487,48 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                <span style={{
                 background: 'rgba(255, 255, 255, 0.2)',
                 color: '#ffffff',
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 fontWeight: 700,
                 padding: '6px 16px',
                 borderRadius: '99px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
                 display: 'inline-block',
-                marginBottom: '20px'
+                marginBottom: '16px'
               }}>{hasWebsite ? '🔒 Website Upgrade & Automation Preview' : '🔒 Reserved Domain & Website Preview'}</span>
 
-              <h2 className="font-heading" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, margin: '0 0 16px 0', lineHeight: 1.2 }}>
+              <h2 className="font-heading" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.4rem)', fontWeight: 800, margin: '0 0 14px 0', lineHeight: 1.25 }}>
                 {hasWebsite ? 'Lock In Your Website Upgrade Before It Expires' : 'Lock In Your Custom Platform Before It Expires'}
               </h2>
 
-              <p style={{ fontSize: 'clamp(0.95rem, 2vw, 1.15rem)', opacity: 0.9, maxWidth: '650px', margin: '0 auto 36px', lineHeight: 1.6 }}>
+              <p style={{ fontSize: 'clamp(0.88rem, 1.8vw, 1.05rem)', opacity: 0.9, maxWidth: '650px', margin: '0 auto 28px', lineHeight: 1.6 }}>
                 {hasWebsite 
                   ? <>We have designed these custom automation tools specifically for your website. Claim now to integrate your auto-pilot customer generation system within 24 hours.</>
                   : <>We have reserved <strong>{lead.name.toLowerCase().replace(/\s+/g, '')}.com.ng</strong> (and options for .com) specifically for this build. Claim now to launch your auto-pilot customer generation system within 24 hours.</>}
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', width: '100%' }}>
                 <a href="#claim" className="btn-hover-effect" style={{
                   background: '#ffffff',
                   color: theme.primary,
                   textDecoration: 'none',
-                  padding: '16px 36px',
+                  padding: '14px clamp(16px, 4vw, 32px)',
                   borderRadius: '12px',
-                  fontWeight: 700,
-                  fontSize: '1.1rem',
+                  fontWeight: 800,
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1.05rem)',
                   display: 'inline-flex',
                   alignItems: 'center',
+                  justifyContent: 'center',
                   gap: '10px',
                   boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15)',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.2s',
+                  maxWidth: '100%',
+                  boxSizing: 'border-box'
                 }}>
-                  {hasWebsite ? 'Secure My Website Upgrade & Automations' : 'Secure My Custom Website & Domain'} <ArrowRight size={20} />
+                  {hasWebsite ? 'Secure My Website Upgrade & Automations' : 'Secure My Custom Website & Domain'} <ArrowRight size={18} />
                 </a>
                 
-                <span style={{ fontSize: '0.85rem', opacity: 0.8, fontWeight: 500 }}>
+                <span style={{ fontSize: '0.8rem', opacity: 0.85, fontWeight: 500 }}>
                   ⚡ Join 14+ other local top-rated businesses in {lead.city || 'your area'} who went digital.
                 </span>
               </div>
@@ -3075,23 +3145,73 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px', alignItems: 'center' }}>
-              {/* Video Embed */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '40px', alignItems: 'center' }}>
+              {/* 24/7 AI WhatsApp Quoting Engine Mockup */}
               <div style={{
-                background: '#1e293b',
-                borderRadius: '16px',
-                padding: '12px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+                background: '#0b141a',
+                borderRadius: '20px',
+                padding: '16px',
+                border: '1px solid rgba(56, 189, 248, 0.3)',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.6)'
               }}>
-                <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '12px' }}>
-                  <video 
-                    src="/assets/bethelmind-demo.webm" 
-                    controls 
-                    preload="none"
-                    poster="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80&auto=format&fit=crop"
-                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                  />
+                <div style={{
+                  background: '#1f2c34',
+                  padding: '10px 14px',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  marginBottom: '14px'
+                }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#25D366' }}></div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#e9edef' }}>
+                    24/7 WhatsApp AI Sales Assistant • Active
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.84rem' }}>
+                  <div style={{
+                    background: '#202c33',
+                    color: '#e9edef',
+                    padding: '10px 12px',
+                    borderRadius: '10px 10px 10px 2px',
+                    maxWidth: '90%'
+                  }}>
+                    Customer: "Good day! How much is your full package and can I get a quote right now?"
+                    <div style={{ fontSize: '0.65rem', color: '#8696a0', textAlign: 'right', marginTop: '3px' }}>11:42 PM ✓✓</div>
+                  </div>
+
+                  <div style={{
+                    background: '#005c4b',
+                    color: '#e9edef',
+                    padding: '10px 12px',
+                    borderRadius: '10px 10px 2px 10px',
+                    alignSelf: 'flex-end',
+                    maxWidth: '92%'
+                  }}>
+                    AI Assistant: "Good day Chief! 🙏 Yes, our 24/7 system generates instant quotes in &lt; 3 seconds with Nigerian tone, schedules consultations, and collects deposits automatically."
+                    <div style={{ fontSize: '0.65rem', color: '#aebac1', textAlign: 'right', marginTop: '3px' }}>11:42 PM (0.8s) ✓✓</div>
+                  </div>
+
+                  <a
+                    href="https://wa.me/2348022791227?text=Hello%20Bethelmind%20Lagos%20Desk!%20I%20want%20to%20activate%20the%2024/7%20WhatsApp%20AI%20Quoting%20Assistant."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      background: '#25D366',
+                      color: '#fff',
+                      padding: '10px',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      textDecoration: 'none',
+                      marginTop: '6px',
+                      display: 'block'
+                    }}
+                  >
+                    💬 Test 24/7 Assistant on WhatsApp
+                  </a>
                 </div>
               </div>
 
@@ -3137,7 +3257,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     <p style={{ margin: '0 0 16px 0', color: '#cbd5e1', fontSize: '0.85rem', lineHeight: 1.4 }}>
                       Perfect if you already have a website but want to add our automated quote calculators, intake forms, or instant lead alerts.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: '0.8rem', color: '#94a3b8' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '8px 16px', fontSize: '0.8rem', color: '#94a3b8' }}>
                       <div>✅ Custom Interactive Quote / Booking Widget</div>
                       <div>✅ Easily Copy-Pasteable Embed Code</div>
                       <div>✅ Works on WordPress, Wix, Shopify & Custom Sites</div>
@@ -3156,7 +3276,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     <p style={{ margin: '0 0 16px 0', color: '#cbd5e1', fontSize: '0.85rem', lineHeight: 1.4 }}>
                       Best for establishing local credibility, security, and search visibility.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: '0.8rem', color: '#94a3b8' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '8px 16px', fontSize: '0.8rem', color: '#94a3b8' }}>
                       <div>✅ Custom Domain (.com.ng) Included</div>
                       <div>✅ 100% Free Managed Fast Hosting</div>
                       <div>✅ SSL Security & HTTPS Setup</div>
@@ -3176,7 +3296,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     <p style={{ margin: '0 0 16px 0', color: '#cbd5e1', fontSize: '0.85rem', lineHeight: 1.4 }}>
                       Perfect for capturing bookings, generating automated estimates, and getting instant lead alerts.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: '0.8rem', color: '#60a5fa' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '8px 16px', fontSize: '0.8rem', color: '#60a5fa' }}>
                       <div>🔹 <strong>Everything in Basic</strong></div>
                       <div>✅ Custom Quote/Price Estimator Widget</div>
                       <div>✅ Automated Booking Intake Form</div>
@@ -3195,7 +3315,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     <p style={{ margin: '0 0 16px 0', color: '#cbd5e1', fontSize: '0.85rem', lineHeight: 1.4 }}>
                       Best for scaling operations, collecting automated online payments, and syncing lead data directly to CRM.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: '0.8rem', color: '#10b981' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '8px 16px', fontSize: '0.8rem', color: '#10b981' }}>
                       <div>🔥 <strong>Everything in Growth</strong></div>
                       <div>✅ Integrated Paystack/Flutterwave Checkout</div>
                       <div>✅ Bidirectional Google Sheets CRM Sync</div>
@@ -3215,7 +3335,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     <p style={{ margin: '0 0 16px 0', color: '#cbd5e1', fontSize: '0.85rem', lineHeight: 1.4 }}>
                       Designed for custom CRM setups, accounting software syncs, and multi-channel marketing automation.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', fontSize: '0.8rem', color: '#8b5cf6' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '8px 16px', fontSize: '0.8rem', color: '#8b5cf6' }}>
                       <div>✅ Custom Accounting (Odoo, Zoho) Syncs</div>
                       <div>✅ Advanced Lead Scrapers & Data Enrichers</div>
                       <div>✅ Multi-agent Shared Inbox Setups</div>
@@ -3618,7 +3738,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               <hr style={{ border: 0, borderTop: '1px solid #e2e8f0', margin: '20px 0' }} />
 
               {/* Invoice Meta details */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '20px', marginBottom: '30px' }}>
                 <div>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Billed To:</span>
                   <strong style={{ display: 'block', fontSize: '0.95rem', marginTop: '4px', color: '#0f172a' }}>{activeModalInvoice.clientName}</strong>
@@ -3724,7 +3844,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', alignItems: 'stretch' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '30px', alignItems: 'stretch' }}>
               {/* Special Tier for Existing Website Owners: Standalone Tool Embed */}
               {hasWebsite && (
                 <div style={{
@@ -4006,10 +4126,10 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 {/* ⚡ 1-CLICK WHATSAPP CLAIM BUTTON (FOR NON-TECH BUSINESS OWNERS) */}
                 <div style={{ background: 'rgba(37, 211, 102, 0.08)', border: '1px solid rgba(37, 211, 102, 0.3)', borderRadius: '16px', padding: '16px', marginBottom: '20px', textAlign: 'center' }}>
                   <span style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 700, display: 'block', marginBottom: '6px' }}>
-                    ⚡ Prefer to claim directly on WhatsApp? (Zero Typing Required)
+                    ⚡ Prefer to chat directly on WhatsApp? (Ask any question)
                   </span>
                   <a
-                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Lagos'}. I want to claim our custom website & 24/7 WhatsApp AI platform. Please activate my domain.`)}`}
+                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am looking at the sample website you made for: *${lead.name}* (${lead.area || lead.city || 'Lagos'}).\n\nLink: https://www.bethelmindanalytics.com/preview/${leadId}\n\nI want to ask a few questions about how it works.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -4821,97 +4941,6 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             Accept
           </button>
         </div>
-      )}
-
-      {/* Sticky Mobile Bottom Action Bar & Glowing Voice Note Player (1-Tap Mobile Conversion) */}
-      {isPreview && (
-        <>
-          {/* Floating Audio Voice Note Pill */}
-          <div style={{
-            position: 'fixed',
-            bottom: '72px',
-            right: '16px',
-            zIndex: 9997,
-            background: 'linear-gradient(135deg, rgba(30, 58, 138, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(59, 130, 246, 0.5)',
-            borderRadius: '30px',
-            padding: '8px 14px',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            cursor: 'pointer',
-            animation: 'pulse 2s infinite'
-          }}
-          onClick={() => {
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new CustomEvent('customer_journey_event', {
-                detail: {
-                  eventType: 'audio_played',
-                  metadata: { audioFile: 'ezinne_35s_pitch.mp3', leadName: lead.name }
-                }
-              }));
-              alert(`🎙️ Playing 35s Audio Briefing from Bethelmind Analytics Lagos Team for ${lead.name}...`);
-            }
-          }}>
-            <span style={{ fontSize: '1rem' }}>🎙️</span>
-            <span style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: 700 }}>Listen to 35s Audio Pitch</span>
-          </div>
-
-          {/* Sticky Mobile Conversion Bar */}
-          <div style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 9998,
-            background: 'rgba(9, 13, 22, 0.96)',
-            backdropFilter: 'blur(16px)',
-            borderTop: '1.5px solid rgba(16, 185, 129, 0.4)',
-            padding: '10px 16px',
-            boxShadow: '0 -4px 20px rgba(0,0,0,0.6)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px'
-          }}>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.62rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>⚡ LIVE PREVIEW FOR {lead.name.toUpperCase()}</span>
-              <span style={{ fontSize: '0.92rem', color: '#34d399', fontWeight: 800 }}>₦0 Upfront <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 500 }}>(Claim on WhatsApp)</span></span>
-            </div>
-            <a
-              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hi Bethelmind Team! I am the owner of ${lead.name} in ${lead.area || lead.city || 'Nigeria'}. I want to claim our custom website and WhatsApp AI platform.`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  window.dispatchEvent(new CustomEvent('customer_journey_event', {
-                    detail: {
-                      eventType: 'checkout_click',
-                      metadata: { cta: 'Claim on WhatsApp', leadName: lead.name }
-                    }
-                  }));
-                }
-              }}
-              style={{
-                flex: 1,
-                maxWidth: '220px',
-                textAlign: 'center',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#ffffff',
-                padding: '10px 16px',
-                borderRadius: '10px',
-                fontWeight: 800,
-                fontSize: '0.85rem',
-                textDecoration: 'none',
-                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
-              }}
-            >
-              🚀 Claim on WhatsApp
-            </a>
-          </div>
-        </>
       )}
 
       {/* Universal Integration & Tool Compatibility Sales Narrative */}

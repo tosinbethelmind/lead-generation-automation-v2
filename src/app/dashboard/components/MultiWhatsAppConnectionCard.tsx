@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { QrCode, Phone, Smartphone, CheckCircle, RefreshCw, AlertTriangle, ShieldCheck, Power, Wifi, Copy, Check } from 'lucide-react';
 
 interface LineStatus {
@@ -36,7 +37,10 @@ export default function MultiWhatsAppConnectionCard() {
 
   useEffect(() => {
     fetchMultiStatus();
-    const interval = setInterval(fetchMultiStatus, 3000);
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      fetchMultiStatus();
+    }, 15000);
     return () => clearInterval(interval);
   }, []);
 
@@ -103,7 +107,7 @@ export default function MultiWhatsAppConnectionCard() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#f8fafc' }}>
-                3-Line WhatsApp Automated Setup & QR Pairing
+                5-SIM WhatsApp Multi-Line Suite &amp; Pairing Center
               </h2>
               <span style={{
                 fontSize: '0.7rem',
@@ -114,11 +118,11 @@ export default function MultiWhatsAppConnectionCard() {
                 color: '#34d399',
                 border: '1px solid rgba(16, 185, 129, 0.4)'
               }}>
-                ● AUTOMATED UI CONNECTION
+                ● 5-SIM DISTRIBUTED CLUSTER
               </span>
             </div>
             <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: '2px 0 0 0' }}>
-              Connect 3 Nigerian WhatsApp numbers directly from UI without touching terminal commands
+              Connect up to 5 Nigerian WhatsApp SIMs (Admin Desk + 4 Outreach Lines) with 8-digit Pairing Code or QR scanning.
             </p>
           </div>
         </div>

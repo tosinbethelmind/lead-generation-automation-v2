@@ -53,6 +53,24 @@ function makePostRequest(endpoint, payload) {
   });
 }
 
+function makeGetRequest(endpoint) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(endpoint, BASE_URL);
+    const req = http.get(url, (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(body));
+        } catch (_) {
+          resolve({ raw: body, status: res.statusCode });
+        }
+      });
+    });
+    req.on('error', reject);
+  });
+}
+
 async function runTrafficCycle() {
   const now = new Date().toISOString();
   console.log(`[${now}] 🔄 Initiating Traffic Generation & Google Indexing Cycle...`);
@@ -70,6 +88,12 @@ async function runTrafficCycle() {
     const idxRes = await makePostRequest('/api/traffic/automate', { action: 'ping_google_indexing' });
     if (idxRes.success) {
       console.log(`  🚀 [Google Indexing]: Successfully submitted URLs to Google Indexing API.`);
+    }
+
+    // 3. Trigger Blog GEO & SEO Search Engine Pinger (Google, Bing, WebSub)
+    const blogRes = await makeGetRequest('/api/blog/ping-index').catch(() => null);
+    if (blogRes && blogRes.success) {
+      console.log(`  📰 [Blog GEO/SEO Pinger]: Dispatched real-time crawling pings for ${blogRes.totalIndexedPosts} articles.`);
     }
 
     console.log(`[${now}] ✨ Cycle completed successfully.\n`);

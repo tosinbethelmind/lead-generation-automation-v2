@@ -118,113 +118,78 @@ export async function scanPendingAppointmentLeads(): Promise<{
   };
 }
 
+import { dispatchSecureEmail, OFFICIAL_PRODUCTION_DOMAIN } from './smtpTransporterPool';
+
 /**
  * Dispatches the Consolidated Daily Top 5 Pay-Per-Appointment Digest.
  */
 export async function dispatchDailyAppointmentDigest(): Promise<{ success: boolean; messageId?: string }> {
   const data = await scanPendingAppointmentLeads();
 
-  let config: any = {};
-  try {
-    config = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'config.json'), 'utf8'));
-  } catch (_) {}
+  const cardsHtml = data.top5Leads.map(l => {
+    const isTop = l.rank === 1;
+    const waPitch = encodeURIComponent(`Hello! Bethelmind Lead Arbitrage Desk: We have a qualified client (${l.customerName}) requesting a ₦${l.estimatedProjectBudgetNGN.toLocaleString()} ${l.sector.replace(/_/g, ' ')} project in ${l.location}. Tap here to claim this exclusive appointment.`);
+    const waUrl = `https://wa.me/2348022791227?text=${waPitch}`;
 
-  return new Promise((resolve) => {
-    if (dns.setDefaultResultOrder) {
-      dns.setDefaultResultOrder('ipv4first');
-    }
-
-    const host = config.smtpHost || 'smtp.hostinger.com';
-    const port = config.smtpPort || 587;
-    const user = config.smtpUser || 'tosin@bethelmindanalytics.com';
-    const pass = config.smtpPass || 'Bethelmind@2026';
-
-    dns.lookup(host, { family: 4 }, async (err, address) => {
-      const resolvedHost = (!err && address) ? address : 'smtp.hostinger.com';
-
-      const transporter = nodemailer.createTransport({
-        host: resolvedHost,
-        port: 587,
-        secure: false,
-        auth: { user, pass },
-        tls: { servername: host, rejectUnauthorized: false },
-        connectionTimeout: 15000
-      });
-
-      const cardsHtml = data.top5Leads.map(l => {
-        const isTop = l.rank === 1;
-        const waPitch = encodeURIComponent(`Hello! Bethelmind Lead Arbitrage Desk: We have a qualified client (${l.customerName}) requesting a ₦${l.estimatedProjectBudgetNGN.toLocaleString()} ${l.sector.replace(/_/g, ' ')} project in ${l.location}. Tap here to claim this exclusive appointment.`);
-        const waUrl = `https://wa.me/2348022791227?text=${waPitch}`;
-
-        return `
-          <div style="background: #111827; border: 1px solid ${isTop ? '#38bdf8' : '#1f2937'}; border-radius: 10px; padding: 20px; margin-bottom: 18px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-              <div>
-                <span style="display: inline-block; background: ${isTop ? '#0284c7' : '#374151'}; color: #ffffff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px;">
-                  ${l.tierBadge} (RANK #${l.rank})
-                </span>
-                <div style="font-size: 18px; font-weight: 800; color: #ffffff;">${l.customerName}</div>
-                <div style="font-size: 13px; color: #9ca3af;">📍 ${l.location} | Sector: <strong>${l.sector.replace(/_/g, ' ')}</strong></div>
-              </div>
-              <div style="text-align: right;">
-                <div style="font-size: 20px; font-weight: 900; color: #38bdf8;">+₦${l.totalArbitrageRevenueNGN.toLocaleString()}</div>
-                <div style="font-size: 11px; color: #9ca3af;">Arbitrage Yield (3 Buyers)</div>
-              </div>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; background: #030712; padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px;">
-              <div><span style="color: #9ca3af;">Project Budget:</span> <strong style="color: #ffffff;">₦${l.estimatedProjectBudgetNGN.toLocaleString()}</strong></div>
-              <div><span style="color: #9ca3af;">Buyer Intent Score:</span> <strong style="color: #34d399;">${l.buyerIntentScore}% VETTED</strong></div>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-              <a href="${waUrl}" style="background: ${isTop ? '#0284c7' : '#2563eb'}; color: #ffffff; padding: 10px 18px; text-decoration: none; font-size: 13px; font-weight: 800; border-radius: 6px; display: inline-block;">
-                🤝 1-Click Route Appointment (₦${l.totalArbitrageRevenueNGN.toLocaleString()})
-              </a>
-            </div>
+    return `
+      <div style="background: #111827; border: 1px solid ${isTop ? '#38bdf8' : '#1f2937'}; border-radius: 10px; padding: 20px; margin-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+          <div>
+            <span style="display: inline-block; background: ${isTop ? '#0284c7' : '#374151'}; color: #ffffff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px;">
+              ${l.tierBadge} (RANK #${l.rank})
+            </span>
+            <div style="font-size: 18px; font-weight: 800; color: #ffffff;">${l.customerName}</div>
+            <div style="font-size: 13px; color: #9ca3af;">📍 ${l.location} | Sector: <strong>${l.sector.replace(/_/g, ' ')}</strong></div>
           </div>
-        `;
-      }).join('');
-
-      const emailHtml = `
-        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto; background: #0b0f19; color: #f3f4f6; border-radius: 12px; overflow: hidden; border: 1px solid #1f2937;">
-          <div style="background: linear-gradient(135deg, #075985, #0f172a); padding: 26px 30px; text-align: left; border-bottom: 1px solid #38bdf8;">
-            <div style="font-size: 12px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
-              PAY-PER-APPOINTMENT ARBITRAGE DIGEST • 08:00 AM WAT
-            </div>
-            <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800;">
-              🤝 ${data.totalPending} High-Intent Commercial Appointments Waiting (Top 5 Ranked)
-            </h1>
-            <p style="color: #bae6fd; margin: 6px 0 0 0; font-size: 13px;">
-              Total Available Arbitrage Yield: <strong>₦${data.totalArbitrageValueNGN.toLocaleString()}</strong> | Rate: <strong>₦25k – ₦50k / router</strong>
-            </p>
-          </div>
-
-          <div style="padding: 26px;">
-            ${cardsHtml}
-          </div>
-
-          <div style="background: #030712; padding: 16px 30px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #1f2937;">
-            Sent daily by Bethelmind Autonomous 24/7 Appointment Arbitrage Watchdog • Desk: +234 802 279 1227
+          <div style="text-align: right;">
+            <div style="font-size: 20px; font-weight: 900; color: #38bdf8;">+₦${l.totalArbitrageRevenueNGN.toLocaleString()}</div>
+            <div style="font-size: 11px; color: #9ca3af;">Arbitrage Yield (3 Buyers)</div>
           </div>
         </div>
-      `;
 
-      const mailOptions = {
-        from: `"Bethelmind Lead Router" <${user}>`,
-        to: 'bethelmindrecruit@gmail.com',
-        subject: `🤝 Daily Appointment Digest: ₦${data.totalArbitrageValueNGN.toLocaleString()} Arbitrage Yield Ready (Top 5 Ranked)`,
-        html: emailHtml
-      };
+        <div style="display: flex; justify-content: space-between; background: #030712; padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px;">
+          <div><span style="color: #9ca3af;">Project Budget:</span> <strong style="color: #ffffff;">₦${l.estimatedProjectBudgetNGN.toLocaleString()}</strong></div>
+          <div><span style="color: #9ca3af;">Buyer Intent Score:</span> <strong style="color: #34d399;">${l.buyerIntentScore}% VETTED</strong></div>
+        </div>
 
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          resolve({ success: false });
-        } else {
-          console.log(`✅ [AppointmentWatchdog]: Daily Appointment Digest dispatched (ID: ${info.messageId})`);
-          resolve({ success: true, messageId: info.messageId });
-        }
-      });
-    });
+        <div style="display: flex; gap: 10px;">
+          <a href="${waUrl}" style="background: ${isTop ? '#0284c7' : '#2563eb'}; color: #ffffff; padding: 10px 18px; text-decoration: none; font-size: 13px; font-weight: 800; border-radius: 6px; display: inline-block;">
+            🤝 1-Click Route Appointment (₦${l.totalArbitrageRevenueNGN.toLocaleString()})
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const emailHtml = `
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto; background: #0b0f19; color: #f3f4f6; border-radius: 12px; overflow: hidden; border: 1px solid #1f2937;">
+      <div style="background: linear-gradient(135deg, #075985, #0f172a); padding: 26px 30px; text-align: left; border-bottom: 1px solid #38bdf8;">
+        <div style="font-size: 12px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
+          PAY-PER-APPOINTMENT ARBITRAGE DIGEST • 08:00 AM WAT
+        </div>
+        <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800;">
+          🤝 ${data.totalPending} High-Intent Commercial Appointments Waiting (Top 5 Ranked)
+        </h1>
+        <p style="color: #bae6fd; margin: 6px 0 0 0; font-size: 13px;">
+          Total Available Arbitrage Yield: <strong>₦${data.totalArbitrageValueNGN.toLocaleString()}</strong> | Rate: <strong>₦25k – ₦50k / router</strong>
+        </p>
+      </div>
+
+      <div style="padding: 26px;">
+        ${cardsHtml}
+      </div>
+
+      <div style="background: #030712; padding: 16px 30px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #1f2937;">
+        Sent daily by Bethelmind Autonomous 24/7 Appointment Arbitrage Watchdog • Desk: +234 802 279 1227
+      </div>
+    </div>
+  `;
+
+  return dispatchSecureEmail({
+    to: 'bethelmindrecruit@gmail.com',
+    subject: `🤝 Daily Appointment Digest: ₦${data.totalArbitrageValueNGN.toLocaleString()} Arbitrage Yield Ready (Top 5 Ranked)`,
+    html: emailHtml,
+    fromName: 'Bethelmind Lead Router'
   });
 }
+

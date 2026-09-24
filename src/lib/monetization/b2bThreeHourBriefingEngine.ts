@@ -24,9 +24,8 @@ import path from 'path';
 import dns from 'dns';
 import nodemailer from 'nodemailer';
 
-import { scanExpiringNigerianDomains } from './expiredDomainMonitor';
-import { generatePurchaseAuthToken } from './domainRegistrarApi';
-import { scanUnclaimedGmbBusinesses } from './gmbRescueEngine';
+import { scanTurnkeyWebsiteLeads } from './turnkeyWebsiteEngine';
+import { scanFreightArbitrageLeads } from './smeFreightArbitrageEngine';
 import { scanPendingAppointmentLeads } from './appointmentLeadRouter';
 import { scanDiasporaEscrowProjects } from './diasporaEscrowEngine';
 import { generateLeadBundlesFromDatabase } from './leadBundlePackager';
@@ -85,15 +84,15 @@ export async function checkAndDispatchB2BThreeHourBriefing(forceDispatch: boolea
 
   // Gather real-time data across all 7 active B2B pillars
   const [
-    domainData,
-    gmbData,
+    websiteData,
+    freightData,
     appointmentData,
     diasporaData,
     leadBundleData,
     whiteLabelData
   ] = await Promise.all([
-    scanExpiringNigerianDomains(),
-    scanUnclaimedGmbBusinesses(),
+    scanTurnkeyWebsiteLeads(),
+    scanFreightArbitrageLeads(),
     scanPendingAppointmentLeads(),
     scanDiasporaEscrowProjects(),
     generateLeadBundlesFromDatabase(),
@@ -108,14 +107,13 @@ export async function checkAndDispatchB2BThreeHourBriefing(forceDispatch: boolea
     topTool: 'Bankable Solar Sizer & ROI Calculator'
   };
 
-  // Top Domain Deal
-  const topDomain = domainData.top5Prospects[0] || { domain: 'lagosautoservice.com.ng', netProfitNGN: 280000, registrationCostNGN: 6500, tierBadge: '👑 HIGH-AUTHORITY COMMERCE', historicMonthlyTraffic: 14500 };
-  const domainToken = generatePurchaseAuthToken(topDomain.domain, topDomain.registrationCostNGN);
-  const domainAuthUrl = `${PROD_BASE_URL}/api/domains/authorize-buy?domain=${encodeURIComponent(domainToken.domain)}&cost=${domainToken.costNGN}&expiresAt=${domainToken.expiresAt}&sig=${domainToken.signature}`;
+  // Top Engine 1 Target (Turnkey Website Prototype)
+  const topWebsite = websiteData.top5Targets[0] || { businessName: 'Jacio Commercial Hub', phone: '08022791227', depositFeeNGN: 75000, totalValueNGN: 150000, location: 'Ikeja, Lagos', previewUrl: `${PROD_BASE_URL}/preview/jacio-hub` };
+  const websiteWaUrl = `https://wa.me/${topWebsite.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello Management at ${topWebsite.businessName}. We created a 100% Done-For-You Commercial Website Prototype for your business in ${topWebsite.location} (₦75,000 50% deposit / ₦150,000). Claim prototype: ${topWebsite.previewUrl}`)}`;
 
-  // Top GMB Profile Rescue Deal
-  const topGmb = gmbData.top5Targets[0] || { businessName: 'Lekki Pearl Dental Clinic', phone: '0802 345 6789', recommendedFeeNGN: 45000, location: 'Lekki Phase 1', rating: 4.8, reviewCount: 94, tierBadge: '🚨 UNCLAIMED CRITICAL RISK' };
-  const gmbWaUrl = `https://wa.me/${topGmb.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello Management at ${topGmb.businessName}. Our local SEO audit shows your Google Maps listing (${topGmb.rating}★ in ${topGmb.location}) is currently UNCLAIMED and exposed to hijacking. We can claim and lock it today.`)}`;
+  // Top Engine 2 Target (B2B Freight Importer Arbitrage)
+  const topFreight = freightData.top5Targets[0] || { businessName: 'Macmed Industrial Import Hub', phone: '08033316905', requestedOrderUsd: 65000, totalCommissionNgn: 1625000, quotedRateNgn: 1375, importerCorridor: 'Trade Fair Commercial Complex' };
+  const freightWaUrl = `https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Management at ${topFreight.businessName}. Bethelmind OTC Settlement Desk has locked in a ₦${topFreight.quotedRateNgn}/USD rate for your $${topFreight.requestedOrderUsd.toLocaleString()} supplier transfer order in ${topFreight.importerCorridor}. Direct OPay Settlement Account ready.`)}`;
 
   // Top Appointment Lead Deal (Dual-Router)
   const topAppointment = appointmentData.top5Leads[0] || { customerName: 'Chief Adebayo (Hospital Solar)', estimatedProjectBudgetNGN: 45000000, totalArbitrageRevenueNGN: 90000, sector: 'COMMERCIAL_CONSTRUCTION', location: 'Victoria Island' };
@@ -127,8 +125,8 @@ export async function checkAndDispatchB2BThreeHourBriefing(forceDispatch: boolea
 
   // Total B2B Pipeline Yield
   const totalB2BPipelineNGN = 
-    domainData.top5Prospects.reduce((acc: number, d: any) => acc + d.netProfitNGN, 0) +
-    gmbData.top5Targets.reduce((acc: number, g: any) => acc + g.recommendedFeeNGN, 0) +
+    websiteData.top5Targets.reduce((acc: number, w: any) => acc + w.depositFeeNGN, 0) +
+    freightData.top5Targets.reduce((acc: number, f: any) => acc + f.totalCommissionNgn, 0) +
     leadBundleData.top5Bundles.reduce((acc: number, b: any) => acc + b.projectedSalesValueNGN, 0) +
     microPaywalls.monthlyYieldNGN +
     appointmentData.totalArbitrageValueNGN +
@@ -193,17 +191,17 @@ export async function checkAndDispatchB2BThreeHourBriefing(forceDispatch: boolea
               <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 14px; margin-bottom: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                   <div>
-                    <span style="background: #0284c7; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px;">STEP 1 • DOMAIN SNIPING ARBITRAGE</span>
+                    <span style="background: #2563eb; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px;">STEP 1 • TURNKEY DFY PROTOTYPE</span>
                     <div style="color: #ffffff; font-weight: 800; font-size: 14px; margin-top: 4px;">
-                      Authorize Sniped Domain: ${topDomain.domain}
+                      Pitch Prototype: ${topWebsite.businessName} (${topWebsite.location})
                     </div>
                     <div style="color: #94a3b8; font-size: 12px; margin-top: 2px;">
-                      Traffic: ${topDomain.historicMonthlyTraffic?.toLocaleString() || '14,500'} Visits/mo • Buyback Yield: <strong>+₦${topDomain.netProfitNGN.toLocaleString()} NGN</strong>
+                      Package: ${topWebsite.offerType.replace(/_/g, ' ')} • Deposit: <strong>+₦${topWebsite.depositFeeNGN.toLocaleString()} NGN</strong>
                     </div>
                   </div>
                   <div style="text-align: right;">
-                    <a href="${domainAuthUrl}" target="_blank" style="background: #0284c7; color: #ffffff; padding: 8px 16px; text-decoration: none; font-size: 12px; font-weight: 900; border-radius: 6px; display: inline-block;">
-                      🛡️ 1-Click Authorize
+                    <a href="${websiteWaUrl}" target="_blank" style="background: #2563eb; color: #ffffff; padding: 8px 16px; text-decoration: none; font-size: 12px; font-weight: 900; border-radius: 6px; display: inline-block;">
+                      🌐 1-Click Send Pitch
                     </a>
                   </div>
                 </div>
@@ -213,17 +211,17 @@ export async function checkAndDispatchB2BThreeHourBriefing(forceDispatch: boolea
               <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 14px; margin-bottom: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                   <div>
-                    <span style="background: #ef4444; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px;">STEP 2 • GMB PROFILE RESCUE</span>
+                    <span style="background: #0284c7; color: #ffffff; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px;">STEP 2 • 1-LINE SCRIPT EMBED UPGRADE</span>
                     <div style="color: #ffffff; font-weight: 800; font-size: 14px; margin-top: 4px;">
-                      Rescue Listing: ${topGmb.businessName} (${topGmb.location})
+                      Pitch 1-Line Embed: ${topWebsite.businessName} (${topWebsite.location})
                     </div>
                     <div style="color: #94a3b8; font-size: 12px; margin-top: 2px;">
-                      Status: ${topGmb.rating}★ (${topGmb.reviewCount} Reviews) • Rescue Lock Fee: <strong>+₦${topGmb.recommendedFeeNGN.toLocaleString()} NGN</strong>
+                      Upgrade Fee: <strong>₦35,000 / ₦65,000 NGN</strong> • 0ms Setup (Zero Hosting/SEO Impact)
                     </div>
                   </div>
                   <div style="text-align: right;">
-                    <a href="${gmbWaUrl}" target="_blank" style="background: #ef4444; color: #ffffff; padding: 8px 16px; text-decoration: none; font-size: 12px; font-weight: 900; border-radius: 6px; display: inline-block;">
-                      🚨 1-Click Send Alert
+                    <a href="${websiteWaUrl}" target="_blank" style="background: #0284c7; color: #ffffff; padding: 8px 16px; text-decoration: none; font-size: 12px; font-weight: 900; border-radius: 6px; display: inline-block;">
+                      ⚡ 1-Click Pitch Embed
                     </a>
                   </div>
                 </div>
@@ -265,14 +263,14 @@ export async function checkAndDispatchB2BThreeHourBriefing(forceDispatch: boolea
                 </thead>
                 <tbody>
                   <tr style="border-bottom: 1px solid #1e293b;">
-                    <td style="padding: 8px 0; font-weight: 700; color: #ffffff;">1. Expired Domain Snipes (301 Traffic)</td>
-                    <td>${domainData.totalOpportunities} Dropped Domains</td>
-                    <td style="font-weight: 800; color: #34d399;">₦${domainData.top5Prospects.reduce((a: number, d: any) => a + d.netProfitNGN, 0).toLocaleString()}</td>
+                    <td style="padding: 8px 0; font-weight: 700; color: #ffffff;">1. Turnkey DFY Prototypes & Commercial Websites</td>
+                    <td>${websiteData.totalQualified} Staged Lead Prototypes</td>
+                    <td style="font-weight: 800; color: #34d399;">₦${websiteData.top5Targets.reduce((a: number, w: any) => a + w.depositFeeNGN, 0).toLocaleString()}</td>
                   </tr>
                   <tr style="border-bottom: 1px solid #1e293b;">
-                    <td style="padding: 8px 0; font-weight: 700; color: #ffffff;">2. Unclaimed GMB Profile Rescues</td>
-                    <td>${gmbData.totalVulnerable} Vulnerable Profiles</td>
-                    <td style="font-weight: 800; color: #34d399;">₦${gmbData.top5Targets.reduce((a: number, g: any) => a + g.recommendedFeeNGN, 0).toLocaleString()}</td>
+                    <td style="padding: 8px 0; font-weight: 700; color: #ffffff;">2. B2B Freight Importer Escrow & Spread Arbitrage</td>
+                    <td>${freightData.totalQualified} Scored Importer Deals</td>
+                    <td style="font-weight: 800; color: #34d399;">₦${freightData.top5Targets.reduce((a: number, f: any) => a + f.totalCommissionNgn, 0).toLocaleString()}</td>
                   </tr>
                   <tr style="border-bottom: 1px solid #1e293b;">
                     <td style="padding: 8px 0; font-weight: 700; color: #ffffff;">3. B2B Verified Lead Data Bundles (Selar)</td>

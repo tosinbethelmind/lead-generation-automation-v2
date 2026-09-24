@@ -354,12 +354,9 @@ export function validateLeadQuality(lead: any): boolean {
     lead.phone_e164 = normalizePhone(lead.phone_raw, 'NG') || '';
   }
 
-  // Mandatory Reachability Gate: Must have valid phone, email, OR verified website URL
-  const hasPhone = !!lead.phone_e164 || !!lead.phone_raw;
-  const hasEmail = !!lead.email && lead.email.includes('@');
-  const hasWebsite = !!lead.website && lead.website.startsWith('http') && !lead.website.includes('google.com/search');
-
-  if (!hasPhone && !hasEmail && !hasWebsite) {
+  // Strict Rule #5 Guard: A lead MUST have a verified Nigerian phone number
+  const hasPhone = Boolean(lead.phone_e164 && lead.phone_e164.startsWith('+234') && lead.phone_e164.length === 14);
+  if (!hasPhone) {
     return false;
   }
 

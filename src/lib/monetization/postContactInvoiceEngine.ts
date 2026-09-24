@@ -53,9 +53,9 @@ export function generateCommercialInvoice(
   ];
 
   if (packageType === 'EMBED_AI_CLOSER_UPGRADE') {
-    totalAmountNgn = 45000;
-    depositAmountNgn = 45000;
-    balanceAmountNgn = 0;
+    totalAmountNgn = 65000;
+    depositAmountNgn = 35000;
+    balanceAmountNgn = 30000;
     deliverables = [
       '1-Line JavaScript / WordPress AI Closer widget embed',
       '24/7 WhatsApp quote dispatcher connected to management line',
@@ -111,5 +111,26 @@ export function generateCommercialInvoice(
     deliverables,
     termsAndConditions: '50% initial commitment deposit to commence domain & cloud setup. 50% balance strictly due upon live production inspection.',
     formattedWhatsAppInvoice
+  };
+}
+
+export function generateBankableInvoiceCard(params: {
+  businessName: string;
+  phone?: string;
+  email?: string;
+  category?: string;
+  packageTier?: 'TURNKEY_DFY' | 'EMBED_UPGRADE';
+}) {
+  const pkg = params.packageTier === 'EMBED_UPGRADE' ? 'EMBED_AI_CLOSER_UPGRADE' : 'DFY_TURNKEY_BUILD';
+  const inv = generateCommercialInvoice(params.businessName, params.category || 'Commercial SME', pkg);
+  return {
+    invoiceNumber: inv.invoiceNumber,
+    businessName: inv.clientName,
+    totalNgn: inv.totalAmountNgn,
+    depositNgn: inv.depositAmountNgn,
+    balanceNgn: inv.balanceAmountNgn,
+    slaHours: inv.slaHours,
+    bankDetails: inv.beneficiary,
+    whatsappFormatted: inv.formattedWhatsAppInvoice,
   };
 }

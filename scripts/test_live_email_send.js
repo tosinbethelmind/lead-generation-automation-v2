@@ -21,7 +21,7 @@ async function sendLiveTestEmail() {
     }
   });
 
-  const targetEmail = 'bethelminrecruit@gmail.com';
+  const targetEmail = 'bethelmindrecruit@gmail.com';
   const previewUrl = 'https://www.bethelmindanalytics.com/preview/eko-luxury-suites?src=10k_lagos';
 
   const mailOptions = {

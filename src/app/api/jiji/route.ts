@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
     // Live Puppeteer Outreach Mode
     await addLog('Jiji Outreach', 'START', `Starting live Jiji Puppeteer outreach campaign for ${targetLeads.length} leads.`);
     
-    let browser;
+    let browser: any;
     try {
       const { launchBrowser, applyStealthToPage } = await import('@/lib/browserLauncher');
       browser = await launchBrowser();
@@ -167,66 +167,45 @@ export async function POST(req: NextRequest) {
           await addLog('Jiji Outreach', 'WARN', `Live login failed: ${authErr.message}.`);
           throw new Error(`Jiji Authentication Failed: ${authErr.message}`);
         }
-      }      // Loop and dispatch messages
-      for (const lead of targetLeads) {
-        if (lead.source !== 'JIJI' || !lead.profile_url) {
-          results.push({
-            leadId: lead.lead_id,
-            name: lead.name,
-            status: 'SKIPPED',
-            error: "Lead source is not JIJI or missing profile URL listing link."
-          });
-          continue;
-        }
+      }
+      if (page) {
+        await page.close().catch(() => {});
+      }
 
-        const previewUrl = `${origin}/preview/${lead.lead_id}`;
-        const finalMessage = formatMessage(customMessage || jijiTemplate, lead, previewUrl, signature);
-
-        try {
-          // Navigate to Jiji listing page
-          await page.goto(lead.profile_url, { waitUntil: 'domcontentloaded', timeout: 25000 });
-          await new Promise(r => setTimeout(r, 2000));
-
-          // Click Chat button
-          const chatBtnClicked = await page.evaluate(() => {
-            const btn = Array.from(document.querySelectorAll('button, a')).find(el => {
-              const text = el.textContent?.toLowerCase() || '';
-              return text.includes('chat') || text.includes('start chat') || text.includes('message');
+      // Loop and dispatch messages concurrently using parallel browser tabs (concurrency = 3)
+      const CONCURRENCY_LIMIT = 3;
+      for (let i = 0; i < targetLeads.length; i += CONCURRENCY_LIMIT) {
+        const chunk = targetLeads.slice(i, i + CONCURRENCY_LIMIT);
+        await Promise.all(chunk.map(async (lead) => {
+          if (lead.source !== 'JIJI' || !lead.profile_url) {
+            results.push({
+              leadId: lead.lead_id,
+              name: lead.name,
+              status: 'SKIPPED',
+              error: "Lead source is not JIJI or missing profile URL listing link."
             });
-            if (btn) {
-              (btn as HTMLElement).click();
-              return true;
-            }
-            return false;
-          });
+            return;
+          }
 
-          if (chatBtnClicked) {
-            await new Promise(r => setTimeout(r, 2000));
+          const previewUrl = `${origin}/preview/${lead.lead_id}`;
+          const finalMessage = formatMessage(customMessage || jijiTemplate, lead, previewUrl, signature);
 
-            // Enter chat text
-            const textEntered = await page.evaluate((msg: string) => {
-              const textarea = document.querySelector('textarea, textarea[placeholder*="message"]') as HTMLTextAreaElement;
-              if (textarea) {
-                textarea.value = msg;
-                textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                return true;
-              }
-              return false;
-            }, finalMessage);
+          let tab = null;
+          try {
+            const { applyStealthToPage } = await import('@/lib/browserLauncher');
+            tab = await browser.newPage();
+            await applyStealthToPage(tab);
 
-            if (!textEntered) {
-              throw new Error("Chat message input textarea not found.");
-            }
+            // Navigate to Jiji listing page
+            await tab.goto(lead.profile_url, { waitUntil: 'domcontentloaded', timeout: 25000 });
+            await new Promise(r => setTimeout(r, 1500));
 
-            await new Promise(r => setTimeout(r, 1000));
-
-            // Send message
-            const sendBtnClicked = await page.evaluate(() => {
-              const btn = document.querySelector('button[type="submit"], svg[class*="send"]') || 
-                          Array.from(document.querySelectorAll('button')).find(b => {
-                            const t = b.textContent?.toLowerCase() || '';
-                            return t.includes('send');
-                          });
+            // Click Chat button
+            const chatBtnClicked = await tab.evaluate(() => {
+              const btn = Array.from(document.querySelectorAll('button, a')).find(el => {
+                const text = el.textContent?.toLowerCase() || '';
+                return text.includes('chat') || text.includes('start chat') || text.includes('message');
+              });
               if (btn) {
                 (btn as HTMLElement).click();
                 return true;
@@ -234,38 +213,79 @@ export async function POST(req: NextRequest) {
               return false;
             });
 
-            if (!sendBtnClicked) {
-              throw new Error("Send button not found.");
+            if (chatBtnClicked) {
+              await new Promise(r => setTimeout(r, 1500));
+
+              // Enter chat text
+              const textEntered = await tab.evaluate((msg: string) => {
+                const textarea = document.querySelector('textarea, textarea[placeholder*="message"]') as HTMLTextAreaElement;
+                if (textarea) {
+                  textarea.value = msg;
+                  textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                  return true;
+                }
+                return false;
+              }, finalMessage);
+
+              if (!textEntered) {
+                throw new Error("Chat message input textarea not found.");
+              }
+
+              await new Promise(r => setTimeout(r, 800));
+
+              // Send message
+              const sendBtnClicked = await tab.evaluate(() => {
+                const btn = document.querySelector('button[type="submit"], svg[class*="send"]') || 
+                            Array.from(document.querySelectorAll('button')).find(b => {
+                              const t = b.textContent?.toLowerCase() || '';
+                              return t.includes('send');
+                            });
+                if (btn) {
+                  (btn as HTMLElement).click();
+                  return true;
+                }
+                return false;
+              });
+
+              if (!sendBtnClicked) {
+                throw new Error("Send button not found.");
+              }
+
+              await new Promise(r => setTimeout(r, 1500)); // Wait for dispatch
+
+              // Update DB status
+              await repo.updateLeadStatus(lead.lead_id, 'CONTACTED', (lead.notes || '') + `\n[${new Date().toISOString()}] Outreach Jiji live link sent: ${previewUrl}`, new Date().toISOString());
+
+              results.push({
+                leadId: lead.lead_id,
+                name: lead.name,
+                status: 'SUCCESS',
+                messageSent: finalMessage
+              });
+              await addLog('Jiji Outreach', 'SUCCESS', `Sent Jiji chat to ${lead.name} (${lead.profile_url})`);
+            } else {
+              throw new Error("Chat button not found on listing page.");
             }
-
-            await new Promise(r => setTimeout(r, 2000)); // Wait for dispatch
-
-            // Update DB status
-            await repo.updateLeadStatus(lead.lead_id, 'CONTACTED', (lead.notes || '') + `\n[${new Date().toISOString()}] Outreach Jiji live link sent: ${previewUrl}`, new Date().toISOString());
-
+          } catch (leadErr: any) {
+            console.error(`Error sending Jiji outreach to lead ${lead.name}:`, leadErr);
             results.push({
               leadId: lead.lead_id,
               name: lead.name,
-              status: 'SUCCESS',
-              messageSent: finalMessage
+              status: 'FAILED',
+              error: leadErr.message
             });
-            await addLog('Jiji Outreach', 'SUCCESS', `Sent Jiji chat to ${lead.name} (${lead.profile_url})`);
-          } else {
-            throw new Error("Chat button not found on listing page.");
+            await addLog('Jiji Outreach', 'ERROR', `Failed to send Jiji message to ${lead.name}: ${leadErr.message}`);
+          } finally {
+            if (tab) {
+              await tab.close().catch(() => {});
+            }
           }
-        } catch (leadErr: any) {
-          console.error(`Error sending Jiji outreach to lead ${lead.name}:`, leadErr);
-          results.push({
-            leadId: lead.lead_id,
-            name: lead.name,
-            status: 'FAILED',
-            error: leadErr.message
-          });
-          await addLog('Jiji Outreach', 'ERROR', `Failed to send Jiji message to ${lead.name}: ${leadErr.message}`);
-        }
+        }));
 
-        // Delay between listings to bypass anti-spam rate limiting
-        await new Promise(r => setTimeout(r, 3000));
+        // Safety spacing between concurrency blocks
+        if (i + CONCURRENCY_LIMIT < targetLeads.length) {
+          await new Promise(r => setTimeout(r, 2000));
+        }
       }
 
     } catch (browserErr: any) {

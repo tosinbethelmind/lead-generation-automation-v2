@@ -56,13 +56,13 @@ export async function bindCustomDomainToCloudflare(domainName: string): Promise<
       body: JSON.stringify({
         type: 'CNAME',
         name: cleanDomain,
-        content: 'apexreach.site',
+        content: 'bethelmindanalytics.com',
         ttl: 1, // Automatic TTL
         proxied: true
       })
     });
     if (resp.ok) {
-      console.log(`[Cloudflare AutoBind] ✅ CNAME created for ${cleanDomain} -> apexreach.site`);
+      console.log(`[Cloudflare AutoBind] ✅ CNAME created for ${cleanDomain} -> bethelmindanalytics.com`);
       return true;
     }
   } catch (err: any) {
@@ -123,8 +123,9 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
 
   const vercelToken = process.env.VERCEL_AUTH_TOKEN || process.env.VERCEL_TOKEN;
   const projectId = process.env.VERCEL_PROJECT_ID;
-  const appOrigin = process.env.NEXT_PUBLIC_APP_URL || 'https://apexreach.site';  const sanitizedName = activeLead.name ? activeLead.name.toLowerCase().replace(/[^a-z0-9]/g, '') : 'client';
-  const subdomainUrl = `https://${sanitizedName}.apexreach.site`;
+  const appOrigin = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
+  const sanitizedName = activeLead.name ? activeLead.name.toLowerCase().replace(/[^a-z0-9]/g, '') : 'client';
+  const subdomainUrl = `https://${sanitizedName}.bethelmindanalytics.com`;
   const handoverPortalUrl = `${appOrigin}/handover/${leadId}`;
 
   let liveUrl = subdomainUrl;
@@ -213,8 +214,8 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
       `🔑 Your Client Handover Portal:\n${handoverPortalUrl}\n\n` +
       `🌐 Custom Domain Setup (Optional):\n` +
       `To point your own domain (e.g. www.yourbusiness.com) to your site, add these 2 DNS CNAME records at your domain provider:\n` +
-      `- CNAME @ -> apexreach.site\n` +
-      `- CNAME www -> apexreach.site\n\n` +
+      `- CNAME @ -> bethelmindanalytics.com\n` +
+      `- CNAME www -> bethelmindanalytics.com\n\n` +
       `Selected Package: ${selectedStrategy}\n` +
       `Payment Ref: ${paymentReference || 'N/A'}\n\n` +
       `Our engineering team is on standby to assist with DNS setup.\n\n` +

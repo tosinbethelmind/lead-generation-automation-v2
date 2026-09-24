@@ -17,19 +17,24 @@ export interface PlanFeature {
 }
 
 export interface Plan {
-  /** Internal key used in payment references (STARTER | PRO | VIP) */
-  id: 'starter' | 'pro' | 'vip';
+  /** Internal key used in payment references (STARTER | PRO | VIP | APP_BUNDLE) */
+  id: 'starter' | 'pro' | 'vip' | 'app_bundle';
   /** Display name */
   name: string;
   /** Monthly subscription price in Naira */
   monthlyNGN: number;
   /**
    * One-time setup / onboarding fee in Naira.
-   * Covers initial workflow configuration, WhatsApp setup,
-   * sector tools, CRM setup, and first review.
-   * Paid once at the start — separate from the monthly plan.
    */
   setupFeeNGN: number;
+  /** Total project investment */
+  totalAmountNGN: number;
+  /** Milestone commitment deposit to begin */
+  depositAmountNGN: number;
+  /** Balance due only upon live production approval */
+  balanceAmountNGN: number;
+  /** Guaranteed deployment delivery SLA in hours */
+  slaHours: number;
   /** Hex accent colour for this plan */
   color: string;
   /** Badge text (e.g. "Most Popular") — null if none */
@@ -43,38 +48,68 @@ export interface Plan {
 export const PLANS_NEED_WEBSITE: Plan[] = [
   {
     id: 'pro',
-    name: 'Complete Website & AI Closer Pro',
-    monthlyNGN: 35_000,
-    setupFeeNGN: 185_000,
+    name: 'Complete Luxury Website & 24/7 AI Sales Closer',
+    monthlyNGN: 0,
+    setupFeeNGN: 75_000,
+    totalAmountNGN: 150_000,
+    depositAmountNGN: 75_000,
+    balanceAmountNGN: 75_000,
+    slaHours: 48,
     color: '#8b5cf6',
-    badge: 'Most Popular • Full Website & Domain Included',
-    tagline: 'Complete Done-For-You Luxury Website + Custom .com/.ng Domain + 24/7 AI Sales Closer.',
+    badge: '🔥 Most Popular • 50% Milestone Deposit • 48h Live SLA',
+    tagline: '100% Done-For-You Luxury Website + Custom .com.ng Domain + 24/7 AI WhatsApp Quoting Assistant.',
     features: [
-      { text: '🌐 COMPLETE Luxury Business Website Development (Full Custom Build)' },
-      { text: '🏷️ Free Custom .com or .com.ng Domain + SSL + Cloud CDN Hosting' },
-      { text: '🎙️ WhatsApp AI Sales Closer with Nigerian Accent Voice Notes' },
-      { text: '🧮 Tailored Sector Calculator (Solar BOQ, Auto Duty, Real Estate, Legal)' },
-      { text: '💳 Moniepoint & Paystack Virtual Account Auto-Verification' },
-      { text: '🎯 10,000 Verified Nigerian B2B Decision-Maker Leads/mo' },
-      { text: '⚡ 50% Deposit Option Available (Pay ₦92,500 to begin, balance on handover)' },
+      { text: '🌐 100% Done-For-You Luxury Custom Website (Desktop + Mobile Ultra-Fast)' },
+      { text: '🏷️ Free Custom .com or .com.ng Domain + SSL + Cloud CDN Hosting Included' },
+      { text: '🎙️ 24/7 WhatsApp AI Sales Closer with Natural Nigerian Accent Voice Notes' },
+      { text: '🧮 Tailored Sector Tool (Solar BOQ, Real Estate Calculator, HMO Clinic Booker, Auto Duty)' },
+      { text: '💳 Moniepoint & Paystack Virtual Account Payment Auto-Verification' },
+      { text: '📍 Google Maps & Local SEO Business Profile Setup' },
+      { text: '🛡️ 100% Risk Reversal: ₦75,000 deposit to start. Balance of ₦75,000 paid ONLY after live approval' },
+    ],
+  },
+  {
+    id: 'app_bundle',
+    name: 'Luxury Web Portal + Branded Android Mobile App (.apk)',
+    monthlyNGN: 0,
+    setupFeeNGN: 125_000,
+    totalAmountNGN: 250_000,
+    depositAmountNGN: 125_000,
+    balanceAmountNGN: 125_000,
+    slaHours: 48,
+    color: '#10b981',
+    badge: '👑 Web + Native Android APK • Customer Push Notifications',
+    tagline: 'Complete Done-For-You Luxury Website + Branded Native Android App (.apk) with Lock-Screen Push Notifications.',
+    features: [
+      { text: '🌐 100% Done-For-You Luxury Custom Website (Desktop + Mobile Ultra-Fast)' },
+      { text: '📱 Branded Native Android Mobile App (.apk) ready for Google Play & direct install' },
+      { text: '🔔 Customer Lock-Screen Push Notifications via Firebase / OneSignal' },
+      { text: '🏷️ Free Custom .com or .com.ng Domain + SSL + Cloud CDN Hosting Included' },
+      { text: '🎙️ 24/7 WhatsApp AI Sales Closer with Natural Nigerian Accent Voice Notes' },
+      { text: '🧮 Tailored Sector Tool (Solar BOQ, Real Estate Calculator, HMO Booker, Auto Duty)' },
+      { text: '💳 Moniepoint & Paystack Virtual Account Payment Auto-Verification' },
+      { text: '🛡️ 100% Risk Reversal: ₦125,000 deposit to start. Balance of ₦125,000 paid ONLY after live APK approval' },
     ],
   },
   {
     id: 'vip',
-    name: 'VIP Enterprise Portal & Outbound AI',
-    monthlyNGN: 75_000,
-    setupFeeNGN: 350_000,
+    name: 'Enterprise Custom Portal & Multi-Agent CRM',
+    monthlyNGN: 0,
+    setupFeeNGN: 175_000,
+    totalAmountNGN: 350_000,
+    depositAmountNGN: 175_000,
+    balanceAmountNGN: 175_000,
+    slaHours: 72,
     color: '#f59e0b',
-    badge: 'Enterprise Portal',
+    badge: '🏢 Enterprise Multi-Branch Build',
     tagline: 'For established firms needing custom multi-page web applications & multi-agent CRMs.',
     features: [
-      { text: '🌐 Multi-Page Custom Web Portal + Customer Dashboard' },
+      { text: '🌐 Multi-Page Custom Web Portal + Customer Client Dashboard' },
       { text: '🏷️ High-Performance Enterprise Server Hosting & Daily Backups' },
       { text: '🎙️ Outbound Nigerian Voice Calling & 24/7 WhatsApp AI Closer' },
       { text: '👥 Multi-Agent WhatsApp Shared Team Inbox (Anti-Lead Theft)' },
       { text: '📸 Instagram DM & Social Ad-to-WhatsApp Funnel Automation' },
-      { text: '🎯 Unlimited B2B Decision-Maker Lead Mining across Nigeria' },
-      { text: '⚡ 50% Deposit Option Available (₦175,000 deposit to start)' },
+      { text: '🛡️ 100% Risk Reversal: ₦175,000 deposit to begin, balance of ₦175,000 on live handover' },
     ],
   },
 ];
@@ -82,43 +117,54 @@ export const PLANS_NEED_WEBSITE: Plan[] = [
 export const PLANS_HAVE_WEBSITE: Plan[] = [
   {
     id: 'starter',
-    name: 'Starter AI Embed Package',
-    monthlyNGN: 15_000,
-    setupFeeNGN: 75_000,
+    name: 'Starter 1-Line Script Embed',
+    monthlyNGN: 0,
+    setupFeeNGN: 35_000,
+    totalAmountNGN: 65_000,
+    depositAmountNGN: 35_000,
+    balanceAmountNGN: 30_000,
+    slaHours: 24,
     color: '#0ea5e9',
-    badge: 'Quick 60s Setup',
-    tagline: 'For businesses with WordPress, Wix, or Shopify who just want a 24/7 AI Chatbot.',
+    badge: '⚡ 10-Minute Setup • 0% Downtime',
+    tagline: 'Keep your existing website 100% untouched. Attach our 24/7 AI WhatsApp Quoter & Sector Tool.',
     features: [
-      { text: '🔌 1-Line Script Embed on your existing website (60-second setup)' },
-      { text: '🤖 24/7 WhatsApp & Web AI Sales Chatbot & Auto-Responder' },
-      { text: '🎯 500 Verified Local SME & Decision-Maker Leads' },
-      { text: '💳 Direct Bank Transfer & Payment Link Integration' },
-      { text: '📊 Simple CRM Lead Pipeline & Deal Tracker' },
-      { text: '⚡ Turnkey 24-hour setup & onboarding handover' },
+      { text: '🔌 1-Line Script Embed: Works on WordPress, Wix, Shopify, or Custom HTML' },
+      { text: '🤖 24/7 WhatsApp & Web AI Sales Chatbot & Instant Quoter' },
+      { text: '🧮 Tailored Sector Lead Tool embedded on your existing website' },
+      { text: '🔒 100% Zero-Touch Guarantee: Your current domain, hosting, and SEO remain untouched' },
+      { text: '🛡️ Pay ₦35,000 deposit to start, balance of ₦30,000 only after you test live' },
     ],
   },
   {
     id: 'pro',
-    name: 'Business Pro AI & Calculators Embed',
-    monthlyNGN: 25_000,
-    setupFeeNGN: 125_000,
+    name: 'Pro Embed & Custom Sector CRM Suite',
+    monthlyNGN: 0,
+    setupFeeNGN: 65_000,
+    totalAmountNGN: 65_000,
+    depositAmountNGN: 65_000,
+    balanceAmountNGN: 0,
+    slaHours: 24,
     color: '#8b5cf6',
-    badge: 'Most Popular for Existing Sites',
-    tagline: 'Embed our full AI Voice Closer & 8 Sector Calculators into your current website.',
+    badge: '🔥 Complete Single-Payment Handover',
+    tagline: 'Embed full AI Voice Closer & Specialized Sector Calculators into your current website.',
     features: [
-      { text: '🔌 1-Line Script Embed for AI Concierge + All 8 Sector Calculators' },
-      { text: '🎙️ WhatsApp AI Closer with Nigerian Voice Notes' },
+      { text: '🔌 1-Line Script Embed for AI Concierge + All Specialized Sector Calculators' },
+      { text: '🎙️ WhatsApp AI Closer with Nigerian Accent Voice Notes' },
       { text: '🧮 Interactive Sector Calculators embedded on your current domain' },
-      { text: '💳 Moniepoint & Paystack Virtual Account Payment Auto-Verification' },
-      { text: '🎯 5,000 Verified Nigerian B2B Decision-Maker Leads/mo' },
-      { text: '⚡ 50% Deposit Option Available (Pay ₦62,500 to begin, balance on launch)' },
+      { text: '💳 Moniepoint & Paystack Virtual Account Payment Integration' },
+      { text: '📊 Real-Time CRM Lead Pipeline & Deal Tracker' },
+      { text: '⚡ One-Time ₦65,000 Complete Integration Fee — Zero monthly charges' },
     ],
   },
   {
     id: 'vip',
     name: 'Enterprise Custom Integration',
-    monthlyNGN: 50_000,
-    setupFeeNGN: 250_000,
+    monthlyNGN: 0,
+    setupFeeNGN: 150_000,
+    totalAmountNGN: 150_000,
+    depositAmountNGN: 75_000,
+    balanceAmountNGN: 75_000,
+    slaHours: 48,
     color: '#f59e0b',
     badge: 'Full API & CRM Sync',
     tagline: 'Deep API & CRM integration with your existing custom web infrastructure.',
@@ -126,8 +172,7 @@ export const PLANS_HAVE_WEBSITE: Plan[] = [
       { text: '🔌 Full Custom API & Webhook Integration with your current database' },
       { text: '👥 Multi-Agent WhatsApp Shared Team Inbox' },
       { text: '📸 Instagram DM & Social Ad-to-WhatsApp Funnel Automation' },
-      { text: '🎯 10,000 Verified Nigerian B2B Decision-Maker Leads/mo' },
-      { text: '⚡ 50% Deposit Option Available (₦125,000 deposit to start)' },
+      { text: '🛡️ ₦75,000 deposit to start, balance only on complete sync' },
     ],
   },
 ];

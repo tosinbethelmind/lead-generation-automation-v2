@@ -9,6 +9,14 @@ import LandingPage from '@/components/LandingPage';
 
 // Lazy load non-critical floating AI concierge to accelerate primary landing page load
 const CustomerAiAgentWidget = dynamic(() => import('@/components/CustomerAiAgentWidget'), { ssr: false });
+const StickyMobileConversionBar = dynamic(() => import('@/components/StickyMobileConversionBar'), { ssr: false });
+const VoiceNotePlayer = dynamic(() => import('@/components/VoiceNotePlayer'), { ssr: false });
+const TypebotLeadConverter = dynamic(() => import('@/components/interactive/TypebotLeadConverter'), { ssr: false });
+const NigerianSmeHeroExplainer = dynamic(() => import('@/components/NigerianSmeHeroExplainer'), { ssr: false });
+const ExecutivePdfQuoteModal = dynamic(() => import('@/components/ExecutivePdfQuoteModal'), { ssr: false });
+const SectorToolsWidget = dynamic(() => import('@/components/SectorToolsWidget').then(m => m.SectorToolsWidget), { ssr: false });
+const ExitIntentAndIdleModal = dynamic(() => import('@/components/ExitIntentAndIdleModal'), { ssr: false });
+const LiveSocialProofTicker = dynamic(() => import('@/components/LiveSocialProofTicker').then(m => m.LiveSocialProofTicker), { ssr: false });
 
 interface PreviewData {
   lead: {
@@ -175,6 +183,19 @@ export default function PreviewPage() {
 
     // Defer non-critical journey tracking to idle time (0ms blocking)
     const runTracking = () => {
+      // 1. Dub.co High-Precision Click Attribution
+      fetch('/api/preview/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId,
+          businessName: data?.lead?.name || leadId,
+          category: data?.lead?.category || 'General',
+          area: data?.lead?.area || data?.lead?.city || 'Lagos',
+          phone: data?.lead?.phone_e164 || ''
+        })
+      }).catch(() => {});
+
       fetch('/api/tracking/journey-event', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -264,28 +285,165 @@ export default function PreviewPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#090d16', position: 'relative' }}>
-      {/* Main Interactive Landing Page with Single Clean Sticky Header */}
-      <LandingPage data={data} leadId={leadId} isPreview={true} />
-
-      {/* Floating 24/7 AI Concierge Widget — Receives full scraped lead profile for hyper-personalized suggestions */}
-      <CustomerAiAgentWidget
-        businessName={data.lead.name}
-        sector={data.lead.category}
-        leadData={{
-          name: data.lead.name,
-          category: data.lead.category,
-          address: data.lead.address,
-          area: data.lead.area,
-          city: data.lead.city,
-          rating: data.lead.rating,
-          reviews_count: data.lead.reviews_count,
-          business_summary: data.lead.business_summary,
-          phone: data.lead.phone_raw,
-          services: data.copy?.services?.map((s: any) => s.title).join(', '),
-          social_links: data.lead.social_links,
+    <div style={{ minHeight: '100vh', width: '100%', background: '#070b14', color: '#ffffff', position: 'relative', overflowX: 'hidden' }}>
+      {/* Top High-Conversion VIP Proof & 1-Tap WhatsApp Bar */}
+      <header 
+        style={{
+          width: '100%',
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
+          background: 'rgba(7, 11, 20, 0.92)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(16, 185, 129, 0.25)',
+          padding: '10px 16px',
+          boxSizing: 'border-box'
         }}
+      >
+        <div 
+          style={{
+            maxWidth: '1100px',
+            margin: '0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+            flexWrap: 'wrap'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px #10b981', flexShrink: 0 }}></span>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f59e0b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              👑 VIP DEMO: <span style={{ color: '#ffffff', fontWeight: 800 }}>{data.lead.name}</span>
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <a
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Analytics Lagos Desk! I am reviewing the live 24/7 AI quoting prototype for *${data.lead.name}* (${data.lead.category}) in ${data.lead.area || data.lead.city || 'Lagos'}.\n\nDemo Link: https://www.bethelmindanalytics.com/preview/${leadId}\n\nPlease show me how the 2-second WhatsApp quoter works with our services and pricing (₦0 Upfront Preview).`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 16px',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                color: '#ffffff',
+                borderRadius: '9999px',
+                fontSize: '0.8rem',
+                fontWeight: 800,
+                textDecoration: 'none',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              🟢 Test WhatsApp Demo →
+            </a>
+            
+            <a
+              href="tel:+2348022791227"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '8px 12px',
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '9999px',
+                color: '#cbd5e1',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                textDecoration: 'none',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              📞 0802 279 1227
+            </a>
+          </div>
+        </div>
+      </header>
+
+      {/* High-Converting Plain-English Nigerian SME Explainer Hero */}
+      <NigerianSmeHeroExplainer
+        businessName={data.lead.name}
+        category={data.lead.category}
+        area={data.lead.area || data.lead.city || 'Lagos'}
+        phone={data.lead.phone_raw}
+        previewUrl={`https://www.bethelmindanalytics.com/preview/${leadId}`}
+        adminPhone="2348022791227"
+      />
+
+      {/* Interactive Sector Calculator & Trust Suite (The Trojan Horse Value Engine) */}
+      <section style={{ maxWidth: '1100px', margin: '32px auto', padding: '0 16px', boxSizing: 'border-box' }}>
+        <SectorToolsWidget
+          businessCategory={data.lead.category}
+          businessName={data.lead.name}
+          merchantPhone="2348022791227"
+          hasWebsite={Boolean(data.lead.business_summary?.includes('http') || (data as any).lead?.website || (data as any).hasWebsite)}
+        />
+      </section>
+
+      {/* Main Interactive Landing Page with Single Clean Sticky Header */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+        <LandingPage data={data} leadId={leadId} isPreview={true} />
+      </div>
+
+      {/* Embedded Typebot Conversational Quoting Lead Magnet */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <TypebotLeadConverter
+          businessName={data.lead.name}
+          category={data.lead.category}
+          area={data.lead.area || data.lead.city || 'Lagos'}
+          leadId={leadId}
+          primaryColor={data.theme?.primary || '#0284c7'}
+          accentColor={data.theme?.accent || '#38bdf8'}
+        />
+      </div>
+
+      {/* Floating 24/7 AI Concierge Widget — On desktop, display floating concierge. On mobile, hidden to prevent collision with sticky conversion bar */}
+      <div className="hidden md:block">
+        <CustomerAiAgentWidget
+          businessName={data.lead.name}
+          sector={data.lead.category}
+          leadData={{
+            name: data.lead.name,
+            category: data.lead.category,
+            address: data.lead.address,
+            area: data.lead.area,
+            city: data.lead.city,
+            rating: data.lead.rating,
+            reviews_count: data.lead.reviews_count,
+            business_summary: data.lead.business_summary,
+            phone: data.lead.phone_raw,
+            services: data.copy?.services?.map((s: any) => s.title).join(', '),
+            social_links: data.lead.social_links,
+          }}
+        />
+      </div>
+
+      {/* Sticky Bottom Mobile Conversion Bar for 1-Tap WhatsApp Claim */}
+      <StickyMobileConversionBar
+        businessName={data.lead.name}
+        area={data.lead.area || data.lead.city || 'Lagos'}
+        category={data.lead.category}
+        hasWebsite={Boolean(data.lead.business_summary?.includes('http') || (data as any).lead?.website || (data as any).hasWebsite)}
+        website={(data as any).lead?.website}
+        adminPhone="2348022791227"
+      />
+
+      {/* Real-Time Verified Commercial Social Proof Toast */}
+      <LiveSocialProofTicker />
+
+      {/* 16-Second Idle & Exit-Intent 1-Tap WhatsApp Re-Engagement Modal */}
+      <ExitIntentAndIdleModal
+        businessName={data.lead.name}
+        category={data.lead.category}
+        area={data.lead.area || data.lead.city || 'Lagos'}
+        adminPhone="2348022791227"
+        leadId={leadId}
       />
     </div>
   );
 }
+

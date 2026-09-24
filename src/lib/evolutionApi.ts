@@ -127,6 +127,46 @@ export async function sendEvolutionTextMessage(
 }
 
 /**
+ * Sends a native .opus audio voice note bubble via Evolution API
+ */
+export async function sendEvolutionVoiceNote(
+  config: EvolutionInstanceConfig,
+  phone: string,
+  audioBase64OrUrl: string
+): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const cleanPhone = phone.replace(/[^0-9]/g, '');
+  const url = `${config.baseUrl.replace(/\/$/, '')}/message/sendWhatsAppAudio/${config.instanceName}`;
+
+  try {
+    const isUrl = audioBase64OrUrl.startsWith('http');
+    const payload = isUrl 
+      ? { audio: audioBase64OrUrl }
+      : { audio: `data:audio/ogg;codecs=opus;base64,${audioBase64OrUrl}` };
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': config.apiKey,
+      },
+      body: JSON.stringify({
+        number: cleanPhone,
+        ...payload,
+        options: { delay: 1500, presence: 'recording' },
+      }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      return { success: true, messageId: data.key?.id || data.messageId };
+    }
+    return { success: false, error: data.message || `HTTP ${res.status}` };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+/**
  * Fetches connection state of an Evolution instance
  */
 export async function getEvolutionConnectionState(

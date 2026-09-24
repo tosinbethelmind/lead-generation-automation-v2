@@ -23,11 +23,13 @@ function syncDirectory(src, dest) {
   for (const entry of entries) {
     const srcPath = path.join(src, entry);
     const destPath = path.join(dest, entry);
-    const stat = fs.statSync(srcPath);
-    if (stat.isFile()) {
-      fs.copyFileSync(srcPath, destPath);
-      count++;
-    }
+    try {
+      const stat = fs.statSync(srcPath);
+      if (stat.isFile()) {
+        fs.copyFileSync(srcPath, destPath);
+        count++;
+      }
+    } catch (_) {}
   }
   return count;
 }

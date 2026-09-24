@@ -3,13 +3,16 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { BlogEngine } from '@/lib/blog/blogEngine';
 import { MASTER_PAYOUT } from '@/data/monetizationCatalog';
+import { FeaturedMonetizationVault } from '@/components/blog/FeaturedMonetizationVault';
 
 export const metadata: Metadata = {
   title: 'B2B Commercial Intelligence & Growth Blog | Bethelmind Analytics Lagos',
-  description: 'Practical playbooks, market intelligence, solar BOQ models, real estate yields, and AI automation blueprints for Nigerian commercial leaders and diaspora investors.',
+  description:
+    'Practical playbooks, market intelligence, solar BOQ models, real estate yields, and AI automation blueprints for Nigerian commercial leaders and diaspora investors.',
   openGraph: {
     title: 'Bethelmind Analytics — B2B Commercial Growth & AI Automation Blog',
-    description: 'Practical playbooks on leveraging AI, solar energy, real estate, and B2B automation for rapid commercial growth.',
+    description:
+      'Practical playbooks on leveraging AI, solar energy, real estate, and B2B automation for rapid commercial growth.',
     url: 'https://www.bethelmindanalytics.com/blog',
     siteName: 'Bethelmind Analytics Lagos Desk',
     images: [
@@ -25,201 +28,400 @@ export const metadata: Metadata = {
   },
 };
 
+const CATEGORY_ICONS: Record<string, string> = {
+  'CleanTech & Solar Energy': '⚡',
+  'Logistics, Haulage & Supply Chain': '🚛',
+  'Hospitality & Luxury Shortlets': '🏨',
+  'Healthcare & Clinic Management': '🏥',
+  'AI & Enterprise Automation': '🤖',
+  'Real Estate & Diaspora Wealth': '🏗️',
+  'Auto Clearing & Customs Logistics': '🚢',
+  'Private Education & Schools': '🎓',
+  'Beauty, Spas & Wellness': '💇‍♀️',
+  'Corporate Compliance, CAC & Legal Ops': '⚖️',
+  'Retail, E-Commerce & Fraud Prevention': '🛍️',
+  'Construction, POP & Building Material Estimating': '🧱',
+  'Agribusiness, Aquaculture & Feed Consolidation': '🌾',
+  'Multi-Location Inventory & Stock Theft Prevention': '📦',
+  'Tech Trends': '💻',
+  'AI & Autonomous Agents': '🧠',
+  'Google Ranking & SEO': '📈',
+};
+
+function getCategoryIcon(cat: string) {
+  return CATEGORY_ICONS[cat] || '📰';
+}
+
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const h = Math.floor(diff / 3600000);
+  if (h < 1) return 'Just now';
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d}d ago`;
+  return new Date(dateStr).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' });
+}
+
 export default function BlogIndexPage() {
   const posts = BlogEngine.getAllPosts();
   const featuredPost = posts[0];
-  const remainingPosts = posts.slice(1);
-  
-  const categories = Array.from(new Set(posts.map(p => p.category)));
+  const secondaryHero = posts.slice(1, 3);
+  const gridPosts = posts.slice(3);
+  const categories = Array.from(new Set(posts.map((p) => p.category)));
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-amber-500 selection:text-slate-950">
-      {/* Header Banner */}
-      <section className="relative py-20 lg:py-28 overflow-hidden border-b border-slate-800 bg-gradient-to-b from-navy-950 via-slate-950 to-slate-950">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.15),transparent_60%)] pointer-events-none"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-widest mb-6">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-            <span>Live Commercial Intelligence & AI Playbooks</span>
+    <div
+      className="min-h-screen text-slate-100 selection:bg-amber-400 selection:text-slate-950"
+      style={{ background: 'linear-gradient(160deg, #030712 0%, #070a14 40%, #0a0f1e 100%)' }}
+    >
+      {/* ─── HERO MASTHEAD ─── */}
+      <section className="relative overflow-hidden pt-16 pb-12 lg:pt-24 lg:pb-16 border-b border-white/5">
+        {/* Ambient glow orbs */}
+        <div
+          className="pointer-events-none absolute -top-40 left-1/4 w-[600px] h-[600px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.10) 0%, transparent 70%)' }}
+        />
+        <div
+          className="pointer-events-none absolute -top-20 right-1/4 w-[400px] h-[400px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)' }}
+        />
+        {/* Dot grid */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.022]"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Live badge */}
+          <div className="flex items-center gap-2.5 mb-7">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400" />
+            </span>
+            <span className="text-xs font-bold tracking-[0.18em] uppercase text-amber-400">
+              Live Commercial Intelligence Feed &middot; {posts.length} Active Playbooks
+            </span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-6">
-            Resources, Field Data & <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">Execution Blueprints</span>
-          </h1>
-          <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Data-backed breakdowns on commercial solar payback, off-plan real estate yields, tokunbo customs duties, and autonomous 24/7 AI WhatsApp sales systems.
-          </p>
-          
-          {/* Quick Metrics Bar */}
-          <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
-            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-              <div className="text-2xl font-black text-amber-400">30+</div>
-              <div className="text-xs text-slate-400 font-medium">Daily Briefings & GEO Guides</div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+            <div className="lg:col-span-7">
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-black text-white leading-[1.08] tracking-tight mb-5">
+                Field Data &amp;{' '}
+                <span
+                  className="text-transparent bg-clip-text"
+                  style={{ backgroundImage: 'linear-gradient(90deg, #fbbf24, #f59e0b, #fde68a)' }}
+                >
+                  Execution Blueprints
+                </span>{' '}
+                for Nigeria&rsquo;s Growth Economy
+              </h1>
+              <p className="text-lg text-slate-400 max-w-xl leading-relaxed">
+                Verified commercial intel on solar ROI, real estate yields, customs duties, and autonomous AI sales systems &mdash; published autonomously, 30+ times daily.
+              </p>
             </div>
-            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-              <div className="text-2xl font-black text-amber-400">&lt; 3s</div>
-              <div className="text-xs text-slate-400 font-medium">WhatsApp AI Response Time</div>
+
+            {/* Metric mini-cards */}
+            <div className="lg:col-span-5 grid grid-cols-2 gap-3">
+              {[
+                { value: `${posts.length}+`, label: 'Live Playbooks', icon: '📋' },
+                { value: '< 3s', label: 'WhatsApp AI Reply', icon: '⚡' },
+                { value: '₦650k', label: 'Top Asset Value', icon: '💰' },
+                { value: '48h', label: 'DFY Portal SLA', icon: '🚀' },
+              ].map((m) => (
+                <div
+                  key={m.label}
+                  className="relative p-4 rounded-2xl border border-white/8 overflow-hidden group hover:border-amber-400/30 transition-all duration-300"
+                  style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(12px)' }}
+                >
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.08), transparent)' }}
+                  />
+                  <div className="text-xl mb-1">{m.icon}</div>
+                  <div className="text-2xl font-black text-amber-400 leading-none">{m.value}</div>
+                  <div className="text-[11px] text-slate-500 mt-1 font-medium">{m.label}</div>
+                </div>
+              ))}
             </div>
-            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-              <div className="text-2xl font-black text-amber-400">₦650k / $499</div>
-              <div className="text-xs text-slate-400 font-medium">Verified CleanTech Leads Vault</div>
-            </div>
-            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-              <div className="text-2xl font-black text-amber-400">48h</div>
-              <div className="text-xs text-slate-400 font-medium">Turnkey Business Portal SLA</div>
-            </div>
+          </div>
+
+          {/* Sector pill carousel */}
+          <div className="flex items-center gap-2.5 mt-10 overflow-x-auto pb-1 scrollbar-none">
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-600 whitespace-nowrap shrink-0">
+              Sectors:
+            </span>
+            {categories.map((cat) => (
+              <span
+                key={cat}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 whitespace-nowrap shrink-0 hover:border-amber-400/50 hover:text-amber-300 hover:bg-amber-400/5 cursor-pointer"
+                style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.1)', color: '#94a3b8' }}
+              >
+                {getCategoryIcon(cat)} {cat}
+              </span>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Categories Bar */}
-        <div className="flex items-center space-x-2 overflow-x-auto pb-4 mb-12 scrollbar-none">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2 whitespace-nowrap">Explore Sectors:</span>
-          {categories.map((cat, idx) => (
-            <span 
-              key={idx}
-              className="inline-flex items-center px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all whitespace-nowrap"
-            >
-              {cat}
-            </span>
-          ))}
-        </div>
+      {/* ─── MAIN CONTENT ─── */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
 
-        {/* Featured Top Post */}
+        {/* ─── HIGH-YIELD REVENUE ASSETS & DFY PROTOTYPE VAULT ─── */}
+        <FeaturedMonetizationVault />
+
+        {/* ── FEATURED EDITORIAL HERO ── */}
         {featuredPost && (
-          <div className="mb-16 rounded-3xl overflow-hidden bg-slate-900/70 border border-amber-500/30 shadow-2xl hover:border-amber-400 transition-all group">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
-              <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center space-x-3 text-xs font-bold mb-4">
-                    <span className="px-3 py-1 rounded-full bg-amber-500 text-slate-950 uppercase tracking-widest font-black">
-                      Featured Blueprint
-                    </span>
-                    <span className="text-slate-400">•</span>
-                    <span className="text-amber-400">{featuredPost.category}</span>
-                    <span className="text-slate-400">•</span>
-                    <span className="text-slate-400">{featuredPost.read_time}</span>
-                  </div>
-                  <Link href={`/blog/${featuredPost.slug}`}>
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white group-hover:text-amber-400 transition-colors leading-tight mb-4">
-                      {featuredPost.title}
-                    </h2>
-                  </Link>
-                  <p className="text-slate-300 text-base leading-relaxed mb-6">
-                    {featuredPost.excerpt}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between pt-6 border-t border-slate-800">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center font-black text-slate-950 text-sm">
-                      OT
-                    </div>
+          <div className="mb-10">
+            <Link href={`/blog/${featuredPost.slug}`} className="group block">
+              <div
+                className="relative rounded-3xl overflow-hidden border transition-all duration-500 hover:border-amber-400/50 hover:shadow-[0_0_60px_rgba(245,158,11,0.10)]"
+                style={{ borderColor: 'rgba(245,158,11,0.2)', background: 'rgba(255,255,255,0.02)' }}
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-2">
+                  <div className="relative z-10 p-8 sm:p-12 lg:p-14 flex flex-col justify-between">
                     <div>
-                      <div className="text-sm font-bold text-white">Oyelakin Tosin</div>
-                      <div className="text-xs text-slate-400">Bethelmind Analytics Lagos Desk</div>
+                      <div className="flex items-center gap-3 mb-5 flex-wrap">
+                        <span
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest text-slate-950"
+                          style={{ background: 'linear-gradient(90deg, #f59e0b, #fbbf24)' }}
+                        >
+                          ★ Editor&apos;s Pick
+                        </span>
+                        <span className="text-[12px] text-amber-400 font-semibold">
+                          {getCategoryIcon(featuredPost.category)} {featuredPost.category}
+                        </span>
+                      </div>
+                      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight tracking-tight mb-4 group-hover:text-amber-300 transition-colors duration-300">
+                        {featuredPost.title}
+                      </h2>
+                      <p className="text-slate-400 leading-relaxed text-base mb-8 max-w-lg">
+                        {featuredPost.excerpt}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center font-black text-sm text-slate-950 shrink-0"
+                          style={{ background: 'linear-gradient(135deg, #f59e0b, #fbbf24)' }}
+                        >
+                          OT
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-white">Oyelakin Tosin</div>
+                          <div className="text-xs text-slate-500">
+                            {featuredPost.read_time} &middot; {timeAgo(featuredPost.created_at)}
+                          </div>
+                        </div>
+                      </div>
+                      <span
+                        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-sm text-slate-950 transition-all duration-200 group-hover:scale-105 group-hover:shadow-[0_0_25px_rgba(245,158,11,0.4)]"
+                        style={{ background: 'linear-gradient(90deg, #f59e0b, #fbbf24)' }}
+                      >
+                        Read Playbook →
+                      </span>
                     </div>
                   </div>
-                  <Link 
-                    href={`/blog/${featuredPost.slug}`}
-                    className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm transition-all"
-                  >
-                    Read Blueprint →
-                  </Link>
+
+                  {/* Hero image side */}
+                  <div className="relative min-h-[280px] lg:min-h-full overflow-hidden">
+                    <img
+                      src={featuredPost.featured_image}
+                      alt={featuredPost.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: 'linear-gradient(to right, rgba(7,10,20,0.7) 0%, transparent 60%)' }}
+                    />
+                    <div
+                      className="absolute top-5 right-5 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-md border border-white/10"
+                      style={{ background: 'rgba(0,0,0,0.55)' }}
+                    >
+                      👁 {featuredPost.views_count.toLocaleString()} {featuredPost.views_count === 1 ? 'view' : 'views'}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="lg:col-span-5 relative min-h-[280px] lg:min-h-full bg-slate-800 overflow-hidden">
-                <img 
-                  src={featuredPost.featured_image} 
-                  alt={featuredPost.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent lg:hidden"></div>
-              </div>
-            </div>
+            </Link>
           </div>
         )}
 
-        {/* All Articles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {remainingPosts.map((post) => (
-            <article 
-              key={post.id} 
-              className="flex flex-col bg-slate-900/50 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-lg group"
-            >
-              <div className="h-48 relative overflow-hidden bg-slate-800">
-                <img 
-                  src={post.featured_image} 
-                  alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                />
-                <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-950/80 text-amber-400 border border-amber-500/30 backdrop-blur-sm">
-                    {post.category}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-6 flex flex-col flex-grow justify-between">
-                <div>
-                  <div className="flex items-center space-x-2 text-xs text-slate-400 mb-3">
-                    <span>{post.read_time}</span>
-                    <span>•</span>
-                    <span className="text-amber-400/80 font-semibold">{post.views_count.toLocaleString()} Views</span>
+        {/* ── SECONDARY HERO PAIR ── */}
+        {secondaryHero.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+            {secondaryHero.map((post) => (
+              <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
+                <div
+                  className="relative rounded-2xl overflow-hidden border border-white/8 h-full transition-all duration-300 hover:border-amber-400/40 hover:shadow-[0_0_40px_rgba(245,158,11,0.07)] hover:-translate-y-0.5"
+                  style={{ background: 'rgba(255,255,255,0.025)' }}
+                >
+                  <div className="flex h-full min-h-[160px]">
+                    <div className="flex-1 p-6 sm:p-7 flex flex-col justify-between">
+                      <div>
+                        <div className="text-xs font-bold text-amber-400 mb-3">
+                          {getCategoryIcon(post.category)} {post.category}
+                        </div>
+                        <h3 className="text-[16px] font-black text-white leading-snug mb-3 group-hover:text-amber-300 transition-colors line-clamp-3">
+                          {post.title}
+                        </h3>
+                        <p className="text-slate-500 text-xs leading-relaxed line-clamp-2">{post.excerpt}</p>
+                      </div>
+                      <div className="mt-5 flex items-center gap-2 text-xs text-slate-500">
+                        <span>{post.read_time}</span>
+                        <span>&middot;</span>
+                        <span className="text-amber-400/70 font-semibold">{timeAgo(post.created_at)}</span>
+                        <span>&middot;</span>
+                        <span>{post.views_count.toLocaleString()} views</span>
+                      </div>
+                    </div>
+                    <div className="w-36 sm:w-44 relative overflow-hidden shrink-0">
+                      <img
+                        src={post.featured_image}
+                        alt={post.title}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div
+                        className="absolute inset-0"
+                        style={{ background: 'linear-gradient(to right, rgba(7,10,20,0.45), transparent)' }}
+                      />
+                    </div>
                   </div>
-                  <Link href={`/blog/${post.slug}`}>
-                    <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors leading-snug mb-3">
-                      {post.title}
-                    </h3>
-                  </Link>
-                  <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                    {post.excerpt}
-                  </p>
                 </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
-                <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
-                  <Link 
-                    href={`/blog/${post.slug}`}
-                    className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center space-x-1"
-                  >
-                    <span>Read Article</span>
-                    <span>→</span>
-                  </Link>
-                  {post.matched_product && (
-                    <span className="text-[11px] text-slate-400 font-medium">
-                      Includes {post.matched_product.priceNgn} Asset
+        {/* Divider */}
+        <div className="flex items-center gap-4 mb-8">
+          <span className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">All Playbooks</span>
+          <div
+            className="flex-1 h-px"
+            style={{ background: 'linear-gradient(to right, rgba(255,255,255,0.08), transparent)' }}
+          />
+          <span className="text-xs text-slate-700">{gridPosts.length} articles</span>
+        </div>
+
+        {/* ── ARTICLE GRID ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20">
+          {gridPosts.map((post) => (
+            <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
+              <article
+                className="h-full flex flex-col rounded-2xl overflow-hidden border border-white/7 transition-all duration-300 hover:border-amber-400/35 hover:-translate-y-1 hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.8)]"
+                style={{ background: 'rgba(255,255,255,0.025)' }}
+              >
+                {/* Thumbnail */}
+                <div className="relative h-44 overflow-hidden shrink-0">
+                  <img
+                    src={post.featured_image}
+                    alt={post.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: 'linear-gradient(to top, rgba(7,10,20,0.75) 0%, transparent 55%)' }}
+                  />
+                  <div className="absolute bottom-3 left-3">
+                    <span
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-amber-300 border border-amber-400/25 backdrop-blur-md"
+                      style={{ background: 'rgba(0,0,0,0.60)' }}
+                    >
+                      {getCategoryIcon(post.category)}{' '}
+                      {post.category.length > 20 ? post.category.substring(0, 18) + '…' : post.category}
                     </span>
+                  </div>
+                  {post.views_count >= 50 && (
+                    <div
+                      className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-black text-slate-950 uppercase tracking-wider"
+                      style={{ background: 'linear-gradient(90deg, #f59e0b, #fbbf24)' }}
+                    >
+                      Trending 🔥
+                    </div>
                   )}
                 </div>
-              </div>
-            </article>
+
+                {/* Card body */}
+                <div className="flex flex-col flex-grow p-5">
+                  <div className="flex items-center gap-2 text-[11px] text-slate-500 mb-3">
+                    <span>{post.read_time}</span>
+                    <span>&middot;</span>
+                    <span className="text-amber-400/70 font-semibold">
+                      {post.views_count.toLocaleString()} {post.views_count === 1 ? 'view' : 'views'}
+                    </span>
+                    <span>&middot;</span>
+                    <span>{timeAgo(post.created_at)}</span>
+                  </div>
+                  <h3 className="text-[15px] font-bold text-white leading-snug mb-2.5 group-hover:text-amber-300 transition-colors line-clamp-2">
+                    {post.title}
+                  </h3>
+                  <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 flex-grow">
+                    {post.excerpt}
+                  </p>
+                  <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-white/6">
+                    <span className="text-xs font-bold text-amber-400 group-hover:text-amber-300 transition-colors flex items-center gap-1">
+                      Read Playbook{' '}
+                      <span className="group-hover:translate-x-0.5 transition-transform inline-block">→</span>
+                    </span>
+                    {post.matched_product && (
+                      <span
+                        className="text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/25 text-emerald-400"
+                        style={{ background: 'rgba(16,185,129,0.07)' }}
+                      >
+                        {post.matched_product.priceNgn}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </article>
+            </Link>
           ))}
         </div>
 
-        {/* Global Conversion & Newsletter Magnet */}
-        <section className="mt-24 p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-navy-950 via-slate-900 to-slate-900 border border-amber-500/30 shadow-2xl text-center relative overflow-hidden">
-          <div className="max-w-2xl mx-auto relative z-10">
-            <span className="text-xs font-black uppercase tracking-widest text-amber-400 block mb-2">Direct Executive Access</span>
-            <h3 className="text-2xl sm:text-3xl font-black text-white mb-4">
-              Need a Custom 24/7 AI Sales Bot or Done-For-You Business Website?
+        {/* ── BOTTOM CTA STRIP ── */}
+        <section
+          className="relative rounded-3xl overflow-hidden p-8 sm:p-12"
+          style={{
+            background: 'linear-gradient(135deg, #0f172a 0%, #1a1040 50%, #0f172a 100%)',
+            border: '1px solid rgba(245,158,11,0.22)',
+          }}
+        >
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.12) 0%, transparent 70%)' }}
+          />
+          <div className="relative z-10 max-w-2xl mx-auto text-center">
+            <div
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-400/30 text-amber-400 text-xs font-bold uppercase tracking-widest mb-5"
+              style={{ background: 'rgba(245,158,11,0.07)' }}
+            >
+              ⚡ Direct Executive Access
+            </div>
+            <h3 className="text-2xl sm:text-3xl font-black text-white mb-4 leading-tight">
+              Need a 24/7 AI Sales Bot or Done-For-You Business Website?
             </h3>
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-8">
-              We deploy 100% turnkey commercial operations portals in 48 hours and 1-line script quote widgets in 10 minutes. Connect directly to our Lagos desk on WhatsApp.
+            <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-8">
+              We deploy 100% turnkey commercial operations portals in 48 hours and 1-line script quote widgets in 10 minutes. Connect directly to our Lagos desk.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <a 
+              <a
                 href={`${MASTER_PAYOUT.whatsappCloser}?text=Hi+Bethelmind,+I+want+to+automate+sales+for+my+business`}
-                target="_blank" 
+                target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm tracking-wide shadow-xl hover:scale-105 transition-all"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-black text-sm text-slate-950 transition-all duration-200 hover:scale-105 hover:shadow-[0_0_30px_rgba(245,158,11,0.4)]"
+                style={{ background: 'linear-gradient(90deg, #f59e0b, #fbbf24)' }}
               >
-                💬 Chat with Admin & Closer Desk (0802 279 1227)
+                💬 Chat with Our Lagos Desk
               </a>
-              <a 
-                href="/tools/solar-quote-pro"
-                className="px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 transition-colors"
+              <a
+                href="/marketplace"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm text-slate-300 border border-white/10 hover:border-amber-400/40 hover:text-amber-300 transition-all duration-200"
+                style={{ background: 'rgba(255,255,255,0.04)' }}
               >
-                ⚡ Explore Solar BOQ Calculator
+                Explore Digital Asset Vault →
               </a>
             </div>
           </div>

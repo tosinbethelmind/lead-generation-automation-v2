@@ -294,7 +294,10 @@ export default function Lagos10KOutreachCard() {
 
   useEffect(() => {
     fetchLagosStatus(false);
-    const interval = setInterval(() => fetchLagosStatus(false), 3000);
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      fetchLagosStatus(false);
+    }, 15000);
 
     // Live Stream SSE Connection for Real-Time Updates
     let eventSource: EventSource | null = null;
@@ -311,7 +314,6 @@ export default function Lagos10KOutreachCard() {
               ...prev,
               latestLogs: [...formatted, ...prev.latestLogs].slice(0, 50)
             }));
-            fetchLagosStatus(false);
           }
         } catch (_) {}
       });

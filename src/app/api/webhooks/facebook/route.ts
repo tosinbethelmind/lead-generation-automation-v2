@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRuntimeConfig } from '@/lib/localConfig';
 import { solarQuoteProSupabase } from '@/lib/solarQuoteProClient';
-import { addLog } from '@/lib/googleSheets';
+import { addLog, Lead } from '@/lib/googleSheets';
+import { OutreachManager } from '@/lib/outreachManager';
 import { createHmac } from 'crypto';
 import { setWorkerIndex } from '@/lib/requestContext';
 import { safeCompareStrings } from '@/lib/security';
@@ -163,6 +164,44 @@ export async function POST(req: NextRequest) {
                   triggerVidrushContentGeneration({ id: insertedId, type: 'homeowner' }).catch(vErr => {
                     console.error('[Meta Webhook -> VidRush Error]:', vErr);
                   });
+                });
+
+                // Trigger Automated Outreach Bridge (WhatsApp & SMS)
+                const leadForOutreach = {
+                  lead_id: `meta_${leadgenId}`,
+                  name: fullName,
+                  phone_e164: phone,
+                  phone_raw: phone,
+                  email: email,
+                  status: 'NEW',
+                  source: 'FACEBOOK',
+                  category: 'Solar homeowner',
+                  notes: notes,
+                  address: '',
+                  area: 'Lagos',
+                  city: 'Lagos',
+                  website: '',
+                  rating: 5.0,
+                  reviews_count: 1,
+                  verified: true,
+                  listings_count: 0,
+                  profile_url: '',
+                  source_query_or_seed: '',
+                  collected_at: new Date().toISOString(),
+                  last_contacted_at: '',
+                  duplicate_of_lead_id: '',
+                  business_summary: `Meta Lead Ad Ingest: ${fullName}`
+                } as unknown as Lead;
+
+                // Send welcome message via WhatsApp/SMS
+                const requestOrigin = req.nextUrl.origin || 'https://www.bethelmindanalytics.com';
+                OutreachManager.dispatchWithFallback(leadForOutreach, requestOrigin, {
+                  channelsOverride: ['whatsapp', 'sms'],
+                  isDryRun: false
+                }).then(res => {
+                  console.log(`[Meta Webhook Outreach] Auto-bridge completed: Succeeded? ${res.success}. Channels: ${res.attemptedChannels.join(', ')}`);
+                }).catch(outreachErr => {
+                  console.error('[Meta Webhook Outreach Error]:', outreachErr);
                 });
               }
             }

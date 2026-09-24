@@ -31,6 +31,35 @@ export interface ProductItem {
 
 export const ALL_PRODUCTS: ProductItem[] = [
   {
+    id: 'b2b-due-diligence-dossier',
+    category: 'legal',
+    title: 'Institutional B2B Corporate Due Diligence & Counterparty Dossier',
+    badge: '👑 Institutional Grade (₦150k)',
+    badgeColor: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
+    icon: Building,
+    shortDesc: 'Deep counterparty verification for Nigerian corporations, importers, and contractors before wiring funds.',
+    longDesc: 'Powered by OpenPlanter and SearchPhone intelligence. Eliminates ₦10M+ contract fraud, fake suppliers, and director impersonation. Delivers comprehensive CAC registration status, director verification, physical asset inspection, carrier-verified telecom intelligence, and executive risk scoring.',
+    prices: { NGN: 150000, USD: 120, GBP: 95 },
+    originalPrices: { NGN: 350000, USD: 280, GBP: 220 },
+    highlights: [
+      'Official CAC Corporate Registration & RC Status Verification',
+      'Directing Directors & Beneficial Owners Deep Identity Verification',
+      'Telecom Carrier & Active WhatsApp Line Resolution (via SearchPhone)',
+      'Physical Operational Corridor & Google Maps Cadastral Verification',
+      'Comprehensive Corporate Trust Grade (AAA to Review)'
+    ],
+    deliverablesList: [
+      'Bankable Executive Due Diligence Dossier (PDF & JSON)',
+      'Verified Direct Mobile & WhatsApp Contact for Principal Decision-Maker',
+      'Corporate Litigation & Risk Assessment Summary Card',
+      'Direct Settlement Verification onto Official Invoices'
+    ],
+    deliverableType: 'Official Executive PDF Dossier + Digital Intelligence File',
+    whoIsThisFor: 'Commercial Banks, Solar EPC Installers, Real Estate Developers, and Foreign Importers.',
+    roiHook: 'Protects against ₦10M+ supply-chain scams, counterfeit contractors, and ghost vendors.',
+    previewSnippet: 'Includes director ownership mapping, E.164 telecom carrier verification, physical trade corridor rating, and institutional trust score.'
+  },
+  {
     id: 'solar-buster',
     category: 'solar',
     title: 'The 2026 Nigerian Solar Sizer & Anti-Fake Buying Kit',

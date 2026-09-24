@@ -21,51 +21,45 @@ import path from 'path';
 import dns from 'dns';
 import nodemailer from 'nodemailer';
 
-import { scanExpiringNigerianDomains } from './expiredDomainMonitor';
-import { generatePurchaseAuthToken } from './domainRegistrarApi';
-import { scanUnclaimedGmbBusinesses } from './gmbRescueEngine';
+import { scanTurnkeyWebsiteLeads } from './turnkeyWebsiteEngine';
+import { scanFreightArbitrageLeads } from './smeFreightArbitrageEngine';
 import { generateLeadBundlesFromDatabase } from './leadBundlePackager';
-import { scanUnprotectedTrademarkBrands } from './trademarkShieldEngine';
 import { scanPendingAppointmentLeads } from './appointmentLeadRouter';
 import { scanDiasporaEscrowProjects } from './diasporaEscrowEngine';
 import { scanWhiteLabelAgencyProspects } from './whitelabelLicensingEngine';
-import { scanEnterpriseMultipliedOpportunities } from './enterpriseArbitrageMultiplier';
 
 export interface UnifiedMonetizationDossier {
   timestamp: string;
   watTime: string;
   totalPipelineYieldNGN: number;
   totalActiveOpportunities: number;
-  domains: any;
-  gmb: any;
+  turnkeyWebsites: any;
+  freightArbitrage: any;
   leadBundles: any;
   microPaywalls: any;
   appointments: any;
   diaspora: any;
   whiteLabel: any;
-  crypto: any;
 }
 
 /**
- * Aggregates and ranks the top opportunities across ALL ACTIVE monetization streams (excluding CAC).
+ * Aggregates and ranks the top opportunities across ALL B2B COMMERCIAL monetization streams.
  */
 export async function generateUnifiedMonetizationDossier(): Promise<UnifiedMonetizationDossier> {
   const [
-    domainData,
-    gmbData,
+    websiteData,
+    freightData,
     leadBundleData,
     appointmentData,
     diasporaData,
-    whiteLabelData,
-    cryptoData
+    whiteLabelData
   ] = await Promise.all([
-    scanExpiringNigerianDomains(),
-    scanUnclaimedGmbBusinesses(),
+    scanTurnkeyWebsiteLeads(),
+    scanFreightArbitrageLeads(),
     generateLeadBundlesFromDatabase(),
     scanPendingAppointmentLeads(),
     scanDiasporaEscrowProjects(),
-    scanWhiteLabelAgencyProspects(),
-    scanEnterpriseMultipliedOpportunities()
+    scanWhiteLabelAgencyProspects()
   ]);
 
   // Micro-SaaS Paywalls projected active daily revenue
@@ -82,41 +76,38 @@ export async function generateUnifiedMonetizationDossier(): Promise<UnifiedMonet
     ]
   };
 
-  // Calculate estimated total pipeline revenue (excluding CAC)
-  const domainYield = domainData.top5Prospects.reduce((acc, d) => acc + d.netProfitNGN, 0);
-  const gmbYield = gmbData.top5Targets.reduce((acc, g) => acc + g.recommendedFeeNGN, 0);
-  const bundlesYield = leadBundleData.top5Bundles.reduce((acc, b) => acc + b.projectedSalesValueNGN, 0);
+  // Calculate estimated total pipeline revenue
+  const websiteYield = websiteData.top5Targets.reduce((acc: number, w: any) => acc + w.depositFeeNGN, 0);
+  const freightYield = freightData.top5Targets.reduce((acc: number, f: any) => acc + f.totalCommissionNgn, 0);
+  const bundlesYield = leadBundleData.top5Bundles.reduce((acc: number, b: any) => acc + b.projectedSalesValueNGN, 0);
   const paywallYield = microPaywallData.estimatedMonthlyRevenueNGN;
   const appointmentYield = appointmentData.totalArbitrageValueNGN;
-  const diasporaYield = diasporaData.top5Targets.reduce((acc, dp) => acc + dp.royaltyFeeNGN, 0);
-  const whiteLabelYield = whiteLabelData.top5Agencies.reduce((acc, a) => acc + a.projectedAnnualValueNGN, 0);
-  const cryptoYield = cryptoData.totalWeeklyTargetNGN;
+  const diasporaYield = diasporaData.top5Targets.reduce((acc: number, dp: any) => acc + dp.royaltyFeeNGN, 0);
+  const whiteLabelYield = whiteLabelData.top5Agencies.reduce((acc: number, a: any) => acc + a.projectedAnnualValueNGN, 0);
 
-  const totalPipelineYieldNGN = domainYield + gmbYield + bundlesYield + paywallYield + appointmentYield + diasporaYield + whiteLabelYield + cryptoYield;
-  const totalActiveOpportunities = domainData.totalOpportunities + gmbData.totalVulnerable + leadBundleData.totalBundles + appointmentData.totalPending + diasporaData.activeProjects + whiteLabelData.top5Agencies.length + cryptoData.topMultipliedDeals.length;
+  const totalPipelineYieldNGN = websiteYield + freightYield + bundlesYield + paywallYield + appointmentYield + diasporaYield + whiteLabelYield;
+  const totalActiveOpportunities = websiteData.totalQualified + freightData.totalQualified + leadBundleData.totalBundles + appointmentData.totalPending + diasporaData.activeProjects + whiteLabelData.top5Agencies.length;
 
   return {
     timestamp: new Date().toISOString(),
     watTime: new Date().toLocaleString('en-US', { timeZone: 'Africa/Lagos' }),
     totalPipelineYieldNGN,
     totalActiveOpportunities,
-    domains: domainData,
-    gmb: gmbData,
+    turnkeyWebsites: websiteData,
+    freightArbitrage: freightData,
     leadBundles: leadBundleData,
     microPaywalls: microPaywallData,
     appointments: appointmentData,
     diaspora: diasporaData,
-    whiteLabel: whiteLabelData,
-    crypto: cryptoData
+    whiteLabel: whiteLabelData
   };
 }
 
 /**
- * Dispatches the Master Unified 8-Pillar Monetization Briefing directly to bethelmindrecruit@gmail.com.
+ * Dispatches the Master Unified Monetization Briefing directly to bethelmindrecruit@gmail.com.
  */
 export async function dispatchMasterMonetizationDossier(): Promise<{ success: boolean; messageId?: string; error?: string }> {
   const dossier = await generateUnifiedMonetizationDossier();
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'https://www.bethelmindanalytics.com';
 
   let config: any = {};
   try {
@@ -145,54 +136,56 @@ export async function dispatchMasterMonetizationDossier(): Promise<{ success: bo
         connectionTimeout: 15000
       });
 
-      // ── Pillar 1: Top 3 Dropped Domains ──────────────────────────────────────
-      const domainsHtml = dossier.domains.top5Prospects.slice(0, 3).map((d: any) => {
-        const token = generatePurchaseAuthToken(d.domain, d.registrationCostNGN);
-        const authUrl = `${baseUrl}/api/domains/authorize-buy?domain=${encodeURIComponent(token.domain)}&cost=${token.costNGN}&expiresAt=${token.expiresAt}&sig=${token.signature}`;
+      // ── Engine 1: Top 3 Turnkey Commercial Prototypes ────────────────────────
+      const websiteHtml = dossier.turnkeyWebsites.top5Targets.slice(0, 3).map((w: any) => {
+        const pitchText = w.hasWebsite
+          ? `Hello Management at ${w.businessName}. We can upgrade your website with a 1-Line AI Sales Assistant widget (₦35,000 / ₦65,000). View demo: ${w.previewUrl}`
+          : `Hello Management at ${w.businessName}. We created a 100% Done-For-You Commercial Website Prototype for your business (₦75,000 deposit / ₦150,000). Claim prototype: ${w.previewUrl}`;
+        const waUrl = `https://wa.me/${w.phone.replace(/\D/g, '')}?text=${encodeURIComponent(pitchText)}`;
 
         return `
           <div style="background: #111827; border: 1px solid #1e293b; border-radius: 8px; padding: 14px; margin-bottom: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <div>
-                <span style="font-size: 11px; background: #0284c7; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${d.tierBadge}</span>
-                <div style="font-size: 16px; font-weight: bold; color: #38bdf8; font-family: monospace; margin-top: 4px;">${d.domain}</div>
-                <div style="font-size: 12px; color: #94a3b8;">${d.previousOwnerSector} • ${d.historicMonthlyTraffic.toLocaleString()} Visits/mo</div>
+                <span style="font-size: 11px; background: #2563eb; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${w.tierBadge}</span>
+                <div style="font-size: 15px; font-weight: bold; color: #ffffff; margin-top: 4px;">${w.businessName}</div>
+                <div style="font-size: 12px; color: #94a3b8;">📍 ${w.location} • Package: ${w.offerType.replace(/_/g, ' ')}</div>
               </div>
               <div style="text-align: right;">
-                <div style="font-size: 16px; font-weight: bold; color: #34d399;">+₦${d.netProfitNGN.toLocaleString()}</div>
-                <div style="font-size: 11px; color: #94a3b8;">${d.roiMultiplier}x ROI</div>
+                <div style="font-size: 16px; font-weight: bold; color: #60a5fa;">₦${w.depositFeeNGN.toLocaleString()}</div>
+                <div style="font-size: 11px; color: #94a3b8;">Deposit Required</div>
               </div>
             </div>
             <div style="margin-top: 10px;">
-              <a href="${authUrl}" style="background: #10b981; color: #fff; padding: 6px 14px; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 4px; display: inline-block;">
-                🛡️ 1-Click Authorize (₦${d.registrationCostNGN.toLocaleString()})
+              <a href="${waUrl}" style="background: #2563eb; color: #fff; padding: 6px 14px; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 4px; display: inline-block;">
+                🌐 1-Click Send Prototype Pitch (${w.phone})
               </a>
             </div>
           </div>
         `;
       }).join('');
 
-      // ── Pillar 2: Top 3 Unclaimed GMB ───────────────────────────────────────
-      const gmbHtml = dossier.gmb.top5Targets.slice(0, 3).map((g: any) => {
-        const waPitch = encodeURIComponent(`Hello Management at ${g.businessName}. Our local SEO audit detected that your Google Maps listing (${g.rating}★, ${g.reviewCount} reviews in ${g.location}) is currently UNCLAIMED and exposed. We can claim and lock it today.`);
-        const waUrl = `https://wa.me/${g.phone.replace(/\D/g, '')}?text=${waPitch}`;
+      // ── Engine 2: Top 3 B2B Freight Importer Arbitrage Deals ───────────────
+      const freightHtml = dossier.freightArbitrage.top5Targets.slice(0, 3).map((f: any) => {
+        const waPitch = encodeURIComponent(`Hello Management at ${f.businessName}. Bethelmind OTC Settlement Desk has locked in a ₦${f.quotedRateNgn}/USD rate for your $${f.requestedOrderUsd.toLocaleString()} supplier transfer order in ${f.importerCorridor}. Direct OPay Settlement Account ready.`);
+        const waUrl = `https://wa.me/2348022791227?text=${waPitch}`;
 
         return `
           <div style="background: #111827; border: 1px solid #1e293b; border-radius: 8px; padding: 14px; margin-bottom: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <div>
-                <span style="font-size: 11px; background: #dc2626; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${g.tierBadge}</span>
-                <div style="font-size: 15px; font-weight: bold; color: #ffffff; margin-top: 4px;">${g.businessName}</div>
-                <div style="font-size: 12px; color: #94a3b8;">📍 ${g.location} • ${g.rating}★ (${g.reviewCount} Reviews)</div>
+                <span style="font-size: 11px; background: #10b981; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${f.tierBadge}</span>
+                <div style="font-size: 15px; font-weight: bold; color: #ffffff; margin-top: 4px;">${f.businessName}</div>
+                <div style="font-size: 12px; color: #94a3b8;">📍 ${f.importerCorridor} • Order: $${f.requestedOrderUsd.toLocaleString()} USD</div>
               </div>
               <div style="text-align: right;">
-                <div style="font-size: 16px; font-weight: bold; color: #fbbf24;">₦${g.recommendedFeeNGN.toLocaleString()}</div>
-                <div style="font-size: 11px; color: #94a3b8;">Rescue Fee</div>
+                <div style="font-size: 16px; font-weight: bold; color: #34d399;">+₦${f.totalCommissionNgn.toLocaleString()}</div>
+                <div style="font-size: 11px; color: #94a3b8;">Net Spread (+₦25/$)</div>
               </div>
             </div>
             <div style="margin-top: 10px;">
-              <a href="${waUrl}" style="background: #ef4444; color: #fff; padding: 6px 14px; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 4px; display: inline-block;">
-                🚨 1-Click Send GMB Alert (${g.phone})
+              <a href="${waUrl}" style="background: #10b981; color: #fff; padding: 6px 14px; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 4px; display: inline-block;">
+                🤝 1-Click Lock OTC Escrow (+₦${f.totalCommissionNgn.toLocaleString()})
               </a>
             </div>
           </div>
@@ -268,20 +261,20 @@ export async function dispatchMasterMonetizationDossier(): Promise<{ success: bo
           </div>
 
           <div style="padding: 26px;">
-            <!-- Pillar 1 Section -->
+            <!-- Engine 1 Section -->
             <div style="margin-bottom: 24px;">
-              <h3 style="color: #38bdf8; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0; border-bottom: 1px solid #1e293b; padding-bottom: 6px;">
-                🏛️ Pillar 1: High-Yield Expired Domain Snipes
+              <h3 style="color: #60a5fa; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0; border-bottom: 1px solid #1e293b; padding-bottom: 6px;">
+                🌐 Engine 1: Turnkey DFY Prototypes & Commercial Websites
               </h3>
-              ${domainsHtml}
+              ${websiteHtml}
             </div>
 
-            <!-- Pillar 2 Section -->
+            <!-- Engine 2 Section -->
             <div style="margin-bottom: 24px;">
-              <h3 style="color: #f87171; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0; border-bottom: 1px solid #1e293b; padding-bottom: 6px;">
-                📍 Pillar 2: Unclaimed Google Maps Profile Rescues
+              <h3 style="color: #34d399; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0; border-bottom: 1px solid #1e293b; padding-bottom: 6px;">
+                🚢 Engine 2: B2B Freight Importer Escrow & Spread Arbitrage
               </h3>
-              ${gmbHtml}
+              ${freightHtml}
             </div>
 
             <!-- Pillar 6 Section -->
@@ -300,35 +293,9 @@ export async function dispatchMasterMonetizationDossier(): Promise<{ success: bo
               ${diasporaHtml}
             </div>
 
-            <!-- Enterprise Multiplied High-Ticket Cashflow Section -->
-            <div style="margin-bottom: 20px;">
-              <h3 style="color: #10b981; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0; border-bottom: 1px solid #1e293b; padding-bottom: 6px;">
-                🪙 Enterprise Asymmetric High-Ticket Arbitrage Radar (₦2.5M – ₦5M/Week Target)
-              </h3>
-              ${dossier.crypto.topMultipliedDeals.map((c: any) => `
-                <div style="background: #111827; border: 1px solid #1e293b; border-radius: 8px; padding: 14px; margin-bottom: 10px;">
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                      <span style="font-size: 11px; background: #059669; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${c.badge} (${c.scalingMultiplier})</span>
-                      <div style="font-size: 15px; font-weight: bold; color: #ffffff; margin-top: 4px;">${c.dealTitle}</div>
-                      <div style="font-size: 12px; color: #94a3b8;">${c.tacticalAction}</div>
-                    </div>
-                    <div style="text-align: right;">
-                      <div style="font-size: 16px; font-weight: bold; color: #10b981;">+₦${c.projectedProfitNGN.toLocaleString()}</div>
-                      <div style="font-size: 11px; color: #94a3b8;">Capital: ₦0.00 (Risk Free)</div>
-                    </div>
-                  </div>
-                  <div style="margin-top: 10px;">
-                    <a href="${c.actionUrl}" target="_blank" style="background: #059669; color: #fff; padding: 6px 14px; text-decoration: none; font-size: 12px; font-weight: bold; border-radius: 4px; display: inline-block;">
-                      🚀 1-Click Launch (${c.executionTime})
-                    </a>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-
+            <!-- Summary Section -->
             <div style="background: #111827; border: 1px solid #374151; border-radius: 8px; padding: 14px; font-size: 12px; color: #9ca3af; text-align: center;">
-              📦 Pillars (Lead Bundles, Micro-SaaS PDF Paywalls, White-Label Agency MRR & B2B Lead Arbitrage) are operating 100% autonomously in the cloud.
+              📦 B2B Commercial Pillars (Lead Bundles, Micro-SaaS PDF Paywalls, White-Label Agency MRR & B2B Lead Arbitrage) are operating 100% autonomously in the cloud.
             </div>
           </div>
 

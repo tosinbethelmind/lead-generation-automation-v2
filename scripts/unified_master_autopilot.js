@@ -25,7 +25,7 @@ if (!fs.existsSync(logsDir)) {
 }
 
 const masterLog = path.join(logsDir, 'unified_master_autopilot.log');
-const tsxCli = path.join(rootDir, 'node_modules', 'tsx', 'dist', 'cli.mjs');
+const tsxCli = './node_modules/tsx/dist/cli.mjs';
 
 function log(msg) {
   const timestamp = new Date().toLocaleString('en-US', { timeZone: 'Africa/Lagos' });
@@ -44,10 +44,10 @@ log('• SMS Gateway: Tailscale Android (http://10.132.90.251:8082)');
 log('• WhatsApp Channel: https://whatsapp.com/channel/0029VbDFgKP4o7qM58yY9v2l');
 log('• Bandwidth Policy: Local PC Data-Saver Active. Continuous 10k Harvester offloaded to GitHub Actions Cloud.');
 
-// Common child process environment with strict memory limits
+// Common child process environment with strict memory & bandwidth limits (Data-Saver Active)
 const safeEnv = {
   ...process.env,
-  NODE_OPTIONS: '--max-old-space-size=256'
+  NODE_OPTIONS: '--max-old-space-size=128'
 };
 
 // ── SYSTEM RAM & RESOURCE WATCHDOG ──────────────────────────────────────────
@@ -67,23 +67,23 @@ setInterval(checkSystemMemory, 5 * 60 * 1000);
 // ── WORKER 1: Traffic Generation & Google Indexing Daemon ─────────────────
 let trafficProcess = null;
 function startTrafficDaemon() {
-  log('🚀 [Worker 1: Traffic Engine] Launching Autonomous Multi-Channel Traffic Daemon...');
-  trafficProcess = spawn('node', ['--max-old-space-size=256', 'scripts/autonomous_traffic_daemon.js'], {
+  log('🚀 [Worker 1: Traffic Engine] Launching Autonomous Multi-Channel Traffic Daemon (6-Hour Bounded Cycle)...');
+  trafficProcess = spawn('node', ['--max-old-space-size=128', 'scripts/autonomous_traffic_daemon.js'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
   });
 
   trafficProcess.on('exit', (code) => {
-    log(`⚠️ [Worker 1: Traffic Engine] Exited with code ${code}. Rescheduling next cycle in 10 minutes...`);
-    setTimeout(startTrafficDaemon, 10 * 60 * 1000);
+    log(`ℹ️ [Worker 1: Traffic Engine] Cycle finished (Code: ${code}). Resting 6 hours to conserve data and CPU...`);
+    setTimeout(startTrafficDaemon, 6 * 60 * 60 * 1000);
   });
 
   trafficProcess.on('error', (err) => {
-    log(`❌ [Worker 1: Traffic Engine] Error: ${err.message}. Retrying in 15 minutes...`);
-    setTimeout(startTrafficDaemon, 15 * 60 * 1000);
+    log(`❌ [Worker 1: Traffic Engine] Error: ${err.message}. Retrying in 30 minutes...`);
+    setTimeout(startTrafficDaemon, 30 * 60 * 1000);
   });
 }
 
@@ -93,7 +93,7 @@ function startQueueRunner() {
   log('⚡ [Worker 2: Pipeline Runner] Launching Local Job & Lead Pipeline Runner...');
   queueProcess = spawn('node', ['--max-old-space-size=256', 'scripts/keep_alive_runner.js'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
@@ -125,7 +125,7 @@ function checkScheduledBroadcast() {
 
     const child = spawn('node', ['--max-old-space-size=256', 'scripts/whatsapp_viral_channel_bot.js'], {
       cwd: rootDir,
-      shell: true,
+      shell: false,
       stdio: 'inherit',
       windowsHide: true,
       env: safeEnv
@@ -137,49 +137,49 @@ function checkScheduledBroadcast() {
   }
 }
 
-// ── WORKER 4: WhatsApp Line 1 Server Supervisor (Port 3007) ───────────────
-let wa1Process = null;
-function startWa1Server() {
-  log('📱 [Worker 4: WA Line 1] Launching WhatsApp Line 1 Server (+234 702 626 6946 on Port 3007)...');
-  wa1Process = spawn('node', ['--max-old-space-size=256', 'scripts/whatsapp_baileys.js'], {
+// ── WORKER 4: Multi-SIM WhatsApp Outbound Campaign (30/Line/Day Anti-Ban) ──
+let waOutboundProcess = null;
+function startWaOutboundCampaign() {
+  log('🚀 [Worker 4: WhatsApp Outbound] Launching Multi-SIM Anti-Ban Campaign (Target: 30 DMs/line/day)...');
+  waOutboundProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/whatsapp_outbound_30_per_line_campaign.ts', '--limit=30'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
   });
 
-  wa1Process.on('exit', (code) => {
-    log(`⚠️ [Worker 4: WA Line 1] Exited with code ${code}. Auto-restarting in 15s...`);
-    setTimeout(startWa1Server, 15000);
+  waOutboundProcess.on('exit', (code) => {
+    log(`ℹ️ [Worker 4: WhatsApp Outbound] Run wave completed (Code: ${code}). Resting 2 hours before checking next quota cycle...`);
+    setTimeout(startWaOutboundCampaign, 2 * 60 * 60 * 1000);
   });
 
-  wa1Process.on('error', (err) => {
-    log(`❌ [Worker 4: WA Line 1] Error: ${err.message}. Restarting in 30s...`);
-    setTimeout(startWa1Server, 30000);
+  waOutboundProcess.on('error', (err) => {
+    log(`❌ [Worker 4: WhatsApp Outbound] Error: ${err.message}. Retrying in 30 minutes...`);
+    setTimeout(startWaOutboundCampaign, 30 * 60 * 1000);
   });
 }
 
-// ── WORKER 5: WhatsApp Line 2 Server Supervisor (Port 3009) ───────────────
-let wa2Process = null;
-function startWa2Server() {
-  log('📱 [Worker 5: WA Line 2] Launching WhatsApp Line 2 Server (+234 904 605 0469 on Port 3009)...');
-  wa2Process = spawn('node', ['--max-old-space-size=256', 'scripts/whatsapp_baileys_line2.js'], {
+// ── WORKER 5: Nigerian Instagram & TikTok Commercial Harvester ─────────────
+let socialHarvesterProcess = null;
+function startSocialHarvester() {
+  log('📸 [Worker 5: Social Harvester] Sweeping Instagram & TikTok for Nigerian commercial businesses...');
+  socialHarvesterProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/harvest_instagram_and_tiktok_leads.ts'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
   });
 
-  wa2Process.on('exit', (code) => {
-    log(`⚠️ [Worker 5: WA Line 2] Exited with code ${code}. Auto-restarting in 15s...`);
-    setTimeout(startWa2Server, 15000);
+  socialHarvesterProcess.on('exit', (code) => {
+    log(`ℹ️ [Worker 5: Social Harvester] Sweep completed (Code: ${code}). Resting 4 hours to preserve bandwidth...`);
+    setTimeout(startSocialHarvester, 4 * 60 * 60 * 1000);
   });
 
-  wa2Process.on('error', (err) => {
-    log(`❌ [Worker 5: WA Line 2] Error: ${err.message}. Restarting in 30s...`);
-    setTimeout(startWa2Server, 30000);
+  socialHarvesterProcess.on('error', (err) => {
+    log(`❌ [Worker 5: Social Harvester] Error: ${err.message}. Retrying in 30 minutes...`);
+    setTimeout(startSocialHarvester, 30 * 60 * 1000);
   });
 }
 
@@ -189,7 +189,7 @@ function startOutreachEngine() {
   log('📧 [Worker 6: Outreach Engine] Launching Autonomous 300 Email & Webform Dispatcher...');
   outreachProcess = spawn('node', ['--max-old-space-size=256', tsxCli, 'scripts/execute_today_300_emails_and_webforms.ts'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
@@ -220,12 +220,13 @@ function startOutreachEngine() {
       } catch (_) {}
     }
 
-    const targetMet = sentEmails >= 300 && successfulWebforms >= 300;
+    const DAILY_EMAIL_TARGET = parseInt(process.env.DAILY_EMAIL_TARGET || '600', 10);
+    const targetMet = sentEmails >= DAILY_EMAIL_TARGET && successfulWebforms >= 300;
     if (targetMet) {
-      log(`🎉 [Worker 6: Outreach Engine] Full daily quota achieved (Emails: ${sentEmails}/300, Webforms: ${successfulWebforms}/300). Resting 4 hours before next audit cycle...`);
+      log(`🎉 [Worker 6: Outreach Engine] Full daily quota achieved (Emails: ${sentEmails}/${DAILY_EMAIL_TARGET}, Webforms: ${successfulWebforms}/300). Resting 4 hours before next audit cycle...`);
       setTimeout(startOutreachEngine, 4 * 60 * 60 * 1000);
     } else {
-      log(`ℹ️ [Worker 6: Outreach Engine] Batch completed (Code: ${code}). Progress: Emails ${sentEmails}/300, Webforms ${successfulWebforms}/300. Resting 30 minutes before next batch to conserve data...`);
+      log(`ℹ️ [Worker 6: Outreach Engine] Batch completed (Code: ${code}). Progress: Emails ${sentEmails}/${DAILY_EMAIL_TARGET}, Webforms ${successfulWebforms}/300. Resting 30 minutes before next batch to conserve data...`);
       setTimeout(startOutreachEngine, 30 * 60 * 1000);
     }
   });
@@ -242,7 +243,7 @@ function startEvolutionServer() {
   log('🚀 [Worker 7: Evolution API] Launching 3-Line Evolution API Server on Port 8080...');
   evolutionProcess = spawn('node', ['--max-old-space-size=256', 'scripts/evolution_api_server.js'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
@@ -265,7 +266,7 @@ function startModernCommercialEngine() {
   log('🏛️ [Worker 8: Modernized Commercial Engine] Launching SearchPhone + OpenPlanter + Capacitor Pipeline...');
   modernCommercialProcess = spawn('node', ['--max-old-space-size=256', 'scripts/run_modernized_commercial_engine.js'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
@@ -282,26 +283,44 @@ function startModernCommercialEngine() {
   });
 }
 
-// ── WORKER 9: Nationwide Harvester (Data-Saver / Low-Bandwidth Mode) ────────
+// ── WORKER 9: Nationwide Harvester (Strict Data-Saver / Bounded Mode) ────────
 let harvesterProcess = null;
 function startHeavyHarvester() {
-  log('⚡ [Worker 9: Massive Harvester] Launching High-Yield Nationwide Harvester wave (Target: 500 leads)...');
-  harvesterProcess = spawn('node', ['--max-old-space-size=256', tsxCli, 'scripts/run_heavy_10k_nigeria_scraper.ts', '--target=500'], {
+  // Check local database: if we already have abundant unsent leads, pause local scraping completely to conserve data
+  const leadsDbPath = path.join(rootDir, 'local_db/leads_db.json');
+  let unsentCount = 0;
+  if (fs.existsSync(leadsDbPath)) {
+    try {
+      const leads = JSON.parse(fs.readFileSync(leadsDbPath, 'utf8'));
+      if (Array.isArray(leads)) {
+        unsentCount = leads.filter(l => !l.email_sent && !l.outreach_sent && (l.email || l.phone)).length;
+      }
+    } catch (_) {}
+  }
+
+  if (unsentCount > 50) {
+    log(`⚡ [Worker 9: Harvester] ${unsentCount} unsent verified leads already staged locally. Heavy scraping is active 24/7 in GitHub Actions Cloud. Pausing local scraper for 4 hours to save cellular data...`);
+    setTimeout(startHeavyHarvester, 4 * 60 * 60 * 1000);
+    return;
+  }
+
+  log('⚡ [Worker 9: Harvester] Launching Data-Saver Bounded Harvester (Target: 25 leads)...');
+  harvesterProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/run_heavy_10k_nigeria_scraper.ts', '--target=25'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
   });
 
   harvesterProcess.on('exit', (code) => {
-    log(`ℹ️ [Worker 9: Massive Harvester] Harvest wave completed (Code: ${code}). Rescheduling next wave in 10 minutes...`);
-    setTimeout(startHeavyHarvester, 10 * 60 * 1000);
+    log(`ℹ️ [Worker 9: Harvester] Bounded cycle completed (Code: ${code}). Resting 4 hours to conserve cellular data...`);
+    setTimeout(startHeavyHarvester, 4 * 60 * 60 * 1000);
   });
 
   harvesterProcess.on('error', (err) => {
-    log(`❌ [Worker 9: Massive Harvester] Error: ${err.message}. Retrying in 5 minutes...`);
-    setTimeout(startHeavyHarvester, 5 * 60 * 1000);
+    log(`❌ [Worker 9: Harvester] Error: ${err.message}. Retrying in 30 minutes...`);
+    setTimeout(startHeavyHarvester, 30 * 60 * 1000);
   });
 }
 
@@ -309,22 +328,22 @@ function startHeavyHarvester() {
 let blogDaemonProcess = null;
 function startBlogEngine() {
   log('📰 [Worker 10: Viral Blog Engine] Launching Autonomous Publishing Daemon in Data-Saver Mode...');
-  blogDaemonProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/run_autonomous_blog_engine.ts', '--batch=10'], {
+  blogDaemonProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/run_autonomous_blog_engine.ts', '--batch=5'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
   });
 
   blogDaemonProcess.on('exit', (code) => {
-    log(`⚠️ [Worker 10: Viral Blog Engine] Process completed (Code: ${code}). Next cycle in 2 hours...`);
-    setTimeout(startBlogEngine, 2 * 60 * 60 * 1000);
+    log(`⚠️ [Worker 10: Viral Blog Engine] Process completed (Code: ${code}). Next cycle in 4 hours...`);
+    setTimeout(startBlogEngine, 4 * 60 * 60 * 1000);
   });
 
   blogDaemonProcess.on('error', (err) => {
-    log(`❌ [Worker 10: Viral Blog Engine] Error: ${err.message}. Retrying in 15 minutes...`);
-    setTimeout(startBlogEngine, 15 * 60 * 1000);
+    log(`❌ [Worker 10: Viral Blog Engine] Error: ${err.message}. Retrying in 30 minutes...`);
+    setTimeout(startBlogEngine, 30 * 60 * 1000);
   });
 }
 
@@ -334,7 +353,7 @@ function startCloserDaemon() {
   log('🤖 [Worker 11: OpenSource Closer Daemon] Launching Closer Engine...');
   closerDaemonProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/run_autonomous_opensource_closer.ts'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
@@ -351,26 +370,145 @@ function startCloserDaemon() {
   });
 }
 
+// Helper: Check if local leads database has excess unsent leads (Rule 2B Data-Saver)
+function hasExcessUnsentLeads() {
+  try {
+    const leadsDbPath = path.join(rootDir, 'local_db/leads_db.json');
+    if (fs.existsSync(leadsDbPath)) {
+      const raw = JSON.parse(fs.readFileSync(leadsDbPath, 'utf8'));
+      const list = Array.isArray(raw) ? raw : raw.leads || [];
+      const unsent = list.filter(l => !l.contacted && !l.email_sent && !l.sms_sent).length;
+      return unsent >= 50;
+    }
+  } catch (_) {}
+  return false;
+}
+
 // ── WORKER 12: Autonomous Local Vibe Prospecting Daemon (2026 Zero Sign-up) ──
 let vibeDaemonProcess = null;
 function startVibeDaemon() {
+  if (hasExcessUnsentLeads()) {
+    log('📶 [Data-Saver Mode] Local pool already contains 50+ unsent leads. Heavy scraping is 100% offloaded to GitHub Actions Cloud. Pausing local Vibe Harvester for 4 hours...');
+    setTimeout(startVibeDaemon, 4 * 60 * 60 * 1000);
+    return;
+  }
+
   log('⚡ [Worker 12: Local Vibe Prospector] Launching Autonomous Natural Language Harvester...');
   vibeDaemonProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/autonomous_vibe_prospector_daemon.ts'], {
     cwd: rootDir,
-    shell: true,
+    shell: false,
     stdio: 'inherit',
     windowsHide: true,
     env: safeEnv
   });
 
   vibeDaemonProcess.on('exit', (code) => {
-    log(`⚠️ [Worker 12: Local Vibe Prospector] Process exited (Code: ${code}). Next cycle in 2 hours...`);
-    setTimeout(startVibeDaemon, 2 * 60 * 60 * 1000);
+    log(`⚠️ [Worker 12: Local Vibe Prospector] Process exited (Code: ${code}). Next cycle in 4 hours...`);
+    setTimeout(startVibeDaemon, 4 * 60 * 60 * 1000);
   });
 
   vibeDaemonProcess.on('error', (err) => {
-    log(`❌ [Worker 12: Local Vibe Prospector] Error: ${err.message}. Retrying in 15 minutes...`);
-    setTimeout(startVibeDaemon, 15 * 60 * 1000);
+    log(`❌ [Worker 12: Local Vibe Prospector] Error: ${err.message}. Retrying in 30 minutes...`);
+    setTimeout(startVibeDaemon, 30 * 60 * 1000);
+  });
+}
+
+// ── WORKER 13: Smart Webform Submitter Daemon (Data-Saver Paced) ──
+let webformProcess = null;
+function startSmartWebformDaemon() {
+  const todayStr = new Date().toISOString().split('T')[0];
+  const webformPath = path.join(rootDir, 'local_db/real_webform_submissions.json');
+  let deliveredCount = 0;
+  if (fs.existsSync(webformPath)) {
+    try {
+      const logs = JSON.parse(fs.readFileSync(webformPath, 'utf8'));
+      if (Array.isArray(logs)) {
+        deliveredCount = logs.filter(l => (l.submitted_at || l.timestamp || '').startsWith(todayStr) && l.success).length;
+      }
+    } catch (_) {}
+  }
+
+  if (deliveredCount >= 300) {
+    log(`🎉 [Worker 13: Webform Submitter] Daily target of 300 webforms achieved (${deliveredCount}/300). Resting 4 hours...`);
+    setTimeout(startSmartWebformDaemon, 4 * 60 * 60 * 1000);
+    return;
+  }
+
+  log(`🌐 [Worker 13: Smart Webform Submitter] Launching batch of 25 webforms (Today: ${deliveredCount}/300)...`);
+  webformProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/continuous_smart_webform_submitter.ts'], {
+    cwd: rootDir,
+    shell: false,
+    stdio: 'inherit',
+    windowsHide: true,
+    env: safeEnv
+  });
+
+  webformProcess.on('exit', (code) => {
+    log(`ℹ️ [Worker 13: Smart Webform Submitter] Batch completed (Code: ${code}). Resting 30 minutes before next batch to conserve data...`);
+    setTimeout(startSmartWebformDaemon, 30 * 60 * 1000);
+  });
+
+  webformProcess.on('error', (err) => {
+    log(`❌ [Worker 13: Smart Webform Submitter] Error: ${err.message}. Retrying in 15 minutes...`);
+    setTimeout(startSmartWebformDaemon, 15 * 60 * 1000);
+  });
+}
+
+// ── WORKER 14: Crawlee + Katana + Metascraper (Bounded Pass) ────────
+let crawleeProcess = null;
+function startCrawleeKatanaHarvester() {
+  if (hasExcessUnsentLeads()) {
+    log('📶 [Data-Saver Mode] Local pool already contains 50+ unsent leads. Heavy scraping is 100% offloaded to GitHub Actions Cloud. Pausing local Crawlee Harvester for 4 hours...');
+    setTimeout(startCrawleeKatanaHarvester, 4 * 60 * 60 * 1000);
+    return;
+  }
+
+  log('🗺️ [Worker 14: Crawlee Harvester] Launching Data-Saver Bounded Scraper (Target: 20 leads)...');
+  crawleeProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/run_crawlee_harvester.ts', '--target=20'], {
+    cwd: rootDir,
+    shell: false,
+    stdio: 'inherit',
+    windowsHide: true,
+    env: safeEnv
+  });
+
+  crawleeProcess.on('exit', (code) => {
+    log(`ℹ️ [Worker 14: Crawlee Harvester] Pass finished (Code: ${code}). Resting 4 hours to preserve bandwidth...`);
+    setTimeout(startCrawleeKatanaHarvester, 4 * 60 * 60 * 1000);
+  });
+
+  crawleeProcess.on('error', (err) => {
+    log(`❌ [Worker 14: Crawlee Harvester] Error: ${err.message}. Retrying in 30 minutes...`);
+    setTimeout(startCrawleeKatanaHarvester, 30 * 60 * 1000);
+  });
+}
+
+// ── WORKER 15: Scout B2B Lead Harvester & Enricher (kiryano/Scout) ───────────
+let scoutProcess = null;
+function startScoutHarvester() {
+  if (hasExcessUnsentLeads()) {
+    log('📶 [Data-Saver Mode] Local pool already contains 50+ unsent leads. Heavy scraping is 100% offloaded to GitHub Actions Cloud. Pausing local Scout Harvester for 4 hours...');
+    setTimeout(startScoutHarvester, 4 * 60 * 60 * 1000);
+    return;
+  }
+
+  log('🦅 [Worker 15: Scout Harvester] Launching Scout Multi-Platform Lead & Contact Enricher...');
+  scoutProcess = spawn('python', ['scripts/run_scout_lead_harvester.py', '--count=10'], {
+    cwd: rootDir,
+    shell: false,
+    stdio: 'inherit',
+    windowsHide: true,
+    env: safeEnv
+  });
+
+  scoutProcess.on('exit', (code) => {
+    log(`ℹ️ [Worker 15: Scout Harvester] Harvest wave completed (Code: ${code}). Rescheduling in 4 hours...`);
+    setTimeout(startScoutHarvester, 4 * 60 * 60 * 1000);
+  });
+
+  scoutProcess.on('error', (err) => {
+    log(`❌ [Worker 15: Scout Harvester] Error: ${err.message}. Retrying in 30 minutes...`);
+    setTimeout(startScoutHarvester, 30 * 60 * 1000);
   });
 }
 
@@ -380,14 +518,17 @@ const workerManifest = [
   { name: 'Worker 1: Traffic Engine', start: startTrafficDaemon, delay: 0 },
   { name: 'Worker 2: Pipeline Runner', start: startQueueRunner, delay: 3000 },
   { name: 'Worker 7: Evolution API', start: startEvolutionServer, delay: 6000 },
-  { name: 'Worker 4: WA Line 1', start: startWa1Server, delay: 9000 },
-  { name: 'Worker 5: WA Line 2', start: startWa2Server, delay: 12000 },
+  { name: 'Worker 4: WhatsApp Outbound Campaign', start: startWaOutboundCampaign, delay: 9000 },
+  { name: 'Worker 5: Social Harvester', start: startSocialHarvester, delay: 12000 },
   { name: 'Worker 6: Outreach Engine', start: startOutreachEngine, delay: 15000 },
   { name: 'Worker 8: Modernized Commercial', start: startModernCommercialEngine, delay: 18000 },
   { name: 'Worker 9: Massive Harvester', start: startHeavyHarvester, delay: 21000 },
   { name: 'Worker 10: Viral Blog Engine', start: startBlogEngine, delay: 24000 },
   { name: 'Worker 11: Closer Daemon', start: startCloserDaemon, delay: 27000 },
-  { name: 'Worker 12: Vibe Prospector', start: startVibeDaemon, delay: 30000 }
+  { name: 'Worker 12: Vibe Prospector', start: startVibeDaemon, delay: 30000 },
+  { name: 'Worker 13: Smart Webform Submitter', start: startSmartWebformDaemon, delay: 33000 },
+  { name: 'Worker 14: Crawlee + Katana Harvester', start: startCrawleeKatanaHarvester, delay: 36000 },
+  { name: 'Worker 15: Scout Harvester', start: startScoutHarvester, delay: 39000 }
 ];
 
 workerManifest.forEach((w) => {
@@ -413,9 +554,10 @@ setInterval(() => {
 function cleanExit() {
   log('Gracefully stopping Unified Master Autopilot and all child workers...');
   const procs = [
-    trafficProcess, queueProcess, wa1Process, wa2Process,
+    trafficProcess, queueProcess, waOutboundProcess, socialHarvesterProcess,
     outreachProcess, evolutionProcess, modernCommercialProcess,
-    harvesterProcess, blogDaemonProcess, closerDaemonProcess, vibeDaemonProcess
+    harvesterProcess, blogDaemonProcess, closerDaemonProcess, vibeDaemonProcess,
+    webformProcess, crawleeProcess, scoutProcess
   ];
   for (const p of procs) {
     if (p) {

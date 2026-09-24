@@ -10,18 +10,22 @@ import {
   executeRetargetingDecision,
   dismissRetargetingDecision
 } from '@/lib/retargetingDecisionEngine';
+import { getUnifiedTelemetryReport } from '@/lib/unifiedReportingEngine';
 
 export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/admin/journey-analytics
- * Returns real-time journey statistics, funnel analytics, hot leads, and retargeting decisions.
+ * Returns real-time journey statistics, funnel analytics, hot leads, unified channel dispatches, and retargeting decisions.
  */
 export async function GET(req: NextRequest) {
   try {
     const allJourneys = Object.values(getAllLocalLeadJourneys());
     const funnelStats = getJourneyFunnelMetrics();
     const recentJourneys = getRecentLeadJourneys(30);
+
+    // Unified Standard Telemetry Report (SMS, DMs, Email, Website Actions)
+    const unifiedReport = getUnifiedTelemetryReport();
 
     // Sort hot leads by Heat Score descending
     const hotLeads = [...allJourneys]
@@ -51,6 +55,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
+      unifiedReport,
       funnelStats,
       hotLeads,
       retargetingDecisions,
@@ -63,35 +68,29 @@ export async function GET(req: NextRequest) {
 
 /**
  * POST /api/admin/journey-analytics
- * Handles manual triggers: audit, execute decision, dismiss decision.
+ * Actions: 'audit', 'execute-retarget', 'dismiss-retarget'
  */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action, decisionId } = body;
+    const { action, leadId, decisionId } = body;
 
-    if (action === 'run_audit') {
+    if (action === 'audit') {
       const newDecisions = await runRetargetingDecisionAudit();
-      return NextResponse.json({
-        success: true,
-        message: `Decision engine completed audit. Generated ${newDecisions.length} new retargeting recommendations.`,
-        newDecisions
-      });
+      return NextResponse.json({ success: true, newDecisionsCount: newDecisions.length });
     }
 
-    if (action === 'execute_decision') {
-      if (!decisionId) return NextResponse.json({ error: 'decisionId is required' }, { status: 400 });
+    if (action === 'execute-retarget' && decisionId) {
       const result = await executeRetargetingDecision(decisionId);
-      return NextResponse.json(result);
+      return NextResponse.json({ success: true, result });
     }
 
-    if (action === 'dismiss_decision') {
-      if (!decisionId) return NextResponse.json({ error: 'decisionId is required' }, { status: 400 });
+    if (action === 'dismiss-retarget' && decisionId) {
       const dismissed = dismissRetargetingDecision(decisionId);
-      return NextResponse.json({ success: dismissed });
+      return NextResponse.json({ success: true, dismissed });
     }
 
-    return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

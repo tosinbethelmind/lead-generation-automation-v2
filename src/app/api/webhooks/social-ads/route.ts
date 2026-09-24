@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       platform,
       leadId: rawLead.lead_id || rawLead.leadId || `LEAD-${Date.now()}`,
       fullName: rawLead.full_name || rawLead.name || rawLead.fullName || 'Valued Lead',
-      email: rawLead.email || 'lead@apexreach.site',
+      email: rawLead.email || 'lead@bethelmindanalytics.com',
       phoneRaw: rawLead.phone_number || rawLead.phone || rawLead.phoneRaw || '08000000000',
       formId: rawLead.form_id || rawLead.formId || 'FORM_META_001',
       campaignId: rawLead.campaign_id || rawLead.campaignId || 'CAMP_SOLAR_2026',

@@ -184,8 +184,8 @@ export async function sendWhatsAppMessage(
 
   const provider = config.whatsappProvider || 'evolution';
 
-  if (provider === 'cloud') {
-    // ── Meta WhatsApp Cloud API ──
+  if (provider === 'cloud' || provider === 'meta_cloud') {
+    // ── Meta WhatsApp Cloud API (v20.0) ──
     const templateName = config.whatsappTemplateName;
     const languageCode = config.whatsappTemplateLanguageCode || 'en_US';
 
@@ -206,7 +206,7 @@ export async function sendWhatsAppMessage(
               parameters: [
                 { type: 'text', text: lead.name },
                 { type: 'text', text: previewUrl },
-                { type: 'text', text: config.businessSignature || '' }
+                { type: 'text', text: config.businessSignature || 'Bethelmind Analytics Lagos' }
               ]
             }
           ]
@@ -218,11 +218,12 @@ export async function sendWhatsAppMessage(
         recipient_type: 'individual',
         to: cleanPhone,
         type: 'text',
-        text: { body: message }
+        text: { preview_url: true, body: message }
       };
     }
 
-    const url = `https://graph.facebook.com/v16.0/${config.whatsappPhoneNumberId}/messages`;
+    const apiVersion = process.env.WHATSAPP_CLOUD_API_VERSION || 'v20.0';
+    const url = `https://graph.facebook.com/${apiVersion}/${config.whatsappPhoneNumberId}/messages`;
 
     const resp = await fetch(url, {
       method: 'POST',

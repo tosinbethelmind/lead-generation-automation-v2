@@ -16,6 +16,7 @@
  */
 
 import { getLocalConfig } from './localConfig';
+import * as cheerio from 'cheerio';
 
 class TokenRotator {
   private apifyIdx = 0;
@@ -316,9 +317,53 @@ export async function fetchSERPWithFallback(query: string, limit: number = 10): 
       }
       if (results.length > 0) return results;
     }
-  } catch (_) {
-    console.warn('[SERP Rotator] DuckDuckGo fallback failed');
-  }
+  } catch (_) {}
+
+  // Option 5: Bing HTML Zero-Key Fallback
+  try {
+    const bingUrl = `https://www.bing.com/search?q=${encodeURIComponent(query)}`;
+    const resp = await fetch(bingUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9'
+      },
+      signal: AbortSignal.timeout(8000)
+    });
+    if (resp.ok) {
+      const html = await resp.text();
+      const results: SerpSearchResultItem[] = [];
+      const $ = cheerio.load(html);
+      
+      $('li.b_algo').each((_, el) => {
+        const titleNode = $(el).find('h2 a').first();
+        const title = titleNode.text().trim();
+        let link = titleNode.attr('href') || '';
+        const snippet = $(el).find('.b_caption p, .b_snippet, p').first().text().trim();
+
+        if (link.includes('bing.com/ck/a?!')) {
+          try {
+            const urlObj = new URL(link);
+            const u = urlObj.searchParams.get('u');
+            if (u && u.startsWith('a1')) {
+              link = Buffer.from(u.slice(2), 'base64').toString('utf8');
+            }
+          } catch (_) {}
+        }
+
+        if (title && (link || snippet)) {
+          results.push({
+            title,
+            link: link.startsWith('http') ? link : `https://${link}`,
+            snippet: snippet || `Found via Bing search for ${query}`
+          });
+        }
+        if (results.length >= limit) return false;
+      });
+
+      if (results.length > 0) return results;
+    }
+  } catch (_) {}
 
   return [];
 }

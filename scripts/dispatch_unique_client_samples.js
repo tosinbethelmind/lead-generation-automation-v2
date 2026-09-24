@@ -31,7 +31,7 @@ Attn: Management, Jacio International Company Ltd
 Location: ASPAMDA Trade Fair Complex, Lagos
 
 • Client Unique ID: BM-OTC-701-JACIO
-• Order Allocation: $65,000 USDT / RMB Factory Clearance
+• Order Allocation: $65,000 USD / RMB Factory Clearance
 • Guaranteed Wholesale Rate: ₦1,520 / USD (Fixed Rate)
 • Total Naira Deposit: ₦98,800,000 NGN
 • Rate Lock Window: Same-Day Commercial Window (Until 05:00 PM WAT)

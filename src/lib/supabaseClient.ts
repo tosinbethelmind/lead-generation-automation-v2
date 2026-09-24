@@ -1,4 +1,7 @@
 import dns from 'dns';
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+} catch (_) {}
 if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder('ipv4first');
 }
@@ -15,7 +18,7 @@ if (typeof (global as any).WebSocket === 'undefined') {
 import { createClient } from '@supabase/supabase-js';
 import { getRuntimeConfig } from './localConfig';
 
-const ACTIVE_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://pnsrjsyiygxdcxkpgbzx.supabase.co';
+const ACTIVE_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://rcaamfaqkxvgbjlfuhki.supabase.co';
 
 function isValidKeyForProject(keyStr: string | undefined): boolean {
   if (!keyStr || typeof keyStr !== 'string') return false;
@@ -25,7 +28,7 @@ function isValidKeyForProject(keyStr: string | undefined): boolean {
     const parts = trimmed.split('.');
     if (parts.length === 3) {
       const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-      return payload.ref === 'pnsrjsyiygxdcxkpgbzx' || payload.ref === 'szyuterncawfxwzhvwcf';
+      return payload.ref === 'rcaamfaqkxvgbjlfuhki';
     }
   } catch (e) {}
   return trimmed.length > 20;
@@ -41,7 +44,7 @@ function getValidUrl(): string {
   return ACTIVE_SUPABASE_URL;
 }
 
-const ACTIVE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8';
+const ACTIVE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWFtZmFxa3h2Z2JqbGZ1aGtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzUyNDI0OCwiZXhwIjoyMTAzMTAwMjQ4fQ.9KKQ52VdE8b-jxy2QmOAAxuBMKpGyncwDDEyMGfe9fw';
 
 function getValidKey(): string {
   const candidates = [
@@ -68,7 +71,7 @@ export function getSupabaseClient() {
       global: {
         fetch: (url, options) => {
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 2000);
+          const timer = setTimeout(() => controller.abort(), 12000);
           return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
         }
       },

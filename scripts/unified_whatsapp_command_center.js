@@ -85,23 +85,16 @@ function generateTicketId(prefix) {
 
 // ─── AI DRAFT GENERATOR ──────────────────────────────────────
 function generateAiDraft(channel, senderName, senderEmail, question) {
-  const lq = (question || '').toLowerCase();
-
-  if (lq.includes('price') || lq.includes('cost') || lq.includes('how much') || lq.includes('plan') || lq.includes('fee')) {
-    return `Hello ${senderName}! 👋 Thank you for reaching out to Bethelmind Analytics.\n\nOur B2B Website Launch Package is priced at ₦185,000 — this includes a fully custom business portal with Paystack card payment & Moniepoint bank transfer integration, all set up within 24 hours.\n\nWould you like me to send you a live preview link for your business? Just reply and we'll get it ready!`;
+  try {
+    const { handlePostContactInquiry } = require('./lib/closer_engine');
+    const closerRes = handlePostContactInquiry(question || '', {
+      businessName: senderName || 'Valued Business',
+      email: senderEmail || ''
+    });
+    return closerRes.messageText;
+  } catch (_) {
+    return `Hello ${senderName}! 👋 Thank you for reaching out to Bethelmind Analytics Lagos Desk.\n\nWe build 24/7 AI WhatsApp Sales Assistants and Turnkey Websites delivered in 48 Hours.\n\n• Turnkey Website + WhatsApp AI: ₦75,000 deposit to start (₦150,000 total)\n• 1-Line Embed Upgrade: ₦35,000 deposit\n• Bank: OPay Digital Services | Account: 7034297995 | Name: Oyelakin Tosin Matthew\n\nHow can our Lagos team assist you today?`;
   }
-  if (lq.includes('preview') || lq.includes('demo') || lq.includes('sample') || lq.includes('website') || lq.includes('link')) {
-    return `Hello ${senderName}! 🌐 Great news — we can generate a live preview of your business website right away!\n\nVisit: https://www.bethelmindanalytics.com/ to see a sample portal.\n\nReply "CLAIM" when you are ready to launch your own site. Setup takes under 24 hours!`;
-  }
-  if (lq.includes('claim') || lq.includes('buy') || lq.includes('pay') || lq.includes('start') || lq.includes('order')) {
-    return `Excellent! 🚀 To claim your site, choose your payment option:\n\n1️⃣ Bank Transfer (Moniepoint): Account details will be sent to you.\n2️⃣ Paystack Card Payment: https://www.bethelmindanalytics.com/claim\n\nOnce payment is confirmed, your domain and hosting will be configured within 24 hours!`;
-  }
-  if (lq.includes('support') || lq.includes('help') || lq.includes('issue') || lq.includes('problem')) {
-    return `Hello ${senderName}! Thank you for contacting Bethelmind Analytics support.\n\nWe've received your message and our team will reach out to you shortly. For urgent matters, you can also WhatsApp us directly.\n\nWe're committed to resolving your issue as quickly as possible. 🙏`;
-  }
-
-  // Generic response
-  return `Hello ${senderName}! 👋 Thank you for reaching out to Bethelmind Analytics.\n\nWe've received your message: "${question.substring(0, 80)}${question.length > 80 ? '...' : ''}"\n\nA member of our team will get back to you within the hour. In the meantime, visit our website to learn more about our B2B website launch packages.\n\nBest regards,\nBethelmind Analytics Team`;
 }
 
 // ─── SEND WHATSAPP ALERT TO ADMIN ────────────────────────────

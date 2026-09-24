@@ -72,6 +72,7 @@ export async function runScraper(
     stdio: ['ignore', 'pipe', 'pipe'],
     cwd: options?.cwd,
     env: { ...process.env, ...options?.env },
+    windowsHide: true,
   });
 
   // Update status to running

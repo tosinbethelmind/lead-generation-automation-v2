@@ -8,14 +8,15 @@ const { spawn } = require('child_process');
     const vercelUrl = 'https://www.bethelmindanalytics.com';
     console.log(`Opening Vercel site: ${vercelUrl}`);
     // Use the Windows `start` command to open the URL in the default browser.
-    spawn('cmd', ['/c', 'start', '', vercelUrl], { stdio: 'ignore', detached: true });
+    spawn('cmd', ['/c', 'start', '', vercelUrl], { stdio: 'ignore', detached: true, windowsHide: true });
     console.log('Vercel site opened in default browser.');
 
     // Start the local runner (uses npm script "local-runner")
     console.log('Starting local runner...');
     const runner = spawn('npm', ['run', 'local-runner'], {
       stdio: 'inherit',
-      shell: true
+      shell: true,
+      windowsHide: true
     });
     runner.on('close', code => {
       console.log(`Local runner exited with code ${code}`);

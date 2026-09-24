@@ -23,7 +23,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'How does the 50% deposit option work?',
-    a: 'You can start onboarding today with a 50% deposit (₦92,500). Our engineering team sets up your 24/7 AI agent and sector tools immediately, and you pay the remaining balance upon 100% handover within 24 hours.',
+    a: 'You can start onboarding today with a 50% deposit (₦75,000). Our engineering team sets up your 24/7 AI agent, website prototype, and sector tools immediately, and you pay the remaining balance upon 100% handover within 48 hours.',
   },
   {
     q: 'What if I already have a website (WordPress, Wix, Shopify, custom)?',

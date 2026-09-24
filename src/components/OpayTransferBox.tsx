@@ -15,9 +15,9 @@ interface OpayTransferBoxProps {
 export function OpayTransferBox({
   businessName,
   leadId,
-  setupPriceNGN = 185000,
+  setupPriceNGN = 150000,
   monthlyRenewalNGN = 35000,
-  adminWhatsAppPhone = '2348012345678',
+  adminWhatsAppPhone = '2348022791227',
 }: OpayTransferBoxProps) {
   const [copied, setCopied] = useState(false);
   const opayAccount = {

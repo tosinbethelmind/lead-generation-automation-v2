@@ -359,7 +359,8 @@ export async function POST(req: Request) {
       detached: true,
       stdio: ['ignore', 'pipe', 'pipe'],
       cwd: getAppCwd(),
-      env: { ...process.env, PORT: hostPort }
+      env: { ...process.env, PORT: hostPort },
+      windowsHide: true
     });
 
     child.stdout?.pipe(logStream);

@@ -92,7 +92,8 @@ function startRunner() {
     childProcess = spawn('npx', ['tsx', 'scripts/local_job_runner.ts'], {
       stdio: 'inherit',
       cwd: projectDir,
-      shell: true
+      shell: true,
+      windowsHide: true
     });
 
     childProcess.on('close', (code) => {

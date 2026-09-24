@@ -521,11 +521,13 @@ export interface SchoolTuitionResult {
 }
 
 export function calculateSchoolTuitionAndPin(
-  gradeLevel = 'JSS 1',
+  gradeLevel: any = 'JSS 1',
   isBoarder = false,
   termCount = 3
 ): SchoolTuitionResult {
-  const baseTuition = gradeLevel.includes('SSS') ? 185000 : gradeLevel.includes('JSS') ? 150000 : 120000;
+  const safeGrade = typeof gradeLevel === 'string' ? gradeLevel : (Number(gradeLevel) > 1000 ? 'SSS 1' : 'JSS 1');
+  const baseTuition = typeof gradeLevel === 'number' && gradeLevel > 1000 ? gradeLevel : (safeGrade.includes('SSS') ? 185000 : safeGrade.includes('JSS') ? 150000 : 120000);
+
   const boardingFeeNgn = isBoarder ? 220000 : 0;
   const textbookPackNgn = 35000;
   const developmentLevyNgn = 25000;
@@ -662,7 +664,7 @@ export function calculateHmoCoPayAndTelehealth(
   const hmoCoverageNgn = Math.round(totalProcedureCostNgn * 0.8); // 80% HMO coverage
   const patientCoPayNgn = totalProcedureCostNgn - hmoCoverageNgn;
   const roomId = `clinic-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-  const telehealthConsultationUrl = `https://apexreach.daily.co/${roomId}`;
+  const telehealthConsultationUrl = `https://bethelmind.daily.co/${roomId}`;
 
   return {
     hmoProvider,
@@ -3522,18 +3524,23 @@ export function calculateBeautySalonStylistBooking(
   };
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+export function buildSectorWhatsAppQuoteMessage(
+  businessName: string,
+  sector: string,
+  toolName: string,
+  summaryText: string,
+  adminPhone = '2348022791227'
+): string {
+  const safeName = businessName || 'Valued Enterprise';
+  let cleanPhone = adminPhone.replace(/[^0-9]/g, '');
+  if (cleanPhone.startsWith('0')) {
+    cleanPhone = '234' + cleanPhone.substring(1);
+  } else if (!cleanPhone.startsWith('234') && cleanPhone.length === 10) {
+    cleanPhone = '234' + cleanPhone;
+  }
+  if (!cleanPhone) cleanPhone = '2348022791227';
+  const message = `Hello Bethelmind Analytics Lagos Desk!\n\nI am testing the live *${toolName}* prepared for *${safeName}* (${sector}).\n\n📊 *Quotation Summary*: ${summaryText}\n\nI want to claim this prototype and connect the 24/7 AI quoting assistant for my business. Please send next steps!`;
+  return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+}
 
 

@@ -21,7 +21,8 @@ const MERGED_PACKAGES = [
       '📲 1-Tap Direct WhatsApp Checkout',
       '📅 Express AI Appointment Booking Link',
       '⚡ Multi-Channel Autoresponder Engine',
-      '🌐 Free Subdomain (.apexreach.site) + 1 Year Hosting',
+      '🌐 Free Subdomain (.bethelmindanalytics.com) + 1 Year Hosting',
+
       '🔒 SSL Security Certificate Included',
     ],
     color: '#10b981',

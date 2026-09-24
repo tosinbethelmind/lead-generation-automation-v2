@@ -162,127 +162,88 @@ export async function scanExpiringNigerianDomains(): Promise<{
   };
 }
 
+import { dispatchSecureEmail, OFFICIAL_PRODUCTION_DOMAIN } from './smtpTransporterPool';
+
 /**
  * Dispatches the Consolidated Daily Top 5 Expired Domain Digest to bethelmindrecruit@gmail.com.
  */
 export async function dispatchDailyDomainTop5Digest(): Promise<{ success: boolean; messageId?: string; error?: string }> {
   const scanData = await scanExpiringNigerianDomains();
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || 'https://www.bethelmindanalytics.com';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.BASE_URL || OFFICIAL_PRODUCTION_DOMAIN;
 
-  let config: any = {};
-  try {
-    config = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'config.json'), 'utf8'));
-  } catch (_) {}
+  const cardsHtml = scanData.top5Prospects.map((d) => {
+    const isTop = d.rank === 1;
+    const token = generatePurchaseAuthToken(d.domain, d.registrationCostNGN);
+    const authUrl = `${baseUrl}/api/domains/authorize-buy?domain=${encodeURIComponent(token.domain)}&cost=${token.costNGN}&expiresAt=${token.expiresAt}&sig=${token.signature}`;
 
-  return new Promise((resolve) => {
-    if (dns.setDefaultResultOrder) {
-      dns.setDefaultResultOrder('ipv4first');
-    }
-
-    const host = config.smtpHost || 'smtp.hostinger.com';
-    const port = config.smtpPort || 587;
-    const user = config.smtpUser || 'tosin@bethelmindanalytics.com';
-    const pass = config.smtpPass || 'Bethelmind@2026';
-
-    dns.lookup(host, { family: 4 }, async (err, address) => {
-      const resolvedHost = (!err && address) ? address : 'smtp.hostinger.com';
-
-      const transporter = nodemailer.createTransport({
-        host: resolvedHost,
-        port: 587,
-        secure: false,
-        auth: { user, pass },
-        tls: {
-          servername: host,
-          rejectUnauthorized: false
-        },
-        connectionTimeout: 15000
-      });
-
-      const cardsHtml = scanData.top5Prospects.map((d) => {
-        const isTop = d.rank === 1;
-        const token = generatePurchaseAuthToken(d.domain, d.registrationCostNGN);
-        const authUrl = `${baseUrl}/api/domains/authorize-buy?domain=${encodeURIComponent(token.domain)}&cost=${token.costNGN}&expiresAt=${token.expiresAt}&sig=${token.signature}`;
-
-        return `
-          <div style="background: #111827; border: 1px solid ${isTop ? '#f59e0b' : '#1f2937'}; border-radius: 10px; padding: 20px; margin-bottom: 18px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-              <div>
-                <span style="display: inline-block; background: ${isTop ? '#f59e0b' : '#374151'}; color: #ffffff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px;">
-                  ${d.tierBadge} (RANK #${d.rank})
-                </span>
-                <div style="font-size: 19px; font-weight: 800; color: #38bdf8; font-family: monospace;">${d.domain}</div>
-                <div style="font-size: 13px; color: #9ca3af; margin-top: 2px;">Sector: <strong>${d.previousOwnerSector}</strong></div>
-              </div>
-              <div style="text-align: right;">
-                <div style="font-size: 22px; font-weight: 900; color: #34d399;">${d.roiMultiplier}x</div>
-                <div style="font-size: 11px; color: #9ca3af;">ROI Multiplier</div>
-              </div>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; background: #030712; padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px;">
-              <div><span style="color: #9ca3af;">Reg Cost:</span> <strong style="color: #ffffff;">₦${d.registrationCostNGN.toLocaleString()}</strong></div>
-              <div><span style="color: #9ca3af;">Est. Resale:</span> <strong style="color: #fbbf24;">₦${d.resaleValuationNGN.toLocaleString()}</strong></div>
-              <div><span style="color: #9ca3af;">Net Profit:</span> <strong style="color: #34d399;">+₦${d.netProfitNGN.toLocaleString()}</strong></div>
-              <div><span style="color: #9ca3af;">Traffic:</span> <strong style="color: #60a5fa;">${d.historicMonthlyTraffic.toLocaleString()}/mo</strong></div>
-            </div>
-
-            <div style="display: flex; gap: 10px; align-items: center;">
-              <a href="${authUrl}" style="background: ${isTop ? 'linear-gradient(135deg, #10b981, #059669)' : '#2563eb'}; color: #ffffff; padding: 10px 20px; text-decoration: none; font-size: 13px; font-weight: 800; border-radius: 6px; display: inline-block;">
-                🛡️ 1-Click Authorize & Auto-List (₦${d.registrationCostNGN.toLocaleString()})
-              </a>
-              <a href="${d.quickRegisterUrl}" style="color: #9ca3af; font-size: 12px; text-decoration: underline; margin-left: 10px;">
-                Manual Registrar Link &rarr;
-              </a>
-            </div>
+    return `
+      <div style="background: #111827; border: 1px solid ${isTop ? '#f59e0b' : '#1f2937'}; border-radius: 10px; padding: 20px; margin-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <div>
+            <span style="display: inline-block; background: ${isTop ? '#f59e0b' : '#374151'}; color: #ffffff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px;">
+              ${d.tierBadge} (RANK #${d.rank})
+            </span>
+            <div style="font-size: 19px; font-weight: 800; color: #38bdf8; font-family: monospace;">${d.domain}</div>
+            <div style="font-size: 13px; color: #9ca3af; margin-top: 2px;">Sector: <strong>${d.previousOwnerSector}</strong></div>
           </div>
-        `;
-      }).join('');
-
-      const emailHtml = `
-        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto; background: #0b0f19; color: #f3f4f6; border-radius: 12px; overflow: hidden; border: 1px solid #1f2937;">
-          <div style="background: linear-gradient(135deg, #1e3a8a, #0f172a); padding: 26px 30px; text-align: left; border-bottom: 1px solid #3b82f6;">
-            <div style="font-size: 12px; font-weight: 800; color: #60a5fa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
-              DAILY DOMAIN ARBITRAGE DIGEST • 08:00 AM WAT
-            </div>
-            <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800;">
-              📊 ${scanData.totalOpportunities} Dropped Commercial Domains Found (Top 5 Ranked)
-            </h1>
-            <p style="color: #cbd5e1; margin: 6px 0 0 0; font-size: 13px;">
-              Total Scanned: <strong>${scanData.totalScanned} domains</strong> | Active Opportunities: <strong>${scanData.totalOpportunities}</strong>
-            </p>
-          </div>
-
-          <div style="padding: 26px;">
-            <div style="background: #1e1b4b; border: 1px solid #3730a3; border-radius: 8px; padding: 14px; margin-bottom: 22px; font-size: 13px; color: #c7d2fe;">
-              💡 <strong>How to take action:</strong> Below are today's top 5 highest-yield dropped domains ranked by historic organic Google traffic and ROI. Simply click <strong>"1-Click Authorize & Auto-List"</strong> on any candidate you wish to acquire.
-            </div>
-
-            ${cardsHtml}
-          </div>
-
-          <div style="background: #030712; padding: 16px 30px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #1f2937;">
-            Sent daily by Bethelmind Autonomous 24/7 Arbitrage Watchdog • Desk: +234 802 279 1227
+          <div style="text-align: right;">
+            <div style="font-size: 22px; font-weight: 900; color: #34d399;">${d.roiMultiplier}x</div>
+            <div style="font-size: 11px; color: #9ca3af;">ROI Multiplier</div>
           </div>
         </div>
-      `;
 
-      const mailOptions = {
-        from: `"Bethelmind Domain Watchdog" <${user}>`,
-        to: 'bethelmindrecruit@gmail.com',
-        subject: `📊 Daily Domain Digest: ${scanData.totalOpportunities} Dropped Domains Found — Top 5 Prospects Ranked`,
-        html: emailHtml
-      };
+        <div style="display: flex; justify-content: space-between; background: #030712; padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px;">
+          <div><span style="color: #9ca3af;">Reg Cost:</span> <strong style="color: #ffffff;">₦${d.registrationCostNGN.toLocaleString()}</strong></div>
+          <div><span style="color: #9ca3af;">Est. Resale:</span> <strong style="color: #fbbf24;">₦${d.resaleValuationNGN.toLocaleString()}</strong></div>
+          <div><span style="color: #9ca3af;">Net Profit:</span> <strong style="color: #34d399;">+₦${d.netProfitNGN.toLocaleString()}</strong></div>
+          <div><span style="color: #9ca3af;">Traffic:</span> <strong style="color: #60a5fa;">${d.historicMonthlyTraffic.toLocaleString()}/mo</strong></div>
+        </div>
 
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('[DailyDomainDigest Error]:', error.message);
-          resolve({ success: false, error: error.message });
-        } else {
-          console.log(`✅ [DailyDomainDigest]: Daily Top 5 Digest dispatched to bethelmindrecruit@gmail.com (ID: ${info.messageId})`);
-          resolve({ success: true, messageId: info.messageId });
-        }
-      });
-    });
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="${authUrl}" style="background: ${isTop ? 'linear-gradient(135deg, #10b981, #059669)' : '#2563eb'}; color: #ffffff; padding: 10px 20px; text-decoration: none; font-size: 13px; font-weight: 800; border-radius: 6px; display: inline-block;">
+            🛡️ 1-Click Authorize & Auto-List (₦${d.registrationCostNGN.toLocaleString()})
+          </a>
+          <a href="${d.quickRegisterUrl}" style="color: #9ca3af; font-size: 12px; text-decoration: underline; margin-left: 10px;">
+            Manual Registrar Link &rarr;
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const emailHtml = `
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto; background: #0b0f19; color: #f3f4f6; border-radius: 12px; overflow: hidden; border: 1px solid #1f2937;">
+      <div style="background: linear-gradient(135deg, #1e3a8a, #0f172a); padding: 26px 30px; text-align: left; border-bottom: 1px solid #3b82f6;">
+        <div style="font-size: 12px; font-weight: 800; color: #60a5fa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
+          DAILY DOMAIN ARBITRAGE DIGEST • 08:00 AM WAT
+        </div>
+        <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800;">
+          📊 ${scanData.totalOpportunities} Dropped Commercial Domains Found (Top 5 Ranked)
+        </h1>
+        <p style="color: #cbd5e1; margin: 6px 0 0 0; font-size: 13px;">
+          Total Scanned: <strong>${scanData.totalScanned} domains</strong> | Active Opportunities: <strong>${scanData.totalOpportunities}</strong>
+        </p>
+      </div>
+
+      <div style="padding: 26px;">
+        <div style="background: #1e1b4b; border: 1px solid #3730a3; border-radius: 8px; padding: 14px; margin-bottom: 22px; font-size: 13px; color: #c7d2fe;">
+          💡 <strong>How to take action:</strong> Below are today's top 5 highest-yield dropped domains ranked by historic organic Google traffic and ROI. Simply click <strong>"1-Click Authorize & Auto-List"</strong> on any candidate you wish to acquire.
+        </div>
+
+        ${cardsHtml}
+      </div>
+
+      <div style="background: #030712; padding: 16px 30px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #1f2937;">
+        Sent daily by Bethelmind Autonomous 24/7 Arbitrage Watchdog • Desk: +234 802 279 1227
+      </div>
+    </div>
+  `;
+
+  return dispatchSecureEmail({
+    to: 'bethelmindrecruit@gmail.com',
+    subject: `📊 Daily Domain Digest: ${scanData.totalOpportunities} Dropped Domains Found — Top 5 Prospects Ranked`,
+    html: emailHtml,
+    fromName: 'Bethelmind Domain Watchdog'
   });
 }
+

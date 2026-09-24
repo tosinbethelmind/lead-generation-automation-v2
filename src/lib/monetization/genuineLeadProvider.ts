@@ -68,11 +68,41 @@ export function isValidNigerianCommercialPhone(phoneStr: string): boolean {
  * Validates that lead identity is not a template or placeholder.
  */
 export function isGenuineCommercialIdentity(lead: any): boolean {
-  const name = (lead.name || '').trim();
+  const name = (lead.name || lead.business_name || '').trim();
   const email = (lead.email || '').trim().toLowerCase();
   const leadId = (lead.lead_id || '').trim().toLowerCase();
 
   if (!name || name.length < 3) return false;
+
+  // Reject UI scraping junk, login text & foreign non-business strings
+  const junkPatterns = [
+    /gmail/i,
+    /sign\s+in/i,
+    /log\s*in/i,
+    /reset\s+password/i,
+    /accedere/i,
+    /inloggen/i,
+    /inicie\s+sess/i,
+    /تسجيل/i,
+    /الدخول/i,
+    /phone\s+number/i,
+    /username/i,
+    /^high$/i,
+    /^soft\s+natural$/i,
+    /privacy\s+policy/i,
+    /terms\s+of\s+service/i
+  ];
+  if (junkPatterns.some(pattern => pattern.test(name))) return false;
+
+  // Reject repeated concatenated strings (e.g. "Shawarma MachineShawarma Machine")
+  const halfLen = Math.floor(name.length / 2);
+  if (name.length >= 10 && name.slice(0, halfLen) === name.slice(halfLen, halfLen * 2)) {
+    return false;
+  }
+  const thirdLen = Math.floor(name.length / 3);
+  if (name.length >= 12 && name.slice(0, thirdLen) === name.slice(thirdLen, thirdLen * 2) && name.slice(0, thirdLen) === name.slice(thirdLen * 2, thirdLen * 3)) {
+    return false;
+  }
 
   // Reject template names
   if (/premium\s+(salon|dental|auto|spa|solar|restaurant|fashion|real|logistics)\s+\d+/i.test(name)) return false;
@@ -106,7 +136,7 @@ export function getGenuineCommercialLeads(): GenuineLead[] {
   }
 
   try {
-    const data = readJsonFileSyncWithRetry<any>(filePath, [], 3, 100);
+    const data = readJsonFileSyncWithRetry<any>(filePath, [], 3);
     if (!data) return cachedGenuineLeads || [];
     const list: any[] = Array.isArray(data) ? data : (data.leads || Object.values(data));
 
