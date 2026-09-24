@@ -50,5 +50,12 @@ jobs:
         run: |
           set +e
           node scripts/lagos_10k_master_harvester.js --single
-          echo "✅ Lagos Harvester Pass Finished Successfully."
-          exit 0
+          echo "✅ Lagos Harvester Pass Finished."
+
+      - name: Persist Harvested Leads to Repository
+        run: |
+          git config --global user.name "Bethelmind Autonomous Cloud Bot"
+          git config --global user.email "bot@bethelmindanalytics.com"
+          git add local_db/leads_db.json || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(cloud-harvester): persist lagos scraped leads [skip ci]" && git push origin main) || true
+          echo "✅ Scraped leads committed and pushed to repository."
