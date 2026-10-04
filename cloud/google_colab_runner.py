@@ -1,4 +1,4 @@
-"""
+﻿"""
 ===============================================================================
 🚀 GOOGLE COLAB 24/7 MULTI-ENGINE LEAD HARVESTER (400+ TO 1,000+ LEADS/DAY)
 ===============================================================================
@@ -31,8 +31,8 @@ except ImportError:
     from bs4 import BeautifulSoup
 
 # 🔐 Live Supabase Cloud Connection Credentials
-SUPABASE_URL = "https://pnsrjsyiygxdcxkpgbzx.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuc3Jqc3lpeWd4ZGN4a3BnYnp4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM1NDUxNywiZXhwIjoyMDk1OTMwNTE3fQ.uNuu3YwMOGS2uZR4S8mayKX_wivIXnDyOrf2vROhna8"
+SUPABASE_URL = "https://rcaamfaqkxvgbjlfuhki.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWFtZmFxa3h2Z2JqbGZ1aGtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzUyNDI0OCwiZXhwIjoyMTAzMTAwMjQ4fQ.9KKQ52VdE8b-jxy2QmOAAxuBMKpGyncwDDEyMGfe9fw"
 
 # 18+ Expanded Commercial Corridors & B2B Hubs (Yielding 400+ - 1,200+ leads/day)
 COMMERCIAL_CORRIDORS = [

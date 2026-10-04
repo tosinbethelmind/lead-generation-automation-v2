@@ -7,18 +7,24 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # PERMANENT AGENT MEMORY & OPERATING RULES
 
 ## 1. SCOPE & DECOUPLED DUAL ENGINE ARCHITECTURE (STRICT ZERO-CRYPTO B2B OUTREACH)
-- **ENGINE 1: 100% ZERO-CRYPTO B2B COMMERCIAL GROWTH ENGINE (SOLE ACTIVE PRIMARY FOCUS)**: All customer outreach, scrapers, SMS, WhatsApp dispatches, email templates, and executive digests are strictly focused **100% on Engine 1**. Messaging highlights the **Core Monetization Offers & Specialized Sector Lead Tools** (Turnkey DFY Business Website Prototypes ₦75k/₦150k, 1-Line Script Embed Upgrades ₦35k/₦65k, 24/7 AI WhatsApp Sales Assistants, Solar BOQ Load Sizers, Real Estate Mortgage Calculators, Clinic Patient Bookings, Auto Duty Estimators, Selar Lead Packs). ZERO crypto jargon, ZERO wallet references, and ZERO crypto keywords allowed in outreach.
+- **ENGINE 1: 100% ZERO-CRYPTO B2B COMMERCIAL GROWTH ENGINE (SOLE ACTIVE PRIMARY FOCUS)**: All customer outreach, scrapers, SMS, WhatsApp dispatches, email templates, and executive digests are strictly focused **100% on Engine 1**. Messaging highlights the **10 High-Conversion Sector Monetization Tools & DFY SME Prototypes** (₦15k–₦150k setups, ₦15k–₦70k/mo retainers, 24/7 AI WhatsApp Sales Assistants, Solar BOQ Load Sizers, Fake Alert Proof Bank Transfer Reconciliation, Hyperlocal Dispatch Aggregator, Multi-Location Stock Theft Prevention, Service Booking Deposit Lock, Tenant Escrow Manager, Construction Material Estimator, School Fee Result Gating, Agribusiness Order Consolidator). ZERO crypto jargon, ZERO wallet references, and ZERO crypto keywords allowed in outreach.
 - **CHINA FACTORY / FX / ESCROW COPY EXPUNGED FROM COLD OUTREACH**: Cold customer outreach copy strictly expunges China factory, RMB/USD direct wire, and escrow copy. All messaging highlights 24/7 AI WhatsApp Assistants, Sector Tools, and DFY SME Prototypes.
 - **ENGINE 2: STANDALONE INDEPENDENT CRYPTO ENGINE (`cryptoEngineStandalone.ts`)**: Completely decoupled, isolated, and PAUSED. Zero messages or notifications dispatched to or from crypto modules.
 - **STRICT BRANDING**: All outreach messages, signatures, SMS, and emails MUST strictly use **Bethelmind Analytics Lagos Desk** (e.g. `*Bethelmind Analytics Lagos*`). NEVER use `ApexReach`.
 
 ## 2. B2B COMMERCIAL OUTREACH STRATEGY, VOICE NOTE INTEGRATION & 100% REAL-ACTION INVARIANT
-- **Core Value Proposition (Core 5 Monetization Engines & Specialized Sector Tools)**:
-  1. 24/7 Conversational AI WhatsApp Sales & Quoting Assistant (< 3s reply, Nigerian tone).
-  2. Specialized Sector Lead Tools (Solar BOQ Load Sizer, Generator Diesel Savings, Mortgage Calculator, HMO Booking, Customs Duty Estimator).
-  3. Done-For-You Commercial Website Prototypes (`https://www.bethelmindanalytics.com/preview/[lead_id]`).
-  4. Verified Sector Lead Packs (Instant Selar digital delivery).
-  5. Automated Paystack & Moniepoint Bank Transfer Verification.
+- **The 10 High-Conversion Sector Monetization Tools (Ready-to-Pitch B2B Revenue Suite)**:
+  1. *Instant WhatsApp Speed-to-Lead & Catalog Closer* (₦15k–₦30k/mo): Sub-3s WhatsApp catalog & FAQ assistant for Instagram/retail vendors.
+  2. *Solar & Inverter System Sizing & Instant Quotation Engine* (₦25k–₦50k/mo or ₦100k setup): Interactive load calculator generating instant WhatsApp BOQs.
+  3. *"Fake Alert Proof" Automated Bank Transfer Reconciliation* (₦10k/mo + 0.5% cap): Instant Moniepoint/Paystack/OPay bank transfer webhook verification.
+  4. *Hyperlocal Dispatch Aggregator & Waybill Tracker* (₦20k–₦45k/mo): GIG/Gokada/local dispatch cost comparer and auto-SMS/WhatsApp waybill tracker.
+  5. *Multi-Location Real-Time Stock & Theft-Prevention Ledger* (₦30k–₦60k/mo): Cloud inventory ledger tracking shrinkage and sending low-stock WhatsApp alerts.
+  6. *Automated Service Booking & Deposit Lock Engine* (₦15k–₦35k/mo): 24/7 appointment scheduler for clinics/salons locking slots with Paystack/OPay deposits.
+  7. *Tenant Service Charge & Rent Escrow Manager* (₦50k–₦150k/mo): Automated rent reminders, digital receipts, and facility maintenance breakdown.
+  8. *Construction & Interior Finishing Material Estimator* (₦20k–₦40k/mo): Instant cement, tile, paint & POP quantity calculator for contractors.
+  9. *Private School Term Fee Portal with Result Gating* (₦50k–₦100k/term): Student term fee payment portal that auto-gates digital report cards until fees clear.
+  10. *Bulk Agribusiness Feed & Input Order Consolidator* (₦30k–₦70k/mo): Farm collective portal aggregating feed/fertilizer orders to secure wholesale discounts.
+- **Done-For-You Commercial Website Prototypes (`https://www.bethelmindanalytics.com/preview/[lead_id]`)**: Turnkey deployments (₦75k deposit / ₦150k) or 1-Line Embed Script Upgrades (₦35k / ₦65k).
 - **MANDATORY VOICE NOTE INTEGRATION ACROSS ALL CHANNELS (EXCEPT GSM SMS)**:
   - **WhatsApp DMs**: 15-second `.opus` voice note audio bubbles (`en-NG-EzinneNeural`).
   - **B2B Executive Email**: Personalized `.mp3` voice note attachment + clickable audio player banner via Hostinger SMTP.
@@ -33,20 +39,46 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - All prospect interaction metrics (page views, calculator runs, video views) MUST reflect only verified incoming client telemetry.
 - **100% DIRECT-TO-OPAY COMMISSIONS**: All revenue, setup deposits, and product sales route directly to **OPay Digital Services** (`7034297995` - Oyelakin Tosin Matthew).
 
+## 2B. PERMANENT OPERATING MANDATE: STRICT FAIR USAGE OF DATA & BANDWIDTH CONSERVATION (SOLIDIFIED IN PERMANENT MEMORY)
+- **1. HOST ENVIRONMENT INVARIANT (METERED CELLULAR BROADBAND)**:
+  - The host laptop runs on metered / mobile cellular broadband. Uncontrolled data consumption, rapid polling loops, and redundant asset downloads severely deplete the user's mobile data bundle and are **STRICTLY PROHIBITED**.
+  - Every script, daemon, background runner, crawler, and dispatcher MUST strictly observe fair usage of internet data, network bandwidth, memory (RAM), and CPU.
+- **2. HEAVY SCRAPING 100% CLOUD-ONLY (ZERO RUNAWAY LOCAL SCRAPING)**:
+  - Continuous nationwide lead scraping (10,000–30,000 leads/day) is **100% offloaded to GitHub Actions Cloud** (`.github/workflows/autonomous_247_cloud_engine.yml`), running on GitHub's free unlimited cloud runners every 30 minutes 24/7.
+  - **Local laptop scraping is strictly restricted**: Local runners must NEVER execute continuous 10s-30s scraping loops. Local harvesting is capped at small bounded batches ($\le 25$ leads) with a mandatory **4-hour rest cooldown**. If `leads_db.json` already contains unsent leads, local scraping is automatically paused to conserve data.
+- **3. SUPABASE CLOUD EGRESS CIRCUIT BREAKER & LOCAL-FIRST ARCHITECTURE**:
+  - If Supabase Cloud returns `exceed_egress_quota`, HTTP 429, or quota restriction violations, ALL cloud RPC/queue polling MUST immediately sleep and back off for **15 to 30 minutes**.
+  - The local runner MUST NEVER poll Supabase in rapid 1s-5s loops when quota is exceeded.
+  - Operations prioritize local offline storage (`local_db/leads_db.json`, `local_db/crm_leads.json`, `local_db/email_daemon_state.json`) first.
+- **4. MANDATORY RESOURCE & MEDIA ABORTION (ZERO HEAVY ASSETS)**:
+  - All web crawlers, HTTP client fetchers, and headless browser sessions MUST drop and abort images (`.png`, `.jpg`, `.jpeg`, `.webp`), fonts (`.woff`, `.woff2`), stylesheets (`.css`), audio/video (`.mp4`, `.mp3`), and tracking scripts before network transfer, saving $\ge 85\%$ data bandwidth.
+  - Web contact form probing streams at most **64 KB** of HTML per target (`Range: bytes=0-65535` or stream close upon header/form match).
+- **5. BULLETPROOF 600 EMAILS/DAY QUOTA WITH MICRO-PAYLOADS**:
+  - Capacity: Exactly **600 verified B2B corporate emails per day** delivered via Dual-Mailbox Hostinger Direct SMTP Pool (`tosin@` 300/day + `matthew@` 300/day) with Brevo API v3 failover.
+  - Payloads are strictly micro-sized: Clean compressed HTML (< 10 KB) and lightweight audio attachment ($\le 21$ KB, `public/sample_voice_ng.mp3`) or streaming player link.
+  - Senders meter dispatches into hourly tranches (< 80/hr per mailbox) with 650ms–1000ms jitter, preventing network packet bursts.
+- **6. IN-MEMORY FAIR USAGE & SYSTEM RAM HYGIENE**:
+  - Worker RAM memory is strictly capped at **< 120MB per worker** (enforced via `--max-old-space-size=128`).
+  - CPU usage is maintained **< 6%**.
+  - In-memory data collections must be bounded (max 1,000 items in memory). Avoid re-parsing massive JSON files repeatedly in memory.
+  - Prohibit zombie processes (`ffmpeg.exe`, orphaned Playwright/Chromium instances, stuck Node workers) from lingering in memory or consuming background data.
+- **7. EXPONENTIAL BACKOFF ON NETWORK ERRORS**:
+  - If any network request, API endpoint, or SMTP transport fails due to connection drop or offline status, retries MUST back off by **10 to 30 minutes**. Rapid-fire 5s retry storms that consume cellular data are strictly forbidden.
+
 ## 3. SCHEDULE CYCLE & DAILY AUTONOMOUS 24/7 OUTREACH CAPACITY (PERMANENT INVARIANT)
 - **Permanent Daily High-Volume Campaign (10,000–30,000+ Leads Scraped & Staged/Day Across Nigeria)**:
-  - **B2B Executive Emails**: Exactly **300 verified corporate emails per day** dispatched via Brevo API v3 & Hostinger SMTP pool with personalized MP3 voice note attachments.
+  - **B2B Executive Emails**: Exactly **600 verified corporate emails per day** dispatched via Dual-Mailbox Hostinger Direct SMTP Pool (`tosin@` 300/day + `matthew@` 300/day) backed by Brevo API v3 failover with personalized MP3 voice note attachments.
   - **Web Contact Form Submissions**: Exactly **300 real commercial web contact forms submitted per day** delivering custom prototype preview links (`/preview/[slug]`).
   - **WhatsApp Outreach**: Exactly **30 messages per line per day** across connected lines.
   - **GSM SMS Outreach**: Exactly **120 SMS per day** (single credit $\le$ 158 chars per client).
-  - **Heavy Nigeria-Wide Scraping (430 Dynamic Hubs across 36 States + FCT)**: 24/7 continuous autonomous lead discovery across all 36 Nigerian States + FCT (Lagos, Abuja, Port Harcourt, Ibadan, Kano, Kaduna, Aba, Onitsha, Enugu, Benin City, etc.) using 16 streaming parallel workers with `p-limit(10)` bounded enrichment (22.2 leads/min, ~31,680 leads/day projected yield).
+  - **Heavy Nigeria-Wide Scraping (100% Cloud-Offloaded to GitHub Actions)**: 24/7 continuous autonomous lead discovery across all 36 Nigerian States + FCT is 100% executed in the cloud via GitHub Actions (`.github/workflows/autonomous_247_cloud_engine.yml`), protecting the user's local PC from high data consumption.
   - **Autonomous 24/7 Growth & Conversion Stack**: Dub.co Real-Time Click Attribution, Typebot Conversational Quoting Magnets, Programmatic SEO Directory, Evolution API WhatsApp Stability, Warmbly Deliverability Pooler, Pipecat 30s Voice Bridge, and Postiz Social Syndication.
 - **PERMANENT 24/7 DUAL-MODE EXECUTION ARCHITECTURE (LAPTOP ON OR OFF)**:
-  - **Mode A: Laptop ON (Local Silent Autopilot)**:
+  - **Mode A: Laptop ON (Local Silent Autopilot with Strict Data-Saver)**:
     - Automatically triggered on Windows boot/login via hidden VBScript hook (`C:\Users\HomePC\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Bethelmind_LeadGen_247_AutoStart.vbs`).
     - Executes `scripts/start_automation_on_boot.ps1` silently: loops until internet (`8.8.8.8`) is active, verifies dev server on port 3006, and launches `scripts/unified_master_autopilot.js`.
-    - Supervises all 12 worker subsystems (Traffic, Lead Pipeline, WhatsApp Channel, WA Line 1 & Line 2, 300 Emails/Webforms, Evolution API, Modernized Commercial, Upgraded 10k Harvester `scripts/run_heavy_10k_nigeria_scraper.ts`, Viral Blog Engine, Closer Daemon, Local Vibe Prospector).
-    - Self-healing: Automatically restarts any crashed worker in 5–15 seconds with 30-minute heartbeats.
+    - Operates strictly in **Data-Saver Mode**: Workers run bounded cycles ($\le 25$ leads, 4-hour cooldowns); heavy nationwide scraping is paused locally whenever unsent leads exist.
+    - Self-healing with Exponential Backoff: Restarts crashed workers with 5 to 30-minute gentle backoff to eliminate rapid cellular data drain.
   - **Mode B: Laptop OFF (24/7 Autonomous Cloud Engine)**:
     - Automatically executed on GitHub Actions cloud infrastructure via `.github/workflows/autonomous_247_cloud_engine.yml`.
     - Scheduled to run continuously every **30 minutes 24/7** (`cron: '*/30 * * * *'`), independent of laptop power or state.
@@ -200,13 +232,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
        - Dedicated standalone route [`src/app/admin/scraper/page.tsx`](file:///c:/Users/HomePC/Desktop/website%20Projects/lead%20generation%20automation/src/app/admin/scraper/page.tsx) (`/admin/scraper`).
        - API controller [`src/app/api/scrape/10k/route.ts`](file:///c:/Users/HomePC/Desktop/website%20Projects/lead%20generation%20automation/src/app/api/scrape/10k/route.ts) with dynamic quota, zone, sector, and engine multi-selection.
   - **Zero-Synthetic & Anti-Duplicate Pipeline**: Every single scraped lead MUST be validated for authentic Nigerian phone numbers (MTN, Airtel, Glo, 9mobile prefixes), formatted to E.164 (`+234...`), stripped of duplicates, and instantly synchronized to **Supabase Cloud** (`leads` / `crm_leads`) and local RAM database (`leads_db.json`).
-  - **Laptop & Data-Saver Guardian**: Memory strictly capped under **< 120MB**, CPU under **< 6%**. Images, fonts, and CSS stripped at the network layer. In-memory Bloom filter rejects duplicate numbers in < 1ms before secondary queries.
-  - **24/7 Autonomous Execution**: Runs continuously via local daemon and 24/7 Cloud Workers (Google Colab `colab_lagos_10k_runner.py` + Koyeb/Docker instances) with self-healing watchdogs and zero downtime.
+  - **Laptop & Data-Saver Guardian**: Memory strictly capped under **< 120MB**, CPU under **< 6%**. Images, fonts, and CSS stripped at the network layer. In-memory Bloom filter rejects duplicate numbers in < 1ms before secondary queries. Heavy scraping runs in GitHub Actions Cloud; local runs are strictly bounded ($\le 25$ leads, 4-hour rest cooldown).
+  - **24/7 Autonomous Execution**: Heavy harvesting runs via GitHub Actions cloud workflow (`autonomous_247_cloud_engine.yml`) every 30 minutes, saving 100% local cellular data, while local supervisor handles lightweight email/webform dispatch and inbound closer desks.
 
 ## 13. AUTONOMOUS MULTI-CHANNEL DISPATCH POLICY & OPTION A INVARIANTS (ENGINE 1 ONLY)
 - **STRICT ENGINE 1 FOCUS**: Outreach is 100% focused on Engine 1 (Turnkey DFY Prototypes `/preview/[slug]`, 1-Line Embeds ₦35k/₦65k, Sector Tools, Direct OPay Payouts `7034297995`). ZERO crypto copy or wallet references.
 - **OPTION A: EMAIL-FIRST OMNICHANNEL & 1-TAP INBOUND WHATSAPP HOOK (PERMANENT RULE)**:
-  - Cold outbound prospecting is 100% led by **Hostinger B2B Email** (1,000+ emails/day) and **Carrier GSM SMS** ($\le$ 158 chars).
+  - Cold outbound prospecting is 100% led by **Dual-Mailbox Hostinger B2B Email** (600 verified corporate emails/day: `tosin@` 300 + `matthew@` 300) and **Carrier GSM SMS** ($\le$ 158 chars).
   - Every email and SMS delivers the dynamic prototype preview link (`/preview/[slug]`) and a prominent **1-Tap Inbound WhatsApp Claim Button** connecting the prospect directly to Admin WhatsApp (`0802 279 1227`).
   - Prospects tap the button to send the first message, establishing a 100% permission-based conversation on WhatsApp with ZERO cold DM spam filters or line ban risks.
   - WhatsApp Line 1 (`0802 279 1227`) functions strictly as the **24/7 AI Inbound Closer Desk** (< 3s Nigerian AI response time).
@@ -437,14 +469,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - All converted setups route 100% directly to **OPay Digital Services** (`7034297995` - Oyelakin Tosin Matthew).
   - Primary conversion bridge strictly points to **CEO/Admin Desk (`0802 279 1227` / `+234 802 279 1227`)**.
 
-## 34. ZERO-DATA-WASTE, BANDWIDTH PROTECTION & DAILY 300 EMAIL/MASSIVE WEBFORM INVARIANTS (PERMANENT RULE)
+## 34. ZERO-DATA-WASTE, BANDWIDTH PROTECTION & DAILY 600 EMAIL/MASSIVE WEBFORM INVARIANTS (PERMANENT RULE)
 - **1. LOCAL BANDWIDTH & DATA DRAIN PROTECTION (ZERO-DATA-WASTE INVARIANT)**:
   - Strict prohibition of continuous unthrottled 24/7 local scraping loops (`local_job_runner.ts`, `autonomous_traffic_daemon.js`, background `ffmpeg.exe` rendering, `comet.exe` sync loops).
-  - Heavy Nigeria-wide lead harvesting (10,000 leads/day across all 36 States + FCT) is permanently delegated to **Google Colab Cloud** (`colab_lagos_10k_runner.py` / `Colab_247_Harvester.ipynb`), consuming **₦0.00 local internet data**.
+  - Heavy Nigeria-wide lead harvesting (10,000 leads/day across all 36 States + FCT) is permanently delegated to **GitHub Actions Cloud** (`.github/workflows/autonomous_247_cloud_engine.yml`), consuming **₦0.00 local internet data**.
   - Local PC resources are reserved strictly for lightweight on-demand batch dispatches, inbound WhatsApp closer desk, and dashboard preview hydration.
-- **2. GUARANTEED DAILY 300 DELIVERED B2B EMAILS INVARIANT**:
-  - The B2B email dispatch engine aggregates from the consolidated pool of verified corporate leads and dynamically cycles through the queue until **exactly 300 confirmed delivered emails** are recorded each day.
-  - Dual Delivery Route: Primary **Brevo API v3** (300 daily transactional credits) with instant automatic fallback to **Hostinger SMTP** (Port 587 - `tosin@bethelmindanalytics.com`).
+- **2. GUARANTEED DAILY 600 DELIVERED B2B EMAILS INVARIANT**:
+  - The B2B email dispatch engine aggregates from the consolidated pool of verified corporate leads and dynamically cycles through the queue until **exactly 600 confirmed delivered emails** are recorded each day.
+  - Dual-Mailbox Primary Route: Dual **Hostinger SMTP Mailboxes** (`tosin@bethelmindanalytics.com` 300/day + `matthew@bethelmindanalytics.com` 300/day on Port 465 SSL) with secondary failover to **Brevo API v3** (circuit-breakered).
   - Payload delivered: Tailored Nigerian commercial proposal, attached lightweight MP3 voice note briefing (`sample_voice_ng.mp3` ~21 KB) + audio player banner, custom prototype preview link (`/preview/[slug]`), pre-installed sector tools, and direct 1-tap WhatsApp hook (`wa.me/2348022791227`).
 - **3. MASSIVE HIGH-SPEED WEB CONTACT FORM DELIVERY INVARIANT**:
   - Clean Single-Hop Webform Submissions: Probes at most ONE direct contact endpoint (`/contact` or homepage) with a fast $\le$ 6.5s timeout.
@@ -463,15 +495,16 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - All background processes must prevent memory leaks by processing leads in chunked slices, garbage-collecting temporary buffers, and terminating cleanly upon quota completion.
   - Prohibit zombie processes (`ffmpeg.exe`, stuck Chromium instances, background sync loops) from silently consuming local bandwidth or memory.
 
-## 36. PERMANENT AUTONOMOUS 24/7 NON-STOP 300 DAILY EMAIL CONTINUOUS DAEMON (SOLIDIFIED IN MEMORY)
-- **1. PERMANENT 300 DAILY DELIVERIES MANDATE (NON-STOP AUTONOMOUS EXECUTION)**:
-  - The system is permanently instructed to execute an autonomous background daemon that delivers exactly **300 verified B2B commercial emails every single day non-stop**.
+## 36. PERMANENT AUTONOMOUS 24/7 NON-STOP 600 DAILY EMAIL CONTINUOUS DAEMON (SOLIDIFIED IN MEMORY)
+- **1. PERMANENT 600 DAILY DELIVERIES MANDATE (NON-STOP AUTONOMOUS EXECUTION)**:
+  - The system is permanently instructed to execute an autonomous background daemon that delivers exactly **600 verified B2B commercial emails every single day non-stop**.
   - Daily counter tracks verified deliveries and resets automatically at 00:00 Lagos WAT every calendar day.
 - **2. HOURLY TRANCHE PACING & PROVIDER RATE-LIMIT SHIELDING**:
-  - To respect Hostinger SMTP's strict 100 emails/hour ceiling (`hostinger_out_ratelimit`) and maintain 100% inbox deliverability, the daemon autonomously meters dispatches into **4 spaced hourly tranches of 75 emails each** ($\approx 75 \times 4 = 300$ emails/day).
+  - Dual mailboxes share the load evenly: `tosin@bethelmindanalytics.com` (300/day) and `matthew@bethelmindanalytics.com` (300/day).
+  - To respect Hostinger SMTP's strict ceiling and maintain 100% inbox deliverability, the daemon autonomously meters dispatches into spaced hourly tranches (< 80 emails/hour per mailbox).
   - Pacing between individual emails: 650ms - 1000ms.
   - Connection mode: Hostinger Direct SMTP Port 465 (SSL) with strict IPv4 resolution (`dns.setDefaultResultOrder('ipv4first')`).
-  - Auto-Cooldown & Self-Healing: If a temporary rate limit (`451 Ratelimit exceeded`) or network glitch occurs, the daemon automatically sleeps for 55 minutes to allow the provider window to reset, then immediately resumes without human intervention or data loss.
+  - Auto-Cooldown & Self-Healing: If a temporary rate limit (`451 Ratelimit exceeded`) or network glitch occurs, the daemon automatically sleeps for 30–55 minutes to allow the provider window to reset, then immediately resumes without human intervention or data loss.
 - **3. MANDATORY PAYLOAD & CONVERSION ASSETS**:
   - Mandatory voice note briefing attachment: 21 KB MP3 (`public/sample_voice_ng.mp3`).
   - Clickable audio player banner + direct prototype preview link (`/preview/[slug]`).
@@ -480,9 +513,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 37. PERMANENT ZERO-DOWNTIME CLOUD & OFFLINE LAPTOP CONTINUITY (SOLIDIFIED IN MEMORY)
 - **1. CONTINUOUS 24/7 EXECUTION WHEN LAPTOP IS POWERED OFF (PERMANENT RULE)**:
-  - Both the heavy scraping (up to 10,000 genuine commercial leads/day across all 36 Nigerian states + FCT) and daily B2B email sending (exactly 300 per day via Hostinger Port 465 SSL & Brevo API v3 with MP3 voice note attached) MUST run continuously non-stop 24/7, **even when the user physically powers off, closes, or sleeps their laptop**.
+  - Both the heavy scraping (up to 10,000 genuine commercial leads/day across all 36 Nigerian states + FCT) and daily B2B email sending (exactly 600 per day via Dual-Mailbox Hostinger Port 465 SSL & Brevo API v3 with MP3 voice note attached) MUST run continuously non-stop 24/7, **even when the user physically powers off, closes, or sleeps their laptop**.
   - **Tri-Cluster Cloud Architecture (Zero Laptop Power Needed)**:
-    1. **GitHub Actions 24/7 Cloud Engine (`.github/workflows/autonomous_247_cloud_engine.yml`)**: Executes automatically every 30 minutes (`*/30 * * * *`) 24 hours a day, 365 days a year on GitHub's Ubuntu cloud runners. Automatically runs `scripts/lagos_10k_master_harvester.js`, `scripts/run_heavy_b2b_email_harvester.ts`, and `scripts/execute_today_300_emails_and_webforms.ts`.
+    1. **GitHub Actions 24/7 Cloud Engine (`.github/workflows/autonomous_247_cloud_engine.yml`)**: Executes automatically every 30 minutes (`*/30 * * * *`) 24 hours a day, 365 days a year on GitHub's Ubuntu cloud runners. Automatically runs `scripts/run_heavy_10k_nigeria_scraper.ts --target=1000`, `scripts/master_five_engine_high_speed_scraper.js`, `scripts/run_heavy_b2b_email_harvester.ts`, and `scripts/execute_today_300_emails_and_webforms.ts`.
     2. **Google Colab Master Cloud Cluster (`Colab_Master_Cloud_Cluster.ipynb` & `colab_lagos_10k_runner.py`)**: Runs continuous 24/7 lead harvesting across Nigerian commercial hubs, staging leads directly into Supabase Cloud.
     3. **Docker & Koyeb Cloud Runner (`scripts/cloud_runner_entrypoint.js` & `Dockerfile`)**: Containerized 24/7 background daemon worker pool maintaining permanent process uptime.
   - **Cloud Single Source of Truth**: All harvested leads, prototype previews (`/preview/[slug]`), and email delivery states (`outreach_sent: true`) synchronize in real-time to **Supabase Cloud** (`leads`, `preview_data`, `crm_leads`, `lead_journeys`), guaranteeing zero lost data between cloud and local runners.
@@ -507,7 +540,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
     6. **`turbo1000WebformEngine`**: Direct HTTP POST form dispatcher using Cheerio, submitting verified contact proposals in $< 200$ms with 0% browser overhead and enforcing strict Rule #6 ($\le 3.5$s timeout, single-endpoint probe).
 - **2. STRICT LOW-RESOURCE LAPTOP INVARIANTS (SILENT RUNNING & ZERO FAN NOISE)**:
   - **OS Priority**: Always set `os.setPriority(os.constants.priority.PRIORITY_BELOW_NORMAL)` so foreground laptop usage remains completely smooth and lag-free.
-  - **V8 Memory Stability**: Node processes run with `cross-env NODE_OPTIONS=--max-old-space-size=4096` to prevent V8 Zone Allocation failures during prolonged 24/7 scraping.
+  - **V8 Memory Stability**: Node processes run with `cross-env NODE_OPTIONS=--max-old-space-size=512` to prevent memory bloat and protect the 8GB host machine from Antigravity IDE crashes.
   - **Micro-Batch Hub Processing**: Commercial hubs are processed in gentle micro-chunks of 2 hubs (`CHUNK_SIZE = 2`) with an in-memory Bloom filter to guarantee sub-millisecond deduplication.
   - **Single-Thread Python Bridge Execution**: `UnifiedScraperCluster` enforces `concurrencyLimit = pLimit(1)` on Python subprocess executions to eliminate simultaneous process bloat.
   - **Mirror Race Resource Cleanup**: `OverpassScraper` utilizes `AbortController` to immediately cancel and abort slower parallel mirror connections as soon as the first mirror responds, preventing redundant network and heap buffer consumption.
@@ -533,4 +566,123 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **5. 100% REAL-ACTION PERSISTENCE**:
   - Confirmed SMTP Message IDs recorded to `leads_db.json`, `lead_journeys.json`, `email_daemon_state.json`, and Supabase Cloud in real time.
 
+## 40. PERMANENT ANTIGRAVITY ZERO-CRASH & DATA-SAVER GOVERNANCE (METERED DATA & RESILIENCE LAW)
+- **1. ANTIGRAVITY IDE ZERO-CRASH & MEMORY CEILING INVARIANT (STRICT OS SAFETY)**:
+  - **Host RAM Context**: Host machine has 8.0 GB of physical RAM. To prevent Antigravity IDE (Electron main/renderer) from being killed by Windows OOM or crashing from exhausted memory, total background memory across ALL node, python, and worker tasks MUST strictly NEVER exceed **1.5 GB cumulative**.
+  - **Memory Limits per Process**:
+    * Next.js Dev Server (`next dev -p 3006`): Strictly capped at `cross-env NODE_OPTIONS=--max-old-space-size=512`. Never use `--max-old-space-size=4096` on local development.
+    * Background Workers & Supervisors (`unified_master_autopilot.js`, PM2, tsx runners): Strictly capped at `--max-old-space-size=256` or `--max-old-space-size=512`.
+    * Build & Typecheck: Capped at `--max-old-space-size=1536`.
+  - **Pre-Flight Zombie & Orphaned Process Cleanup**:
+    * Before spawning any new process, scripts must detect and terminate dead/orphaned background instances (`node.exe`, `chrome-headless-shell`, `patchright`).
+    * Autopilot monitors system free RAM every 5 minutes: if free physical RAM falls below 1,200 MB, non-essential background tasks are automatically paused and garbage collection is triggered to safeguard Antigravity IDE.
+
+- **2. STRICT DATA-SAVER & LOW-BANDWIDTH NETWORK INVARIANT (ZERO DATA OVERCONSUMPTION)**:
+  - **Host Internet Context**: Local PC operates on metered / mobile cellular broadband (Nigerian telecom networks). Every megabyte has direct financial cost.
+  - **Offloading Heavy Scraping to Cloud**: Continuous 10,000 leads/day multi-worker scrapers (`--continuous`) MUST NEVER run locally on the user's laptop. High-throughput continuous sweeps are 100% offloaded to **Mode B: GitHub Actions Cloud Engine** (`.github/workflows/autonomous_247_cloud_engine.yml`), running on GitHub's free unlimited cloud bandwidth.
+  - **Local Harvesting Policy (Bounded & Metered)**:
+    * Local scraping is capped at small bounded batches ($\le 50$ leads per cycle) with a minimum **4-hour rest cooldown** (`4 * 60 * 60 * 1000`). Never run continuous 10s-15s sweep loops locally.
+    * **Mandatory Resource Abortion (Zero Media Transfer)**: All local scrapers, webhooks, and headless browser contexts must drop and abort images (`.png`, `.jpg`, `.jpeg`, `.webp`), fonts (`.woff`, `.woff2`), stylesheets (`.css`), audio/video (`.mp4`, `.mp3`), and tracking scripts before network transfer, saving $\ge 85\%$ data bandwidth.
+  - **Network Failure Exponential Backoff**:
+    * If an outbound network request, API, or scraper fails or is offline, retries MUST back off by at least **5 to 30 minutes**. Rapid-fire 5s/10s retry loops that spam network adapters and deplete cellular data bundles are strictly banned.
+  - **Zero Synthetic Localhost Loop Traffic**:
+    * Traffic generation and indexing daemons must run in bounded 6-hourly intervals, never executing rapid high-frequency HTTP ping storms on localhost or external endpoints.
+
+- **3. BROWSER AGENT CLI & SOCIAL PLATFORM FLEET**:
+  - **Browser Agent CLI**: The system utilizes `browser-use` CLI (`C:\Users\HomePC\AppData\Local\Programs\Python\Python314\Scripts\browser-use.exe`) and Playwright (`v1.58.0`) for vision-driven and anti-detect automated web actions with resource blocking enabled.
+  - Available command: `browser-use --doctor` or `browser-use [task]`.
+
+- **4. WHATSAPP GATEWAY & 2026 EMAIL OUTREACH REPOSITORIES**:
+  - **WhatsApp Multi-Device Engines**:
+    * TypeScript Engine: `@whiskeysockets/baileys` (`https://github.com/WhiskeySockets/Baileys`) on Ports 3007 & 3009, plus Evolution API (`https://github.com/EvolutionAPI/evolution-api`) on Port 8080.
+    * Go WhatsApp Engine: `whatsmeow` (`https://github.com/tulir/whatsmeow`) — high-performance Go multi-device library.
+  - **2026 Open-Source Email Engines & Deliverability Repositories**:
+    * `PaulleDemon/Email-automation` (`https://github.com/PaulleDemon/Email-automation`): Open-source cold outreach automation with multi-account SMTP pooling and automated follow-ups.
+    * `knadh/listmonk` (`https://github.com/knadh/listmonk`): Ultra-fast single-binary Go mailing manager (23.4k stars) with multi-SMTP connection pooling and minimal RAM footprint (< 50MB).
+    * `postalsys/emailengine` (`https://github.com/postalsys/emailengine`): Headless email gateway connecting to SMTP/IMAP via REST API with rate-limit and retry management.
+    * `catin-black/meteor-emails` (`https://github.com/catin-black/meteor-emails`): Free cold email CRM and campaign dispatcher.
+
+## 41. PERMANENT ZERO-FAILURE OUTREACH ARCHITECTURE (EMAIL & WEBFORM DELIVERY GUARANTEE)
+- **1. ZERO-FAILURE GUARANTEED DELIVERY CASCADE (WEB CONTACT FORMS)**:
+  - Scraped business websites frequently lack open HTML `<form>` tags or are protected by Cloudflare WAF 403 / reCAPTCHA.
+  - The submitter MUST NEVER log these as dropped or failed outreach.
+  - **The Guaranteed Cascade Protocol**:
+    1. *Pre-Flight Sanitization*: Strips trailing garbage, commas, and concatenated URLs (`sanitizeWebsiteUrl()`), and excludes non-form aggregators (`finelib.com/listing/...`, `jiji.ng`, `google.com/search`).
+    2. *Resilient Pre-Flight*: Probes homepage and contact endpoints with a 7,000ms timeout and automatic `https://` <-> `http://` failover.
+    3. *Token-Preserving Form POST*: If an HTML form is located, submits via HTTP POST preserving hidden security tokens, CF7 IDs, nonces, and Elementor fields.
+    4. *Zero-Failure SMTP Cascade*: If form is protected by reCAPTCHA / 403 WAF OR no form exists on the site:
+       The engine scans the page HTML for public corporate emails (`mailto:` or regex) or falls back to verified `lead.email`.
+       It immediately delivers the tailored prototype proposal & audio walkthrough via the **Multi-SMTP Connection Pooler**!
+       Logs `success: true, methodUsed: 'smtp_pool_cascade'`.
+    5. *WhatsApp / SMS Queue Staging*: If no public email exists anywhere, but a verified mobile phone exists, stages the lead for the 24/7 WhatsApp & GSM SMS outreach queue.
+- **2. TRI-PROVIDER MULTI-ACCOUNT SMTP CONNECTION POOLER (B2B CORPORATE EMAILS)**:
+  - Eliminates single-provider bottlenecks, ISP port blocks, and rate limit freezes.
+  - **Tri-Provider Cascade**:
+    * Provider 1: Hostinger Port 465 SSL Transporter.
+    * Provider 2: Brevo API v3 REST Gateway (bypasses all ISP network/port blocks).
+    * Provider 3: Hostinger Port 587 STARTTLS Transporter (backup for SSL handshake drops).
+  - **Recipient Address Sanitization**: Scrubs `mailto:`, parses comma/space-separated strings, and extracts the primary valid RFC 5322 address.
+  - **Micro-Payload Delivery (< 4KB)**: Clickable HTML audio player card replaces heavy raw binary `.mp3` attachments, guaranteeing 0% spam flags and 100% inboxing.
+  - **Rate-Limit Guardians**: Strict 80/hr cap on Hostinger, 250/day on Brevo, with 6-9s humanized jitter pacing.
+- **3. AUTONOMOUS SUPERVISOR WATCHDOG (`scripts/unified_master_autopilot.js`)**:
+  - Automatically checks worker heartbeats every 5 minutes.
+## 42. PERMANENT MANDATE: STRICT FAIR USAGE OF DATA & BULLETPROOF 600 EMAILS/DAY DISPATCH ARCHITECTURE (SOLIDIFIED IN MEMORY)
+- **1. PERMANENT 600 DAILY VERIFIED CORPORATE EMAILS CAPACITY**:
+  - **Dual-Mailbox Primary Hostinger SMTP Pool**:
+    * Mailbox 1: `tosin@bethelmindanalytics.com` (Bethelmind Analytics Lagos Desk) — delivers up to 300 emails/day metered safely across hourly tranches (< 80/hr).
+    * Mailbox 2: `matthew@bethelmindanalytics.com` (Bethelmind Analytics Lagos Desk) — delivers up to 300 emails/day metered safely across hourly tranches (< 80/hr).
+    * **Cumulative Capacity**: Exactly **600 verified B2B corporate emails per day** delivered with < 1s latency.
+  - **Dual-Mailbox Load Balancing & Rotation**:
+    * Senders alternate round-robin: Mailbox 1 (Tosin) <-> Mailbox 2 (Matthew).
+    * Secondary Failover: Hostinger Port 587 STARTTLS & Brevo API v3 (multi-account rotation).
+  - **Strict Anti-Spam Deliverability Headers (100% Inboxing Guarantee)**:
+    * Custom RFC 5322 Message-ID: `<[timestamp].[random]@bethelmindanalytics.com>`.
+    * `X-Mailer: Bethelmind-Analytics-Deliverability-Gateway/2026`.
+    * `List-Unsubscribe: <mailto:tosin@bethelmindanalytics.com?subject=unsubscribe>`.
+    * `Reply-To: bethelmindrecruit@gmail.com` (prospect replies route straight to the active admin desk).
+  - **Zero-Latency Connection Pooling**:
+    * All transports maintain persistent keepalive connection pools (`pool: true`, `maxConnections: 5`, `maxMessages: 100`, `family: 4`, `dns.setDefaultResultOrder('ipv4first')`), avoiding handshake latency on every send.
+  - **30-Minute Brevo Circuit Breaker (Zero Dispatch Stalling)**:
+    * If Brevo API encounters a timeout (6,000ms ceiling), network offline error, or quota exhaustion, it is immediately placed on a **30-minute cooldown**. Subsequent leads in the batch skip Brevo without stalling, ensuring fast, unblocked execution.
+
+- **2. PERMANENT RULE: STRICT FAIR USAGE OF DATA & BANDWIDTH CONSERVATION ACROSS ALL PROCESSES**:
+  - **Host Internet Environment Invariant**:
+    * The host PC runs on metered / mobile cellular broadband. Uncontrolled data downloads, high-frequency polling, and asset re-fetching are strictly banned.
+  - **Supabase Egress Circuit-Breaker**:
+    * If Supabase returns `exceed_egress_quota`, `429`, or quota restriction violations, ALL cloud RPC/queue polling MUST immediately sleep and back off for at least **15 to 30 minutes**.
+    * The runner must never poll Supabase in rapid 1s-3s loops.
+    * Priority is always given to local offline storage (`local_db/leads_db.json`, `local_db/crm_leads.json`, `local_db/scrape_jobs.json`).
+  - **Heavy 10k Scraping 100% Offloaded to GitHub Actions Cloud**:
+    * Continuous nationwide 10k scraping MUST NEVER run locally on the user's laptop.
+    * Heavy scraping is 100% offloaded to `.github/workflows/autonomous_247_cloud_engine.yml` running on GitHub's free unlimited cloud runners.
+    * Local lead harvesting is strictly bounded ($\le 50$ leads) with a mandatory 4-hour rest period.
+  - **Mandatory Resource & Media Abortion (Zero Heavy Assets)**:
+    * All web scrapers, crawlers, and webform submitters must abort and drop images (`.png`, `.jpg`, `.webp`), fonts (`.woff`, `.woff2`), stylesheets (`.css`), audio/video (`.mp4`, `.mp3`), and tracking scripts before network transfer.
+    * Webform probing streams at most 64 KB of HTML per target (`Range: bytes=0-65535` or stream close).
+  - **Micro-Payload Deliveries**:
+    * Cold outreach email HTML payloads must remain under 10 KB with compressed audio attachment ($\le 21$ KB) or streaming link.
+  - **Exponential Backoff on Connectivity Glitches**:
+    * When offline or experiencing network errors, processes must sleep for 10 to 30 minutes. Rapid retry storms that deplete mobile data are prohibited.
+
+- **3. PERMANENT RULE: STRICT BUSINESS-NAME-FIRST SECTOR CLASSIFICATION & ZERO-MISMATCH INVARIANT**:
+  - **Business Name is the Primary Ground Truth**:
+    * A lead's sector MUST be determined from its explicit business name first (`scripts/leadClassifier.js` / `src/lib/leadClassifier.ts`).
+    * NEVER infer a lead's sector solely from a scraper's search query or harvest keyword. For example, if a scraper searches "Healthcare" or "Clinic", directory results may return nearby restaurants (e.g. *Amala Sky*), hotels, or beauty stores. Blindly tagging those leads as "Healthcare" is strictly forbidden.
+  - **Strict Sector Taxonomy**:
+    * Words like "Beauty", "Cosmetics", "Hair", "Salon", "Spa", "Lash", "Wig" -> strictly **Beauty, Cosmetics & Spas**.
+    * Words like "Restaurant", "Amala", "Kitchen", "Bukka", "Food", "Eatery", "Cafe", "Grill", "Lounge" -> strictly **Restaurants, Eateries & Food**.
+    * Words like "Hotel", "Suites", "Apartments", "Shortlet", "Resort", "Lodge" -> strictly **Hotels, Shortlets & Apartments**.
+    * Words like "Homes", "Realty", "Properties", "Estate", "Land", "PWAN", "Adron" -> strictly **Real Estate & Properties**.
+    * Words like "Clinic", "Hospital", "Dental", "Dentist", "Doctor", "Medical", "Pharmacy", "Maternity" -> strictly **Clinics & Healthcare**.
+    * Words like "Solar", "Inverter", "Battery", "Renewable" -> strictly **Solar & Renewable Energy**.
+    * Words like "Auto", "Car", "Motors", "Tokunbo", "Dealership", "Mechanic" -> strictly **Automotive & Dealerships**.
+    * Words like "School", "Academy", "College", "Creche", "High School" -> strictly **Schools & Academies**.
+    * Words like "Freight", "Logistics", "Cargo", "Waybill", "Courier", "Haulage" -> strictly **Logistics, Freight & Haulage**.
+    * Words like "Fashion", "Boutique", "Apparel", "Clothing", "Luxury", "Tailor" -> strictly **Fashion & Luxury**.
+    * Words like "Law Firm", "Chambers", "Solicitor", "Barrister", "Attorney" -> strictly **Legal & Law Chambers**.
+  - **Zero-Mismatch Law**:
+    * Non-medical businesses must NEVER receive clinic/patient copy.
+    * Non-solar businesses must NEVER receive solar BOQ copy.
+    * Non-hotel businesses must NEVER receive hotel room copy.
+    * If a lead does not match any specific sector, it strictly receives the **Universal Neutral Commercial Quoting Assistant** hook (*"Good day [Name] team. After-hours clients asking for prices wait hours for replies. We built a 24/7 WhatsApp quoting bot for your firm. May I send a demo?"* — strictly <= 158 chars, with ZERO medical or solar terms).
 

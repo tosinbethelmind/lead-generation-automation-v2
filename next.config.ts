@@ -70,10 +70,14 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     '*': [
       './local_db/**/*',
-      './data/**/*',
+      './data/raw_leads/**/*',
+      './data/cache/**/*',
       './public/assets/audio/**/*',
       './.git/**/*'
     ]
+  },
+  outputFileTracingIncludes: {
+    '/**': ['./data/blog_posts/**/*']
   },
   async headers() {
     return [
@@ -101,9 +105,32 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // All other routes keep strict security headers
         source: "/((?!preview|api/widget).*)",
         headers: securityHeaders,
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: '/demo',
+        destination: '/walkthrough',
+        permanent: true,
+      },
+      {
+        source: '/video',
+        destination: '/walkthrough',
+        permanent: true,
+      },
+      {
+        source: '/assets/bethelmind-demo.webm',
+        destination: '/walkthrough',
+        permanent: false,
+      },
+      {
+        source: '/assets/apexreach-demo.webm',
+        destination: '/walkthrough',
+        permanent: false,
       },
     ];
   },

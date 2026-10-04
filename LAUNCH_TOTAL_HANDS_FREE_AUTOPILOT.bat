@@ -9,8 +9,10 @@ echo [1] Auto-Scrapes 18+ Commercial Lagos Corridors (ASPAMDA, Alaba, Apapa)
 echo [2] Auto-Verifies Leads (100-Point Scoring Guard)
 echo [3] Auto-Synthesizes Personalized Nigerian Female Voice Notes
 echo [4] Auto-Dispatches Dual-Wave Outreach (Carrier SMS + B2B Email)
-echo [5] Auto-Closes Inbound Inquiries on WhatsApp in < 3s (wa.me/2348022791227)
-echo [6] Direct-to-OPay Cashout: 7034297995 (Oyelakin Tosin Matthew)
+echo [5] Auto-Schedules 1-Tap Demos (Cal.com) & Syncs Omnichannel Chatwoot Hub
+echo [6] Auto-Advances Visual Pipeline Deals in Twenty CRM & Generates Invoices
+echo [7] Auto-Closes Inbound Inquiries on WhatsApp in < 3s (wa.me/2348022791227)
+echo [8] Direct-to-OPay Cashout: 7034297995 (Oyelakin Tosin Matthew)
 echo ===============================================================================
 echo.
 echo Starting autopilot now... (No clicks needed, runs continuously forever)

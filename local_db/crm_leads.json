@@ -1,5 +1,17 @@
 [
   {
+    "id": "crm_1789396190516",
+    "name": "Lekki Solar Tech Ltd",
+    "sector": "Solar Energy",
+    "city": "Lekki Phase 1",
+    "area": "Lekki Phase 1",
+    "phone": "+2348022791227",
+    "status": "WHATSAPP_TESTED",
+    "preview_url": "https://www.bethelmindanalytics.com/preview/lekki-solar-tech-ltd",
+    "high_intent": true,
+    "created_at": "2026-09-14T14:29:50.516Z"
+  },
+  {
     "id": "lagos_lead_001",
     "name": "Ikeja Premium Salon 1",
     "sector": "Salon & Spa",
@@ -334,5 +346,230 @@
     "createdAt": "2026-08-17T21:37:26.080Z",
     "contactedAt": "2026-08-17T21:47:41.358Z",
     "contactedVariant": "B"
+  },
+  {
+    "id": "WA-APPR-1788545309284-275",
+    "phone": "2349036254245",
+    "businessName": "FAVOURITES' KITCHEN",
+    "incoming": "Hello",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*FAVOURITES' KITCHEN*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://www.bethelmindanalytics.com/preview/ibadan_det_997d501a17ba2b2e\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-04T18:08:29.349Z"
+  },
+  {
+    "id": "WA-APPR-1788545315801-235",
+    "phone": "2348067733756",
+    "businessName": "Zeek Solar Shop",
+    "incoming": "Hello",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Zeek Solar Shop*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://www.bethelmindanalytics.com/preview/solar_det_e1879c4e49acbc05\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-04T18:08:36.766Z"
+  },
+  {
+    "id": "WA-APPR-1788545324334-631",
+    "phone": "2349013568040",
+    "businessName": "BlessIfe catering services",
+    "incoming": "Hello",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*BlessIfe catering services*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://www.bethelmindanalytics.com/preview/ibadan_det_c690f251dc154fe4\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-04T18:08:44.979Z"
+  },
+  {
+    "id": "WA-APPR-1788545330372-417",
+    "phone": "2348147626861",
+    "businessName": "Business Owner (+2348147626861)",
+    "incoming": "Hello",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Business Owner (+2348147626861)*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://www.bethelmindanalytics.com/preview/2348147626861\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-04T18:08:50.412Z"
+  },
+  {
+    "id": "WA-APPR-1788545336622-984",
+    "phone": "2348038246324",
+    "businessName": "Healthcare Kaduna Commercial Enterprise #34",
+    "incoming": "Hello",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Healthcare Kaduna Commercial Enterprise #34*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://www.bethelmindanalytics.com/preview/lead_1787932283051_531\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-04T18:08:57.098Z"
+  },
+  {
+    "id": "WA-APPR-1788545408009-562",
+    "phone": "",
+    "businessName": "Ikeja Premium Salon 1",
+    "incoming": "100k To Pack 1M Every Month End Early Number Available. \nDM If You’re Interested",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Ikeja Premium Salon 1*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://www.bethelmindanalytics.com/preview/lagos_lead_001\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-04T18:10:08.043Z"
+  },
+  {
+    "id": "WA-APPR-1788545415848-631",
+    "phone": "",
+    "businessName": "Ikeja Premium Salon 1",
+    "incoming": "100k To Pack 1M Every Month End Early Number Available. \nDM If You’re Interested",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Ikeja Premium Salon 1*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://www.bethelmindanalytics.com/preview/lagos_lead_001\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-04T18:10:15.870Z"
+  },
+  {
+    "id": "WA-APPR-1788545422416-587",
+    "phone": "",
+    "businessName": "Ikeja Premium Salon 1",
+    "incoming": "100k To Pack 1M Every Month End Early Number Available. \nDM If You’re Interested",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Ikeja Premium Salon 1*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://www.bethelmindanalytics.com/preview/lagos_lead_001\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-04T18:10:24.064Z"
+  },
+  {
+    "id": "WA-APPR-1788548199976-646",
+    "phone": "232165111509123",
+    "businessName": "Business Owner (+232165111509123)",
+    "incoming": "Solar Plus",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Business Owner (+232165111509123)*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://www.bethelmindanalytics.com/preview/232165111509123\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-04T18:56:40.409Z"
+  },
+  {
+    "id": "WA-APPR-1788548558221-857",
+    "phone": "48645537792150",
+    "businessName": "Business Owner (+48645537792150)",
+    "incoming": "If the person he no having money he participate in this organization",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Business Owner (+48645537792150)*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://www.bethelmindanalytics.com/preview/48645537792150\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-04T19:02:38.240Z"
+  },
+  {
+    "id": "WA-APPR-1788591890197-824",
+    "phone": "80955939242192",
+    "businessName": "Business Owner (+80955939242192)",
+    "incoming": "Hello Premier Lagos Commercial Enterprise! I visited your website and would like to inquire about your services.",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Business Owner (+80955939242192)*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://lead-generation-automation-v2-dk3imdpd4-tosin4.vercel.app/preview/80955939242192\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-05T07:04:51.456Z"
+  },
+  {
+    "id": "WA-APPR-1788591890928-277",
+    "phone": "80955939242192",
+    "businessName": "Business Owner (+80955939242192)",
+    "incoming": "Hello Premier Lagos Commercial Enterprise! I visited your website and would like to inquire about your services.",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Business Owner (+80955939242192)*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://lead-generation-automation-v2-dk3imdpd4-tosin4.vercel.app/preview/80955939242192\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-05T07:04:51.520Z"
+  },
+  {
+    "id": "WA-APPR-1788618739342-897",
+    "phone": "",
+    "businessName": "Luminity Technologies and Gadgets",
+    "incoming": "Faithful God 🙌",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*Luminity Technologies and Gadgets*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\nhttps://lead-generation-automation-v2-dk3imdpd4-tosin4.vercel.app/preview/lead_ng_68d02a9ca56912\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!",
+    "intent": "GENERAL_INQUIRY",
+    "timestamp": "2026-09-05T14:32:19.372Z"
+  },
+  {
+    "id": "WA-APPR-1788644181585-55",
+    "phone": "2349061803042",
+    "businessName": "School Desk and Table",
+    "incoming": "I do not understand the message",
+    "reply": "Good day sir/ma! 👋 Sorry for any confusion. Let me explain very simply:\n\nWe noticed your business *School Desk and Table* in Ajah.\n\n💡 *WHY WE CONTACTED YOU:*\nMany times, new customers want to buy from you, book your services, or ask prices at night or when you are busy. But if nobody answers them quickly on WhatsApp, they leave and go to competitors.\n\nSo our firm (*Bethelmind Analytics Lagos Desk*) designed a professional modern website and an automated 24/7 WhatsApp quoting assistant for *School Desk and Table* that answers your customers' questions and gives them quotes automatically day and night.\n\n👉 *We already prepared a FREE sample website for you to test on your phone:*\nhttps://www.bethelmindanalytics.com/preview/lead_jiji_29d5c07636950157\n\n📱 Open the link right now on your phone — it is 100% FREE to inspect. You don't pay ₦1 to look at it.\n\nIf you like how it works and want us to launch it officially with your real pictures, prices, and phone number, we do everything for you in 48 hours for just ₦75,000 commitment deposit (₦150k total).\n\nWould you like me to walk you through your free sample?",
+    "intent": "CLARIFICATION_EXPLANATION",
+    "timestamp": "2026-09-05T21:36:21.609Z"
+  },
+  {
+    "id": "WA-APPR-1788644188529-722",
+    "phone": "2348166571173",
+    "businessName": "Hotel for Sale in Baruwa Ipaja Lagos State on a Ti",
+    "incoming": "I do not understand the message",
+    "reply": "Good day sir/ma! 👋 Sorry for any confusion. Let me explain very simply:\n\nWe noticed your business *Hotel for Sale in Baruwa Ipaja Lagos State on a Ti* in Baruwa.\n\n💡 *WHY WE CONTACTED YOU:*\nMany times, new customers want to buy from you, book your services, or ask prices at night or when you are busy. But if nobody answers them quickly on WhatsApp, they leave and go to competitors.\n\nSo our firm (*Bethelmind Analytics Lagos Desk*) designed a professional modern website and an automated 24/7 WhatsApp quoting assistant for *Hotel for Sale in Baruwa Ipaja Lagos State on a Ti* that answers your customers' questions and gives them quotes automatically day and night.\n\n👉 *We already prepared a FREE sample website for you to test on your phone:*\nhttps://www.bethelmindanalytics.com/preview/lead_jiji_031334f5d732b21e\n\n📱 Open the link right now on your phone — it is 100% FREE to inspect. You don't pay ₦1 to look at it.\n\nIf you like how it works and want us to launch it officially with your real pictures, prices, and phone number, we do everything for you in 48 hours for just ₦75,000 commitment deposit (₦150k total).\n\nWould you like me to walk you through your free sample?",
+    "intent": "CLARIFICATION_EXPLANATION",
+    "timestamp": "2026-09-05T21:36:28.561Z"
+  },
+  {
+    "id": "WA-APPR-1788644200656-667",
+    "phone": "2349160124389",
+    "businessName": "265kwh All",
+    "incoming": "I do not understand the message",
+    "reply": "Good day sir/ma! 👋 Sorry for any confusion. Let me explain very simply:\n\nWe noticed your business *265kwh All* in Wuse 2.\n\n💡 *WHY WE CONTACTED YOU:*\nMany times, new customers want to buy from you, book your services, or ask prices at night or when you are busy. But if nobody answers them quickly on WhatsApp, they leave and go to competitors.\n\nSo our firm (*Bethelmind Analytics Lagos Desk*) designed a professional modern website and an automated 24/7 WhatsApp quoting assistant for *265kwh All* that answers your customers' questions and gives them quotes automatically day and night.\n\n👉 *We already prepared a FREE sample website for you to test on your phone:*\nhttps://www.bethelmindanalytics.com/preview/lead_ng_13453036c2fd94\n\n📱 Open the link right now on your phone — it is 100% FREE to inspect. You don't pay ₦1 to look at it.\n\nIf you like how it works and want us to launch it officially with your real pictures, prices, and phone number, we do everything for you in 48 hours for just ₦75,000 commitment deposit (₦150k total).\n\nWould you like me to walk you through your free sample?",
+    "intent": "CLARIFICATION_EXPLANATION",
+    "timestamp": "2026-09-05T21:36:40.692Z"
+  },
+  {
+    "id": "WA-APPR-1788644209223-419",
+    "phone": "2347031193694",
+    "businessName": "Laptop Repair/Phone Service",
+    "incoming": "I do not understand the message",
+    "reply": "Good day sir/ma! 👋 Sorry for any confusion. Let me explain very simply:\n\nWe noticed your business *Laptop Repair/Phone Service* in Ikeja.\n\n💡 *WHY WE CONTACTED YOU:*\nMany times, new customers want to buy from you, book your services, or ask prices at night or when you are busy. But if nobody answers them quickly on WhatsApp, they leave and go to competitors.\n\nSo our firm (*Bethelmind Analytics Lagos Desk*) designed a professional modern website and an automated 24/7 WhatsApp quoting assistant for *Laptop Repair/Phone Service* that answers your customers' questions and gives them quotes automatically day and night.\n\n👉 *We already prepared a FREE sample website for you to test on your phone:*\nhttps://www.bethelmindanalytics.com/preview/lead_ng_bd7a529f681b2e\n\n📱 Open the link right now on your phone — it is 100% FREE to inspect. You don't pay ₦1 to look at it.\n\nIf you like how it works and want us to launch it officially with your real pictures, prices, and phone number, we do everything for you in 48 hours for just ₦75,000 commitment deposit (₦150k total).\n\nWould you like me to walk you through your free sample?",
+    "intent": "CLARIFICATION_EXPLANATION",
+    "timestamp": "2026-09-05T21:36:49.286Z"
+  },
+  {
+    "id": "WA-APPR-1788668716853-616",
+    "phone": "",
+    "businessName": "ZEE RESIDENCE",
+    "incoming": "Join our growing team at Lucent Aesthetics Clinic! We are looking for a passionate and skilled Dental Nurse to join our professional clinic and help us provide exceptional care to our clients.",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos.\n\nWe prepared a customized interactive commercial prototype for *ZEE RESIDENCE* to show you how clients in Lagos can easily discover your business and receive instant 24/7 quotes on WhatsApp.\n\n👉 *View Your Free Live Prototype:* https://www.bethelmindanalytics.com/preview/lead_ng_c145b6f384682e\n\n🔊 *Listen to 15s Executive Audio Note:* https://www.bethelmindanalytics.com/assets/audio/vn_intro.ogg\n\nFeel free to reply if you would like us to customize it with your real product catalogue and pricing!",
+    "intent": "GREETING_HANDSHAKE",
+    "timestamp": "2026-09-06T04:25:19.892Z"
+  },
+  {
+    "id": "WA-APPR-1788668718476-771",
+    "phone": "",
+    "businessName": "ZEE RESIDENCE",
+    "incoming": "Join our growing team at Lucent Aesthetics Clinic! We are looking for a passionate and skilled Dental Nurse to join our professional clinic and help us provide exceptional care to our clients.",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos.\n\nWe prepared a customized interactive commercial prototype for *ZEE RESIDENCE* to show you how clients in Lagos can easily discover your business and receive instant 24/7 quotes on WhatsApp.\n\n👉 *View Your Free Live Prototype:* https://www.bethelmindanalytics.com/preview/lead_ng_c145b6f384682e\n\n🔊 *Listen to 15s Executive Audio Note:* https://www.bethelmindanalytics.com/assets/audio/vn_intro.ogg\n\nFeel free to reply if you would like us to customize it with your real product catalogue and pricing!",
+    "intent": "GREETING_HANDSHAKE",
+    "timestamp": "2026-09-06T04:25:19.931Z"
+  },
+  {
+    "id": "WA-APPR-1788708029751-624",
+    "phone": "9457618657290",
+    "businessName": "Business Owner (+9457618657290)",
+    "incoming": "🌍 Welcome to Gee'z Global Concept & Logistics!\nThank you for reaching out to us.\nYour trusted partner for Export, Procurement, and Logistics Services. We specialize in supplying and exporting high-quality:\n🌾 Foodstuffs\n🌿 Agro Products\n💄 Cosmetics\n📦 Export & Logistics Services\n🛍️ Product Sourcing\n✨ And many more. Nationwide 🌏✈️\nWe are committed to providing quality products, competitive prices, and timely delivery with excellent customer service.\nKindly send us your request, and we'll be happy to assist you.",
+    "reply": "Good day! 👋 Here is our complete growth package ladder for *Business Owner (+9457618657290)*:\n\n👑 *TIER 1 (ENTERPRISE): Luxury Web Portal + Branded Android Mobile App (.apk)*\n• Total: ₦250,000 (Start with 50% deposit: *₦125,000*)\n• Includes luxury responsive commercial portal, branded Android App, and customer lock-screen push notifications.\n\n💎 *TIER 2 (CORE DFY): Complete Turnkey Business Website + WhatsApp Assistant*\n• Total: ₦150,000 (Start with 50% deposit: *₦75,000*)\n• Includes official .com/.com.ng domain, Google Maps listing, photo showcase, and 24/7 automated WhatsApp customer quoting.\n\n⚡ *TIER 3 (UPGRADE): 1-Line WhatsApp Quoting Assistant on Your Existing Website*\n• Setup: *₦35,000* (Full integration: ₦65,000)\n• Connects to your current website in 10 minutes without touching your hosting or SEO.\n\n📦 *TIER 4 (ENTRY TOOLKIT): 2026 Commercial Sector Quoting Vault*\n• Instant Download: *₦7,500* via Selar\n• Includes industry BOQ load sizers, pricing spreadsheets, and closing scripts.\n\n👉 Test your live prototype here:\nhttps://www.bethelmindanalytics.com/preview/9457618657290\n\nWhich tier best fits your business goals this month?",
+    "intent": "PRICING_INQUIRY",
+    "timestamp": "2026-09-06T15:21:31.182Z"
+  },
+  {
+    "id": "WA-APPR-1789068863755-447",
+    "phone": "12799673688172",
+    "businessName": "Business Owner (+12799673688172)",
+    "incoming": "Hello.",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe prepared a customized interactive commercial prototype for *Business Owner (+12799673688172)* to show you how clients in Nigeria can easily discover your business on Google and receive instant 24/7 quotes on WhatsApp.\n\n👉 *View Your Free Live Prototype:* \nhttps://www.bethelmindanalytics.com/preview/12799673688172\n\n🛠️ *LAUNCH YOUR COMPLETE 24/7 SYSTEM IN 48 HOURS:*\n• Turnkey Website + WhatsApp AI Assistant: ₦75,000 commitment deposit (₦150,000 total).\n• 1-Line Embed Upgrade (If you already have a website): ₦35,000 deposit.\n• Balance strictly payable after deployment & your 100% approval.\n\n🏦 *Official OPay Settlement Account:*\n• Bank: *OPay Digital Services*\n• Account Number: *7034297995*\n• Account Name: *Oyelakin Tosin Matthew*\n• Narration: *Business Owner  Setup*\n\nReply with any questions or transfer your deposit and share your receipt here to secure your 48-hour delivery slot!",
+    "intent": "GREETING_HANDSHAKE",
+    "timestamp": "2026-09-10T19:34:23.789Z"
+  },
+  {
+    "id": "WA-APPR-1789068868906-781",
+    "phone": "12799673688172",
+    "businessName": "Business Owner (+12799673688172)",
+    "incoming": "https://www.bethelmindanalytics.com/preview/9d661cb9-e990-4bb5-8d50-a7b0eb226872",
+    "reply": "Here is your free sample website demo created for *Business Owner (+12799673688172)*:\n\n👉 https://www.bethelmindanalytics.com/preview/9d661cb9-e990-4bb5-8d50-a7b0eb226872\n\n📱 Open it on your phone to see how your business will look to customers on Google.\nYou can tap the buttons to test the 24/7 WhatsApp quoting engine.\n\n🛠️ *READY TO LAUNCH FOR YOUR BUSINESS IN 48 HOURS?*\n• 50% commitment deposit to start: *₦75,000 NGN* (₦150k total, balance only upon approval).\n• Bank: *OPay Digital Services* | Account: *7034297995* | Name: *Oyelakin Tosin Matthew*\n\nSend your receipt here once transferred and we commence deployment immediately!",
+    "intent": "REQUEST_DEMO_LINK",
+    "timestamp": "2026-09-10T19:34:28.924Z"
+  },
+  {
+    "id": "WA-APPR-1789070041543-750",
+    "phone": "",
+    "businessName": "Old English Superstores",
+    "incoming": "Marry someone you can understand \nE get why",
+    "reply": "Good day sir/ma! 👋 Sorry for any confusion. Let me explain very simply:\n\nWe noticed your business *Old English Superstores* in Lagos.\n\n💡 *WHY WE CONTACTED YOU:*\nMany times, new customers want to buy from you, book your services, or ask prices at night or when you are busy. But if nobody answers them quickly on WhatsApp, they leave and go to competitors.\n\nSo our firm (*Bethelmind Analytics Lagos Desk*) designed a professional modern website and an automated 24/7 WhatsApp quoting assistant for *Old English Superstores* that answers your customers' questions and gives them quotes automatically day and night.\n\n👉 *We already prepared a FREE sample website for you to test on your phone:*\nhttps://www.bethelmindanalytics.com/preview/lead_ng_e625815c0847ee\n\n📱 Open the link right now on your phone — it is 100% FREE to inspect. You don't pay ₦1 to look at it.\n\n🛠️ *HOW WE LAUNCH IT OFFICIALLY IN 48 HOURS:*\n• 100% Turnkey DFY Website + 24/7 WhatsApp AI: *₦75,000 commitment deposit* (₦150,000 total, balance only upon approval).\n• 1-Line Embed Upgrade: *₦35,000 deposit*.\n\n🏦 *Official OPay Settlement Account:*\n• Bank: *OPay Digital Services*\n• Account Number: *7034297995*\n• Account Name: *Oyelakin Tosin Matthew*\n\nTransfer your deposit and share your receipt here to lock in your 48-hour delivery slot!",
+    "intent": "CLARIFICATION_EXPLANATION",
+    "timestamp": "2026-09-10T19:54:01.565Z"
+  },
+  {
+    "id": "WA-APPR-1789070812553-544",
+    "phone": "254712172222",
+    "businessName": "Solar Company In Kenya",
+    "incoming": "https://www.bethelmindanalytics.com/preview/9d661cb9-e990-4bb5-8d50-a7b0eb226872",
+    "reply": "Here is your free sample website demo created for *Solar Company In Kenya*:\n\n👉 https://www.bethelmindanalytics.com/preview/9d661cb9-e990-4bb5-8d50-a7b0eb226872\n\n📱 Open it on your phone to see how your business will look to customers on Google.\nYou can tap the buttons to test the 24/7 WhatsApp quoting engine.\n\n🛠️ *READY TO LAUNCH FOR YOUR BUSINESS IN 48 HOURS?*\n• 50% commitment deposit to start: *₦75,000 NGN* (₦150k total, balance only upon approval).\n• Bank: *OPay Digital Services* | Account: *7034297995* | Name: *Oyelakin Tosin Matthew*\n\nSend your receipt here once transferred and we commence deployment immediately!",
+    "intent": "REQUEST_DEMO_LINK",
+    "timestamp": "2026-09-10T20:06:53.681Z"
+  },
+  {
+    "id": "WA-APPR-1789203505872-296",
+    "phone": "232757196239094@lid",
+    "businessName": "Valued Business Owner",
+    "incoming": "AbdallahTECHW",
+    "reply": "Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe prepared a customized interactive commercial prototype for *Valued Business Owner* to show you how clients in Nigeria can easily discover your business on Google and receive instant 24/7 quotes on WhatsApp.\n\n👉 *View Your Free Live Prototype:* \nhttps://www.bethelmindanalytics.com/preview/demo\n\n🛠️ *LAUNCH YOUR COMPLETE 24/7 SYSTEM IN 48 HOURS:*\n• Turnkey Website + WhatsApp AI Assistant: ₦75,000 commitment deposit (₦150,000 total).\n• 1-Line Embed Upgrade (If you already have a website): ₦35,000 deposit.\n• Balance strictly payable after deployment & your 100% approval.\n\n🏦 *Official OPay Settlement Account:*\n• Bank: *OPay Digital Services*\n• Account Number: *7034297995*\n• Account Name: *Oyelakin Tosin Matthew*\n• Narration: *Valued Business Setup*\n\nReply with any questions or transfer your deposit and share your receipt here to secure your 48-hour delivery slot!",
+    "intent": "GREETING_HANDSHAKE",
+    "timestamp": "2026-09-12T08:58:26.856Z"
   }
 ]

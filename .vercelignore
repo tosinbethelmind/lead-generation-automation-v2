@@ -2,7 +2,6 @@
 .netlify
 node_modules
 tools/
-public/assets/
 *.tmp*
 *.log
 local_db/
@@ -17,7 +16,5 @@ startup_log.txt
 diff_output.txt
 diff_output_utf8.txt
 *.wav
-*.mp3
 *.xlsx
-*.webm
 tsconfig.tsbuildinfo

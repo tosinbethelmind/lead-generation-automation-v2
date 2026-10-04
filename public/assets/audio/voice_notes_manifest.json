@@ -6,7 +6,7 @@
     "gender": "female",
     "ogg_url": "/assets/audio/universal_followup_day2.ogg",
     "text": "Hello, good day! I know how busy running a business in Lagos can be, and how easy it is to miss customer inquiries when your desk is occupied or after closing hours. My team at Bethelmind Analytics took the time to build a private interactive website prototype for your brand, complete with a 24/7 WhatsApp quoting and booking engine so you never lose another paying client. I've placed your private preview link right below this note. It is completely free to review on your phone. Please take a look whenever you have a moment, and let us know what you think!",
-    "file_size_kb": 141.0
+    "file_size_kb": 141
   },
   {
     "id": "step2_permission_reply",
@@ -41,7 +41,7 @@
     "voice": "en-NG-EzinneNeural",
     "gender": "female",
     "ogg_url": "/assets/audio/commercial_turnkey_deployment.ogg",
-    "text": "Hello Management team, good day! To help your business capture more clients across Lagos, our engineering team prepared a private interactive website prototype featuring Google Maps SEO discovery and a 24/7 WhatsApp booking desk. There is zero upfront commitment\u2014we simply wanted you to experience what an automated online portal can do for your sales. Your private preview link is attached right below. Please take a look!",
+    "text": "Hello Management team, good day! To help your business capture more clients across Lagos, our engineering team prepared a private interactive website prototype featuring Google Maps SEO discovery and a 24/7 WhatsApp booking desk. There is zero upfront commitment—we simply wanted you to experience what an automated online portal can do for your sales. Your private preview link is attached right below. Please take a look!",
     "file_size_kb": 111.9
   }
 ]

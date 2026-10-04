@@ -11,3 +11,12 @@
    - **Line 2 (Rotator Cold Outreach):** `+234 904 605 0469` (`OUTREACH_WA_PHONE_2`, Port `3009`, Name: `TOSIN New`). Primary Auth: `local_db/baileys_auth_line2`, Solidified Backup: `local_db/baileys_auth_line2_solidified_backup`.
    - **Self-Healing Persistence**: Both sessions are locked into memory and persistent disk. Any missing keys auto-restore from the solidified backups on boot without requiring re-pairing.
 7. **Current Campaign Cycle**: Monday, Aug 17, 2026 to Sunday, Aug 23, 2026.
+8. **Strict Manual Gate for Engines 1 & 3**:
+   - **No active outreach** is allowed for Engine 1 (GMB Rescue) and Engine 3 (Expired Domains).
+   - The scraping and accumulation processes for both engines must run continuously in the background.
+   - Outreach execution for these segments remains paused until manually authorized by the user once a sufficient quantity is accumulated.
+9. **Autonomous Customer Friction & Optimization Watchdog**:
+   - The AI agent will continuously monitor user movements on the landing page and website templates (clicks, scrolls, time spent, widget interactions, rage clicks).
+   - Telemetry must be audited periodically by the `autonomous_customer_friction_tracker.ts` background daemon and stored in `local_db/landing_page_friction_audit.json`.
+   - This data is locked in memory and must be used as intelligence for programmatic upgrades, optimizing call-to-actions, reducing mobile input friction, and boosting conversion velocity over time.
+

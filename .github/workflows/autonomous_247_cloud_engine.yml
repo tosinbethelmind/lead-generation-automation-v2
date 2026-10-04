@@ -49,11 +49,12 @@ jobs:
           NODE_ENV: 'production'
         run: |
           set +e
+          npx tsx scripts/run_breakthrough_trio_scraper.ts --target=250 --sync-cloud || true
           npx tsx scripts/run_heavy_10k_nigeria_scraper.ts --target=1000 || true
           node scripts/master_five_engine_high_speed_scraper.js || true
           npx tsx scripts/run_heavy_b2b_email_harvester.ts || true
           npx tsx scripts/harvest_instagram_and_tiktok_leads.ts || true
-          echo "✅ High-Speed Nationwide Harvester, Social Scraper & 5-Engine Pass complete."
+          echo "✅ High-Speed Nationwide Harvester, Breakthrough Trio & 5-Engine Pass complete."
 
       - name: Execute Daily B2B Email (300 Quota) & Webform Outreach Pass
         env:

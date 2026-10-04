@@ -13,7 +13,7 @@ echo 🔋 Resource Footprint: Micro-Footprint (Zero CPU Spinning, Zero Local Lag
 echo ===============================================================================
 echo.
 
-npx tsx scripts/unified_autonomous_high_value_growth_engine.ts
+npx tsx scripts/unified_autonomous_high_value_growth_engine.ts --247
 
 echo.
 echo ===============================================================================
