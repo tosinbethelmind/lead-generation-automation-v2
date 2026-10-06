@@ -238,7 +238,7 @@ def harvest_scout_leads(target_count: int = 15, filter_sector: Optional[str] = N
     logger.info("================================================================================")
     logger.info(f"Target Harvest Count: {target_count} Verified Commercial B2B Leads")
     logger.info(f"Scout Framework: {'AVAILABLE (tools/scout)' if SCOUT_AVAILABLE else 'BUILT-IN FAST EXTRACTOR'}")
-    logger.info("Direct Settlement Account: OPay (7034297995 - Oyelakin Tosin Matthew)")
+    logger.info("Direct Settlement Account: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)")
     logger.info("Anti-Synthetic Rule #5: Strictly Enforced (100% Genuine Numbers Only)\n")
 
     enricher = LeadEnricher() if SCOUT_AVAILABLE else None
