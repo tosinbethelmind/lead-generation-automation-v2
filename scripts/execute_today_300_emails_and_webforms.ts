@@ -532,8 +532,10 @@ async function main() {
     let availableUnsentEmails = leads
       .filter(l => l.email && l.email.includes('@') && !l.email_sent)
       .sort((a, b) => {
-        const aHasWeb = Boolean(a.website && a.website.startsWith('http') && !a.website.includes('google.com') && !a.website.includes('instagram.com') && !a.website.includes('facebook.com'));
-        const bHasWeb = Boolean(b.website && b.website.startsWith('http') && !b.website.includes('google.com') && !b.website.includes('instagram.com') && !b.website.includes('facebook.com'));
+        const dirPatterns = ['google.com', 'instagram.com', 'facebook.com', 'businesslist.com.ng', 'vconnect.com', 'finelib.com'];
+        const isRealSite = (url: string) => Boolean(url && url.startsWith('http') && !dirPatterns.some(d => url.includes(d)));
+        const aHasWeb = isRealSite(a.website);
+        const bHasWeb = isRealSite(b.website);
         if (!aHasWeb && bHasWeb) return -1;
         if (aHasWeb && !bHasWeb) return 1;
         return 0;

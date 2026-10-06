@@ -253,17 +253,20 @@ async function runWhatsAppOutboundCampaign() {
       return Boolean(!l.wa_outbound_dispatched && !l.whatsapp_dispatched);
     })
     .sort((a, b) => {
-      // Leads with no website or social-only links come first
-      const aHasWeb = Boolean(a.website && a.website.startsWith('http') && !a.website.includes('google.com') && !a.website.includes('instagram.com') && !a.website.includes('facebook.com'));
-      const bHasWeb = Boolean(b.website && b.website.startsWith('http') && !b.website.includes('google.com') && !b.website.includes('instagram.com') && !b.website.includes('facebook.com'));
+      // Leads with no website or directory-only links (businesslist, vconnect, instagram, facebook) come first
+      const dirPatterns = ['google.com', 'instagram.com', 'facebook.com', 'businesslist.com.ng', 'vconnect.com', 'finelib.com'];
+      const isRealSite = (url: string) => Boolean(url && url.startsWith('http') && !dirPatterns.some(d => url.includes(d)));
+      const aHasWeb = isRealSite(a.website);
+      const bHasWeb = isRealSite(b.website);
       if (!aHasWeb && bHasWeb) return -1;
       if (aHasWeb && !bHasWeb) return 1;
       return 0;
     });
 
-  const noWebCount = eligibleLeads.filter(l => !l.website || !l.website.startsWith('http') || l.website.includes('google.com') || l.website.includes('instagram.com') || l.website.includes('facebook.com')).length;
+  const dirPatterns = ['google.com', 'instagram.com', 'facebook.com', 'businesslist.com.ng', 'vconnect.com', 'finelib.com'];
+  const noWebCount = eligibleLeads.filter(l => !l.website || !l.website.startsWith('http') || dirPatterns.some(d => l.website.includes(d))).length;
   console.log(`📋 Total Verified Genuine Leads Eligible for WhatsApp Outreach: ${eligibleLeads.length}`);
-  console.log(`⚡ Leads Without Official Dedicated Website (High Priority): ${noWebCount}`);
+  console.log(`⚡ Leads Without Official Dedicated Website (Prioritized First): ${noWebCount}`);
   console.log(`🎯 Daily Target per Line: ${DAILY_LIMIT_PER_LINE} leads (Max potential: ${connectedLines.length * DAILY_LIMIT_PER_LINE} today)\n`);
 
   let leadPointer = 0;
