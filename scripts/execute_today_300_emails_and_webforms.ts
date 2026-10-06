@@ -162,10 +162,30 @@ function getSectorOutreachHooks(sectorRaw: string, businessName: string, area: s
       painPoint: `attendants taking 2 hours to answer "how much" on Instagram and WhatsApp causes 40% of ready-to-buy shoppers to abandon orders.`,
       specializedFeature: `3-Second WhatsApp Speed Closer & "Fake Alert Proof" Bank Transfer Reconciliation`
     };
+  if (/beauty|salon|spa|cosmetics|hair|nail|barber/i.test(s)) {
+    return {
+      subject: `${businessName} Booking Desk — 24/7 appointment scheduling & zero no-shows`,
+      painPoint: `clients booking styling, spa, or grooming sessions after closing hours face delays, leading to empty salon slots.`,
+      specializedFeature: `24/7 VIP Appointment Booking & Deposit Lock Engine (Instant bank transfer confirmation)`
+    };
+  }
+  if (/restaurant|cater|bakery|food|lounge|bar|pastry|cake|shawarma/i.test(s)) {
+    return {
+      subject: `${businessName} Food & Orders Desk — direct 24/7 digital menu & order intake`,
+      painPoint: `customers ordering food or catering online face delay on WhatsApp, causing them to order from competitors.`,
+      specializedFeature: `Digital Menu Ordering Portal with Instant WhatsApp Ticket & Bank Transfer Reconciliation`
+    };
+  }
+  if (/law|legal|attorney|audit|accounting|tax|consult/i.test(s)) {
+    return {
+      subject: `${businessName} Practice Management — confidential client intake & retainer booking`,
+      painPoint: `corporate clients seeking advisory services experience slow intake, delaying retainer agreements.`,
+      specializedFeature: `Corporate Advisory Portal with Automated Consultation Scheduling & Bank Settlement`
+    };
   }
 
   return {
-    subject: `Recovering missed after-hours client revenue for ${businessName}`,
+    subject: `Capturing online clients and recovering after-hours revenue for ${businessName}`,
     painPoint: `prospective clients reaching out after hours wait hours for price quotes or booking confirmations, causing lost sales to faster competitors.`,
     specializedFeature: `24/7 WhatsApp Sales Closer (< 3s response time with instant Paystack/Moniepoint bank transfer reconciliation)`
   };

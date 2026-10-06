@@ -107,7 +107,7 @@ function formatAntiBanWaProposal(lead: any): string {
   const cat = (lead.category || lead.sector || '').toLowerCase() + ' ' + rawName.toLowerCase();
 
   let sectorHook = '';
-  if (/beauty|salon|spa|cosmetics|fashion|boutique|cloth|apparel|hair/i.test(cat) && !/dental|clinic|hospital/i.test(rawName)) {
+  if (/beauty|salon|spa|cosmetics|fashion|boutique|cloth|apparel|hair|nail|barber/i.test(cat) && !/dental|clinic|hospital/i.test(rawName)) {
     sectorHook = `I checked online for *${cleanName}* and noticed you don't have an official commercial website yet. When customers search for your store on Google or Instagram, they often buy from competitors with verified web catalogs.
  
 We designed an official mobile website + 24/7 WhatsApp AI Assistant for *${cleanName}* that quotes prices, takes orders, and verifies bank transfers automatically.`;
@@ -115,22 +115,38 @@ We designed an official mobile website + 24/7 WhatsApp AI Assistant for *${clean
     sectorHook = `I searched online for *${cleanName}* and noticed you don't have an active website for clients to calculate load sizes or request quotes after hours.
  
 We designed a complete mobile website + 24/7 WhatsApp BOQ Sizer for *${cleanName}* that quotes panels, inverters, and batteries in 30 seconds while you sleep.`;
-  } else if (/freight|cargo|haulage|logistics|courier|dispatch|customs/i.test(cat)) {
+  } else if (/freight|cargo|haulage|logistics|courier|dispatch|customs|shipping/i.test(cat)) {
     sectorHook = `I noticed *${cleanName}* doesn't have an official online tracking website where customers can calculate delivery fees or track waybills directly.
  
 We built an official mobile website + WhatsApp Waybill Tracker for your logistics operations with instant bank transfer verification.`;
-  } else if (/clinic|dental|dentist|health|hospital|doctor|eye|medical|optician/i.test(cat)) {
+  } else if (/clinic|dental|dentist|health|hospital|doctor|eye|medical|optician|pharmacy/i.test(cat)) {
     sectorHook = `I noticed *${cleanName}* doesn't have an official website where patients can book consultations or view clinic services after closing hours.
  
 We built a modern mobile website + 24/7 WhatsApp patient intake assistant for your clinic.`;
-  } else if (/hotel|shortlet|apartment|suite|resort|lodge/i.test(cat)) {
+  } else if (/hotel|shortlet|apartment|suite|resort|lodge|guest house/i.test(cat)) {
     sectorHook = `I searched online for *${cleanName}* and noticed you don't have an official direct booking website to avoid heavy third-party agent fees.
  
 We designed a clean mobile website + 24/7 direct WhatsApp booking assistant for *${cleanName}* that confirms guest reservations instantly.`;
-  } else if (/auto|car|dealership|spare|motor|tokunbo/i.test(cat)) {
+  } else if (/auto|car|dealership|spare|motor|tokunbo|mechanic/i.test(cat)) {
     sectorHook = `I noticed *${cleanName}* doesn't have an official website where car buyers can browse your available car lot or calculate import duties online.
  
 We built a fast mobile showroom website + 24/7 WhatsApp vehicle browser for *${cleanName}*.`;
+  } else if (/realestate|property|realty|estate|developer|land|housing|agent/i.test(cat)) {
+    sectorHook = `I searched online for *${cleanName}* and noticed you don't have an official website where serious buyers can browse property listings or schedule private inspections.
+ 
+We designed an official mobile website + 24/7 WhatsApp property inspection scheduler for *${cleanName}*.`;
+  } else if (/school|academy|education|college|creche|tutor|preschool|nursery/i.test(cat)) {
+    sectorHook = `I checked online for *${cleanName}* and noticed you don't have an official school portal where parents can explore admission requirements or view fees after hours.
+ 
+We built an official school website + 24/7 WhatsApp admissions enquiry bot for your institution.`;
+  } else if (/restaurant|cater|bakery|food|lounge|bar|pastry|cake|fast food|shawarma/i.test(cat)) {
+    sectorHook = `I checked online for *${cleanName}* and noticed you don't have an official digital ordering website for customers looking to place food and catering orders directly.
+ 
+We built a modern mobile menu website + 24/7 WhatsApp ordering assistant for *${cleanName}*.`;
+  } else if (/law|legal|attorney|audit|accounting|tax|consult/i.test(cat)) {
+    sectorHook = `I searched online for *${cleanName}* and noticed you don't have an official corporate website for clients to review your practice areas and book confidential consultations.
+ 
+We designed a modern corporate website + 24/7 WhatsApp consultation scheduler for your firm.`;
   } else {
     sectorHook = `I searched online for *${cleanName}* and noticed you don't have an official business website yet. When clients search for your services on Google, they end up calling competitors who have verified websites.
  

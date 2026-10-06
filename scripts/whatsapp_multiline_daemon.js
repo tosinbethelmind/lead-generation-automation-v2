@@ -279,24 +279,34 @@ async function triggerAutoOutreachBurst(lineId, targetCount = 25) {
       const slug = cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 18);
       const previewUrl = `https://www.bethelmindanalytics.com/preview/${slug}`;
 
-      let hookLine = 'We built a 24/7 WhatsApp customer quoting & automated enquiry quoter for your business.';
-      if (/beauty|salon|spa|fashion|apparel|hair/i.test(cat)) {
-        hookLine = 'We built a 24/7 WhatsApp VIP order quoter & instant booking assistant for your salon.';
+      let hookLine = 'We built a modern mobile website + 24/7 WhatsApp sales assistant for your business.';
+      if (/beauty|salon|spa|fashion|apparel|hair|boutique|cosmetics/i.test(cat)) {
+        hookLine = 'We built a modern mobile website + 24/7 WhatsApp VIP order quoter & booking assistant for your brand.';
       } else if (/solar|inverter|energy|battery/i.test(cat)) {
-        hookLine = 'We built an automated 24/7 WhatsApp BOQ load sizer & diesel-savings calculator for your firm.';
-      } else if (/clinic|dental|health|hospital|medical/i.test(cat)) {
-        hookLine = 'We built a 24/7 WhatsApp patient booking & consultation intake tool for your clinic.';
-      } else if (/hotel|shortlet|apartment|suite/i.test(cat)) {
-        hookLine = 'We built a 24/7 direct WhatsApp room booking & deposit verification assistant.';
-      } else if (/auto|car|dealership|spare/i.test(cat)) {
-        hookLine = 'We built a 24/7 vehicle duty calculator & WhatsApp stock browser for your dealership.';
+        hookLine = 'We built a complete mobile website + 24/7 WhatsApp BOQ load sizer for your solar operations.';
+      } else if (/clinic|dental|health|hospital|medical|doctor|eye|pharmacy/i.test(cat)) {
+        hookLine = 'We built a modern mobile website + 24/7 WhatsApp patient intake & booking assistant for your clinic.';
+      } else if (/hotel|shortlet|apartment|suite|resort|lodge/i.test(cat)) {
+        hookLine = 'We built an official direct booking website + 24/7 WhatsApp reservation assistant for your hotel.';
+      } else if (/auto|car|dealership|spare|motor|tokunbo/i.test(cat)) {
+        hookLine = 'We built a fast showroom website + 24/7 vehicle duty calculator & WhatsApp stock browser for your dealership.';
+      } else if (/freight|cargo|haulage|logistics|courier|dispatch/i.test(cat)) {
+        hookLine = 'We built an official tracking website + 24/7 WhatsApp waybill tracking assistant for your logistics firm.';
+      } else if (/realestate|property|realty|estate|developer/i.test(cat)) {
+        hookLine = 'We built an official luxury showcase website + 24/7 WhatsApp inspection booker for your real estate firm.';
+      } else if (/school|academy|education|college|creche/i.test(cat)) {
+        hookLine = 'We built an official school portal + 24/7 WhatsApp parent admissions enquiry assistant for your school.';
+      } else if (/restaurant|cater|bakery|food|lounge|bar/i.test(cat)) {
+        hookLine = 'We built a modern digital menu website + 24/7 WhatsApp food ordering assistant for your brand.';
+      } else if (/law|legal|attorney|audit|accounting|consulting/i.test(cat)) {
+        hookLine = 'We built a professional corporate website + 24/7 WhatsApp client consultation booking engine for your firm.';
       }
 
       const proposalText = `Good day Team at *${cleanName}* (${area}),
 
-My name is Tosin from Bethelmind Analytics Lagos Desk.
+My name is Tosin from Bethelmind Digital Solutions.
 
-Prospective clients inquiring after business hours often wait hours before receiving quotes or availability confirmations.
+I noticed your business does not have an official commercial website yet. When prospective clients search for your services online, they often end up contacting competitors with active websites.
 
 ${hookLine}
 
