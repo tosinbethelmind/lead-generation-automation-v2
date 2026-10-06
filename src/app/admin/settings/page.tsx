@@ -57,11 +57,11 @@ export default function AdminSettingsIntegrationsPage() {
 
     // Bank & Payments
     moniepointBankName: 'Moniepoint Microfinance Bank',
-    moniepointAccountNumber: '7034297995',
-    moniepointAccountName: 'Oyelakin Tosin Matthew',
-    opayBankName: 'OPay Digital Services',
-    opayAccountNumber: '7034297995',
-    opayAccountName: 'Oyelakin Tosin Matthew',
+    moniepointAccountNumber: '6805375225',
+    moniepointAccountName: 'Bethelmind Digital Solutions',
+    opayBankName: 'Moniepoint Microfinance Bank',
+    opayAccountNumber: '6805375225',
+    opayAccountName: 'Bethelmind Digital Solutions',
     paystackPublicKey: '',
     paystackSecretKey: '',
 

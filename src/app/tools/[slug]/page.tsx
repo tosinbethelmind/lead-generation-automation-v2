@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: ToolPageProps) {
 
   if (slug === 'integrations') {
     return {
-      title: 'Seamless Web & CRM Integration Blueprint | ApexReach Automation Suite',
+      title: 'Seamless Web & CRM Integration Blueprint | Bethelmind Analytics Automation Suite',
       description: 'Connect platform lead generation tools, Meta CAPI, GA4, WhatsApp API, and Paystack/Moniepoint webhooks to any website or business app in under 60 seconds.',
     };
   }

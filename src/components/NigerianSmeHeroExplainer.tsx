@@ -90,7 +90,7 @@ export default function NigerianSmeHeroExplainer({
     if (!showVideoModal || !isSimPlaying) return;
 
     const timers: NodeJS.Timeout[] = [];
-    setSimStep(0);
+    timers.push(setTimeout(() => setSimStep(0), 0));
     timers.push(setTimeout(() => setSimStep(1), 1200));
     timers.push(setTimeout(() => setSimStep(2), 2600));
     timers.push(setTimeout(() => setSimStep(3), 5200));
@@ -322,7 +322,7 @@ export default function NigerianSmeHeroExplainer({
                 {isPlaying ? `Playing (${Math.floor(currentTime)}s / ${Math.floor(duration)}s)` : 'Tap to hear personalized note'}
               </div>
             </div>
-            <audio ref={audioRef} src="/assets/audio/commercial_turnkey_deployment.mp3" preload="metadata" />
+            <audio ref={audioRef} src="/sample_voice_ng.mp3" preload="metadata" />
           </div>
 
           {/* Action Modals */}
@@ -712,15 +712,15 @@ export default function NigerianSmeHeroExplainer({
               <ShieldCheck size={13} style={{ color: '#34d399' }} /> ₦0 Upfront Demo
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <ShieldCheck size={13} style={{ color: '#34d399' }} /> ₦15,000 Pilot Setup
+              <ShieldCheck size={13} style={{ color: '#34d399' }} /> ₦45,000 Complete Online Setup
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Clock size={13} style={{ color: '#34d399' }} /> 48h Turnkey Deployment
+              <Clock size={13} style={{ color: '#34d399' }} /> 48h Delivery Guarantee
             </span>
           </div>
         </div>
 
-        {/* Clean Corporate Trust Seal (Zero Premature Payment Shock) */}
+        {/* Clean Corporate Trust Seal */}
         <div 
           style={{
             marginTop: '24px',
@@ -733,11 +733,11 @@ export default function NigerianSmeHeroExplainer({
             flexWrap: 'wrap'
           }}
         >
-          <span>Bethelmind Analytics Lagos Desk: <strong style={{ color: '#94a3b8' }}>0802 279 1227</strong></span>
+          <span>Bethelmind Digital Solutions: <strong style={{ color: '#94a3b8' }}>0802 279 1227</strong></span>
           <span>•</span>
-          <span>₦0 Demo / ₦15k Pilot Terms</span>
+          <span>₦0 Free Prototype Review</span>
           <span>•</span>
-          <span>Moniepoint & OPay Settlement Verified</span>
+          <span>Moniepoint Settlement: <strong style={{ color: '#10b981' }}>6805375225</strong> (Bethelmind Digital Solutions)</span>
         </div>
       </div>
 

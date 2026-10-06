@@ -14,14 +14,14 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Bethelmind Analytics | AI Lead Generation & Business Automation Nigeria",
-  description: "Capture 3.5x more paying clients with AI-assisted WhatsApp enquiry handling, Lagos B2B lead harvesting, Solar Quote Pro, and automated Moniepoint/Paystack payment verification.",
+  title: "Bethelmind Digital Solutions | AI Lead Generation & Business Automation Nigeria",
+  description: "Capture 3.5x more paying clients with AI-assisted WhatsApp enquiry handling, Lagos B2B lead harvesting, Solar Quote Pro, and automated Moniepoint payment verification.",
   metadataBase: new URL('https://www.bethelmindanalytics.com'),
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Bethelmind',
+    title: 'Bethelmind Digital Solutions',
   },
   icons: {
     icon: [
@@ -52,9 +52,9 @@ export const metadata: Metadata = {
     'Abuja corporate email leads',
     'Port Harcourt business directory scraper'
   ],
-  authors: [{ name: 'Bethelmind Analytics & Strategy', url: 'https://www.bethelmindanalytics.com' }],
-  creator: 'Bethelmind Analytics & Strategy',
-  publisher: 'Bethelmind Analytics',
+  authors: [{ name: 'Bethelmind Digital Solutions', url: 'https://www.bethelmindanalytics.com' }],
+  creator: 'Bethelmind Digital Solutions',
+  publisher: 'Bethelmind Digital Solutions',
   other: {
     'geo.region': 'NG-LA',
     'geo.placename': 'Lagos, Ikeja, Victoria Island, Abuja, Port Harcourt',

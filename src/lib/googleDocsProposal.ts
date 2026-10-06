@@ -40,9 +40,9 @@ export function generateLeadProposalDocument(params: LeadProposalParams): Propos
       'Continuous SSL Security & 24/7 Hosting Setup'
     ],
     claimFeeNGN = 185000,
-    paymentAccountName = 'Oyelakin Tosin Matthew',
-    paymentBankName = 'Moniepoint Microfinance Bank / OPay',
-    paymentAccountNumber = '7034297995'
+    paymentAccountName = 'Bethelmind Digital Solutions',
+    paymentBankName = 'Moniepoint Microfinance Bank',
+    paymentAccountNumber = '6805375225'
   } = params;
 
   const proposalId = `PROP_${Date.now().toString().slice(-6)}`;
@@ -116,7 +116,7 @@ export function generateLeadProposalDocument(params: LeadProposalParams): Propos
     </div>
 
     <div style="margin-top: 40px; text-align: center; color: #64748b; font-size: 13px;">
-      Bethelmind Analytics & Strategy &bull; Lagos, Nigeria &bull; Verified Digital Partner
+      Bethelmind Digital Solutions &bull; Lagos, Nigeria &bull; Verified Digital Partner
     </div>
   </div>
 </body>

@@ -34,9 +34,9 @@ export default function InstantCheckoutModal({
   if (!isOpen) return null;
 
   const formattedAmount = `₦${amountNGN.toLocaleString()}`;
-  const bankAccount = '7034297995';
-  const bankName = 'Moniepoint Microfinance Bank / OPay';
-  const accountName = 'Oyelakin Tosin Matthew';
+  const bankAccount = '6805375225';
+  const bankName = 'Moniepoint Microfinance Bank';
+  const accountName = 'Bethelmind Digital Solutions';
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText(bankAccount);

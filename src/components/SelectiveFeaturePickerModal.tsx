@@ -44,7 +44,7 @@ export function SelectiveFeaturePickerModal({
   };
 
   const handleCopyAccount = () => {
-    navigator.clipboard.writeText('7034297995');
+    navigator.clipboard.writeText('6805375225');
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -197,7 +197,7 @@ export function SelectiveFeaturePickerModal({
           </div>
         </div>
 
-        {/* OPay Bank Transfer Box */}
+        {/* Moniepoint Bank Transfer Box */}
         <div style={{
           background: '#1e293b',
           borderRadius: '12px',
@@ -206,13 +206,13 @@ export function SelectiveFeaturePickerModal({
           border: '1px solid #334155',
         }}>
           <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>
-            Transfer <strong>₦{calc.finalSetupNGN.toLocaleString()}</strong> to OPay Bank:
+            Transfer <strong>₦{calc.finalSetupNGN.toLocaleString()}</strong> to Moniepoint Bank:
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <span style={{ fontSize: '11px', color: '#64748b' }}>OPay Digital Services</span>
-              <div style={{ fontSize: '18px', fontWeight: 900, color: '#10b981' }}>7034297995</div>
-              <span style={{ fontSize: '11px', color: '#94a3b8' }}>Oyelakin Tosin Matthew</span>
+              <span style={{ fontSize: '11px', color: '#64748b' }}>Moniepoint Microfinance Bank</span>
+              <div style={{ fontSize: '18px', fontWeight: 900, color: '#10b981' }}>6805375225</div>
+              <span style={{ fontSize: '11px', color: '#94a3b8' }}>Bethelmind Digital Solutions</span>
             </div>
             <button
               onClick={handleCopyAccount}

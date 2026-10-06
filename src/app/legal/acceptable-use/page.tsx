@@ -4,8 +4,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Acceptable Use Policy | Bethelmind Analytics',
-  description: 'Rules and restrictions on how Bethelmind Analytics services may be used.',
+  title: 'Acceptable Use Policy | Bethelmind Digital Solutions',
+  description: 'Rules and restrictions on how Bethelmind Digital Solutions services may be used.',
 };
 
 export default function AcceptableUsePolicyPage() {
@@ -22,7 +22,7 @@ export default function AcceptableUsePolicyPage() {
 
       <h2>1. Purpose</h2>
       <p>
-        This Acceptable Use Policy (&ldquo;AUP&rdquo;) sets out the rules for using services provided by Bethelmind Analytics & Strategy. By subscribing to or using our services, you agree to comply with this AUP.
+        This Acceptable Use Policy (&ldquo;AUP&rdquo;) sets out the rules for using services provided by Bethelmind Digital Solutions & Strategy. By subscribing to or using our services, you agree to comply with this AUP.
       </p>
 
       <h2>2. Permitted Uses</h2>
@@ -46,7 +46,7 @@ export default function AcceptableUsePolicyPage() {
         <li>Conduct outreach to individuals who have opted out or requested to be removed from your contact list.</li>
         <li>Use our tools for any unlawful purpose under Nigerian law or any applicable jurisdiction.</li>
         <li>Attempt to reverse-engineer, copy, or redistribute our workflow configurations or tools.</li>
-        <li>Use our services in a way that could harm the reputation of Bethelmind Analytics & Strategy.</li>
+        <li>Use our services in a way that could harm the reputation of Bethelmind Digital Solutions & Strategy.</li>
       </ul>
 
       <h2>4. Lead Data Responsibility</h2>

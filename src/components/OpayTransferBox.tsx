@@ -21,9 +21,9 @@ export function OpayTransferBox({
 }: OpayTransferBoxProps) {
   const [copied, setCopied] = useState(false);
   const opayAccount = {
-    bankName: 'OPay Digital Services',
-    accountNumber: '7034297995',
-    accountName: 'Oyelakin Tosin Matthew',
+    bankName: 'Moniepoint Microfinance Bank',
+    accountNumber: '6805375225',
+    accountName: 'Bethelmind Digital Solutions',
   };
 
   const handleCopy = async () => {
@@ -36,10 +36,10 @@ export function OpayTransferBox({
 
   const cleanPhone = adminWhatsAppPhone.replace(/\D/g, '');
   const waMsg = encodeURIComponent(
-    `Hello! I just made a bank transfer to your OPay account for ${businessName}.\n\n` +
+    `Hello Bethelmind Digital Solutions! I just made a bank transfer to your Moniepoint account for ${businessName}.\n\n` +
     `Amount: ₦${setupPriceNGN.toLocaleString()}\n` +
     `Package: Business Growth & AI Harvester\n` +
-    `Please verify and activate my subscription!`
+    `Please verify and activate our subscription!`
   );
   const waUrl = `https://wa.me/${cleanPhone}?text=${waMsg}`;
 
@@ -78,7 +78,7 @@ export function OpayTransferBox({
       </div>
 
       <p style={{ fontSize: '13px', color: '#94a3b8', margin: '0 0 16px 0', lineHeight: 1.5 }}>
-        To activate your AI Lead Harvester, Customer AI Care Agent, and WhatsApp Voice Notes for <strong>{businessName}</strong>, make a bank transfer to the official OPay account below:
+        To activate your AI Lead Harvester, Customer AI Care Agent, and WhatsApp Voice Notes for <strong>{businessName}</strong>, make a bank transfer to the official Moniepoint account below:
       </p>
 
       {/* Pricing summary */}

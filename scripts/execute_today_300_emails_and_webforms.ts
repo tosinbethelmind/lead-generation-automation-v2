@@ -30,6 +30,7 @@ import pLimit from 'p-limit';
 import { heavyNationwideB2BEmailHarvester } from '../src/lib/scraping/heavyNationwideB2BEmailHarvester';
 import { stealthMetascraperExtractor } from '../src/lib/scraping/stealthMetascraperExtractor';
 import { katanaCrawlerBridge } from '../src/lib/scraping/katanaCrawlerBridge';
+import { getSectorCaseStudy } from '../src/lib/blog/sectorCaseStudies';
 
 const LOCAL_DB = path.join(process.cwd(), 'local_db');
 if (!fs.existsSync(LOCAL_DB)) fs.mkdirSync(LOCAL_DB, { recursive: true });
@@ -180,6 +181,8 @@ function generateEmailPayload(lead: any) {
   const hooks = getSectorOutreachHooks(sector, cleanName, area);
   const subject = hooks.subject;
 
+  const caseStudy = getSectorCaseStudy(sector);
+
   const textContent = `Good day ${cleanName} Team,
 
 We recently conducted an operational review for ${sector} firms in ${area} and identified that ${hooks.painPoint}
@@ -196,13 +199,17 @@ ${previewUrl}
 
 (100% Free ₦0 Upfront Review. Listen to the 15-second voice note attached).
 
+📖 P.S. Read our 2026 Nigerian Operator Blueprint for ${sector}:
+"${caseStudy.title}"
+Case Study & ROI Calculator: ${caseStudy.url}
+
 To claim your portal or request customizations:
 WhatsApp Desk: +234 802 279 1227 (https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am testing the quoter prototype for ${cleanName}.`)})
 Email: tosin@bethelmindanalytics.com
 
 Best regards,
 Tosin Oyelakin
-Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
+Lead Solutions Strategist · Bethelmind Digital Solutions`;
 
   const htmlContent = `
 <!DOCTYPE html>
@@ -211,13 +218,13 @@ Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
 <body style="margin:0; padding:20px; background-color:#0b1329; font-family:'Segoe UI', Arial, sans-serif; color:#f8fafc;">
   <div style="max-width:580px; margin:0 auto; background:#0f172a; border:1px solid #1e293b; border-radius:12px; overflow:hidden;">
     <div style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding:20px 24px; text-align:center;">
-      <div style="color:#e0f2fe; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">⚡ Bethelmind Analytics Lagos Desk</div>
+      <div style="color:#e0f2fe; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">⚡ Bethelmind Digital Solutions</div>
       <h1 style="color:#ffffff; margin:0; font-size:19px; font-weight:800;">24/7 AI Sales & Quoting Assistant</h1>
       <p style="color:#bae6fd; margin:4px 0 0 0; font-size:13px;">Private Prototype for <strong>${cleanName}</strong></p>
     </div>
     <div style="padding:24px;">
       <p style="font-size:15px; color:#cbd5e1; line-height:1.6; margin-top:0;">Good day Team at <strong>${cleanName}</strong>,</p>
-      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">During our operational review of ${sector} firms in ${area}, we identified that ${hooks.painPoint} We pre-built a 24/7 WhatsApp sales & quoting portal custom-tailored for <strong>${cleanName}</strong>. It qualifies after-hours buyers and issues instant estimates in under 3 seconds.</p>
+      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">During our review of ${sector} firms in ${area}, we noticed you do not have an official mobile website configured to capture online buyers. We pre-built an official mobile website + 24/7 WhatsApp quoting portal custom-tailored for <strong>${cleanName}</strong>.</p>
       
       <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:14px; margin:16px 0; text-align:center;">
         <div style="color:#38bdf8; font-size:13px; font-weight:700; margin-bottom:4px;">🎙️ 15-Second Voice Note Briefing Attached</div>
@@ -227,6 +234,13 @@ Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
       <div style="text-align:center; margin:22px 0;">
         <a href="${previewUrl}" style="display:inline-block; background:linear-gradient(135deg, #0284c7, #2563eb); color:#ffffff; padding:14px 28px; border-radius:8px; font-weight:800; font-size:15px; text-decoration:none;">👉 Test Drive Your Live Prototype Online</a>
         <div style="font-size:12px; color:#64748b; margin-top:6px;">(100% Free ₦0 Upfront Review on your phone)</div>
+      </div>
+
+      <!-- Sector Blueprint & Case Study Bridge -->
+      <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #38bdf8; border-radius:8px; padding:14px 16px; margin:20px 0; text-align:left;">
+        <div style="color:#f59e0b; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">📖 2026 Nigerian Operator Blueprint</div>
+        <a href="${caseStudy.url}" style="display:block; color:#ffffff; font-size:13px; font-weight:700; text-decoration:none; margin:6px 0 4px 0; line-height:1.4;">${caseStudy.title} &rarr;</a>
+        <div style="color:#94a3b8; font-size:11px; line-height:1.5;">${caseStudy.highlight} (Impact: <strong>${caseStudy.metric}</strong>). Includes live operator calculator.</div>
       </div>
 
       <div style="text-align:center; margin-bottom:18px;">
@@ -495,7 +509,15 @@ async function main() {
     console.log(`   • Corporate Emails : ${sentEmailsToday}/${DAILY_EMAIL_TARGET} delivered (${remainingEmails} remaining)`);
     console.log(`   • Web Contact Forms: ${successfulWebformsToday}/300 delivered (${remainingWebformsTo300} remaining)\n`);
 
-    let availableUnsentEmails = leads.filter(l => l.email && l.email.includes('@') && !l.email_sent);
+    let availableUnsentEmails = leads
+      .filter(l => l.email && l.email.includes('@') && !l.email_sent)
+      .sort((a, b) => {
+        const aHasWeb = Boolean(a.website && a.website.startsWith('http') && !a.website.includes('google.com') && !a.website.includes('instagram.com') && !a.website.includes('facebook.com'));
+        const bHasWeb = Boolean(b.website && b.website.startsWith('http') && !b.website.includes('google.com') && !b.website.includes('instagram.com') && !b.website.includes('facebook.com'));
+        if (!aHasWeb && bHasWeb) return -1;
+        if (aHasWeb && !bHasWeb) return 1;
+        return 0;
+      });
     console.log(`📧 Available Unsent Genuine Email Leads: ${availableUnsentEmails.length}`);
 
     // Autonomous replenishment if unsent email leads pool is less than quota needed
@@ -643,7 +665,7 @@ async function main() {
 
   // ── PART 2: Automated Web Contact Form Submissions ───────────────────────────
   console.log('\n🌐 PART 2: Executing Automated Web Contact Form Submissions...');
-  const EXCLUDE_WEB = /jiji\.ng|bing\.com|google\.com|facebook\.com|instagram\.com|twitter\.com|x\.com|tiktok\.com|youtube\.com|linkedin\.com|wa\.me/i;
+  const EXCLUDE_WEB = /jiji\.ng|bing\.com|google\.com|facebook\.com|instagram\.com|twitter\.com|x\.com|tiktok\.com|youtube\.com|linkedin\.com|wa\.me|t\.me|finelib\.com|businesslist\.com\.ng|vconnect\.com|yellowpages|taplink\.ws|linktr\.ee|carrd\.co|bio\.link|beacons\.ai/i;
   const webformLeads = leads.filter(l => {
     const web = (l.website || '').trim().toLowerCase();
     return web.startsWith('http') && !EXCLUDE_WEB.test(web) && !l.webform_submitted;

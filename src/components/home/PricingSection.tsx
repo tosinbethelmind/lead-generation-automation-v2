@@ -591,7 +591,7 @@ export default function PricingSection({
               </div>
 
               <a
-                href={`https://wa.me/2347034297995?text=${encodeURIComponent(`Hello Bethelmind Team, I want to add the *${opt.name}* (₦${opt.priceNGN.toLocaleString()} ${opt.period}) for my website. Please activate it!`)}`}
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions, I want to add the *${opt.name}* (₦${opt.priceNGN.toLocaleString()} ${opt.period}) for my business. Please activate it!`)}`}
                 target="_blank"
                 rel="noreferrer noopener"
                 style={{

@@ -149,9 +149,9 @@ THE 5 CORE COMMERCIAL MONETIZATION ENGINES (2026):
    - Options: ₦150k turnkey build (₦75k 50% milestone deposit) OR ₦35k / ₦65k (1-Line Embed on existing website).
 
 PAYMENT & VERIFIED SETTLEMENT DESTINATION:
-- Bank Name: OPay Digital Services
-- Account Number: 7034297995
-- Account Name: Oyelakin Tosin Matthew (Bethelmind Analytics Lagos)
+- Bank Name: Moniepoint Microfinance Bank
+- Account Number: 6805375225
+- Account Name: Bethelmind Digital Solutions
 - Closer Desk & WhatsApp Verification: 0802 279 1227 (+234 802 279 1227)
 
    - Full 24/7 WhatsApp Voice Note Sales Specialist: Our AI is NOT merely a voice calculator — it is a complete, human-like Nigerian Accent Voice Sales Closer that:
@@ -248,11 +248,11 @@ HOW YOU RESOLVE THINGS:
   handover_enabled: true,
   auto_lead_conversion: true,
   admin_whatsapp_phone: '+2348022791227',
-  welcome_message: '👋 Welcome to Bethelmind Analytics! I am your 24/7 AI Guide. How can I help you explore our landing pages, sector tools, pricing offers, or claim your website today?',
+  welcome_message: '👋 Welcome to Bethelmind Digital Solutions! I am your 24/7 AI Guide. How can I help you explore our services, website solutions, pricing offers, or activate your business online today?',
   custom_faq: [
     {
       question: 'How do I claim my pre-generated website & AI tools?',
-      answer: 'If you have a site, embed our 1-line script tag in 60s. If not, we host your full site on custom domain! Transfer ₦75,000 (50% commitment deposit) to OPay 7034297995 to activate.',
+      answer: 'If you have a site, embed our 1-line script tag in 60s. If not, we build and host your full site on custom domain! Transfer ₦45,000 (complete package) or ₦40,000 (milestone deposit) to Moniepoint 6805375225 (Bethelmind Digital Solutions) to activate.',
     },
     {
       question: 'How fast can a 5kVA Solar System be installed?',

@@ -1163,15 +1163,15 @@ export function SectorToolsWidget({
                   <div className="bg-slate-900 border border-emerald-500/20 p-4 rounded-xl space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-400">Settlement Bank</span>
-                      <span className="text-sm font-bold text-emerald-300">OPay Digital Services / Moniepoint</span>
+                      <span className="text-sm font-bold text-emerald-300">Moniepoint Microfinance Bank</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-400">Account Number</span>
-                      <span className="text-xl font-black text-white tracking-widest">7034297995</span>
+                      <span className="text-xl font-black text-white tracking-widest">6805375225</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-400">Beneficiary Name</span>
-                      <span className="text-xs font-semibold text-slate-200">Oyelakin Tosin Matthew</span>
+                      <span className="text-xs font-semibold text-slate-200">Bethelmind Digital Solutions</span>
                     </div>
                   </div>
 

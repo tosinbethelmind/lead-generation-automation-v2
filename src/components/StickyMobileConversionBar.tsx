@@ -46,7 +46,7 @@ export default function StickyMobileConversionBar({
   const offerText = isExistingWeb ? '1-Line WhatsApp Embed Upgrade' : 'Turnkey Business Website + 24/7 AI Assistant';
 
   const prefilledMessage = encodeURIComponent(
-    `Hello Bethelmind Analytics Lagos Desk! I am testing the live 24/7 quoting prototype for *${businessName}* (${category}) in ${area}.\n\nDemo Link: ${previewLink}\n\nPlease show me how the 2-second WhatsApp auto-reply works with our services and prices (₦0 Upfront Preview).`
+    `Hello Bethelmind Digital Solutions! I am testing the live 24/7 quoting prototype for *${businessName}* (${category}) in ${area}.\n\nDemo Link: ${previewLink}\n\nPlease show me how the 2-second WhatsApp auto-reply works with our services and prices (₦0 Upfront Preview).`
   );
   const waUrl = `https://wa.me/${adminPhone}?text=${prefilledMessage}`;
 
@@ -115,6 +115,26 @@ export default function StickyMobileConversionBar({
             <MessageCircle size={14} />
             <span>Chat</span>
           </div>
+        </a>
+
+        {/* Quick Call Direct Hotline */}
+        <a
+          href="tel:+2348022791227"
+          style={{
+            padding: '10px 12px',
+            borderRadius: '12px',
+            background: '#0f172a',
+            border: '1px solid rgba(16, 185, 129, 0.35)',
+            color: '#34d399',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textDecoration: 'none',
+            flexShrink: 0
+          }}
+          title="Call Lagos Desk directly: 0802 279 1227"
+        >
+          <span style={{ fontSize: '0.8rem', fontWeight: 800 }}>📞 Call</span>
         </a>
 
         {/* Quick 10-Min Demo Book Button */}

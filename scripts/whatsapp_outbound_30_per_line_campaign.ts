@@ -108,42 +108,42 @@ function formatAntiBanWaProposal(lead: any): string {
 
   let sectorHook = '';
   if (/beauty|salon|spa|cosmetics|fashion|boutique|cloth|apparel|hair/i.test(cat) && !/dental|clinic|hospital/i.test(rawName)) {
-    sectorHook = `Vendors running Instagram/TikTok ads lose up to 40% of sales because buyers asking "how much" wait hours for size & price details.
-
-We set up a 3-second WhatsApp Speed Closer that displays your catalog, calculates delivery, and confirms bank transfers immediately.`;
+    sectorHook = `I checked online for *${cleanName}* and noticed you don't have an official commercial website yet. When customers search for your store on Google or Instagram, they often buy from competitors with verified web catalogs.
+ 
+We designed an official mobile website + 24/7 WhatsApp AI Assistant for *${cleanName}* that quotes prices, takes orders, and verifies bank transfers automatically.`;
   } else if (/solar|inverter|energy|renewable|battery/i.test(cat)) {
-    sectorHook = `I noticed that after-hours solar clients in Lagos inquiring past 7 PM wait hours for quotes and end up buying from competitors.
-
-We set up a 24/7 WhatsApp Sales Assistant for solar firms that calculates exact load sizes and locks inspection deposits before you wake up.`;
+    sectorHook = `I searched online for *${cleanName}* and noticed you don't have an active website for clients to calculate load sizes or request quotes after hours.
+ 
+We designed a complete mobile website + 24/7 WhatsApp BOQ Sizer for *${cleanName}* that quotes panels, inverters, and batteries in 30 seconds while you sleep.`;
   } else if (/freight|cargo|haulage|logistics|courier|dispatch|customs/i.test(cat)) {
-    sectorHook = `How many times have dispatch riders delayed waybills or shop attendants argued over uncredited bank transfers?
-
-We set up an automated WhatsApp Transfer Shield that verifies Moniepoint/OPay credits in 2 seconds and auto-generates tracking waybills.`;
+    sectorHook = `I noticed *${cleanName}* doesn't have an official online tracking website where customers can calculate delivery fees or track waybills directly.
+ 
+We built an official mobile website + WhatsApp Waybill Tracker for your logistics operations with instant bank transfer verification.`;
   } else if (/clinic|dental|dentist|health|hospital|doctor|eye|medical|optician/i.test(cat)) {
-    sectorHook = `Patients inquiring for clinic consultations after hours often face delays and end up seeking medical care elsewhere.
-
-We set up a 24/7 WhatsApp patient intake and consultation deposit tool for Lagos clinics.`;
+    sectorHook = `I noticed *${cleanName}* doesn't have an official website where patients can book consultations or view clinic services after closing hours.
+ 
+We built a modern mobile website + 24/7 WhatsApp patient intake assistant for your clinic.`;
   } else if (/hotel|shortlet|apartment|suite|resort|lodge/i.test(cat)) {
-    sectorHook = `Guests checking room rates at night frequently book elsewhere when availability responses are delayed.
-
-We set up a 24/7 direct WhatsApp booking assistant that verifies reservations and saves third-party commission fees.`;
+    sectorHook = `I searched online for *${cleanName}* and noticed you don't have an official direct booking website to avoid heavy third-party agent fees.
+ 
+We designed a clean mobile website + 24/7 direct WhatsApp booking assistant for *${cleanName}* that confirms guest reservations instantly.`;
   } else if (/auto|car|dealership|spare|motor|tokunbo/i.test(cat)) {
-    sectorHook = `Car buyers inquiring for vehicle prices or customs clearance past 7 PM often wait hours and visit other car lots.
-
-We set up a 24/7 vehicle duty calculator and WhatsApp stock browser that books inspection test drives automatically.`;
+    sectorHook = `I noticed *${cleanName}* doesn't have an official website where car buyers can browse your available car lot or calculate import duties online.
+ 
+We built a fast mobile showroom website + 24/7 WhatsApp vehicle browser for *${cleanName}*.`;
   } else {
-    sectorHook = `After-hours clients in Lagos inquiring past 7 PM often wait hours for quotes and purchase from competitors.
-
-We set up a 24/7 WhatsApp Sales Closer that quotes inquiries and locks in customer orders while you sleep.`;
+    sectorHook = `I searched online for *${cleanName}* and noticed you don't have an official business website yet. When clients search for your services on Google, they end up calling competitors who have verified websites.
+ 
+We designed a complete mobile website + 24/7 WhatsApp sales assistant specifically for *${cleanName}*.`;
   }
 
   return `Good day Team at *${cleanName}* (${area}),
 
 ${sectorHook}
 
-May I send a quick 1-minute WhatsApp demo for your team to test?
+May I share your free ₦0 prototype demo link for your team to test on your phone?
 
-— Tosin, Bethelmind Analytics Lagos Desk
+— Tosin, Bethelmind Digital Solutions
 (wa.me/2348022791227)`;
 }
 
@@ -219,13 +219,35 @@ async function runWhatsAppOutboundCampaign() {
   const todayLog = waLog.dates[todayKey];
   if (!todayLog.lineCounts) todayLog.lineCounts = {};
 
-  // Find genuine Nigerian commercial leads not yet dispatched via WhatsApp
-  const eligibleLeads = leads.filter(l => {
-    const p = cleanPhone(l.phone_e164 || l.phone_raw || l.phone);
-    return Boolean(p && !l.wa_outbound_dispatched && !l.whatsapp_dispatched);
-  });
+  // Load blacklist
+  const blacklistPath = path.join(LOCAL_DB, 'opt_out_blacklist.json');
+  let blacklist: string[] = [];
+  if (fs.existsSync(blacklistPath)) {
+    try { blacklist = JSON.parse(fs.readFileSync(blacklistPath, 'utf8')); } catch (_) {}
+  }
 
+  // Find genuine Nigerian commercial leads not yet dispatched via WhatsApp
+  // PRIORITIZATION: Businesses without an official website are prioritized first!
+  const eligibleLeads = leads
+    .filter(l => {
+      if (l.opt_out === true) return false;
+      const p = cleanPhone(l.phone_e164 || l.phone_raw || l.phone);
+      if (!p) return false;
+      if (blacklist.includes(p) || blacklist.some(b => p.endsWith(b) || b.endsWith(p))) return false;
+      return Boolean(!l.wa_outbound_dispatched && !l.whatsapp_dispatched);
+    })
+    .sort((a, b) => {
+      // Leads with no website or social-only links come first
+      const aHasWeb = Boolean(a.website && a.website.startsWith('http') && !a.website.includes('google.com') && !a.website.includes('instagram.com') && !a.website.includes('facebook.com'));
+      const bHasWeb = Boolean(b.website && b.website.startsWith('http') && !b.website.includes('google.com') && !b.website.includes('instagram.com') && !b.website.includes('facebook.com'));
+      if (!aHasWeb && bHasWeb) return -1;
+      if (aHasWeb && !bHasWeb) return 1;
+      return 0;
+    });
+
+  const noWebCount = eligibleLeads.filter(l => !l.website || !l.website.startsWith('http') || l.website.includes('google.com') || l.website.includes('instagram.com') || l.website.includes('facebook.com')).length;
   console.log(`📋 Total Verified Genuine Leads Eligible for WhatsApp Outreach: ${eligibleLeads.length}`);
+  console.log(`⚡ Leads Without Official Dedicated Website (High Priority): ${noWebCount}`);
   console.log(`🎯 Daily Target per Line: ${DAILY_LIMIT_PER_LINE} leads (Max potential: ${connectedLines.length * DAILY_LIMIT_PER_LINE} today)\n`);
 
   let leadPointer = 0;

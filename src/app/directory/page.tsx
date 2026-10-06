@@ -257,7 +257,7 @@ export default function PublicAuthorityDirectoryPage() {
             <div className="flex items-center space-x-2 text-amber-200">
               <Lock className="w-4 h-4 text-amber-400 shrink-0" />
               <span>
-                <strong>Diaspora Trust Guarantee:</strong> All projects & contractors booked through this portal include <strong>Milestone Video Audits</strong> and <strong>100% Escrow Protection</strong> managed by Bethelmind Analytics.
+                <strong>Diaspora Trust Guarantee:</strong> All projects & contractors booked through this portal include <strong>Milestone Video Audits</strong> and <strong>100% Escrow Protection</strong> managed by Bethelmind Digital Solutions.
               </span>
             </div>
             <button

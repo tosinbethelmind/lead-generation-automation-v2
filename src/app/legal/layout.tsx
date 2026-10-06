@@ -19,12 +19,12 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
     <div style={{ minHeight: '100vh', background: '#07090e', color: '#f8fafc', fontFamily: "'Inter', sans-serif" }}>
       {/* Top bar */}
       <header style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '16px clamp(16px, 4vw, 40px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-        <Link href="/home" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }} aria-label="Back to Bethelmind Analytics Home">
+        <Link href="/home" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }} aria-label="Back to Bethelmind Digital Solutions Home">
           <div style={{ width: 30, height: 30, borderRadius: 8, background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Sparkles style={{ width: 16, height: 16, color: '#fff' }} aria-hidden="true" />
           </div>
           <span style={{ fontWeight: 800, fontSize: '0.95rem', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontFamily: "'Outfit', sans-serif" }}>
-            Bethelmind Analytics
+            Bethelmind Digital Solutions
           </span>
         </Link>
         <nav aria-label="Legal pages navigation" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -43,7 +43,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
 
       {/* Footer */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '24px clamp(16px, 4vw, 40px)', textAlign: 'center', color: '#475569', fontSize: '0.78rem', marginTop: 40 }}>
-        <p style={{ margin: '0 0 4px' }}>© {new Date().getFullYear()} Bethelmind Analytics & Strategy · Lagos, Nigeria</p>
+        <p style={{ margin: '0 0 4px' }}>© {new Date().getFullYear()} Bethelmind Digital Solutions & Strategy · Lagos, Nigeria</p>
         <p style={{ margin: 0 }}>Privacy-conscious workflows · Human support available · Built for Nigerian businesses</p>
       </footer>
 

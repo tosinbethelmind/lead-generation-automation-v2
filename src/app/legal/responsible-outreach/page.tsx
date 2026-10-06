@@ -4,8 +4,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Responsible Outreach & Data Policy | Bethelmind Analytics',
-  description: 'Bethelmind Analytics policy on responsible outreach, consent, data use, and AI agent conduct.',
+  title: 'Responsible Outreach & Data Policy | Bethelmind Digital Solutions',
+  description: 'Bethelmind Digital Solutions policy on responsible outreach, consent, data use, and AI agent conduct.',
 };
 
 export default function ResponsibleOutreachPage() {
@@ -22,7 +22,7 @@ export default function ResponsibleOutreachPage() {
 
       <h2>1. Our Commitment</h2>
       <p>
-        Bethelmind Analytics & Strategy is committed to responsible, respectful, and lawful business communication. This policy sets out our expectations for how clients use our services for outreach, and how we handle business data.
+        Bethelmind Digital Solutions & Strategy is committed to responsible, respectful, and lawful business communication. This policy sets out our expectations for how clients use our services for outreach, and how we handle business data.
       </p>
 
       <h2>2. Your Responsibility for Outreach Lawfulness</h2>
@@ -80,7 +80,7 @@ export default function ResponsibleOutreachPage() {
 
       <h2>7. Reporting Concerns</h2>
       <p>
-        If you believe our tools are being misused, or if you have a concern about outreach you have received that you believe originated from a Bethelmind Analytics workflow, please contact us via WhatsApp or email and we will investigate.
+        If you believe our tools are being misused, or if you have a concern about outreach you have received that you believe originated from a Bethelmind Digital Solutions workflow, please contact us via WhatsApp or email and we will investigate.
       </p>
 
       <h2>8. Changes to This Policy</h2>

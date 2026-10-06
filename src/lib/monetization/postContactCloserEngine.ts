@@ -150,8 +150,8 @@ export function handlePostContactInquiry(
         `4️⃣ Watermarked, Printable Executive Audit Report (PDF/HTML) authorized by Bethelmind Analytics Lagos Desk.\n` +
         `5️⃣ Delivered within 24 Hours.\n\n` +
         `🏦 *Fee: ₦150,000 NGN* per audited entity.\n` +
-        `Settlement: *OPay Digital Services (7034297995 - Oyelakin Tosin Matthew)*.\n\n` +
-        `To commission this dossier immediately, transfer ₦150,000 to the OPay account above and send your proof here!`,
+        `Settlement: *Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)*.\n\n` +
+        `To commission this dossier immediately, transfer ₦150,000 to the Moniepoint account above and send your proof here!`,
       suggestedAction: 'COMMISSION_DOSSIER',
       directPaymentEligible: true
     };
@@ -162,24 +162,21 @@ export function handlePostContactInquiry(
     return {
       intent: 'PRICING_INQUIRY',
       messageText:
-        `Good day! 👋 Here is our complete growth package ladder and official settlement details for *${name}*:\n\n` +
-        `💎 *1. CORE DFY: Complete Turnkey Business Website + 24/7 WhatsApp AI Assistant*\n` +
-        `• Total: ₦150,000 NGN | *Commitment Deposit to Start: ₦75,000 NGN*\n` +
-        `• Balance strictly payable AFTER your site is live and 100% approved by you. Ready in 48 hours!\n` +
-        `• Includes official custom domain (.com/.com.ng), Google Maps SEO listing, product showcase, and 24/7 automated WhatsApp quoting.\n\n` +
-        `⚡ *2. UPGRADE: 1-Line WhatsApp Quoting Assistant (For Existing Websites)*\n` +
-        `• Setup: *₦35,000 NGN* (Full integration: ₦65,000 NGN)\n` +
-        `• Installs in 10 minutes without touching your hosting or SEO rankings.\n\n` +
-        `👑 *3. ENTERPRISE: Luxury Web Portal + Branded Android Mobile App (.apk)*\n` +
-        `• Total: ₦250,000 NGN | *Commitment Deposit: ₦125,000 NGN*\n\n` +
-        `🏦 *OFFICIAL DIRECT OPAY SETTLEMENT ACCOUNT (LOCK YOUR 48-HOUR SLOT):*\n` +
+        `Good day! 👋 Here is our complete package ladder and official settlement details for *${name}*:\n\n` +
+        `💎 *1. STARTER: Complete Web Presence + 24/7 WhatsApp AI Assistant*\n` +
+        `• Setup Fee: *₦45,000 NGN* (One-off setup, ideal if you don't have a website)\n` +
+        `• Includes mobile web page, Google Maps setup, and 24/7 automated WhatsApp quoter. Ready in 48 hours!\n\n` +
+        `⚡ *2. PRO: Custom Domain (.com/.ng) + Priority Automation*\n` +
+        `• Total: ₦85,000 NGN | *Commitment Deposit: ₦40,000 NGN*\n` +
+        `• Includes your custom company domain, business email, and high-speed hosting.\n\n` +
+        `🏦 *OFFICIAL DIRECT MONIEPOINT SETTLEMENT ACCOUNT:*\n` +
         `• Bank: *${OPAY_BENEFICIARY_CONFIG.bankName}*\n` +
         `• Account Number: *${OPAY_BENEFICIARY_CONFIG.accountNumber}*\n` +
         `• Account Name: *${OPAY_BENEFICIARY_CONFIG.accountName}*\n` +
         `• Narration/Ref: *${name.slice(0, 15)} Setup*\n\n` +
-        `👉 Test your live sample prototype on your phone right now: \n${previewUrl}\n\n` +
+        `👉 Test your live sample preview on your phone right now: \n${previewUrl}\n\n` +
         `⚡ *TO LOCK IN YOUR SETUP TODAY:*\n` +
-        `Transfer your commitment deposit (₦75,000 for Turnkey or ₦35,000 for 1-Line Embed) to the OPay account above, send your receipt here, and we begin immediately!`,
+        `Transfer to the Moniepoint account above, send your receipt here, and we begin immediately!`,
       suggestedAction: 'QUALIFY_PACKAGE',
       directPaymentEligible: true
     };
@@ -190,13 +187,13 @@ export function handlePostContactInquiry(
     return {
       intent: 'REQUEST_DEMO_LINK',
       messageText:
-        `Here is your free sample website demo created for *${name}*:\n\n` +
+        `Here is your free sample preview created for *${name}*:\n\n` +
         `👉 ${previewUrl}\n\n` +
         `📱 Open it on your phone to see how your business will look to customers on Google.\n` +
         `You can tap the buttons to test the 24/7 WhatsApp quoting engine.\n\n` +
         `🛠️ *READY TO LAUNCH FOR YOUR BUSINESS IN 48 HOURS?*\n` +
-        `• 50% commitment deposit to start: *₦75,000 NGN* (₦150k total, balance only upon approval).\n` +
-        `• Bank: *OPay Digital Services* | Account: *7034297995* | Name: *Oyelakin Tosin Matthew*\n\n` +
+        `• Complete Web Presence + WhatsApp AI: *₦45,000 NGN* one-off.\n` +
+        `• Bank: *Moniepoint Microfinance Bank* | Account: *6805375225* | Name: *Bethelmind Digital Solutions*\n\n` +
         `Send your receipt here once transferred and we commence deployment immediately!`,
       suggestedAction: 'AWAIT_DEMO_FEEDBACK',
       directPaymentEligible: true
@@ -208,37 +205,37 @@ export function handlePostContactInquiry(
     return {
       intent: 'TRUST_VERIFICATION',
       messageText:
-        `Hello! 👋 My name is Tosin from Bethelmind Analytics Lagos Desk.\n\n` +
-        `We are a registered business tech firm in Lagos. We created a free sample website for *${name}* to help you get more customers online and answer people on WhatsApp even when you are busy or asleep.\n\n` +
+        `Hello! 👋 My name is Tosin from Bethelmind Digital Solutions.\n\n` +
+        `We are a registered business technology firm in Lagos. We created a free sample preview for *${name}* to help you get more customers online and answer enquiries on WhatsApp even when you are busy or asleep.\n\n` +
         `🛡️ *Why You Are 100% Protected:* \n` +
-        `1. You test your sample website completely FREE on your phone: ${previewUrl}\n` +
-        `2. You only pay a 50% commitment deposit (₦75,000) to start, balance strictly after your site is live and approved by you.\n` +
+        `1. You test your sample preview completely FREE on your phone: ${previewUrl}\n` +
+        `2. One-time setup of ₦45,000 NGN (complete web presence + 24/7 WhatsApp AI bot).\n` +
         `3. Guaranteed 48-Hour delivery SLA.\n` +
-        `4. Direct settlement to verified Nigerian bank account: *OPay Digital Services (7034297995 - Oyelakin Tosin Matthew)*.\n` +
-        `5. Direct phone hotline: +234 802 279 1227.\n\n` +
+        `4. Direct settlement to verified Nigerian business account: *Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)*.\n` +
+        `5. Direct WhatsApp / Phone hotline: +234 802 279 1227.\n\n` +
         `Once transferred, share your receipt here so we can activate your deployment!`,
       suggestedAction: 'REASSURE_AND_CLOSE',
       directPaymentEligible: true
     };
   }
 
-  // Default: Simple, Warm Handshake with Voice Note Bridge, Packages & OPay Details
+  // Default: Simple, Warm Handshake with Voice Note Bridge, Packages & Moniepoint Details
   return {
     intent: 'GREETING_HANDSHAKE',
     messageText:
-      `Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\n` +
-      `We prepared a customized interactive commercial prototype for *${name}* to show you how clients in ${leadData.area || 'Nigeria'} can easily discover your business on Google and receive instant 24/7 quotes on WhatsApp.\n\n` +
+      `Good day! 👋 Welcome to Bethelmind Digital Solutions.\n\n` +
+      `We prepared a customized interactive prototype for *${name}* to show you how clients in ${leadData.area || 'Nigeria'} can easily discover your business on Google and receive instant 24/7 quotes on WhatsApp.\n\n` +
       `👉 *View Your Free Live Prototype:* \n${previewUrl}\n\n` +
       `🛠️ *LAUNCH YOUR COMPLETE 24/7 SYSTEM IN 48 HOURS:*\n` +
-      `• Turnkey Website + WhatsApp AI Assistant: ₦75,000 commitment deposit (₦150,000 total).\n` +
-      `• 1-Line Embed Upgrade (If you already have a website): ₦35,000 deposit.\n` +
-      `• Balance strictly payable after deployment & your 100% approval.\n\n` +
-      `🏦 *Official OPay Settlement Account:*\n` +
-      `• Bank: *OPay Digital Services*\n` +
-      `• Account Number: *7034297995*\n` +
-      `• Account Name: *Oyelakin Tosin Matthew*\n` +
+      `• Complete Web Presence + 24/7 WhatsApp AI Assistant: ₦45,000 one-off.\n` +
+      `• Custom Domain + Priority Automation Suite: ₦85,000 (₦40,000 deposit to start).\n` +
+      `• Live on Google and WhatsApp in 48 Hours.\n\n` +
+      `🏦 *Official Settlement Account:*\n` +
+      `• Bank: *Moniepoint Microfinance Bank*\n` +
+      `• Account Number: *6805375225*\n` +
+      `• Account Name: *Bethelmind Digital Solutions*\n` +
       `• Narration: *${name.slice(0, 15)} Setup*\n\n` +
-      `Reply with any questions or transfer your deposit and share your receipt here to secure your 48-hour delivery slot!`,
+      `Reply with any questions or transfer and share your receipt here to secure your 48-hour delivery slot!`,
     suggestedAction: 'SEND_DEMO_LINK',
     directPaymentEligible: true
   };

@@ -123,15 +123,15 @@ export async function POST(req: NextRequest) {
   <div class="bank-box">
     <div style="font-size: 11px; font-weight: 700; color: #1e40af; text-transform: uppercase; margin-bottom: 8px;">Official Direct Bank Settlement Instructions</div>
     <div style="font-size: 13px; line-height: 1.8;">
-      • <strong>Bank Name:</strong> OPay Digital Services<br>
-      • <strong>Account Number:</strong> <strong>7034297995</strong><br>
-      • <strong>Account Name:</strong> Oyelakin Tosin Matthew<br>
+      • <strong>Bank Name:</strong> Moniepoint Microfinance Bank<br>
+      • <strong>Account Number:</strong> <strong>6805375225</strong><br>
+      • <strong>Account Name:</strong> Bethelmind Digital Solutions<br>
       • <strong>Payment Narration / Reference:</strong> ${invoiceRef} - ${businessName.slice(0, 15)}
     </div>
   </div>
 
   <div class="footer">
-    Bethelmind Analytics Lagos Desk · 24/7 Closer Hotline: +234 802 279 1227 · Email: tosin@bethelmindanalytics.com<br>
+    Bethelmind Digital Solutions · 24/7 Hotline: +234 802 279 1227 · Email: tosin@bethelmindanalytics.com<br>
     <em>All payments clear directly to verified Nigerian Bank settlement. 100% money-back SLA guarantee.</em>
   </div>
 </body>

@@ -784,15 +784,15 @@ What would you like to review or upgrade?
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#94a3b8' }}>Bank Name:</span>
-                  <strong style={{ color: '#ffffff' }}>OPay Digital Services</strong>
+                  <strong style={{ color: '#ffffff' }}>Moniepoint Microfinance Bank</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#94a3b8' }}>Account Number:</span>
-                  <strong style={{ color: '#34d399', fontSize: '15px' }}>7034297995</strong>
+                  <strong style={{ color: '#34d399', fontSize: '15px' }}>6805375225</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#94a3b8' }}>Beneficiary Name:</span>
-                  <strong style={{ color: '#ffffff' }}>Oyelakin Tosin Matthew</strong>
+                  <strong style={{ color: '#ffffff' }}>Bethelmind Digital Solutions</strong>
                 </div>
               </div>
             </div>

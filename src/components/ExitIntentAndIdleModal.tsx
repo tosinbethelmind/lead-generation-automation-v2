@@ -74,7 +74,7 @@ export default function ExitIntentAndIdleModal({
     : `https://www.bethelmindanalytics.com/preview/${leadId || 'demo'}`;
 
   const prefilledMessage = encodeURIComponent(
-    `Hello Bethelmind Analytics Lagos Desk! I was previewing the 24/7 AI quoting assistant for *${businessName}* (${category}) in ${area}.\n\nDemo: ${previewLink}\n\nPlease show me how the 2-second auto-reply answers our customers' quote inquiries (₦0 Upfront Preview).`
+    `Hello Bethelmind Digital Solutions! I was previewing the 24/7 AI quoting assistant for *${businessName}* (${category}) in ${area}.\n\nDemo: ${previewLink}\n\nPlease show me how the 2-second auto-reply answers our customers' quote inquiries (₦0 Upfront Preview).`
   );
 
   const waUrl = `https://wa.me/${adminPhone}?text=${prefilledMessage}`;
@@ -243,7 +243,7 @@ export default function ExitIntentAndIdleModal({
         {/* Trust Footer */}
         <div className="flex items-center justify-center gap-2 pt-2 border-t border-slate-800/80 text-[11px] text-slate-400">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-          <span>Bethelmind Analytics Lagos Desk · 100% Zero Capital Risk · Verified 24/7 SLA</span>
+          <span>Bethelmind Digital Solutions · 100% Zero Capital Risk · Verified 24/7 SLA</span>
         </div>
       </div>
     </div>

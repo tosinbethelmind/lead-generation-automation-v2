@@ -25,9 +25,9 @@ export function sanitizeDisplayName(rawName: string, category: string = 'Commerc
   const isHexGroupTokens = trimmed.split(/[\s\-_]+/).filter(w => /^[0-9a-fA-F]{4,8}$/.test(w)).length >= 2;
   const isSlugWithHyphens = /^[a-z0-9]+(-[a-z0-9]+){3,}$/i.test(trimmed);
   const isGenericValued = /^(valued business|valued enterprise|client company|commercial business|sample business|client business)$/i.test(trimmed);
+  const isSyntheticNumbered = /^(commercial\s*sme|premium\s*lead|hub\s*#|trade\s*fair\s*hub|alaba\s*hub).*\d+/i.test(trimmed);
 
-  const isInvalidName = isStandardUuid || isSpacedUuid || isPureHex32 || isLongHex || isPrefixId || isHexGroupTokens || isSlugWithHyphens || isGenericValued;
-
+  const isInvalidName = isStandardUuid || isSpacedUuid || isPureHex32 || isLongHex || isPrefixId || isHexGroupTokens || isSlugWithHyphens || isGenericValued || isSyntheticNumbered;
 
   if (isInvalidName) {
     const combinedContext = `${category} ${trimmed}`.toLowerCase();
@@ -46,10 +46,25 @@ export function sanitizeDisplayName(rawName: string, category: string = 'Commerc
     return 'Premier Lagos Commercial Enterprise';
   }
 
+  // Clean personal employee/staff titles or multi-segment noisy titles
+  let cleaned = trimmed;
+  // If it contains "Staff Profile" or academic directory noise, extract the actual business/name
+  if (/staff profile/i.test(cleaned)) {
+    cleaned = cleaned.replace(/—\s*staff profile.*$/i, '').replace(/-\s*staff profile.*$/i, '').trim();
+  }
+  // Strip "MR / MRS / DR / ENGR" leading salutations if concatenated with business
+  if (/^(mr|mrs|miss|dr|engr|barrister|pastor)\s+/i.test(cleaned) && cleaned.includes('/')) {
+    const parts = cleaned.split('/');
+    cleaned = parts[parts.length - 1].trim(); // Take the brand part e.g. "1STLADY SKINCARE & SP"
+  } else if (/^(mr|mrs|miss|dr|engr)\s+[a-z\s]+$/i.test(cleaned)) {
+    // Pure individual personal name
+    cleaned = `${cleaned} Enterprise`;
+  }
+
   // Remove any remaining trailing technical noise
-  return trimmed
-    .replace(/\s*\|\|\s*dental clinic in.*/i, '')
-    .replace(/\s*\|\s*dental clinic in.*/i, '')
+  return cleaned
+    .replace(/\s*\|\|\s*.*/i, '')
+    .replace(/\s*\|\s*.*/i, '')
     .replace(/\s*-\s*scaling\s*&.*/i, '')
     .trim();
 }
@@ -67,8 +82,12 @@ export function sanitizeCopyText(text: string, safeName: string): string {
 
 export function cleanWebsiteDomain(rawUrl: string): string {
   if (!rawUrl || typeof rawUrl !== 'string') return '';
-  return rawUrl
-    .trim()
+  const trimmed = rawUrl.trim();
+  // Filter out search engine tracking or intermediate redirect URLs
+  if (/bing\.com\/ck\/|google\.com\/url|yahoo\.com\/|duckduckgo\.com\/|facebook\.com\/l\.php/i.test(trimmed)) {
+    return '';
+  }
+  return trimmed
     .replace(/^https?:\/\//i, '')
     .replace(/^www\./i, '')
     .replace(/\/+$/, '')

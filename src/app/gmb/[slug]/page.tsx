@@ -109,7 +109,7 @@ export default async function GmbAuditPage({ params, searchParams }: GmbAuditPag
             <div className="flex items-start space-x-3 bg-rose-950/20 border border-rose-900/30 p-4 rounded-xl">
               <span className="text-rose-400 font-black">2.</span>
               <div className="text-sm text-slate-300">
-                <strong className="text-white">Suspension & Loss of 5-Star Reviews:</strong> Unverified listings are 8x more likely to be flagged by Google's spam filter, risking total erasure of your {reviewCount} reviews.
+                <strong className="text-white">Suspension & Loss of 5-Star Reviews:</strong> Unverified listings are 8x more likely to be flagged by Google&apos;s spam filter, risking total erasure of your {reviewCount} reviews.
               </div>
             </div>
             <div className="flex items-start space-x-3 bg-rose-950/20 border border-rose-900/30 p-4 rounded-xl">
@@ -132,13 +132,23 @@ export default async function GmbAuditPage({ params, searchParams }: GmbAuditPag
               Our Lagos engineering desk directly verifies official ownership, links your primary WhatsApp line, locks against edits, and optimizes local Map ranking in 24 hours.
             </p>
 
-            <a
-              href={waUrl}
-              className="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-base rounded-xl transition-all shadow-xl shadow-emerald-900/50"
-            >
-              <span>🔒 1-Tap Claim & Lock Profile (₦{rescueFeeNGN.toLocaleString()})</span>
-              <ArrowRight className="w-5 h-5" />
-            </a>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <a
+                href={waUrl}
+                className="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-base rounded-xl transition-all shadow-xl shadow-emerald-900/50"
+              >
+                <span>🔒 1-Tap Claim & Lock Profile (₦{rescueFeeNGN.toLocaleString()})</span>
+                <ArrowRight className="w-5 h-5" />
+              </a>
+
+              <a
+                href="tel:+2348022791227"
+                className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-base rounded-xl border border-slate-700 transition-all"
+              >
+                <PhoneCall className="w-5 h-5 text-emerald-400" />
+                <span>Call Hotline (0802 279 1227)</span>
+              </a>
+            </div>
 
             <div className="mt-4 text-[11px] text-slate-400">
               Direct Settlement: OPay ({OPAY_BENEFICIARY_CONFIG.accountNumber} - {OPAY_BENEFICIARY_CONFIG.accountName})

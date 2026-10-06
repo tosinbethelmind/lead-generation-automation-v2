@@ -2,7 +2,7 @@
 
 /**
  * @file src/app/home/page.tsx
- * High-Converting Nigerian B2B Homepage — Bethelmind Analytics Lagos Desk
+ * High-Converting Nigerian B2B Homepage — Bethelmind Digital Solutions
  *
  * Performance Optimized:
  * - Streamlined 6-step conversion journey: Hero -> How It Works -> Sector Tools -> Solutions -> Trust -> Pricing -> Settlement -> FAQ
@@ -28,8 +28,8 @@ const PaymentSection = dynamic(() => import('@/components/home/PaymentSection'),
 const FaqSection = dynamic(() => import('@/components/home/FaqSection'), { ssr: true });
 const CustomerAiAgentWidget = dynamic(() => import('@/components/CustomerAiAgentWidget'), { ssr: false });
 const StickyMobileConversionBar = dynamic(() => import('@/components/StickyMobileConversionBar'), { ssr: false });
-const LiveSocialProofTicker = dynamic(() => import('@/components/LiveSocialProofTicker').then(m => m.LiveSocialProofTicker), { ssr: false });
 const ExitIntentAndIdleModal = dynamic(() => import('@/components/ExitIntentAndIdleModal'), { ssr: false });
+const ScrollWorld = dynamic(() => import('@/components/three/ScrollWorld'), { ssr: false });
 
 export default function HomePage() {
   const [businessName, setBusinessName] = useState('My Business');
@@ -50,6 +50,7 @@ export default function HomePage() {
         paddingBottom: 70, // Buffer for mobile sticky bar
       }}
     >
+      <ScrollWorld theme="bethelmind" />
       <Navbar />
 
       <main id="main-content">
@@ -91,7 +92,9 @@ export default function HomePage() {
         <FaqSection />
       </main>
 
-      <CustomerAiAgentWidget sector={sectorProfile.name} />
+      <div className="hidden md:block">
+        <CustomerAiAgentWidget sector={sectorProfile.name} />
+      </div>
 
       <StickyMobileConversionBar
         businessName={businessName}
@@ -100,8 +103,6 @@ export default function HomePage() {
         hasWebsite={false}
         adminPhone="2348022791227"
       />
-
-      <LiveSocialProofTicker />
 
       <ExitIntentAndIdleModal
         businessName={businessName}
@@ -116,6 +117,9 @@ export default function HomePage() {
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { margin: 0; }
+        #how-it-works, #sector-tools, #pricing, #faq, #solutions, #payment, #live-demo {
+          scroll-margin-top: 85px;
+        }
         :focus-visible {
           outline: 2px solid #06b6d4;
           outline-offset: 2px;

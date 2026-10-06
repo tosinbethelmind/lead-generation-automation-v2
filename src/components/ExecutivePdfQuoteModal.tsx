@@ -47,9 +47,9 @@ export function ExecutivePdfQuoteModal({
     claimFeeNgn,
     depositFeeNgn,
     adminPhone,
-    accountNumber: '7034297995',
-    bankName: 'OPay Digital Services',
-    accountName: 'Oyelakin Tosin Matthew',
+    accountNumber: '6805375225',
+    bankName: 'Moniepoint Microfinance Bank',
+    accountName: 'Bethelmind Digital Solutions',
   };
 
   const cleanAdminPhone = (adminPhone || '2348022791227').replace(/[^0-9]/g, '');
@@ -217,14 +217,14 @@ export function ExecutivePdfQuoteModal({
   <div class="bank">
     <div style="font-size:11px; font-weight:bold; color:#065f46;">OFFICIAL SETTLEMENT CHANNEL (DIRECT NIP BANK TRANSFER):</div>
     <div style="display:flex; justify-content:space-between; margin-top:4px;">
-      <div>Bank: <strong>OPay Digital Services</strong></div>
-      <div>Account No: <strong style="font-size:15px; color:#047857; font-family:monospace;">7034297995</strong></div>
-      <div>Beneficiary: <strong>Oyelakin Tosin Matthew</strong></div>
+      <div>Bank: <strong>Moniepoint Microfinance Bank</strong></div>
+      <div>Account No: <strong style="font-size:15px; color:#047857; font-family:monospace;">6805375225</strong></div>
+      <div>Beneficiary: <strong>Bethelmind Digital Solutions</strong></div>
     </div>
   </div>
 
   <div style="margin-top:14px; font-size:10px; color:#64748b; text-align:center; border-top:1px solid #e2e8f0; padding-top:8px;">
-    Bethelmind Analytics Lagos Desk &bull; Ref: ${quoteRef} &bull; Call/WhatsApp: +${adminPhone}
+    Bethelmind Digital Solutions &bull; Ref: ${quoteRef} &bull; Call/WhatsApp: +${adminPhone}
   </div>
 </body>
 </html>`}

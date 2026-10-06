@@ -4,8 +4,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Refund & Cancellation Policy | Bethelmind Analytics',
-  description: 'Refund and cancellation terms for Bethelmind Analytics & Strategy subscriptions.',
+  title: 'Refund & Cancellation Policy | Bethelmind Digital Solutions',
+  description: 'Refund and cancellation terms for Bethelmind Digital Solutions & Strategy subscriptions.',
 };
 
 export default function RefundPolicyPage() {
@@ -42,7 +42,7 @@ export default function RefundPolicyPage() {
 
       <h2>5. Payment Errors</h2>
       <p>
-        If you transferred the wrong amount or transferred to the wrong account, contact us immediately via WhatsApp with your transfer receipt. We will work with you to resolve the situation. We are not responsible for transfers made to unofficial accounts or individuals not authorised by Bethelmind Analytics & Strategy.
+        If you transferred the wrong amount or transferred to the wrong account, contact us immediately via WhatsApp with your transfer receipt. We will work with you to resolve the situation. We are not responsible for transfers made to unofficial accounts or individuals not authorised by Bethelmind Digital Solutions & Strategy.
       </p>
 
       <h2>6. Dispute Resolution</h2>

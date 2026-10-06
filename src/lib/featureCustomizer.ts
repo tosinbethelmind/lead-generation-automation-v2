@@ -125,10 +125,10 @@ export function formatCustomFeatureWhatsAppRequest(params: {
 } {
   const { businessName, leadId = 'site_custom', selectedIds, clientPhone } = params;
   const calc = calculateCustomFeatureSelection(selectedIds);
-  const opay = {
-    bankName: paymentConfig.bankName || 'OPay Digital Services',
-    accountNumber: paymentConfig.accountNumber || '7034297995',
-    accountName: paymentConfig.accountName || 'Oyelakin Tosin Matthew',
+  const bankInfo = {
+    bankName: paymentConfig.bankName || 'Moniepoint Microfinance Bank',
+    accountNumber: paymentConfig.accountNumber || '6805375225',
+    accountName: paymentConfig.accountName || 'Bethelmind Digital Solutions',
   };
 
   const featureNames = calc.selectedFeatures.map(f => `${f.icon} ${f.name}`).join('\n');
@@ -140,11 +140,11 @@ export function formatCustomFeatureWhatsAppRequest(params: {
     `💰 *One-Time Setup:* ₦${calc.finalSetupNGN.toLocaleString()}\n` +
     `🔄 *Monthly Renewal:* ₦${calc.finalMonthlyNGN.toLocaleString()}/mo\n` +
     (calc.discountAppliedPercentage > 0 ? `🎉 *15% Bundle Discount Applied!*\n\n` : `\n`) +
-    `🏦 *OPay Payment Instructions:*\n` +
+    `🏦 *Bank Payment Instructions:*\n` +
     `Transfer ₦${calc.finalSetupNGN.toLocaleString()} to:\n` +
-    `• Bank: ${opay.bankName}\n` +
-    `• Account: *${opay.accountNumber}*\n` +
-    `• Name: ${opay.accountName}\n\n` +
+    `• Bank: ${bankInfo.bankName}\n` +
+    `• Account: *${bankInfo.accountNumber}*\n` +
+    `• Name: ${bankInfo.accountName}\n\n` +
     `Please approve and activate my custom selected features!`;
 
   const cleanAdminPhone = (process.env.NEXT_PUBLIC_ADMIN_PHONE || '2348012345678').replace(/\D/g, '');

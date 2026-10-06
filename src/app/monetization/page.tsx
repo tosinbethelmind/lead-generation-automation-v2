@@ -235,17 +235,26 @@ export default function MonetizationHubPage() {
               Need a Custom Multi-Engine Integration for Your Business?
             </h3>
             <p className="text-xs sm:text-sm text-slate-300">
-              Direct settlement to OPay (7034297995) • 48-Hour delivery guarantee on all turnkey deployments.
+              Direct settlement to Moniepoint (6805375225) • 48-Hour delivery guarantee on all turnkey deployments.
             </p>
           </div>
-          <a
-            href="https://wa.me/2348022791227?text=Hello%20Bethelmind%20Executive%20Desk%2C%20I%20want%20to%20deploy%20a%20commercial%20engine%20for%20our%20business."
-            target="_blank"
-            rel="noreferrer"
-            className="px-6 py-3.5 bg-white text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl hover:bg-slate-200 transition-all flex-shrink-0"
-          >
-            💬 Connect on WhatsApp (0802 279 1227)
-          </a>
+          <div className="flex flex-col sm:flex-row items-center gap-3 flex-shrink-0">
+            <a
+              href="https://wa.me/2348022791227?text=Hello%20Bethelmind%20Executive%20Desk%2C%20I%20want%20to%20deploy%20a%20commercial%20engine%20for%20our%20business."
+              target="_blank"
+              rel="noreferrer"
+              className="w-full sm:w-auto px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all text-center"
+            >
+              💬 WhatsApp Desk (0802 279 1227)
+            </a>
+            <a
+              href="tel:+2348022791227"
+              className="w-full sm:w-auto px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl border border-slate-700 transition-all text-center flex items-center justify-center gap-2"
+            >
+              <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Direct Call</span>
+            </a>
+          </div>
         </div>
       </main>
 

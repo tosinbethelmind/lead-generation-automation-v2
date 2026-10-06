@@ -92,7 +92,7 @@ export default function CustomerAiAgentWidget({
       ? `👋 Hello, **${leadData.name}**! 🌟 Your profile is verified in **${leadData.area || leadData.city || 'Lagos'}**. I have already pre-configured this 24/7 AI Lead & Quoting portal specifically for **${leadData.name}**! 🚀 How can I assist you with your instant quote or system setup today?`
       : businessName
       ? `👋 Welcome to ${businessName}! I am your 24/7 AI Business Guide & Virtual Assistant. How can I assist you with our services, instant quotes, or custom domain setup today?`
-      : `👋 Hello! Welcome to Bethelmind Analytics & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`;
+      : `👋 Hello! Welcome to Bethelmind Digital Solutions & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`;
 
     // Restore conversation memory from localStorage ONLY if it matches the current lead
     const savedChat = typeof window !== 'undefined' ? localStorage.getItem(historyKey) : null;

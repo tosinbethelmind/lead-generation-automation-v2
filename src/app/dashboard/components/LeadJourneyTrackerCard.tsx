@@ -532,7 +532,7 @@ export default function LeadJourneyTrackerCard() {
                   Turnkey DFY Build (₦150,000 / ₦75,000 50% Milestone Deposit) or 1-Line Embed Upgrade (₦35,000)
                 </div>
                 <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>
-                  Paves Direct-to-OPay NIP Transfer: <strong style={{ color: '#4ade80' }}>7034297995</strong> (Oyelakin Tosin Matthew)
+                  Settlement via Moniepoint NIP Transfer: <strong style={{ color: '#4ade80' }}>6805375225</strong> (Bethelmind Digital Solutions)
                 </div>
               </div>
 

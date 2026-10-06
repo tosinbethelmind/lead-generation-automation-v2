@@ -219,8 +219,8 @@ function CheckoutContent() {
                     style={{ marginTop: 3 }}
                   />
                   <div>
-                    <strong style={{ color: '#f8fafc', fontSize: '0.9rem', display: 'block' }}>🏦 Direct Bank Transfer (OPay / Moniepoint)</strong>
-                    <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Fastest activation — transfer to account 7034297995 (OPay / Moniepoint)</span>
+                    <strong style={{ color: '#f8fafc', fontSize: '0.9rem', display: 'block' }}>🏦 Direct Bank Transfer (Moniepoint MFB)</strong>
+                    <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Fastest activation — transfer to account 6805375225 (Moniepoint)</span>
                   </div>
                 </label>
 
@@ -243,9 +243,9 @@ function CheckoutContent() {
               {formData.payment_method === 'opay' && (
                 <div style={{ marginTop: 16, padding: 16, background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 12 }}>
                   <p style={{ color: '#10b981', fontWeight: 700, margin: '0 0 8px', fontSize: '0.85rem' }}>Bank Transfer Details:</p>
-                  <p style={{ color: '#f8fafc', margin: '0 0 4px', fontSize: '0.85rem' }}>Bank: <strong>OPay Digital Services / Moniepoint</strong></p>
-                  <p style={{ color: '#06b6d4', fontWeight: 800, fontSize: '1.1rem', margin: '0 0 4px' }}>Account: 7034297995</p>
-                  <p style={{ color: '#94a3b8', margin: 0, fontSize: '0.85rem' }}>Name: Oyelakin Tosin Matthew</p>
+                  <p style={{ color: '#f8fafc', margin: '0 0 4px', fontSize: '0.85rem' }}>Bank: <strong>Moniepoint Microfinance Bank</strong></p>
+                  <p style={{ color: '#06b6d4', fontWeight: 800, fontSize: '1.1rem', margin: '0 0 4px' }}>Account: 6805375225</p>
+                  <p style={{ color: '#94a3b8', margin: 0, fontSize: '0.85rem' }}>Name: Bethelmind Digital Solutions</p>
 
                   <div style={{ marginTop: 12 }}>
                     <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.78rem', marginBottom: 4 }}>Transaction Reference / Receipt ID (Optional)</label>

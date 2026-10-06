@@ -95,7 +95,7 @@ export default function TrustSection() {
           </div>
           <div style={{ flex: 1, minWidth: 200 }}>
             <h3 style={{ margin: '0 0 4px', color: '#fff', fontSize: '1.05rem', fontWeight: 800, fontFamily: "'Outfit', sans-serif" }}>
-              Bethelmind Analytics & Strategy
+              Bethelmind Digital Solutions & Strategy
             </h3>
             <p style={{ margin: '0 0 2px', color: '#94a3b8', fontSize: '0.83rem' }}>📍 Lagos, Nigeria</p>
             <p style={{ margin: '0 0 12px', color: '#64748b', fontSize: '0.8rem', lineHeight: 1.5 }}>

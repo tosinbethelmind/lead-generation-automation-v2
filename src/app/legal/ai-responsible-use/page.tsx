@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'AI Responsible Use Policy | Bethelmind Analytics',
+  title: 'AI Responsible Use Policy | Bethelmind Digital Solutions',
   description: 'Guidelines and safety protocols for responsible AI agent deployment, human oversight, and data privacy.',
 };
 
@@ -19,7 +19,7 @@ export default function AiResponsibleUsePage() {
 
       <h2>1. Purpose and Scope</h2>
       <p>
-        Bethelmind Analytics & Strategy builds automated AI Lead Generation Engines, 24/7 Virtual Customer Care Concierges, and Voice Note Assistants. This policy outlines our standards for deploying Artificial Intelligence safely, ethically, and responsibly.
+        Bethelmind Digital Solutions & Strategy builds automated AI Lead Generation Engines, 24/7 Virtual Customer Care Concierges, and Voice Note Assistants. This policy outlines our standards for deploying Artificial Intelligence safely, ethically, and responsibly.
       </p>
 
       <h2>2. Human-in-the-Loop Governance</h2>

@@ -135,7 +135,7 @@ export default function PaymentSection({
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 20, padding: '5px 16px', marginBottom: 14 }}>
             <ShieldCheck size={14} style={{ color: '#10b981' }} />
             <span style={{ fontSize: '0.76rem', color: '#34d399', fontWeight: 800 }}>
-              Official Bethelmind Settlement Desk • 50% Milestone Escrow Protection
+              Official Bethelmind Digital Solutions Settlement Desk • 50% Milestone Escrow Protection
             </span>
           </div>
           <h2

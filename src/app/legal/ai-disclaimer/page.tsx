@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'AI Transparency & Disclaimer Policy | Bethelmind Analytics',
+  title: 'AI Transparency & Disclaimer Policy | Bethelmind Digital Solutions',
   description: 'Official AI output disclaimer, accuracy limits, and non-binding estimate notices for client websites.',
 };
 
@@ -30,7 +30,7 @@ export default function AiDisclaimerPage() {
 
       <h2>4. Limitation of Liability</h2>
       <p>
-        Bethelmind Analytics and its client business partners shall not be held liable for temporary AI misinterpretations, third-party network delays, or reliance placed on non-binding automated estimates without written human confirmation.
+        Bethelmind Digital Solutions and its client business partners shall not be held liable for temporary AI misinterpretations, third-party network delays, or reliance placed on non-binding automated estimates without written human confirmation.
       </p>
     </div>
   );

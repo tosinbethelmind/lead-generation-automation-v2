@@ -207,7 +207,7 @@ export default function VoiceNotePlayer({
             Voice Note Transcript:
           </p>
           <p className="italic text-slate-300">
-            &ldquo;Hello! Good day, this is Ezinne from Bethelmind Analytics Lagos. We analyzed {businessName}&apos;s digital operations in {area}, and we built a live 24/7 AI WhatsApp customer booking and automated quote prototype tailored specifically for {businessName}. It responds to your customer inquiries in less than 3 seconds and handles Moniepoint and Paystack payment verification automatically. Please check the link we sent to test your prototype live, or chat directly with our Lagos team at 0802 279 1227 to claim your free 48-hour setup. Thank you!&rdquo;
+            &ldquo;Hello! Good day, this is Ezinne from Bethelmind Digital Solutions. We analyzed {businessName}&apos;s digital operations in {area}, and we built a live 24/7 AI WhatsApp customer booking and automated quote prototype tailored specifically for {businessName}. It responds to your customer inquiries in less than 3 seconds and handles Moniepoint and Paystack payment verification automatically. Please check the link we sent to test your prototype live, or chat directly with our Lagos team at 0802 279 1227 to claim your free 48-hour setup. Thank you!&rdquo;
           </p>
         </div>
       )}

@@ -46,7 +46,7 @@ export default function Footer() {
                 <Sparkles style={{ width: 17, height: 17, color: '#fff' }} aria-hidden="true" />
               </div>
               <span style={{ fontWeight: 800, fontSize: '0.98rem', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontFamily: "'Outfit', sans-serif" }}>
-                Bethelmind Analytics
+                Bethelmind Digital Solutions
               </span>
             </div>
             <p style={{ color: '#64748b', fontSize: '0.82rem', lineHeight: 1.6, margin: '0 0 12px' }}>
@@ -103,7 +103,7 @@ export default function Footer() {
         {/* Bottom row */}
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <p style={{ margin: 0, color: '#475569', fontSize: '0.78rem' }}>
-            © {new Date().getFullYear()} Bethelmind Analytics & Strategy · Lagos, Nigeria
+            © {new Date().getFullYear()} Bethelmind Digital Solutions · Lagos, Nigeria
           </p>
           <p style={{ margin: 0, color: '#475569', fontSize: '0.78rem', textAlign: 'right' }}>
             Privacy-conscious workflows · Human support available · Built for Nigerian businesses

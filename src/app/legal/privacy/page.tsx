@@ -4,8 +4,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Bethelmind Analytics',
-  description: 'How Bethelmind Analytics & Strategy collects, uses, and protects your information.',
+  title: 'Privacy Policy | Bethelmind Digital Solutions',
+  description: 'How Bethelmind Digital Solutions & Strategy collects, uses, and protects your information.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
 
       <h2>1. Who We Are</h2>
       <p>
-        Bethelmind Analytics & Strategy (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) is a business automation and customer-acquisition workflow provider based in Lagos, Nigeria. We can be contacted via WhatsApp at the number shown on our website or by email at the address provided during onboarding.
+        Bethelmind Digital Solutions & Strategy (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) is a business automation and customer-acquisition workflow provider based in Lagos, Nigeria. We can be contacted via WhatsApp at the number shown on our website or by email at the address provided during onboarding.
       </p>
 
       <h2>2. What Information We Collect</h2>

@@ -93,9 +93,9 @@ export function generateExecutivePDFProposal(params: PDFProposalParams): PDFProp
       <div style="font-size: 32px; font-weight: 800; color: #15803d; margin: 4px 0;">${formattedFee}</div>
       <div style="font-size: 13px; color: #334155; margin-top: 12px;">
         <strong>Bank Transfer Instructions:</strong><br>
-        Bank: <strong>Moniepoint Microfinance Bank / OPay</strong><br>
-        Account Number: <strong>7034297995</strong><br>
-        Account Name: <strong>Oyelakin Tosin Matthew</strong>
+        Bank: <strong>Moniepoint Microfinance Bank</strong><br>
+        Account Number: <strong>6805375225</strong><br>
+        Account Name: <strong>Bethelmind Digital Solutions</strong>
       </div>
     </div>
   </div>

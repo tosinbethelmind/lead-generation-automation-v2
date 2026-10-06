@@ -23,7 +23,7 @@ interface SocialAdAutomationWidgetProps {
 }
 
 export function SocialAdAutomationWidget({
-  businessName = 'ApexReach Partner',
+  businessName = 'Bethelmind Partner',
   category = 'Solar & Renewable Energy',
   onSelectPackage,
 }: SocialAdAutomationWidgetProps) {

@@ -32,9 +32,9 @@ export interface DirectNairaSettlement {
 }
 
 export const OPAY_BENEFICIARY_CONFIG = {
-  bankName: 'OPay Digital Services',
-  accountNumber: '7034297995',
-  accountName: 'Oyelakin Tosin Matthew',
+  bankName: 'Moniepoint Microfinance Bank',
+  accountNumber: '6805375225',
+  accountName: 'Bethelmind Digital Solutions',
   adminWaPhone: '2348022791227',
   adminEmail: 'bethelmindrecruit@gmail.com'
 };

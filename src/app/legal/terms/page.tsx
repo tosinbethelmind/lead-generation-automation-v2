@@ -4,8 +4,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Bethelmind Analytics',
-  description: 'Terms and conditions for using Bethelmind Analytics & Strategy services.',
+  title: 'Terms of Service | Bethelmind Digital Solutions',
+  description: 'Terms and conditions for using Bethelmind Digital Solutions & Strategy services.',
 };
 
 export default function TermsOfServicePage() {
@@ -22,7 +22,7 @@ export default function TermsOfServicePage() {
 
       <h2>1. Agreement</h2>
       <p>
-        By subscribing to or using any service offered by Bethelmind Analytics & Strategy (&ldquo;we&rdquo;, &ldquo;us&rdquo;), you agree to these Terms of Service. If you do not agree, do not use our services.
+        By subscribing to or using any service offered by Bethelmind Digital Solutions & Strategy (&ldquo;we&rdquo;, &ldquo;us&rdquo;), you agree to these Terms of Service. If you do not agree, do not use our services.
       </p>
 
       <h2>2. Services</h2>
@@ -50,7 +50,7 @@ export default function TermsOfServicePage() {
 
       <h2>6. Intellectual Property</h2>
       <p>
-        All workflow configurations, tools, and materials provided by us remain the intellectual property of Bethelmind Analytics & Strategy. You are granted a non-exclusive licence to use them for your own business purposes during your active subscription.
+        All workflow configurations, tools, and materials provided by us remain the intellectual property of Bethelmind Digital Solutions & Strategy. You are granted a non-exclusive licence to use them for your own business purposes during your active subscription.
       </p>
 
       <h2>7. No Guarantee of Results</h2>

@@ -274,7 +274,7 @@ export default function SolutionsPage() {
           </h1>
 
           <p style={{ color: '#94a3b8', fontSize: '1.05rem', maxWidth: 740, margin: '0 auto 32px', lineHeight: 1.65 }}>
-            Nigerian businesses don't need complicated dashboards. You need tools that <strong>stop buyers from abandoning your DMs</strong>, <strong>rank you #1 on Google Maps</strong>, and <strong>hand you verified high-intent local clients</strong> ready to pay.
+            Nigerian businesses don&apos;t need complicated dashboards. You need tools that <strong>stop buyers from abandoning your DMs</strong>, <strong>rank you #1 on Google Maps</strong>, and <strong>hand you verified high-intent local clients</strong> ready to pay.
           </p>
 
           {/* DUAL DELIVERY MODE TOGGLE */}
@@ -513,33 +513,58 @@ export default function SolutionsPage() {
                 Zero Risk Commercial Onboarding for Nigerian Business Owners
               </h3>
               <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
-                You test your custom customer-acquisition system on your own phone and laptop before paying the remaining balance. Direct Nigerian bank settlement processed straight via <strong>OPay Digital Services</strong> (Acc: <code>7034297995</code> — Oyelakin Tosin Matthew).
+                You test your custom customer-acquisition system on your own phone and laptop before paying the remaining balance. Direct Nigerian bank settlement processed straight via <strong>Moniepoint Microfinance Bank</strong> (Acc: <code>6805375225</code> — Bethelmind Digital Solutions).
               </p>
             </div>
 
-            <a
-              href="https://wa.me/2348022791227?text=Hello%20Bethelmind%20Lagos%20Desk%2C%20I%20want%20to%20deploy%20a%20customer%20acquisition%20system%20for%20my%20business."
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                padding: '14px 24px',
-                borderRadius: 14,
-                background: '#10b981',
-                color: '#022c22',
-                fontWeight: 900,
-                fontSize: '0.95rem',
-                textAlign: 'center',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                boxShadow: '0 6px 20px rgba(16,185,129,0.35)',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              <PhoneCall style={{ width: 16, height: 16 }} />
-              <span>Talk to Lagos Closer Desk</span>
-            </a>
+            <div style={{ display: 'flex', flexDirection: 'column', sm: 'row', gap: 10, flexShrink: 0 }}>
+              <a
+                href="https://wa.me/2348022791227?text=Hello%20Bethelmind%20Digital%20Solutions%2C%20I%20want%20to%20deploy%20a%20customer%20acquisition%20system%20for%20my%20business."
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  padding: '14px 24px',
+                  borderRadius: 14,
+                  background: '#10b981',
+                  color: '#022c22',
+                  fontWeight: 900,
+                  fontSize: '0.95rem',
+                  textAlign: 'center',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  boxShadow: '0 6px 20px rgba(16,185,129,0.35)',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <span>💬 WhatsApp Closer Desk</span>
+              </a>
+
+              <a
+                href="tel:+2348022791227"
+                style={{
+                  padding: '14px 20px',
+                  borderRadius: 14,
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  color: '#f8fafc',
+                  fontWeight: 800,
+                  fontSize: '0.95rem',
+                  textAlign: 'center',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <PhoneCall style={{ width: 16, height: 16, color: '#34d399' }} />
+                <span>Call (0802 279 1227)</span>
+              </a>
+            </div>
           </div>
         </section>
       </main>

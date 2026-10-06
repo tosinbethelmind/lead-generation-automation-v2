@@ -126,7 +126,7 @@ export default async function Image({ params }: { params: Promise<{ lead_id: str
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ fontSize: '22px', color: '#e2e8f0', fontWeight: 700 }}>
-              Bethelmind Analytics Lagos
+              Bethelmind Digital Solutions
             </span>
             <span style={{ fontSize: '20px', color: '#38bdf8' }}>→</span>
           </div>

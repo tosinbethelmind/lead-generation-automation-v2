@@ -17,6 +17,17 @@ const BeforeAfterAuditWidget = dynamic(() => import('@/components/BeforeAfterAud
 const InvoiceModal = dynamic(() => import('@/components/InvoiceModal'), { ssr: false });
 const SalesIntegrationNarrative = dynamic(() => import('@/components/SalesIntegrationNarrative'), { ssr: false });
 const VoiceNotePlayer = dynamic(() => import('@/components/VoiceNotePlayer'), { ssr: false });
+const ShaderGradientLiquidLogo = dynamic(() => import('@/components/three/ShaderGradientLiquidLogo'), { ssr: false });
+const LiquidGlassCard = dynamic(() => import('@/components/three/LiquidGlass').then(m => m.LiquidGlassCard), { ssr: false });
+
+function resolveSectorPalette(cat: string = ''): 'solar' | 'luxury' | 'healthcare' | 'automotive' | 'bethelmind' {
+  const lower = (cat || '').toLowerCase();
+  if (/solar|inverter|energy|battery|power/.test(lower)) return 'solar';
+  if (/medical|clinic|doctor|health|hospital|pharmacy|dental|optician/.test(lower)) return 'healthcare';
+  if (/car|auto|motor|vehicle|dealership|tokunbo/.test(lower)) return 'automotive';
+  if (/estate|property|home|realty|developer|hotel|shortlet|luxury/.test(lower)) return 'luxury';
+  return 'bethelmind';
+}
 
 interface PreviewData {
   lead: {
@@ -1926,6 +1937,15 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
       }}>
         <div style={{ maxWidth: '960px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
           
+          {/* Client Branded 3D WebGL Shader Fluid Logo */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '14px' }}>
+            <ShaderGradientLiquidLogo 
+              size={56} 
+              initials={lead.name ? lead.name.split(' ').map((w: string) => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() : 'VIP'} 
+              palette={resolveSectorPalette(lead.category)} 
+            />
+          </div>
+
           {/* Executive Trust Pill */}
           <div style={{
             background: 'rgba(15, 23, 42, 0.90)',
@@ -2002,21 +2022,20 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
 
           {/* Luxury Live Staging Viewport Card */}
           {isPreview && (
-            <div className="staging-box-wrap" style={{
-              maxWidth: '680px',
-              margin: '0 auto 28px',
-              background: 'rgba(15, 23, 42, 0.75)',
-              backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '14px',
-              padding: '10px 16px',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '12px',
-              flexWrap: 'wrap'
-            }}>
+            <LiquidGlassCard
+              glowColor={theme.primary || '#06b6d4'}
+              borderRadius={16}
+              padding="10px 16px"
+              style={{
+                maxWidth: '680px',
+                margin: '0 auto 28px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+                flexWrap: 'wrap'
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444', display: 'inline-block' }}></span>
                 <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b', display: 'inline-block' }}></span>
@@ -2037,13 +2056,12 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   <span>🔒</span>
                   <span>{formatStagingDomain(lead.name)}</span>
                 </div>
-
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }}></span>
                 <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#34d399' }}>STAGING READY</span>
               </div>
-            </div>
+            </LiquidGlassCard>
           )}
 
           {/* Streamlined High-Conversion Action Buttons (1 Primary + 1 Secondary) */}
@@ -2268,26 +2286,17 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '24px' }}>
             {copy.services.map((service, idx) => (
-              <div key={idx} style={{ 
-                padding: '28px', 
-                borderRadius: '12px', 
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                cursor: 'default'
-              }}
-              className="service-card frosted-glass"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 20px 25px rgba(0,0,0,0.05)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'none';
-                e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.02), 0 10px 15px rgba(0,0,0,0.03)';
-              }}
+              <LiquidGlassCard
+                key={idx}
+                glowColor={theme.primary || '#06b6d4'}
+                borderRadius={16}
+                padding="28px"
+                className="service-card"
               >
-                <div style={{ fontSize: '2.5rem', marginBottom: '20px' }}>{service.icon}</div>
-                <h3 className="font-heading" style={{ fontSize: '1.25rem', fontWeight: 600, color: theme.primary, marginBottom: '12px' }}>{service.title}</h3>
+                <div style={{ fontSize: '2.5rem', marginBottom: '16px' }}>{service.icon}</div>
+                <h3 className="font-heading" style={{ fontSize: '1.25rem', fontWeight: 600, color: theme.primary, marginBottom: '10px' }}>{service.title}</h3>
                 <p style={{ color: '#64748b', lineHeight: 1.6, fontSize: '0.95rem', margin: 0 }}>{service.description}</p>
-              </div>
+              </LiquidGlassCard>
             ))}
           </div>
         </div>
@@ -4325,13 +4334,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                           <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Number:</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <strong style={{ color: theme.primary, fontSize: '1.1rem', letterSpacing: '0.05em' }}>
-                              {paymentConfig.opayAccountNumber || '7034297995'}
+                              {paymentConfig.opayAccountNumber || '6805375225'}
                             </strong>
                             <button
                               type="button"
                               onClick={() => {
-                                navigator.clipboard.writeText(paymentConfig.opayAccountNumber || '7034297995');
-                                alert('OPay account number copied!');
+                                navigator.clipboard.writeText(paymentConfig.opayAccountNumber || '6805375225');
+                                alert('Moniepoint account number copied!');
                                 fetch('/api/preview/drip-trigger', {
                                   method: 'POST',
                                   headers: { 'Content-Type': 'application/json' },
@@ -4346,7 +4355,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                           <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Name:</span>
-                          <strong style={{ color: '#1e2937', textTransform: 'uppercase' }}>{paymentConfig.opayAccountName || 'Oyelakin Tosin Matthew'}</strong>
+                          <strong style={{ color: '#1e2937', textTransform: 'uppercase' }}>{paymentConfig.opayAccountName || 'Bethelmind Digital Solutions'}</strong>
                         </div>
                       </div>
 
@@ -4358,22 +4367,22 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                             onClick={() => setShowMoniepointFallback(true)}
                             style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '0.78rem', cursor: 'pointer', textDecoration: 'underline' }}
                           >
-                            Having issues transferring to OPay? Click for Moniepoint alternative
+                            Need payment support? Click for official Moniepoint details
                           </button>
                         ) : (
                           <div style={{ background: '#fff', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', marginTop: '8px', textAlign: 'left' }}>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Backup Alternative Option:</span>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Official Settlement Account:</span>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
                               <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Bank:</span>
                               <strong style={{ fontSize: '0.85rem' }}>{paymentConfig.moniepointBankName || 'Moniepoint MFB'}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
                               <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Acc No:</span>
-                              <strong style={{ fontSize: '0.9rem', color: theme.primary }}>{paymentConfig.moniepointAccountNumber || '7034297995'}</strong>
+                              <strong style={{ fontSize: '0.9rem', color: theme.primary }}>{paymentConfig.moniepointAccountNumber || '6805375225'}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
                               <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Name:</span>
-                              <strong style={{ fontSize: '0.8rem' }}>{paymentConfig.moniepointAccountName || 'Oyelakin Tosin Matthew'}</strong>
+                              <strong style={{ fontSize: '0.8rem' }}>{paymentConfig.moniepointAccountName || 'Bethelmind Digital Solutions'}</strong>
                             </div>
                           </div>
                         )}
@@ -4428,11 +4437,11 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                           <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Number:</span>
-                          <strong style={{ color: theme.primary, letterSpacing: '0.05em' }}>{paymentConfig.moniepointAccountNumber || '7034297995'}</strong>
+                          <strong style={{ color: theme.primary, letterSpacing: '0.05em' }}>{paymentConfig.moniepointAccountNumber || '6805375225'}</strong>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                           <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Account Name:</span>
-                          <strong style={{ color: '#1e2937', textTransform: 'uppercase' }}>{paymentConfig.moniepointAccountName || 'Oyelakin Tosin Matthew'}</strong>
+                          <strong style={{ color: '#1e2937', textTransform: 'uppercase' }}>{paymentConfig.moniepointAccountName || 'Bethelmind Digital Solutions'}</strong>
                         </div>
                       </div>
                     </div>

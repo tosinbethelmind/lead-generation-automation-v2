@@ -10,7 +10,7 @@ interface ChatMessage {
 
 export default function EmbeddableChatbotWidget({
   sector = 'general',
-  businessName = 'Bethelmind Analytics',
+  businessName = 'Bethelmind Digital Solutions',
 }: {
   sector?: string;
   businessName?: string;

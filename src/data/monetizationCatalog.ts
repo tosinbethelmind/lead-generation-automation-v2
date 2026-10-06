@@ -29,9 +29,9 @@ export interface YouTubeEmbedChannel {
 }
 
 export const MASTER_PAYOUT = {
-  bankName: 'OPay Digital Services',
-  accountNumber: '7034297995',
-  accountName: 'Oyelakin Tosin Matthew',
+  bankName: 'Moniepoint Microfinance Bank',
+  accountNumber: '6805375225',
+  accountName: 'Bethelmind Digital Solutions',
   whatsappCloser: 'https://wa.me/2348022791227',
   whatsappPhone: '+234 802 279 1227',
   adminEmail: 'bethelmindrecruit@gmail.com',

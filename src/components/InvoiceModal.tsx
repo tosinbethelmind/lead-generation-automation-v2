@@ -167,10 +167,10 @@ export default function InvoiceModal({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', fontFamily: "'Outfit', sans-serif", letterSpacing: '-0.02em' }}>
-              BETHELMIND ANALYTICS
+              BETHELMIND DIGITAL SOLUTIONS
             </h2>
             <span style={{ fontSize: '0.78rem', color: '#0284c7', fontWeight: 700, display: 'block', marginTop: 2 }}>
-              & STRATEGY AUTOMATIONS NIGERIA
+              ENTERPRISE AUTOMATION & WEB SOLUTIONS NIGERIA
             </span>
             <p style={{ margin: '6px 0 0', fontSize: '0.8rem', color: '#64748b', lineHeight: 1.45 }}>
               Lagos Tech Hub, Ikeja / Lekki Phase 1, Lagos State<br />

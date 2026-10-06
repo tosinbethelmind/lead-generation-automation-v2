@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: canonicalUrl,
-      siteName: 'Bethelmind Analytics — Client Preview Hub',
+      siteName: 'Bethelmind Digital Solutions — Client Preview Hub',
       locale: 'en_NG',
       type: 'website',
       images: [

@@ -871,7 +871,7 @@ export default function DigitalProductsStorePage() {
         </div>
         <h3 className="text-xl font-bold text-white">100% Encrypted Multi-Currency Delivery</h3>
         <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-          All transactions are processed securely via Selar and Bethelmind Analytics supporting Nigerian bank transfers and international cards (USD, GBP, EUR).
+          All transactions are processed securely via Selar and Bethelmind Digital Solutions supporting Nigerian bank transfers and international cards (USD, GBP, EUR).
         </p>
       </div>
     </div>

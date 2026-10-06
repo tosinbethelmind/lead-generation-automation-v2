@@ -54,13 +54,13 @@ export const paymentConfig: PaymentConfig = {
   paymentMode: 'manual_opay_transfer',
 
   bankName:
-    process.env.NEXT_PUBLIC_PAYMENT_BANK_NAME || 'OPay Digital Services',
+    process.env.NEXT_PUBLIC_PAYMENT_BANK_NAME || 'Moniepoint Microfinance Bank',
 
   accountName:
-    process.env.NEXT_PUBLIC_PAYMENT_ACCOUNT_NAME || 'Oyelakin Tosin Matthew (Bethelmind Analytics)',
+    process.env.NEXT_PUBLIC_PAYMENT_ACCOUNT_NAME || 'Bethelmind Digital Solutions',
 
   accountNumber:
-    process.env.NEXT_PUBLIC_PAYMENT_ACCOUNT_NUMBER || '7034297995',
+    process.env.NEXT_PUBLIC_PAYMENT_ACCOUNT_NUMBER || '6805375225',
 
   whatsappNumber:
     process.env.NEXT_PUBLIC_BUSINESS_WHATSAPP_NUMBER || process.env.ADMIN_WA_PHONE || '2348022791227',
@@ -71,7 +71,7 @@ export const paymentConfig: PaymentConfig = {
 
   instructions: [
     'Select your preferred package below.',
-    'Transfer the exact displayed amount to the OPay account shown.',
+    'Transfer the exact displayed amount to the official Moniepoint account shown.',
     'Use the generated payment reference as your transfer narration where possible.',
     'Take a screenshot of your bank transfer confirmation.',
     'Tap "Send Receipt on WhatsApp" and attach the screenshot.',
@@ -80,7 +80,7 @@ export const paymentConfig: PaymentConfig = {
 
   safetyNote:
     'Always confirm the account name shown on this page before sending payment. ' +
-    'Do not send money to unofficial accounts or individuals claiming to represent Bethelmind Analytics.',
+    'Do not send money to unofficial accounts or individuals claiming to represent Bethelmind Digital Solutions.',
 };
 
 /**

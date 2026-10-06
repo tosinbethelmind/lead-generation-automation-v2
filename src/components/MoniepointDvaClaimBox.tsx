@@ -63,8 +63,8 @@ export function MoniepointDvaClaimBox({
   };
 
   const handleCopyAccount = async () => {
-    if (!dvaData?.dva?.accountNumber) return;
-    const success = await copyToClipboard(dvaData.dva.accountNumber);
+    const acc = dvaData?.dva?.accountNumber || '6805375225';
+    const success = await copyToClipboard(acc);
     if (success) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
@@ -161,7 +161,7 @@ export function MoniepointDvaClaimBox({
           <div>
             <div style={{ fontSize: '0.82rem', color: '#94a3b8', marginBottom: '2px' }}>ACCOUNT NUMBER</div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '1px', fontFamily: 'monospace' }}>
-              {loading ? 'Generating...' : dvaData?.dva?.accountNumber || '7034297995'}
+              {loading ? 'Generating...' : dvaData?.dva?.accountNumber || '6805375225'}
             </div>
           </div>
           <button

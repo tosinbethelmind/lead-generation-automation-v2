@@ -318,7 +318,7 @@ export default function AdminAssistantSupportDesk() {
                         {/* WhatsApp Assistant Support */}
                         {lead.phone && (
                           <a
-                            href={`https://wa.me/${formatWhatsAppPhone(lead.phone)}?text=${encodeURIComponent(`Hello ${lead.name}, I am your assigned Admin Support Assistant at Bethelmind Analytics! I saw your request to claim your website (${lead.name}). I am here to help you finalize setup, verify payment, and launch your domain live!`)}`}
+                            href={`https://wa.me/${formatWhatsAppPhone(lead.phone)}?text=${encodeURIComponent(`Hello ${lead.name}, I am your assigned Admin Support Assistant at Bethelmind Digital Solutions! I saw your request to claim your website (${lead.name}). I am here to help you finalize setup, verify payment, and launch your domain live!`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all"

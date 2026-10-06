@@ -12,9 +12,9 @@ export async function POST(req: NextRequest) {
       claimFeeNgn = 150000,
       depositFeeNgn = 75000,
       adminPhone = '2348022791227',
-      accountNumber = '7034297995',
-      bankName = 'OPay Digital Services',
-      accountName = 'Oyelakin Tosin Matthew',
+      accountNumber = '6805375225',
+      bankName = 'Moniepoint Microfinance Bank',
+      accountName = 'Bethelmind Digital Solutions',
     } = body;
 
     const quoteRef = `BM-EST-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -160,11 +160,11 @@ export async function POST(req: NextRequest) {
   </div>
 
   <div class="sla-banner">
-    <strong>🛡️ 100% Zero-Risk Handover Guarantee:</strong> Bethelmind Analytics Lagos Desk guarantees delivery of the full system within 48 hours of initial activation. If our desk fails to hit the SLA, the deposit is 100% refundable without friction.
+    <strong>🛡️ 100% Zero-Risk Handover Guarantee:</strong> Bethelmind Digital Solutions guarantees delivery of the full system within 48 hours of initial activation. If our desk fails to hit the SLA, the deposit is 100% refundable without friction.
   </div>
 
   <div class="footer">
-    Bethelmind Analytics Lagos Commercial Desk • Hotline: +${adminPhone} • Generated for ${businessName} [Ref: ${quoteRef}]
+    Bethelmind Digital Solutions • Hotline: +${adminPhone} • Generated for ${businessName} [Ref: ${quoteRef}]
   </div>
 </body>
 </html>`;

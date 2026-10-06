@@ -15,7 +15,7 @@ import { checkRateLimit, safeCompareStrings } from './lib/security';
 const MAIN_DOMAINS = new Set([
   'localhost',
   'www',
-  'apexreach',
+  'bethelmindanalytics',
   'bethelmind',
   'vercel',
 ]);
