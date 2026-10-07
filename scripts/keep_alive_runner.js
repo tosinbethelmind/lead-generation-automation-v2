@@ -99,8 +99,9 @@ function startRunner() {
     childProcess.on('close', (code) => {
       if (isIntentionallyStopped) return;
       restartCount++;
-      const delay = Math.min(5000 * restartCount, 30000); // exponential up to 30s max
-      console.log(`[KeepAlive] ⚠️ Runner exited with code ${code}. Restarting in ${delay / 1000}s...`);
+      // If exited cleanly with code 0 (e.g. singleton guard active in another instance), back off for 5 minutes
+      const delay = code === 0 ? 300000 : Math.min(5000 * restartCount, 60000);
+      console.log(`[KeepAlive] ⚠️ Runner exited with code ${code}. Resting ${delay / 1000}s before next check...`);
       setTimeout(startRunner, delay);
     });
 
