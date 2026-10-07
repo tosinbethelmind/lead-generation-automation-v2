@@ -178,47 +178,53 @@ def get_nigerian_carrier(phone_clean):
 def extract_businesslist_cards(html, url, category, area):
     from bs4 import BeautifulSoup
     from curl_cffi import requests
+    import concurrent.futures
     soup = BeautifulSoup(html, 'html.parser')
     companies = soup.select('div.company, div.company_header')
     leads = []
     seen = set()
 
-    profile_fetches = 0
+    # Pre-extract company metadata from category listing
+    candidate_list = []
     for c in companies:
-        if len(leads) >= 15:
-            break
         name_el = c.select_one('h4 a, h3 a, a.company_name')
         if not name_el:
             continue
         raw_name = name_el.get_text(strip=True)
         if not raw_name or len(raw_name) < 3 or raw_name.lower() == 'view profile':
             continue
-        clean_name = re.sub(r'view profile', '', raw_name, flags=re.I).strip()
+        clean_name = re.sub(r'^\d+\s*\|\s*', '', raw_name).strip()
+        clean_name = re.sub(r'view profile', '', clean_name, flags=re.I).strip()
         
         addr_el = c.select_one('.address, .location')
         address = addr_el.get_text(strip=True) if addr_el else f"{area}, Nigeria"
-
-        card_text = c.get_text()
-        phone_pattern = r'(?:(?:\+?234)|0)[\s.-]?[789][01](?:[\s.-]?\d){8}'
-        phones = re.findall(phone_pattern, card_text)
-
-        # If no phone on card, check company profile page using curl_cffi (bounded check)
+        
         href = name_el.get('href', '')
-        if not phones and href and profile_fetches < 6:
-            profile_fetches += 1
-            try:
-                prof_url = href if href.startswith('http') else ('https://www.businesslist.com.ng' + ('' if href.startswith('/') else '/') + href)
-                r_prof = requests.get(prof_url, impersonate="chrome124", timeout=3.5)
-                if r_prof.status_code == 200:
-                    s_prof = BeautifulSoup(r_prof.text, 'html.parser')
-                    tel_el = s_prof.select_one('.phone, .tel, div.phone, a[href^="tel:"]')
-                    if tel_el:
-                        phones = re.findall(phone_pattern, tel_el.get_text() or tel_el.get('href', ''))
-                    if not phones:
-                        phones = re.findall(phone_pattern, r_prof.text)
-            except Exception:
-                pass
+        prof_url = href if href.startswith('http') else ('https://www.businesslist.com.ng' + ('' if href.startswith('/') else '/') + href) if href else ''
+        candidate_list.append({
+            'name': clean_name,
+            'address': address,
+            'prof_url': prof_url
+        })
+        if len(candidate_list) >= 20:
+            break
 
+    # Parallel detail fetcher function (fast 3.5s timeout)
+    def fetch_company_phones(cand):
+        if not cand['prof_url']:
+            return cand, []
+        try:
+            req = urllib.request.Request(cand['prof_url'], headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
+            p_html = urllib.request.urlopen(req, timeout=3.5).read().decode('utf-8', errors='ignore')
+            found = re.findall(r'(?:(?:\+?234)|0)[\s.-]?[789][01](?:[\s.-]?\d){8}', p_html)
+            return cand, found
+        except Exception:
+            return cand, []
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        fetched_results = list(executor.map(fetch_company_phones, candidate_list))
+
+    for cand, phones in fetched_results:
         for p in phones:
             clean_p = validate_nigerian_phone(p)
             if clean_p and clean_p not in seen:
@@ -226,19 +232,19 @@ def extract_businesslist_cards(html, url, category, area):
                 carrier = get_nigerian_carrier(clean_p)
                 leads.append({
                     "id": f"bizlist_{int(time.time()*1000)}_{len(leads)}",
-                    "name": clean_name,
+                    "name": cand['name'],
                     "phone": clean_p,
                     "phoneE164": "+234" + clean_p[1:],
                     "carrier": carrier,
                     "email": None,
                     "category": category,
                     "area": area,
-                    "address": address,
-                    "website": external_site if 'external_site' in locals() and external_site else None,
-                    "hasWebsite": bool('external_site' in locals() and external_site),
+                    "address": cand['address'],
+                    "website": None,
+                    "hasWebsite": False,
                     "source": "BUSINESSLIST_NG",
                     "confidenceScore": 95,
-                    "engineTag": "CURL_CFFI_CHROME124",
+                    "engineTag": "THREADPOOL_BUSINESSLIST_FAST",
                     "scrapedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ")
                 })
                 break
