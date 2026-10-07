@@ -190,32 +190,6 @@ function resolveAuthDir(inst) {
   const localDb = path.join(__dirname, '../local_db');
   const targetDir = path.join(localDb, inst.canonicalDir);
 
-  // Check canonical dir first
-  if (hasSavedSession(targetDir)) {
-    return targetDir;
-  }
-
-  // Check permanent master backup and general backup directories
-  const candidateDirs = [
-    path.join(localDb, 'baileys_auth_permanent_master', inst.canonicalDir),
-    path.join(localDb, 'baileys_auth_backups', inst.canonicalDir),
-    inst.id === 1 ? path.join(localDb, 'baileys_auth_admin') : null
-  ].filter(Boolean);
-
-  for (const backupDir of candidateDirs) {
-    if (hasSavedSession(backupDir)) {
-      try {
-        if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
-        for (const f of fs.readdirSync(backupDir)) {
-          const sf = path.join(backupDir, f);
-          if (fs.statSync(sf).isFile()) fs.copyFileSync(sf, path.join(targetDir, f));
-        }
-        console.log(`[Evolution API] 🔄 Restored valid session for ${inst.label} from ${backupDir}`);
-        return targetDir;
-      } catch (_) {}
-    }
-  }
-
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
   }
@@ -364,23 +338,44 @@ function extractMessageText(msg) {
 function formatInboundCloserReply(text) {
   const lower = (text || '').toLowerCase().trim();
 
-  // Pricing inquiries
+  // 1. Opt-out / Disinterest / Stop requests (STOP SENDING IMMEDIATELY)
+  if (/^(no|stop|cancel|unsubscribe|remove|not interested|dont message|don't message|not keen|never|leave me|stop it|opt out|optout|block)\b/i.test(lower) ||
+      /\b(not interested|not keen|stop messaging|remove my number|stop sending|no thanks|no thank you|dont contact|don't contact)\b/i.test(lower)) {
+    return {
+      isOptOut: true,
+      text: `Understood and acknowledged Sir/Ma. We have immediately removed your number from all future outreach. We wish your business continuous success!`
+    };
+  }
+
+  // 2. Pricing inquiries
   if (/price|cost|how much|fee|pay|pricing|expensive|cheap|charges|amount/i.test(lower)) {
-    return `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Analytics Lagos* business tools.\n\nWe keep our rates completely transparent with ZERO hidden fees:\n\n1️⃣ *Option A: 1-Line Self-Install Embed* — *₦25,000* (one-time setup).\n   Ideal if you already have a website and just want the 24/7 quoting bot & calculator added in 5 minutes.\n\n2️⃣ *Option B: Full 100% Done-For-You (DFY) Turnkey* — *₦75,000* (Deposit: ₦35,000 to begin).\n   We deliver everything within 48 hours:\n   • Custom .com / .ng business domain\n   • 24/7 AI WhatsApp Sales Bot configured on your business line\n   • Automated Paystack & OPay bank transfer reconciliation (stops fake alerts)\n   • 30-day technical support & staff handover\n\nYou can test drive the interactive demo on your phone right now:\n👉 https://www.bethelmindanalytics.com\n\nWhich option fits your budget better (Self-Install ₦25k or Full DFY ₦75k)?\nYou can also call or message our Head of Desk directly:\n👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`;
+    return {
+      isOptOut: false,
+      text: `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Analytics Lagos* business tools.\n\nWe keep our rates completely transparent with ZERO hidden fees:\n\n1️⃣ *Option A: 1-Line Self-Install Embed* — *₦35,000* (one-time setup).\n   Ideal if you already have a website and just want the 24/7 quoting bot & calculator added in 5 minutes.\n\n2️⃣ *Option B: Full 100% Done-For-You (DFY) Turnkey* — *₦150,000* (Deposit: ₦75,000 to begin).\n   We deliver everything within 48 hours:\n   • Custom .com / .ng business domain\n   • 24/7 AI WhatsApp Sales Bot configured on your business line\n   • Automated Paystack & OPay bank transfer reconciliation (stops fake alerts)\n   • 30-day technical support & staff handover\n\nYou can test drive the interactive demo on your phone right now:\n👉 https://www.bethelmindanalytics.com\n\nWhich option fits your budget better (1-Line Embed ₦35k or Full Turnkey ₦150k / ₦75k deposit)?\nYou can also call or message our Head of Desk directly:\n👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`
+    };
   }
 
-  // Positive interest / demo requests
+  // 3. Positive interest / demo requests
   if (/yes|send|ok|sure|show me|interested|demo|proceed|details|link|share|go ahead|tell me more|how does it work/i.test(lower)) {
-    return `Thank you so much Sir/Ma! We are excited to show you.\n\nHere is the live interactive prototype (test it directly on your mobile device, ₦0 Upfront):\n👉 https://www.bethelmindanalytics.com\n\n📌 *What to test when you open it:*\n1. Try the instant price calculator to see how fast it quotes.\n2. Tap the WhatsApp demo button to experience the sub-3s automated response.\n\nOnce set up on your official business line, it captures paying customers day and night without your staff having to type repetitive replies.\n\nWould you like our technical team to schedule a quick 10-minute activation for your business today?\nConnect directly with our Lagos Desk Head:\n👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`;
+    return {
+      isOptOut: false,
+      text: `Thank you so much Sir/Ma! We are excited to show you.\n\nHere is the live interactive prototype (test it directly on your mobile device, ₦0 Upfront):\n👉 https://www.bethelmindanalytics.com\n\n📌 *What to test when you open it:*\n1. Try the instant price calculator to see how fast it quotes.\n2. Tap the WhatsApp demo button to experience the sub-3s automated response.\n\nOnce set up on your official business line, it captures paying customers day and night without your staff having to type repetitive replies.\n\nWould you like our technical team to schedule a quick 10-minute activation for your business today?\nConnect directly with our Lagos Desk Head:\n👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`
+    };
   }
 
-  // Verification / Location / Legitimacy
+  // 4. Verification / Location / Legitimacy
   if (/who|where|office|address|location|scam|real|legit|call|number/i.test(lower)) {
-    return `Good day Sir/Ma!\n\nWe are *Bethelmind Analytics Lagos Desk*, a registered commercial technology enterprise based in Lagos, Nigeria.\n• Head of Desk: Tosin Oyelakin\n• Official Hotline / Direct WhatsApp: 0802 279 1227 (wa.me/2348022791227)\n• Corporate Website: https://www.bethelmindanalytics.com\n• Bank Settlement: Direct OPay Merchant Integration (Oyelakin Tosin Matthew)\n\nWe help Nigerian businesses eliminate after-hours sales loss by deploying automated 24/7 WhatsApp response tools.\n\nYou do NOT pay anything upfront to review your demo. Feel free to inspect our platform or call 0802 279 1227 to speak with Tosin directly.`;
+    return {
+      isOptOut: false,
+      text: `Good day Sir/Ma!\n\nWe are *Bethelmind Analytics Lagos Desk*, a registered commercial technology enterprise based in Lagos, Nigeria.\n• Head of Desk: Tosin Oyelakin\n• Official Hotline / Direct WhatsApp: 0802 279 1227 (wa.me/2348022791227)\n• Corporate Website: https://www.bethelmindanalytics.com\n• Bank Settlement: Direct OPay Merchant Integration (Oyelakin Tosin Matthew)\n\nWe help Nigerian businesses eliminate after-hours sales loss by deploying automated 24/7 WhatsApp response tools.\n\nYou do NOT pay anything upfront to review your demo. Feel free to inspect our platform or call 0802 279 1227 to speak with Tosin directly.`
+    };
   }
 
-  // General polite response
-  return `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Analytics Lagos Desk*.\n\nOur senior technical consultant is reviewing your message right now.\n\nIn the meantime, you can test drive how our 24/7 automated quoting tool works on your phone:\n👉 https://www.bethelmindanalytics.com\n\nTo speak directly with our Head of Desk for immediate setup:\n👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`;
+  // 5. General polite response for interested/curious prospects
+  return {
+    isOptOut: false,
+    text: `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Analytics Lagos Desk*.\n\nOur senior technical consultant is reviewing your message right now.\n\nIn the meantime, you can test drive how our 24/7 automated quoting tool works on your phone:\n👉 https://www.bethelmindanalytics.com\n\nTo speak directly with our Head of Desk for immediate setup:\n👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`
+  };
 }
 
 async function handleInboundMessage(inst, msg) {
@@ -393,6 +388,19 @@ async function handleInboundMessage(inst, msg) {
     if (!text || !text.trim()) return;
 
     const cleanSender = senderJid.replace('@s.whatsapp.net', '');
+    const localDbDir = path.join(__dirname, '../local_db');
+    const blacklistPath = path.join(localDbDir, 'opt_out_blacklist.json');
+
+    // Check if user is already blacklisted
+    let blacklist = [];
+    if (fs.existsSync(blacklistPath)) {
+      try { blacklist = JSON.parse(fs.readFileSync(blacklistPath, 'utf8')); } catch (_) {}
+    }
+    if (blacklist.includes(cleanSender)) {
+      console.log(`🛑 [Inbound Closer] +${cleanSender} is on the Opt-Out Blacklist. Zero replies dispatched.`);
+      return;
+    }
+
     const now = Date.now();
     const lastReply = inboundCooldowns.get(senderJid) || 0;
     if (now - lastReply < 10 * 60 * 1000) {
@@ -402,7 +410,8 @@ async function handleInboundMessage(inst, msg) {
     inboundCooldowns.set(senderJid, now);
 
     console.log(`\n🎧 [Inbound Closer] New inquiry on ${inst.label} from +${cleanSender}: "${text.trim().substring(0, 80)}"`);
-    const replyText = formatInboundCloserReply(text);
+    const decision = formatInboundCloserReply(text);
+    const replyText = decision.text;
 
     // Simulate natural typing delay (800ms - 1500ms)
     await inst.socket.presenceSubscribe(senderJid);
@@ -410,16 +419,52 @@ async function handleInboundMessage(inst, msg) {
     await new Promise(r => setTimeout(r, 1200));
 
     await inst.socket.sendMessage(senderJid, { text: replyText });
-    console.log(`✅ [Inbound Closer] Auto-reply dispatched to +${cleanSender}!`);
+    console.log(`✅ [Inbound Closer] Auto-reply dispatched to +${cleanSender}! (Opt-out: ${decision.isOptOut})`);
 
-    // Alert Admin Closer Desk (0802 279 1227) if message came on an outreach line
-    if (inst.id !== 1 && instances.instance_1?.socket && instances.instance_1?.state === 'open') {
+    // If client requested opt-out / not interested, permanently add to blacklist and mark in leads_db.json
+    if (decision.isOptOut) {
+      if (!blacklist.includes(cleanSender)) {
+        blacklist.push(cleanSender);
+        fs.writeFileSync(blacklistPath, JSON.stringify(blacklist, null, 2), 'utf8');
+        console.log(`🚫 [Opt-Out Handler] Added +${cleanSender} to permanent blacklist.`);
+      }
+
+      // Mark opt_out in leads_db.json
       try {
-        const adminAlert = `🚨 *[INBOUND LEAD ALERT]* on *${inst.label}*\n• From: +${cleanSender}\n• Client Message: "${text.trim()}"\n• Action: Auto-reply closer sent with demo link.\n• Jump in: wa.me/${cleanSender}`;
-        await instances.instance_1.socket.sendMessage('2348022791227@s.whatsapp.net', { text: adminAlert });
-        console.log(`📢 [Admin Alert] Dispatched lead notification to 0802 279 1227!`);
-      } catch (alertErr) {
-        console.warn(`[Admin Alert Warning]:`, alertErr.message);
+        const leadsDbP = path.join(localDbDir, 'leads_db.json');
+        if (fs.existsSync(leadsDbP)) {
+          const leads = JSON.parse(fs.readFileSync(leadsDbP, 'utf8'));
+          let modified = false;
+          leads.forEach(l => {
+            const p = (l.phone_e164 || l.phone || '').replace(/\D/g, '');
+            if (p === cleanSender || (cleanSender.endsWith(p) && p.length >= 10)) {
+              l.opt_out = true;
+              l.opt_out_at = new Date().toISOString();
+              l.opt_out_reason = text.trim();
+              modified = true;
+            }
+          });
+          if (modified) fs.writeFileSync(leadsDbP, JSON.stringify(leads, null, 2), 'utf8');
+        }
+      } catch (_) {}
+
+      // Notify Admin Closer Desk that contact asked to stop
+      if (inst.id !== 1 && instances.instance_1?.socket && instances.instance_1?.state === 'open') {
+        try {
+          const optOutAlert = `🛑 *[OPT-OUT CONFIRMED]*\n• From: +${cleanSender}\n• Client Message: "${text.trim()}"\n• Action: Removed from all campaigns permanently.`;
+          await instances.instance_1.socket.sendMessage('2348022791227@s.whatsapp.net', { text: optOutAlert });
+        } catch (_) {}
+      }
+    } else {
+      // Alert Admin Closer Desk (0802 279 1227) if positive message came on an outreach line
+      if (inst.id !== 1 && instances.instance_1?.socket && instances.instance_1?.state === 'open') {
+        try {
+          const adminAlert = `🚨 *[INBOUND LEAD ALERT]* on *${inst.label}*\n• From: +${cleanSender}\n• Client Message: "${text.trim()}"\n• Action: Auto-reply closer sent with demo link.\n• Jump in: wa.me/${cleanSender}`;
+          await instances.instance_1.socket.sendMessage('2348022791227@s.whatsapp.net', { text: adminAlert });
+          console.log(`📢 [Admin Alert] Dispatched lead notification to 0802 279 1227!`);
+        } catch (alertErr) {
+          console.warn(`[Admin Alert Warning]:`, alertErr.message);
+        }
       }
     }
 
@@ -436,6 +481,7 @@ async function handleInboundMessage(inst, msg) {
         lineLabel: inst.label,
         message: text.trim(),
         replySent: true,
+        optOut: decision.isOptOut,
         timestamp: new Date().toISOString()
       });
       if (crm.length > 500) crm = crm.slice(0, 500);
@@ -485,7 +531,7 @@ async function startInstanceSocket(key, isUserInitiated = false) {
       logger: pino({ level: 'silent' }),
       auth: state,
       printQRInTerminal: false,
-      browser: ['Windows', 'Chrome', '128.0.6613.120'],
+      browser: ['Ubuntu', 'Chrome', '20.0.04'],
       syncFullHistory: false,
       markOnlineOnConnect: true,
       keepAliveIntervalMs: 25000,
@@ -548,26 +594,30 @@ async function startInstanceSocket(key, isUserInitiated = false) {
           return;
         }
 
-        // 2. LOGGED OUT (401) OR FORBIDDEN (403)
-        if (statusCode === DisconnectReason.loggedOut || statusCode === 401 || statusCode === 403) {
-          console.log(`[Evolution API] 🔒 Session unlinked for ${inst.label}. Preserving keys on disk.`);
+        // 2. EXPLICIT LOGGED OUT (401 ONLY)
+        // Never wipe keys on 408 (timedOut) or 428 (connectionClosed) - those are routine socket reconnects!
+        if (statusCode === DisconnectReason.loggedOut || statusCode === 401) {
+          console.log(`[Evolution API] 🔒 Session unlinked / logged out for ${inst.label}.`);
           inst.hasSavedLink = false;
           inst.phone = '';
+          inst.qr = '';
+          inst.pairingCode = '';
+          try {
+            const credsFile = path.join(authDir, 'creds.json');
+            if (fs.existsSync(credsFile)) fs.unlinkSync(credsFile);
+          } catch (_) {}
           updateLineRegistry(inst, false);
           return;
         }
 
-        // 3. TEMPORARY NETWORK DROP / RECONNECT WATCHDOG
-        if (inst.hasSavedLink || isUserInitiated) {
-          inst.reconnectAttempts = (inst.reconnectAttempts || 0) + 1;
-          if (inst.reconnectAttempts <= 10) {
-            const delayMs = Math.min(2500 * Math.pow(1.4, inst.reconnectAttempts - 1), 25000);
-            console.log(`[Evolution API] 🔄 Reconnecting ${inst.label} in ${(delayMs / 1000).toFixed(1)}s (Attempt ${inst.reconnectAttempts})...`);
-            setTimeout(() => {
-              startInstanceSocket(key, isUserInitiated);
-            }, delayMs);
-          }
-        }
+        // 3. TEMPORARY NETWORK DROP / ROUTINE DISCONNECT (408, 428, 440, 500, 503, ETC.)
+        // Preserve all keys permanently! Never delete creds! Auto-reconnect with watchdog!
+        inst.reconnectAttempts = (inst.reconnectAttempts || 0) + 1;
+        const delayMs = Math.min(2000 * Math.pow(1.3, Math.min(inst.reconnectAttempts, 8)), 20000);
+        console.log(`[Evolution API] 🔄 Routine socket refresh for ${inst.label} (code: ${statusCode}). Reconnecting in ${(delayMs / 1000).toFixed(1)}s (Attempt ${inst.reconnectAttempts})...`);
+        setTimeout(() => {
+          startInstanceSocket(key, isUserInitiated || inst.hasSavedLink);
+        }, delayMs);
       }
     });
 
@@ -1201,8 +1251,28 @@ app.post('/send', async (req, res) => {
   if (targetLine && instances[`instance_${targetLine}`]) {
     inst = instances[`instance_${targetLine}`];
   }
+
+  // ANTI-BAN SAFETY GUARD: Never use Line 1 (0802 279 1227) for cold outbound campaigns
+  const isColdOutreach = req.body.isColdOutreach === true || targetLine === undefined || targetLine === null;
+  if (isColdOutreach && (!targetLine || Number(targetLine) === 1)) {
+    // Attempt to route to an active secondary outreach line (Lines 2 through 7)
+    inst = Object.values(instances).find(i => i.id > 1 && i.state === 'open' && i.socket);
+    if (!inst) {
+      return res.status(403).json({ 
+        error: 'OUTBOUND_BLOCKED: Line 1 (0802 279 1227) is strictly protected from cold outreach to prevent bans. Please link an outreach line (Line 2-7) at http://localhost:8080/pair/2.' 
+      });
+    }
+  }
+
   if (!inst || inst.state !== 'open' || !inst.socket) {
     inst = Object.values(instances).find(i => i.state === 'open' && i.socket);
+  }
+
+  // Strict check: if the selected instance is still Line 1 and request is marked as cold outreach, block it!
+  if (inst && inst.id === 1 && req.body.isColdOutreach) {
+    return res.status(403).json({ 
+      error: 'OUTBOUND_BLOCKED: Line 1 (0802 279 1227) is protected. Cold outreach forbidden on main closer line.' 
+    });
   }
 
   if (!inst) return res.status(503).json({ error: 'No active WhatsApp instance online' });
@@ -1259,8 +1329,17 @@ async function startPairingSocket(key, rawPhone) {
   const localDb = path.join(__dirname, '../local_db');
   const targetDir = path.join(localDb, inst.canonicalDir);
 
-  // If unverified session exists, clean directory to guarantee fresh cryptographic keys
-  if (!hasSavedSession(targetDir)) {
+  // ONLY wipe if there is NO valid registered session already present!
+  // If valid creds.json exists, do NOT wipe: simply reuse/reconnect!
+  const existingSaved = hasSavedSession(targetDir);
+  if (existingSaved) {
+    console.log(`[Evolution API] Valid registered session already detected for ${inst.label} (+${existingSaved.phone}). Reconnecting existing link rather than wiping!`);
+    await startInstanceSocket(key, true);
+    return 'ALREADY_LINKED';
+  }
+
+  // If session is truly not registered, prepare fresh clean handshake
+  if (inst.state !== 'open') {
     try {
       if (fs.existsSync(targetDir)) {
         for (const f of fs.readdirSync(targetDir)) {
@@ -1270,6 +1349,8 @@ async function startPairingSocket(key, rawPhone) {
         fs.mkdirSync(targetDir, { recursive: true });
       }
     } catch (_) {}
+    inst.hasSavedLink = false;
+    inst.phone = '';
   }
 
   // Start the authoritative instance socket
@@ -1307,7 +1388,15 @@ async function startQrSocket(key) {
   const localDb = path.join(__dirname, '../local_db');
   const targetDir = path.join(localDb, inst.canonicalDir);
 
-  if (!hasSavedSession(targetDir)) {
+  // ONLY wipe if there is NO valid registered session already present!
+  const existingSaved = hasSavedSession(targetDir);
+  if (existingSaved) {
+    console.log(`[Evolution API] Valid registered session already detected for ${inst.label} (+${existingSaved.phone}). Reconnecting existing link rather than wiping!`);
+    await startInstanceSocket(key, true);
+    return null;
+  }
+
+  if (inst.state !== 'open') {
     try {
       if (fs.existsSync(targetDir)) {
         for (const f of fs.readdirSync(targetDir)) {
@@ -1317,6 +1406,8 @@ async function startQrSocket(key) {
         fs.mkdirSync(targetDir, { recursive: true });
       }
     } catch (_) {}
+    inst.hasSavedLink = false;
+    inst.phone = '';
   }
 
   // Start the authoritative instance socket

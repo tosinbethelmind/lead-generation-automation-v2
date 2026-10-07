@@ -247,25 +247,39 @@ def extract_businesslist_cards(html, url, category, area):
 def extract_finelib_cards(html, url, category, area):
     from bs4 import BeautifulSoup
     soup = BeautifulSoup(html, 'html.parser')
-    inner_boxes = soup.select('div.bx-inner')
     leads = []
     seen = set()
+    phone_pattern = r'(?:(?:\+?234)|0)[\s.-]?[789][01](?:[\s.-]?\d){8}'
 
-    for b in inner_boxes:
-        if len(leads) >= 15:
+    # Check outer card boxes (.box-682) first (Category listing view)
+    boxes = soup.find_all('div', class_='box-682')
+    if not boxes:
+        boxes = soup.select('div.bx-inner, div[class*="box"]')
+
+    for b in boxes:
+        if len(leads) >= 25:
             break
-        # Locate company name header
-        header = b.find_previous(['h2', 'h3', 'h4', 'div'], class_=lambda c: c and ('title' in c or 'heading' in c or 'name' in c))
-        raw_name = header.get_text(strip=True) if header else ""
+        # Locate company name from heading or anchor tag
+        name_el = b.find(['h2', 'h3', 'h4', 'a'], class_=lambda c: c and ('title' in c or 'heading' in c or 'name' in c))
+        if not name_el:
+            name_el = b.find('a')
+        
+        raw_name = name_el.get_text(strip=True) if name_el else ""
         clean_name = re.sub(r'^\d+\s*', '', raw_name).strip()
-        if not clean_name or len(clean_name) < 3:
-            clean_name = f"{category} Enterprise"
+        clean_name = re.sub(r'view profile|more info|write a review', '', clean_name, flags=re.I).strip()
+        if not clean_name or len(clean_name) < 3 or clean_name.lower() in ['adult wears', 'more info', 'write a review']:
+            continue
 
         box_text = b.get_text(separator=' | ', strip=True)
         parts = [p.strip() for p in box_text.split('|') if p.strip()]
-        address = parts[0] if parts else f"{area}, Nigeria"
+        # Pick the most plausible address part (string with letters and length > 5, not a phone or number)
+        address = f"{area}, Nigeria"
+        for part in parts:
+            if len(part) > 5 and not part.isdigit() and not re.search(phone_pattern, part) and part.lower() not in [clean_name.lower(), 'view profile', 'more info']:
+                address = f"{part}, {area}"
+                break
 
-        phones = re.findall(r'(?:\+?234|0)[789][01]\s?\d{3,4}\s?\d{4}', box_text)
+        phones = re.findall(phone_pattern, box_text)
         for p in phones:
             clean_p = validate_nigerian_phone(p)
             if clean_p and clean_p not in seen:

@@ -90,64 +90,24 @@ function cleanBusinessName(raw: string): string {
     .slice(0, 45);
 }
 
+import { fetchSERPWithFallback } from '../src/lib/multiProviderRotator';
+
 /**
- * Queries public search engines with anti-detection headers to extract Instagram/TikTok snippets
+ * Queries multi-provider search engine rotator with anti-detection headers to extract Instagram/TikTok snippets
  */
 async function searchSocialIndex(platform: 'instagram.com' | 'tiktok.com/@', targetQuery: string): Promise<any[]> {
   const query = `site:${platform} ${targetQuery}`;
-  const results: any[] = [];
-
-  const headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.9'
-  };
-
-  // Provider 1: DuckDuckGo HTML Lite (zero-cost, highly reliable for bio search)
   try {
-    const ddgUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
-    const resp = await axios.get(ddgUrl, { headers, timeout: 10000 });
-    const $ = cheerio.load(resp.data);
-
-    $('.result').each((_, el) => {
-      const title = $(el).find('.result__title a').text().trim();
-      const snippet = $(el).find('.result__snippet').text().trim();
-      const rawLink = $(el).find('.result__url').attr('href') || $(el).find('.result__title a').attr('href') || '';
-      
-      let link = rawLink;
-      if (rawLink.includes('uddg=')) {
-        try {
-          const u = new URL('https:' + rawLink);
-          link = decodeURIComponent(u.searchParams.get('uddg') || rawLink);
-        } catch (_) {}
-      }
-
-      if (title && snippet) {
-        results.push({ title, snippet, link });
-      }
-    });
-  } catch (_) {}
-
-  // Provider 2: Bing Search Lite
-  if (results.length < 5) {
-    try {
-      const bingUrl = `https://www.bing.com/search?q=${encodeURIComponent(query)}`;
-      const resp = await axios.get(bingUrl, { headers, timeout: 10000 });
-      const $ = cheerio.load(resp.data);
-
-      $('li.b_algo').each((_, el) => {
-        const title = $(el).find('h2 a').text().trim();
-        const snippet = $(el).find('.b_caption p').text().trim();
-        const link = $(el).find('h2 a').attr('href') || '';
-
-        if (title && snippet) {
-          results.push({ title, snippet, link });
-        }
-      });
-    } catch (_) {}
+    const serpItems = await fetchSERPWithFallback(query, 15);
+    return serpItems.map(item => ({
+      title: item.title,
+      snippet: item.snippet,
+      link: item.link
+    }));
+  } catch (err: any) {
+    console.warn(`[Social Search] Failed query "${query}": ${err.message}`);
+    return [];
   }
-
-  return results;
 }
 
 export async function harvestInstagramAndTikTok(maxPerSector = 15): Promise<any[]> {

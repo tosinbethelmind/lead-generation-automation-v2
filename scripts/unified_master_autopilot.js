@@ -139,8 +139,33 @@ function checkScheduledBroadcast() {
 
 // ── WORKER 4: Multi-SIM WhatsApp Outbound Campaign (30/Line/Day Anti-Ban) ──
 let waOutboundProcess = null;
-function startWaOutboundCampaign() {
-  log('🚀 [Worker 4: WhatsApp Outbound] Launching Multi-SIM Anti-Ban Campaign (Target: 30 DMs/line/day)...');
+async function startWaOutboundCampaign() {
+  // STRICT SAFETY GUARD: Verify that secondary outreach lines (Line 2 to 7) are actually online before running!
+  try {
+    const http = require('http');
+    const checkStatus = () => new Promise(resolve => {
+      http.get('http://localhost:8080/status', res => {
+        let body = '';
+        res.on('data', d => body += d);
+        res.on('end', () => {
+          try { resolve(JSON.parse(body)); } catch (_) { resolve(null); }
+        });
+      }).on('error', () => resolve(null));
+    });
+
+    const status = await checkStatus();
+    const secondaryLinesOnline = (status?.instances || []).filter(i => i.id > 1 && i.state === 'open');
+
+    if (secondaryLinesOnline.length === 0) {
+      log('🛡️ [Worker 4: WhatsApp Outbound Safety Guard] Outreach paused. Only Line 1 (Main Admin Closer Desk) is linked. Cold outreach is strictly disabled on your main line to protect against bans until secondary lines (Lines 2-7) are linked.');
+      setTimeout(startWaOutboundCampaign, 30 * 60 * 1000); // Re-check in 30 minutes
+      return;
+    }
+  } catch (err) {
+    log('⚠️ [Worker 4: Safety Check Notice] ' + err.message);
+  }
+
+  log('🚀 [Worker 4: WhatsApp Outbound] Secondary outreach lines detected. Launching Multi-SIM Campaign (Target: 30 DMs/line/day)...');
   waOutboundProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/whatsapp_outbound_30_per_line_campaign.ts', '--limit=30'], {
     cwd: rootDir,
     shell: false,

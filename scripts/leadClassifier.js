@@ -119,6 +119,16 @@ function cleanBusinessName(name) {
   if (!name) return 'Commercial Business';
   let cleaned = name.split('||')[0].split('|')[0].split('-')[0].trim();
   cleaned = cleaned.replace(/\(.*?\)/g, '').replace(/\[.*?\]/g, '').trim();
+
+  // If there's an author/business slash e.g. "LAWAL DEBORAH OLABISI / 1STLADY SKINCARE"
+  if (cleaned.includes('/')) {
+    const parts = cleaned.split('/');
+    const brandPart = parts[parts.length - 1].trim();
+    if (brandPart.length > 3) cleaned = brandPart;
+  }
+  // Strip academic / staff directory artifact
+  cleaned = cleaned.replace(/—\s*staff profile.*$/i, '').replace(/-\s*staff profile.*$/i, '').trim();
+
   return cleaned.trim() || 'Commercial Business';
 }
 

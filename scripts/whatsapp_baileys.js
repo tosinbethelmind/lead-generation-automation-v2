@@ -1067,6 +1067,21 @@ const sendHandlerLine1 = async (req, res) => {
     }
     const jid = `${cleanPhone}@s.whatsapp.net`;
     
+    // 🚨 IRONCLAD SAFETY GUARD: Admin line (0802 279 1227) is STRICTLY INBOUND ONLY + admin alerts.
+    // NEVER send outbound messages to leads/clients from the admin session.
+    const myJid = sock?.user?.id || '';
+    const myNumber = myJid.split(':')[0].replace(/\D/g, '');
+    const isAdminSocket = myNumber.includes('8022791227') || myNumber.endsWith('8022791227');
+    const isTargetAdmin = cleanPhone.includes('8022791227') || cleanPhone.endsWith('8022791227');
+
+    if (isAdminSocket && !isTargetAdmin) {
+      console.error(`🚨 [SAFETY BLOCK TRIGGERED]: Attempted cold outbound from ADMIN NUMBER (${myNumber}) to ${cleanPhone}. BLOCKED.`);
+      return res.status(403).json({
+        success: false,
+        error: "SAFETY BLOCK: Admin line (0802 279 1227) is strictly restricted to inbound/internal alerts only. Outbound outreach from this number is prohibited by system invariant."
+      });
+    }
+
     // Simulate human typing
     try {
       await sock.sendPresenceUpdate('composing', jid);
@@ -1103,6 +1118,20 @@ app.post('/send-voicenote', async (req, res) => {
   try {
     const cleanPhone = phone.replace(/\D/g, '');
     const jid = `${cleanPhone}@s.whatsapp.net`;
+
+    // 🚨 IRONCLAD SAFETY GUARD: Block outbound voice notes from admin session
+    const myJid = sock?.user?.id || '';
+    const myNumber = myJid.split(':')[0].replace(/\D/g, '');
+    const isAdminSocket = myNumber.includes('8022791227') || myNumber.endsWith('8022791227');
+    const isTargetAdmin = cleanPhone.includes('8022791227') || cleanPhone.endsWith('8022791227');
+
+    if (isAdminSocket && !isTargetAdmin) {
+      console.error(`🚨 [SAFETY BLOCK TRIGGERED]: Attempted voice note from ADMIN NUMBER (${myNumber}) to ${cleanPhone}. BLOCKED.`);
+      return res.status(403).json({
+        success: false,
+        error: "SAFETY BLOCK: Admin line (0802 279 1227) is strictly restricted to inbound/internal alerts only."
+      });
+    }
 
     console.log(`🎙️ [Baileys Voice Note] Synthesizing & sending PTT Nigerian Voice Note to ${cleanPhone}...`);
 
@@ -1567,6 +1596,22 @@ app.post('/send-message', async (req, res) => {
   try {
     const cleanPhone = target.replace(/\D/g, '');
     const jid = `${cleanPhone}@s.whatsapp.net`;
+
+    // 🚨 IRONCLAD SAFETY GUARD: Admin line (0802 279 1227) is STRICTLY INBOUND ONLY + admin alerts.
+    // NEVER send outbound messages to leads/clients from the admin session.
+    const myJid = sock?.user?.id || '';
+    const myNumber = myJid.split(':')[0].replace(/\D/g, '');
+    const isAdminSocket = myNumber.includes('8022791227') || myNumber.endsWith('8022791227');
+    const isTargetAdmin = cleanPhone.includes('8022791227') || cleanPhone.endsWith('8022791227');
+
+    if (isAdminSocket && !isTargetAdmin) {
+      console.error(`🚨 [SAFETY BLOCK TRIGGERED]: Attempted cold outbound from ADMIN NUMBER (${myNumber}) to ${cleanPhone}. BLOCKED.`);
+      return res.status(403).json({
+        success: false,
+        error: "SAFETY BLOCK: Admin line (0802 279 1227) is strictly restricted to inbound/internal alerts only. Outbound outreach from this number is prohibited by system invariant."
+      });
+    }
+
     await sock.sendMessage(jid, { text: content });
     console.log(`📤 [Baileys /send-message] Successfully sent message to ${cleanPhone}`);
     return res.json({ success: true, deliveredTo: cleanPhone });
@@ -1634,6 +1679,22 @@ app.post('/send', async (req, res) => {
   try {
     const cleanPhone = target.replace(/\D/g, '');
     const jid = `${cleanPhone}@s.whatsapp.net`;
+
+    // 🚨 IRONCLAD SAFETY GUARD: Admin line (0802 279 1227) is STRICTLY INBOUND ONLY + admin alerts.
+    // NEVER send outbound messages to leads/clients from the admin session.
+    const myJid = sock?.user?.id || '';
+    const myNumber = myJid.split(':')[0].replace(/\D/g, '');
+    const isAdminSocket = myNumber.includes('8022791227') || myNumber.endsWith('8022791227');
+    const isTargetAdmin = cleanPhone.includes('8022791227') || cleanPhone.endsWith('8022791227');
+
+    if (isAdminSocket && !isTargetAdmin) {
+      console.error(`🚨 [SAFETY BLOCK TRIGGERED]: Attempted cold outbound from ADMIN NUMBER (${myNumber}) to ${cleanPhone}. BLOCKED.`);
+      return res.status(403).json({
+        success: false,
+        error: "SAFETY BLOCK: Admin line (0802 279 1227) is strictly restricted to inbound/internal alerts only. Outbound outreach from this number is prohibited by system invariant."
+      });
+    }
+
     if (simulateTyping) {
       await sock.sendPresenceUpdate('composing', jid);
       await new Promise(r => setTimeout(r, 1200));
