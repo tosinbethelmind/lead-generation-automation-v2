@@ -441,7 +441,8 @@ export async function fetchBusinessListLeads(categoryOrQuery: string, state = 'N
 
         if (!name || name.length < 4 || name.toLowerCase() === 'view profile' || !href) return;
 
-        const inlinePhones = cardText.match(/(?:(?:\+?234)|0)\s*[789][01](?:[\s.-]?\d){8}/g) || [];
+        const phoneRegex = /(?:(?:\+?234)|0)[\s.-]?[789][01](?:[\s.-]?\d){8}/g;
+        const inlinePhones = cardText.match(phoneRegex) || [];
         const inlineEmails = extractEmailsFromText(cardText) || [];
 
         cards.push({
@@ -454,7 +455,7 @@ export async function fetchBusinessListLeads(categoryOrQuery: string, state = 'N
         });
       });
 
-      // Parallel card enrichment with bounded pool (10 concurrent requests, 2000ms timeout)
+      // Parallel card enrichment with bounded pool (10 concurrent requests, 2500ms timeout)
       const enrichmentTasks = cards.map(card => limit(async () => {
         let rawPhone = card.inlinePhone;
         let email = card.inlineEmail;
@@ -463,12 +464,12 @@ export async function fetchBusinessListLeads(categoryOrQuery: string, state = 'N
         // Profile page extraction only if phone is not already rendered on card
         if (!rawPhone) {
           try {
-            const pResp = await directoryHttpClient.get(profileUrl, { timeout: 2000 });
+            const pResp = await directoryHttpClient.get(profileUrl, { timeout: 2500 });
             if (pResp.data) {
               const pHtml = typeof pResp.data === 'string' ? pResp.data : JSON.stringify(pResp.data);
               const $p = cheerio.load(pHtml);
-              const phoneText = $p('.phone, .tel, div.phone, [class*="phone"]').text().trim();
-              const pMatches = phoneText.match(/(?:(?:\+?234)|0)\s*[789][01](?:[\s.-]?\d){8}/g) || pHtml.match(/(?:(?:\+?234)|0)\s*[789][01](?:[\s.-]?\d){8}/g) || [];
+              const phoneText = $p('.phone, .tel, div.phone, [class*="phone"], a[href^="tel:"]').text().trim();
+              const pMatches = phoneText.match(/(?:(?:\+?234)|0)[\s.-]?[789][01](?:[\s.-]?\d){8}/g) || pHtml.match(/(?:(?:\+?234)|0)[\s.-]?[789][01](?:[\s.-]?\d){8}/g) || [];
               if (pMatches.length > 0 && pMatches[0]) rawPhone = pMatches[0].replace(/\s+/g, '');
               if (!email) {
                 const pEmails = extractEmailsFromText(pHtml);

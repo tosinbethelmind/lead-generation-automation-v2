@@ -199,22 +199,23 @@ def extract_businesslist_cards(html, url, category, area):
         address = addr_el.get_text(strip=True) if addr_el else f"{area}, Nigeria"
 
         card_text = c.get_text()
-        phones = re.findall(r'(?:\+?234|0)[789][01]\s?\d{3,4}\s?\d{4}', card_text)
+        phone_pattern = r'(?:(?:\+?234)|0)[\s.-]?[789][01](?:[\s.-]?\d){8}'
+        phones = re.findall(phone_pattern, card_text)
 
-        # If no phone on card, check company profile page using curl_cffi (max 3 checks per category)
+        # If no phone on card, check company profile page using curl_cffi (bounded check)
         href = name_el.get('href', '')
-        if not phones and href and profile_fetches < 3:
+        if not phones and href and profile_fetches < 6:
             profile_fetches += 1
             try:
                 prof_url = href if href.startswith('http') else ('https://www.businesslist.com.ng' + ('' if href.startswith('/') else '/') + href)
                 r_prof = requests.get(prof_url, impersonate="chrome124", timeout=3.5)
                 if r_prof.status_code == 200:
                     s_prof = BeautifulSoup(r_prof.text, 'html.parser')
-                    tel_el = s_prof.select_one('.phone, .tel, div.phone')
+                    tel_el = s_prof.select_one('.phone, .tel, div.phone, a[href^="tel:"]')
                     if tel_el:
-                        phones = re.findall(r'(?:\+?234|0)[789][01]\s?\d{3,4}\s?\d{4}', tel_el.get_text())
+                        phones = re.findall(phone_pattern, tel_el.get_text() or tel_el.get('href', ''))
                     if not phones:
-                        phones = re.findall(r'(?:\+?234|0)[789][01]\s?\d{3,4}\s?\d{4}', r_prof.text)
+                        phones = re.findall(phone_pattern, r_prof.text)
             except Exception:
                 pass
 
@@ -233,7 +234,8 @@ def extract_businesslist_cards(html, url, category, area):
                     "category": category,
                     "area": area,
                     "address": address,
-                    "hasWebsite": bool(href),
+                    "website": external_site if 'external_site' in locals() and external_site else None,
+                    "hasWebsite": bool('external_site' in locals() and external_site),
                     "source": "BUSINESSLIST_NG",
                     "confidenceScore": 95,
                     "engineTag": "CURL_CFFI_CHROME124",
