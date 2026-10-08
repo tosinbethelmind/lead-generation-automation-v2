@@ -302,7 +302,8 @@ function authMiddleware(req, res, next) {
     req.path.startsWith('/instance/reconnect') ||
     req.path.startsWith('/instance/connect') ||
     req.path.startsWith('/instance/lock') ||
-    req.path.startsWith('/lock')
+    req.path.startsWith('/lock') ||
+    req.path.startsWith('/test-ai')
   ) {
     return next();
   }
@@ -710,6 +711,7 @@ app.get('/', (req, res) => {
       <div class="summary-item online">Online &amp; Active: <b>${onlineCount} / 7</b></div>
       <div class="summary-item">Architecture: <b>1 Admin Closer + 6 Outreach Desks</b></div>
       <button class="btn btn-green" style="font-size:0.85rem;padding:8px 16px;cursor:pointer;" onclick="lockAllSessions()">🔒 Permanently Lock All 7 Lines</button>
+      <a href="/test-ai" class="btn" style="background:#0284c7;font-size:0.85rem;padding:8px 16px;text-decoration:none;font-weight:800;">🤖 Test Live AI Sales Assistant Simulator</a>
     </div>
     <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
       <span style="color:#64748b;font-size:0.8rem;align-self:center;">⚡ Direct 1-Click Line Pairing:</span>
@@ -912,6 +914,122 @@ app.get('/', (req, res) => {
   </script>
 </body>
 </html>`);
+});
+
+// ── Interactive Live AI Sales Assistant Simulator Page ──────────────────────
+app.get('/test-ai', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bethelmind AI Sales Assistant Simulator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #020617; color: #f8fafc; font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; padding: 32px 16px; display: flex; flex-direction: column; align-items: center; }
+    .card { max-width: 650px; width: 100%; background: #0f172a; border: 1.5px solid #1e3a5f; border-radius: 20px; padding: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+    h1 { font-size: 1.5rem; font-weight: 900; color: #38bdf8; margin-bottom: 8px; }
+    p.sub { font-size: 0.85rem; color: #94a3b8; margin-bottom: 24px; line-height: 1.5; }
+    .quick-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .tag { background: #1e293b; color: #7dd3fc; border: 1px solid #334155; padding: 6px 12px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+    .tag:hover { background: #0284c7; color: #fff; }
+    .chat-box { background: #090d16; border: 1px solid #1e293b; border-radius: 14px; padding: 20px; min-height: 220px; max-height: 380px; overflow-y: auto; margin-bottom: 18px; display: flex; flex-direction: column; gap: 14px; }
+    .msg { max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 0.88rem; line-height: 1.5; white-space: pre-wrap; }
+    .msg.client { background: #1e3a5f; color: #e0f2fe; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .msg.ai { background: #064e3b; color: #d1fae5; border: 1px solid #059669; align-self: flex-start; border-bottom-left-radius: 4px; }
+    .input-row { display: flex; gap: 10px; }
+    input { flex: 1; background: #090d16; border: 1.5px solid #1e293b; color: #f8fafc; padding: 12px 16px; border-radius: 10px; font-size: 0.9rem; outline: none; }
+    input:focus { border-color: #38bdf8; }
+    button.send { background: #10b981; color: white; border: none; padding: 12px 22px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+    button.send:hover { background: #059669; }
+    .back { color: #64748b; font-size: 0.82rem; margin-top: 18px; text-decoration: none; font-weight: 600; display: inline-block; }
+    .back:hover { color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🤖 Live AI Sales Assistant Simulator</h1>
+    <p class="sub">Test the exact intelligent responses the AI Closer gives to prospective clients on WhatsApp (Option A/B Pricing, Turnkey Handover, Interactive Demo Links, and Opt-Outs).</p>
+    
+    <div class="quick-tags">
+      <span class="tag" onclick="quickAsk('How much is your website?')">💰 "How much is your website?"</span>
+      <span class="tag" onclick="quickAsk('Can I see a demo?')">📱 "Can I see a demo?"</span>
+      <span class="tag" onclick="quickAsk('Where is your office in Lagos?')">🏢 "Where is your office?"</span>
+      <span class="tag" onclick="quickAsk('I want to start setup today')">🚀 "I want to start setup"</span>
+      <span class="tag" onclick="quickAsk('Stop messaging me')">🛑 "Stop messaging me"</span>
+    </div>
+
+    <div id="chatBox" class="chat-box">
+      <div class="msg ai">👋 Good day Sir/Ma! I am the Bethelmind AI Sales Assistant. Type any question below or click a quick prompt above to test my live responses!</div>
+    </div>
+
+    <div class="input-row">
+      <input type="text" id="userInput" placeholder="Type customer message here..." onkeydown="if(event.key==='Enter') testMessage()" />
+      <button class="send" onclick="testMessage()">Send</button>
+    </div>
+
+    <a href="/" class="back">← Return to WhatsApp Command Center</a>
+  </div>
+
+  <script>
+    function quickAsk(text) {
+      document.getElementById('userInput').value = text;
+      testMessage();
+    }
+
+    async function testMessage() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chatBox = document.getElementById('chatBox');
+      
+      // Append client message
+      const clientDiv = document.createElement('div');
+      clientDiv.className = 'msg client';
+      clientDiv.innerText = text;
+      chatBox.appendChild(clientDiv);
+      input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Simulated typing
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'msg ai';
+      typingDiv.style.opacity = '0.6';
+      typingDiv.innerText = 'typing...';
+      chatBox.appendChild(typingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const res = await fetch('/api/test-ai-reply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        chatBox.removeChild(typingDiv);
+        
+        const aiDiv = document.createElement('div');
+        aiDiv.className = 'msg ai';
+        aiDiv.innerText = data.reply;
+        chatBox.appendChild(aiDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (err) {
+        typingDiv.innerText = 'Error: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>`);
+});
+
+// API endpoint for AI Reply Simulation
+app.post('/api/test-ai-reply', (req, res) => {
+  const msg = req.body.message || '';
+  const decision = formatInboundCloserReply(msg);
+  res.json({ success: true, reply: decision.text, isOptOut: decision.isOptOut });
 });
 
 // ── Status Endpoint per Line for Rapid Live Polling ─────────────────────────
