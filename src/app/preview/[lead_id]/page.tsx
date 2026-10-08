@@ -464,7 +464,7 @@ export default function PreviewPage() {
                     <span style={{ color: '#10b981' }}>✓</span> <strong>Official Mobile-Optimized Website</strong> (No technical setup needed)
                   </li>
                   <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> <strong>24/7 WhatsApp AI Closer</strong> (< 3s instant quotes & product info)
+                    <span style={{ color: '#10b981' }}>✓</span> <strong>24/7 WhatsApp AI Closer</strong> (&lt; 3s instant quotes &amp; product info)
                   </li>
                   <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ color: '#10b981' }}>✓</span> <strong>Instant Moniepoint/Bank Alert Shield</strong> (Eliminates fake alert fraud)
