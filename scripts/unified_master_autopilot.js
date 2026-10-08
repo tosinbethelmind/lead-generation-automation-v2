@@ -308,29 +308,11 @@ function startModernCommercialEngine() {
   });
 }
 
-// ── WORKER 9: Nationwide Harvester (Strict Data-Saver / Bounded Mode) ────────
+// ── WORKER 9: Nationwide Harvester (High-Speed Strict No-Website Mode) ────────
 let harvesterProcess = null;
 function startHeavyHarvester() {
-  // Check local database: if we already have abundant unsent leads, pause local scraping completely to conserve data
-  const leadsDbPath = path.join(rootDir, 'local_db/leads_db.json');
-  let unsentCount = 0;
-  if (fs.existsSync(leadsDbPath)) {
-    try {
-      const leads = JSON.parse(fs.readFileSync(leadsDbPath, 'utf8'));
-      if (Array.isArray(leads)) {
-        unsentCount = leads.filter(l => !l.email_sent && !l.outreach_sent && (l.email || l.phone)).length;
-      }
-    } catch (_) {}
-  }
-
-  if (unsentCount > 50) {
-    log(`⚡ [Worker 9: Harvester] ${unsentCount} unsent verified leads already staged locally. Heavy scraping is active 24/7 in GitHub Actions Cloud. Pausing local scraper for 4 hours to save cellular data...`);
-    setTimeout(startHeavyHarvester, 4 * 60 * 60 * 1000);
-    return;
-  }
-
-  log('⚡ [Worker 9: Harvester] Launching Data-Saver Bounded Harvester (Target: 25 leads)...');
-  harvesterProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/run_heavy_10k_nigeria_scraper.ts', '--target=25'], {
+  log('⚡ [Worker 9: High-Speed Harvester] Launching 20-worker Strict Non-Website Rotational Harvester...');
+  harvesterProcess = spawn('python', ['scripts/harvest_high_speed_strict_rotational.py'], {
     cwd: rootDir,
     shell: false,
     stdio: 'inherit',
@@ -339,13 +321,13 @@ function startHeavyHarvester() {
   });
 
   harvesterProcess.on('exit', (code) => {
-    log(`ℹ️ [Worker 9: Harvester] Bounded cycle completed (Code: ${code}). Resting 4 hours to conserve cellular data...`);
-    setTimeout(startHeavyHarvester, 4 * 60 * 60 * 1000);
+    log(`ℹ️ [Worker 9: High-Speed Harvester] Cycle completed (Code: ${code}). Next harvest rotation in 90 minutes...`);
+    setTimeout(startHeavyHarvester, 90 * 60 * 1000);
   });
 
   harvesterProcess.on('error', (err) => {
-    log(`❌ [Worker 9: Harvester] Error: ${err.message}. Retrying in 30 minutes...`);
-    setTimeout(startHeavyHarvester, 30 * 60 * 1000);
+    log(`❌ [Worker 9: High-Speed Harvester] Error: ${err.message}. Retrying in 15 minutes...`);
+    setTimeout(startHeavyHarvester, 15 * 60 * 1000);
   });
 }
 
