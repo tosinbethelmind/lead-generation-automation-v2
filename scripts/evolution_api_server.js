@@ -1130,12 +1130,29 @@ app.get('/pair/:lineNum', (req, res) => {
     <div class="role-label">${inst.role}</div>
 
     <div class="tabs">
-      <button id="tabBtnQr" class="tab-btn active" onclick="switchTab('qr')">📸 Instant QR Scan</button>
-      <button id="tabBtnCode" class="tab-btn" onclick="switchTab('code')">🔢 8-Digit Phone Code</button>
+      <button id="tabBtnCode" class="tab-btn active" onclick="switchTab('code')">🔢 8-Digit Phone Code (Fastest)</button>
+      <button id="tabBtnQr" class="tab-btn" onclick="switchTab('qr')">📸 Instant QR Scan</button>
     </div>
 
-    <!-- TAB 1: INSTANT QR CODE SCAN -->
-    <div id="tabQr" class="tab-content active">
+    <!-- TAB 1: 8-DIGIT PAIRING CODE (PRIMARY & FASTEST) -->
+    <div id="tabCode" class="tab-content active">
+      <div id="codeArea">
+        <div style="padding:20px 0;">
+          <button class="btn btn-green" onclick="requestCode()">🔢 Generate 8-Digit Pairing Code</button>
+        </div>
+      </div>
+      <div class="steps">
+        <b>How to link with code on phone (+${inst.displayPhone}):</b><br/>
+        1. Open <b>WhatsApp</b> on your phone<br/>
+        2. Tap <b>Menu (⋮)</b> or <b>Settings</b> &rarr; <b>Linked Devices</b><br/>
+        3. Tap <b>Link a Device</b><br/>
+        4. Tap <b>"Link with phone number instead"</b> at the bottom<br/>
+        5. Enter the 8-digit code shown above
+      </div>
+    </div>
+
+    <!-- TAB 2: INSTANT QR CODE SCAN -->
+    <div id="tabQr" class="tab-content">
       <div id="qrArea">
         <div style="padding:30px 20px; color:#94a3b8; font-size:0.9rem;">
           <span class="spinner"></span> Generating live QR code for Line ${lineNum}...
@@ -1151,22 +1168,6 @@ app.get('/pair/:lineNum', (req, res) => {
       <button class="btn" onclick="requestQr()">🔄 Refresh QR Code</button>
     </div>
 
-    <!-- TAB 2: 8-DIGIT PAIRING CODE -->
-    <div id="tabCode" class="tab-content">
-      <div id="codeArea">
-        <div style="padding:20px 0;">
-          <button class="btn btn-green" onclick="requestCode()">🔢 Generate 8-Digit Pairing Code</button>
-        </div>
-      </div>
-      <div class="steps">
-        <b>How to link with code on phone:</b><br/>
-        1. Open <b>WhatsApp</b> &rarr; <b>Linked Devices</b><br/>
-        2. Tap <b>Link a Device</b><br/>
-        3. Tap <b>"Link with phone number instead"</b> at bottom<br/>
-        4. Enter the 8-digit code shown above
-      </div>
-    </div>
-
     <div id="liveStatusBox" class="status-pill">
       <span class="spinner"></span> Waiting for phone to link...
     </div>
@@ -1180,11 +1181,12 @@ app.get('/pair/:lineNum', (req, res) => {
     const PHONE = '${inst.fallbackPhone}';
 
     function switchTab(tab) {
-      document.getElementById('tabBtnQr').classList.toggle('active', tab === 'qr');
       document.getElementById('tabBtnCode').classList.toggle('active', tab === 'code');
-      document.getElementById('tabQr').classList.toggle('active', tab === 'qr');
+      document.getElementById('tabBtnQr').classList.toggle('active', tab === 'qr');
       document.getElementById('tabCode').classList.toggle('active', tab === 'code');
+      document.getElementById('tabQr').classList.toggle('active', tab === 'qr');
       if (tab === 'qr') requestQr();
+      if (tab === 'code') requestCode();
     }
 
     async function requestQr() {
@@ -1196,7 +1198,6 @@ app.get('/pair/:lineNum', (req, res) => {
         if (data.qr) {
           renderQr(data.qr);
         } else {
-          // Poll for QR to appear within 5s
           let tries = 0;
           const t = setInterval(async () => {
             tries++;
@@ -1205,11 +1206,11 @@ app.get('/pair/:lineNum', (req, res) => {
             if (sData.qr) {
               clearInterval(t);
               renderQr(sData.qr);
-            } else if (tries > 8) {
+            } else if (tries > 15) {
               clearInterval(t);
-              qrArea.innerHTML = '<div style="color:#f87171;padding:16px;">QR generation timeout. Please click Refresh QR Code below.</div>';
+              qrArea.innerHTML = '<div style="color:#f87171;padding:16px;">QR generation taking longer over mobile network. Please use the <b>8-Digit Phone Code</b> tab above for instant pairing!</div>';
             }
-          }, 800);
+          }, 1000);
         }
       } catch (err) {
         qrArea.innerHTML = '<div style="color:#f87171;padding:16px;">Network error: ' + err.message + '</div>';
@@ -1224,7 +1225,7 @@ app.get('/pair/:lineNum', (req, res) => {
 
     async function requestCode() {
       const codeArea = document.getElementById('codeArea');
-      codeArea.innerHTML = '<div style="padding:24px; color:#94a3b8;"><span class="spinner"></span> Requesting 8-digit pairing code (3-4 seconds)...</div>';
+      codeArea.innerHTML = '<div style="padding:24px; color:#94a3b8;"><span class="spinner"></span> Connecting to WhatsApp & generating 8-digit code (3-4 seconds)...</div>';
       try {
         const res = await fetch('/instance/pairingCode/' + INSTANCE_NAME, {
           method: 'POST',
@@ -1273,8 +1274,8 @@ app.get('/pair/:lineNum', (req, res) => {
       } catch (_) {}
     }, 1500);
 
-    // Initial load: generate QR code
-    requestQr();
+    // Initial load: automatically request 8-digit code immediately!
+    requestCode();
   </script>
 </body>
 </html>`);
@@ -1541,7 +1542,7 @@ async function startQrSocket(key) {
         clearInterval(interval);
         return resolve(inst.qr);
       }
-      if (tries > 28) { // 7 seconds timeout
+      if (tries > 80) { // 20 seconds timeout
         clearInterval(interval);
         return resolve(inst.qr || null);
       }
