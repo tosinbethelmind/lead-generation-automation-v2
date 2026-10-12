@@ -144,7 +144,11 @@ async function runWebformBatch(maxPerBatch = 25) {
       if (candidateIndex % 3 === 0 || batchDelivered >= batchTarget) {
         try {
           fs.writeFileSync(WEBFORM_LOG_PATH, JSON.stringify(existingLogs, null, 2), 'utf8');
-          fs.writeFileSync(LEADS_DB_PATH, JSON.stringify(leads, null, 2), 'utf8');
+          if (leads.length >= 100) {
+            const tmpPath = `${LEADS_DB_PATH}.tmp.${process.pid}`;
+            fs.writeFileSync(tmpPath, JSON.stringify(leads, null, 2), 'utf8');
+            fs.renameSync(tmpPath, LEADS_DB_PATH);
+          }
         } catch (_) {}
       }
 
@@ -159,7 +163,11 @@ async function runWebformBatch(maxPerBatch = 25) {
   // Final persistence
   try {
     fs.writeFileSync(WEBFORM_LOG_PATH, JSON.stringify(existingLogs, null, 2), 'utf8');
-    fs.writeFileSync(LEADS_DB_PATH, JSON.stringify(leads, null, 2), 'utf8');
+    if (leads.length >= 100) {
+      const tmpPath = `${LEADS_DB_PATH}.tmp.${process.pid}`;
+      fs.writeFileSync(tmpPath, JSON.stringify(leads, null, 2), 'utf8');
+      fs.renameSync(tmpPath, LEADS_DB_PATH);
+    }
     console.log(`\n💾 Webform batch state saved. Total Delivered Today: ${todayDelivered + batchDelivered}/${TARGET_DAILY_QUOTA}`);
   } catch (_) {}
 }

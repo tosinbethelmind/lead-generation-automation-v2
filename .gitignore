@@ -47,6 +47,9 @@ next-env.d.ts
 !local_db/activities.json
 !local_db/lead_journeys.json
 !local_db/whatsapp_warmup_state.json
+!local_db/scraper_rotation_state.json
+!local_db/real_webform_submissions.json
+!local_db/email_daemon_state.json
 /config.json
 .env
 .env.local

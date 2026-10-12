@@ -187,12 +187,32 @@ export async function harvestInstagramAndTikTok(maxPerSector = 15): Promise<any[
     }
   }
 
-  // Save new leads directly to local database
+  // Save new leads directly to local database with atomic merge protection
   if (newLeads.length > 0) {
-    fs.writeFileSync(LEADS_DB_PATH, JSON.stringify(existingData, null, 2), 'utf8');
+    let latestOnDisk: any[] = [];
+    if (fs.existsSync(LEADS_DB_PATH)) {
+      try {
+        const parsed = JSON.parse(fs.readFileSync(LEADS_DB_PATH, 'utf8'));
+        if (Array.isArray(parsed)) latestOnDisk = parsed;
+      } catch (_) {}
+    }
+    const baseList = latestOnDisk.length > existingData.length ? latestOnDisk : existingData;
+    const basePhones = new Set(baseList.map(l => (l.phone_e164 || l.phone || '').replace(/\D/g, '')).filter(Boolean));
+    for (const nl of newLeads) {
+      const p = (nl.phone_e164 || nl.phone || '').replace(/\D/g, '');
+      if (p && !basePhones.has(p)) {
+        baseList.unshift(nl);
+        basePhones.add(p);
+      }
+    }
+    if (baseList.length >= 100) {
+      const tmpFile = `${LEADS_DB_PATH}.tmp.${process.pid}`;
+      fs.writeFileSync(tmpFile, JSON.stringify(baseList, null, 2), 'utf8');
+      fs.renameSync(tmpFile, LEADS_DB_PATH);
+    }
     console.log(`\n========================================================================`);
     console.log(`🎉 HARVEST COMPLETE: ${newLeads.length} NEW verified Instagram/TikTok businesses added!`);
-    console.log(`📊 Total Database Count: ${existingData.length} genuine commercial leads.`);
+    console.log(`📊 Total Database Count: ${baseList.length} genuine commercial leads.`);
     console.log(`========================================================================\n`);
   } else {
     console.log(`\nℹ️ Harvest completed. All matches already in database (no duplicates added).`);

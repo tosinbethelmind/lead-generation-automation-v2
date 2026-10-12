@@ -1,0 +1,848 @@
+[
+  {
+    "lead_id": "lead_ng_8683a3f86b41f8",
+    "business_name": "Ren Attorneys",
+    "target_website": "https://www.renattorneys.com/",
+    "form_action": "https://www.renattorneys.com/",
+    "submitted_at": "2026-10-03T21:05:11.690Z",
+    "success": true,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "smtp_pool_cascade"
+  },
+  {
+    "lead_id": "lead_ng_0aa43dde95c709",
+    "business_name": "Dreamcity HES Ltd",
+    "target_website": "https://dreamcityhes.com",
+    "form_action": "https://dreamcityhes.com",
+    "submitted_at": "2026-10-03T21:05:28.259Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "c92ede4b-9220-42f5-bdac-4a5833d1acef",
+    "business_name": "Funmi Roberts and Co",
+    "target_website": "http://www.funmirobertsandco.com/",
+    "form_action": "http://www.funmirobertsandco.com/",
+    "submitted_at": "2026-10-03T21:05:44.625Z",
+    "success": true,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "fetch"
+  },
+  {
+    "lead_id": "0256590f-d82e-419a-b02a-236cf306f123",
+    "business_name": "SMK Solar Nigeria",
+    "target_website": "https://smksolar.com.ng/",
+    "form_action": "https://smksolar.com.ng/",
+    "submitted_at": "2026-10-03T21:06:01.172Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "c6ab036d-2ffe-43f4-9936-a86eaec83e9b",
+    "business_name": "The Vale College, Ibadan",
+    "target_website": "https://www.thevalecollege.com/",
+    "form_action": "https://www.thevalecollege.com/",
+    "submitted_at": "2026-10-03T21:06:34.930Z",
+    "success": true,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "smtp_pool_cascade"
+  },
+  {
+    "lead_id": "72119789-5b71-4f1e-b587-47d7cafd775e",
+    "business_name": "Quantum Plastic Nigeria Limited",
+    "target_website": "https://www.quantumplasticnig.com/",
+    "form_action": "https://www.quantumplasticnig.com/",
+    "submitted_at": "2026-10-03T21:06:51.129Z",
+    "success": true,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "fetch"
+  },
+  {
+    "lead_id": "99b6afa4-ef93-43b5-ab0e-41d35e0af0a4",
+    "business_name": "BAO Tax Consultants and Accounting Firm",
+    "target_website": "http://www.baokonsult.com/",
+    "form_action": "http://www.baokonsult.com/",
+    "submitted_at": "2026-10-03T21:07:27.732Z",
+    "success": true,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "smtp_pool_cascade"
+  },
+  {
+    "lead_id": "e312dc9b-3876-460a-96e4-a12b6fa03ff3",
+    "business_name": "Veritasi Homes and Properties Ltd",
+    "target_website": "https://www.veritasihomes.com/",
+    "form_action": "https://www.veritasihomes.com/",
+    "submitted_at": "2026-10-03T21:08:25.360Z",
+    "success": true,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "smtp_pool_cascade"
+  },
+  {
+    "lead_id": "lead_ng_b97bd498e0475e",
+    "business_name": "Dover Hotel",
+    "target_website": "https://thedoverhotels.com/",
+    "form_action": "https://thedoverhotels.com/",
+    "submitted_at": "2026-10-04T12:49:00.603Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_4356c4c23b1030",
+    "business_name": "Circle Mall",
+    "target_website": "https://circlemall.ng/",
+    "form_action": "https://circlemall.ng/",
+    "submitted_at": "2026-10-04T12:49:03.124Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_b1c5c20e402de6",
+    "business_name": "British International School Lagos",
+    "target_website": "https://bijsnigeria.org/",
+    "form_action": "https://bijsnigeria.org/",
+    "submitted_at": "2026-10-04T12:49:05.659Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_8ac8931f247432",
+    "business_name": "The Art Hotel",
+    "target_website": "https://arthotelng.com/",
+    "form_action": "https://arthotelng.com/",
+    "submitted_at": "2026-10-04T12:49:08.259Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_4096a8f7f64a7b",
+    "business_name": "Victoria Crown Plaza Hotel",
+    "target_website": "https://vcphotels.com/",
+    "form_action": "https://vcphotels.com/",
+    "submitted_at": "2026-10-04T12:49:10.800Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_14fd2b6b71e8c7",
+    "business_name": "Twin Waters Entertainment Centre",
+    "target_website": "https://twinwaterslagos.com/",
+    "form_action": "https://twinwaterslagos.com/",
+    "submitted_at": "2026-10-04T12:49:13.323Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_ed4efeeaa0a5e5",
+    "business_name": "Fancy Baking Store",
+    "target_website": "https://fancybakingstore.com/",
+    "form_action": "https://fancybakingstore.com/",
+    "submitted_at": "2026-10-04T12:49:15.861Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_9158c2bc778db7",
+    "business_name": "Domus Fidei",
+    "target_website": "https://ehjsisters.com/domus-fidei/",
+    "form_action": "https://ehjsisters.com/domus-fidei/",
+    "submitted_at": "2026-10-04T12:49:18.371Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_afeff2a1a27371",
+    "business_name": "Soonytech Solutions Nig Ltd",
+    "target_website": "https://soonytech.com",
+    "form_action": "https://soonytech.com",
+    "submitted_at": "2026-10-04T12:49:20.880Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_7ee2df2718cbe2",
+    "business_name": "Novare Central Mall",
+    "target_website": "https://novare-central.com/",
+    "form_action": "https://novare-central.com/",
+    "submitted_at": "2026-10-04T12:49:23.430Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_55eb91815f00a6",
+    "business_name": "The Merch Store",
+    "target_website": "https://flutterwave.com/store/themerchstore",
+    "form_action": "https://flutterwave.com/store/themerchstore",
+    "submitted_at": "2026-10-04T12:49:25.943Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_26c52414712146",
+    "business_name": "Edo College",
+    "target_website": "https://edocollegebenin.com/w_home",
+    "form_action": "https://edocollegebenin.com/w_home",
+    "submitted_at": "2026-10-04T12:49:28.464Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_03a2c4b2f44475",
+    "business_name": "High Court of Justice",
+    "target_website": "http://edojudiciary.gov.ng/about-us/",
+    "form_action": "http://edojudiciary.gov.ng/about-us/",
+    "submitted_at": "2026-10-04T12:49:31.011Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_4abee9b1017c6a",
+    "business_name": "Kilimanjaro",
+    "target_website": "https://www.kilimanjaro-restaurants.com/",
+    "form_action": "https://www.kilimanjaro-restaurants.com/",
+    "submitted_at": "2026-10-04T12:49:33.546Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_380bb698e04067",
+    "business_name": "Molabat kitchen",
+    "target_website": "https://molabatkitchen.com/",
+    "form_action": "https://molabatkitchen.com/",
+    "submitted_at": "2026-10-04T12:49:36.052Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_e94cf9ce8346ab",
+    "business_name": "Sabor",
+    "target_website": "http://www.saborlagos.com/",
+    "form_action": "http://www.saborlagos.com/",
+    "submitted_at": "2026-10-04T12:49:38.588Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_fa0be875d73cb1",
+    "business_name": "Eric Kayser Ikoyi",
+    "target_website": "https://www.maison-kayser.com",
+    "form_action": "https://www.maison-kayser.com",
+    "submitted_at": "2026-10-04T12:49:41.100Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_376ba775673da5",
+    "business_name": "Leila Restaurant",
+    "target_website": "https://www.leilarestaurant.com/",
+    "form_action": "https://www.leilarestaurant.com/",
+    "submitted_at": "2026-10-04T12:49:43.626Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_3c654b2713ce5c",
+    "business_name": "Galaxy Pizza",
+    "target_website": "https://galaxypizza.com.ng/",
+    "form_action": "https://galaxypizza.com.ng/",
+    "submitted_at": "2026-10-04T12:49:46.194Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_a75f96b45ccbba",
+    "business_name": "Abuja Continental Hotel",
+    "target_website": "https://www.abujacontinental.com/",
+    "form_action": "https://www.abujacontinental.com/",
+    "submitted_at": "2026-10-04T12:49:48.829Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_fce94ed41a2b2c",
+    "business_name": "Yaba College of Technology",
+    "target_website": "https://www.yabatech.edu.ng/",
+    "form_action": "https://www.yabatech.edu.ng/",
+    "submitted_at": "2026-10-04T12:49:51.339Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_fd2520042034f9",
+    "business_name": "Royalton",
+    "target_website": "https://royaltonhotels.com.ng/",
+    "form_action": "https://royaltonhotels.com.ng/",
+    "submitted_at": "2026-10-04T12:49:53.873Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_8683a3f86b41f8",
+    "business_name": "Ren Attorneys",
+    "target_website": "https://www.renattorneys.com/",
+    "form_action": "https://www.renattorneys.com/",
+    "submitted_at": "2026-10-04T12:49:56.385Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_acfc1ddee3d5f7",
+    "business_name": "Spar",
+    "target_website": "https://sparnigeria.com/",
+    "form_action": "https://sparnigeria.com/",
+    "submitted_at": "2026-10-04T12:49:58.906Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_ng_0aa43dde95c709",
+    "business_name": "Dreamcity HES Ltd",
+    "target_website": "https://dreamcityhes.com",
+    "form_action": "https://dreamcityhes.com",
+    "submitted_at": "2026-10-04T12:50:01.478Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "lead_b2b_f8jsp7d",
+    "business_name": "LIST OF ACTIVE FREIGHT FORWARDING AGENTS AS A",
+    "target_website": "https://www.mra.mu/download/ForwardingFreightAgentsList.pdf",
+    "form_action": "https://www.mra.mu/download/ForwardingFreightAgentsList.pdf",
+    "submitted_at": "2026-10-04T12:50:04.139Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "c92ede4b-9220-42f5-bdac-4a5833d1acef",
+    "business_name": "Funmi Roberts and Co",
+    "target_website": "http://www.funmirobertsandco.com/",
+    "form_action": "http://www.funmirobertsandco.com/",
+    "submitted_at": "2026-10-04T12:50:06.652Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "6de26481-2e0a-4f12-a698-674ea29dcc85",
+    "business_name": "Olaniyi Okin & Co.",
+    "target_website": "https://olaniyiokinandco.com/",
+    "form_action": "https://olaniyiokinandco.com/",
+    "submitted_at": "2026-10-04T12:50:09.198Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "4e0ed51c-fb2c-4277-b62c-09cc4ffd5f65",
+    "business_name": "Mondial Solicitors",
+    "target_website": "https://mondialsolicitors.com/",
+    "form_action": "https://mondialsolicitors.com/",
+    "submitted_at": "2026-10-04T12:50:11.709Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "63c8f587-59f0-44bf-99ac-5cd1ab1c455b",
+    "business_name": "Musibau Adetunbi SAN & Co",
+    "target_website": "http://rajichambers.ng/",
+    "form_action": "http://rajichambers.ng/",
+    "submitted_at": "2026-10-04T12:50:14.228Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "907ab590-9bdd-4828-b221-9cbdf83d4d08",
+    "business_name": "Yaba Thrift Store",
+    "target_website": "https://linktr.ee/Yabathriftstore",
+    "form_action": "https://linktr.ee/Yabathriftstore",
+    "submitted_at": "2026-10-04T12:50:16.776Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "0256590f-d82e-419a-b02a-236cf306f123",
+    "business_name": "SMK Solar Nigeria",
+    "target_website": "https://smksolar.com.ng/",
+    "form_action": "https://smksolar.com.ng/",
+    "submitted_at": "2026-10-04T12:50:19.290Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "9504a6e1-129a-4e62-9339-9da07fbe37ea",
+    "business_name": "Dradrock Real Estate Limited",
+    "target_website": "http://dradrockng.com/",
+    "form_action": "http://dradrockng.com/",
+    "submitted_at": "2026-10-04T12:50:21.800Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "aa4fd5ff-c8b8-4467-9ce7-6f7fd9c033db",
+    "business_name": "CHOGON PROPERTIES DEVELOPMENT COMPANY",
+    "target_website": "http://www.chogonproperties.com.ng/",
+    "form_action": "http://www.chogonproperties.com.ng/",
+    "submitted_at": "2026-10-04T12:50:24.331Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "44f17551-a2b1-4241-9fff-d919780e9e2d",
+    "business_name": "Dainty Affairs Bakery",
+    "target_website": "https://daintyaffairs.com/",
+    "form_action": "https://daintyaffairs.com/",
+    "submitted_at": "2026-10-04T12:50:26.854Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "50bdec1e-b142-4106-9147-4e1e763582a9",
+    "business_name": "ORIKI Wellness Spa in Lekki Phase 1",
+    "target_website": "https://www.orikigroup.com/pages/spa-in-lekki-phase-1",
+    "form_action": "https://www.orikigroup.com/pages/spa-in-lekki-phase-1",
+    "submitted_at": "2026-10-04T12:50:29.367Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "f8aa06dd-5227-4290-b4a5-99e83fe62e8c",
+    "business_name": "Delphi International School",
+    "target_website": "http://nigeriaprivateschools.com/",
+    "form_action": "http://nigeriaprivateschools.com/",
+    "submitted_at": "2026-10-04T12:50:31.900Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "5e6a325e-49d2-48e0-9f79-e14947c5f1b2",
+    "business_name": "SayCheese Cakes",
+    "target_website": "https://take.app/saycheesecakes",
+    "form_action": "https://take.app/saycheesecakes",
+    "submitted_at": "2026-10-04T12:50:34.421Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "29efc9b4-9f2e-4cf6-bada-20bc3f349703",
+    "business_name": "Lekki Luxury Car Rentals",
+    "target_website": "http://lekkiluxurycarrental.com/",
+    "form_action": "http://lekkiluxurycarrental.com/",
+    "submitted_at": "2026-10-04T12:50:36.951Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "f1446e8f-930c-4904-87ad-97747bde78e6",
+    "business_name": "Pegasus Fleet",
+    "target_website": "https://www.pegasusfleet.ng/",
+    "form_action": "https://www.pegasusfleet.ng/",
+    "submitted_at": "2026-10-04T12:50:39.507Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "c6ab036d-2ffe-43f4-9936-a86eaec83e9b",
+    "business_name": "The Vale College, Ibadan",
+    "target_website": "https://www.thevalecollege.com/",
+    "form_action": "https://www.thevalecollege.com/",
+    "submitted_at": "2026-10-04T12:50:42.015Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "06ce8c28-9c4d-442e-9c5d-79bff4f865e7",
+    "business_name": "The Solar Haven Lagos",
+    "target_website": "http://www.solarhaven.com.ng/",
+    "form_action": "http://www.solarhaven.com.ng/",
+    "submitted_at": "2026-10-04T12:50:44.541Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "8fc2adba-b084-4b77-83d4-f273d4183db5",
+    "business_name": "God’s Touch Apartments Signatures",
+    "target_website": "http://www.godstouchapartments.com/",
+    "form_action": "http://www.godstouchapartments.com/",
+    "submitted_at": "2026-10-04T12:50:47.152Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "00dfa3df-03f8-486f-aeb0-2f6c699f725b",
+    "business_name": "Cypresshill Hospitals",
+    "target_website": "https://www.cypresshillhospitals.com/",
+    "form_action": "https://www.cypresshillhospitals.com/",
+    "submitted_at": "2026-10-04T12:50:49.671Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "642cbae4-572d-4abe-a01d-20372bb7ae5c",
+    "business_name": "Motayo Hospital Lagos",
+    "target_website": "https://www.motayohospitallimited.com/",
+    "form_action": "https://www.motayohospitallimited.com/",
+    "submitted_at": "2026-10-04T12:50:52.180Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "edbdafc1-9519-4370-b0d0-81ebe9683038",
+    "business_name": "The Loft Ikoyi",
+    "target_website": "http://www.theloftikoyi.com/",
+    "form_action": "http://www.theloftikoyi.com/",
+    "submitted_at": "2026-10-04T12:50:54.720Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "a797d50c-0fdc-49d2-9a46-464f49135d1c",
+    "business_name": "SPAN MUSIC ACADEMY",
+    "target_website": "https://www.spanigeria.org/",
+    "form_action": "https://www.spanigeria.org/",
+    "submitted_at": "2026-10-04T12:50:57.232Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "ad13c4b0-d77e-46f4-9c2b-cfb478520a0d",
+    "business_name": "Blooming Greens School",
+    "target_website": "http://www.bloominggreensschool.com/",
+    "form_action": "http://www.bloominggreensschool.com/",
+    "submitted_at": "2026-10-04T12:50:59.742Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "4d9d1389-a4f6-49ee-bddf-870559d16286",
+    "business_name": "Greenapple school,Nursery, Primary, College",
+    "target_website": "http://greenappleschoolsng.com/",
+    "form_action": "http://greenappleschoolsng.com/",
+    "submitted_at": "2026-10-04T12:51:02.277Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "423a2816-bc99-4194-b6c2-1735a944d24e",
+    "business_name": "Woodentots Nursery School Lagos",
+    "target_website": "http://www.woodentotsnurserysch.com/",
+    "form_action": "http://www.woodentotsnurserysch.com/",
+    "submitted_at": "2026-10-04T12:51:04.797Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "c6e2c45a-1efb-4413-85d8-7d0007485e83",
+    "business_name": "Camilla Brook School",
+    "target_website": "https://camillabrookschool.com/",
+    "form_action": "https://camillabrookschool.com/",
+    "submitted_at": "2026-10-04T12:51:07.309Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "94a0cd94-e55b-4a8a-a5ab-b9299e792a7f",
+    "business_name": "Mariyam Dental Clinic Bodija, Ibadan",
+    "target_website": "http://mariyamdentalclinic.com.ng/",
+    "form_action": "http://mariyamdentalclinic.com.ng/",
+    "submitted_at": "2026-10-04T12:51:09.854Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "58649380-0bb8-4488-8f24-bdc563443032",
+    "business_name": "The Cedars",
+    "target_website": "http://www.cedarsworld.sch.ng/",
+    "form_action": "http://www.cedarsworld.sch.ng/",
+    "submitted_at": "2026-10-04T12:51:12.366Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "367031f7-7f64-42f2-b31c-329f2e2b2328",
+    "business_name": "CourierPlus Services Limited",
+    "target_website": "http://www.courierplus-ng.com/",
+    "form_action": "http://www.courierplus-ng.com/",
+    "submitted_at": "2026-10-04T12:51:14.875Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "ad360aed-3694-4ce6-b16a-188c2fb39e72",
+    "business_name": "Nymphé Skincare & Wellness Spa",
+    "target_website": "http://nymphebeautyempire.ng/",
+    "form_action": "http://nymphebeautyempire.ng/",
+    "submitted_at": "2026-10-04T12:51:17.409Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "40e69858-efcb-44c3-8403-6a61de2521b1",
+    "business_name": "IRL Micro Finance Bank",
+    "target_website": "https://irlmicrofinancebank.com/",
+    "form_action": "https://irlmicrofinancebank.com/",
+    "submitted_at": "2026-10-04T12:51:19.927Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "f3f2afc6-f185-46fb-b5d5-9cd36350eb7c",
+    "business_name": "Danfo Bistros & Dives",
+    "target_website": "http://danfo.me/",
+    "form_action": "http://danfo.me/",
+    "submitted_at": "2026-10-04T12:51:22.442Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "07bd6878-abef-4259-a99c-ed553a72e2e3",
+    "business_name": "Assetklean fumigation services",
+    "target_website": "http://assetkleanfumigation.com.ng/",
+    "form_action": "http://assetkleanfumigation.com.ng/",
+    "submitted_at": "2026-10-04T12:51:24.979Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "b5d9ee9c-14da-44da-89f8-4cf3d07baa54",
+    "business_name": "Unique pro cleaning service and fumigation",
+    "target_website": "https://uniqueprocleaningserviceandfumigation.com.ng/",
+    "form_action": "https://uniqueprocleaningserviceandfumigation.com.ng/",
+    "submitted_at": "2026-10-04T12:51:27.495Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "37219c94-e31d-420f-9371-e6764e76cd59",
+    "business_name": "Outreach Signature Hospitals",
+    "target_website": "https://outreachhospital.com/",
+    "form_action": "https://outreachhospital.com/",
+    "submitted_at": "2026-10-04T12:51:30.018Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "bc8b9fec-bc73-4da5-9265-64f878e6acc9",
+    "business_name": "Power Solution Mall",
+    "target_website": "https://powersolutionmall.com/",
+    "form_action": "https://powersolutionmall.com/",
+    "submitted_at": "2026-10-04T12:51:32.577Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "72119789-5b71-4f1e-b587-47d7cafd775e",
+    "business_name": "Quantum Plastic Nigeria Limited",
+    "target_website": "https://www.quantumplasticnig.com/",
+    "form_action": "https://www.quantumplasticnig.com/",
+    "submitted_at": "2026-10-04T12:51:35.085Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "f624630f-1931-45d0-8103-759bcbbaf2aa",
+    "business_name": "Vanxtech PestControl Company",
+    "target_website": "http://www.vanxtech.com/",
+    "form_action": "http://www.vanxtech.com/",
+    "submitted_at": "2026-10-04T12:51:37.590Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "da53fb73-a436-4989-a2e4-490b95e931df",
+    "business_name": "Max",
+    "target_website": "https://mtechitng.net/",
+    "form_action": "https://mtechitng.net/",
+    "submitted_at": "2026-10-04T12:51:40.121Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "687664b1-4049-416a-b195-5c4925afc0b8",
+    "business_name": "McKins",
+    "target_website": "https://www.mckinstech.com/",
+    "form_action": "https://www.mckinstech.com/",
+    "submitted_at": "2026-10-04T12:51:42.636Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "99b6afa4-ef93-43b5-ab0e-41d35e0af0a4",
+    "business_name": "BAO Tax Consultants and Accounting Firm",
+    "target_website": "http://www.baokonsult.com/",
+    "form_action": "http://www.baokonsult.com/",
+    "submitted_at": "2026-10-04T12:51:45.148Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "e312dc9b-3876-460a-96e4-a12b6fa03ff3",
+    "business_name": "Veritasi Homes and Properties Ltd",
+    "target_website": "https://www.veritasihomes.com/",
+    "form_action": "https://www.veritasihomes.com/",
+    "submitted_at": "2026-10-04T12:51:47.730Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "bf4e7694-8c9f-4ae5-9a14-902473582411",
+    "business_name": "PSC Solar UK",
+    "target_website": "https://pscsolaruk.com/",
+    "form_action": "https://pscsolaruk.com/",
+    "submitted_at": "2026-10-04T12:51:50.265Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "2d76ff48-8408-4640-a8c5-6ee1cf5e41ca",
+    "business_name": "METROSKYE REALTY LIMITED",
+    "target_website": "http://metroskyerealty.com/",
+    "form_action": "http://metroskyerealty.com/",
+    "submitted_at": "2026-10-04T12:51:52.788Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "f0c86253-4574-407a-b423-8a85fb1800ae",
+    "business_name": "La Vie De Luxe Fashion Hub",
+    "target_website": "https://paystack.shop/la-vie-de-luxe-fashion-hub",
+    "form_action": "https://paystack.shop/la-vie-de-luxe-fashion-hub",
+    "submitted_at": "2026-10-04T12:51:55.343Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "url": "https://www.theseattleresidences.com/",
+    "businessName": "Seattle Residences",
+    "success": false,
+    "notes": "Skip: Website domain DNS unresolvable or server unresponsive (<= 7s).",
+    "methodUsed": "none",
+    "deliveredAt": "2026-10-04T20:56:29.663Z"
+  },
+  {
+    "lead_id": "10f0a19b-b7c6-46bf-bb4c-072bfda5fb89",
+    "business_name": "Seattle Residences",
+    "target_website": "https://www.theseattleresidences.com/",
+    "form_action": "https://www.theseattleresidences.com/",
+    "submitted_at": "2026-10-04T21:07:17.598Z",
+    "success": true,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "smtp_pool_cascade"
+  },
+  {
+    "lead_id": "10f0a19b-b7c6-46bf-bb4c-072bfda5fb89",
+    "business_name": "Seattle Residences",
+    "target_website": "https://www.theseattleresidences.com/",
+    "form_action": "https://www.theseattleresidences.com/",
+    "submitted_at": "2026-10-06T19:31:55.519Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "url": "https://www.theseattleresidences.com/",
+    "businessName": "Seattle Residences",
+    "success": false,
+    "notes": "Skip: Website domain DNS unresolvable or server unresponsive (<= 7s).",
+    "methodUsed": "none",
+    "deliveredAt": "2026-10-06T19:37:27.317Z"
+  },
+  {
+    "lead_id": "10f0a19b-b7c6-46bf-bb4c-072bfda5fb89",
+    "business_name": "Seattle Residences",
+    "target_website": "https://www.theseattleresidences.com/",
+    "form_action": "https://www.theseattleresidences.com/",
+    "submitted_at": "2026-10-06T20:02:33.445Z",
+    "success": true,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "smtp_pool_cascade"
+  },
+  {
+    "lead_id": "social_instagram_9c84db300b",
+    "business_name": "Real Estate Agents & Companies in Lagos State",
+    "target_website": "https://propertypro.ng/agents/lagos",
+    "form_action": "https://propertypro.ng/agents/lagos",
+    "submitted_at": "2026-10-11T17:16:35.525Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  },
+  {
+    "lead_id": "social_instagram_9c84db300b",
+    "business_name": "Real Estate Agents & Companies in Lagos State",
+    "target_website": "https://propertypro.ng/agents/lagos",
+    "form_action": "https://propertypro.ng/agents/lagos",
+    "submitted_at": "2026-10-11T17:46:54.034Z",
+    "success": false,
+    "proposal_type": "WEB_PROPOSAL",
+    "methodUsed": "none"
+  }
+]

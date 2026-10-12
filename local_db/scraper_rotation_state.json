@@ -1,0 +1,27 @@
+{
+  "cat_idx": 14,
+  "page_offsets": {
+    "solar-energy": 16,
+    "construction-services": 16,
+    "estate-agents": 16,
+    "doctors-and-clinics": 16,
+    "vehicle-services": 16,
+    "architects": 16,
+    "schools": 16,
+    "hotels": 16,
+    "lawyers": 16,
+    "restaurants": 16,
+    "beauty-salons": 16,
+    "supermarkets": 16,
+    "pharmacies": 16,
+    "event-management": 16,
+    "cleaning-services": 15,
+    "bakeries": 15,
+    "furniture": 15,
+    "security-services": 15,
+    "printing-services": 15,
+    "courier-services": 15,
+    "travel-agencies": 15,
+    "computer-dealers": 15
+  }
+}
