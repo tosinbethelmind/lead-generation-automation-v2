@@ -31,13 +31,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
 
-      - name: Install Node Dependencies
+      - name: Install Lightweight Scraper & Outreach Dependencies
         run: |
-          npm install --legacy-peer-deps --no-audit
-          echo "✅ Cloud Node dependencies verified."
+          set +e
+          pip install beautifulsoup4 --quiet || true
+          npm install --no-save --no-package-lock --legacy-peer-deps --no-audit tsx @supabase/supabase-js cheerio axios nodemailer dotenv ws p-limit p-retry disposable-email-domains zod
+          echo "✅ Cloud Node & Python scraper dependencies verified in < 10s."
 
       - name: Execute Heavy Nationwide Scraper Pass (36 States + FCT)
         env:
@@ -48,14 +48,15 @@ jobs:
           NODE_ENV: 'production'
         run: |
           set +e
+          python3 scripts/harvest_high_speed_strict_rotational.py || true
           npx tsx scripts/run_breakthrough_trio_scraper.ts --target=250 --sync-cloud || true
           npx tsx scripts/run_heavy_10k_nigeria_scraper.ts --target=1000 || true
           node scripts/master_five_engine_high_speed_scraper.js || true
           npx tsx scripts/run_heavy_b2b_email_harvester.ts || true
           npx tsx scripts/harvest_instagram_and_tiktok_leads.ts || true
-          echo "✅ High-Speed Nationwide Harvester, Breakthrough Trio & 5-Engine Pass complete."
+          echo "✅ High-Speed Nationwide Harvester, Rotational Strict No-Website & 5-Engine Pass complete."
 
-      - name: Execute Daily B2B Email (300 Quota) & Webform Outreach Pass
+      - name: Execute Daily B2B Email (600 Quota) & Webform Outreach Pass
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -78,6 +79,10 @@ jobs:
         run: |
           git config --global user.name "Bethelmind Autonomous Cloud Bot"
           git config --global user.email "bot@bethelmindanalytics.com"
-          git add local_db/leads_db.json local_db/real_webform_submissions.json local_db/email_daemon_state.json local_db/crm_leads.json local_db/activities.json || true
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(cloud-engine): persist autonomous scraped leads & outreach telemetry [skip ci]" && git push origin main) || true
+          git add local_db/leads_db.json local_db/scraper_rotation_state.json local_db/real_webform_submissions.json local_db/email_daemon_state.json local_db/crm_leads.json local_db/activities.json || true
+          if ! git diff --quiet || ! git diff --staged --quiet; then
+            git commit -m "chore(cloud-engine): persist autonomous scraped leads & outreach telemetry [skip ci]" || true
+            git pull --rebase origin main || true
+            git push origin main || true
+          fi
           echo "✅ Autonomous cloud harvest & outreach state synced to GitHub repository."

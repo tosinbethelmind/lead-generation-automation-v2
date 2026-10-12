@@ -195,8 +195,22 @@ def run_rotation_batch(batch_size_pages=15):
         })
         added += 1
 
-    with open(db_path, 'w', encoding='utf-8') as f:
+    # Re-read latest db right before atomic merge to prevent overwriting concurrent writes
+    try:
+        latest_db = json.load(open(db_path, encoding='utf-8'))
+        if len(latest_db) > len(db):
+            latest_phones = {l.get('phone') for l in latest_db} | {l.get('phone_e164') for l in latest_db}
+            for new_lead in db[len(db) - added:]:
+                if new_lead.get('phone') not in latest_phones:
+                    latest_db.append(new_lead)
+            db = latest_db
+    except Exception:
+        pass
+
+    tmp_path = db_path + '.tmp'
+    with open(tmp_path, 'w', encoding='utf-8') as f:
         json.dump(db, f, indent=2)
+    os.replace(tmp_path, db_path)
 
     elapsed = time.time() - t0
     total_no_site = sum(1 for l in db if not l.get('website') or l.get('has_website') is False or l.get('website') in ['', 'N/A', 'None', None])

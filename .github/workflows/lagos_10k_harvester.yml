@@ -31,14 +31,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
 
       - name: Install Dependencies Resiliently
         run: |
           set +e
-          npm ci --prefer-offline --no-audit --legacy-peer-deps || npm install --legacy-peer-deps --no-audit
-          echo "✅ Node dependencies verified."
+          pip install beautifulsoup4 --quiet || true
+          npm install --no-save --no-package-lock --legacy-peer-deps --no-audit tsx @supabase/supabase-js cheerio axios nodemailer dotenv ws p-limit p-retry disposable-email-domains zod
+          echo "✅ Node & Python dependencies verified."
 
       - name: Run Harvester Pass
         env:
@@ -49,13 +48,18 @@ jobs:
           NODE_ENV: 'production'
         run: |
           set +e
-          node scripts/lagos_10k_master_harvester.js --single
+          python3 scripts/harvest_high_speed_strict_rotational.py || true
+          node scripts/lagos_10k_master_harvester.js --single || true
           echo "✅ Lagos Harvester Pass Finished."
 
       - name: Persist Harvested Leads to Repository
         run: |
           git config --global user.name "Bethelmind Autonomous Cloud Bot"
           git config --global user.email "bot@bethelmindanalytics.com"
-          git add local_db/leads_db.json || true
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(cloud-harvester): persist lagos scraped leads [skip ci]" && git push origin main) || true
+          git add local_db/leads_db.json local_db/scraper_rotation_state.json || true
+          if ! git diff --quiet || ! git diff --staged --quiet; then
+            git commit -m "chore(cloud-harvester): persist lagos scraped leads [skip ci]" || true
+            git pull --rebase origin main || true
+            git push origin main || true
+          fi
           echo "✅ Scraped leads committed and pushed to repository."
