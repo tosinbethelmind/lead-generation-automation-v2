@@ -53,17 +53,17 @@ function isGenuineCommercialLead(l: any): boolean {
   const email = (l.email || l.email_address || l.contact_email || '').trim().toLowerCase();
 
   if (!name || name.length < 3) return false;
-  if (/mock_|synthetic|template|#\d{3,}|\[area\]|^lead_\d+/i.test(name)) return false;
+  if (/mock_|synthetic|template|#\d{3,}|\[area\]|^lead_\d+|Premium\s+.*?\s+\d+$/i.test(name)) return false;
   if (/Commercial SME.*Hub #\d+/i.test(name)) return false;
 
   // Strict Phone rejection rules (Section 5)
   if (phone) {
-    if (/0000|0001|1111|2222|3333|4444|5555|6666|7777|8888|9999|123456/.test(phone)) return false;
+    if (/000\d|1111|2222|3333|4444|5555|6666|7777|8888|9999|123456|654321|666777/.test(phone)) return false;
   }
 
   // Strict Email rejection rules
   if (email) {
-    if (/example\.com|test\.com|testlead\.com|placeholder|\.png|\.jpg/i.test(email)) return false;
+    if (/example\.com|test\.com|testlead\.com|placeholder|premiumsalon\.com|\.png|\.jpg/i.test(email)) return false;
     if (/commercialsme\d+|@example|@test|@placeholder|demo\d+@/i.test(email)) return false;
     if (email.includes('@')) return true;
   }
@@ -162,6 +162,7 @@ function getSectorOutreachHooks(sectorRaw: string, businessName: string, area: s
       painPoint: `attendants taking 2 hours to answer "how much" on Instagram and WhatsApp causes 40% of ready-to-buy shoppers to abandon orders.`,
       specializedFeature: `3-Second WhatsApp Speed Closer & "Fake Alert Proof" Bank Transfer Reconciliation`
     };
+  }
   if (/beauty|salon|spa|cosmetics|hair|nail|barber/i.test(s)) {
     return {
       subject: `${businessName} Booking Desk — 24/7 appointment scheduling & zero no-shows`,
@@ -280,6 +281,39 @@ Lead Solutions Strategist · Bethelmind Digital Solutions`;
   return { subject, textContent, htmlContent, cleanName, previewUrl };
 }
 
+function safePersistLeads(leads: any[]) {
+  try {
+    if (!Array.isArray(leads) || leads.length < 100) return;
+    let diskLeads: any[] = [];
+    if (fs.existsSync(LEADS_DB_PATH)) {
+      try {
+        const parsed = JSON.parse(fs.readFileSync(LEADS_DB_PATH, 'utf8'));
+        if (Array.isArray(parsed)) diskLeads = parsed;
+      } catch (_) {}
+    }
+    const mergedMap = new Map<string, any>();
+    for (const dl of diskLeads) {
+      if (!isGenuineCommercialLead(dl)) continue;
+      const k = dl.id || dl.lead_id || (dl.phone || dl.phone_e164 || '').replace(/\D/g, '').slice(-10) || dl.email;
+      if (k) mergedMap.set(k, dl);
+    }
+    for (const l of leads) {
+      if (!isGenuineCommercialLead(l)) continue;
+      const k = l.id || l.lead_id || (l.phone || l.phone_e164 || '').replace(/\D/g, '').slice(-10) || l.email;
+      if (k) {
+        const prev = mergedMap.get(k) || {};
+        mergedMap.set(k, { ...prev, ...l, address: l.address || prev.address, carrier: l.carrier || prev.carrier });
+      }
+    }
+    const finalArr = Array.from(mergedMap.values());
+    if (finalArr.length >= 100) {
+      const tmp = `${LEADS_DB_PATH}.tmp.${process.pid}`;
+      fs.writeFileSync(tmp, JSON.stringify(finalArr, null, 2), 'utf8');
+      fs.renameSync(tmp, LEADS_DB_PATH);
+    }
+  } catch (_) {}
+}
+
 export async function loadAndConsolidateLeads(): Promise<any[]> {
   const leadMap = new Map<string, any>();
 
@@ -293,6 +327,7 @@ export async function loadAndConsolidateLeads(): Promise<any[]> {
 
     if (key && !leadMap.has(key)) {
       leadMap.set(key, {
+        ...l,
         id: l.id || l.lead_id || l.leadId || `lead_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         name: name,
         business_name: name,
@@ -303,6 +338,7 @@ export async function loadAndConsolidateLeads(): Promise<any[]> {
         website: (l.website || '').trim(),
         area: l.area || l.city || 'Lagos',
         city: l.city || l.area || 'Lagos',
+        address: l.address || l.area || 'Nigeria',
         email_sent: Boolean(l.email_sent || l.emailSent || (l.outreach_channels && l.outreach_channels.email)),
         email_sent_at: l.email_sent_at || l.emailSentAt || '',
         email_provider: l.email_provider || '',
@@ -484,7 +520,7 @@ async function replenishEmailLeads(leads: ConsolidatedOutreachLead[], targetNeed
 
   if (newlyFound > 0) {
     try {
-      fs.writeFileSync(LEADS_DB_PATH, JSON.stringify(leads, null, 2), 'utf8');
+      safePersistLeads(leads);
       console.log(`💾 Saved ${newlyFound} newly discovered emails to ${LEADS_DB_PATH}`);
     } catch (_) {}
   }
@@ -660,7 +696,7 @@ async function main() {
 
   // Persist email state immediately after Part 1 completes
   try {
-    fs.writeFileSync(LEADS_DB_PATH, JSON.stringify(leads, null, 2), 'utf8');
+    safePersistLeads(leads);
     fs.writeFileSync(ACTIVITIES_PATH, JSON.stringify(activities.slice(-2000), null, 2), 'utf8');
 
     // Sync to email_daemon_state.json for accurate real-time telemetry
@@ -797,7 +833,7 @@ async function main() {
 
   // Persist updated database & logs
   try {
-    fs.writeFileSync(LEADS_DB_PATH, JSON.stringify(leads, null, 2), 'utf8');
+    safePersistLeads(leads);
     fs.writeFileSync(WEBFORM_LOG_PATH, JSON.stringify(webformSubmissionsLog.slice(-1000), null, 2), 'utf8');
     fs.writeFileSync(ACTIVITIES_PATH, JSON.stringify(activities.slice(-2000), null, 2), 'utf8');
   } catch (_) {}
