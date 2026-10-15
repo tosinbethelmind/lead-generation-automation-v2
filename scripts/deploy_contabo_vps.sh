@@ -28,7 +28,7 @@ else
 fi
 
 echo "📦 [4/6] Installing project dependencies..."
-npm install --omit=dev
+npm install --omit=dev --ignore-scripts
 
 echo "🛡️ [5/6] Configuring Firewall (UFW)..."
 ufw allow OpenSSH
