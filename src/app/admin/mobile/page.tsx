@@ -444,6 +444,62 @@ What would you like to review or upgrade?
                     <ArrowUpRight size={18} />
                   )}
                 </button>
+
+                <button
+                  onClick={() => handleTriggerAction('trigger_vps_scraper', 'Contabo Cloud Scraper Pass')}
+                  disabled={triggerLoading === 'trigger_vps_scraper'}
+                  style={{
+                    background: 'linear-gradient(135deg, #1e3a8a, #0369a1)',
+                    border: '1px solid #38bdf8',
+                    borderRadius: '10px',
+                    padding: '14px 16px',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontWeight: 700,
+                    fontSize: '14px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Zap size={18} color="#38bdf8" />
+                    <span>Trigger Contabo Cloud Scraper (Hourly Pass)</span>
+                  </div>
+                  {triggerLoading === 'trigger_vps_scraper' ? (
+                    <RefreshCw size={16} className="animate-spin" />
+                  ) : (
+                    <ArrowUpRight size={18} />
+                  )}
+                </button>
+
+                <button
+                  onClick={() => handleTriggerAction('trigger_vps_restart', 'VPS WhatsApp Service Restart')}
+                  disabled={triggerLoading === 'trigger_vps_restart'}
+                  style={{
+                    background: '#1e293b',
+                    border: '1px solid #10b981',
+                    borderRadius: '10px',
+                    padding: '14px 16px',
+                    color: '#6ee7b7',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontWeight: 700,
+                    fontSize: '14px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Radio size={18} color="#10b981" />
+                    <span>Ping &amp; Verify VPS WhatsApp Line 1</span>
+                  </div>
+                  {triggerLoading === 'trigger_vps_restart' ? (
+                    <RefreshCw size={16} className="animate-spin" />
+                  ) : (
+                    <ArrowUpRight size={18} />
+                  )}
+                </button>
               </div>
             </div>
           </div>

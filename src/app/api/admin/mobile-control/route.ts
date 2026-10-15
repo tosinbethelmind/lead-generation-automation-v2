@@ -168,6 +168,36 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    if (action === 'trigger_vps_scraper') {
+      const child = spawn('node', ['scripts/test_vps_scraper.js'], {
+        cwd,
+        detached: true,
+        stdio: 'ignore',
+        shell: true
+      });
+      child.unref();
+
+      return NextResponse.json({
+        success: true,
+        message: 'Contabo Cloud VPS 5-Engine Scraper Pass initiated in background.'
+      });
+    }
+
+    if (action === 'trigger_vps_restart') {
+      const child = spawn('node', ['scripts/update_vps_code.js'], {
+        cwd,
+        detached: true,
+        stdio: 'ignore',
+        shell: true
+      });
+      child.unref();
+
+      return NextResponse.json({
+        success: true,
+        message: 'Contabo Cloud VPS WhatsApp service restarted cleanly.'
+      });
+    }
+
     return NextResponse.json({
       success: false,
       error: `Unknown action: ${action}`
