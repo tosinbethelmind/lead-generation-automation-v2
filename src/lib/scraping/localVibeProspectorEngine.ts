@@ -1,7 +1,7 @@
 /**
  * @file src/lib/scraping/localVibeProspectorEngine.ts
  * 
- * 🚀 Bethelmind Analytics - Local Autonomous Vibe Prospecting Engine
+ * 🚀 Bethelmind Digital Solutions - Local Autonomous Vibe Prospecting Engine
  * 100% Zero-Sign-Up, Zero-Subscription B2B Lead Harvester & Contact Enricher.
  * 
  * Capabilities:

@@ -2,7 +2,7 @@
  * @file relumeComponents.ts
  * Relume UI Component Library & Layout Engine
  * Provides modern, high-converting Relume design system components (Hero, Features, Stats, Testimonials, CTAs, Footer)
- * to upgrade all generated website redesign previews in ApexReach.
+ * to upgrade all generated website redesign previews in Bethelmind Digital Solutions.
  */
 
 export interface RelumeComponentParams {

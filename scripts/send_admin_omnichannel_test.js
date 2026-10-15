@@ -23,9 +23,9 @@ const LINE2_URL = 'http://localhost:3009/api/send';
 // 1. WhatsApp Dispatcher
 async function sendWhatsApp(lineId = 1) {
   const targetUrl = lineId === 1 ? LINE1_URL : LINE2_URL;
-  const msg = `👑 *APEXREACH ADMIN TEST — ALL CHANNELS VERIFIED*\n\n` +
+  const msg = `👑 *Bethelmind Digital Solutions ADMIN TEST — ALL CHANNELS VERIFIED*\n\n` +
     `Hello Admin 👋\n` +
-    `This is a live multi-channel test from your ApexReach 10K Lagos Engine.\n\n` +
+    `This is a live multi-channel test from your Bethelmind Digital Solutions 10K Lagos Engine.\n\n` +
     `✅ *Channel:* WhatsApp (Line ${lineId})\n` +
     `📊 *Master Lagos Leads:* 16,488 Genuine Businesses\n` +
     `🎯 *Day 2 Status:* Standby (Awaiting your launch command)\n` +
@@ -71,7 +71,7 @@ async function sendWhatsApp(lineId = 1) {
 
 // 2. Carrier SMS Dispatcher
 async function sendCarrierSms() {
-  const smsText = `[ApexReach Admin Test] All systems verified operational. Day 2 batch (30 genuine Lagos leads) standing by.`;
+  const smsText = `[Bethelmind Digital Solutions Admin Test] All systems verified operational. Day 2 batch (30 genuine Lagos leads) standing by.`;
   const payload = JSON.stringify({ to: '+' + ADMIN_PHONE, message: smsText });
 
   return new Promise((resolve) => {
@@ -126,12 +126,12 @@ async function sendEmail() {
       });
 
       const mailOptions = {
-        from: `"ApexReach Automation" <${config.smtpFrom || config.smtpUser}>`,
+        from: `"Bethelmind Digital Solutions Automation" <${config.smtpFrom || config.smtpUser}>`,
         to: ADMIN_EMAIL,
-        subject: '👑 ApexReach Admin Channel Test — All Systems Operational',
+        subject: '👑 Bethelmind Digital Solutions Admin Channel Test — All Systems Operational',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #1e293b; border-radius: 12px; background-color: #0f172a; color: #f8fafc;">
-            <h2 style="color: #38bdf8; margin-top: 0;">👑 ApexReach Admin Channel Verification</h2>
+            <h2 style="color: #38bdf8; margin-top: 0;">👑 Bethelmind Digital Solutions Admin Channel Verification</h2>
             <p style="font-size: 15px; line-height: 1.6; color: #cbd5e1;">
               This is a test notification confirming that all three of your admin communication channels are fully active and delivering.
             </p>

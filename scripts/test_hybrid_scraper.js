@@ -1,10 +1,10 @@
 /**
- * Test script for ApexReach Hybrid Web Scraper (Cheerio + Crawlee Stealth Engine)
+ * Test script for Bethelmind Digital Solutions Hybrid Web Scraper (Cheerio + Crawlee Stealth Engine)
  */
 const path = require('path');
 
 async function testScraper() {
-  console.log('--- Testing ApexReach Hybrid Scraper Engine ---');
+  console.log('--- Testing Bethelmind Digital Solutions Hybrid Scraper Engine ---');
   
   // Register tsx/ts-node if running TypeScript directly or test compiled API endpoint
   try {

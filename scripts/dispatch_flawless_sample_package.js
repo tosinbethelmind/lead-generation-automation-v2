@@ -42,10 +42,10 @@ Good day management at Jacio International! Why wait weeks on Form M or risk bla
 🏢 *Client:* Jacio International Company Ltd (ASPAMDA Trade Fair)
 🆔 *Unique Ref:* \`BM-OTC-701-JACIO\`
 📦 *Volume:* $65,000 USD (₦98,800,000 NGN)
-💰 *YOUR SPREAD PROFIT:* *+₦1,625,000 NGN* (Direct to OPay 7034297995)
+💰 *YOUR SPREAD PROFIT:* *+₦1,625,000 NGN* (Direct to OPay 6805375225)
 ━━━━━━━━━━━━━━━━━━━━━━
 🎙️ *15s PERSONALIZED VOICE NOTE TRANSCRIPT:*
-_"Good day Alhaji, management at Jacio International in ASPAMDA Trade Fair. Tosin here from Bethelmind Analytics. Why wait weeks on Form M? We have locked 1,520 Naira per Dollar for your 65,000 Dollar Guangzhou container wire today, with 15-minute delivery and 100% institutional escrow safety. Check the quick details below with reference BM-OTC-701-JACIO and let us clear your batch today. Thank you."_
+_"Good day Alhaji, management at Jacio International in ASPAMDA Trade Fair. Tosin here from Bethelmind Digital Solutions. Why wait weeks on Form M? We have locked 1,520 Naira per Dollar for your 65,000 Dollar Guangzhou container wire today, with 15-minute delivery and 100% institutional escrow safety. Check the quick details below with reference BM-OTC-701-JACIO and let us clear your batch today. Thank you."_
 
 📋 *CLEAN PROPOSAL TEXT (NO PLACEHOLDERS / NO DUMMIES):*
 ${proposalText}

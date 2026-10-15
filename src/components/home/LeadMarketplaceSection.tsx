@@ -80,7 +80,7 @@ const MARKETPLACE_PACKAGES: LeadPackage[] = [
       'Phone, Email, Maps Rating & Visual Photo Metadata',
       'Instant Excel Download + Free Monthly Updates'
     ],
-    sampleFilename: 'ApexReach_Master_Lagos_10000_Database.xlsx'
+    sampleFilename: 'bethelmind_.xlsx'
   }
 ];
 

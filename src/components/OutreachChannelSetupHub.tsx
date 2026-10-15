@@ -34,7 +34,7 @@ export default function OutreachChannelSetupHub() {
       lastPairingCode: '839-102-94',
     },
     sms: { configured: true, gatewayUrl: 'http://10.132.90.251:8082', status: 'online' },
-    email: { configured: true, senderName: 'Bethelmind Analytics', senderEmail: 'tosin@bethelmindanalytics.com', status: 'online' },
+    email: { configured: true, senderName: 'Bethelmind Digital Solutions', senderEmail: 'tosin@bethelmindanalytics.com', status: 'online' },
     webFormSubmitter: { configured: true, status: 'online' }
   });
 

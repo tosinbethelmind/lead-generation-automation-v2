@@ -2,7 +2,7 @@
  * @file scripts/execute_today_300_emails_and_webforms.ts
  * 
  * 🚀 DAILY COMBINED EMAIL (300 TARGET QUOTA) & WEB CONTACT FORM OUTREACH DISPATCHER
- * Bethelmind Analytics Lagos Desk · Commercial Growth Engine
+ * Bethelmind Digital Solutions · Commercial Growth Engine
  * 
  * Features:
  * 1. Automatic Lead Queue Staging: Ingests existing verified leads and autonomously triggers high-speed B2B sweeps if queue < 300.
@@ -192,45 +192,58 @@ function getSectorOutreachHooks(sectorRaw: string, businessName: string, area: s
   };
 }
 
+function isStrictNoWebsiteLead(l: any): boolean {
+  if (!l) return false;
+  const w = String(l.website || '').toLowerCase().trim();
+  if (!w || !w.startsWith('http')) return true;
+  if (/businesslist\.com\.ng|finelib\.com|jiji\.ng|vconnect|africabizinfo|africabz|nigeriayp|infobel|facebook\.com|instagram\.com|google\.com|bing\.com/i.test(w)) {
+    return true;
+  }
+  return l.hasWebsite === false || l.has_website === false;
+}
+
 function generateEmailPayload(lead: any) {
   const cleanName = cleanBusinessName(lead.name || lead.business_name, lead.category);
   const area = lead.area || lead.city || 'Lagos';
   const sector = lead.category || lead.sector || 'Commercial Enterprise';
-  const slug = (lead.id || lead.lead_id || cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-')).slice(0, 25);
+  const slug = (lead.previewSlug || lead.id || lead.lead_id || cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-')).replace(/^\/preview\//, '').slice(0, 40);
   const previewUrl = `https://www.bethelmindanalytics.com/preview/${slug}`;
 
   const hooks = getSectorOutreachHooks(sector, cleanName, area);
-  const subject = hooks.subject;
-
   const caseStudy = getSectorCaseStudy(sector);
+  const subject = `We built a free sample website for ${cleanName} (Check on your phone)`;
 
-  const textContent = `Good day ${cleanName} Team,
+  const textContent = `Good day Boss / Management at ${cleanName},
 
-We recently conducted an operational review for ${sector} firms in ${area} and identified that ${hooks.painPoint}
+Well done with your business! My name is Tosin from Bethelmind Digital Solutions (CAC Registered Nigerian Business).
 
-We built a private 24/7 WhatsApp Sales & Quoting Portal specifically for ${cleanName}.
+Right now, when customers search for "${cleanName}" on Google, they cannot find your official website — instead, Google shows your competitors in ${area}.
 
-Key Features Pre-Installed:
-• 24/7 AI WhatsApp Quoting Assistant (< 3s Nigerian tone response)
-• ${hooks.specializedFeature}
-• Instant Bank Transfer Verification (Paystack & Moniepoint)
+To help you get more customers easily without waiting weeks for a developer, we already built a ready-made Official Mobile Website + 24/7 WhatsApp Customer Assistant for ${cleanName}.
 
-Test drive your live prototype on your phone here:
+Tap below to check your sample website free on your phone right now (₦0 to view):
 ${previewUrl}
 
-(100% Free ₦0 Upfront Review. Listen to the 15-second voice note attached).
+What Your New Website Does for ${cleanName}:
+• Shows ${cleanName} on Google when customers search in ${area}
+• Replies customers on WhatsApp 24/7 with your price list & booking details
+• Confirms customer bank transfers cleanly (OPay, Moniepoint & Paystack)
 
-📖 P.S. Read our 2026 Nigerian Operator Blueprint for ${sector}:
-"${caseStudy.title}"
-Case Study & ROI Calculator: ${caseStudy.url}
+🇳🇬 October 50% SME Digital Growth Promo (Because Your Sample Is Already 80% Built):
+1. Option 1 (Official .COM.NG Website + WhatsApp Assistant): ₦65,000 Total (Normal Price ₦130,000) — Start today with ₦35,000 Deposit, and pay the ₦30,000 balance ONLY after your website is live on Google with your real photos!
+2. Option 2 (Corporate .COM Website + 3 Official Staff Emails): ₦120,000 Total (Normal Price ₦240,000) — Start today with ₦60,000 Deposit.
+3. Want to see your real shop photos on it first? Send 3–5 photos of your work on WhatsApp (+234 802 279 1227) and we will update your sample page FREE before you pay a kobo!
+4. Official CAC Registered Company Account: Moniepoint Microfinance Bank · 6805375225 · Bethelmind Digital Solutions.
 
-To claim your portal or request customizations:
-WhatsApp Desk: +234 802 279 1227 (https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am testing the quoter prototype for ${cleanName}.`)})
+(Listen to the short 15-second voice note attached for a quick greeting).
+
+Want us to change any picture, phone number, or price on your sample page? Chat with us on WhatsApp:
+WhatsApp Desk: +234 802 279 1227 (https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just checked the sample website for ${cleanName} and want to claim the October 50% Promo.`)})
 Email: tosin@bethelmindanalytics.com
 
-Best regards,
+Warm regards,
 Tosin Oyelakin
-Lead Solutions Strategist · Bethelmind Digital Solutions`;
+Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)`;
 
   const htmlContent = `
 <!DOCTYPE html>
@@ -239,39 +252,41 @@ Lead Solutions Strategist · Bethelmind Digital Solutions`;
 <body style="margin:0; padding:20px; background-color:#0b1329; font-family:'Segoe UI', Arial, sans-serif; color:#f8fafc;">
   <div style="max-width:580px; margin:0 auto; background:#0f172a; border:1px solid #1e293b; border-radius:12px; overflow:hidden;">
     <div style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding:20px 24px; text-align:center;">
-      <div style="color:#e0f2fe; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">⚡ Bethelmind Digital Solutions</div>
-      <h1 style="color:#ffffff; margin:0; font-size:19px; font-weight:800;">24/7 AI Sales & Quoting Assistant</h1>
-      <p style="color:#bae6fd; margin:4px 0 0 0; font-size:13px;">Private Prototype for <strong>${cleanName}</strong></p>
+      <div style="color:#fef08a; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">🇳🇬 OCTOBER 50% SME PROMO · 🏛️ Bethelmind Digital Solutions (CAC Certified)</div>
+      <h1 style="color:#ffffff; margin:0; font-size:19px; font-weight:800;">Ready-Made Business Website + WhatsApp Assistant</h1>
+      <p style="color:#bae6fd; margin:4px 0 0 0; font-size:13px;">Built for <strong>${cleanName}</strong> (Check Free on Your Phone)</p>
     </div>
     <div style="padding:24px;">
-      <p style="font-size:15px; color:#cbd5e1; line-height:1.6; margin-top:0;">Good day Team at <strong>${cleanName}</strong>,</p>
-      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">During our review of ${sector} firms in ${area}, we noticed you do not have an official mobile website configured to capture online buyers. We pre-built an official mobile website + 24/7 WhatsApp quoting portal custom-tailored for <strong>${cleanName}</strong>.</p>
+      <p style="font-size:15px; color:#cbd5e1; line-height:1.6; margin-top:0;">Good day Boss / Management at <strong>${cleanName}</strong>,</p>
+      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">Well done with your business! Right now, when customers search for <strong>${cleanName}</strong> on Google, they cannot find your official website — instead, Google shows your competitors in ${area}.</p>
+      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">To help you get more customers easily without waiting weeks for a developer, we already built a ready-made <strong>Official Mobile Website + 24/7 WhatsApp Customer Assistant</strong> for <strong>${cleanName}</strong> so you can check it free on your phone first (<strong>₦0 to view</strong>).</p>
       
       <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:14px; margin:16px 0; text-align:center;">
-        <div style="color:#38bdf8; font-size:13px; font-weight:700; margin-bottom:4px;">🎙️ 15-Second Voice Note Briefing Attached</div>
-        <div style="color:#94a3b8; font-size:12px;">Listen to the short audio note explaining your custom setup</div>
+        <div style="color:#38bdf8; font-size:13px; font-weight:700; margin-bottom:4px;">🎙️ 15-Second Voice Note Attached</div>
+        <div style="color:#94a3b8; font-size:12px;">Listen to our short audio greeting explaining your sample website</div>
       </div>
 
       <div style="text-align:center; margin:22px 0;">
-        <a href="${previewUrl}" style="display:inline-block; background:linear-gradient(135deg, #0284c7, #2563eb); color:#ffffff; padding:14px 28px; border-radius:8px; font-weight:800; font-size:15px; text-decoration:none;">👉 Test Drive Your Live Prototype Online</a>
-        <div style="font-size:12px; color:#64748b; margin-top:6px;">(100% Free ₦0 Upfront Review on your phone)</div>
+        <a href="${previewUrl}" style="display:inline-block; background:linear-gradient(135deg, #0284c7, #2563eb); color:#ffffff; padding:14px 28px; border-radius:8px; font-weight:800; font-size:15px; text-decoration:none;">👉 Check ${cleanName}'s Sample Website</a>
+        <div style="font-size:12px; color:#64748b; margin-top:6px;">(Free to check on your phone — ₦0 upfront)</div>
       </div>
 
-      <!-- Sector Blueprint & Case Study Bridge -->
-      <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #38bdf8; border-radius:8px; padding:14px 16px; margin:20px 0; text-align:left;">
-        <div style="color:#f59e0b; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">📖 2026 Nigerian Operator Blueprint</div>
-        <a href="${caseStudy.url}" style="display:block; color:#ffffff; font-size:13px; font-weight:700; text-decoration:none; margin:6px 0 4px 0; line-height:1.4;">${caseStudy.title} &rarr;</a>
-        <div style="color:#94a3b8; font-size:11px; line-height:1.5;">${caseStudy.highlight} (Impact: <strong>${caseStudy.metric}</strong>). Includes live operator calculator.</div>
+      <div style="background:#111c35; border:1px solid #10b981; border-radius:8px; padding:14px 16px; margin:18px 0; text-align:left;">
+        <div style="color:#34d399; font-size:12px; font-weight:800; text-transform:uppercase; margin-bottom:8px;">🇳🇬 October 50% SME Promo (Because Your Sample Is Already 80% Built)</div>
+        <div style="color:#e2e8f0; font-size:13px; line-height:1.6; margin-bottom:6px;">• <strong>Option 1 (Official .COM.NG Website): ₦65,000 Total</strong> <span style="text-decoration:line-through; color:#94a3b8;">(₦130k)</span> — <strong>Start today with ₦35,000 Deposit</strong>, and pay the ₦30,000 balance ONLY after your website is live with your real photos!</div>
+        <div style="color:#e2e8f0; font-size:13px; line-height:1.6; margin-bottom:6px;">• <strong>Option 2 (Corporate .COM + Staff Emails): ₦120,000 Total</strong> <span style="text-decoration:line-through; color:#94a3b8;">(₦240k)</span> — <strong>Start today with ₦60,000 Deposit</strong> (Includes <code>.com</code> domain &amp; official company emails).</div>
+        <div style="color:#fde68a; font-size:12.5px; line-height:1.5; margin-bottom:6px;">• <strong>✏️ Want to see your real shop photos first?</strong> Send 3–5 photos on WhatsApp and we will update your sample page <strong>FREE (₦0)</strong> before you pay!</div>
+        <div style="color:#94a3b8; font-size:12px; line-height:1.5; border-top:1px solid #1e293b; padding-top:6px; margin-top:6px;">🏛️ <strong>CAC Registered Company Account:</strong> Moniepoint MFB · <strong>6805375225</strong> · <strong>Bethelmind Digital Solutions</strong></div>
       </div>
 
       <div style="text-align:center; margin-bottom:18px;">
-        <a href="https://wa.me/2348022791227?text=Hello%20Bethelmind%20Lagos%20Desk!%20I%20am%20reviewing%20the%20prototype%20for%20${encodeURIComponent(cleanName)}.%20Let%20us%20discuss%20activation." style="display:inline-block; background:#10b981; color:#ffffff; padding:10px 22px; border-radius:6px; font-weight:700; font-size:13px; text-decoration:none;">💬 Claim via WhatsApp (+234 802 279 1227)</a>
+        <a href="https://wa.me/2348022791227?text=Hello%20Bethelmind%20Digital%20Solutions!%20I%20just%20checked%20the%20sample%20website%20for%20${encodeURIComponent(cleanName)}.%20Let%20us%20talk." style="display:inline-block; background:#10b981; color:#ffffff; padding:10px 22px; border-radius:6px; font-weight:700; font-size:13px; text-decoration:none;">💬 Chat with Us on WhatsApp (0802 279 1227)</a>
       </div>
 
       <div style="border-top:1px solid #1e293b; padding-top:16px; margin-top:18px; font-size:12px; color:#94a3b8; line-height:1.6;">
-        📱 <strong>WhatsApp Desk:</strong> <a href="https://wa.me/2348022791227" style="color:#38bdf8; text-decoration:none; font-weight:700;">+234 802 279 1227</a><br>
+        📱 <strong>WhatsApp / Call:</strong> <a href="https://wa.me/2348022791227" style="color:#38bdf8; text-decoration:none; font-weight:700;">0802 279 1227</a><br>
         📧 <strong>Email:</strong> <a href="mailto:tosin@bethelmindanalytics.com" style="color:#38bdf8; text-decoration:none;">tosin@bethelmindanalytics.com</a><br><br>
-        <strong>Tosin Oyelakin</strong> · <em>Bethelmind Analytics Lagos Desk</em>
+        <strong>Tosin Oyelakin</strong> · <em>Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)</em>
       </div>
     </div>
   </div>
@@ -398,62 +413,44 @@ export async function loadAndConsolidateLeads(): Promise<any[]> {
 
 async function replenishEmailLeads(leads: ConsolidatedOutreachLead[], targetNeeded: number): Promise<number> {
   if (targetNeeded <= 0) return 0;
-  console.log(`\n🔄 [Email Lead Replenishment] Need ${targetNeeded} additional corporate email leads. Initiating multi-source discovery...`);
+  console.log(`\n🔄 [Non-Website Email Lead Replenishment] Need ${targetNeeded} additional non-website business emails. Probing directory listings...`);
 
-  const EXCLUDE_DOMAINS = /jiji\.ng|facebook\.com|instagram\.com|twitter\.com|x\.com|linkedin\.com|youtube\.com|google\.com|bing\.com|wa\.me|finelib\.com|businesslist\.com\.ng|vconnect\.com/i;
-  const candidateSites = leads.filter(l => 
+  const DIRECTORY_DOMAINS = /finelib\.com|businesslist\.com\.ng|africabizinfo\.com|africabz\.com|vconnect\.com/i;
+  const candidateDirectoryProfiles = leads.filter(l => 
+    isStrictNoWebsiteLead(l) &&
     l.website && 
     l.website.startsWith('http') && 
-    !EXCLUDE_DOMAINS.test(l.website) && 
+    DIRECTORY_DOMAINS.test(l.website) && 
     (!l.email || !l.email.includes('@'))
-  );
+  ).slice(0, 120);
 
   let newlyFound = 0;
-  const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-  const IGNORE_PATTERNS = /sentry|wixpress|schema|example\.com|domain\.com|cloudflare|\.png|\.jpg|\.webp|\.svg|bootstrap|jquery|polyfill|webpack|user@email\.com|your@email\.com|sample@mail\.com|name@domain\.com|test@test\.com/i;
+  const IGNORE_PATTERNS = /sentry|wixpress|schema|example\.com|domain\.com|cloudflare|\.png|\.jpg|\.webp|\.svg|bootstrap|jquery|polyfill|webpack|user@email\.com|your@email\.com|sample@mail\.com|name@domain\.com|test@test\.com|finelib\.com|businesslist\.com\.ng/i;
 
-  if (candidateSites.length > 0) {
-    console.log(`🌐 Crawling up to ${candidateSites.length} verified SME websites for hidden corporate emails...`);
+  if (candidateDirectoryProfiles.length > 0) {
+    console.log(`🌐 Probing up to ${candidateDirectoryProfiles.length} directory profile pages of non-website SMEs for business owner emails...`);
     const limit = pLimit(15);
 
-    await Promise.all(candidateSites.map(lead => limit(async () => {
+    await Promise.all(candidateDirectoryProfiles.map(lead => limit(async () => {
       if (newlyFound >= targetNeeded) return;
       try {
-        // 1. First probe via Stealth Metascraper with full DOM & mailto extraction
-        const metaResult = await stealthMetascraperExtractor.extractFromUrl(lead.website, 5000);
-        let extractedEmail = metaResult?.emails?.[0];
+        const metaResult = await stealthMetascraperExtractor.extractFromUrl(lead.website, 4500);
+        const extractedEmail = (metaResult?.emails || []).find(e => !IGNORE_PATTERNS.test(e) && stealthMetascraperExtractor.isGenuineCommercialEmail(e));
 
-        // 2. If not found, probe Katana deep endpoint crawler for hidden mailto / contact pages
-        if (!extractedEmail) {
-          const katanaResult = await katanaCrawlerBridge.crawlDomain(lead.website, 1, 8);
-          if (katanaResult.extractedEmails && katanaResult.extractedEmails.length > 0) {
-            extractedEmail = katanaResult.extractedEmails.find(e => stealthMetascraperExtractor.isGenuineCommercialEmail(e));
-          }
-
-          // 3. Fallback to /contact or discovered contact URL probe with metascraper
-          if (!extractedEmail) {
-            const contactUrl = katanaResult.contactUrls.length > 0 
-              ? katanaResult.contactUrls[0] 
-              : new URL('/contact', lead.website).toString();
-            const contactMeta = await stealthMetascraperExtractor.extractFromUrl(contactUrl, 4000);
-            extractedEmail = contactMeta?.emails?.[0];
-          }
-        }
-
-        if (extractedEmail && stealthMetascraperExtractor.isGenuineCommercialEmail(extractedEmail)) {
+        if (extractedEmail) {
           const cleanEmail = extractedEmail.toLowerCase().trim();
           lead.email = cleanEmail;
           lead.email_sent = false;
           newlyFound++;
-          console.log(`   ✨ [Katana/Metascraper Email ${newlyFound}/${targetNeeded}]: ${cleanEmail} (${lead.name})`);
+          console.log(`   ✨ [Directory Profile Email ${newlyFound}/${targetNeeded}]: ${cleanEmail} (${lead.name})`);
         }
       } catch (_) {}
     })));
   }
 
-  // If still below target, query Supabase Cloud for unsent email leads
+  // If still below target, query Supabase Cloud for unsent non-website email leads
   if (newlyFound < targetNeeded) {
-    console.log(`📡 Querying Supabase Cloud for additional verified corporate emails...`);
+    console.log(`📡 Querying Supabase Cloud for additional verified non-website business emails...`);
     try {
       const { data: supaLeads } = await supabase
         .from('leads')
@@ -465,6 +462,7 @@ async function replenishEmailLeads(leads: ConsolidatedOutreachLead[], targetNeed
       if (Array.isArray(supaLeads)) {
         const existingEmails = new Set(leads.map(l => (l.email || '').toLowerCase()));
         for (const sl of supaLeads) {
+          if (!isStrictNoWebsiteLead(sl)) continue;
           const em = (sl.email || '').toLowerCase().trim();
           if (em && em.includes('@') && !IGNORE_PATTERNS.test(em) && !existingEmails.has(em)) {
             existingEmails.add(em);
@@ -484,7 +482,7 @@ async function replenishEmailLeads(leads: ConsolidatedOutreachLead[], targetNeed
               email_provider: '',
               email_message_id: '',
               webform_submitted: false,
-              has_website: Boolean(sl.website && sl.website.startsWith('http'))
+              has_website: false
             });
             newlyFound++;
             if (newlyFound >= targetNeeded) break;
@@ -496,7 +494,7 @@ async function replenishEmailLeads(leads: ConsolidatedOutreachLead[], targetNeed
 
   // If still below target, run a quick targeted heavy harvester sweep
   if (newlyFound < targetNeeded) {
-    console.log(`🚀 Executing quick Heavy Nationwide Harvester sweep...`);
+    console.log(`🚀 Executing quick Heavy Nationwide Harvester sweep (Strict Non-Website Mode)...`);
     try {
       const harvestStats = await heavyNationwideB2BEmailHarvester.executeHeavySweep(Math.min(targetNeeded, 100));
       console.log(`   ✅ Harvest sweep added fresh pool:`, harvestStats);
@@ -504,6 +502,7 @@ async function replenishEmailLeads(leads: ConsolidatedOutreachLead[], targetNeed
         const freshData = JSON.parse(fs.readFileSync(LEADS_DB_PATH, 'utf8'));
         const existingEmails = new Set(leads.map(l => (l.email || '').toLowerCase()));
         for (const fl of freshData) {
+          if (!isStrictNoWebsiteLead(fl)) continue;
           const em = (fl.email || '').toLowerCase().trim();
           if (em && em.includes('@') && !existingEmails.has(em)) {
             existingEmails.add(em);
@@ -521,7 +520,7 @@ async function replenishEmailLeads(leads: ConsolidatedOutreachLead[], targetNeed
   if (newlyFound > 0) {
     try {
       safePersistLeads(leads);
-      console.log(`💾 Saved ${newlyFound} newly discovered emails to ${LEADS_DB_PATH}`);
+      console.log(`💾 Saved ${newlyFound} newly discovered non-website emails to ${LEADS_DB_PATH}`);
     } catch (_) {}
   }
 
@@ -530,13 +529,14 @@ async function replenishEmailLeads(leads: ConsolidatedOutreachLead[], targetNeed
 
 async function main() {
   console.log('========================================================================');
-  console.log('🚀 BETHELMIND ANALYTICS LAGOS DESK: 300 EMAIL & WEBFORM DISPATCHER');
+  console.log('🚀 Bethelmind Digital Solutions: NON-WEBSITE B2B EMAIL DISPATCHER');
   console.log('   Provider: Brevo API v3 + Hostinger SMTP Failover');
-  console.log('   Target Quota: 300 Corporate Emails + Active Web Contact Forms');
+  console.log('   Strategy: 100% Focused on Verified Nigerian Businesses WITHOUT Websites');
   console.log('========================================================================\n');
 
   let leads = await loadAndConsolidateLeads();
-  console.log(`📋 Consolidated Verified Genuine Leads Loaded: ${leads.length}`);
+  const strictNoWebTotal = leads.filter(isStrictNoWebsiteLead).length;
+  console.log(`📋 Consolidated Verified Genuine Leads Loaded: ${leads.length} (${strictNoWebTotal} Strict Non-Website Businesses)`);
 
   const todayStr = new Date().toISOString().split('T')[0];
   let sentEmailsToday = 0;
@@ -547,48 +547,29 @@ async function main() {
     } catch (_) {}
   }
 
-  let successfulWebformsToday = 0;
-  if (fs.existsSync(WEBFORM_LOG_PATH)) {
-    try {
-      const logs = JSON.parse(fs.readFileSync(WEBFORM_LOG_PATH, 'utf8'));
-      successfulWebformsToday = logs.filter((l: any) =>
-        (l.submitted_at || l.deliveredAt || l.timestamp || '').startsWith(todayStr) && l.success === true
-      ).length;
-    } catch (_) {}
+  const successfulWebformsToday = 0;
+  const DAILY_EMAIL_TARGET = parseInt(process.env.DAILY_EMAIL_TARGET || '600', 10);
+  const remainingEmails = Math.max(0, DAILY_EMAIL_TARGET - sentEmailsToday);
+  const remainingWebformsTo300 = 0; // Strictly focused 100% on Non-Website Businesses
+
+  console.log(`📊 TODAY'S PROGRESS [${todayStr} WAT]:`);
+  console.log(`   • Non-Website B2B Emails : ${sentEmailsToday}/${DAILY_EMAIL_TARGET} delivered (${remainingEmails} remaining)\n`);
+
+  let availableUnsentEmails = leads
+    .filter(l => l.email && l.email.includes('@') && !l.email_sent && isStrictNoWebsiteLead(l));
+  console.log(`📧 Available Unsent Strictly Non-Website Email Leads: ${availableUnsentEmails.length}`);
+
+  // Autonomous replenishment if unsent email leads pool is less than quota needed
+  if (availableUnsentEmails.length < remainingEmails) {
+    const needed = remainingEmails - availableUnsentEmails.length;
+    console.log(`⚡ Pool under quota by ${needed}. Triggering autonomous non-website email replenishment...`);
+    await replenishEmailLeads(leads, needed);
+    availableUnsentEmails = leads.filter(l => l.email && l.email.includes('@') && !l.email_sent && isStrictNoWebsiteLead(l));
+    console.log(`📧 Replenished Unsent Non-Website Email Leads: ${availableUnsentEmails.length}`);
   }
 
-    const DAILY_EMAIL_TARGET = parseInt(process.env.DAILY_EMAIL_TARGET || '600', 10);
-    const remainingEmails = Math.max(0, DAILY_EMAIL_TARGET - sentEmailsToday);
-    const remainingWebformsTo300 = Math.max(0, 300 - successfulWebformsToday);
-
-    console.log(`📊 TODAY'S PROGRESS [${todayStr} WAT]:`);
-    console.log(`   • Corporate Emails : ${sentEmailsToday}/${DAILY_EMAIL_TARGET} delivered (${remainingEmails} remaining)`);
-    console.log(`   • Web Contact Forms: ${successfulWebformsToday}/300 delivered (${remainingWebformsTo300} remaining)\n`);
-
-    let availableUnsentEmails = leads
-      .filter(l => l.email && l.email.includes('@') && !l.email_sent)
-      .sort((a, b) => {
-        const dirPatterns = ['google.com', 'instagram.com', 'facebook.com', 'businesslist.com.ng', 'vconnect.com', 'finelib.com'];
-        const isRealSite = (url: string) => Boolean(url && url.startsWith('http') && !dirPatterns.some(d => url.includes(d)));
-        const aHasWeb = isRealSite(a.website);
-        const bHasWeb = isRealSite(b.website);
-        if (!aHasWeb && bHasWeb) return -1;
-        if (aHasWeb && !bHasWeb) return 1;
-        return 0;
-      });
-    console.log(`📧 Available Unsent Genuine Email Leads: ${availableUnsentEmails.length}`);
-
-    // Autonomous replenishment if unsent email leads pool is less than quota needed
-    if (availableUnsentEmails.length < remainingEmails) {
-      const needed = remainingEmails - availableUnsentEmails.length;
-      console.log(`⚡ Pool under quota by ${needed}. Triggering autonomous lead replenishment...`);
-      await replenishEmailLeads(leads, needed);
-      availableUnsentEmails = leads.filter(l => l.email && l.email.includes('@') && !l.email_sent);
-      console.log(`📧 Replenished Unsent Genuine Email Leads: ${availableUnsentEmails.length}`);
-    }
-
-    const TARGET_EMAIL_QUOTA = Math.min(remainingEmails, availableUnsentEmails.length);
-    console.log(`🎯 Quota Target for this cycle: ${TARGET_EMAIL_QUOTA} emails to dispatch (Daily Target: ${DAILY_EMAIL_TARGET}).\n`);
+  const TARGET_EMAIL_QUOTA = Math.min(remainingEmails, availableUnsentEmails.length);
+  console.log(`🎯 Quota Target for this cycle: ${TARGET_EMAIL_QUOTA} non-website emails to dispatch (Daily Target: ${DAILY_EMAIL_TARGET}).\n`);
 
   const isDryRun = process.argv.includes('--dry-run') || process.argv.includes('--audit');
   if (isDryRun) {
@@ -792,7 +773,7 @@ async function main() {
               notes: ''
             } as any,
             'WebContactForm',
-            'Bethelmind Analytics Lagos Desk'
+            'Bethelmind Digital Solutions'
           );
 
           webformSubmissionsLog.push({

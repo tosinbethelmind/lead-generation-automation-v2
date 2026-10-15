@@ -189,7 +189,7 @@ export async function GET(req?: Request) {
       const { data: configRow } = await (supabase as any)
         .from('app_settings')
         .select('value')
-        .eq('key', 'apexreach_runtime_config')
+        .eq('key', 'bethelmind_')
         .maybeSingle();
       if (configRow?.value) {
         const parsed = JSON.parse(configRow.value);
@@ -361,7 +361,7 @@ export async function POST(req: Request) {
       const { data: configRow } = await (supabase as any)
         .from('app_settings')
         .select('value')
-        .eq('key', 'apexreach_runtime_config')
+        .eq('key', 'bethelmind_')
         .maybeSingle();
 
       let cfg = (configRow as any)?.value ? JSON.parse((configRow as any).value) : {};
@@ -379,7 +379,7 @@ export async function POST(req: Request) {
       await (supabase as any)
         .from('app_settings')
         .upsert({
-          key: 'apexreach_runtime_config',
+          key: 'bethelmind_',
           value: JSON.stringify(cfg),
           updated_at: new Date().toISOString()
         }, { onConflict: 'key' });
@@ -452,7 +452,7 @@ export async function DELETE() {
       const { data: configRow } = await (supabase as any)
         .from('app_settings')
         .select('value')
-        .eq('key', 'apexreach_runtime_config')
+        .eq('key', 'bethelmind_')
         .maybeSingle();
 
       let cfg = (configRow as any)?.value ? JSON.parse((configRow as any).value) : {};
@@ -461,7 +461,7 @@ export async function DELETE() {
       await (supabase as any)
         .from('app_settings')
         .upsert({
-          key: 'apexreach_runtime_config',
+          key: 'bethelmind_',
           value: JSON.stringify(cfg),
           updated_at: new Date().toISOString()
         }, { onConflict: 'key' });

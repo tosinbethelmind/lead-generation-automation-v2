@@ -2,7 +2,7 @@
  * @file src/lib/traffic/postizSocialSyndicator.ts
  * 
  * 🚀 POSTIZ-INSPIRED AUTONOMOUS B2B SOCIAL TRAFFIC & AUTHORITY SYNDICATOR
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  * 
  * Automatically generates and formats high-converting daily sector case studies,
  * breakdowns, and teardowns for LinkedIn, X (Twitter), and Instagram to drive

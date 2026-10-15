@@ -2,7 +2,7 @@
  * @file src/lib/outreach/leadSanitizerPipeline.ts
  * 
  * High-Performance Zero-Tolerance Lead Sanitizer & Pre-Flight Validator
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * Enforces:
  * 1. 100% Genuine Nigerian Mobile Number Carrier Prefix Validation (MTN, Airtel, Glo, 9mobile).

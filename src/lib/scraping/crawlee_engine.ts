@@ -2,7 +2,7 @@
  * @file src/lib/scraping/crawlee_engine.ts
  * 
  * Crawlee Stealth Scraper & Hybrid Fallback Engine (2026 Edition)
- * Bethelmind Analytics Commercial Growth System
+ * Bethelmind Digital Solutions Commercial Growth System
  * 
  * Provides high-resilience web scraping:
  * 1. Layer 1 (Fast Cheerio): Lightweight HTTP fetch for fast parsing with connection pooling.

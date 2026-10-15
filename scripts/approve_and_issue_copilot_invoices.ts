@@ -32,9 +32,9 @@ function approveAndIssueInvoices() {
       ticket.status = 'APPROVED';
       ticket.approvedAt = nowIso;
       ticket.settlementAccount = {
-        bankName: 'OPay Digital Services',
-        accountNumber: '7034297995',
-        accountName: 'Oyelakin Tosin Matthew'
+        bankName: 'Moniepoint Microfinance Bank',
+        accountNumber: '6805375225',
+        accountName: 'Bethelmind Digital Solutions'
       };
 
       // Generate invoice card
@@ -56,9 +56,9 @@ function approveAndIssueInvoices() {
           '48-Hour SLA Deployment Guarantee'
         ],
         settlementBank: {
-          bankName: 'OPay Digital Services',
-          accountNumber: '7034297995',
-          accountName: 'Oyelakin Tosin Matthew'
+          bankName: 'Moniepoint Microfinance Bank',
+          accountNumber: '6805375225',
+          accountName: 'Bethelmind Digital Solutions'
         },
         paymentReference: `REF-${ticketId}`,
         status: 'INVOICE_DISPATCHED_AWAITING_PAYMENT',
@@ -102,7 +102,7 @@ function approveAndIssueInvoices() {
       approvedCount++;
       console.log(`✅ Approved Ticket ${ticketId}: ${ticket.targetBusinessName}`);
       console.log(`   • Value: ₦${ticket.projectedRevenueNGN.toLocaleString()} (Deposit Due: ₦${ticket.upfrontMilestoneNGN.toLocaleString()})`);
-      console.log(`   • Invoice: ${invoiceNumber} -> OPay (7034297995)\n`);
+      console.log(`   • Invoice: ${invoiceNumber} -> OPay (6805375225)\n`);
     }
   }
 

@@ -23,7 +23,7 @@ async function dispatchUniqueSamples() {
       phone: '0818 558 7222',
       cleanPhone: '2348185587222',
       audioLink: 'http://localhost:5005/audio/sample_voicenote_jacio.wav',
-      voiceTranscript: 'Good day Alhaji / Management at Jacio International. This is Tosin from Bethelmind Analytics Lagos Desk. I am reaching out directly regarding your container factory shipments from China. We know traditional bank Form M takes 3 to 4 weeks, so our institutional liquidity desk has reserved and locked a wholesale rate of 1,520 Naira per Dollar for your 65,000 Dollar clearance today with guaranteed same-day supplier delivery and Providus Bank escrow safety. I have sent the official settlement breakdown below with your unique allocation reference BM-OTC-701-JACIO for your review. Let me know once you check it so we lock your batch. Thank you.',
+      voiceTranscript: 'Good day Alhaji / Management at Jacio International. This is Tosin from Bethelmind Digital Solutions. I am reaching out directly regarding your container factory shipments from China. We know traditional bank Form M takes 3 to 4 weeks, so our institutional liquidity desk has reserved and locked a wholesale rate of 1,520 Naira per Dollar for your 65,000 Dollar clearance today with guaranteed same-day supplier delivery and Providus Bank escrow safety. I have sent the official settlement breakdown below with your unique allocation reference BM-OTC-701-JACIO for your review. Let me know once you check it so we lock your batch. Thank you.',
       proposalText: `🤝 [BETHELMIND INSTITUTIONAL FX & ESCROW DESK]
 📋 OFFICIAL SETTLEMENT ADVICE — CLIENT REF: BM-OTC-701-JACIO
 
@@ -38,7 +38,7 @@ Location: ASPAMDA Trade Fair Complex, Lagos
 
 🏦 CBN-LICENSED INSTITUTIONAL ESCROW VAULT:
 • Escrow Bank: Providus Bank / Wema Bank
-• Account Name: Bethelmind Analytics / OTC Settlement Trust
+• Account Name: Bethelmind Digital Solutions / OTC Settlement Trust
 • Escrow Vault Account: 9928371029
 • Payment Narration: BM-OTC-701-JACIO
 
@@ -59,7 +59,7 @@ Location: ASPAMDA Trade Fair Complex, Lagos
       phone: '0803 307 9719',
       cleanPhone: '2348033079719',
       audioLink: 'http://localhost:5005/audio/sample_voicenote_maldini.wav',
-      voiceTranscript: 'Good day Executive Team at Maldini Granites and Marble in Surulere. This is Tosin from Bethelmind Analytics Lagos Desk. I am reaching out concerning your international container freight and stone supplier wires. Rather than experiencing bank documentation bottlenecks, our desk has locked an exclusive wholesale rate of 1,520 Naira per Dollar for your 65,000 Dollar allocation with zero bank delay and full Providus Bank escrow protection. I have dropped the official proposal text below with your unique reference BM-OTC-702-MALDINI. Kindly review and let me know if we should secure this allocation for your desk today.',
+      voiceTranscript: 'Good day Executive Team at Maldini Granites and Marble in Surulere. This is Tosin from Bethelmind Digital Solutions. I am reaching out concerning your international container freight and stone supplier wires. Rather than experiencing bank documentation bottlenecks, our desk has locked an exclusive wholesale rate of 1,520 Naira per Dollar for your 65,000 Dollar allocation with zero bank delay and full Providus Bank escrow protection. I have dropped the official proposal text below with your unique reference BM-OTC-702-MALDINI. Kindly review and let me know if we should secure this allocation for your desk today.',
       proposalText: `🤝 [BETHELMIND INSTITUTIONAL FX & ESCROW DESK]
 📋 OFFICIAL SETTLEMENT ADVICE — CLIENT REF: BM-OTC-702-MALDINI
 
@@ -74,7 +74,7 @@ Location: Alaka Estate, Surulere, Lagos
 
 🏦 CBN-LICENSED INSTITUTIONAL ESCROW VAULT:
 • Escrow Bank: Providus Bank / Wema Bank
-• Account Name: Bethelmind Analytics / OTC Settlement Trust
+• Account Name: Bethelmind Digital Solutions / OTC Settlement Trust
 • Escrow Vault Account: 9928371029
 • Payment Narration: BM-OTC-702-MALDINI
 
@@ -95,7 +95,7 @@ Location: Alaka Estate, Surulere, Lagos
       phone: '0810 754 0008',
       cleanPhone: '2348107540008',
       audioLink: 'http://localhost:5005/audio/sample_voicenote_fouani.wav',
-      voiceTranscript: 'Good day Procurement Team at Fouani on Allen Avenue, Ikeja. This is Tosin from Bethelmind Analytics. We specialize in fast-track institutional foreign exchange settlement for major commercial electronics importers. We have secured a locked commercial rate of 1,520 Naira per Dollar for your 50,000 Dollar single-container batch today, backed by CBN-licensed Providus Bank escrow trust. Your factory receives payment within 15 minutes with official Swift proof. I have sent the complete settlement breakdown below under your reference BM-OTC-703-FOUANI. Please review and let me know to lock this batch for you.',
+      voiceTranscript: 'Good day Procurement Team at Fouani on Allen Avenue, Ikeja. This is Tosin from Bethelmind Digital Solutions. We specialize in fast-track institutional foreign exchange settlement for major commercial electronics importers. We have secured a locked commercial rate of 1,520 Naira per Dollar for your 50,000 Dollar single-container batch today, backed by CBN-licensed Providus Bank escrow trust. Your factory receives payment within 15 minutes with official Swift proof. I have sent the complete settlement breakdown below under your reference BM-OTC-703-FOUANI. Please review and let me know to lock this batch for you.',
       proposalText: `🤝 [BETHELMIND INSTITUTIONAL FX & ESCROW DESK]
 📋 OFFICIAL SETTLEMENT ADVICE — CLIENT REF: BM-OTC-703-FOUANI
 
@@ -110,7 +110,7 @@ Location: 17-19 Allen Avenue, Ikeja, Lagos
 
 🏦 CBN-LICENSED INSTITUTIONAL ESCROW VAULT:
 • Escrow Bank: Providus Bank / Wema Bank
-• Account Name: Bethelmind Analytics / OTC Settlement Trust
+• Account Name: Bethelmind Digital Solutions / OTC Settlement Trust
 • Escrow Vault Account: 9928371029
 • Payment Narration: BM-OTC-703-FOUANI
 
@@ -131,7 +131,7 @@ Location: 17-19 Allen Avenue, Ikeja, Lagos
       phone: '0817 041 7114',
       cleanPhone: '2348170417114',
       audioLink: 'http://localhost:5005/audio/sample_voicenote_cohbs.wav',
-      voiceTranscript: 'Good day Management at COHBS International in Ikeja. This is Tosin from Bethelmind Analytics. We provide direct institutional supplier clearance for industrial hardware importers. We have locked a special wholesale rate of 1,520 Naira per Dollar for your 35,000 Dollar supplier invoice today with full Providus Bank escrow security and same-day payment delivery to your manufacturer. Check the settlement details I just sent below under reference BM-OTC-704-COHBS, and let us get your invoice cleared today. Thank you.',
+      voiceTranscript: 'Good day Management at COHBS International in Ikeja. This is Tosin from Bethelmind Digital Solutions. We provide direct institutional supplier clearance for industrial hardware importers. We have locked a special wholesale rate of 1,520 Naira per Dollar for your 35,000 Dollar supplier invoice today with full Providus Bank escrow security and same-day payment delivery to your manufacturer. Check the settlement details I just sent below under reference BM-OTC-704-COHBS, and let us get your invoice cleared today. Thank you.',
       proposalText: `🤝 [BETHELMIND INSTITUTIONAL FX & ESCROW DESK]
 📋 OFFICIAL SETTLEMENT ADVICE — CLIENT REF: BM-OTC-704-COHBS
 
@@ -146,7 +146,7 @@ Location: Off Awolowo Way, Ikeja, Lagos
 
 🏦 CBN-LICENSED INSTITUTIONAL ESCROW VAULT:
 • Escrow Bank: Providus Bank / Wema Bank
-• Account Name: Bethelmind Analytics / OTC Settlement Trust
+• Account Name: Bethelmind Digital Solutions / OTC Settlement Trust
 • Escrow Vault Account: 9928371029
 • Payment Narration: BM-OTC-704-COHBS
 

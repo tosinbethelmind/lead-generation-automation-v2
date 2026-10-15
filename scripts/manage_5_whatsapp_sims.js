@@ -1,7 +1,7 @@
 /**
  * @file scripts/manage_5_whatsapp_sims.js
  * 
- * 🚀 BETHELMIND ANALYTICS: 5-SIM WHATSAPP MANAGER & PAIRING SYSTEM
+ * 🚀 Bethelmind Digital Solutions: 5-SIM WHATSAPP MANAGER & PAIRING SYSTEM
  * 
  * Supports up to 5 SIM cards / WhatsApp lines for automated high-volume outreach:
  * - Line 1: local_db/baileys_auth_line1
@@ -99,7 +99,7 @@ function inspectLineStatus(lineNum) {
 
 function displayAllLinesStatus() {
   console.log('\n====================================================================');
-  console.log('📱 BETHELMIND ANALYTICS: 7-SIM WHATSAPP LINES STATUS REGISTRY');
+  console.log('📱 Bethelmind Digital Solutions: 7-SIM WHATSAPP LINES STATUS REGISTRY');
   console.log('====================================================================');
   
   const reg = loadRegistry();
@@ -269,7 +269,7 @@ function generatePairingCode(lineNum, rawPhone) {
   });
 }
 
-function sendTestMessage(lineNum, recipientPhone, text = 'Hello from Bethelmind Analytics Lagos Desk!') {
+function sendTestMessage(lineNum, recipientPhone, text = 'Hello from Bethelmind Digital Solutions!') {
   return new Promise(async (resolve) => {
     const cfg = LINES_CONFIG[lineNum];
     if (!cfg) {
@@ -330,7 +330,7 @@ function runInteractiveMenu() {
   });
 
   console.log('\n====================================================================');
-  console.log('👑 BETHELMIND ANALYTICS: 7-SIM WHATSAPP MANAGEMENT CENTER');
+  console.log('👑 Bethelmind Digital Solutions: 7-SIM WHATSAPP MANAGEMENT CENTER');
   console.log('====================================================================');
   console.log('  [1] Check Live Status of All 7 Lines');
   console.log('  [2] Link Line 1 (Admin Closer: 0802 279 1227)');

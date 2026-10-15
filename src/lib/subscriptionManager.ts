@@ -71,7 +71,7 @@ export function getOpayBankTransferDetails() {
     throw new Error('[CRITICAL] OPAY_ACCOUNT_NUMBER or OPAY_ACCOUNT_NAME env var is not set. Refusing to serve payment details to prevent wrong-account transfers.');
   }
   return {
-    bankName: 'OPay Digital Services',
+    bankName: 'Moniepoint Microfinance Bank',
     accountNumber,
     accountName,
     instructions: 'Make bank transfer to OPay account above. Send receipt screenshot to Admin WhatsApp for instant 1-second reactivation!'

@@ -1,7 +1,7 @@
 /**
  * scripts/solidify_and_verify_whatsapp_lines.js
  * 
- * Bethelmind Analytics — Dual-Line WhatsApp Solidification & Verification Engine
+ * Bethelmind Digital Solutions — Dual-Line WhatsApp Solidification & Verification Engine
  * 
  * 1. Synchronizes and solidifies all cryptographic credentials for:
  *    - Line 1: +234 702 626 6946 (Port 3007)
@@ -108,7 +108,7 @@ async function testLineAuth(config) {
       logger: pino({ level: 'silent' }),
       auth: state,
       printQRInTerminal: false,
-      browser: ['Bethelmind Analytics', 'Chrome', '124.0.0']
+      browser: ['Bethelmind Digital Solutions', 'Chrome', '124.0.0']
     });
 
     const timeout = setTimeout(() => {
@@ -168,7 +168,7 @@ async function testLineAuth(config) {
 
 async function main() {
   console.log('\n╔════════════════════════════════════════════════════════════════╗');
-  console.log('║   BETHELMIND ANALYTICS — WHATSAPP LINE SOLIDIFICATION HUB      ║');
+  console.log('║   Bethelmind Digital Solutions — WHATSAPP LINE SOLIDIFICATION HUB      ║');
   console.log('╚════════════════════════════════════════════════════════════════╝');
 
   const results = [];

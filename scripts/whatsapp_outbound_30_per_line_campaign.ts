@@ -3,7 +3,7 @@
  * 
  * 🚀 MULTI-SIM ANTI-BAN WHATSAPP OUTBOUND OUTREACH ENGINE
  * 
- * Bethelmind Analytics Lagos Desk · Commercial B2B Revenue Growth Engine
+ * Bethelmind Digital Solutions · Commercial B2B Revenue Growth Engine
  * 
  * Strict Anti-Ban Architecture:
  * 1. Multi-SIM Round-Robin across verified active lines (Lines 2, 4, 5, 6, 7).
@@ -153,13 +153,15 @@ We designed a modern corporate website + 24/7 WhatsApp consultation scheduler fo
 We designed a complete mobile website + 24/7 WhatsApp sales assistant specifically for *${cleanName}*.`;
   }
 
-  return `Good day Team at *${cleanName}* (${area}),
+  return `Good day Boss / Management at *${cleanName}* (${area})! 👋 Well done with your business.
 
-${sectorHook}
+When customers search for *${cleanName}* on Google right now, you don't have an official website yet, so other businesses show up instead.
 
-May I share your free ₦0 prototype demo link for your team to test on your phone?
+We already built a *free sample website + 24/7 WhatsApp Assistant* for *${cleanName}* so you can check how it looks on your phone first before paying a kobo (and if you like it, you can put it live with our ₦35,000 Starter Go-Live or ₦25k/month Pay-Small-Small).
 
-— Tosin, Bethelmind Digital Solutions
+Can I send your free sample website link here for you to check on your phone?
+
+— Tosin · *Bethelmind Digital Solutions* (CAC Certified)
 (wa.me/2348022791227)`;
 }
 
@@ -198,7 +200,7 @@ async function sendMessageViaGateway(lineNum: number, phone: string, text: strin
 async function runWhatsAppOutboundCampaign() {
   console.log('\n========================================================================');
   console.log('📱 BETHELMIND MULTI-SIM ANTI-BAN WHATSAPP OUTBOUND OUTREACH ENGINE');
-  console.log('   Strict 30 Leads/Line/Day · 45s-75s Jitter · 2-Step Permission Loop');
+  console.log('   Strict 30 Leads/Line/Day · 100% Focused on Non-Website Businesses');
   console.log('========================================================================\n');
 
   const connectedLines = await getConnectedOutreachLines();
@@ -242,31 +244,26 @@ async function runWhatsAppOutboundCampaign() {
     try { blacklist = JSON.parse(fs.readFileSync(blacklistPath, 'utf8')); } catch (_) {}
   }
 
-  // Find genuine Nigerian commercial leads not yet dispatched via WhatsApp
-  // PRIORITIZATION: Businesses without an official website are prioritized first!
+  const dirPatterns = ['google.com', 'bing.com', 'instagram.com', 'facebook.com', 'businesslist.com.ng', 'vconnect.com', 'finelib.com', 'jiji.ng', 'africabizinfo.com', 'africabz.com', 'nigeriayp.com', 'infobel.com'];
+  const isStrictNoWebsite = (l: any) => {
+    const url = String(l?.website || '').toLowerCase().trim();
+    if (!url || !url.startsWith('http')) return true;
+    if (dirPatterns.some(d => url.includes(d))) return true;
+    return l?.hasWebsite === false || l?.has_website === false;
+  };
+
+  // STRICT NON-WEBSITE FILTER: 100% of cold WhatsApp outreach targets ONLY verified businesses WITHOUT an official website
   const eligibleLeads = leads
     .filter(l => {
       if (l.opt_out === true) return false;
+      if (!isStrictNoWebsite(l)) return false;
       const p = cleanPhone(l.phone_e164 || l.phone_raw || l.phone);
       if (!p) return false;
       if (blacklist.includes(p) || blacklist.some(b => p.endsWith(b) || b.endsWith(p))) return false;
       return Boolean(!l.wa_outbound_dispatched && !l.whatsapp_dispatched);
-    })
-    .sort((a, b) => {
-      // Leads with no website or directory-only links (businesslist, vconnect, instagram, facebook) come first
-      const dirPatterns = ['google.com', 'instagram.com', 'facebook.com', 'businesslist.com.ng', 'vconnect.com', 'finelib.com'];
-      const isRealSite = (url: string) => Boolean(url && url.startsWith('http') && !dirPatterns.some(d => url.includes(d)));
-      const aHasWeb = isRealSite(a.website);
-      const bHasWeb = isRealSite(b.website);
-      if (!aHasWeb && bHasWeb) return -1;
-      if (aHasWeb && !bHasWeb) return 1;
-      return 0;
     });
 
-  const dirPatterns = ['google.com', 'instagram.com', 'facebook.com', 'businesslist.com.ng', 'vconnect.com', 'finelib.com'];
-  const noWebCount = eligibleLeads.filter(l => !l.website || !l.website.startsWith('http') || dirPatterns.some(d => l.website.includes(d))).length;
-  console.log(`📋 Total Verified Genuine Leads Eligible for WhatsApp Outreach: ${eligibleLeads.length}`);
-  console.log(`⚡ Leads Without Official Dedicated Website (Prioritized First): ${noWebCount}`);
+  console.log(`📋 Total Verified Strictly Non-Website Leads Eligible for WhatsApp Outreach: ${eligibleLeads.length}`);
   console.log(`🎯 Daily Target per Line: ${DAILY_LIMIT_PER_LINE} leads (Max potential: ${connectedLines.length * DAILY_LIMIT_PER_LINE} today)\n`);
 
   let leadPointer = 0;

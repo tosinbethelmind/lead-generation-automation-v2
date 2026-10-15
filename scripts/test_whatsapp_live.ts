@@ -40,7 +40,7 @@ async function testWhatsAppLive() {
       lead,
       `${origin}/preview/${lead.lead_id}`,
       origin,
-      'Hi {{lead.name}}, live WhatsApp verification test from your ApexReach Lead Engine! Link: {{previewUrl}}'
+      'Hi {{lead.name}}, live WhatsApp verification test from your Bethelmind Digital Solutions Lead Engine! Link: {{previewUrl}}'
     );
     console.log('✅ WHATSAPP RESULT:', res);
   } catch (err: any) {

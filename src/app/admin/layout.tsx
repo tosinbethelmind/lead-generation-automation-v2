@@ -223,7 +223,7 @@ export default function AdminLayout({
             <ShieldAlert />
           </div>
           <div>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1.2 }}>ApexReach Suite</h3>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1.2 }}>Bethelmind Digital Solutions Suite</h3>
             <span className="brand-badge">Executive Console</span>
           </div>
         </div>

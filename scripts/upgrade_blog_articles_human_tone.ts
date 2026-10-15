@@ -2,7 +2,7 @@
  * @file scripts/upgrade_blog_articles_human_tone.ts
  * 
  * 🚀 High-Authority Human-Voice Blog Upgrader
- * Bethelmind Analytics Lagos Desk (www.bethelmindanalytics.com)
+ * Bethelmind Digital Solutions (www.bethelmindanalytics.com)
  * 
  * Purpose:
  * Upgrades all 72 existing commercial articles on disk:
@@ -216,7 +216,7 @@ async function run() {
 
   // Sync public/llms-full.txt for AI Search Engines (Perplexity, ChatGPT, Gemini, Copilot)
   try {
-    let llmContent = '# Bethelmind Analytics Lagos Desk - Complete Knowledge Base (LLMs Full Index)\n';
+    let llmContent = '# Bethelmind Digital Solutions - Complete Knowledge Base (LLMs Full Index)\n';
     llmContent += '> Real-time repository of verified Nigerian commercial playbooks, sector calculators, and B2B automation systems.\n';
     llmContent += '> Website: https://www.bethelmindanalytics.com\n';
     llmContent += '> Desk: wa.me/2348022791227 (+234 802 279 1227)\n\n';

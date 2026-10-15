@@ -135,7 +135,7 @@ export default async function ProgrammaticSectorAreaDirectoryPage({ params }: Pr
             </p>
           </div>
           <a
-            href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Analytics! I operate a ${sectorTitle} business in ${areaTitle} and want to claim my 24/7 AI WhatsApp Sales Portal.`)}`}
+            href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I operate a ${sectorTitle} business in ${areaTitle} and want to claim my 24/7 AI WhatsApp Sales Portal.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="whitespace-nowrap px-6 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-sky-500/25 transition-all"

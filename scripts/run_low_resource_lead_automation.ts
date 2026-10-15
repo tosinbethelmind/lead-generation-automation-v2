@@ -2,7 +2,7 @@
  * @file scripts/run_low_resource_lead_automation.ts
  * 
  * 🔋 LOW-RESOURCE MASSIVE LEAD AUTOMATION (Phones, Emails, Webforms)
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * 🚀 KEY OPTIMIZATIONS FOR LOW-SPEC LAPTOPS:
  * 1. Process Priority: Set to below-normal to keep laptop responsive and fans quiet.

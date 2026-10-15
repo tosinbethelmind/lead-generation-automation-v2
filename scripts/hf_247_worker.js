@@ -33,7 +33,7 @@ async function runHarvestPass() {
 
 async function mainLoop() {
   log('==================================================');
-  log('🚀 ApexReach Hugging Face 24/7 Worker Initialized');
+  log('🚀 Bethelmind Digital Solutions Hugging Face 24/7 Worker Initialized');
   log('==================================================');
 
   while (true) {

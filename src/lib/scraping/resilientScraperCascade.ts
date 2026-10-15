@@ -2,7 +2,7 @@
  * @file src/lib/scraping/resilientScraperCascade.ts
  * 
  * 🛡️ ZERO-FAILURE 8-TIER MULTI-ENGINE SCRAPING & LEAD HARVESTING CASCADE (2026 EDITION)
- * Bethelmind Analytics Lagos Desk · Commercial Growth Engine
+ * Bethelmind Digital Solutions · Commercial Growth Engine
  * 
  * Architecture (8 Robust Resilient Fallback Tiers):
  * 1. Tier 1: Direct Nuxt & REST API Harvester (Jiji, BusinessList, Finelib, CAC).

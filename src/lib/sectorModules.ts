@@ -736,10 +736,10 @@ export function generateVirtualAccountDva(
   return {
     bankName: 'Moniepoint Microfinance Bank',
     accountNumber: randomAcc,
-    accountName: `Bethelmind Analytics / ${merchantName.substring(0, 15)}`,
+    accountName: `Bethelmind Digital Solutions / ${merchantName.substring(0, 15)}`,
     merchantReference,
     expiresInMinutes: 60,
-    paymentInstructionsText: `Transfer ₦${amountNgn.toLocaleString()} to ${randomAcc} (Moniepoint MFB). Account Name: Bethelmind Analytics / ${merchantName}. Payment auto-verifies in 10 seconds!`,
+    paymentInstructionsText: `Transfer ₦${amountNgn.toLocaleString()} to ${randomAcc} (Moniepoint MFB). Account Name: Bethelmind Digital Solutions / ${merchantName}. Payment auto-verifies in 10 seconds!`,
   };
 }
 
@@ -3539,7 +3539,7 @@ export function buildSectorWhatsAppQuoteMessage(
     cleanPhone = '234' + cleanPhone;
   }
   if (!cleanPhone) cleanPhone = '2348022791227';
-  const message = `Hello Bethelmind Analytics Lagos Desk!\n\nI am testing the live *${toolName}* prepared for *${safeName}* (${sector}).\n\n📊 *Quotation Summary*: ${summaryText}\n\nI want to claim this prototype and connect the 24/7 AI quoting assistant for my business. Please send next steps!`;
+  const message = `Hello Bethelmind Digital Solutions!\n\nI am testing the live *${toolName}* prepared for *${safeName}* (${sector}).\n\n📊 *Quotation Summary*: ${summaryText}\n\nI want to claim this prototype and connect the 24/7 AI quoting assistant for my business. Please send next steps!`;
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
 }
 

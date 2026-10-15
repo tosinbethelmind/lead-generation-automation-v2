@@ -40,7 +40,7 @@ export async function checkPendingAutonomousCashPayouts(): Promise<{
       amountReadyNGN: 625000, // ₦25 spread on $25k
       payoutDestinationType: 'NIGERIAN_BANK_TRANSFER',
       instructions: 'The escrow transaction has completed successfully. Tap below to confirm payout to your Moniepoint/OPay account.',
-      oneClickClaimUrl: 'https://wa.me/2348022791227?text=Hello%20Closer%20Desk%2C%20please%20settle%20the%20%E2%82%A6625%2C000%20OTC%20Spread%20commission%20to%20my%20OPay%20Account%20(7034297995).'
+      oneClickClaimUrl: 'https://wa.me/2348022791227?text=Hello%20Closer%20Desk%2C%20please%20settle%20the%20%E2%82%A6625%2C000%20OTC%20Spread%20commission%20to%20my%20OPay%20Account%20(6805375225).'
     },
     {
       alertId: 'PAYOUT-5432',

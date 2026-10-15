@@ -315,7 +315,7 @@ async function executeCloserReply(targetRecipient, incomingText = '', rawMsg = n
     intent = closerRes.intent;
     directPaymentEligible = closerRes.directPaymentEligible;
   } catch (_) {
-    replyText = `Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*${customerName}*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\n${customerPreviewUrl}\n\nOur setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Bank: OPay Digital Services | Account: 7034297995 | Name: Oyelakin Tosin Matthew. Please send your receipt once transferred!`;
+    replyText = `Good day! 👋 Welcome to Bethelmind Digital Solutions.\n\nWe created a free sample website for your business (*${customerName}*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\n${customerPreviewUrl}\n\nOur setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Bank: Moniepoint Microfinance Bank | Account: 6805375225 | Name: Bethelmind Digital Solutions. Please send your receipt once transferred!`;
   }
 
   if (connectionStatus !== 'connected' || !sock) {

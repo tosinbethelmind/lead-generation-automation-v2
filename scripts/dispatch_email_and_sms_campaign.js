@@ -1,7 +1,7 @@
 /**
  * scripts/dispatch_email_and_sms_campaign.js
  * 
- * Bethelmind Analytics B2B Executive Email & Carrier SMS Outreach Engine
+ * Bethelmind Digital Solutions B2B Executive Email & Carrier SMS Outreach Engine
  * 
  * Infrastructure:
  * - Email: Hostinger SMTP (tosin@bethelmindanalytics.com / Port 587)
@@ -83,7 +83,7 @@ async function sendExecutiveEmail(lead, previewUrl, cleanName) {
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
       <div style="background: #0f172a; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-        <h2 style="color: #38bdf8; margin: 0; font-size: 20px;">Bethelmind Analytics Lagos</h2>
+        <h2 style="color: #38bdf8; margin: 0; font-size: 20px;">Bethelmind Digital Solutions</h2>
         <p style="color: #94a3b8; margin: 4px 0 0; font-size: 13px;">B2B Online Deployment & Automated Booking Engines</p>
       </div>
 
@@ -114,7 +114,7 @@ async function sendExecutiveEmail(lead, previewUrl, cleanName) {
         <p style="font-size: 13px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 16px;">
           Best regards,<br>
           <strong>Tosin Bethel</strong><br>
-          <em>Head of B2B Solutions | Bethelmind Analytics Lagos</em><br>
+          <em>Head of B2B Solutions | Bethelmind Digital Solutions</em><br>
           📱 WhatsApp Desk: +234 802 279 1227 | 🌐 bethelmindanalytics.com
         </p>
       </div>
@@ -123,7 +123,7 @@ async function sendExecutiveEmail(lead, previewUrl, cleanName) {
 
   try {
     await transporter.sendMail({
-      from: `"Tosin | Bethelmind Analytics" <${envVars.SMTP_USER || 'tosin@bethelmindanalytics.com'}>`,
+      from: `"Tosin | Bethelmind Digital Solutions" <${envVars.SMTP_USER || 'tosin@bethelmindanalytics.com'}>`,
       to: email,
       subject,
       html: htmlContent
@@ -137,7 +137,7 @@ async function sendExecutiveEmail(lead, previewUrl, cleanName) {
 async function sendDirectSms(phone, cleanName, previewUrl) {
   const intlPhone = normalizeToInternational(phone);
   const formattedPhone = '+' + intlPhone;
-  const smsText = `[Bethelmind Analytics] ${cleanName}: Your 24/7 AI Quoting & Booking website prototype is live for review at: ${previewUrl}`;
+  const smsText = `[Bethelmind Digital Solutions] ${cleanName}: Your 24/7 AI Quoting & Booking website prototype is live for review at: ${previewUrl}`;
   
   const endpoints = [
     { url: `${gatewayUrl}/message`, method: 'POST', body: { to: formattedPhone, message: smsText } },
@@ -182,7 +182,7 @@ function recordActivity(activity) {
 
 async function run() {
   console.log('===============================================================');
-  console.log('📧 BETHELMIND ANALYTICS MULTI-CHANNEL EMAIL & SMS OUTREACH');
+  console.log('📧 Bethelmind Digital Solutions MULTI-CHANNEL EMAIL & SMS OUTREACH');
   console.log(`📅 Date: ${new Date().toLocaleDateString('en-NG')} | Hostinger SMTP + Tailscale SMS`);
   console.log('===============================================================\n');
 

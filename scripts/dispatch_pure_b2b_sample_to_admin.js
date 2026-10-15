@@ -92,7 +92,7 @@ async function sendSampleEmail() {
     
     <!-- Header Banner -->
     <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding: 24px; text-align: center;">
-      <div style="color: #e0f2fe; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">⚡ Bethelmind Analytics Lagos Desk</div>
+      <div style="color: #e0f2fe; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">⚡ Bethelmind Digital Solutions</div>
       <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 800;">24/7 AI Quoting & WhatsApp Booking Portal</h1>
       <p style="color: #bae6fd; margin: 6px 0 0 0; font-size: 13px;">Pre-built private prototype prepared for <strong>${businessName}</strong></p>
     </div>
@@ -104,7 +104,7 @@ async function sendSampleEmail() {
       </p>
 
       <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">
-        My name is Tosin from Bethelmind Analytics Lagos Desk. We recently conducted a digital operations review for your commercial operations in ${area}.
+        My name is Tosin from Bethelmind Digital Solutions. We recently conducted a digital operations review for your commercial operations in ${area}.
       </p>
 
       <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">
@@ -149,7 +149,7 @@ async function sendSampleEmail() {
         📱 <strong>WhatsApp Desk:</strong> <a href="https://wa.me/2348022791227" style="color: #38bdf8; text-decoration: none; font-weight: 700;">+234 802 279 1227</a> (0802 279 1227)<br>
         📧 <strong>Email:</strong> <a href="mailto:tosin@bethelmindanalytics.com" style="color: #38bdf8; text-decoration: none;">tosin@bethelmindanalytics.com</a><br><br>
         <strong>Tosin Oyelakin</strong><br>
-        Lead Solutions Strategist · <em>Bethelmind Analytics Lagos Desk</em>
+        Lead Solutions Strategist · <em>Bethelmind Digital Solutions</em>
       </div>
 
     </div>
@@ -159,7 +159,7 @@ async function sendSampleEmail() {
   `;
 
   const mailOptions = {
-    from: '"Tosin | Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+    from: '"Tosin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
     to: ADMIN_EMAIL,
     subject: `Automating 24/7 AI Quotes & Client Booking for ${businessName} (Voice Note Attached)`,
     html: htmlContent,

@@ -2,7 +2,7 @@
  * @file scripts/test_resilient_failover_cascade.ts
  * 
  * 🧪 MULTI-TIER FAILOVER & CASCADE INTEGRATION TEST
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  */
 
 import dotenv from 'dotenv';
@@ -13,7 +13,7 @@ import { verifyEmailMxRecord, dispatchResilientEmail, dispatchResilientSms, disp
 
 async function testCascade() {
   console.log('========================================================================');
-  console.log('🛡️ BETHELMIND ANALYTICS: RESILIENT MULTI-TIER FAILOVER CASCADE TEST');
+  console.log('🛡️ Bethelmind Digital Solutions: RESILIENT MULTI-TIER FAILOVER CASCADE TEST');
   console.log('========================================================================\n');
 
   // Test 1: DNS MX Preflight Guard

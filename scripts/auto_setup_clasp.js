@@ -12,7 +12,7 @@ fs.mkdirSync(claspDir);
 
 // 1. Create a container‑bound spreadsheet project via clasp
 console.log('Creating Google Sheet with clasp...');
-execSync('npx @google/clasp create --type sheets --title "ApexReach Leads"', {
+execSync('npx @google/clasp create --type sheets --title "Bethelmind Digital Solutions Leads"', {
   cwd: claspDir,
   stdio: 'inherit'
 });
@@ -48,7 +48,7 @@ function setupSheet() {
     ['apify_dataset_id','',"Dataset ID containing scraped leads",'','whatsapp_template_name','lead_intro_v1','The exact name in Meta Manager'],
     ['', '', '', '', 'whatsapp_template_language_code','en_US','Language code'],
     ['', '', '', '', 'whatsapp_opt_out_keyword','STOP',''],
-    ['', '', '', '', 'business_signature','Bethelmind Analytics & Strategy',''],
+    ['', '', '', '', 'business_signature','Bethelmind Digital Solutions',''],
     [],
     ['jiji_seed_url','max_pages_per_seed','max_vendors_per_seed','max_listings_per_vendor','verified_only','min_listings_count','required_keywords','exclude_keywords'],
     ['https://jiji.ng/ikeja/cars',5,20,0,'TRUE',5,'',''],
@@ -93,7 +93,7 @@ execSync('npx @google/clasp run setupSheet', { cwd: claspDir, stdio: 'inherit' }
 
 // 7. Deploy as Web App
 console.log('Deploying as Web App...');
-execSync('npx @google/clasp deploy --description "ApexReach Leads Web App"', { cwd: claspDir, stdio: 'inherit' });
+execSync('npx @google/clasp deploy --description "Bethelmind Digital Solutions Leads Web App"', { cwd: claspDir, stdio: 'inherit' });
 
 // 8. List deployments to retrieve URL
 const listOutput = execSync('npx @google/clasp deployments', { cwd: claspDir, encoding: 'utf8' });

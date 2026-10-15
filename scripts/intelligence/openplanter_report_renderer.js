@@ -7,11 +7,11 @@
  * corporate audit document valued at ₦150,000 – ₦250,000 NGN.
  * 
  * Features:
- * - Institutional Bethelmind Analytics Lagos Seal & Certificate Border
+ * - Institutional Bethelmind Digital Solutions Seal & Certificate Border
  * - Composite Trust Grade Badge (AAA / AA / A)
  * - Corporate Affairs Commission (CAC) Verification Vector
  * - Telecom Handset & Carrier Intelligence Audit (SearchPhone)
- * - Official Settlement Account details (OPay 7034297995)
+ * - Official Settlement Account details (OPay 6805375225)
  */
 
 function renderExecutiveHtmlDossier(dossier) {
@@ -97,7 +97,7 @@ function renderExecutiveHtmlDossier(dossier) {
 
   <div class="header-bar">
     <div>
-      <div class="brand-title">BETHELMIND ANALYTICS LAGOS</div>
+      <div class="brand-title">Bethelmind Digital Solutions</div>
       <div class="brand-subtitle">Institutional B2B Counterparty Due Diligence Desk</div>
     </div>
     <div class="dossier-id-box">
@@ -186,7 +186,7 @@ function renderExecutiveHtmlDossier(dossier) {
       </div>
       <div class="opay-box">
         <div class="opay-label">Settlement Clearing Account</div>
-        <div class="opay-val">${meta.settlementAccount || 'OPay (7034297995)'}</div>
+        <div class="opay-val">${meta.settlementAccount || 'OPay (6805375225)'}</div>
       </div>
     </div>
   </div>

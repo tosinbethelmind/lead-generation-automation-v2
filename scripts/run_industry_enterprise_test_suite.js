@@ -242,7 +242,7 @@ async function runEnterpriseIndustrySuite() {
   };
 
   const lines = Object.entries(sampleData).map(([k, v]) => `• *${k}*: ₦${typeof v === 'number' ? v.toLocaleString() : v}`);
-  const rawText = `*ApexReach Port Clearance Quote*\n\n${lines.join('\n')}\n\n_Generated via Bethelmind Analytics_`;
+  const rawText = `*Bethelmind Digital Solutions Port Clearance Quote*\n\n${lines.join('\n')}\n\n_Generated via Bethelmind Digital Solutions_`;
   const encoded = encodeURIComponent(rawText);
 
   if (encoded.includes('%0A') && decodeURIComponent(encoded) === rawText) {

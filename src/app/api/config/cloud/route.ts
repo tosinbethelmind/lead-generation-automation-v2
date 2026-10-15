@@ -7,7 +7,7 @@ import { maskConfig, MASK_VALUE } from '@/lib/validation';
 import { createClient } from '@supabase/supabase-js';
 
 /** Single merged config row key in app_settings */
-const SETTINGS_ROW_KEY = 'apexreach_runtime_config';
+const SETTINGS_ROW_KEY = 'bethelmind_';
 
 function getSupabaseAdmin() {
   const config = getRuntimeConfig();

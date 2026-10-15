@@ -70,7 +70,7 @@ export default async function DomainInquiryPage({ params }: DomainInquiryPagePro
         <div className="text-xs text-slate-500 max-w-lg">
           Looking for custom website prototype engineering or automated AI growth engines?{' '}
           <Link href="/" className="text-cyan-400 hover:underline">
-            Explore Bethelmind Analytics
+            Explore Bethelmind Digital Solutions
           </Link>
         </div>
       </main>
@@ -78,7 +78,7 @@ export default async function DomainInquiryPage({ params }: DomainInquiryPagePro
       {/* Footer */}
       <footer className="border-t border-slate-800/80 bg-slate-950/60 px-6 py-6 text-center text-xs text-slate-500">
         <p className="mb-1">
-          Bethelmind Analytics Sovereign Domain Escrow • Lagos B2B Commercial Engine
+          Bethelmind Digital Solutions Sovereign Domain Escrow • Lagos B2B Commercial Engine
         </p>
         <p>Executive Closer Desk: +234 802 279 1227 • bethelmindrecruit@gmail.com</p>
       </footer>

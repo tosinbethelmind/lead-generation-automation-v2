@@ -56,7 +56,7 @@ export function generateUniqueClientPackage(
   const rateLockWindow = 'Same-Day Commercial Window (Valid until 05:00 PM WAT)';
 
   // 15-Second Personalized Voice Note Script
-  const voiceScript = `Good day Management at ${businessName} in ${location || 'Lagos'}. Tosin here from Bethelmind Analytics. Why wait weeks on Form M? We have locked 1,520 Naira per Dollar for your $${orderUSD.toLocaleString()} Dollar supplier invoice today, with 15-minute delivery and 100 percent bank escrow safety. Check the quick details below with reference ${clientRef} and let us clear your batch today. Thank you.`;
+  const voiceScript = `Good day Management at ${businessName} in ${location || 'Lagos'}. Tosin here from Bethelmind Digital Solutions. Why wait weeks on Form M? We have locked 1,520 Naira per Dollar for your $${orderUSD.toLocaleString()} Dollar supplier invoice today, with 15-minute delivery and 100 percent bank escrow safety. Check the quick details below with reference ${clientRef} and let us clear your batch today. Thank you.`;
 
   const audioFileName = `Bethelmind_15s_${slug}.wav`;
 

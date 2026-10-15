@@ -9,7 +9,7 @@ async function testSend() {
     tls: { rejectUnauthorized: false }
   });
   const info = await t.sendMail({
-    from: '"Tosin Oyelakin | Bethelmind Analytics" <tosin@bethelmindanalytics.com>',
+    from: '"Tosin Oyelakin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
     to: 'bethelmindrecruit@gmail.com',
     subject: 'Hostinger Port 465 Direct SSL Verification Test',
     text: 'Testing Hostinger Port 465 SSL delivery. Voice note integration verified.'

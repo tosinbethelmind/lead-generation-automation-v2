@@ -13,7 +13,7 @@ export function inspectAll31EnginesLive() {
   console.log('====================================================================================================');
   console.log(`🕒 Timestamp: ${new Date().toISOString()} (WAT Timezone)`);
   console.log(`🌐 Production Base Domain: https://www.bethelmindanalytics.com`);
-  console.log(`🏦 Direct Payout Destination: OPay Digital Services (7034297995 - Oyelakin Tosin Matthew)`);
+  console.log(`🏦 Direct Payout Destination: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)`);
   console.log(`✨ Mode: 100% LIVE REAL-TIME AUDIT (All 31 Engines & Workers Verified)\n`);
 
   console.log('────────────────────────────────────────────────────────────────────────────────────────────────────');
@@ -67,7 +67,7 @@ export function inspectAll31EnginesLive() {
 
   console.log('\n====================================================================================================');
   console.log('🛡️ TOTAL ACTIVE UNITS: ALL 31 ENGINES & CLOUD WORKERS FULLY OPERATIONAL (31/31)');
-  console.log('🏦 Direct Liquidation Destination: OPay (7034297995 - Oyelakin Tosin Matthew)');
+  console.log('🏦 Direct Liquidation Destination: OPay (6805375225 - Bethelmind Digital Solutions)');
   console.log('====================================================================================================\n');
 }
 

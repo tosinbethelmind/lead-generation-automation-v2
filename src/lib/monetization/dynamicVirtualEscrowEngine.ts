@@ -7,7 +7,7 @@
  * 1. Dedicated Account per transaction (e.g. Wema/Moniepoint/Providus via Monnify/Paystack API)
  * 2. Instant Sub-3s Webhook verification upon buyer Naira credit
  * 3. Auto-dispatches USDT release signal to China liquidity supplier
- * 4. Auto-settles locked spread profit directly to OPay (7034297995 - Oyelakin Tosin Matthew)
+ * 4. Auto-settles locked spread profit directly to OPay (6805375225 - Bethelmind Digital Solutions)
  */
 
 import { OPAY_BENEFICIARY_CONFIG } from './directNairaAutoLiquidationRouter';

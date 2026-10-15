@@ -78,7 +78,7 @@ export async function sendBrevoMessage(to: string, subject: string, body: string
   if (!apiKey) {
     throw new Error('Brevo API Key is not configured.');
   }
-  const senderName = config.brevoSenderName || process.env.BREVO_SENDER_NAME || 'Bethelmind Analytics & Strategy';
+  const senderName = config.brevoSenderName || process.env.BREVO_SENDER_NAME || 'Bethelmind Digital Solutions';
   const senderEmail = config.brevoSenderEmail || process.env.BREVO_SENDER_EMAIL || 'tosin@bethelmindanalytics.com';
 
   const client = new BrevoClient(apiKey, senderEmail, senderName);
@@ -119,7 +119,7 @@ export async function sendSmtpMessage(to: string, subject: string, body: string,
   const host = process.env.SMTP_HOST || config?.smtpHost || 'smtp.hostinger.com';
   const user = process.env.SMTP_USER || config?.smtpUser || 'tosin@bethelmindanalytics.com';
   const pass = process.env.SMTP_PASS || config?.smtpPass || 'Bethelmind@2026';
-  const senderName = process.env.SMTP_SENDER_NAME || config?.smtpSenderName || 'Bethelmind Analytics & Strategy';
+  const senderName = process.env.SMTP_SENDER_NAME || config?.smtpSenderName || 'Bethelmind Digital Solutions';
   const fromEmail = process.env.SMTP_FROM || config?.smtpFrom || user;
 
   if (!host || !user || !pass) {
@@ -173,7 +173,7 @@ export async function sendSendGridMessage(to: string, subject: string, body: str
   if (!fromEmail) {
     throw new Error('SendGrid From Email is not configured.');
   }
-  const senderName = config.sendgridSenderName || 'Bethelmind Analytics & Strategy';
+  const senderName = config.sendgridSenderName || 'Bethelmind Digital Solutions';
 
   const resp = await fetch('https://api.sendgrid.com/v3/mail/send', {
     method: 'POST',
@@ -295,7 +295,7 @@ export async function sendNotificationEmail(to: string, subject: string, body: s
  */
 export async function sendMarketingEmail(to: string, subject?: string, body?: string): Promise<boolean> {
   const config = getRuntimeConfig();
-  const finalSubject = subject || config.marketingSubject || 'Special Offer from Bethelmind Analytics Lagos Desk';
+  const finalSubject = subject || config.marketingSubject || 'Special Offer from Bethelmind Digital Solutions';
   const finalBody = body || config.marketingBody || 'Hello,\n\nWe have exciting 24/7 quoting and WhatsApp conversion tools built for your business. Check your live preview at https://www.bethelmindanalytics.com.';
   return sendNotificationEmail(to, finalSubject, finalBody);
 }
@@ -323,7 +323,7 @@ Your Transaction Details:
 Our team is currently setting up your live website custom routing. If you have a custom domain name you would like to map to this page, please reply to this email with the domain details.
 
 Best regards,
-The Bethelmind Analytics & Strategy Team`;
+The Bethelmind Digital Solutions Team`;
 
   return sendNotificationEmail(to, subject, body);
 }

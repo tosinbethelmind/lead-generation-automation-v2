@@ -133,7 +133,7 @@ function normalizeNigerianPhone(cleanDigits: string): { formatted: string; isMob
 
 function generateFemaleVoiceScript(bizName: string, area: string): string {
   const locationStr = area ? `in ${area}` : 'in Lagos';
-  return `Hello! Good day, this is Ezinne from Bethelmind Analytics Lagos. We analyzed ${bizName}'s digital operations ${locationStr}, and we built a live 24/7 AI WhatsApp customer booking and automated quote prototype tailored specifically for ${bizName}. It responds to your customer inquiries in less than 3 seconds and handles Moniepoint and Paystack payment verification automatically. Please check the link we sent to test your prototype live, or chat directly with our Lagos team at 0802 279 1227 to claim your free 48-hour setup. Thank you!`;
+  return `Hello! Good day, this is Ezinne from Bethelmind Digital Solutions. We analyzed ${bizName}'s digital operations ${locationStr}, and we built a live 24/7 AI WhatsApp customer booking and automated quote prototype tailored specifically for ${bizName}. It responds to your customer inquiries in less than 3 seconds and handles Moniepoint and Paystack payment verification automatically. Please check the link we sent to test your prototype live, or chat directly with our Lagos team at 0802 279 1227 to claim your free 48-hour setup. Thank you!`;
 }
 
 function recordJourneyEvent(lead: any, formUrl: string, status: number) {
@@ -250,7 +250,7 @@ Claim your free 48-hour setup or chat with our Lagos Team:
 WhatsApp: https://wa.me/2348022791227 (0802 279 1227)
 
 Best regards,
-Bethelmind Analytics Lagos Team
+Bethelmind Digital Solutions Team
 contact@bethelmindanalytics.com | +234 802 279 1227`;
 
   for (const pathSuffix of candidatePaths) {
@@ -435,7 +435,7 @@ async function sendExecutiveBriefingEmail(stats: {
     </table>
 
     <p style="font-size: 12px; color: #8b949e; text-align: center; margin-top: 25px; border-top: 1px solid #30363d; padding-top: 15px;">
-      Bethelmind Analytics Lagos Engine • Direct Settlements: OPay 7034297995 (Oyelakin Tosin Matthew)
+      Bethelmind Digital Solutions Engine • Direct Settlements: OPay 6805375225 (Bethelmind Digital Solutions)
     </p>
   </div>
   `;

@@ -8,7 +8,7 @@
  * 2. 🎯 TOP 1-CLICK ACTION CARDS for immediate cash-in (< 30s execution).
  * 3. 🚀 Engine 5 Prototype Claim Metrics (0ms prototypes & ₦75k deposits).
  * 4. 📊 Engine Performance Telemetry (GMB, Appointment Router, Domain Snipes, Selar Packs).
- * 5. 🏦 100% Direct Settlement Confirmation to OPay: 7034297995 (Oyelakin Tosin Matthew).
+ * 5. 🏦 100% Direct Settlement Confirmation to OPay: 6805375225 (Bethelmind Digital Solutions).
  */
 
 import fs from 'fs';
@@ -53,7 +53,7 @@ export async function checkAndDispatchFiveMoneyThreeHourBriefing(forceDispatch: 
     <!-- Header -->
     <div style="background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #0284c7 100%); padding: 32px 24px; text-align: left;">
       <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #ecfdf5; margin-bottom: 8px;">
-        🏛️ BETHELMIND ANALYTICS LAGOS HQ • 24/7 CLOUD AUTOPILOT
+        🏛️ Bethelmind Digital Solutions HQ • 24/7 CLOUD AUTOPILOT
       </div>
       <h1 style="font-size: 24px; font-weight: 800; color: #ffffff; margin: 0 0 8px 0; letter-spacing: -0.5px;">
         ⚡ 3-Hour "5 Money Engine" AI Briefing
@@ -163,7 +163,7 @@ export async function checkAndDispatchFiveMoneyThreeHourBriefing(forceDispatch: 
       </div>
 
       <div style="font-size: 11px; color: #64748b; text-align: center; border-top: 1px solid #1e293b; padding-top: 16px;">
-        Bethelmind Analytics Lagos OTC & Autonomous Cloud Desk • Powered by 5 Money Engine Architecture (2026)
+        Bethelmind Digital Solutions OTC & Autonomous Cloud Desk • Powered by 5 Money Engine Architecture (2026)
       </div>
 
     </div>

@@ -52,7 +52,7 @@ async function runLiveTest() {
         smsProvider: 'gateway',
         smsGatewayUrl: ep,
         smsGatewayToken: 'f34af5ea-f657-41b1-b83e-4a59eb786e57',
-        businessSignature: 'Bethelmind Analytics'
+        businessSignature: 'Bethelmind Digital Solutions'
       };
 
       const res = await sendSmsMessage(

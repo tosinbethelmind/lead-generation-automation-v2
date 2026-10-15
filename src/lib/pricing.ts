@@ -485,7 +485,7 @@ export const NIGERIAN_COMPETITOR_BENCHMARKS: CompetitorBenchmark[] = [
     competitorsList: ['Bumpa', 'Selar.co', 'Catlog'],
     typicalPriceRangeNGN: '₦5,000 – ₦15,000 / month (₦50k – ₦120k / yr)',
     keyWeaknessInNigeria: 'Basic link-in-bio catalogs with NO sector calculation tools (Solar BOQ, Tokunbo Duty, CAC Fees), NO automated lead scraping, NO Voice AI, and NO custom landing page previews.',
-    bethelmindAdvantage: 'Bethelmind Analytics offers high-converting, sector-tailored calculation engines + instant Moniepoint DVAs + auto WhatsApp bot at the same or lower entry price.',
+    bethelmindAdvantage: 'Bethelmind Digital Solutions offers high-converting, sector-tailored calculation engines + instant Moniepoint DVAs + auto WhatsApp bot at the same or lower entry price.',
   },
   {
     categoryName: 'Local Web Agencies & Freelancers (WordPress/Elementor)',

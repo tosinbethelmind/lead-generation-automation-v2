@@ -5,7 +5,7 @@ const DOCS_CATALOG: Record<string, { filename: string; title: string; content: s
     filename: 'ADMIN_ASSISTANT_OPERATIONS_WALKTHROUGH.md',
     title: 'Human Admin Assistant Operations & Governance Walkthrough',
     content: `# Human Admin Assistant Operations & Governance Walkthrough
-**Bethelmind Analytics & Lead Generation Platform**
+**Bethelmind Digital Solutions & Lead Generation Platform**
 
 ---
 
@@ -55,7 +55,7 @@ Your Human Admin Assistant account is configured with granular operational permi
     filename: 'AI_RESPONSIBLE_USE_POLICY.md',
     title: 'AI Responsible Use & Safety Policy',
     content: `# AI Responsible Use & Safety Policy
-**Bethelmind Analytics & Strategy**
+**Bethelmind Digital Solutions**
 
 ## 1. Purpose and Scope
 This policy sets standards for deploying Artificial Intelligence safely, ethically, and transparently across all Bethelmind AI Customer Care Concierges, Voice Synthesis Assistants, and Lead Generation Engines.
@@ -77,7 +77,7 @@ Customer interaction logs are stored securely and never sold to third parties or
     filename: 'AI_DISCLAIMER_POLICY.md',
     title: 'AI Output Transparency & Accuracy Disclaimer',
     content: `# AI Output Transparency & Accuracy Disclaimer
-**Bethelmind Analytics & Strategy**
+**Bethelmind Digital Solutions**
 
 ## 1. Algorithmic Nature
 Interactive tools, chatbots, voice synthesis modules, and sizing calculators are powered by artificial intelligence. Output responses are generated algorithmically based on business data inputs.
@@ -93,10 +93,10 @@ Users are encouraged to verify critical specifications or custom requirements di
     filename: 'CLIENT_IP_TRANSFER_AGREEMENT.md',
     title: 'Software & Website IP Transfer Agreement',
     content: `# Software & Turnkey Website IP Transfer Agreement
-**Bethelmind Analytics & Strategy**
+**Bethelmind Digital Solutions**
 
 ## 1. Transfer of Rights
-Upon payment of the setup fee, Bethelmind Analytics transfers perpetual usage rights for the provisioned custom website, layout styles, and software configuration to the designated client enterprise.
+Upon payment of the setup fee, Bethelmind Digital Solutions transfers perpetual usage rights for the provisioned custom website, layout styles, and software configuration to the designated client enterprise.
 
 ## 2. Included Assets
 - Turnkey Responsive Web Portal
@@ -109,7 +109,7 @@ Upon payment of the setup fee, Bethelmind Analytics transfers perpetual usage ri
     filename: 'RESPONSIBLE_OUTREACH_POLICY.md',
     title: 'Responsible Outreach & NDPR Compliance Policy',
     content: `# Responsible Outreach & Messaging Compliance Policy
-**Bethelmind Analytics & Strategy**
+**Bethelmind Digital Solutions**
 
 ## 1. Lawful Basis for Outreach
 Clients are responsible for ensuring that any outreach conducted using platform tools complies with the Nigeria Data Protection Regulation (NDPR) and Meta / WhatsApp Business policies.
@@ -122,10 +122,10 @@ All opt-out or unsubscribe requests must be processed and honored immediately.
     filename: 'SERVICE_LEVEL_AGREEMENT_SLA.md',
     title: 'Service Level Agreement (SLA) & Uptime Guarantee',
     content: `# Service Level Agreement (SLA) & System Guarantee
-**Bethelmind Analytics & Strategy**
+**Bethelmind Digital Solutions**
 
 ## 1. Uptime Target
-Bethelmind Analytics targets **99.9% operational availability** for client hosted web portals, AI concierge endpoints, and 1-line script embed widgets.
+Bethelmind Digital Solutions targets **99.9% operational availability** for client hosted web portals, AI concierge endpoints, and 1-line script embed widgets.
 
 ## 2. Maintenance & Notifications
 Scheduled system maintenance is performed during low-traffic windows (12:00 AM - 4:00 AM WAT) with advance notice provided to admin users.
@@ -140,7 +140,7 @@ Scheduled system maintenance is performed during low-traffic windows (12:00 AM -
     filename: 'CLIENT_ONBOARDING_GUIDE.md',
     title: 'Client Turnkey Website & AI Onboarding Guide',
     content: `# Client Turnkey Website & AI Sales Engine Onboarding Guide
-**Bethelmind Analytics & Strategy**
+**Bethelmind Digital Solutions**
 
 ## 1. Step 1: Claim & Verify Your Site Link
 Visit your provisioned website URL (e.g. \`https://www.bethelmindanalytics.com/preview/your-business\`) and test your 24/7 AI Lead Specialist.
@@ -163,10 +163,10 @@ Every quote request, voice inquiry, and appointment booking will route directly 
     filename: 'MASTER_TERMS_OF_SERVICE.md',
     title: 'Master Terms of Service & Subscription Conditions',
     content: `# Master Terms of Service
-**Bethelmind Analytics & Strategy**
+**Bethelmind Digital Solutions**
 
 ## 1. Agreement
-By accessing or using Bethelmind Analytics software, lead scrapers, AI widgets, and client websites, you agree to these Master Terms of Service.
+By accessing or using Bethelmind Digital Solutions software, lead scrapers, AI widgets, and client websites, you agree to these Master Terms of Service.
 
 ## 2. Subscriptions & Renewal
 Monthly subscription fees cover hosting, AI model API tokens, automated lead scrapers, and ongoing technical support. Renewals are billed on the anniversary of subscription activation.
@@ -179,7 +179,7 @@ Users agree not to utilize platform tools for deceptive marketing, unlawful spam
     filename: 'PRIVACY_POLICY_AND_NDPR.md',
     title: 'Privacy Policy & Data Protection Statement',
     content: `# Privacy Policy & Data Protection Statement
-**Bethelmind Analytics & Strategy**
+**Bethelmind Digital Solutions**
 
 ## 1. Data Collection
 We collect business profile details, contact preferences, and customer support conversation logs solely to deliver AI concierge automation and lead generation services.
@@ -192,7 +192,7 @@ All stored lead details and system logs are encrypted at rest and in transit. We
     filename: 'PARTNERSHIP_AND_REFERRAL_AGREEMENT.md',
     title: 'Agency & Partner Referral Agreement',
     content: `# Agency & Partner Referral Program Agreement
-**Bethelmind Analytics & Strategy**
+**Bethelmind Digital Solutions**
 
 ## 1. Partner Commissions
 Approved agency partners earn a **15% recurring commission** on setup fees and ongoing monthly subscriptions for every business client onboarded to the Bethelmind AI Lead Generation platform.

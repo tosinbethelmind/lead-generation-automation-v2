@@ -6,7 +6,7 @@
  * - Scans verified Lagos container freight importers in Alaba, Trade Fair, and VI corridors.
  * - Locks in +₦25.00 / USD Net Arbitrage Spread Commission on $10k–$65k trade tickets.
  * - Generates 1-tap WhatsApp handshakes connecting buyers with top Diamond Merchants.
- * - Routes 100% of earned commissions directly into OPay (7034297995 - Oyelakin Tosin Matthew).
+ * - Routes 100% of earned commissions directly into OPay (6805375225 - Bethelmind Digital Solutions).
  */
 
 import { dispatchSecureEmail, OFFICIAL_PRODUCTION_DOMAIN } from './smtpTransporterPool';

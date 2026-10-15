@@ -2,7 +2,7 @@
  * @file src/lib/tracking/dubAttributionEngine.ts
  * 
  * 🚀 DUB.CO-INSPIRED REAL-TIME LEAD ATTRIBUTION & INSTANT CLOSER ALERT ENGINE
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  * 
  * Capabilities:
  * 1. Captures prospect device, geo-location, referer, and click timestamps on /preview/[slug].

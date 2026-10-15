@@ -27,12 +27,12 @@ dns.lookup(config.smtpHost || 'smtp.hostinger.com', { family: 4 }, async (err, a
 
   try {
     const info = await transporter.sendMail({
-      from: `ApexReach Admin <${config.smtpFrom}>`,
+      from: `Bethelmind Digital Solutions Admin <${config.smtpFrom}>`,
       to: 'bethelmindrecruit@gmail.com',
-      subject: '✅ ApexReach Lagos Engine — Admin Notification Preferences Updated',
+      subject: '✅ Bethelmind Digital Solutions Lagos Engine — Admin Notification Preferences Updated',
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #1e293b;">
-          <h2 style="color: #0f172a;">ApexReach Lagos B2B Engine Update</h2>
+          <h2 style="color: #0f172a;">Bethelmind Digital Solutions Lagos B2B Engine Update</h2>
           <p>Hello Admin,</p>
           <p>Your notification preferences have been saved:</p>
           <ul>

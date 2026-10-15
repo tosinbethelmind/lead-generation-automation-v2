@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       claimId: claimRecord.id,
-      message: 'Your request has been prioritized by Bethelmind Analytics Concierge Desk.',
+      message: 'Your request has been prioritized by Bethelmind Digital Solutions Concierge Desk.',
       adminSummary,
       deskPhone: '08022791227',
     });

@@ -94,7 +94,7 @@ async function sendAllPersonalTestOutreach() {
           const previewUrl = `https://www.bethelmindanalytics.com/preview/${targets.demoSlug}?src=live_test_wa`;
           const claimUrl = `https://www.bethelmindanalytics.com/claim?biz=${encodeURIComponent('Eko Grand Hotel & Suites')}`;
 
-          const msgContent = `🧪 *[APEXREACH LAGOS 10K B2B LIVE TEST DISPATCH]*
+          const msgContent = `🧪 *[Bethelmind Digital Solutions LAGOS 10K B2B LIVE TEST DISPATCH]*
 
 Good day Tosin 👋
 
@@ -169,7 +169,7 @@ All 3 channels (SMS, WhatsApp, Email) are operational! 🚀`;
     const claimUrl = `https://www.bethelmindanalytics.com/claim?biz=${encodeURIComponent('Eko Grand Hotel & Suites')}`;
 
     const mailOptions = {
-      from: '"Oyelakin Tosin | Bethelmind Analytics" <tosin@bethelmindanalytics.com>',
+      from: '"Oyelakin Tosin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
       to: targets.adminEmail,
       replyTo: 'tosin@bethelmindanalytics.com',
       subject: '🧪 [VERIFIED] Bethelmind Multi-Channel Outreach Engine Confirmation',
@@ -182,7 +182,7 @@ Interactive Portal Preview: ${previewUrl}
 Claim Link: ${claimUrl}
 
 Best regards,
-Oyelakin Tosin | Bethelmind Analytics & Strategy`,
+Oyelakin Tosin | Bethelmind Digital Solutions`,
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 620px; margin: 0 auto; background: #0f172a; color: #f8fafc; padding: 28px; border-radius: 12px; border: 1px solid #10b981;">
           <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; margin-bottom: 20px;">
@@ -211,7 +211,7 @@ Oyelakin Tosin | Bethelmind Analytics & Strategy`,
           </div>
 
           <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; margin-top: 24px; color: #64748b; font-size: 12px;">
-            Bethelmind Analytics & Strategy • Lagos, Nigeria • +234 802 279 1227
+            Bethelmind Digital Solutions • Lagos, Nigeria • +234 802 279 1227
           </div>
         </div>
       `

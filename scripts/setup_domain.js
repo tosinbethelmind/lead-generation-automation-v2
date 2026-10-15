@@ -243,7 +243,7 @@ function printManualInstructions() {
 async function main() {
   console.log('\n');
   console.log(c.bold(c.cyan('╔════════════════════════════════════════════════════════════╗')));
-  console.log(c.bold(c.cyan('║      BETHELMIND ANALYTICS — DOMAIN SETUP AUTOMATION        ║')));
+  console.log(c.bold(c.cyan('║      Bethelmind Digital Solutions — DOMAIN SETUP AUTOMATION        ║')));
   console.log(c.bold(c.cyan('╚════════════════════════════════════════════════════════════╝')));
   console.log(`\n  🌐 Domain : ${c.bold(DOMAIN)}`);
   console.log(`  🚀 Project: lead-generation-automation-v2\n`);

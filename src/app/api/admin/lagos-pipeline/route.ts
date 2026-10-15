@@ -208,7 +208,7 @@ export async function POST(req: NextRequest) {
               'Accept': 'application/vnd.github+json',
               'Authorization': `Bearer ${githubToken}`,
               'X-GitHub-Api-Version': '2022-11-28',
-              'User-Agent': 'ApexReach-App-Lagos10k'
+              'User-Agent': 'Bethelmind Digital Solutions-App-Lagos10k'
             },
             body: JSON.stringify({
               event_type: 'run-lagos-10k',

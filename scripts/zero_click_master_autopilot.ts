@@ -9,7 +9,7 @@
  * 3. 🎙️ Automated Personalized Voice Note Synthesis (en-NG-EzinneNeural)
  * 4. 📡 Automated Dual-Wave Outreach Dispatch (Carrier SMS + B2B Email)
  * 5. 💬 Automated Inbound AI Closer & Live Escrow Locking (< 3s response)
- * 6. 🏦 Automated Direct-to-OPay Liquidation Routing (7034297995)
+ * 6. 🏦 Automated Direct-to-OPay Liquidation Routing (6805375225)
  * 7. 🔄 Loops seamlessly forever with self-healing recovery.
  */
 

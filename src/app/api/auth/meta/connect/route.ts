@@ -65,12 +65,12 @@ async function runMetaAuthFlow() {
           const url = p.url();
           if (url.includes('facebook.com') || url.includes('meta.com')) {
             // Check if banner is already injected
-            const hasBanner = await p.evaluate(() => !!document.getElementById('apexreach-meta-banner')).catch(() => false);
+            const hasBanner = await p.evaluate(() => !!document.getElementById('Bethelmind Digital Solutions-meta-banner')).catch(() => false);
             
             if (!hasBanner) {
               await p.evaluate(() => {
                 const div = document.createElement('div');
-                div.id = 'apexreach-meta-banner';
+                div.id = 'Bethelmind Digital Solutions-meta-banner';
                 div.style.position = 'fixed';
                 div.style.top = '0';
                 div.style.left = '0';
@@ -92,13 +92,13 @@ async function runMetaAuthFlow() {
                   <div style="display: flex; align-items: center; gap: 10px;">
                     <span style="font-size: 24px; animation: pulse 2s infinite;">🤖</span>
                     <div>
-                      <strong style="color: #06b6d4;">Bethelmind Analytics & Strategy Meta Linker</strong> — 
-                      <span id="apexreach-instruction">Please select your App, then go to <strong>WhatsApp > Getting Started</strong> (or <strong>Business Settings > System Users</strong> for permanent tokens).</span>
+                      <strong style="color: #06b6d4;">Bethelmind Digital Solutions Meta Linker</strong> — 
+                      <span id="Bethelmind Digital Solutions-instruction">Please select your App, then go to <strong>WhatsApp > Getting Started</strong> (or <strong>Business Settings > System Users</strong> for permanent tokens).</span>
                     </div>
                   </div>
                   <div style="display: flex; align-items: center; gap: 12px;">
-                    <div id="apexreach-detected-status" style="font-size: 12px; color: #94a3b8;"></div>
-                    <button id="apexreach-link-btn" onclick="this.setAttribute('data-action', 'link'); this.innerText='Extracting...';" style="background: linear-gradient(135deg, #1877f2 0%, #06b6d4 100%); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3); transition: all 0.2s;">
+                    <div id="Bethelmind Digital Solutions-detected-status" style="font-size: 12px; color: #94a3b8;"></div>
+                    <button id="Bethelmind Digital Solutions-link-btn" onclick="this.setAttribute('data-action', 'link'); this.innerText='Extracting...';" style="background: linear-gradient(135deg, #1877f2 0%, #06b6d4 100%); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3); transition: all 0.2s;">
                       Extract Credentials
                     </button>
                   </div>
@@ -122,14 +122,14 @@ async function runMetaAuthFlow() {
 
             // Check if user clicked the "Extract Credentials" button
             const actionClicked = await p.evaluate(() => {
-              const btn = document.getElementById('apexreach-link-btn');
+              const btn = document.getElementById('Bethelmind Digital Solutions-link-btn');
               return btn ? btn.getAttribute('data-action') === 'link' : false;
             }).catch(() => false);
 
             if (actionClicked) {
               // Reset the click attribute so we don't repeat the action
               await p.evaluate(() => {
-                const btn = document.getElementById('apexreach-link-btn');
+                const btn = document.getElementById('Bethelmind Digital Solutions-link-btn');
                 if (btn) btn.removeAttribute('data-action');
               }).catch(() => {});
 
@@ -290,8 +290,8 @@ async function runMetaAuthFlow() {
 
                 // Update the banner with status
                 await p.evaluate((html: string, completed: boolean) => {
-                  const statusEl = document.getElementById('apexreach-detected-status');
-                  const btn = document.getElementById('apexreach-link-btn') as HTMLButtonElement;
+                  const statusEl = document.getElementById('Bethelmind Digital Solutions-detected-status');
+                  const btn = document.getElementById('Bethelmind Digital Solutions-link-btn') as HTMLButtonElement;
                   if (statusEl) statusEl.innerHTML = html;
                   if (btn) {
                     if (completed) {

@@ -1,7 +1,7 @@
 /**
  * @file scripts/unified_mcp_accelerated_pipeline.ts
  * 
- * Bethelmind Analytics - Unified MCP & High-Performance Pipeline Runner
+ * Bethelmind Digital Solutions - Unified MCP & High-Performance Pipeline Runner
  * Combines MCP Scraper Bridge, Crawlee Stealth Engine, and Outreach Acceleration Hub.
  */
 
@@ -11,7 +11,7 @@ import { executeHybridScrape } from '../src/lib/scraping/crawlee_engine';
 
 async function runPipeline() {
   console.log('================================================================');
-  console.log('🚀 BETHELMIND ANALYTICS: UNIFIED MCP ACCELERATED PIPELINE RUNNER');
+  console.log('🚀 Bethelmind Digital Solutions: UNIFIED MCP ACCELERATED PIPELINE RUNNER');
   console.log('================================================================\n');
 
   const args = process.argv.slice(2);

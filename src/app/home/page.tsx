@@ -35,7 +35,7 @@ export default function HomePage() {
   const [businessName, setBusinessName] = useState('My Business');
   const [selectedIndustry, setSelectedIndustry] = useState('solar');
   const [targetDistrict, setTargetDistrict] = useState('Ikeja');
-  const [selectedPlanId, setSelectedPlanId] = useState('pro');
+  const [selectedPlanId, setSelectedPlanId] = useState('starter');
 
   const sectorProfile = getSectorById(selectedIndustry);
 

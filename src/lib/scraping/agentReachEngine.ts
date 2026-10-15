@@ -2,7 +2,7 @@
  * @file src/lib/scraping/agentReachEngine.ts
  * 
  * Agent-Reach: Multi-Platform Zero-Cost Internet Intelligence Layer
- * Bethelmind Analytics Commercial Growth System
+ * Bethelmind Digital Solutions Commercial Growth System
  * 
  * Extracts data without paid official APIs across:
  *  - Social Media: Twitter/X, Instagram, LinkedIn, Facebook, TikTok

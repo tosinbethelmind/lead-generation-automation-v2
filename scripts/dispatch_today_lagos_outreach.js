@@ -188,7 +188,7 @@ async function getNextBatch(batchSize = 30) {
 
 async function executeOutreach(batchSize = 30, dryRun = false) {
   console.log('===============================================================');
-  console.log(`🚀 APEXREACH 10K LAGOS OUTREACH ENGINE — ${dryRun ? 'DRY-RUN AUDIT' : 'LIVE DISPATCH'}`);
+  console.log(`🚀 Bethelmind Digital Solutions 10K LAGOS OUTREACH ENGINE — ${dryRun ? 'DRY-RUN AUDIT' : 'LIVE DISPATCH'}`);
   console.log(`📅 Date: ${new Date().toLocaleDateString('en-NG')} | Safe Limit: ${batchSize} Leads`);
   console.log('===============================================================\n');
 
@@ -224,7 +224,7 @@ async function executeOutreach(batchSize = 30, dryRun = false) {
       `👉 *Test drive your live private prototype (₦0 Upfront Commitment):*\n` +
       `${previewUrl}\n\n` +
       `• WhatsApp Closer Desk: https://wa.me/2348022791227 (0802 279 1227)\n\n` +
-      `*Bethelmind Analytics Lagos Desk*`;
+      `*Bethelmind Digital Solutions*`;
 
     console.log(`[${i + 1}/${batch.length}] 🏢 ${name.padEnd(30)} | 📱 ${phone.padEnd(16)}`);
 

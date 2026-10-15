@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       siteId,
       eventName,
       timestamp: timestamp || new Date().toISOString(),
-      processedBy: 'ApexReach Dual Edge Ingestion'
+      processedBy: 'Bethelmind Digital Solutions Dual Edge Ingestion'
     });
   } catch (error: any) {
     console.error('[SDK Tracking Error]:', error);

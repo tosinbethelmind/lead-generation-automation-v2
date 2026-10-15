@@ -112,7 +112,7 @@ async function runHighVolumeHarvester() {
   const summaryAlert = `🌐 *[HIGH-VOLUME LAGOS HARVEST COMPLETE]*\n\n` +
     `🚀 *${packages.length} Verified Commercial Importers* processed and staged across 6 Lagos hubs (ASPAMDA, Alaba, Ikeja, Oregun, Balogun, Apapa)!\n\n` +
     `📊 *Total Pipeline Volume:* $1,250,000 USD (₦1.9 Billion NGN)\n` +
-    `💰 *Potential Net Profit:* *+₦31,250,000 NGN* (Direct to OPay 7034297995)\n\n` +
+    `💰 *Potential Net Profit:* *+₦31,250,000 NGN* (Direct to OPay 6805375225)\n\n` +
     `🛡️ *Status:* All leads staged with unique IDs & custom 15s scripts, awaiting your 1-click dispatch approval.`;
 
   await fetch('http://localhost:5005/api/send', {

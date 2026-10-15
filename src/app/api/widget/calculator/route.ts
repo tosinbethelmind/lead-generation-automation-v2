@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
  * GET /api/widget/calculator
  * Returns dynamic, self-executing JavaScript bundle that allows ANY external
  * third-party website (WordPress, Shopify, Webflow, Wix, HTML, React) to embed
- * live Bethelmind Analytics / ApexReach sector calculators.
+ * live Bethelmind Digital Solutions / Bethelmind Digital Solutions sector calculators.
  *
  * Usage on external site:
  * <script src="https://www.bethelmindanalytics.com/api/widget/calculator.js" data-sector="solar" data-color="#06b6d4"></script>

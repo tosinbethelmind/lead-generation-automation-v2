@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *  UNIFIED WHATSAPP COMMAND CENTER
- *  Bethelmind Analytics — Multi-Channel Control Hub
+ *  Bethelmind Digital Solutions — Multi-Channel Control Hub
  * ============================================================
  *  This service bridges ALL inbound channels to your WhatsApp:
  *    • Email inquiries  (via IMAP polling)
@@ -58,7 +58,7 @@ const CONFIG = {
         pass: process.env.SMTP_PASS || ''   // ← App password (not your login password)
       }
     },
-    fromName:    process.env.EMAIL_FROM_NAME || 'Bethelmind Analytics',
+    fromName:    process.env.EMAIL_FROM_NAME || 'Bethelmind Digital Solutions',
     fromAddress: process.env.SMTP_USER || ''
   },
 
@@ -93,7 +93,7 @@ function generateAiDraft(channel, senderName, senderEmail, question) {
     });
     return closerRes.messageText;
   } catch (_) {
-    return `Hello ${senderName}! 👋 Thank you for reaching out to Bethelmind Analytics Lagos Desk.\n\nWe build 24/7 AI WhatsApp Sales Assistants and Turnkey Websites delivered in 48 Hours.\n\n• Turnkey Website + WhatsApp AI: ₦75,000 deposit to start (₦150,000 total)\n• 1-Line Embed Upgrade: ₦35,000 deposit\n• Bank: OPay Digital Services | Account: 7034297995 | Name: Oyelakin Tosin Matthew\n\nHow can our Lagos team assist you today?`;
+    return `Hello ${senderName}! 👋 Thank you for reaching out to Bethelmind Digital Solutions.\n\nWe build 24/7 AI WhatsApp Sales Assistants and Turnkey Websites delivered in 48 Hours.\n\n• Turnkey Website + WhatsApp AI: ₦75,000 deposit to start (₦150,000 total)\n• 1-Line Embed Upgrade: ₦35,000 deposit\n• Bank: Moniepoint Microfinance Bank | Account: 6805375225 | Name: Bethelmind Digital Solutions\n\nHow can our Lagos team assist you today?`;
   }
 }
 
@@ -152,17 +152,17 @@ async function sendEmailReply(ticket, replyText) {
     await transporter.sendMail({
       from: `"${CONFIG.email.fromName}" <${CONFIG.email.fromAddress}>`,
       to: ticket.senderEmail,
-      subject: `Re: ${ticket.originalSubject || 'Your Inquiry — Bethelmind Analytics'}`,
+      subject: `Re: ${ticket.originalSubject || 'Your Inquiry — Bethelmind Digital Solutions'}`,
       text: replyText,
       html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
         <div style="background:#0f172a;padding:20px;border-radius:8px 8px 0 0;">
-          <h2 style="color:#38bdf8;margin:0;">Bethelmind Analytics</h2>
+          <h2 style="color:#38bdf8;margin:0;">Bethelmind Digital Solutions</h2>
         </div>
         <div style="background:#fff;padding:24px;border:1px solid #e2e8f0;">
           ${replyText.replace(/\n/g, '<br>')}
         </div>
         <div style="background:#f8fafc;padding:12px;border-radius:0 0 8px 8px;font-size:0.8rem;color:#64748b;">
-          Bethelmind Analytics | B2B Lead Generation & Website Launch Platform
+          Bethelmind Digital Solutions | B2B Lead Generation & Website Launch Platform
         </div>
       </div>`
     });

@@ -2,7 +2,7 @@
  * @file scripts/whatsapp_multi_line_qr_portal.js
  * 
  * 🌐 7-SIM WHATSAPP UNIFIED PAIRING & MANAGEMENT PORTAL
- * Bethelmind Analytics Lagos Desk · Commercial Growth Engine
+ * Bethelmind Digital Solutions · Commercial Growth Engine
  * 
  * Accessible at: http://localhost:5005
  * 
@@ -414,7 +414,7 @@ app.get('/', (req, res) => {
 </head>
 <body>
   <div class="card" id="main-card">
-    <div class="tag">Bethelmind Analytics Lagos Desk</div>
+    <div class="tag">Bethelmind Digital Solutions</div>
     <h1>WhatsApp 6-SIM Hub</h1>
     <p class="sub">Active Line: <strong id="active-line-name">Line 5</strong> &bull; <strong id="phone-display">0703 055 6877</strong></p>
 

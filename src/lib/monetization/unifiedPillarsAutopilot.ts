@@ -1,7 +1,7 @@
 /**
  * @file src/lib/monetization/unifiedPillarsAutopilot.ts
  * 
- * BETHELMIND ANALYTICS UNIFIED 8-PILLAR AUTONOMOUS MONETIZATION ORCHESTRATOR.
+ * Bethelmind Digital Solutions UNIFIED 8-PILLAR AUTONOMOUS MONETIZATION ORCHESTRATOR.
  * 
  * Seamlessly consolidates all 8 algorithmic revenue streams into a single high-efficiency,
  * non-spammy Daily Executive Monetization Dossier delivered every morning at 08:00 AM WAT:

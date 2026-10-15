@@ -62,7 +62,7 @@ async function fetchHttp(url, options = {}) {
 
 async function main() {
   console.log('====================================================================');
-  console.log('🤖 ApexReach Automated Chatbot & WhatsApp Test Suite');
+  console.log('🤖 Bethelmind Digital Solutions Automated Chatbot & WhatsApp Test Suite');
   console.log('====================================================================\n');
 
   let passedCount = 0;

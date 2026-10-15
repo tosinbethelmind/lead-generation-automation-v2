@@ -2,7 +2,7 @@
  * @file src/lib/scraping/katanaCrawlerBridge.ts
  * 
  * 🗡️ KATANA HIGH-SPEED ENDPOINT CRAWLER BRIDGE
- * Bethelmind Analytics Lagos Desk · 2026 Edition
+ * Bethelmind Digital Solutions · 2026 Edition
  * 
  * Powered by ProjectDiscovery Katana (Go v1.7.0):
  * - Crawls entire domains in sub-seconds

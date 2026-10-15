@@ -60,7 +60,7 @@ export function generateExecutivePDFProposal(params: PDFProposalParams): PDFProp
 <body>
   <div class="page">
     <div class="header">
-      <div class="logo">BETHELMIND ANALYTICS & STRATEGY</div>
+      <div class="logo">Bethelmind Digital Solutions</div>
       <div class="ref">${proposalId}</div>
     </div>
 

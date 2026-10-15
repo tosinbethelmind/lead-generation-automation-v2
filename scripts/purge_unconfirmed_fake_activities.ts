@@ -1,7 +1,7 @@
 /**
  * @file scripts/purge_unconfirmed_fake_activities.ts
  * 
- * BETHELMIND ANALYTICS: SANITIZATION & FAKE DATA PURGE ENGINE
+ * Bethelmind Digital Solutions: SANITIZATION & FAKE DATA PURGE ENGINE
  * 
  * Responsibilities:
  * 1. Purges all unconfirmed/simulated SMS and Email activities from local_db/activities.json.

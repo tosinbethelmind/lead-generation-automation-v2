@@ -9,7 +9,7 @@
  * 2. Sweeps Bybit/Binance OTC spreads every 15 minutes.
  * 3. Dispatches 3-hourly executive briefings to bethelmindrecruit@gmail.com.
  * 4. Triggers GSM Carrier SMS alerts to 0802 279 1227 on any cleared deal.
- * 5. Settles 100% of profit into OPay 7034297995 (Oyelakin Tosin Matthew).
+ * 5. Settles 100% of profit into OPay 6805375225 (Bethelmind Digital Solutions).
  */
 
 import { supabase } from '../src/lib/supabaseClient';

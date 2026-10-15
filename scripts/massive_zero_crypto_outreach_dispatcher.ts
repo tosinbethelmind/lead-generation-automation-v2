@@ -1,7 +1,7 @@
 /**
  * @file scripts/massive_zero_crypto_outreach_dispatcher.ts
  * 🚀 MASSIVE MULTI-CHANNEL OUTBOUND DISPATCHER (100% ZERO-CRYPTO B2B FOCUS)
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * Strict Commercial Rules:
  * 1. ZERO crypto keywords (crypto, usdt, binance, p2p, wallet) allowed in copy.
@@ -9,7 +9,7 @@
  * 3. GSM SMS via Tailscale Android Gateway (http://10.132.90.251:8082).
  * 4. Executive B2B Email via Hostinger SMTP.
  * 5. Throttled WhatsApp Outreach across Line 2 & Line 3 (30 leads/day/line).
- * 6. 100% Direct-to-OPay revenue routing (7034297995 - Oyelakin Tosin Matthew).
+ * 6. 100% Direct-to-OPay revenue routing (6805375225 - Bethelmind Digital Solutions).
  * 7. Zero-tolerance lead sanitization (rejects placeholder numbers, repeating quads, synthetic names).
  */
 

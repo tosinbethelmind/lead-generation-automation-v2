@@ -2,7 +2,7 @@
  * @file src/lib/scraping/scraplingFallbackEngine.ts
  * 
  * 🛡️ SCRAPLING & CRAWL4AI 2026 ADAPTIVE SELECTOR & ZERO-FAILURE FALLBACK ENGINE
- * Bethelmind Analytics Commercial Growth Engine · Lagos Desk
+ * Bethelmind Digital Solutions Commercial Growth Engine · Lagos Desk
  * 
  * Architecture & 2026 Innovations:
  * 1. Adaptive DOM Extraction (Scrapling-inspired):

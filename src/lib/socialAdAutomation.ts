@@ -224,7 +224,7 @@ export function generateSocialContentCalendar(
       topic: topicObj.topic,
       caption: `🔥 ${topicObj.hook}\n\nAt ${businessName}, we guarantee premium quality and 100% customer satisfaction. Tap the link in our bio or send us a WhatsApp message to get started!`,
       pidginCaption: `🇳🇬 Oya look sharp! ${topicObj.hook}\n\nFor ${businessName}, we no dey carry last! Message us for WhatsApp right now make we set you up fast!`,
-      hashtags: [`#${businessName.replace(/\s+/g, '')}`, `#NigeriaBusiness`, `#${category.replace(/\s+/g, '')}`, `#LagosSME`, `#ApexReach`],
+      hashtags: [`#${businessName.replace(/\s+/g, '')}`, `#NigeriaBusiness`, `#${category.replace(/\s+/g, '')}`, `#LagosSME`, `#Bethelmind Digital Solutions`],
       visualPrompt: `High-converting modern UI mockup showing ${topicObj.topic} with vibrant gold and dark blue branding for ${businessName}.`,
       callToAction: `📲 Send a WhatsApp message to book today!`,
       bestTime: '08:30 AM & 06:15 PM',

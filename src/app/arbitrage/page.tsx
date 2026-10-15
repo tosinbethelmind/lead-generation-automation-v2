@@ -2,7 +2,7 @@ import React from 'react';
 import InstitutionalArbitrageLanding from '@/components/arbitrage/InstitutionalArbitrageLanding';
 
 export const metadata = {
-  title: 'Institutional B2B FX & China Factory Escrow Desk | Bethelmind Analytics Lagos',
+  title: 'Institutional B2B FX & China Factory Escrow Desk | Bethelmind Digital Solutions',
   description: 'Guaranteed wholesale FX floor rates, 100% CBN-regulated escrow clearing vault, and < 15-min Swift MT103 confirmation to China factories.'
 };
 

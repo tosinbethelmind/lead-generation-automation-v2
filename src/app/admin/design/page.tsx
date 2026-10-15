@@ -217,7 +217,7 @@ export default function AdminDesignPage() {
               {/* Fake UI component */}
               <div className="mock-navbar">
                 <span className="logo" style={{ color: primary }}>
-                  Bethelmind Analytics & Strategy
+                  Bethelmind Digital Solutions
                 </span>
                 <span className="badge" style={{ backgroundColor: `${accent}20`, color: accent, borderColor: `${accent}40`, border: '1px solid' }}>
                   Live Mode

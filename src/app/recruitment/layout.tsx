@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'AI Sales Partner & Commission Agent Network Nigeria | Bethelmind Analytics',
+  title: 'AI Sales Partner & Commission Agent Network Nigeria | Bethelmind Digital Solutions',
   description: 'Join Nigeria’s high-growth AI sales agency network. Earn weekly commissions onboarding Lagos, Abuja, and Port Harcourt businesses to Bethelmind AI lead automation.',
   openGraph: {
     title: 'Join Bethelmind AI Sales Partner Network — High Weekly Commissions',

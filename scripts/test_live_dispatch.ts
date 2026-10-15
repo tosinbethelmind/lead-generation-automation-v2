@@ -37,7 +37,7 @@ async function testLiveOutreach() {
     phone_e164: '+2348022791227',
     phone_raw: '+2348022791227',
     website: 'https://bethelmindanalytics.com',
-    company: 'Bethelmind Analytics'
+    company: 'Bethelmind Digital Solutions'
   };
 
   const origin = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
@@ -47,7 +47,7 @@ async function testLiveOutreach() {
     const emailResult = await sendNotificationEmail(
       lead.email,
       '🌟 Bethelmind Outreach Engine Readiness Verification Test',
-      `Hello ${lead.name},\n\nThis is a live system verification email from the ApexReach / Bethelmind Lead Engine.\n\nYour outreach engine is 100% active, configured, and ready for deployment!\n\nPreview Link: ${origin}/preview/${lead.lead_id}\n\nBest regards,\nBethelmind Analytics Team`
+      `Hello ${lead.name},\n\nThis is a live system verification email from the Bethelmind Digital Solutions / Bethelmind Lead Engine.\n\nYour outreach engine is 100% active, configured, and ready for deployment!\n\nPreview Link: ${origin}/preview/${lead.lead_id}\n\nBest regards,\nBethelmind Digital Solutions Team`
     );
     console.log('Email Status:', emailResult ? '✅ SENT SUCCESSFULLY' : '⚠️ EMAIL DISPATCH PROCESSED / FALLBACK QUEUE READY');
   } catch (err: any) {
@@ -60,7 +60,7 @@ async function testLiveOutreach() {
       lead,
       `${origin}/preview/${lead.lead_id}`,
       origin,
-      'Hi {{lead.name}}, live test from your ApexReach Outreach Engine! Link: {{previewUrl}}'
+      'Hi {{lead.name}}, live test from your Bethelmind Digital Solutions Outreach Engine! Link: {{previewUrl}}'
     );
     console.log('WhatsApp Status: ✅', waResult);
   } catch (err: any) {

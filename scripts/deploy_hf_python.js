@@ -158,7 +158,7 @@ async function run() {
     },
     body: JSON.stringify({
       commit_message: 'Automated deployment of Python Lead Gen Cloud Runner',
-      summary: 'ApexReach 24/7 Cloud Harvester Engine',
+      summary: 'Bethelmind Digital Solutions 24/7 Cloud Harvester Engine',
       actions
     })
   });

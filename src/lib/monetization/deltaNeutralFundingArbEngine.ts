@@ -8,7 +8,7 @@
  * 2. Positions: Spot / Yield Collateral (Long 1x) + Perp Short (1x Short).
  * 3. Directional Exposure (Delta): 0.00 (Immune to Bitcoin / Ethereum market crashes).
  * 4. PnL Generation: Harvests recurring 8-hour funding fee payments from leveraged long traders (18% - 42% annualized APR).
- * 5. Automatically sweeps accumulated funding yields to OPay (7034297995 - Oyelakin Tosin Matthew).
+ * 5. Automatically sweeps accumulated funding yields to OPay (6805375225 - Bethelmind Digital Solutions).
  */
 
 import { routeDirectToOPay, DirectNairaSettlement } from './directNairaAutoLiquidationRouter';

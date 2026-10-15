@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     const origin = getOutreachOrigin(req.url);
-    const signature = config.businessSignature || "Bethelmind Analytics & Strategy";
+    const signature = config.businessSignature || "Bethelmind Digital Solutions";
     const jijiTemplate = config.jijiMessageTemplate || 
       "Hello {{lead.name}},\n\nI noticed your listing on Jiji with an impressive {{lead.rating}}★ rating! Since you don't currently have a website, I built a personalized landing page preview for you to check out: {{previewUrl}}\n\nLet me know if you would like to go live with this!\n\nBest regards,\n{{signature}}";
 

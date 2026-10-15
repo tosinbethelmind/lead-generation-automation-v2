@@ -2,7 +2,7 @@
  * @file src/lib/blog/autonomousViralBlogDaemon.ts
  * 
  * 🤖 Autonomous 30+ Posts/Day Viral Blog Publishing Engine
- * Bethelmind Analytics Lagos Desk (www.bethelmindanalytics.com)
+ * Bethelmind Digital Solutions (www.bethelmindanalytics.com)
  * 
  * High-Velocity Capabilities:
  * - Generates 30+ unique, non-generic, high-ranking articles per day across 10 commercial sectors
@@ -511,7 +511,7 @@ ${BlogEngine.renderProductCtaHtml(matchedProduct)}
                 `2/3: ${template.commercialTakeaway}`,
                 `3/3: Full implementation blueprint + calculators on our blog: ${MASTER_PAYOUT.website}/blog/${slug} 🚀`
               ],
-              whatsapp: `⚡ *Commercial Briefing: ${title}*\n\n${template.commercialTakeaway}\n\nRead the complete breakdown:\n🔗 ${MASTER_PAYOUT.website}/blog/${slug}\n\n_(Bethelmind Analytics Lagos Desk)_`
+              whatsapp: `⚡ *Commercial Briefing: ${title}*\n\n${template.commercialTakeaway}\n\nRead the complete breakdown:\n🔗 ${MASTER_PAYOUT.website}/blog/${slug}\n\n_(Bethelmind Digital Solutions)_`
             },
             schema_ld: {
               '@context': 'https://schema.org',
@@ -524,12 +524,12 @@ ${BlogEngine.renderProductCtaHtml(matchedProduct)}
                 jobTitle: 'Lead AI & Systems Engineer',
                 worksFor: {
                   '@type': 'Organization',
-                  name: 'Bethelmind Analytics Lagos Desk'
+                  name: 'Bethelmind Digital Solutions'
                 }
               },
               publisher: {
                 '@type': 'Organization',
-                name: 'Bethelmind Analytics Lagos Desk',
+                name: 'Bethelmind Digital Solutions',
                 logo: {
                   '@type': 'ImageObject',
                   url: 'https://www.bethelmindanalytics.com/favicon.ico'

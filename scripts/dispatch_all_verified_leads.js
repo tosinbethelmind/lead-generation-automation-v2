@@ -29,7 +29,7 @@ We noticed your verified business listing in ${city} and would love to route hig
 Would you be open to receiving customer inquiries this week?
 
 Best regards,
-Tosin | CEO, Bethelmind Analytics & Strategy
+Tosin | CEO, Bethelmind Digital Solutions
 WhatsApp/Call: +234 802 279 1227`;
 }
 

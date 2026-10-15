@@ -77,7 +77,7 @@ const DEFAULT_RULES: AutoresponderRule[] = [
     trigger_type: 'contains',
     keywords: ['price', 'cost', 'pricing', 'how much', 'quote', 'package', 'tariff', 'fee', 'rate', 'charges', 'plans'],
     response_type: 'template',
-    response_text: "Good day! 👋 Here is our complete package pricing and official settlement details:\n\n💎 *1. STARTER: Complete Web Presence + WhatsApp AI Sales Assistant*\n• Setup Fee: *₦45,000 NGN* (One-off setup)\n• Includes high-converting mobile web page, Google Maps setup, and 24/7 automated WhatsApp responder. Delivered in 48 hours!\n\n⚡ *2. PRO: Custom Domain (.com/.ng) + Priority Automation*\n• Total: ₦85,000 NGN | *Commitment Deposit: ₦40,000 NGN*\n• Custom business domain, dedicated business email, and full lead management system.\n\n🏦 *OFFICIAL DIRECT MONIEPOINT SETTLEMENT ACCOUNT:*\n• Bank: *Moniepoint Microfinance Bank*\n• Account Number: *6805375225*\n• Account Name: *Bethelmind Digital Solutions*\n• Narration: *Website Setup Deposit*\n\n⚡ *TO LOCK IN YOUR SETUP TODAY:*\nTransfer to the Moniepoint account above, send your receipt here, and we begin immediately!",
+    response_text: "Good day! 👋 Because we already built 80% of your sample website in advance, you qualify for our *🇳🇬 October 50% SME Digital Growth Promo*:\n\n⭐ *1. Official .COM.NG Business Website + WhatsApp Assistant*\n• Normal Price: ~₦130,000~ | *October 50% Promo Total: ₦65,000*\n• 👉 *Start Today With Just ₦35,000 Deposit* (Pay the ₦30,000 balance ONLY after your website is live on Google with your real photos!)\n\n🏆 *2. Corporate .COM Website + 3 Official Staff Emails & AI Suite*\n• Normal Price: ~₦240,000~ | *October 50% Promo Total: ₦120,000*\n• 👉 *Start Today With ₦60,000 Deposit*\n\n✏️ *3. Free Custom Photo Preview First (₦0 Upfront):*\n• Send 3–5 photos of your shop/work here on WhatsApp and we will update your sample page FREE before you pay!\n\n🏛️ *OFFICIAL CAC CORPORATE BANK ACCOUNT:*\n• Bank: *Moniepoint Microfinance Bank*\n• Account Number: *6805375225*\n• Account Name: *Bethelmind Digital Solutions*\n\nReply with your business name, send your shop photos, or share your deposit receipt here to start!",
     priority: 80,
     enabled: true,
     reply_count: 98,
@@ -89,9 +89,9 @@ const DEFAULT_RULES: AutoresponderRule[] = [
     name: 'Instant Welcome Auto-reply with Deal Closer',
     channel: 'all',
     trigger_type: 'default_welcome',
-    keywords: ['hello', 'hi', 'start', 'help', 'hey', 'good day', 'good morning', 'good afternoon'],
+    keywords: ['hello', 'hi', 'start', 'hey', 'good day', 'good morning', 'good afternoon'],
     response_type: 'template',
-    response_text: "Hello! 👋 Welcome to Bethelmind Digital Solutions.\n\nWe build modern commercial web presences and 24/7 AI WhatsApp Sales Assistants delivered in 48 Hours to capture customers and close deals on autopilot.\n\n🛠️ *OUR PACKAGES & 48-HOUR SLA:*\n• Complete Web Presence + WhatsApp AI Bot: ₦45,000 one-off.\n• Custom Domain + Priority Automation Suite: ₦85,000 (₦40,000 deposit to start).\n• Delivery guaranteed in 48 hours.\n\n🏦 *Official Settlement Account:*\n• Bank: *Moniepoint Microfinance Bank*\n• Account Number: *6805375225*\n• Account Name: *Bethelmind Digital Solutions*\n\nReply with your business name or transfer and share your receipt here to secure your delivery slot!",
+    response_text: "Hello! 👋 Welcome to *Bethelmind Digital Solutions* (CAC Certified).\n\nUnder our *🇳🇬 October 50% SME Digital Growth Promo*, we build your Official Business Website + 24/7 WhatsApp Customer Assistant in 24–48 Hours:\n\n⭐ *Option 1 (Official .COM.NG Website):* *₦65,000 Total* _(down from ~₦130,000~)_ — *Start today with ₦35,000 Deposit*, pay ₦30k balance after going live!\n🏆 *Option 2 (Corporate .COM + Staff Emails):* *₦120,000 Total* _(down from ~₦240,000~)_ — *Start with ₦60,000 Deposit*.\n✏️ *Option 3 (Free Photo Preview First):* Send us 3–5 shop photos here on WhatsApp and we will put them on your sample website FREE first!\n\n🏛️ *Official CAC Corporate Account:*\n• Bank: *Moniepoint Microfinance Bank*\n• Account Number: *6805375225*\n• Account Name: *Bethelmind Digital Solutions*\n\nReply with your business name so I can send your custom sample website link!",
     priority: 10,
     enabled: true,
     reply_count: 142,
@@ -105,7 +105,7 @@ const DEFAULT_RULES: AutoresponderRule[] = [
     trigger_type: 'keyword',
     keywords: ['yes', 'speaking', 'who is this', 'who is speaking', 'how can i help', 'who are you', 'how may i help', 'im listening', "i'm listening", 'tell me', 'go ahead'],
     response_type: 'template',
-    response_text: 'Thank you for confirming! 👋 We operate Bethelmind Digital Solutions in Lagos. We have designed an interactive 24/7 AI Customer Quoting & Booking preview specifically for your business to capture customers on autopilot.\n\n👉 Test your live 2-min interactive preview here:\nhttps://www.bethelmindanalytics.com/preview/demo\n\n🛠️ *Ready to launch in 48 Hours?*\n• Complete Web Presence + WhatsApp AI: ₦45,000 setup (or ₦40,000 deposit for Custom Domain).\n• Bank: Moniepoint Microfinance Bank | Account: 6805375225 | Name: Bethelmind Digital Solutions',
+    response_text: 'Thank you for confirming! 👋 We operate *Bethelmind Digital Solutions* (CAC Certified) in Lagos. We built a ready-made sample website + 24/7 WhatsApp Customer Assistant for your business.\n\n🇳🇬 *October 50% SME Promo (Ends Oct 31):*\n• Official .COM.NG Website: *₦65,000 Total* (down from ₦130k) — *Start today with ₦35,000 Deposit*, balance after going live!\n• Or send 3–5 shop photos here on WhatsApp so we update your sample page FREE first!\n• Corporate Bank: *Moniepoint Microfinance Bank | 6805375225 | Bethelmind Digital Solutions*',
     priority: 50,
     enabled: true,
     reply_count: 0,
@@ -119,7 +119,7 @@ const DEFAULT_RULES: AutoresponderRule[] = [
     trigger_type: 'outside_hours',
     keywords: ['night', 'after hours', 'closed'],
     response_type: 'template',
-    response_text: '🌙 Thanks for your message! Our 24/7 AI Sales Assistant is active. If you are ready to launch your business web presence or WhatsApp bot:\n• Complete Web Presence: ₦45,000 one-off.\n• Bank: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions).\nLeave your business name or send your deposit receipt and we will finalize your deployment first thing in the morning!',
+    response_text: '🌙 Thanks for your message! Our 24/7 AI Assistant is active. Under our *🇳🇬 October 50% SME Promo*, you can lock in your Official .COM.NG Business Website (*₦65,000 Promo Total*, down from ₦130k) with a *₦35,000 Deposit* into *Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)*, or send your business name & shop photos here!',
     priority: 5,
     enabled: true,
     reply_count: 45,
@@ -311,10 +311,31 @@ export async function processAutoresponderMessage(params: {
     return {
       matched: true,
       ruleId: 'rule_optout_000',
-      replyText: 'You have been successfully unsubscribed. You will not receive any further automated outreach messages from Bethelmind Solutions. Wishing your business continued success!',
+      replyText: 'You have been successfully unsubscribed. You will not receive any further automated outreach messages from Bethelmind Digital Solutions. Wishing your business continued success!',
       responseType: 'template',
       isOptOut: true,
     };
+  }
+
+  // 2. Smart Phone-Number Auto-Match & Personalized Demo/Pricing Closer (Lever 2)
+  if (params.senderContact) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { handleInboundLeadMessage } = require('./monetization/postContactCloserEngine');
+      const smartReply = await handleInboundLeadMessage({
+        senderPhone: params.senderContact,
+        messageBody: params.message,
+        channel: params.channel,
+      });
+      if (smartReply && smartReply.replyText) {
+        return {
+          matched: true,
+          ruleId: `smart_closer_${smartReply.intent.toLowerCase()}`,
+          replyText: smartReply.replyText,
+          responseType: 'ai_generated',
+        };
+      }
+    } catch (_) {}
   }
 
   const rules = await getAutoresponderRules();

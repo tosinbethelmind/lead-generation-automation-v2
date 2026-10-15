@@ -1,5 +1,5 @@
 /**
- * ApexReach Multi-Host Deployer & Adaptive Efficiency Rotator
+ * Bethelmind Digital Solutions Multi-Host Deployer & Adaptive Efficiency Rotator
  * 
  * Manages deployments and efficiency benchmarks for:
  * 1. Priority 1: Fly.io (High efficiency 24/7 Docker container)
@@ -26,7 +26,7 @@ const PRIORITY_HOSTS = [
   { priority: 1, name: 'GitHub Actions (Priority 1 — 100% Free)', url: 'https://api.github.com' },
   { priority: 2, name: 'Hugging Face (Priority 2 — 100% Free 24/7)', url: 'https://huggingface.co/spaces/bethelmind/lead-engine' },
   { priority: 3, name: 'Fly.io (Priority 3)', url: 'https://bethelmind-lead-engine.fly.dev' },
-  { priority: 4, name: 'Render (Priority 4)', url: 'https://apexreach-247-worker.onrender.com' },
+  { priority: 4, name: 'Render (Priority 4)', url: 'https://bethelmind-247-worker.onrender.com' },
   { priority: 5, name: 'Local Machine (Priority 5)', url: 'http://localhost:3000' }
 ];
 

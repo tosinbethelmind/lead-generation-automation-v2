@@ -63,7 +63,7 @@ async function runTestSuite() {
   
   const res2 = await processCustomerMessage(
     session2Id,
-    'Good day, our solar team needs to refill 5000 leads for Lagos and Abuja. My phone is 07034297995',
+    'Good day, our solar team needs to refill 5000 leads for Lagos and Abuja. My phone is 06805375225',
     'solar'
   );
 

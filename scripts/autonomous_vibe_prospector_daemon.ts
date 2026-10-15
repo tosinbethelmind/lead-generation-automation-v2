@@ -1,7 +1,7 @@
 /**
  * @file scripts/autonomous_vibe_prospector_daemon.ts
  * 
- * 🚀 Bethelmind Analytics - Autonomous 24/7 Vibe Prospecting Daemon
+ * 🚀 Bethelmind Digital Solutions - Autonomous 24/7 Vibe Prospecting Daemon
  * Continuously discovers and stages Nigerian commercial leads without human intervention.
  * 
  * Target Rotations:
@@ -151,7 +151,7 @@ async function main() {
   const isOnce = process.argv.includes('--once');
 
   console.log('================================================================');
-  console.log('🚀 BETHELMIND ANALYTICS: AUTONOMOUS 24/7 VIBE PROSPECTOR DAEMON');
+  console.log('🚀 Bethelmind Digital Solutions: AUTONOMOUS 24/7 VIBE PROSPECTOR DAEMON');
   console.log('================================================================\n');
 
   if (isOnce) {

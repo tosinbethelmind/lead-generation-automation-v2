@@ -64,7 +64,7 @@ To claim your portal with ₦0 upfront or get a 1-line script embed for your exi
 📲 WhatsApp: {whatsappUrl}
 
 Best regards,
-*{senderName}* • Bethelmind Analytics Lagos Desk`,
+*{senderName}* • Bethelmind Digital Solutions`,
 
   emailSubject: `{Stop losing after-hours inquiry leads|Automating 24/7 AI Quotes|Exclusive ₦0 Web Prototype} for {bizName}`,
 };

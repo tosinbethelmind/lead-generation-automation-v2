@@ -1,7 +1,7 @@
 /**
  * @file src/data/monetizationCatalog.ts
  * 
- * Centralized Monetization & Product Catalog for Bethelmind Analytics Lagos Desk
+ * Centralized Monetization & Product Catalog for Bethelmind Digital Solutions
  * Consolidates VidRush Selar products, Gumroad vaults, YouTube channels, 
  * affiliate partners, and turnkey DFY prototype conversion funnels.
  */

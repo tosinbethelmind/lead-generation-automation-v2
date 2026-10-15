@@ -201,7 +201,7 @@ function generateEmail(lead, categoryKey, previewUrl) {
   <div style="max-width: 600px; margin: 0 auto; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
     
     <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding: 24px; text-align: center;">
-      <div style="color: #e0f2fe; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">⚡ Bethelmind Analytics Lagos Desk</div>
+      <div style="color: #e0f2fe; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">⚡ Bethelmind Digital Solutions</div>
       <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 800;">24/7 AI Quoting & WhatsApp Booking Portal</h1>
       <p style="color: #bae6fd; margin: 6px 0 0 0; font-size: 13px;">Pre-built private prototype prepared for <strong>${cleanName}</strong></p>
     </div>
@@ -212,7 +212,7 @@ function generateEmail(lead, categoryKey, previewUrl) {
       </p>
 
       <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">
-        My name is Tosin from Bethelmind Analytics Lagos Desk. We recently conducted an operations review for commercial businesses in ${area}. We noticed that prospective clients inquiring after business hours often experience delays before receiving manual quotes on WhatsApp.
+        My name is Tosin from Bethelmind Digital Solutions. We recently conducted an operations review for commercial businesses in ${area}. We noticed that prospective clients inquiring after business hours often experience delays before receiving manual quotes on WhatsApp.
       </p>
 
       <div style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(14, 165, 233, 0.15) 100%); border: 1px solid #0284c7; border-radius: 10px; padding: 18px; margin: 24px 0; text-align: center;">
@@ -246,7 +246,7 @@ function generateEmail(lead, categoryKey, previewUrl) {
         📱 <strong>WhatsApp Desk:</strong> <a href="https://wa.me/2348022791227" style="color: #38bdf8; text-decoration: none; font-weight: 700;">+234 802 279 1227</a> (0802 279 1227)<br>
         📧 <strong>Email:</strong> <a href="mailto:tosin@bethelmindanalytics.com" style="color: #38bdf8; text-decoration: none;">tosin@bethelmindanalytics.com</a><br><br>
         <strong>Tosin Oyelakin</strong><br>
-        Lead Solutions Strategist · <em>Bethelmind Analytics Lagos Desk</em>
+        Lead Solutions Strategist · <em>Bethelmind Digital Solutions</em>
       </div>
 
     </div>
@@ -384,7 +384,7 @@ async function runMasterCampaign() {
       }
 
       const mailOptions = {
-        from: '"Tosin | Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+        from: '"Tosin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
         to: email,
         subject: emailData.subject,
         html: emailData.html,

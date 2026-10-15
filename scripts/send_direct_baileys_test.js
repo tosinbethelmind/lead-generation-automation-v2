@@ -68,7 +68,7 @@ We custom-built a 2-minute live demo preview specifically for your commercial op
 • 📄 Instant automated PDF quote & verified bank payment confirmations
 
 Warm regards,
-Tosin | Bethelmind Analytics & Strategy (Lagos 10K Multi-Sector Engine)`;
+Tosin | Bethelmind Digital Solutions (Lagos 10K Multi-Sector Engine)`;
 
       try {
         console.log(`Sending message to ${targetJid}...`);

@@ -9,7 +9,7 @@
  * 3. 10-Wallet Cloud Testnet Airdrop Farming History (Monad/Berachain/Story)
  * 4. Real-Time NAV Depeg Opportunities
  * 5. 3-Hour Executive Briefing Dispatch Timestamps
- * 6. Beneficiary Audit Lock: OPay Digital Services (7034297995 - Oyelakin Tosin Matthew)
+ * 6. Beneficiary Audit Lock: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)
  */
 
 import fs from 'fs';
@@ -85,7 +85,7 @@ const INITIAL_MEMORY: CryptoMemoryState = {
   },
   recentAdminDirectives: [
     'Operate 100% risk-free $0-capital models only',
-    'Route all realized spreads directly to OPay (7034297995)',
+    'Route all realized spreads directly to OPay (6805375225)',
     'Dispatch 3-hour executive briefings to bethelmindrecruit@gmail.com',
     'Maintain continuous 24/7 cloud background operation'
   ],

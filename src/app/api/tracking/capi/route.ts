@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       eventName: body.eventName || 'Lead',
       eventId: body.eventId || `evt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       eventTime: body.eventTime || Math.floor(Date.now() / 1000),
-      eventSourceUrl: body.eventSourceUrl || req.headers.get('referer') || 'https://apexreach-leads.vercel.app',
+      eventSourceUrl: body.eventSourceUrl || req.headers.get('referer') || 'https://bethelmind-leads.vercel.app',
       userData: {
         ...(body.userData || {}),
         clientIpAddress: clientIp,

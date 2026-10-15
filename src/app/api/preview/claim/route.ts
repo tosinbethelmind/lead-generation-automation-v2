@@ -101,9 +101,23 @@ export async function POST(req: NextRequest) {
       console.warn('[ClaimRoute] Log entry notice:', logErr.message);
     }
 
-    // 3. Assemble JSON configuration for the claimed website
+    // 3. Assemble JSON configuration for the claimed website (injecting verified owner phone & domain)
+    const normalizedClientPhone = clientPhone ? String(clientPhone).trim() : '';
+    const updatedLead = {
+      ...lead,
+      ...(normalizedClientPhone ? {
+        phone_raw: normalizedClientPhone,
+        phone_e164: normalizedClientPhone.startsWith('0')
+          ? `+234${normalizedClientPhone.slice(1).replace(/\D/g, '')}`
+          : normalizedClientPhone.startsWith('+')
+            ? normalizedClientPhone
+            : `+234${normalizedClientPhone.replace(/\D/g, '')}`
+      } : {}),
+      ...(preferredDomain ? { website: `https://${preferredDomain.replace(/^https?:\/\//i, '')}` } : {}),
+    };
+
     const siteConfig = {
-      lead,
+      lead: updatedLead,
       theme: theme || {
         primary: '#1e3a8a',
         accent: '#60a5fa',
@@ -123,14 +137,16 @@ export async function POST(req: NextRequest) {
       },
       selectedFeatures: selectedFeatures || [],
       customInstructions: customInstructions || '',
+      preferredDomain: preferredDomain || '',
       claimedAt: timestamp,
       clientName,
-      clientEmail
+      clientEmail,
+      clientPhone: normalizedClientPhone || lead.phone_raw || ''
     };
 
     const siteConfigString = JSON.stringify(siteConfig, null, 2);
 
-    // 4. Local filesystem write (safe fallback for local development only)
+    // 4. Local filesystem write (writes both leadId.json and customDomain slug .json for instant domain routing)
     let localWriteSuccess = false;
     const isServerless = process.env.VERCEL || process.env.NETLIFY || process.env.AWS_EXECUTION_ENV;
     if (!isServerless) {
@@ -152,6 +168,15 @@ export async function POST(req: NextRequest) {
         
         const { writeJsonFileSyncAtomic } = require('@/lib/atomicIo');
         writeJsonFileSyncAtomic(filePath, siteConfig);
+
+        // Also save under custom domain slug (e.g., chinedumotors.com.ng -> chinedumotors.json) so custom domain rewrites resolve immediately
+        if (preferredDomain && !workerIndex) {
+          const domainSlug = preferredDomain.replace(/^https?:\/\//i, '').replace(/^www\./i, '').split('.')[0].toLowerCase().replace(/[^a-z0-9-]/g, '');
+          if (domainSlug && domainSlug !== leadId) {
+            writeJsonFileSyncAtomic(path.join(dataDir, `${domainSlug}.json`), siteConfig);
+          }
+        }
+
         localWriteSuccess = true;
         console.log(`Locally wrote claimed site config to ${filePath}`);
       } catch (fsErr: unknown) {
@@ -186,6 +211,20 @@ export async function POST(req: NextRequest) {
             token: githubPat,
             branch: githubBranch
           });
+          if (preferredDomain) {
+            const domainSlug = preferredDomain.replace(/^https?:\/\//i, '').replace(/^www\./i, '').split('.')[0].toLowerCase().replace(/[^a-z0-9-]/g, '');
+            if (domainSlug && domainSlug !== leadId) {
+              await commitFileToGitHub({
+                owner,
+                repo: repoName,
+                filePath: `src/data/sites/${domainSlug}.json`,
+                content: siteConfigString,
+                commitMessage: `feat: bind custom domain slug ${domainSlug} for ${lead.name}`,
+                token: githubPat,
+                branch: githubBranch
+              });
+            }
+          }
           githubCommitStatus = 'SUCCESS';
         } catch (ghErr: unknown) {
           const error = ghErr as Error;
@@ -215,37 +254,56 @@ export async function POST(req: NextRequest) {
           ? `⚠️ Automatic deployment failed: ${githubErrorMsg}`
           : 'ℹ️ GitHub deployment skipped.';
 
+    const activeStrategy = body.upgradeStrategy || scaling.mode || 'basic_presence';
+    const resolvedDepositNGN =
+      paymentMethod === 'free_photo_preview' || activeStrategy === 'free_photo_preview'
+        ? 0
+        : activeStrategy === 'growth_automation'
+          ? 60000
+          : 35000;
+
+    const appOrigin = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
+    const instantLiveSiteUrl = `${appOrigin}/sites/${leadId}`;
+    const instantHandoverUrl = `${appOrigin}/handover/${leadId}`;
+
     const isManualTransfer = paymentMethod === 'bank_transfer' || paymentMethod === 'bank_transfer_moniepoint' || paymentMethod === 'bank_transfer_opay';
-    const transferSubjectSuffix = isManualTransfer ? ' (Manual Bank Transfer Pending)' : '';
-    const adminSubject = `🎉 Lead Claimed: ${lead.name} requested ownership!${transferSubjectSuffix}`;
+    const transferSubjectSuffix = isManualTransfer ? ` (₦${resolvedDepositNGN.toLocaleString()} Deposit Initiated)` : ' (Free Photo Preview Claim)';
+    const adminSubject = `🎉 Lead Claimed: ${lead.name} (${preferredDomain || 'Custom Domain'})${transferSubjectSuffix}`;
     const adminBody = `Hi Admin,
 
-Exciting news! A business owner has claimed their landing page preview.
+Exciting news! A business owner has claimed their website preview.
 
 Details:
 - Business Name: ${lead.name}
 - Lead ID: ${leadId}
 - Contact Person: ${clientName}
+- Contact Phone / WhatsApp: ${clientPhone || lead.phone_raw || 'Not provided'}
 - Contact Email: ${clientEmail}
-- Phone Number: ${lead.phone_raw || 'Not provided'}
+- Preferred Domain: ${preferredDomain || 'To be confirmed on WhatsApp'}
+- Selected Package: ${activeStrategy} (Deposit: ₦${resolvedDepositNGN.toLocaleString()})
 - Payment Method: ${
-      paymentMethod === 'bank_transfer_moniepoint' ? 'Manual Local Bank Transfer (Moniepoint)' :
-      paymentMethod === 'bank_transfer_opay' ? 'Manual Local Bank Transfer (OPay)' :
-      paymentMethod === 'bank_transfer' ? 'Manual Local Bank Transfer (Generic)' : 'Default / None'
+      paymentMethod === 'bank_transfer_moniepoint' ? 'Direct Bank Transfer (Moniepoint 6805375225)' :
+      paymentMethod === 'bank_transfer_opay' ? 'Direct Bank Transfer (Moniepoint 6805375225)' :
+      paymentMethod === 'free_photo_preview' ? '₦0 Free Photo Preview First' :
+      paymentMethod === 'bank_transfer' ? 'Direct Bank Transfer (Moniepoint 6805375225)' : 'Default / None'
     }
 - Status: CLAIMED (Lead Notes updated in CRM)
 
+Instant Delivery Links (Already Hosted & Live):
+- 🌐 Live Production Website: ${instantLiveSiteUrl}
+- 🔑 Client Handover Portal: ${instantHandoverUrl}
+
 Customizations:
-- Selected Automations: ${selectedFeatures && selectedFeatures.length > 0 ? selectedFeatures.join(', ') : 'None'}
+- Selected Automations: ${selectedFeatures && selectedFeatures.length > 0 ? selectedFeatures.join(', ') : 'Standard WhatsApp AI Closer'}
 - Natural Language Instructions: ${customInstructions || 'None'}
 
 Deployment Status:
 ${gitNotice}
 
-Please contact them at ${clientEmail} as soon as possible to finalize their website build and assist with custom domain mapping.
+Next Step: Message ${clientName} on WhatsApp (${clientPhone || lead.phone_raw || 'their number'}) to collect their 3–5 shop photos and connect ${preferredDomain || 'their .com.ng domain'}.
 
 Best regards,
-Bethelmind Analytics & Strategy Lead Engine`;
+Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)`;
 
     // Send email notification to admin
     if (scaling.mode !== 'git-batch' && adminEmail) {
@@ -262,8 +320,8 @@ Bethelmind Analytics & Strategy Lead Engine`;
         leadName: lead.name,
         clientName,
         clientEmail,
-        amountNGN: config.claimFeeNGN || 185000,
-        paymentMethod: paymentMethod || 'opay_bank_transfer',
+        amountNGN: resolvedDepositNGN,
+        paymentMethod: paymentMethod || 'moniepoint_bank_transfer',
       });
     } catch (waAlertErr: any) {
       console.warn('Failed to send WhatsApp admin alert:', waAlertErr.message);
@@ -282,10 +340,10 @@ Bethelmind Analytics & Strategy Lead Engine`;
         clientEmail,
         clientPhone: clientPhone || lead.phone_raw || lead.phone_e164,
         customDomain: preferredDomain || undefined,
-        selectedStrategy: body.upgradeStrategy || scaling.mode || 'basic_presence',
+        selectedStrategy: activeStrategy,
         selectedFeatures: selectedFeatures || [],
-        claimFeeNGN: 150000,
-        paymentMethod: paymentMethod || 'paystack'
+        claimFeeNGN: resolvedDepositNGN,
+        paymentMethod: paymentMethod || 'moniepoint_bank_transfer'
       });
       provisionedUrl = provisionRes.liveUrl;
       subdomainUrl = provisionRes.subdomainUrl;

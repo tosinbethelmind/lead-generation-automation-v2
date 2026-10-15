@@ -23,7 +23,7 @@ import { getSupabaseClient } from '../src/lib/supabaseClient';
 
 async function runComprehensiveVerification() {
   console.log('========================================================================');
-  console.log('🛡️ BETHELMIND ANALYTICS: FULL SYSTEM INTEGRITY & MONETIZATION AUDIT');
+  console.log('🛡️ Bethelmind Digital Solutions: FULL SYSTEM INTEGRITY & MONETIZATION AUDIT');
   console.log('========================================================================\n');
 
   let passed = 0;

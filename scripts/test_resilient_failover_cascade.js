@@ -2,7 +2,7 @@
  * @file scripts/test_resilient_failover_cascade.js
  * 
  * 🧪 MULTI-TIER FAILOVER & CASCADE INTEGRATION TEST (NODE NATIVE)
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  */
 
 const fs = require('fs');
@@ -47,7 +47,7 @@ async function dispatchResilientEmail(toEmail, toName, subject, htmlContent, tex
         'Accept': 'application/json'
       },
       body: JSON.stringify({
-        sender: { name: 'Bethelmind Analytics Lagos Desk', email: 'tosin@bethelmindanalytics.com' },
+        sender: { name: 'Bethelmind Digital Solutions', email: 'tosin@bethelmindanalytics.com' },
         to: [{ email: toEmail, name: toName }],
         subject,
         htmlContent,
@@ -75,7 +75,7 @@ async function dispatchResilientEmail(toEmail, toName, subject, htmlContent, tex
       connectionTimeout: 6000
     });
     const info = await t587.sendMail({
-      from: '"Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+      from: '"Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
       to: `"${toName}" <${toEmail}>`,
       subject,
       text: textContent,
@@ -98,7 +98,7 @@ async function dispatchResilientEmail(toEmail, toName, subject, htmlContent, tex
       connectionTimeout: 6000
     });
     const info = await t465.sendMail({
-      from: '"Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+      from: '"Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
       to: `"${toName}" <${toEmail}>`,
       subject,
       text: textContent,
@@ -169,7 +169,7 @@ async function dispatchResilientSms(phone, messageText) {
 
 async function runTest() {
   console.log('========================================================================');
-  console.log('🛡️ BETHELMIND ANALYTICS: RESILIENT MULTI-TIER FAILOVER CASCADE TEST');
+  console.log('🛡️ Bethelmind Digital Solutions: RESILIENT MULTI-TIER FAILOVER CASCADE TEST');
   console.log('========================================================================\n');
 
   console.log('--- TEST 1: DNS MX PREFLIGHT VERIFICATION ---');

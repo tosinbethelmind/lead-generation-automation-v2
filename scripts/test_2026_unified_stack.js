@@ -27,10 +27,10 @@ const logger = require('./lib/logger');
 
 async function runFullVerification() {
   console.log('\n===============================================================');
-  console.log('🚀 BETHELMIND ANALYTICS LAGOS — 2026 UNIFIED STACK VERIFICATION');
+  console.log('🚀 Bethelmind Digital Solutions — 2026 UNIFIED STACK VERIFICATION');
   console.log('===============================================================');
   console.log('⚡ Laptop Resource Policy: Low-RAM (<512MB) & Data-Saver Active');
-  console.log('💰 Settlement Destination: OPay Digital Services (7034297995)');
+  console.log('💰 Settlement Destination: Moniepoint Microfinance Bank (6805375225)');
   console.log('===============================================================\n');
 
   let passed = 0;
@@ -134,7 +134,7 @@ async function runFullVerification() {
   console.log('• Internet Data Saved: 85%–90% on all scraping & form submissions');
   console.log('• Laptop Resource Usage: Zero heavy SDKs, heap capped at 512MB');
   console.log('• High-Ticket Offers: ₦150k B2B Dossiers + ₦250k Capacitor Mobile Bundles');
-  console.log('• All dispatches strictly route to OPay Digital Services: 7034297995');
+  console.log('• All dispatches strictly route to Moniepoint Microfinance Bank: 6805375225');
   console.log('===============================================================\n');
 
   return { passed, total };

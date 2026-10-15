@@ -553,7 +553,7 @@ async function tryBrowserFormSubmit(
 export async function submitContactForm(
   lead: WebformLeadTarget,
   origin = 'WebContactForm',
-  signature = 'Bethelmind Analytics Lagos Desk'
+  signature = 'Bethelmind Digital Solutions'
 ): Promise<SubmissionResult> {
   const result: SubmissionResult = {
     success: false,
@@ -613,7 +613,7 @@ We noticed after-hours clients often wait hours for quotes. We pre-built a 24/7 
 Test drive live prototype (₦0 Upfront):
 ${previewUrl}
 WhatsApp Closer Desk: wa.me/2348022791227 (0802 279 1227)
-— Bethelmind Analytics Lagos Desk`;
+— Bethelmind Digital Solutions`;
 
   const pitchPayload = {
     name: signature,

@@ -73,7 +73,7 @@ To claim your portal with ₦0 upfront or get a 1-line script embed for your exi
 📱 WhatsApp: https://wa.me/2348022791227?text=${waPreFill}
 
 Best regards,
-*Bethelmind Analytics Lagos Team*`;
+*Bethelmind Digital Solutions Team*`;
 }
 
 function recordJourneyDispatched(lead: any, previewUrl: string, channelName: string) {

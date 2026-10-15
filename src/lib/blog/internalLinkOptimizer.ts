@@ -2,7 +2,7 @@
  * @file src/lib/blog/internalLinkOptimizer.ts
  * 
  * 🔗 Automated Internal Link Optimizer & Trojan Horse Prototype Bridge
- * Bethelmind Analytics Lagos Desk (www.bethelmindanalytics.com)
+ * Bethelmind Digital Solutions (www.bethelmindanalytics.com)
  * 
  * Purpose:
  * Scans article HTML and intelligently converts key transactional phrases into

@@ -78,7 +78,7 @@ We built a high-speed, modern Relume UI redesign preview for *${businessName}*:
 https://www.bethelmindanalytics.com/#marketplace`;
 
   // Step 2: Nigerian Voice Note Script
-  const voiceNoteScript = `Hello ${leadName}, this is Bethelmind Analytics. We analyzed ${businessName}'s website performance in Lagos and built a custom high-speed redesign preview for you. Check out the link we just sent!`;
+  const voiceNoteScript = `Hello ${leadName}, this is Bethelmind Digital Solutions. We analyzed ${businessName}'s website performance in Lagos and built a custom high-speed redesign preview for you. Check out the link we just sent!`;
 
   let step2VoiceSent = false;
   try {

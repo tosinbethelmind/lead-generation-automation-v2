@@ -5,10 +5,10 @@ import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
 
 export const metadata = {
-  title: 'B2B Growth & Monetization Engines | Bethelmind Analytics Lagos',
+  title: 'B2B Growth & Monetization Engines | Bethelmind Digital Solutions',
   description: 'Explore the 5 core commercial engines: GMB Profile Lock, Commercial Solar Multi-Router, Expired Domain Reinstatement, Verified Lead Packs, and 48-Hour Turnkey Client Prototypes.',
   openGraph: {
-    title: 'Bethelmind Analytics Lagos — 5 B2B Commercial Growth Engines',
+    title: 'Bethelmind Digital Solutions — 5 B2B Commercial Growth Engines',
     description: 'Autonomous B2B operations, Google Maps security, solar engineering routers, and instant website portals for Nigerian commercial businesses.',
   }
 };

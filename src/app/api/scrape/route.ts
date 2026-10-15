@@ -49,7 +49,7 @@ export async function GET(req: Request) {
 
   if (!targetUrl) {
     return NextResponse.json({
-      service: 'ApexReach Hybrid Scraper API',
+      service: 'Bethelmind Digital Solutions Hybrid Scraper API',
       status: 'online',
       usage: 'POST /api/scrape with JSON body { "url": "https://example.com" } or GET /api/scrape?url=https://example.com'
     });

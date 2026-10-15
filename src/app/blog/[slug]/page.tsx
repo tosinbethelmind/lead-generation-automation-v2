@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!post) {
     return {
-      title: 'Article Not Found | Bethelmind Analytics Lagos',
+      title: 'Article Not Found | Bethelmind Digital Solutions',
       description: 'The requested commercial intelligence article could not be located.',
     };
   }
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const url = `https://www.bethelmindanalytics.com/blog/${post.slug}`;
 
   return {
-    title: `${post.title} | Bethelmind Analytics Lagos`,
+    title: `${post.title} | Bethelmind Digital Solutions`,
     description: post.excerpt,
     keywords: [post.category, 'AI Automation', 'Solar ROI', 'Lagos Business', 'Nigeria 2026', 'Selar Digital Products'],
     authors: [{ name: 'Oyelakin Tosin', url: 'https://www.bethelmindanalytics.com' }],
@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: post.title,
       description: post.excerpt,
       url,
-      siteName: 'Bethelmind Analytics Lagos Desk',
+      siteName: 'Bethelmind Digital Solutions',
       images: [
         {
           url: post.featured_image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80',
@@ -185,7 +185,7 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
             </div>
             <div>
               <div className="text-sm font-bold text-white">Oyelakin Tosin</div>
-              <div className="text-xs text-slate-500">Lead Systems Engineer &middot; Bethelmind Analytics Lagos</div>
+              <div className="text-xs text-slate-500">Lead Systems Engineer &middot; Bethelmind Digital Solutions</div>
             </div>
           </div>
           <div className="text-right">
@@ -243,7 +243,7 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
           </p>
           <div className="pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400 font-medium">
             <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-              ✓ Verified by Bethelmind Analytics Lagos Desk
+              ✓ Verified by Bethelmind Digital Solutions
             </span>
             <span className="text-amber-400/90 font-semibold">
               Primary Search Intent: {intentCluster.primaryKeyword}
@@ -359,7 +359,7 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
             <div>
               <div className="text-sm font-bold text-white">Editorial Review: Oyelakin Tosin</div>
               <div className="text-xs text-slate-400 mt-0.5">
-                Lead Systems Engineer &middot; Bethelmind Analytics Lagos Desk (Verified NIP Settlement Desk)
+                Lead Systems Engineer &middot; Bethelmind Digital Solutions (Verified NIP Settlement Desk)
               </div>
             </div>
           </div>

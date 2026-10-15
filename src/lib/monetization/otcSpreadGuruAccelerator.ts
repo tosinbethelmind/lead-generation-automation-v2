@@ -6,7 +6,7 @@
  * Incorporating Top Guru Mechanics:
  * - ⚡ Guaranteed Rate Lock Slippage Protection (< 0.2%)
  * - 🤝 Auto-Pre-Populated 1-Click WhatsApp 3-Way Bridge
- * - 💵 Direct Nigerian Interbank Settlement (NIP) straight to OPay (7034297995)
+ * - 💵 Direct Nigerian Interbank Settlement (NIP) straight to OPay (6805375225)
  * - 🎯 Scrapes Alaba, Trade Fair, Nnewi & Computer Village Freight Importers
  */
 

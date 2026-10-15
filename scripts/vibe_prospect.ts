@@ -1,7 +1,7 @@
 /**
  * @file scripts/vibe_prospect.ts
  * 
- * 🎯 Bethelmind Analytics - Interactive Local Vibe Prospecting CLI
+ * 🎯 Bethelmind Digital Solutions - Interactive Local Vibe Prospecting CLI
  * Zero-Sign-Up Natural Language Lead Discovery across Nigeria
  * 
  * Usage:
@@ -28,7 +28,7 @@ async function main() {
   const query = cleanArgs.join(' ') || 'Find 10 solar inverter companies in Ikeja Lagos';
 
   console.log('================================================================');
-  console.log('🚀 BETHELMIND ANALYTICS: LOCAL VIBE PROSPECTING SYSTEM (2026)');
+  console.log('🚀 Bethelmind Digital Solutions: LOCAL VIBE PROSPECTING SYSTEM (2026)');
   console.log('⚡ 100% Free, Zero Third-Party Sign-up, Real Nigerian Businesses');
   console.log('================================================================\n');
 

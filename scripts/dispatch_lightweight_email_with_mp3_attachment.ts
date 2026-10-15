@@ -70,7 +70,7 @@ async function runLightweightDispatch() {
   const plainTextBody = 
 `Good day Lead Engineering & Management Team at Macmed Integrated Hub,
 
-My name is Tosin from Bethelmind Analytics Lagos Desk.
+My name is Tosin from Bethelmind Digital Solutions.
 
 We recently conducted a digital operations review for your commercial facility in Satellite Town, Lagos. We noticed that prospective clients inquiring about your equipment and services after business hours are unable to get instant pricing quotes or automated WhatsApp booking confirmations.
 
@@ -95,11 +95,11 @@ Best regards,
 
 Tosin Oyelakin
 Lead Solutions Strategist
-Bethelmind Analytics Lagos Desk`;
+Bethelmind Digital Solutions`;
 
 
   const mailOptions = {
-    from: '"Tosin | Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+    from: '"Tosin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
     to: 'bethelmindrecruit@gmail.com',
     subject: 'Automating 24/7 AI Quotes & Client Booking for Macmed Integrated Hub (Voice Note Attached)',
     text: plainTextBody,

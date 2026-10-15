@@ -23,10 +23,10 @@ async function dispatchFreshSuite() {
       phone: '0818 558 7222',
       cleanPhone: '2348185587222',
       escrowBank: 'Providus Bank / Wema Bank',
-      escrowAccName: 'Bethelmind Analytics / OTC Settlement Trust',
+      escrowAccName: 'Bethelmind Digital Solutions / OTC Settlement Trust',
       escrowAccNo: '9928371029',
       smsStage1: 'Good day! Please is this the management team at Jacio International in ASPAMDA Trade Fair?',
-      smsStage2: 'Bethelmind Analytics: Locked $65k China supplier FX rate at N1,520/$. Escrow Vault: Providus Bank 9928371029 (Bethelmind). Call/WA 08022791227 to confirm.',
+      smsStage2: 'Bethelmind Digital Solutions: Locked $65k China supplier FX rate at N1,520/$. Escrow Vault: Providus Bank 9928371029 (Bethelmind). Call/WA 08022791227 to confirm.',
       waMessage: `🤝 [BETHELMIND INSTITUTIONAL OTC ESCROW: DEAL-OTC-JACIO-65K]
 
 • Buyer: Jacio International Company Ltd
@@ -37,7 +37,7 @@ async function dispatchFreshSuite() {
 
 🏦 DEDICATED INSTITUTIONAL ESCROW DEPOSIT:
 • Escrow Bank: Providus Bank / Wema Bank (CBN Licensed)
-• Account Name: Bethelmind Analytics / OTC Settlement Trust
+• Account Name: Bethelmind Digital Solutions / OTC Settlement Trust
 • Escrow Vault No: 9928371029 (Ref: DEAL-OTC-JACIO-65K)
 
 📋 SETTLEMENT PROTOCOL:
@@ -57,10 +57,10 @@ async function dispatchFreshSuite() {
       phone: '0803 307 9719',
       cleanPhone: '2348033079719',
       escrowBank: 'Providus Bank / Wema Bank',
-      escrowAccName: 'Bethelmind Analytics / OTC Settlement Trust',
+      escrowAccName: 'Bethelmind Digital Solutions / OTC Settlement Trust',
       escrowAccNo: '9928371029',
       smsStage1: 'Good day! Please is this the commercial desk for Maldini Granites & Marble in Surulere?',
-      smsStage2: 'Bethelmind Analytics: Locked $65k freight & supplier FX rate at N1,520/$. Escrow Vault: Providus Bank 9928371029 (Bethelmind). Call/WA 08022791227.',
+      smsStage2: 'Bethelmind Digital Solutions: Locked $65k freight & supplier FX rate at N1,520/$. Escrow Vault: Providus Bank 9928371029 (Bethelmind). Call/WA 08022791227.',
       waMessage: `🤝 [BETHELMIND INSTITUTIONAL OTC ESCROW: DEAL-OTC-MALDINI-65K]
 
 • Buyer: Maldini Granites and Marble Imports
@@ -71,7 +71,7 @@ async function dispatchFreshSuite() {
 
 🏦 DEDICATED INSTITUTIONAL ESCROW DEPOSIT:
 • Escrow Bank: Providus Bank / Wema Bank (CBN Licensed)
-• Account Name: Bethelmind Analytics / OTC Settlement Trust
+• Account Name: Bethelmind Digital Solutions / OTC Settlement Trust
 • Escrow Vault No: 9928371029 (Ref: DEAL-OTC-MALDINI-65K)
 
 📋 SETTLEMENT PROTOCOL:
@@ -91,10 +91,10 @@ async function dispatchFreshSuite() {
       phone: '0810 754 0008',
       cleanPhone: '2348107540008',
       escrowBank: 'Providus Bank / Wema Bank',
-      escrowAccName: 'Bethelmind Analytics / OTC Settlement Trust',
+      escrowAccName: 'Bethelmind Digital Solutions / OTC Settlement Trust',
       escrowAccNo: '9928371029',
       smsStage1: 'Good day! Please is this the procurement desk for Fouani on Allen Avenue, Ikeja?',
-      smsStage2: 'Bethelmind Analytics: Locked $50k factory clearance rate at N1,520/$. Escrow Vault: Providus Bank 9928371029 (Bethelmind). Call/WA 08022791227.',
+      smsStage2: 'Bethelmind Digital Solutions: Locked $50k factory clearance rate at N1,520/$. Escrow Vault: Providus Bank 9928371029 (Bethelmind). Call/WA 08022791227.',
       waMessage: `🤝 [BETHELMIND INSTITUTIONAL OTC ESCROW: DEAL-OTC-FOUANI-50K]
 
 • Buyer: Fouani (Commercial Electronics & Appliances)
@@ -105,7 +105,7 @@ async function dispatchFreshSuite() {
 
 🏦 DEDICATED INSTITUTIONAL ESCROW DEPOSIT:
 • Escrow Bank: Providus Bank / Wema Bank (CBN Licensed)
-• Account Name: Bethelmind Analytics / OTC Settlement Trust
+• Account Name: Bethelmind Digital Solutions / OTC Settlement Trust
 • Escrow Vault No: 9928371029 (Ref: DEAL-OTC-FOUANI-50K)
 
 📋 SETTLEMENT PROTOCOL:
@@ -125,10 +125,10 @@ async function dispatchFreshSuite() {
       phone: '0817 041 7114',
       cleanPhone: '2348170417114',
       escrowBank: 'Providus Bank / Wema Bank',
-      escrowAccName: 'Bethelmind Analytics / OTC Settlement Trust',
+      escrowAccName: 'Bethelmind Digital Solutions / OTC Settlement Trust',
       escrowAccNo: '9928371029',
       smsStage1: 'Good day! Please is this the management at COHBS International in Ikeja?',
-      smsStage2: 'Bethelmind Analytics: Locked $35k hardware supplier rate at N1,520/$. Escrow Vault: Providus Bank 9928371029 (Bethelmind). Call/WA 08022791227.',
+      smsStage2: 'Bethelmind Digital Solutions: Locked $35k hardware supplier rate at N1,520/$. Escrow Vault: Providus Bank 9928371029 (Bethelmind). Call/WA 08022791227.',
       waMessage: `🤝 [BETHELMIND INSTITUTIONAL OTC ESCROW: DEAL-OTC-COHBS-35K]
 
 • Buyer: COHBS International
@@ -139,7 +139,7 @@ async function dispatchFreshSuite() {
 
 🏦 DEDICATED INSTITUTIONAL ESCROW DEPOSIT:
 • Escrow Bank: Providus Bank / Wema Bank (CBN Licensed)
-• Account Name: Bethelmind Analytics / OTC Settlement Trust
+• Account Name: Bethelmind Digital Solutions / OTC Settlement Trust
 • Escrow Vault No: 9928371029 (Ref: DEAL-OTC-COHBS-35K)
 
 📋 SETTLEMENT PROTOCOL:
@@ -157,11 +157,11 @@ async function dispatchFreshSuite() {
 • Active Deals: 4 High-Volume Genuine Importers
 • Total Order Flow: $215,000 USD
 • Total Spread Profit: *₦5,375,000 NGN*
-• Settlement Destination: OPay 7034297995 (Oyelakin Tosin Matthew)
+• Settlement Destination: OPay 6805375225 (Bethelmind Digital Solutions)
 
 🏦 *OFFICIAL INSTITUTIONAL ESCROW DETAILS (VISIBLE TO CLIENTS):*
 • Bank: Providus Bank / Wema Bank (CBN Licensed)
-• Account Name: Bethelmind Analytics / OTC Settlement Trust
+• Account Name: Bethelmind Digital Solutions / OTC Settlement Trust
 • Escrow Vault Account: 9928371029
 
 👇 *Here are your 4 fresh, clean deal cards with visible escrow details:*`;

@@ -2,7 +2,7 @@
  * @file src/lib/scraping/heavyNationwideB2BEmailHarvester.ts
  * 
  * 🇳🇬 HEAVY NATIONWIDE B2B EMAIL & WEB CONTACT FORM HARVESTER (ALL 36 STATES + FCT)
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * 🚀 CAPABILITIES:
  * 1. Multi-Engine Search Dorks (Google, Bing, DuckDuckGo, Yahoo) across all 36 Nigerian States + FCT.
@@ -50,16 +50,20 @@ const httpClient = axios.create({
   }
 });
 
-// All 36 States + FCT Commercial Hubs
+// All 36 States + FCT + 80 High-Density Nigerian Commercial Micro-Districts
 export const NATIONWIDE_CITIES = [
   'Lagos', 'Ikeja', 'Lekki', 'Victoria Island', 'Yaba', 'Alaba', 'Surulere',
-  'Abuja', 'Maitama', 'Wuse', 'Garki', 'Jabi',
-  'Port Harcourt', 'Trans-Amadi', 'GRA Port Harcourt',
-  'Ibadan', 'Bodija', 'Dugbe', 'Ring Road Ibadan',
-  'Kano', 'Fagge', 'Sabon Gari Kano',
-  'Kaduna', 'Aba', 'Onitsha', 'Enugu', 'Benin City',
-  'Warri', 'Asaba', 'Abeokuta', 'Ota', 'Ilorin', 'Jos',
-  'Uyo', 'Calabar', 'Owerri', 'Akure', 'Osogbo', 'Lokoja'
+  'Ajah', 'Sangotedo', 'Chevron Lekki', 'Magodo', 'Omole', 'Ogba', 'Gbagada',
+  'Maryland Lagos', 'Festac', 'Amuwo Odofin', 'Apapa', 'Ikoyi', 'allen avenue ikeja',
+  'Opebi', 'Adeniyi Jones', 'Egbeda', 'Ikotun', 'Ikorodu', 'Isolo', 'Oshodi',
+  'Abuja', 'Maitama', 'Wuse', 'Garki', 'Jabi', 'Gwarinpa', 'Utako', 'Asokoro', 'Kubwa', 'Lugbe',
+  'Port Harcourt', 'Trans-Amadi', 'GRA Port Harcourt', 'Rumuokoro', 'Peter Odili', 'Choba',
+  'Ibadan', 'Bodija', 'Dugbe', 'Ring Road Ibadan', 'Akobo Ibadan', 'Challenge Ibadan',
+  'Kano', 'Fagge', 'Sabon Gari Kano', 'Nassarawa GRA Kano',
+  'Kaduna', 'Aba', 'Onitsha', 'Enugu', 'Benin City', 'Nnewi', 'Awka', 'Abakaliki', 'Umuahia',
+  'Warri', 'Effurun', 'Sapele', 'Asaba', 'Abeokuta', 'Ota', 'Ijebu Ode', 'Sagamu',
+  'Ilorin', 'Jos', 'Uyo', 'Eket', 'Calabar', 'Owerri', 'Akure', 'Osogbo', 'Ile Ife',
+  'Lokoja', 'Minna', 'Makurdi', 'Ado Ekiti', 'Sokoto', 'Zaria', 'Bauchi'
 ];
 
 export const COMMERCIAL_SECTORS = [
@@ -70,7 +74,17 @@ export const COMMERCIAL_SECTORS = [
   'Private School and Academy', 'Law Firm and Commercial Chambers',
   'Accounting and Tax Audit Firm', 'Event Venue and Banquet Hall',
   'Agro Processing and Cold Storage', 'Industrial Machinery and Hardware',
-  'Furniture and Interior Architecture', 'Security and CCTV Surveillance'
+  'Furniture and Interior Architecture', 'Security and CCTV Surveillance',
+  'Boutique and Fashion Store', 'Pharmacy and Diagnostic Laboratory',
+  'Bakery and Cake Studio', 'Car Rental and Chauffeur Service',
+  'Catering and Food Delivery', 'Dry Cleaning and Laundry Service',
+  'Roofing and Building Materials', 'Borehole Drilling and Water Treatment',
+  'Generator Sales and Servicing', 'Printing Press and Branding Agency',
+  'Optician and Eye Clinic', 'Physiotherapy and Chiropractic Clinic',
+  'Air Conditioning and Cold Room', 'Supermarket and Wholesale Store',
+  'Auto Spare Parts Dealer', 'Travel Agency and Tour Operator',
+  'Cleaning and Fumigation Service', 'Poultry and Feed Mill',
+  'Event Decorator and Rental', 'Photography and Video Production Studio'
 ];
 
 const EMAIL_DOMAINS = ['@gmail.com', '@yahoo.com', 'info@', 'contact@', 'sales@', 'admin@'];
@@ -123,8 +137,8 @@ export class HeavyNationwideB2BEmailHarvester {
   /**
    * Crawls a website to extract corporate email addresses and contact page URLs.
    */
-  async extractWebsiteContactDetails(websiteUrl: string): Promise<{ emails: string[]; contactUrl: string; hasForm: boolean }> {
-    const result = { emails: [] as string[], contactUrl: '', hasForm: false };
+  async extractWebsiteContactDetails(websiteUrl: string): Promise<{ emails: string[]; phones: string[]; contactUrl: string; hasForm: boolean }> {
+    const result = { emails: [] as string[], phones: [] as string[], contactUrl: '', hasForm: false };
     if (!websiteUrl || !websiteUrl.startsWith('http')) return result;
 
     try {
@@ -132,7 +146,7 @@ export class HeavyNationwideB2BEmailHarvester {
       const html = resp.data || '';
       const $ = cheerio.load(html);
 
-      // Extract emails from homepage
+      // Extract emails & phones from homepage
       const text = $.text();
       const matches = text.match(EMAIL_REGEX) || [];
       matches.forEach(e => {
@@ -141,6 +155,8 @@ export class HeavyNationwideB2BEmailHarvester {
           result.emails.push(clean);
         }
       });
+      const phoneMatches = text.match(PHONE_REGEX) || [];
+      phoneMatches.forEach(p => result.phones.push(p.trim()));
 
       // Find Contact Page Link
       const contactLinks: string[] = [];
@@ -161,13 +177,16 @@ export class HeavyNationwideB2BEmailHarvester {
           const contactResp = await httpClient.get(result.contactUrl, { timeout: 5000 });
           const contactHtml = contactResp.data || '';
           const contact$ = cheerio.load(contactHtml);
-          const contactMatches = contact$.text().match(EMAIL_REGEX) || [];
+          const contactText = contact$.text();
+          const contactMatches = contactText.match(EMAIL_REGEX) || [];
           contactMatches.forEach(e => {
             const clean = e.toLowerCase().trim();
             if (!clean.includes('.png') && !clean.includes('.jpg') && !clean.includes('example.com')) {
               result.emails.push(clean);
             }
           });
+          const contactPhones = contactText.match(PHONE_REGEX) || [];
+          contactPhones.forEach(p => result.phones.push(p.trim()));
 
           if (contact$('form').length > 0 || contact$('input').length > 0) {
             result.hasForm = true;
@@ -176,6 +195,7 @@ export class HeavyNationwideB2BEmailHarvester {
       }
 
       result.emails = Array.from(new Set(result.emails));
+      result.phones = Array.from(new Set(result.phones));
     } catch (_) {}
 
     return result;
@@ -222,12 +242,21 @@ export class HeavyNationwideB2BEmailHarvester {
         });
       }
 
+      const dirOnlyRegex = /businesslist\.com\.ng|finelib\.com|jiji\.ng|vconnect|africabizinfo|africabz|nigeriayp|infobel|facebook\.com|instagram\.com/i;
+
       allDir.forEach(d => {
         const val = validateNigerianCarrier(d.phone_raw || d.phone_e164);
         const cleanName = (d.name || '').replace(/\|.*/, '').replace(/-.*/, '').trim().slice(0, 45);
         const slug = cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const rawWeb = String(d.website || d.profile_url || '').trim();
+        const isNoWebsiteLead = !rawWeb || !rawWeb.startsWith('http') || dirOnlyRegex.test(rawWeb);
+        if (!isNoWebsiteLead) return; // Strictly target businesses WITHOUT a standalone website
 
-        if (cleanName.length > 2 && (val.isValid || (d.email && d.email.includes('@')))) {
+        let cleanEmail = String(d.email || '').toLowerCase().trim();
+        cleanEmail = cleanEmail.replace(/^.*?(?:\+?234|0)[789][01]\d{8}([a-z][a-z0-9._%+-]*@)/i, '$1');
+        const hasValidEmail = Boolean(cleanEmail && cleanEmail.includes('@') && !/example\.com|test\.com|placeholder|jiji\.ng|finelib\.com|businesslist/i.test(cleanEmail));
+
+        if (cleanName.length > 2 && (val.isValid || hasValidEmail)) {
           leads.push({
             id: `lead_b2b_${Math.random().toString(36).substring(2, 9)}`,
             business_name: cleanName,
@@ -236,15 +265,15 @@ export class HeavyNationwideB2BEmailHarvester {
             city: d.city || city,
             area: d.area || d.address || city,
             state: d.city || city,
-            phone: val.isValid ? val.cleanLocal : (d.phone_raw || '08022791227'),
-            phone_e164: val.isValid ? val.phoneE164 : '+2348022791227',
+            phone: val.isValid ? val.cleanLocal : '',
+            phone_e164: val.isValid ? val.phoneE164 : '',
             carrier: val.carrier,
-            email: d.email || '',
-            website: d.website || d.profile_url || '',
-            has_website: Boolean(d.website && d.website.startsWith('http')),
-            has_webform: Boolean(d.website && d.website.startsWith('http')),
+            email: hasValidEmail ? cleanEmail : '',
+            website: rawWeb,
+            has_website: false,
+            has_webform: false,
             preview_url: `https://www.bethelmindanalytics.com/preview/${slug}`,
-            deposit_ngn: d.website ? 35000 : 75000,
+            deposit_ngn: 35000,
             source: d.source || 'DIRECTORY_HARVESTER',
             created_at: new Date().toISOString()
           });
@@ -260,23 +289,25 @@ export class HeavyNationwideB2BEmailHarvester {
    */
   async executeHeavySweep(maxTarget = 5000): Promise<{ harvestedCount: number; withEmailCount: number; withWebformCount: number; syncedCount: number }> {
     console.log('\n========================================================================');
-    console.log(`⚡ EXECUTING HEAVY NATIONWIDE B2B EMAIL & WEB CONTACT HARVEST SWEEP`);
+    console.log(`⚡ EXECUTING HEAVY NATIONWIDE NON-WEBSITE B2B HARVEST SWEEP`);
     console.log(`📍 Cities Covered : ${NATIONWIDE_CITIES.length} Commercial Hubs (36 States + FCT)`);
     console.log(`🏢 Sectors Covered: ${COMMERCIAL_SECTORS.length} High-Value Commercial Niches`);
-    console.log(`📧 Target Quota   : Harvest up to ${maxTarget.toLocaleString()} Verified Leads with Emails & Forms`);
+    console.log(`🎯 Target Segment : 100% Strictly Verified Nigerian Businesses WITHOUT Websites`);
     console.log('========================================================================\n');
 
     const limit = pLimit(20); // 20 concurrent search workers
     const tasks: Promise<HarvestedB2BLead[]>[] = [];
 
-    let citiesToSearch = NATIONWIDE_CITIES;
-    let sectorsToSearch = COMMERCIAL_SECTORS;
+    const shuffledCities = [...NATIONWIDE_CITIES].sort(() => Math.random() - 0.5);
+    const shuffledSectors = [...COMMERCIAL_SECTORS].sort(() => Math.random() - 0.5);
+    let citiesToSearch = shuffledCities.slice(0, 40);
+    let sectorsToSearch = shuffledSectors.slice(0, 16);
     if (maxTarget <= 150) {
-      citiesToSearch = NATIONWIDE_CITIES.slice(0, 4); // Fast primary Lagos hubs
-      sectorsToSearch = COMMERCIAL_SECTORS.slice(0, 4);
+      citiesToSearch = shuffledCities.slice(0, 6);
+      sectorsToSearch = shuffledSectors.slice(0, 6);
     } else if (maxTarget <= 500) {
-      citiesToSearch = NATIONWIDE_CITIES.slice(0, 8);
-      sectorsToSearch = COMMERCIAL_SECTORS.slice(0, 6);
+      citiesToSearch = shuffledCities.slice(0, 12);
+      sectorsToSearch = shuffledSectors.slice(0, 8);
     }
 
     // Queue directory scrapers across targeted commercial cities and sectors
@@ -289,39 +320,55 @@ export class HeavyNationwideB2BEmailHarvester {
     const results = await Promise.all(tasks);
     const flattened = results.flat();
 
-    const uniqueLeads: HarvestedB2BLead[] = [];
+    const candidateLeads: HarvestedB2BLead[] = [];
     flattened.forEach(lead => {
-      const emailKey = lead.email.toLowerCase();
-      const phoneKey = lead.phone.replace(/\D/g, '');
+      const emailKey = (lead.email || '').toLowerCase().trim();
+      const phoneKey = (lead.phone || '').replace(/\D/g, '');
 
       if (emailKey && !this.seenEmails.has(emailKey)) {
         this.seenEmails.add(emailKey);
-        uniqueLeads.push(lead);
+        candidateLeads.push(lead);
       } else if (phoneKey && phoneKey.length === 11 && !this.seenPhones.has(phoneKey)) {
         this.seenPhones.add(phoneKey);
-        uniqueLeads.push(lead);
+        candidateLeads.push(lead);
       }
     });
 
-    console.log(`✅ Search Dork Pass Complete: Harvested ${uniqueLeads.length} unique B2B commercial leads.`);
+    console.log(`✅ Directory Pass Complete: Gathered ${candidateLeads.length} candidate non-website commercial leads.`);
 
-    // Enrich website leads to extract hidden contact emails & forms
-    const websiteLeads = uniqueLeads.filter(l => l.has_website && l.website.startsWith('http')).slice(0, 300);
-    console.log(`🌐 Crawling ${websiteLeads.length} commercial websites for hidden emails & web contact forms...`);
+    // Enrich directory profile URLs to extract hidden business owner emails & phones
+    const dirProfileLeads = candidateLeads.filter(l => (!l.email || !l.phone) && l.website.startsWith('http')).slice(0, 250);
+    console.log(`🌐 Probing ${dirProfileLeads.length} directory profile pages for hidden owner emails & mobile phones...`);
 
-    const crawlLimit = pLimit(20);
-    const crawlTasks = websiteLeads.map(lead => crawlLimit(async () => {
+    const crawlLimit = pLimit(25);
+    const crawlTasks = dirProfileLeads.map(lead => crawlLimit(async () => {
       const details = await this.extractWebsiteContactDetails(lead.website);
       if (details.emails.length > 0 && !lead.email) {
-        lead.email = details.emails[0];
+        let em = details.emails[0].toLowerCase().trim();
+        em = em.replace(/^.*?(?:\+?234|0)[789][01]\d{8}([a-z][a-z0-9._%+-]*@)/i, '$1');
+        if (!/finelib\.com|businesslist\.com\.ng|jiji\.ng/i.test(em)) {
+          lead.email = em;
+        }
       }
-      if (details.contactUrl) {
-        lead.contact_page_url = details.contactUrl;
-        lead.has_webform = details.hasForm;
+      if (details.phones.length > 0 && !lead.phone) {
+        for (const rawPh of details.phones) {
+          const v = validateNigerianCarrier(rawPh);
+          if (v.isValid) {
+            lead.phone = v.cleanLocal;
+            lead.phone_e164 = v.phoneE164;
+            lead.carrier = v.carrier;
+            break;
+          }
+        }
       }
     }));
 
     await Promise.all(crawlTasks);
+
+    const uniqueLeads = candidateLeads.filter(l =>
+      (l.phone && l.phone.length >= 10) ||
+      (l.email && l.email.includes('@'))
+    );
 
     // Save to local RAM database
     let existingLocal: any[] = [];

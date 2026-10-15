@@ -9,7 +9,7 @@
  * 3. Delta-Neutral Perp Funding Rate & Basis Cash-and-Carry Harvester (Hyperliquid/dYdX).
  * 4. Intent-Based Private Order Flow (POF) Solver (CoW Swap / UniswapX).
  * 5. Enhanced Solana Jito Shredstream & Atomic Multi-DEX Bundler.
- * 6. Direct-to-OPay Naira Settlement Routing (7034297995 - Oyelakin Tosin Matthew).
+ * 6. Direct-to-OPay Naira Settlement Routing (6805375225 - Bethelmind Digital Solutions).
  */
 
 import { calculateOptimalTradeSize, PoolReserves } from '../src/lib/monetization/optimalTradeSizer';

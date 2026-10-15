@@ -28,7 +28,7 @@ export async function GET() {
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Bethelmind Analytics Lagos Desk — Commercial Growth & AI Blog</title>
+    <title>Bethelmind Digital Solutions — Commercial Growth & AI Blog</title>
     <link>${MASTER_PAYOUT.website}/blog</link>
     <description>B2B commercial growth playbooks, solar ROI calculators, off-plan real estate models, and AI WhatsApp sales automation.</description>
     <language>en-NG</language>

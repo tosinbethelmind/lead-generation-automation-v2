@@ -134,7 +134,7 @@ export async function dispatchAutomatedEmailDrip(lead: LeadPayload, templateName
           'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
         },
         body: JSON.stringify({
-          from: 'ApexReach Automation <leads@apexreach.io>',
+          from: 'Bethelmind Digital Solutions Automation <leads@bethelmindanalytics.io>',
           to: [email],
           subject: `Your Personalized Growth & Automation Strategy - ${lead.name}`,
           html: `<h1>Hello ${lead.name}</h1><p>Your interactive website preview and tracking dashboard is ready for launch.</p>`

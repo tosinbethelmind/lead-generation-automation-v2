@@ -192,7 +192,7 @@ export default function MarketplacePage() {
             <Sparkles style={{ width: 20, height: 20, color: '#fff' }} />
           </div>
           <div>
-            <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bethelmind Analytics</span>
+            <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bethelmind Digital Solutions</span>
 
             <span style={{ fontSize: '0.7rem', color: '#64748b', display: 'block', marginTop: -2 }}>AI Lead Platform</span>
           </div>
@@ -230,7 +230,7 @@ export default function MarketplacePage() {
           <button onClick={scrollToPricing} style={{ background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', color: '#fff', border: 'none', borderRadius: 12, padding: '16px 32px', fontWeight: 800, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 0 40px rgba(6,182,212,0.3)' }}>
             <Rocket style={{ width: 18, height: 18 }} /> Start Free Setup →
           </button>
-          <a href="https://wa.me/+2348022791227?text=Hi%2C%20I%20want%20to%20see%20ApexReach%20demo" target="_blank" rel="noreferrer" style={{ background: 'rgba(255,255,255,0.05)', color: '#f8fafc', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '16px 32px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+          <a href="https://wa.me/+2348022791227?text=Hi%2C%20I%20want%20to%20see%20Bethelmind Digital Solutions%20demo" target="_blank" rel="noreferrer" style={{ background: 'rgba(255,255,255,0.05)', color: '#f8fafc', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '16px 32px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
             <Play style={{ width: 18, height: 18 }} /> Watch Live Demo
           </a>
         </div>
@@ -450,7 +450,7 @@ export default function MarketplacePage() {
             Ready to Grow Your Business?
           </h2>
           <p style={{ color: '#94a3b8', marginBottom: 32, fontSize: '1rem', lineHeight: 1.6 }}>
-            Join 38+ Lagos businesses already using Bethelmind Analytics to generate leads and close deals on autopilot.
+            Join 38+ Lagos businesses already using Bethelmind Digital Solutions to generate leads and close deals on autopilot.
           </p>
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={scrollToPricing} style={{ background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)', color: '#fff', border: 'none', borderRadius: 12, padding: '16px 32px', fontWeight: 800, cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -476,7 +476,7 @@ export default function MarketplacePage() {
           <a href="/marketplace" style={{ color: '#475569', textDecoration: 'none' }}>Pricing</a>
           <a href="https://wa.me/+2348022791227" style={{ color: '#475569', textDecoration: 'none' }}>Support</a>
         </div>
-        <p style={{ margin: 0 }}>© 2026 ApexReach · Bethelmind Analytics & Strategy · Lagos, Nigeria</p>
+        <p style={{ margin: 0 }}>© 2026 Bethelmind Digital Solutions · Bethelmind Digital Solutions · Lagos, Nigeria</p>
         <p style={{ margin: '8px 0 0', fontSize: '0.75rem' }}>
           <Shield style={{ width: 12, height: 12, display: 'inline', marginRight: 4 }} />
           All data is encrypted · NDPR compliant · Nigerian-hosted infrastructure

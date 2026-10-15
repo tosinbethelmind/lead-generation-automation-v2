@@ -73,14 +73,14 @@ export class MultiSmtpPooler {
 
   private senders = [
     {
-      name: 'Tosin Oyelakin | Bethelmind Analytics Lagos Desk',
+      name: 'Tosin Oyelakin | Bethelmind Digital Solutions',
       email: 'tosin@bethelmindanalytics.com',
       replyTo: 'bethelmindrecruit@gmail.com',
       phone: '08022791227',
       waUrl: 'https://wa.me/2348022791227'
     },
     {
-      name: 'Matthew Oyelakin | Bethelmind Analytics Lagos Desk',
+      name: 'Matthew Oyelakin | Bethelmind Digital Solutions',
       email: 'matthew@bethelmindanalytics.com',
       replyTo: 'bethelmindrecruit@gmail.com',
       phone: '08022791227',
@@ -301,37 +301,42 @@ export class MultiSmtpPooler {
     const previewUrl = `https://www.bethelmindanalytics.com/preview/${slug}`;
 
     const hooks = this.getSectorOutreachHooks(sector, bName, area);
-    const subject = hooks.subject;
+    const subject = `We built a free sample website for ${bName} (Check on your phone)`;
 
     const textContent = 
-`Good day Management Team at ${bName},
+`Good day Boss / Management at ${bName},
 
-My name is Tosin from Bethelmind Analytics Lagos Desk (Plot 12 Commercial Corridor, Victoria Island).
+Well done with your business! My name is Tosin from Bethelmind Digital Solutions (CAC Registered Nigerian Business).
 
-During our operational review of ${sector} enterprises in ${area}, we identified that ${hooks.painPoint}
+Right now, when customers search for ${bName} on Google, they cannot find your official website — instead, Google shows your competitors in ${area}.
 
-🎙️ Personalized 15-Second Audio Briefing: Tap demo link below to listen directly.
+To help you get more customers easily without waiting weeks for a web developer, we already built a ready-made Official Mobile Website + 24/7 WhatsApp Customer Assistant for ${bName}.
 
-Key Features Built for ${bName}:
-1. 24/7 Conversational AI WhatsApp Sales Assistant (< 3s response time, natural Nigerian business tone).
-2. ${hooks.specializedFeature}.
-3. Automated Moniepoint & Paystack Payment Reconciliation.
-4. Done-For-You Turnkey Commercial Mobile Portal.
+Tap below to check it free on your phone right now (₦0 to view):
+👉 ${previewUrl}
 
-👉 Test drive your live private prototype & listen to audio note (₦0 Upfront):
-${previewUrl}
+🎙️ We also recorded a short 15-second voice note for you inside the link above.
 
-To activate your portal or test the WhatsApp assistant live:
-• Direct WhatsApp Closer Desk: wa.me/2348022791227 (0802 279 1227)
-• Direct Email: tosin@bethelmindanalytics.com (or reply directly to this email)
+What Your New Website Does for ${bName}:
+1. Shows your business on Google when customers search in ${area}.
+2. Replies customers on WhatsApp 24/7 with your price list & booking details even when you are busy.
+3. Confirms customer bank transfers cleanly.
 
-Best regards,
+Simple & Affordable Ways to Activate (Only After You Check & Like It):
+• Option 1 (Starter Go-Live): ₦35,000 one-time (or ₦25,000/month Pay-Small-Small) — puts your website + WhatsApp assistant live today.
+• Option 2 (Full Custom .com / .com.ng Website): ₦75,000 deposit (₦150,000 total) — includes your own .com or .com.ng name ready in 48 hours.
+• Official CAC Registered Company Account: Moniepoint Microfinance Bank · 6805375225 · Bethelmind Digital Solutions.
+
+Chat with us on WhatsApp if you want us to change any picture, phone number, or price on your sample page:
+• WhatsApp Desk: https://wa.me/2348022791227 (0802 279 1227)
+• Email: tosin@bethelmindanalytics.com (or simply reply to this email)
+
+Warm regards,
 
 Tosin Oyelakin
-Lead Solutions Consultant
-Bethelmind Analytics Lagos Desk
-Commercial Office: Plot 12, Commercial Corridor, Victoria Island, Lagos
-WhatsApp / Direct Desk: +234 802 279 1227`;
+Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)
+Office: Plot 12, Commercial Corridor, Victoria Island, Lagos
+WhatsApp / Call: 0802 279 1227`;
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -339,55 +344,56 @@ WhatsApp / Direct Desk: +234 802 279 1227`;
 <head><meta charset="utf-8"></head>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #1e293b; max-width: 620px; margin: 0 auto; padding: 20px;">
   <div style="border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 20px;">
-    <h3 style="margin: 0; color: #0f172a;">Bethelmind Analytics Lagos Desk</h3>
-    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">Enterprise Business Automation &amp; Conversion Infrastructure</p>
+    <h3 style="margin: 0; color: #0f172a;">Bethelmind Digital Solutions <span style="font-size: 11px; background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 12px; vertical-align: middle;">✓ CAC Certified</span></h3>
+    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">Business Websites &amp; 24/7 WhatsApp Customer Assistant</p>
   </div>
 
-  <p>Good day Management Team at <strong>${bName}</strong>,</p>
+  <p>Good day Boss / Management at <strong>${bName}</strong>,</p>
 
-  <p>My name is Tosin from <strong>Bethelmind Analytics Lagos Desk</strong>.</p>
+  <p>Well done with your business! My name is Tosin from <strong>Bethelmind Digital Solutions</strong> (CAC Registered Nigerian Business).</p>
 
-  <p>During our operational review of ${sector} enterprises in ${area}, we identified that ${hooks.painPoint}</p>
+  <p>Right now, when customers search for <strong>${bName}</strong> on Google, they cannot find your official website — instead, Google shows your competitors in ${area}.</p>
 
-  <!-- Modern Clickable Waveform Audio Banner (100% Inboxing / Zero Raw Binary Attachment) -->
+  <p>To help you get more customers easily without waiting weeks for a developer, we already built a ready-made <strong>Official Mobile Website + 24/7 WhatsApp Customer Assistant</strong> for <strong>${bName}</strong> so you can check it free on your phone first (<strong>₦0 to view</strong>):</p>
+
+  <!-- Modern Clickable Waveform Audio Banner -->
   <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid #334155; padding: 16px 20px; margin: 20px 0; border-radius: 8px; color: #ffffff;">
-    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; font-weight: 700;">Executive Voice Briefing (0:15)</span>
-    <h4 style="margin: 4px 0 8px 0; font-size: 15px; color: #ffffff;">Personalized Audio Note for ${bName} Team</h4>
+    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; font-weight: 700;">Short Voice Note (0:15)</span>
+    <h4 style="margin: 4px 0 8px 0; font-size: 15px; color: #ffffff;">Listen to 15s Audio &amp; View ${bName}'s Sample Website</h4>
     <p style="margin: 0 0 12px 0; font-size: 12px; color: #94a3b8;">
-      Customized audio walkthrough for your ${sector} customer inquiries in ${area}.
+      See how customers in ${area} will view your services and message you on WhatsApp.
     </p>
     <a href="${previewUrl}" style="display: inline-block; background-color: #22c55e; color: #ffffff; text-decoration: none; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold;">
-      ▶ Listen to 15s Audio Note &amp; View Prototype →
+      ▶ Open ${bName}'s Sample Website &amp; Voice Note →
     </a>
   </div>
 
-  <p>To eliminate this bottleneck, our team pre-built a private 24/7 AI WhatsApp Quoting &amp; Sales Assistant tailored specifically for <strong>${bName}</strong>:</p>
-
   <ul style="padding-left: 20px; color: #334155;">
-    <li><strong>Instant 24/7 Quotes:</strong> Automated inquiries resolved in under 3 seconds in a natural Nigerian business tone.</li>
-    <li><strong>Specialized Sector Tool:</strong> ${hooks.specializedFeature}.</li>
-    <li><strong>Automated Bank Reconciliation:</strong> Verified Paystack &amp; Moniepoint instant receipts.</li>
+    <li><strong>Be Found on Google:</strong> Customers searching in ${area} see <strong>${bName}</strong> directly instead of competitors.</li>
+    <li><strong>24/7 WhatsApp Assistant:</strong> Replies customers immediately with your prices &amp; bookings even when you are busy.</li>
+    <li><strong>Easy &amp; Affordable Plans:</strong> <strong>₦35,000 Starter Go-Live</strong> (or ₦25,000/month Pay-Small-Small) — or <strong>₦75,000 Deposit</strong> for your own <code>.com / .com.ng</code> custom website.</li>
+    <li><strong>CAC Registered Company Account:</strong> Moniepoint Microfinance Bank · <strong>6805375225</strong> · <strong>Bethelmind Digital Solutions</strong>.</li>
   </ul>
 
   <div style="text-align: center; margin: 26px 0;">
     <a href="${previewUrl}" style="background-color: #0284c7; color: #ffffff; text-decoration: none; padding: 14px 26px; font-weight: bold; border-radius: 6px; display: inline-block;">
-      Test Drive Your Private Prototype (₦0 Upfront) →
+      Check ${bName}'s Sample Website on Your Phone (Free) →
     </a>
   </div>
 
   <p style="font-size: 14px; color: #475569;">
-    To review this implementation or connect with our engineering closer desk directly on WhatsApp:
+    Want us to change any picture, price, or phone number on your sample page? Chat with us on WhatsApp:
     <br/>
-    👉 <a href="https://wa.me/2348022791227?text=Hello+Tosin+I+am+interested+in+the+automation+prototype+for+${encodeURIComponent(bName)}" style="color: #16a34a; font-weight: bold;">Chat on WhatsApp: 0802 279 1227</a>
+    👉 <a href="https://wa.me/2348022791227?text=Hello+Bethelmind+Digital+Solutions+I+just+checked+the+sample+website+for+${encodeURIComponent(bName)}" style="color: #16a34a; font-weight: bold;">Chat on WhatsApp: 0802 279 1227</a>
   </p>
 
   <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
 
   <p style="font-size: 12px; color: #64748b; margin: 0;">
-    <strong>Tosin Oyelakin</strong> | Lead Solutions Consultant<br/>
-    Bethelmind Analytics Lagos Desk<br/>
-    Plot 12, Commercial Corridor, Victoria Island, Lagos<br/>
-    Email: tosin@bethelmindanalytics.com | Phone: 0802 279 1227
+    <strong>Tosin Oyelakin</strong> | Lead Consultant<br/>
+    <strong>Bethelmind Digital Solutions</strong> (CAC Certified Nigerian Enterprise)<br/>
+    Company Bank: Moniepoint MFB · 6805375225 · Bethelmind Digital Solutions<br/>
+    Email: tosin@bethelmindanalytics.com | WhatsApp / Call: 0802 279 1227
   </p>
 </body>
 </html>`;

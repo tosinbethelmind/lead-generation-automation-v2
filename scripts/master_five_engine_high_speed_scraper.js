@@ -2,7 +2,7 @@
  * @file scripts/master_five_engine_high_speed_scraper.js
  * 
  * 🚀 HIGH-SPEED 5-ENGINE PARALLEL SCRAPER & MULTI-PIPELINE INGESTION ORCHESTRATOR
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * ⚡ UPGRADES IMPLEMENTED (NATIONWIDE 36-STATE EXPANSION):
  * 1. 50-Parallel Async Concurrency with HTTP Keep-Alive & Rotated Mobile User-Agents.
@@ -101,10 +101,10 @@ function isValidNigerianPhone(phoneStr) {
   if (digits.length !== 11 || !digits.startsWith('0')) return false;
 
   // Rule #5 Rejections
-  if (digits.includes('0000') || digits.includes('00010') || digits.includes('00011')) return false;
-  if (/(\d)\1{3,}/.test(digits)) return false; // 1111, 8888
-  if (/(\d)\1{2}(\d)\2{2}/.test(digits)) return false; // 666777
-  if (digits.includes('123456') || digits.includes('654321')) return false;
+  if (digits.includes('0000') || digits.includes('00010') || digits.includes('00011') || digits.includes('55500')) return false;
+  if (/(\d)\1{3,}/.test(digits)) return false; // 1111, 8888, 4444, 5555
+  if (/(\d)\1{2}(\d)\2{2}/.test(digits)) return false; // 666777, 777888
+  if (/12345|23456|34567|45678|56789|65432|54321|01234/.test(digits.substring(4))) return false;
 
   const prefix4 = digits.substring(0, 4);
   return ALL_VALID_PREFIXES.includes(prefix4);
@@ -248,15 +248,79 @@ async function runMasterFiveEngineScraper() {
     try {
       const existingLeads = JSON.parse(fs.readFileSync(localDbPath, 'utf8'));
       if (Array.isArray(existingLeads)) {
+        const seenPhoneTails = new Set();
+        const seenEmails = new Set();
+
         for (const rawLead of existingLeads) {
-          const rawPhone = rawLead.phone_raw || rawLead.phone || rawLead.phone_e164 || '';
-          if (!isValidNigerianPhone(rawPhone)) {
+          let rawPhone = (rawLead.phone_raw || rawLead.phone || rawLead.phone_e164 || '').trim();
+          if (rawPhone.replace(/\D/g, '').endsWith('8022791227')) {
+            rawPhone = '';
+            rawLead.phone = '';
+            rawLead.phone_e164 = '';
+            rawLead.phone_raw = '';
+          }
+
+          const hasValidPhone = rawPhone ? isValidNigerianPhone(rawPhone) : false;
+          let rawEmail = (rawLead.email || '').trim().toLowerCase();
+          rawEmail = rawEmail.replace(/^.*?(?:\+?234|0)[789][01]\d{8}([a-z][a-z0-9._%+-]*@)/i, '$1');
+          if (/jiji\.ng|finelib\.com|businesslist\.com\.ng/i.test(rawEmail)) {
+            rawEmail = '';
+          }
+          rawLead.email = rawEmail;
+
+          const hasValidEmail = Boolean(
+            rawEmail &&
+            rawEmail.includes('@') &&
+            !/example\.com|test\.com|testlead\.com|placeholder|sentinel|wix|sentry|bethelmind|\.png|\.jpg/i.test(rawEmail)
+          );
+          const rawWeb = (rawLead.website || '').trim();
+          const rawName = (rawLead.business_name || rawLead.name || '').trim();
+
+          // STRICT NON-WEBSITE MANDATE (Section 1B): Only keep businesses WITHOUT a standalone website
+          const dirOnlyRegex = /businesslist\.com\.ng|finelib\.com|jiji\.ng|vconnect|africabizinfo|africabz|nigeriayp|infobel|facebook\.com|instagram\.com|google\.com|bing\.com/i;
+          const isStrictNoWebsite = !rawWeb || !rawWeb.startsWith('http') || dirOnlyRegex.test(rawWeb) || rawLead.hasWebsite === false || rawLead.has_website === false;
+          if (!isStrictNoWebsite) {
+            syntheticRejected++;
+            continue;
+          }
+          rawLead.hasWebsite = false;
+          rawLead.has_website = false;
+          rawLead.offerType = 'TURNKEY_DFY_PROTOTYPE';
+
+          // Reject academic papers, PDFs, dictionaries, listicles, or template names
+          if (
+            /ncbi\.nlm\.nih\.gov|sciencedirect\.com|researchgate\.net|scribd\.com|dictionary\.cambridge|merriam-webster|wikipedia\.org|seahipublications\.org|\.pdf($|\?)/i.test(`${rawWeb} ${rawName}`) ||
+            /Specialist \(\d+\)|Enterprise \(\d+\)|Merchant \(\d+\)|\(\d{3,4}\)$|^Top \d+ |^Best \d+ |^List of |mock_|synthetic_|^Lead /i.test(rawName)
+          ) {
             syntheticRejected++;
             continue;
           }
 
-          const phoneDigits = rawPhone.replace(/\D/g, '');
-          const phoneE164 = toE164(rawPhone);
+          // Require a verified Nigerian phone OR verified corporate email
+          if (!hasValidPhone && !hasValidEmail) {
+            syntheticRejected++;
+            continue;
+          }
+
+          // Canonical deduplication by 10-digit Nigerian phone tail, email, and business name
+          const pTail = hasValidPhone ? rawPhone.replace(/\D/g, '').slice(-10) : '';
+          const normBizName = rawName.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (pTail && seenPhoneTails.has(pTail)) {
+            duplicatesSkipped++;
+            continue;
+          }
+          if (hasValidEmail && seenEmails.has(rawEmail)) {
+            duplicatesSkipped++;
+            continue;
+          }
+          if (normBizName.length >= 4 && seenEmails.has(`name:${normBizName}`)) {
+            duplicatesSkipped++;
+            continue;
+          }
+          if (pTail) seenPhoneTails.add(pTail);
+          if (hasValidEmail) seenEmails.add(rawEmail);
+          if (normBizName.length >= 4) seenEmails.add(`name:${normBizName}`);
+
           const slug = slugify(rawLead.name || rawLead.business_name || '');
 
           if (!rawLead.assigned_engine) {

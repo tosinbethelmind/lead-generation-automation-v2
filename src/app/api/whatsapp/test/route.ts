@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     };
 
     const previewUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com'}/demo-proposal`;
-    const testMessage = `Hello from Bethelmind Analytics & Strategy! Your WhatsApp Meta Cloud API integration is successfully linked and verified.`;
+    const testMessage = `Hello from Bethelmind Digital Solutions! Your WhatsApp Meta Cloud API integration is successfully linked and verified.`;
 
     // Send using standard utility (handles template vs free-form message)
     await sendWhatsAppMessage(mockLead as any, previewUrl, 'http://localhost:3006', testMessage);

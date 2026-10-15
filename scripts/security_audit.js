@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 console.log('====================================================');
-console.log('       APEXREACH SECURITY & SECRETS AUDIT          ');
+console.log('       Bethelmind Digital Solutions SECURITY & SECRETS AUDIT          ');
 console.log('====================================================\n');
 
 let issuesFound = 0;

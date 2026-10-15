@@ -28,8 +28,8 @@ async function verifyAll() {
   console.log(`    Account Name:    ${MASTER_PAYOUT.accountName}`);
   console.log(`    WhatsApp Closer: ${MASTER_PAYOUT.whatsappCloser}`);
 
-  if (MASTER_PAYOUT.bankName !== 'OPay Digital Services' || MASTER_PAYOUT.accountNumber !== '7034297995') {
-    throw new Error('Payout account violates AGENTS.md rule: Must be OPay Digital Services (7034297995)');
+  if (MASTER_PAYOUT.bankName !== 'Moniepoint Microfinance Bank' || MASTER_PAYOUT.accountNumber !== '6805375225') {
+    throw new Error('Payout account violates AGENTS.md rule: Must be Moniepoint Microfinance Bank (6805375225)');
   }
   console.log('    ✅ Payout account 100% compliant with Direct-to-OPay settlement rule.');
 

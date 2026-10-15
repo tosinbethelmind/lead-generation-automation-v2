@@ -113,7 +113,7 @@ Customer Details:
 This alert was triggered instantly and sent to your inbox. Claim your website today to activate this workflow live!
 
 Best regards,
-Bethelmind Analytics & Strategy Automation Suite`;
+Bethelmind Digital Solutions Automation Suite`;
 
     // Log the test trigger event
     await addLog(

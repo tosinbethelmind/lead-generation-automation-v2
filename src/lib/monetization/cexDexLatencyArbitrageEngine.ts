@@ -8,7 +8,7 @@
  * 2. Compares against decentralized AMMs on Base L2 (Aerodrome Slipstream / Uniswap Base) and Arbitrum (Camelot / Uniswap).
  * 3. Identifies lead-lag price latency where CEX spot leads DEX on-chain pool by > 200ms.
  * 4. Sizes trade with optimal trade sizer, routes via Flashbots / Titan private builder RPC,
- *    and sweeps net yield directly into OPay (7034297995).
+ *    and sweeps net yield directly into OPay (6805375225).
  */
 
 import { calculateOptimalTradeSize, PoolReserves } from './optimalTradeSizer';

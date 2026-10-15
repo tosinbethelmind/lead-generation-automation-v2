@@ -353,7 +353,7 @@ export class AnswerThePublicEngine {
   <h4 class="text-lg md:text-xl font-bold text-white mb-3">${topQ.question}</h4>
   <p class="text-slate-200 text-base leading-relaxed mb-4">${topQ.directAnswer}</p>
   <div class="pt-4 border-t border-slate-700/60 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
-    <span>Verified by <strong>Bethelmind Analytics Lagos Desk</strong></span>
+    <span>Verified by <strong>Bethelmind Digital Solutions</strong></span>
     <span class="text-gold-400 font-semibold">Updated for 2026 Commercial Operations</span>
   </div>
 </div>

@@ -96,7 +96,7 @@ function fetchWithRedirect(targetUrl, maxRedirects = 3) {
 
 async function run() {
   console.log('\n========================================================================');
-  console.log('🚀 TESTING ALL LIVE PRODUCTION LINKS (Bethelmind Analytics Lagos Desk)');
+  console.log('🚀 TESTING ALL LIVE PRODUCTION LINKS (Bethelmind Digital Solutions)');
   console.log('========================================================================\n');
 
   const results = [];

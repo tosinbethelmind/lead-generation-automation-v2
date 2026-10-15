@@ -137,13 +137,13 @@ function testLiveSend() {
     console.log('\n4. Testing Live Email Send from tosin@bethelmindanalytics.com via Brevo API...');
     const payload = JSON.stringify({
       sender: {
-        name: 'Tosin | Bethelmind Analytics Lagos Desk',
+        name: 'Tosin | Bethelmind Digital Solutions',
         email: 'tosin@bethelmindanalytics.com'
       },
       to: [
         { email: 'bethelmindrecruit@gmail.com', name: 'Admin Test' }
       ],
-      subject: '✅ DNS & Deliverability Live Verification - Bethelmind Analytics',
+      subject: '✅ DNS & Deliverability Live Verification - Bethelmind Digital Solutions',
       htmlContent: '<p>Hello Admin,</p><p>This email confirms that DNS and Brevo integration for <strong>tosin@bethelmindanalytics.com</strong> is 100% verified and operational!</p>'
     });
 

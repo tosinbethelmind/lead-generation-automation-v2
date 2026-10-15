@@ -216,7 +216,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    let pitch = getPitchDetails(lead, origin, config.businessSignature || 'Bethelmind Analytics & Strategy');
+    let pitch = getPitchDetails(lead, origin, config.businessSignature || 'Bethelmind Digital Solutions');
     if (overrides.pitch) {
       pitch = {
         ...pitch,

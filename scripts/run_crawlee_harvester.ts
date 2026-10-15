@@ -2,7 +2,7 @@
  * @file scripts/run_crawlee_harvester.ts
  * 
  * 🚀 RUNNER: Crawlee + Katana + Metascraper Autonomous Scraper
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  */
 
 import { crawleeGoogleMapsHarvester } from '../src/lib/scraping/crawleeGoogleMapsHarvester';

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Briefcase } from 'lucide-react';
 
 export const metadata = {
-  title: 'AI Recruitment & Talent Engine | Bethelmind Analytics',
+  title: 'AI Recruitment & Talent Engine | Bethelmind Digital Solutions',
   description: 'Position advertising, evergreen talent pool bank, automated AI CV grading, Google X-Ray candidate sourcing, and interview scheduling.',
 };
 

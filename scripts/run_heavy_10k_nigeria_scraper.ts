@@ -2,7 +2,7 @@
  * @file scripts/run_heavy_10k_nigeria_scraper.ts
  * 
  * 🇳🇬 COMMAND RUNNER: Accelerated Nigeria-Wide 10,000 Leads/Day Multi-Strategy Scraper
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * UPGRADES IMPLEMENTED:
  * - Full 36 States + FCT Geo-Political Regional Matrix (Southwest, North-Central, South-South, Southeast, Northwest, Northeast)

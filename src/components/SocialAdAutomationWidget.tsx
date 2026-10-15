@@ -189,7 +189,7 @@ export function SocialAdAutomationWidget({
                     💰 Maximum Cost Efficiency Math
                   </span>
                   <h4 className="text-xl font-extrabold text-white mt-1">
-                    Traditional Agency Ads vs Bethelmind Analytics AI Ad Engine
+                    Traditional Agency Ads vs Bethelmind Digital Solutions AI Ad Engine
                   </h4>
                 </div>
                 <div className="bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 px-4 py-2 rounded-xl text-xs font-bold">

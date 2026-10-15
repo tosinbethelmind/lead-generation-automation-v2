@@ -6,7 +6,7 @@
  * - Auto-responds to Lagos importer FX / USDT inquiries with live wholesale rates.
  * - Locks in ₦25/USD commission spread.
  * - Connects verified buyer to merchant escrow.
- * - Dispatches instant Naira settlement to user's OPay Account (7034297995).
+ * - Dispatches instant Naira settlement to user's OPay Account (6805375225).
  */
 
 import { OPAY_BENEFICIARY_CONFIG, routeDirectToOPay } from './directNairaAutoLiquidationRouter';

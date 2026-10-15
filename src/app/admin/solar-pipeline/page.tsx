@@ -419,9 +419,9 @@ export default function SolarPipelineDashboard() {
       
       // Pre-fill default templates based on channel
       const defaultTemplates = {
-        whatsapp: `Hi ${selectedLead.name},\n\nWe prepared a custom residential solar proposal for your property. View details: {{previewUrl}}\n\nBest regards,\nBethelmind Analytics`,
+        whatsapp: `Hi ${selectedLead.name},\n\nWe prepared a custom residential solar proposal for your property. View details: {{previewUrl}}\n\nBest regards,\nBethelmind Digital Solutions`,
         sms: `Hello ${selectedLead.name}, your custom solar estimate is ready. View at: {{previewUrl}}`,
-        email: `Hello ${selectedLead.name},\n\nThank you for reaching out regarding a custom solar installation. We have prepared your design recommendation with ROI savings projection.\n\nView complete proposal here: {{previewUrl}}\n\nWarm regards,\nBethelmind Analytics`
+        email: `Hello ${selectedLead.name},\n\nThank you for reaching out regarding a custom solar installation. We have prepared your design recommendation with ROI savings projection.\n\nView complete proposal here: {{previewUrl}}\n\nWarm regards,\nBethelmind Digital Solutions`
       };
       setCustomMessage(defaultTemplates[outreachChannel]);
       setCustomSubject(selectedLead.type === 'enterprise' ? 'Commercial Solar ROI Proposal' : 'Home Solar Power Quote');

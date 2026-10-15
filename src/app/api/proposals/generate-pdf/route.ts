@@ -2,7 +2,7 @@
  * @file src/app/api/proposals/generate-pdf/route.ts
  * 
  * 📄 PROGRAMMATIC BANKABLE EXECUTIVE PROPOSAL GENERATOR API
- * Bethelmind Analytics Lagos Desk (Plot 12 Commercial Corridor, VI)
+ * Bethelmind Digital Solutions (Plot 12 Commercial Corridor, VI)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 <body>
   <div class="header">
     <div>
-      <div class="logo-text">⚡ Bethelmind Analytics Lagos Desk</div>
+      <div class="logo-text">⚡ Bethelmind Digital Solutions</div>
       <div class="tagline">Plot 12 Commercial Corridor, Victoria Island, Lagos · Desk Hotline: +234 802 279 1227</div>
     </div>
     <div class="inv-details">

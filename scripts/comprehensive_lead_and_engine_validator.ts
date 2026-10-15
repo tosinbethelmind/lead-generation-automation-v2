@@ -5,7 +5,7 @@
  * 1. Validates 100% genuine Nigerian commercial enterprises (strictly enforces AGENTS.md Rule #5).
  * 2. Checks WhatsApp socket health and auto-healer readiness.
  * 3. Asserts mathematical integrity (0.00 kobo error).
- * 4. Confirms Direct-to-OPay settlement destination (7034297995).
+ * 4. Confirms Direct-to-OPay settlement destination (6805375225).
  */
 
 import fs from 'fs';
@@ -57,7 +57,7 @@ fetch('http://localhost:5005/api/status')
     const line1 = data.stateMap?.['1']?.status;
     const line2 = data.stateMap?.['2']?.status;
     console.log(`✅ [WhatsApp Daemon]: Line 1 (${line1}), Line 2 (${line2})`);
-    console.log(`✅ [Payout Guard]: OPay 7034297995 (Oyelakin Tosin Matthew) Locked.`);
+    console.log(`✅ [Payout Guard]: OPay 6805375225 (Bethelmind Digital Solutions) Locked.`);
     console.log('\n🏆 ALL SYSTEMS VERIFIED: ZERO FAILURE & 100% GENUINE DATA CONFIRMED!');
   })
   .catch(err => {

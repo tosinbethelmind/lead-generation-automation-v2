@@ -2,7 +2,7 @@
  * @file src/app/api/integrations/brevo/route.ts
  * 
  * Brevo Integration API Route (2026 Edition)
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * GET: Audits Brevo API key, account credits, and senders.
  * POST: Triggers test email dispatch or syncs lead contact to Brevo.
@@ -66,8 +66,8 @@ export async function POST(request: Request) {
 
       const result = await client.sendEmail({
         to: [{ email: to }],
-        subject: subject || 'Bethelmind Analytics - Brevo Integration Test',
-        textContent: message || 'Hello! This is a test email verifying your Brevo API integration on Bethelmind Analytics.'
+        subject: subject || 'Bethelmind Digital Solutions - Brevo Integration Test',
+        textContent: message || 'Hello! This is a test email verifying your Brevo API integration on Bethelmind Digital Solutions.'
       });
 
       return NextResponse.json({

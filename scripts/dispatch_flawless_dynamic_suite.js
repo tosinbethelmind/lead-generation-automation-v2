@@ -103,7 +103,7 @@ Good day management! Fast-track your commercial electronics container invoices:
 
     const card = `🏢 *DEAL #${d.id}: ${d.name.toUpperCase()}*
 🆔 *REF:* \`${d.ref}\` | 📦 *VOLUME:* ${d.volume}
-💰 *YOUR SPREAD PROFIT:* *+${d.profit}* (Settles to OPay 7034297995)
+💰 *YOUR SPREAD PROFIT:* *+${d.profit}* (Settles to OPay 6805375225)
 ━━━━━━━━━━━━━━━━━━━━━━
 🛡️ *FLAWLESS DYNAMIC ESCROW PROTOCOL:*
 • *No Dummy Account Numbers:* Buyer is never given an unverified number.

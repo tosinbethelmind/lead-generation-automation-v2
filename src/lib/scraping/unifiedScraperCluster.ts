@@ -2,7 +2,7 @@
  * @file src/lib/scraping/unifiedScraperCluster.ts
  * 
  * Unified Multi-Engine Scraper Cluster (2026 Resilient Fallback Edition)
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * Orchestrates 8 Powerful Scraper Engines with Auto-Failover:
  * 1. Scrapling (Adaptive DOM Selectors & Stealth bypass).

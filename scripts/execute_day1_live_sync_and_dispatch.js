@@ -158,7 +158,7 @@ async function main() {
       l.lastContactedAt = nowIso;
       const slug = (l.name || 'lagos-biz').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       l.preview_url = `https://www.bethelmindanalytics.com/preview/${slug}`;
-      l.notes = 'Day 1 ApexReach Outreach Dispatched (WhatsApp + Email + Tailscale Gateway)';
+      l.notes = 'Day 1 Bethelmind Digital Solutions Outreach Dispatched (WhatsApp + Email + Tailscale Gateway)';
     }
   });
 
@@ -182,7 +182,7 @@ async function main() {
           phone_e164: lead.phone_e164 || lead.phone,
           status: 'CONTACTED',
           last_contacted_at: nowIso,
-          notes: 'Day 1 ApexReach Outreach Dispatched'
+          notes: 'Day 1 Bethelmind Digital Solutions Outreach Dispatched'
         });
       } catch (err) {
         // silent fail on network / fallback
@@ -199,7 +199,7 @@ async function main() {
       type: 'outreach_dispatched',
       lead_id: lead.id || lead.lead_id,
       deal_id: '',
-      description: `ApexReach Day 1 Interactive Website Pitch dispatched to ${lead.name} (${lead.phone_e164})`,
+      description: `Bethelmind Digital Solutions Day 1 Interactive Website Pitch dispatched to ${lead.name} (${lead.phone_e164})`,
       metadata: JSON.stringify({ category: lead.category, area: lead.area || 'Lagos', channel: 'whatsapp_and_sms' }),
       channel: 'whatsapp',
       actor: 'system',
@@ -238,7 +238,7 @@ async function main() {
           phone: lead.phone_e164 || lead.phone,
           email: lead.email || '',
           stage: 'OUTREACH_DISPATCHED',
-          title: 'Dispatched ApexReach Interactive Preview',
+          title: 'Dispatched Bethelmind Digital Solutions Interactive Preview',
           description: `Personalized Prototype Link & Paystack Instant Claim sent to ${lead.name}`,
           channelUsed: 'WhatsApp & SMS Gateway',
           timestamp: nowIso,
@@ -270,7 +270,7 @@ async function main() {
     timestamp: nowIso,
     step: 'OUTREACH_CAMPAIGN',
     status: 'SUCCESS',
-    message: `ApexReach 10K Lagos Engine Day 1: Dispatched 30 verified B2B leads across Lagos commercial hubs.`
+    message: `Bethelmind Digital Solutions 10K Lagos Engine Day 1: Dispatched 30 verified B2B leads across Lagos commercial hubs.`
   });
   if (logs.length > 500) logs = logs.slice(0, 500);
   fs.writeFileSync(logsDbPath, JSON.stringify(logs, null, 2), 'utf8');
@@ -278,7 +278,7 @@ async function main() {
 
   // Send live verification to Admin phone
   console.log('\n📲 Sending Live Verification Delivery to Admin Phone...');
-  const adminMsg = `🟢 *APEXREACH LAGOS — DAY 1 DISPATCH & DASHBOARD SYNC COMPLETE*\n\n` +
+  const adminMsg = `🟢 *Bethelmind Digital Solutions LAGOS — DAY 1 DISPATCH & DASHBOARD SYNC COMPLETE*\n\n` +
     `✅ *Leads Contacted:* 30 Verified Lagos B2B Leads\n` +
     `📊 *Dashboard UI:* Updated (Leads, Funnel, Activities, Journey)\n` +
     `🛡️ *Warm-up Limit:* 30/30 Safe Limit Reached\n` +
@@ -289,7 +289,7 @@ async function main() {
   const waRes = await sendWhatsAppLine('2348022791227', adminMsg, 1);
   console.log(`💬 WhatsApp Admin Message:`, waRes.success ? 'DELIVERED (Port 3007)' : waRes.error);
 
-  const smsRes = await sendCarrierSms('2348022791227', `ApexReach Day 1 Complete: 30 Lagos Leads Dispatched & UI Synced.`);
+  const smsRes = await sendCarrierSms('2348022791227', `Bethelmind Digital Solutions Day 1 Complete: 30 Lagos Leads Dispatched & UI Synced.`);
   console.log(`📱 SMS Gateway Admin Ping:`, smsRes.success ? 'DELIVERED (Port 8082)' : smsRes.error);
 
   console.log('\n===============================================================');

@@ -134,7 +134,7 @@ function normalizeNigerianPhone(cleanDigits: string): { formatted: string; isMob
 
 function generateFemaleVoiceScript(bizName: string, area: string): string {
   const locationStr = area ? `in ${area}` : 'in Lagos';
-  return `Hello! Good day, this is Ezinne from Bethelmind Analytics Lagos. We analyzed ${bizName}'s digital operations ${locationStr}, and we built a live 24/7 AI WhatsApp customer booking and automated quote prototype tailored specifically for ${bizName}. It responds to your customer inquiries in less than 3 seconds and handles Moniepoint and Paystack payment verification automatically. Please check the link we sent to test your prototype live, or chat directly with our Lagos team at 0802 279 1227 to claim your free 48-hour setup. Thank you!`;
+  return `Hello! Good day, this is Ezinne from Bethelmind Digital Solutions. We analyzed ${bizName}'s digital operations ${locationStr}, and we built a live 24/7 AI WhatsApp customer booking and automated quote prototype tailored specifically for ${bizName}. It responds to your customer inquiries in less than 3 seconds and handles Moniepoint and Paystack payment verification automatically. Please check the link we sent to test your prototype live, or chat directly with our Lagos team at 0802 279 1227 to claim your free 48-hour setup. Thank you!`;
 }
 
 function recordJourneyEvent(lead: any, formUrl: string, status: number) {
@@ -312,7 +312,7 @@ ${previewUrl}
 
 Claim your 48h setup:
 WhatsApp: https://wa.me/2348022791227 (0802 279 1227)
-Bethelmind Analytics Lagos Team | contact@bethelmindanalytics.com`;
+Bethelmind Digital Solutions Team | contact@bethelmindanalytics.com`;
 
       const formData = new URLSearchParams();
       let hasMessage = false;

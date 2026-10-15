@@ -82,7 +82,7 @@ export function generateLeadProposalDocument(params: LeadProposalParams): Propos
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">BETHELMIND ANALYTICS</div>
+      <div class="logo">Bethelmind Digital Solutions</div>
       <div class="badge">Ref: ${proposalId}</div>
     </div>
 

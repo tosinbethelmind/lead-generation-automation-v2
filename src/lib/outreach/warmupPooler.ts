@@ -2,7 +2,7 @@
  * @file src/lib/outreach/warmupPooler.ts
  * 
  * 🛡️ WARMBY-INSPIRED SENDER DOMAIN POOLER & DELIVERABILITY REPUTATION MANAGER
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  * 
  * Capabilities:
  * 1. Paces outgoing emails dynamically to maintain 99.8% inbox deliverability.
@@ -26,14 +26,14 @@ export interface SenderProfile {
 export class WarmupReputationPooler {
   private senders: SenderProfile[] = [
     {
-      name: 'Tosin | Bethelmind Analytics Lagos Desk',
+      name: 'Tosin | Bethelmind Digital Solutions',
       email: 'tosin@bethelmindanalytics.com',
       dailyQuota: 300,
       hourlySent: 0,
       lastSentAt: 0
     },
     {
-      name: 'Bethelmind Analytics Solutions Desk',
+      name: 'Bethelmind Digital Solutions Solutions Desk',
       email: 'contact@bethelmindanalytics.com',
       dailyQuota: 300,
       hourlySent: 0,

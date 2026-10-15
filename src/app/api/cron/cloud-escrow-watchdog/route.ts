@@ -11,7 +11,7 @@
  * 4. Automated multi-channel fallback dispatches:
  *    - Priority Hostinger SMTP Email to bethelmindrecruit@gmail.com
  *    - Direct GSM Carrier SMS to 0802 279 1227
- * 5. Direct-to-OPay Hardcoded Settlement (7034297995 - Oyelakin Tosin Matthew).
+ * 5. Direct-to-OPay Hardcoded Settlement (6805375225 - Bethelmind Digital Solutions).
  */
 
 import { NextResponse } from 'next/server';
@@ -28,9 +28,9 @@ export async function GET(request: Request) {
   const ADMIN_PHONE = '+2348022791227';
   const ADMIN_EMAIL = 'bethelmindrecruit@gmail.com';
   const OPAY_BENEFICIARY = {
-    bank: 'OPay Digital Services',
-    account: '7034297995',
-    name: 'Oyelakin Tosin Matthew'
+    bank: 'Moniepoint Microfinance Bank',
+    account: '6805375225',
+    name: 'Bethelmind Digital Solutions'
   };
 
   const results: Record<string, any> = {

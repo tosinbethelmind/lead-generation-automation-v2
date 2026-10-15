@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     // 1. Compose tailored Nigerian WhatsApp test response
     const greetingMsg = 
       `🌟 *Hello Management at ${bName}!* 👋\n\n` +
-      `This is your live 24/7 AI Sales Assistant test message from *Bethelmind Analytics Lagos Desk*.\n\n` +
+      `This is your live 24/7 AI Sales Assistant test message from *Bethelmind Digital Solutions*.\n\n` +
       `⚡ *HOW FAST WE REPLY TO YOUR CLIENTS:*\n` +
       `Notice this message arrived in seconds! When after-hours customers message *${bName}* at 9:00 PM or while you are busy, our 24/7 assistant answers their questions, calculates quotes, and books appointments automatically.\n\n` +
       `📍 *Your Business Identity:* ${bName} (${cat}) in ${loc}\n` +

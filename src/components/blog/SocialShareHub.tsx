@@ -21,7 +21,7 @@ export const SocialShareHub: React.FC<SocialShareHubProps> = ({
   const [copiedType, setCopiedType] = useState<string | null>(null);
   const articleUrl = `${MASTER_PAYOUT.website}/blog/${slug}`;
 
-  const defaultWhatsapp = whatsappSnippet || `*${title}*\n\nRead the full strategic breakdown from Bethelmind Analytics Lagos Desk:\n👉 ${articleUrl}`;
+  const defaultWhatsapp = whatsappSnippet || `*${title}*\n\nRead the full strategic breakdown from Bethelmind Digital Solutions:\n👉 ${articleUrl}`;
   const defaultTwitter = (twitterSnippet && twitterSnippet[0]) || `${title}\n\nStrategic briefing via @BethelmindHQ:\n${articleUrl}`;
 
   const copyToClipboard = (text: string, type: string) => {

@@ -1,7 +1,7 @@
 /**
  * @file scripts/whatsapp_pairing_and_listener_hub.js
  * 
- * 🌐 BETHELMIND ANALYTICS WHATSAPP FLEET HUB & 24/7 NIGERIAN CLOSING AUTO-RESPONDER
+ * 🌐 Bethelmind Digital Solutions WHATSAPP FLEET HUB & 24/7 NIGERIAN CLOSING AUTO-RESPONDER
  * 
  * Features:
  * 1. Live Web Dashboard on http://localhost:5005 for QR scan & 8-Digit Pairing Code.
@@ -9,6 +9,12 @@
  * 3. 24/7 Intelligent Nigerian B2B Sales Closer Auto-Responder.
  * 4. Real-time notifications to Admin Closer Desk (0802 279 1227).
  */
+
+// ── Gated: Standalone pairing hub is disabled to prevent 440 session replacement on Line 1 ──
+if (process.env.ALLOW_STANDALONE_BAILEYS !== 'true') {
+  console.log('⚠️ [Notice] whatsapp_pairing_and_listener_hub.js is disabled to protect evolution_api_server.js from session collisions.');
+  process.exit(0);
+}
 
 const { default: makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion, DisconnectReason } = require('@whiskeysockets/baileys');
 const QRCode = require('qrcode');
@@ -56,7 +62,7 @@ function formatNigerianAutoReply(text) {
 
   // Pricing inquiries
   if (/price|cost|how much|fee|pay|pricing|expensive|cheap|charges|amount/i.test(lower)) {
-    return `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Analytics Lagos* business tools.
+    return `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Digital Solutions* business tools.
 
 We keep our rates completely transparent with ZERO hidden fees:
 
@@ -100,11 +106,11 @@ Connect directly with our Lagos Desk Head:
   if (/who|where|office|address|location|scam|real|legit|call|number/i.test(lower)) {
     return `Good afternoon Sir/Ma!
 
-We are *Bethelmind Analytics Lagos Desk*, a registered commercial technology enterprise based in Lagos, Nigeria.
+We are *Bethelmind Digital Solutions*, a registered commercial technology enterprise based in Lagos, Nigeria.
 • Head of Desk: Tosin Oyelakin
 • Official Hotline / Direct WhatsApp: 0802 279 1227 (wa.me/2348022791227)
 • Corporate Website: https://www.bethelmindanalytics.com
-• Bank Settlement: Direct OPay Merchant Integration (Oyelakin Tosin Matthew)
+• Bank Settlement: Direct OPay Merchant Integration (Bethelmind Digital Solutions)
 
 We help Nigerian SMEs eliminate after-hours sales loss by deploying automated 24/7 WhatsApp response tools.
 
@@ -112,7 +118,7 @@ You do NOT pay anything upfront to review your demo. Feel free to inspect our pl
   }
 
   // General polite reply
-  return `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Analytics Lagos Desk*.
+  return `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Digital Solutions*.
 
 Our senior technical consultant is reviewing your message right now.
 
@@ -307,7 +313,7 @@ app.get('/', (req, res) => {
   </div>
 
   <div class="hub-footer">
-    🛡️ Bethelmind Analytics Lagos Desk · Protected by Permanent Triple Session Vault
+    🛡️ Bethelmind Digital Solutions · Protected by Permanent Triple Session Vault
   </div>
 
   <script>

@@ -150,7 +150,7 @@ Simply reply *YES* or call our Lagos closer desk directly:
 📞 *0802 279 1227*
 
 Warm regards,
-*Bethelmind Analytics Lagos Desk*
+*Bethelmind Digital Solutions*
 Plot 12, Commercial Corridor, Lagos
 (Reply STOP to opt out)`;
 

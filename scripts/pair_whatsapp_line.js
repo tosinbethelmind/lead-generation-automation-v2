@@ -29,7 +29,7 @@ async function main() {
   const cleanPhone = phone.startsWith('0') && phone.length === 11 ? '234' + phone.substring(1) : phone;
 
   console.log('========================================================================');
-  console.log(`📱 BETHELMIND ANALYTICS: WHATSAPP PAIRING ASSISTANT FOR LINE ${lineId}`);
+  console.log(`📱 Bethelmind Digital Solutions: WHATSAPP PAIRING ASSISTANT FOR LINE ${lineId}`);
   console.log(`📞 SIM Phone : +${cleanPhone} (${target.display})`);
   console.log(`🏢 Role      : ${target.role}`);
   console.log('========================================================================\n');

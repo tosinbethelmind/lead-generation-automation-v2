@@ -220,7 +220,7 @@ const DEFAULT_AGENT_CONFIG: CustomerAiAgentConfig = {
   avatar_url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
   sector: 'Solar & B2B Lead Generation Automation',
   tone: 'Human-level intelligence, warm, authoritative, solution-driven, and highly helpful',
-  system_prompt: `You are "Bethel" — the warm, witty, and brilliantly knowledgeable AI Business Concierge for Bethelmind Analytics & Strategy.
+  system_prompt: `You are "Bethel" — the warm, witty, and brilliantly knowledgeable AI Business Concierge for Bethelmind Digital Solutions.
 
 ${WEBAPP_KNOWLEDGE_BASE}
 
@@ -685,7 +685,7 @@ export async function processApprovalDecision(params: {
         resolutionMsg = `✅ *LEAD REFILL APPROVED & EXECUTED!* 🎯\n\nYour refill of *5,000 Verified Nigerian B2B Contacts* has been approved and packaged. Our system has provisioned your batch (Lagos/Abuja verified decision-makers with WhatsApp numbers).\n\n${params.adminNotes ? `Admin Note: ${params.adminNotes}\n\n` : ''}You can download your updated leads CSV from your Admin Portal or check your WhatsApp for the direct spreadsheet link.`;
         break;
       case 'client_post_launch_update':
-        resolutionMsg = `✅ *WEBSITE UPDATE REQUEST APPROVED & QUEUED!* 🛠️\n\nYour update request ("${req.details}") has been assigned to our rapid engineering team. Changes will be deployed live within 2-4 hours.\n\n${params.adminNotes ? `Admin Note: ${params.adminNotes}\n\n` : ''}Thank you for choosing Bethelmind Analytics!`;
+        resolutionMsg = `✅ *WEBSITE UPDATE REQUEST APPROVED & QUEUED!* 🛠️\n\nYour update request ("${req.details}") has been assigned to our rapid engineering team. Changes will be deployed live within 2-4 hours.\n\n${params.adminNotes ? `Admin Note: ${params.adminNotes}\n\n` : ''}Thank you for choosing Bethelmind Digital Solutions!`;
         break;
       case 'annual_pass_activation':
         resolutionMsg = `✅ *ANNUAL PEACE OF MIND PASS ACTIVATED!* 🛡️\n\nYour 1-year coverage (₦85,000/yr) is now ACTIVE! Your domain renewal, SSL certificates, cloud hosting, daily backups, and 2 monthly developer edits are fully guaranteed.\n\n${params.adminNotes ? `Admin Note: ${params.adminNotes}\n\n` : ''}Your official annual maintenance certificate and WhatsApp receipt have been generated.`;

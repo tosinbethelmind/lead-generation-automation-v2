@@ -47,7 +47,7 @@ async function runHighTrafficTrigger() {
   const actionPlanFile = path.join(queueDir, 'DAILY_TRAFFIC_ACTION_PLAN.md');
   let mdContent = `# 🚀 BETHELMIND DAILY HIGH-VELOCITY TRAFFIC ACTION PLAN
 **Generated:** ${now}
-**Target Revenue Engine:** Bethelmind Analytics Due-Diligence & Digital Asset Store
+**Target Revenue Engine:** Bethelmind Digital Solutions Due-Diligence & Digital Asset Store
 **Monetization Gateways:** Selar (Instant Card & Transfer) + WhatsApp Closing Desk (0802 279 1227)
 
 ---

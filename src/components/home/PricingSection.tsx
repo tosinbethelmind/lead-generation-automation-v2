@@ -419,20 +419,31 @@ export default function PricingSection({
                 <p style={{ color: '#64748b', fontSize: '0.78rem', margin: '0 0 16px', lineHeight: 1.4 }}>{plan.tagline}</p>
 
                 <div style={{ marginBottom: 18, background: 'rgba(255,255,255,0.02)', padding: '14px 16px', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)' }}>
+                  {plan.originalTotalNGN && (
+                    <div style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Normal Agency Fee:</span>
+                      <span style={{ fontSize: '0.88rem', color: '#f87171', textDecoration: 'line-through', fontWeight: 700 }}>
+                        ₦{plan.originalTotalNGN.toLocaleString()}
+                      </span>
+                      <span style={{ fontSize: '0.7rem', background: 'rgba(245,158,11,0.15)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.35)', padding: '1px 7px', borderRadius: 6, fontWeight: 800 }}>
+                        🇳🇬 50% OCTOBER PROMO
+                      </span>
+                    </div>
+                  )}
                   <p style={{ margin: '0 0 6px', display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: '2.1rem', fontWeight: 900, color: plan.color, fontFamily: "'Outfit', sans-serif" }}>
                       ₦{plan.depositAmountNGN.toLocaleString()}
                     </span>
                     <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 800, background: 'rgba(52,211,153,0.12)', padding: '2px 8px', borderRadius: 6 }}>
-                      {plan.balanceAmountNGN > 0 ? '50% Deposit to Start' : 'Complete 1-Time Setup'}
+                      {plan.balanceAmountNGN > 0 ? 'Deposit to Start Today' : 'Complete 1-Time Promo Setup'}
                     </span>
                   </p>
                   <p style={{ margin: '0 0 4px', fontSize: '0.82rem', color: '#cbd5e1', fontWeight: 600 }}>
-                    Total Project Investment: <strong style={{ color: '#fff' }}>₦{plan.totalAmountNGN.toLocaleString()}</strong>
+                    October Promo Total: <strong style={{ color: '#fff' }}>₦{plan.totalAmountNGN.toLocaleString()}</strong> <span style={{ color: '#34d399', fontSize: '0.75rem' }}>(1 Full Year Included • ₦0 Monthly)</span>
                   </p>
                   <p style={{ margin: 0, fontSize: '0.76rem', color: '#94a3b8', lineHeight: 1.4 }}>
                     {plan.balanceAmountNGN > 0
-                      ? `🛡️ Balance of ₦${plan.balanceAmountNGN.toLocaleString()} strictly due ONLY after you inspect & approve your live preview on your phone.`
+                      ? `🛡️ Balance of ₦${plan.balanceAmountNGN.toLocaleString()} strictly due ONLY after you inspect & approve your live website on your phone.`
                       : '⚡ Zero forced monthly subscriptions. Complete same-day integration.'}
                   </p>
                   <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.76rem', color: '#38bdf8', fontWeight: 700 }}>

@@ -1,7 +1,7 @@
 /**
  * @file scripts/unified_master_autopilot.js
  * 
- * BETHELMIND ANALYTICS UNIFIED 24/7 MASTER AUTOPILOT ENGINE.
+ * Bethelmind Digital Solutions UNIFIED 24/7 MASTER AUTOPILOT ENGINE.
  * 
  * Optimized with Strict Memory-Safe (<=256MB per worker) & Data-Saver Protection:
  * 1. 🌐 Web App & Digital Storefront Watchdog (Port 3006 / Production)
@@ -35,7 +35,7 @@ function log(msg) {
 }
 
 console.log('=================================================================');
-console.log('🌟 BETHELMIND ANALYTICS: 24/7 MASTER AUTOPILOT (DATA-SAVER & RAM SAFE)');
+console.log('🌟 Bethelmind Digital Solutions: 24/7 MASTER AUTOPILOT (DATA-SAVER & RAM SAFE)');
 console.log('=================================================================\n');
 
 log('Starting background worker subsystems in Memory-Safe (<256MB) & Data-Saver mode...');
@@ -246,12 +246,12 @@ function startOutreachEngine() {
     }
 
     const DAILY_EMAIL_TARGET = parseInt(process.env.DAILY_EMAIL_TARGET || '600', 10);
-    const targetMet = sentEmails >= DAILY_EMAIL_TARGET && successfulWebforms >= 300;
+    const targetMet = sentEmails >= DAILY_EMAIL_TARGET;
     if (targetMet) {
-      log(`🎉 [Worker 6: Outreach Engine] Full daily quota achieved (Emails: ${sentEmails}/${DAILY_EMAIL_TARGET}, Webforms: ${successfulWebforms}/300). Resting 4 hours before next audit cycle...`);
+      log(`🎉 [Worker 6: Non-Website Outreach Engine] Full daily email quota achieved (${sentEmails}/${DAILY_EMAIL_TARGET}). Resting 4 hours before next audit cycle...`);
       setTimeout(startOutreachEngine, 4 * 60 * 60 * 1000);
     } else {
-      log(`ℹ️ [Worker 6: Outreach Engine] Batch completed (Code: ${code}). Progress: Emails ${sentEmails}/${DAILY_EMAIL_TARGET}, Webforms ${successfulWebforms}/300. Resting 30 minutes before next batch to conserve data...`);
+      log(`ℹ️ [Worker 6: Non-Website Outreach Engine] Batch completed (Code: ${code}). Progress: Non-Website Emails ${sentEmails}/${DAILY_EMAIL_TARGET}. Resting 30 minutes before next batch to conserve data...`);
       setTimeout(startOutreachEngine, 30 * 60 * 1000);
     }
   });
@@ -420,45 +420,10 @@ function startVibeDaemon() {
   });
 }
 
-// ── WORKER 13: Smart Webform Submitter Daemon (Data-Saver Paced) ──
+// ── WORKER 13: Smart Webform Submitter Daemon (Paused in Strict Non-Website Mode) ──
 let webformProcess = null;
 function startSmartWebformDaemon() {
-  const todayStr = new Date().toISOString().split('T')[0];
-  const webformPath = path.join(rootDir, 'local_db/real_webform_submissions.json');
-  let deliveredCount = 0;
-  if (fs.existsSync(webformPath)) {
-    try {
-      const logs = JSON.parse(fs.readFileSync(webformPath, 'utf8'));
-      if (Array.isArray(logs)) {
-        deliveredCount = logs.filter(l => (l.submitted_at || l.timestamp || '').startsWith(todayStr) && l.success).length;
-      }
-    } catch (_) {}
-  }
-
-  if (deliveredCount >= 300) {
-    log(`🎉 [Worker 13: Webform Submitter] Daily target of 300 webforms achieved (${deliveredCount}/300). Resting 4 hours...`);
-    setTimeout(startSmartWebformDaemon, 4 * 60 * 60 * 1000);
-    return;
-  }
-
-  log(`🌐 [Worker 13: Smart Webform Submitter] Launching batch of 25 webforms (Today: ${deliveredCount}/300)...`);
-  webformProcess = spawn('node', ['--max-old-space-size=128', tsxCli, 'scripts/continuous_smart_webform_submitter.ts'], {
-    cwd: rootDir,
-    shell: false,
-    stdio: 'inherit',
-    windowsHide: true,
-    env: safeEnv
-  });
-
-  webformProcess.on('exit', (code) => {
-    log(`ℹ️ [Worker 13: Smart Webform Submitter] Batch completed (Code: ${code}). Resting 30 minutes before next batch to conserve data...`);
-    setTimeout(startSmartWebformDaemon, 30 * 60 * 1000);
-  });
-
-  webformProcess.on('error', (err) => {
-    log(`❌ [Worker 13: Smart Webform Submitter] Error: ${err.message}. Retrying in 15 minutes...`);
-    setTimeout(startSmartWebformDaemon, 15 * 60 * 1000);
-  });
+  log('🎯 [Worker 13: Non-Website Strategy Guard] Outreach is 100% focused on verified Nigerian businesses WITHOUT websites. Existing-website webform crawler is paused to conserve cellular bandwidth.');
 }
 
 // ── WORKER 14: Crawlee + Katana + Metascraper (Bounded Pass) ────────

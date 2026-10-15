@@ -159,7 +159,7 @@ export default async function GmbAuditPage({ params, searchParams }: GmbAuditPag
 
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950 px-6 py-6 text-center text-xs text-slate-600">
-        <p>Bethelmind Analytics Lagos OTC & Business Security Desk • Plot 12 Commercial Corridor, VI, Lagos</p>
+        <p>Bethelmind Digital Solutions OTC & Business Security Desk • Plot 12 Commercial Corridor, VI, Lagos</p>
         <p className="mt-1">Direct Verification Hotline: +234 802 279 1227</p>
       </footer>
     </div>

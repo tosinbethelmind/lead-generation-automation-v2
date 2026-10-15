@@ -3,7 +3,7 @@ async function testSms() {
   const payload = {
     to: '2348022791227',
     from: 'N-Alert',
-    sms: 'Good day! This is a live SMS delivery test from Bethelmind Analytics Lagos Desk.',
+    sms: 'Good day! This is a live SMS delivery test from Bethelmind Digital Solutions.',
     type: 'plain',
     channel: 'generic',
     api_key: apiKey

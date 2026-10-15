@@ -3,7 +3,7 @@ import { verifySessionToken } from './lib/session';
 import { checkRateLimit, safeCompareStrings } from './lib/security';
 
 /**
- * Bethelmind Analytics & Strategy Unified Middleware
+ * Bethelmind Digital Solutions Unified Middleware
  *
  * Handles three responsibilities:
  * 1. API rate limiting
@@ -154,21 +154,36 @@ export async function proxy(req: NextRequest) {
 
   const parts = hostWithoutPort.split('.');
 
-  // Must have at least 2 segments (subdomain.domain) to be a subdomain request
+  // Must have at least 2 segments (domain.tld or subdomain.domain.tld)
   if (parts.length < 2) return NextResponse.next();
 
-  const subdomain = parts[0];
+  // Check if request is on our primary platform domain (bethelmindanalytics.com / localhost)
+  const isPlatformDomain =
+    hostWithoutPort === 'localhost' ||
+    hostWithoutPort.endsWith('bethelmindanalytics.com') ||
+    hostWithoutPort.endsWith('bethelmind.com');
 
-  // Skip root/main domains and reserved subdomains
-  if (MAIN_DOMAINS.has(subdomain)) return NextResponse.next();
-  if (RESERVED_SUBDOMAINS.has(subdomain)) return NextResponse.next();
+  let targetSiteSlug = '';
 
-  // Skip Vercel deployment preview hashes (20+ hex characters)
-  if (/^[a-f0-9]{20,}$/.test(subdomain)) return NextResponse.next();
+  if (isPlatformDomain) {
+    const subdomain = parts[0];
+    if (MAIN_DOMAINS.has(subdomain) || RESERVED_SUBDOMAINS.has(subdomain)) {
+      return NextResponse.next();
+    }
+    if (/^[a-f0-9]{20,}$/.test(subdomain)) return NextResponse.next();
+    targetSiteSlug = subdomain;
+  } else {
+    // External custom domain pointed to our Vercel server (e.g., www.chinedumotors.com.ng or chinedumotors.com.ng)
+    const cleanHost = hostWithoutPort.replace(/^www\./i, '');
+    targetSiteSlug = cleanHost.split('.')[0];
+    if (!targetSiteSlug || MAIN_DOMAINS.has(targetSiteSlug)) {
+      return NextResponse.next();
+    }
+  }
 
-  // Rewrite to /sites/[subdomain] internally — zero-build multi-tenancy
-  url.pathname = `/sites/${subdomain}${pathname === '/' ? '' : pathname}`;
-  console.log(`[Bethelmind Analytics & Strategy Middleware] Rewriting ${hostname}${pathname} → ${url.pathname}`);
+  // Rewrite to /sites/[targetSiteSlug] internally — zero-build multi-tenancy
+  url.pathname = `/sites/${targetSiteSlug}${pathname === '/' ? '' : pathname}`;
+  console.log(`[Bethelmind Digital Solutions Middleware] Rewriting ${hostname}${pathname} → ${url.pathname}`);
 
   return NextResponse.rewrite(url);
 }

@@ -68,7 +68,7 @@ localLeads.forEach(l => {
 
 console.log('📌 EXACT BREAKDOWN:');
 console.log('  1. Total Lagos Records:                     ', lagosCount.toLocaleString());
-console.log('  2. Verified Regular Lagos B2B Businesses:   ', lagosRegularB2B.toLocaleString(), '🎯 (Target for ApexReach 10K Engine)');
+console.log('  2. Verified Regular Lagos B2B Businesses:   ', lagosRegularB2B.toLocaleString(), '🎯 (Target for Bethelmind Digital Solutions 10K Engine)');
 console.log('  3. Lagos Leads with Valid Phone Numbers:    ', lagosWithPhone.toLocaleString());
 console.log('  4. Lagos Leads with Business Email:         ', lagosWithEmail.toLocaleString());
 console.log('  5. Excluded Solar Companies:                ', lagosSolar.toLocaleString(), '☀️ (Excluded)');

@@ -10,7 +10,20 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **ENGINE 1: 100% ZERO-CRYPTO B2B COMMERCIAL GROWTH ENGINE (SOLE ACTIVE PRIMARY FOCUS)**: All customer outreach, scrapers, SMS, WhatsApp dispatches, email templates, and executive digests are strictly focused **100% on Engine 1**. Messaging highlights the **10 High-Conversion Sector Monetization Tools & DFY SME Prototypes** (₦15k–₦150k setups, ₦15k–₦70k/mo retainers, 24/7 AI WhatsApp Sales Assistants, Solar BOQ Load Sizers, Fake Alert Proof Bank Transfer Reconciliation, Hyperlocal Dispatch Aggregator, Multi-Location Stock Theft Prevention, Service Booking Deposit Lock, Tenant Escrow Manager, Construction Material Estimator, School Fee Result Gating, Agribusiness Order Consolidator). ZERO crypto jargon, ZERO wallet references, and ZERO crypto keywords allowed in outreach.
 - **CHINA FACTORY / FX / ESCROW COPY EXPUNGED FROM COLD OUTREACH**: Cold customer outreach copy strictly expunges China factory, RMB/USD direct wire, and escrow copy. All messaging highlights 24/7 AI WhatsApp Assistants, Sector Tools, and DFY SME Prototypes.
 - **ENGINE 2: STANDALONE INDEPENDENT CRYPTO ENGINE (`cryptoEngineStandalone.ts`)**: Completely decoupled, isolated, and PAUSED. Zero messages or notifications dispatched to or from crypto modules.
-- **STRICT BRANDING**: All outreach messages, signatures, SMS, and emails MUST strictly use **Bethelmind Analytics Lagos Desk** (e.g. `*Bethelmind Analytics Lagos*`). NEVER use `ApexReach`.
+- **STRICT BRANDING & CAC CERTIFICATION**: All outreach messages, signatures, SMS, emails, and client preview pages MUST strictly use **Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)** and route all corporate settlements to **Moniepoint Microfinance Bank (`6805375225` — Bethelmind Digital Solutions)**. NEVER use `ApexReach` or old `Bethelmind Analytics` names.
+
+## 1B. PERMANENT CONVERSION MANDATE: 100% STRICT NON-WEBSITE BUSINESS FOCUS (`hasWebsite === false` / DIRECTORY-ONLY SMEs)
+- **SOLE TARGET SEGMENT (VERIFIED NIGERIAN BUSINESSES WITHOUT A STANDALONE WEBSITE)**:
+  - All scraping, enrichment, and outreach across Email, WhatsApp, and GSM SMS MUST strictly target **100% verified Nigerian commercial businesses that do NOT have a standalone website** (`hasWebsite === false` or directory-only profiles on `businesslist.com.ng`, `finelib.com`, `jiji.ng`, `vconnect.com`, `africabizinfo.com`, `africabz.com`, `nigeriayp.com`, `infobel.com`, `facebook.com`, `instagram.com`).
+  - **Zero Wasted Outreach on Existing Website Owners**: Do NOT waste outreach capacity or cellular bandwidth pitching website builds or submitting webforms to companies that already own standalone websites.
+  - **Every Scraped Lead Must Have Verified Contact & Originality**: Every saved lead MUST have a verified 11-digit Nigerian mobile number (`MTN`, `Airtel`, `Glo`, `9mobile`) and/or a verified business email address, and a 100% unique company name. Bare search-dork URLs without phone/email, academic PDFs, dictionary pages, and template/listicle names (`... Specialist (1234)`, `Top 10 ...`) are strictly rejected.
+- **THE "COMPETITORS ARE STEALING YOUR GOOGLE SEARCHES" HOOK**:
+  - Every outreach message (Email, WhatsApp, GSM SMS) and every `/preview/[slug]` landing page leads with the acute visibility & revenue leak:
+    *"When prospective customers search for [Business Name] on Google right now, only third-party directory pages show up alongside ads for your direct competitors because you do not have an official mobile website yet. Instead of asking you to wait weeks for a developer, we already built your live Official Mobile Website + 24/7 WhatsApp Booking & Quoting Assistant for [Business Name] to test free on your phone (`https://www.bethelmindanalytics.com/preview/[slug]`)."*
+- **2-TIER LOW-FRICTION COMMERCIAL PRICING (REMOVES FIRST-CONTACT PRICE RESISTANCE)**:
+  - **Option 1 — Starter Go-Live ("Pay-Small-Small" Fast Activation)**: **`₦35,000` one-time Starter Activation** *(or **`₦25,000/month`** Pay-Small-Small)* — Launches their pre-built Official Mobile Website + 24/7 WhatsApp AI Closer & OPay/Moniepoint Transfer Shield immediately.
+  - **Option 2 — Full Turnkey Custom Domain Suite**: **`₦75,000` 50% Milestone Deposit (`₦150,000` Total)** — Includes dedicated `.com` / `.com.ng` custom domain registration, full sector calculator + WhatsApp ledger, Google Search SEO ranking, and 100% code/domain ownership within 48 hours.
+  - All settlements route 100% directly to our CAC Certified Corporate Account: **Moniepoint Microfinance Bank (`6805375225` — Bethelmind Digital Solutions)**.
 
 ## 2. B2B COMMERCIAL OUTREACH STRATEGY, VOICE NOTE INTEGRATION & 100% REAL-ACTION INVARIANT
 - **The 10 High-Conversion Sector Monetization Tools (Ready-to-Pitch B2B Revenue Suite)**:
@@ -24,12 +37,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
   8. *Construction & Interior Finishing Material Estimator* (₦20k–₦40k/mo): Instant cement, tile, paint & POP quantity calculator for contractors.
   9. *Private School Term Fee Portal with Result Gating* (₦50k–₦100k/term): Student term fee payment portal that auto-gates digital report cards until fees clear.
   10. *Bulk Agribusiness Feed & Input Order Consolidator* (₦30k–₦70k/mo): Farm collective portal aggregating feed/fertilizer orders to secure wholesale discounts.
-- **Done-For-You Commercial Website Prototypes (`https://www.bethelmindanalytics.com/preview/[lead_id]`)**: Turnkey deployments (₦75k deposit / ₦150k) or 1-Line Embed Script Upgrades (₦35k / ₦65k).
+- **Done-For-You Commercial Website Prototypes (`https://www.bethelmindanalytics.com/preview/[lead_id]`)**: Turnkey deployments (₦35k Starter Go-Live / ₦25k monthly or ₦75k deposit / ₦150k Full Custom Domain Suite).
 - **MANDATORY VOICE NOTE INTEGRATION ACROSS ALL CHANNELS (EXCEPT GSM SMS)**:
   - **WhatsApp DMs**: 15-second `.opus` voice note audio bubbles (`en-NG-EzinneNeural`).
   - **B2B Executive Email**: Personalized `.mp3` voice note attachment + clickable audio player banner via Hostinger SMTP.
   - **Social DMs (Instagram, Facebook, LinkedIn, TikTok)**: Embedded audio preview link in inbox messages.
-  - **Web Contact Forms**: Embedded audio proposal link.
+  - **Web Contact Forms**: Paused in Strict Non-Website Mode to conserve cellular bandwidth.
   - **GSM SMS (EXCEPTION)**: Text ONLY ($\le$ 158 characters, exactly 1 SMS per client). Zero audio links in SMS to preserve single-credit billing.
 - **STRICT 100% REAL-ACTION & REAL-FIGURES ONLY INVARIANT (ZERO SIMULATED/MOCK REPORTING)**:
   - All logs, metrics, databases (`leads_db.json`, `lead_journeys.json`, Supabase Cloud), blog views, click counts, order tallies, and status reports MUST report **ONLY 100% genuine, confirmed, network-delivered actions and real visitor counts**.
@@ -37,7 +50,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - If a blog article has received 0 real human visits, it MUST be reported as `0 views`.
   - If an outreach channel has not sent an actual confirmed network packet to a client, it MUST be reported as `0 / Pending`.
   - All prospect interaction metrics (page views, calculator runs, video views) MUST reflect only verified incoming client telemetry.
-- **100% DIRECT-TO-OPAY COMMISSIONS**: All revenue, setup deposits, and product sales route directly to **OPay Digital Services** (`7034297995` - Oyelakin Tosin Matthew).
+- **100% DIRECT-TO-OPAY COMMISSIONS**: All revenue, setup deposits, and product sales route directly to **Moniepoint Microfinance Bank** (`6805375225` - Bethelmind Digital Solutions).
 
 ## 2B. PERMANENT OPERATING MANDATE: STRICT FAIR USAGE OF DATA & BANDWIDTH CONSERVATION (SOLIDIFIED IN PERMANENT MEMORY)
 - **1. HOST ENVIRONMENT INVARIANT (METERED CELLULAR BROADBAND)**:
@@ -89,9 +102,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## 4. PHONE LINE ARCHITECTURE & DIRECT-TO-OPAY PAYOUT SETTLEMENT
 - **ADMIN & CLOSER DESK (INBOUND INQUIRIES ONLY):** `0802 279 1227` (`ADMIN_WA_PHONE`) & Email (`bethelmindrecruit@gmail.com`). All SMS & Email CTA links connect directly to this desk (`wa.me/2348022791227`). NEVER dispatch cold outbound outreach from this number.
 - **100% DIRECT-TO-OPAY NAIRA CASHOUT (ZERO CRYPTO WALLET REQUIREMENT):** All revenue, OTC spreads, airdrop liquidations, and prototype setup deposits MUST be converted directly to Naira and routed to the user's primary OPay account:
-  - **Bank Name:** `OPay Digital Services`
-  - **Account Number:** `7034297995`
-  - **Account Name:** `Oyelakin Tosin Matthew`
+  - **Bank Name:** `Moniepoint Microfinance Bank`
+  - **Account Number:** `6805375225`
+  - **Account Name:** `Bethelmind Digital Solutions`
   - The user is NOT required to maintain, connect, or manage crypto wallets, private keys, or foreign exchanges. All funds arrive directly as Nigerian Bank Transfers (NIP).
 
 ## 4B. THE INSTITUTIONAL B2B OTC ESCROW & SPREAD ARBITRAGE SYSTEM (ZERO CAPITAL RISK)
@@ -99,14 +112,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Mandatory Live Rate Breakdown in ALL Quotes & Examples:**
   - **Live Wholesale Ask Floor:** `₦1,350 / USD` (CoinGecko Real-Time Benchmark)
   - **Locked Client Quoted Rate:** `₦1,375 / USD`
-  - **Net Arbitrage Spread Commission:** `+₦25.00 / USD` (Paid 100% Direct-to-OPay: `7034297995`).
+  - **Net Arbitrage Spread Commission:** `+₦25.00 / USD` (Paid 100% Direct-to-OPay: `6805375225`).
 - **Zero-Margin-of-Error Risk Architecture (`zeroMarginRiskGuard.ts`):**
   1. *Deterministic Financial Assertions*: Strict invariant validation on all rate math. Zero AI calculation hallucinations.
   2. *Strict Neutral Bank Narrations*: Scrubs all restricted terms ("crypto", "binance", "p2p", "usdt") and generates clean corporate codes (e.g. `BM-OTC-TICKET-JACIOINTER`).
   3. *Pre-Flight China Timezone & Route Intelligence*: Detects Beijing UTC+8 factory working hours, automatically selecting between 24/7 TRC-20 USDT and Swift MT103 Bank Wires.
   4. *Diamond Merchant Whitelist & Pre-Flight Depth Check*: Pre-flight order depth verification with AlphaDesk VI (`+234 809 112 4022`) and BitDelta Trade Fair (`+234 813 900 8821`).
   5. *1-Tap Co-Pilot User Approval Gate*: System automatically collects supplier proforma invoice, creates verified ticket, and sends 1-tap approval card to Admin WhatsApp (`0802 279 1227`). Upon 1-tap click, dual dispatches verified Providus Escrow Vault to client and trade execution order to Diamond Merchant.
-  6. *100% Direct-to-OPay Cashout*: All commissions (+₦25/USD) clear straight into OPay (`7034297995` - Oyelakin Tosin Matthew) with ₦0 crypto complexity.
+  6. *100% Direct-to-OPay Cashout*: All commissions (+₦25/USD) clear straight into OPay (`6805375225` - Bethelmind Digital Solutions) with ₦0 crypto complexity.
 - **Mandatory Verified Top Diamond Merchant Whitelist & Direct Contact Registry (BEFORE Transacting):**
   - **Desk #1 (Victoria Island Corridor):** `AlphaDesk Institutional Liquidity Desk #402`
     - **Physical Office:** Plot 12, Commercial Corridor, Victoria Island, Lagos
@@ -133,7 +146,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 4C. SOLIDIFIED 4-STAGE POST-CONTACT CLIENT CONVERSION PIPELINE
 - **Stage 1 (Inbound AI Closer < 3s):** When prospect responds to SMS/Email outreach, `postContactCloserEngine.ts` answers in < 3s with a natural Nigerian business tone, qualifying between 100% Turnkey DFY build (₦150k / ₦75k deposit) and 1-Line Embed (₦35k / ₦65k) or Freight OTC rate-lock.
-- **Stage 2 (Digital Commercial Invoicing & 48h SLA):** `postContactInvoiceEngine.ts` issues official bankable invoice cards detailing the 6 deliverables, 48-Hour delivery guarantee, 50% milestone deposit, and direct OPay settlement account (`7034297995`).
+- **Stage 2 (Digital Commercial Invoicing & 48h SLA):** `postContactInvoiceEngine.ts` issues official bankable invoice cards detailing the 6 deliverables, 48-Hour delivery guarantee, 50% milestone deposit, and direct OPay settlement account (`6805375225`).
 - **Stage 3 (Co-Pilot Human Approval Desk):** High-intent inquiries and invoice requests trigger a 1-tap card to Admin WhatsApp (`0802 279 1227`).
 - **Stage 4 (Automated Zero-Touch Handover):** Upon verified bank credit, system registers domain, activates Vercel production staging, and sends the business owner their Welcome Dashboard Pack via SMS & Email.
 
@@ -175,7 +188,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - **Step 2 (The Value Teaser & Prototype Link):** Upon reply, send the sector tool pain hook + live preview link + 15s Nigerian voice note (`en-NG-EzinneNeural`).
 - **Email Channel Protocol (Complete Executive Breakdown)**:
   - Subject: `Automating 24/7 Quotes & Inquiries for [Business Name]`
-  - Includes dynamic prototype preview link, 15s voice note attachment, and direct OPay settlement details (`7034297995`).
+  - Includes dynamic prototype preview link, 15s voice note attachment, and direct OPay settlement details (`6805375225`).
 
 ## 8. DUAL AUDIENCE OFFER STRUCTURE & TIERING
 - **No-Website Leads (`hasWebsite === false`)**:
@@ -236,7 +249,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - **24/7 Autonomous Execution**: Heavy harvesting runs via GitHub Actions cloud workflow (`autonomous_247_cloud_engine.yml`) every 30 minutes, saving 100% local cellular data, while local supervisor handles lightweight email/webform dispatch and inbound closer desks.
 
 ## 13. AUTONOMOUS MULTI-CHANNEL DISPATCH POLICY & OPTION A INVARIANTS (ENGINE 1 ONLY)
-- **STRICT ENGINE 1 FOCUS**: Outreach is 100% focused on Engine 1 (Turnkey DFY Prototypes `/preview/[slug]`, 1-Line Embeds ₦35k/₦65k, Sector Tools, Direct OPay Payouts `7034297995`). ZERO crypto copy or wallet references.
+- **STRICT ENGINE 1 FOCUS**: Outreach is 100% focused on Engine 1 (Turnkey DFY Prototypes `/preview/[slug]`, 1-Line Embeds ₦35k/₦65k, Sector Tools, Direct OPay Payouts `6805375225`). ZERO crypto copy or wallet references.
 - **OPTION A: EMAIL-FIRST OMNICHANNEL & 1-TAP INBOUND WHATSAPP HOOK (PERMANENT RULE)**:
   - Cold outbound prospecting is 100% led by **Dual-Mailbox Hostinger B2B Email** (600 verified corporate emails/day: `tosin@` 300 + `matthew@` 300) and **Carrier GSM SMS** ($\le$ 158 chars).
   - Every email and SMS delivers the dynamic prototype preview link (`/preview/[slug]`) and a prominent **1-Tap Inbound WhatsApp Claim Button** connecting the prospect directly to Admin WhatsApp (`0802 279 1227`).
@@ -269,7 +282,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 16. THE 7-PILLAR ACTIVE B2B COMMERCIAL MONETIZATION ARCHITECTURE (CAC EXCLUDED)
 - **Pillar 1 / Engine 1: Turnkey DFY Prototype & Website Deployment Engine (`turnkeyWebsiteEngine.ts`)**: Autonomously stages personalized prototypes (`/preview/[slug]`) for Nigerian SMEs (₦75k deposit / ₦150k DFY build or ₦35k/₦65k 1-Line Embed upgrade).
-- **Pillar 2 / Engine 2: Institutional B2B Freight Importer Escrow & Spread Arbitrage Engine (`smeFreightArbitrageEngine.ts`)**: Connects Lagos container freight importers with Diamond Liquidity Desks, capturing +₦25.00/USD net spread commissions (₦250k–₦1.625M/trade) routed 100% direct to OPay (`7034297995`).
+- **Pillar 2 / Engine 2: Institutional B2B Freight Importer Escrow & Spread Arbitrage Engine (`smeFreightArbitrageEngine.ts`)**: Connects Lagos container freight importers with Diamond Liquidity Desks, capturing +₦25.00/USD net spread commissions (₦250k–₦1.625M/trade) routed 100% direct to OPay (`6805375225`).
 - **Pillar 3: B2B Verified Lead Data Bundler (`leadBundlePackager.ts`)**: Packages enriched, verified sector databases into downloadable Selar packs (₦15k–₦85k) with automated Paystack/Moniepoint fulfillment.
 - **Pillar 4: Programmatic Micro-SaaS Paywalls (`/api/tools/micro-paywall`)**: 24/7 instant ₦2,500 impulse unlock gateway for official Bankable PDF audits (Solar Sizer, Land Cadastral coordinate verifier, SCUML compliance tools).
 - **Pillar 5: Shadow B2B Pay-Per-Appointment Multi-Router (`appointmentLeadRouter.ts`)**: Routes high-budget commercial quote leads (Hospital Solar, Real Estate, Dental) to 2 non-competing vetted contractors simultaneously (₦35k–₦50k/contractor yielding ₦70k–₦90k/lead).
@@ -284,13 +297,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Unified Master Dossier Delivery**: All 7 commercial monetization pillars consolidate into a single clean **Master Monetization Dossier** delivered at **08:00 AM WAT** to `bethelmindrecruit@gmail.com`.
 
 ## 18. THE 3 ZERO-CAPITAL COMPANION ACCELERATOR ENGINES
-- **Companion 1: WhatsApp Direct-to-OPay Instant Escrow Bot (`whatsappInstantEscrowBot.ts`)**: Automatically calculates live commercial FX/USDT rates (₦1,520/$), locks in ₦25/USD commission spreads on $10k–$65k Lagos freight importer orders, and routes instant Naira payouts directly to OPay (`7034297995` - Oyelakin Tosin Matthew).
+- **Companion 1: WhatsApp Direct-to-OPay Instant Escrow Bot (`whatsappInstantEscrowBot.ts`)**: Automatically calculates live commercial FX/USDT rates (₦1,520/$), locks in ₦25/USD commission spreads on $10k–$65k Lagos freight importer orders, and routes instant Naira payouts directly to OPay (`6805375225` - Bethelmind Digital Solutions).
 - **Companion 2: Headless Colab Testnet Cloud Cluster (`colab_testnet_sybil_cluster.py`)**: Runs 24/7 as Worker D in the cloud. Rotates 10 free, anonymous EVM wallet addresses to claim $0 faucets and execute automated test swaps across Monad, Berachain, and Story Protocol—multiplying airdrop allocations 10x (₦1.8M – ₦4.5M potential value) with 0% battery or manual friction.
 - **Companion 3: Automated SME FX Liquidity Radar (`smeFxLiquidityRadar.ts`)**: Continuously identifies and scores verified container freight importers in Alaba International, Trade Fair Complex, and Ikeja Industrial corridors, funneling 3 to 5 pre-vetted deals into the 08:00 AM WAT Master Dossier.
 
 ## 19. 100% AUTOMATED 1-CLICK 3-WAY WHATSAPP HANDSHAKE & SETTLEMENT ENGINE
 - **Automated Handshake Generation (`whatsappAutomatedBridgeEngine.ts`)**: Eliminates all manual group creation, typing, or rate math. Generates pre-populated 1-click WhatsApp agreements with locked ₦25/USD spread rates for instant importer-to-merchant escrow connection.
-- **Direct Payout Protocol**: Upon merchant delivery to the buyer's China supplier, all commissions (₦375,000 – ₦1,625,000) are routed directly via Nigerian Interbank Transfer (NIP) straight into the user's primary OPay Account (`7034297995` - Oyelakin Tosin Matthew) with 0% platform deductions.
+- **Direct Payout Protocol**: Upon merchant delivery to the buyer's China supplier, all commissions (₦375,000 – ₦1,625,000) are routed directly via Nigerian Interbank Transfer (NIP) straight into the user's primary OPay Account (`6805375225` - Bethelmind Digital Solutions) with 0% platform deductions.
 
 ## 20. 24/7 CRYPTO & ARBITRAGE CLOUD SUPERVISOR & 3-HOUR BRIEFING ENGINE
 - **24/7 Supervisor Process (`run_crypto_arbitrage_supervisor.ts`)**: Runs continuously as Worker F in the cloud, monitoring:
@@ -305,16 +318,16 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Real-Time Background Comparison (`bestRateLiquidityAggregator.ts`)**: Automatically queries Bybit, Binance, and Lagos Institutional OTC desks in under 1.8 seconds *before* quoting any buyer.
 - **Profit Maximization**: Selects the lowest wholesale seller rate to stretch the user's commission spread from ₦25 to ₦30–₦35/USD (boosting profit to ₦750k–₦1.2M per deal).
 - **Sub-3s Exclusive Liquidity Hold**: Automatically locks the order volume with a 30-minute exclusivity window to prevent rival brokers from poaching the deal.
-- **100% Direct-to-OPay**: Commission payouts land directly via NIP into OPay (`7034297995` - Oyelakin Tosin Matthew).
+- **100% Direct-to-OPay**: Commission payouts land directly via NIP into OPay (`6805375225` - Bethelmind Digital Solutions).
 
 ## 22. ATOMIC FLASH LOAN ARBITRAGE & CORPORATE TRADE UNION ESCROW FACTORING
 - **Atomic Flash Loan Engine (`atomic_flash_loan_arbitrage_engine.py`)**: Executes $500k–$1M Balancer/Aave flash loans with 0.00% capital risk. Transactions auto-revert if net profit is under $150 USD, guaranteeing 0 loss.
 - **Trade Union Escrow Factoring (`corporateTradeUnionEscrowEngine.ts`)**: Co-branded escrow portals for Alaba Electronics (AIEMA), ASPAMDA Trade Fair, and Computer Village guilds (₦15–₦20/USD spread yielding ₦2M–₦5M/mo in recurring retainers).
-- **100% Direct-to-OPay**: All settled yields land directly via NIP into OPay (`7034297995` - Oyelakin Tosin Matthew).
+- **100% Direct-to-OPay**: All settled yields land directly via NIP into OPay (`6805375225` - Bethelmind Digital Solutions).
 
 ## 23. JITO-SOLANA SHREDSTREAM & BASE L2 HIGH-FREQUENCY ATOMIC BUNDLES
 - **Jito-Solana & Base L2 Engine (`jito_solana_atomic_arbitrage_engine.py`)**: Ingests sub-25ms Yellowstone Geyser gRPC streams, executing atomic triangular arbitrage across Raydium, Orca, and Aerodrome with dynamic 50% Jito tip bribes.
-- **4-Hour Batch Settlement Windows**: Automatically cycles liquidity and dispatches settled Naira spreads directly into OPay (`7034297995` - Oyelakin Tosin Matthew) at 10:00 AM, 02:00 PM, and 06:00 PM WAT.
+- **4-Hour Batch Settlement Windows**: Automatically cycles liquidity and dispatches settled Naira spreads directly into OPay (`6805375225` - Bethelmind Digital Solutions) at 10:00 AM, 02:00 PM, and 06:00 PM WAT.
 
 ## 31. THE 5 MONEY ENGINE (100% AUTONOMOUS ZERO-TOUCH B2B CLOUD SUITE)
 - **Harmonized 5-Engine Architecture (`fiveMoneyEngine.ts`)**:
@@ -326,9 +339,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Interconnected Sector Tools & Client Prototypes**: Every personalized client landing page embeds sector-specific tools (Solar Sizer, Land Survey Verifier, SCUML Checker) that feed live inquiries into Engine 2 and GMB security badges into Engine 1.
 - **24/7 Zero-Failure Cloud Daemon (`autonomous_five_money_daemon.ts`)**: Runs continuously with isolated process sandboxing (`Promise.allSettled`), circuit breakers, and automated 3-hour executive AI digests dispatched to `bethelmindrecruit@gmail.com`.
 - **100% Direct-to-OPay NIP Settlements**: All revenue, setup deposits, and royalties clear directly into:
-  - **Bank Name:** `OPay Digital Services`
-  - **Account Number:** `7034297995`
-  - **Account Name:** `Oyelakin Tosin Matthew`
+  - **Bank Name:** `Moniepoint Microfinance Bank`
+  - **Account Number:** `6805375225`
+  - **Account Name:** `Bethelmind Digital Solutions`
   - Zero crypto complexity, zero foreign exchange lockups, and zero personal capital risk.
 
 
@@ -337,19 +350,19 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Worker I (CEX-DEX Flash Backrun Engine - `cex_dex_flash_backrun_engine.py`)**: Monitors Binance/Bybit WebSocket feeds, executing $250k–$500k flash swaps on Base L2 to capture CEX-to-DEX price lags with 0.00% capital risk.
 - **Worker J (Unclaimed Merkle Airdrop & Bounty Reclaimer - `merkle_airdrop_bounty_reclaimer.py`)**: Scans 1,850+ dormant Merkle distributor contracts, extracting uncollected token bounties via Flashbots private RPC.
 - **Worker K (DeFi Bad-Debt Liquidation Sniping - `defi_liquidation_bad_debt_sniper.py`)**: Borrows $1M Balancer flash loans to liquidate underwater loans on Aave V3 and Morpho Blue for 5%–10% protocol cash bounties.
-- **100% Direct-to-OPay**: All yields convert to Naira and deposit via NIP into OPay (`7034297995` - Oyelakin Tosin Matthew).
+- **100% Direct-to-OPay**: All yields convert to Naira and deposit via NIP into OPay (`6805375225` - Bethelmind Digital Solutions).
 
 ## 25. THE 20-ENGINE CONSOLIDATED QUANTITATIVE ARBITRAGE SUITE (WORKERS 12 TO 31)
 - **Consolidated 20-Engine Cluster (`batch_quantitative_arbitrage_cluster_v20.py`)**: Runs asynchronous sweeps across:
   - **Cluster 1 (Workers 12–21):** Cross-Rollup Gas Price Lag, LST Depeg Instant Flash Arb, Dormant Royalty Sweeper, 4-Hop Multi-DEX Graph Loop, Yield-Bearing Stablecoin Spread, RWA B2B Factoring, Oracle Latency Backrun, Unclaimed Staking Rewards, Cross-L2 Stable Rebalancer, DePIN Solana Idle Compute.
   - **Cluster 2 (Workers 22–31):** Concentrated Liquidity Tick Sniping (Uniswap V3/Aerodrome), Restaking Yield Discrepancy (EigenLayer/Symbiotic), Algorithmic FX P2P Spread, AI Autonomous ERC-4337 Caller, Cross-Chain Bridge Rebalance Arb, Diaspora Infrastructure Escrow Vault, MEV Clean Backrun Shield, Multi-Protocol Point Farming Node, Parallel EVM Sub-Block Arbitrage (Monad), DePIN Decentralized Wireless Node.
 - **Micro-Footprint System Protection**: Consolidated into a single lightweight asynchronous daemon (< 45MB RAM), guaranteeing zero CPU throttling or hardware lag on local machine.
-- **100% Direct-to-OPay**: All settled yields land directly via NIP into OPay (`7034297995` - Oyelakin Tosin Matthew).
+- **100% Direct-to-OPay**: All settled yields land directly via NIP into OPay (`6805375225` - Bethelmind Digital Solutions).
 
 ## 26. RESEARCH-BACKED BASE L2 & DEAD LP INVARIANT ENGINE (`base_l2_high_precision_arbitrage_engine.py`)
 - **Operational Focus**: Targets high-probability Layer-2 micro-arbs (Aerodrome vs Uniswap Base) and 14,000+ unmonitored dead LP pools (`skim()` / `sync()`).
 - **Sub-Cent Gas Advantage**: Utilizes Base L2's < $0.01 gas advantage to capture $50–$350 recurring price imbalances with zero speed competition.
-- **100% Direct-to-OPay**: Proceeds convert automatically to Naira and land directly in OPay (`7034297995` - Oyelakin Tosin Matthew).
+- **100% Direct-to-OPay**: Proceeds convert automatically to Naira and land directly in OPay (`6805375225` - Bethelmind Digital Solutions).
 
 ## 27. INSTITUTIONAL QUANTITATIVE HFT SUITE & 24/7 AI AGENT GUIDANCE
 - **Active 5-Engine Quantitative Core**:
@@ -366,9 +379,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - Automatically analyzes market spreads, whale order flow, and yields, updating `local_db/crypto_arbitrage_memory.json`.
   - Dispatches consolidated 3-hour intelligence briefings to **`bethelmindrecruit@gmail.com`**.
 - **100% Direct-to-OPay Liquidation**: All settled profits convert to Naira (₦1,520/$) and route via NIP directly to:
-  - **Bank Name:** `OPay Digital Services`
-  - **Account Number:** `7034297995`
-  - **Account Name:** `Oyelakin Tosin Matthew`
+  - **Bank Name:** `Moniepoint Microfinance Bank`
+  - **Account Number:** `6805375225`
+  - **Account Name:** `Bethelmind Digital Solutions`
 
 ## 28. 24/7 CUSTOMER JOURNEY FRICTION & AUTONOMOUS LANDING PAGE OPTIMIZATION ENGINE
 - **Continuous Telemetry Ingestion (`customerFrictionAnalyzer.ts` & `autonomous_customer_friction_tracker.ts`)**:
@@ -391,9 +404,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **100% Genuine Nigerian Leads & Direct-to-OPay Settlement**:
   - Zero synthetic/placeholder lead tolerance (strictly enforcing Section 5).
   - All closed setup deposits and retainer earnings route directly via NIP to:
-    - **Bank Name:** `OPay Digital Services`
-    - **Account Number:** `7034297995`
-    - **Account Name:** `Oyelakin Tosin Matthew`
+    - **Bank Name:** `Moniepoint Microfinance Bank`
+    - **Account Number:** `6805375225`
+    - **Account Name:** `Bethelmind Digital Solutions`
 
 ## 30. NON-AUTOMATED HUMAN RELEASE GATE & REAL INSTITUTIONAL ESCROW PROTOCOL
 - **100% NON-AUTOMATED MANUAL RELEASE AUTHORITY**: 
@@ -403,9 +416,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **METHOD A DUAL-ACCOUNT SETTLEMENT (ZERO PERSONAL BANK RISK)**:
   - **Wholesale Capital (₦40M–₦80M)**: Transferred directly by the client into the verified **Exchange Escrow Vault (Binance VIP / Quidax SEC-licensed / YellowCard Pro)**. Zero large capital enters the user's personal bank account.
   - **Desk Sourcing & Facilitation Fee (+₦25/USD Spread = ₦500k–₦1.625M)**: Transferred directly by the client into the user's primary OPay account:
-    - **Bank Name:** `OPay Digital Services`
-    - **Account Number:** `7034297995`
-    - **Account Name:** `Oyelakin Tosin Matthew`
+    - **Bank Name:** `Moniepoint Microfinance Bank`
+    - **Account Number:** `6805375225`
+    - **Account Name:** `Bethelmind Digital Solutions`
   - **Hold & Release Protection**: The China wire remains locked in platform escrow until both the escrow deposit and the user's OPay fee are confirmed, eliminating any client default risk.
 - **ANTI-DISINTERMEDIATION & BROKER PROTECTION PROTOCOL**:
   - Cold outreach messages, SMS, and voice notes NEVER contain third-party merchant phone numbers.
@@ -445,9 +458,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - Non-critical analytics and telemetry run deferred in `requestIdleCallback` so mobile touch response is never hindered on 3G/4G networks.
 - **4. 100% DIRECT-TO-OPAY SETTLEMENT**:
   - All revenue, retainers, and setup fees route directly via NIP to:
-    - **Bank Name:** `OPay Digital Services`
-    - **Account Number:** `7034297995`
-    - **Account Name:** `Oyelakin Tosin Matthew`
+    - **Bank Name:** `Moniepoint Microfinance Bank`
+    - **Account Number:** `6805375225`
+    - **Account Name:** `Bethelmind Digital Solutions`
 - **5. INBOUND-ONLY CLOSER DESK**:
   - All WhatsApp CTA bridges, SMS signatures, and email contacts point directly to **`+234 802 279 1227`** (`0802 279 1227`).
 
@@ -466,7 +479,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **MANDATORY REPORTING AUDIT COMMAND**:
   - All automated status reporting and customer journey audits MUST execute direct dual-database evaluation to return real non-simulated numbers.
 - **100% DIRECT-TO-OPAY SETTLEMENT & INBOUND DESK REINFORCEMENT**:
-  - All converted setups route 100% directly to **OPay Digital Services** (`7034297995` - Oyelakin Tosin Matthew).
+  - All converted setups route 100% directly to **Moniepoint Microfinance Bank** (`6805375225` - Bethelmind Digital Solutions).
   - Primary conversion bridge strictly points to **CEO/Admin Desk (`0802 279 1227` / `+234 802 279 1227`)**.
 
 ## 34. ZERO-DATA-WASTE, BANDWIDTH PROTECTION & DAILY 600 EMAIL/MASSIVE WEBFORM INVARIANTS (PERMANENT RULE)
@@ -562,7 +575,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - Automatically triggers directory harvester passes if the local eligible lead queue drops below tranche thresholds.
 - **4. MANDATORY VOICE NOTE ATTACHMENT & ZERO-CRYPTO B2B BRANDING**:
   - Mandatory voice note briefing attachment: 21 KB MP3 (`public/sample_voice_ng.mp3`) attached to every single email.
-  - Strict Zero-Crypto B2B Copy: Sender is strictly *Bethelmind Analytics Lagos Desk* (`tosin@bethelmindanalytics.com`), reply-to `bethelmindrecruit@gmail.com`, and CTA wa.me/2348022791227 (`0802 279 1227`).
+  - Strict Zero-Crypto B2B Copy: Sender is strictly *Bethelmind Digital Solutions* (`tosin@bethelmindanalytics.com`), reply-to `bethelmindrecruit@gmail.com`, and CTA wa.me/2348022791227 (`0802 279 1227`).
 - **5. 100% REAL-ACTION PERSISTENCE**:
   - Confirmed SMTP Message IDs recorded to `leads_db.json`, `lead_journeys.json`, `email_daemon_state.json`, and Supabase Cloud in real time.
 
@@ -629,8 +642,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## 42. PERMANENT MANDATE: STRICT FAIR USAGE OF DATA & BULLETPROOF 600 EMAILS/DAY DISPATCH ARCHITECTURE (SOLIDIFIED IN MEMORY)
 - **1. PERMANENT 600 DAILY VERIFIED CORPORATE EMAILS CAPACITY**:
   - **Dual-Mailbox Primary Hostinger SMTP Pool**:
-    * Mailbox 1: `tosin@bethelmindanalytics.com` (Bethelmind Analytics Lagos Desk) — delivers up to 300 emails/day metered safely across hourly tranches (< 80/hr).
-    * Mailbox 2: `matthew@bethelmindanalytics.com` (Bethelmind Analytics Lagos Desk) — delivers up to 300 emails/day metered safely across hourly tranches (< 80/hr).
+    * Mailbox 1: `tosin@bethelmindanalytics.com` (Bethelmind Digital Solutions) — delivers up to 300 emails/day metered safely across hourly tranches (< 80/hr).
+    * Mailbox 2: `matthew@bethelmindanalytics.com` (Bethelmind Digital Solutions) — delivers up to 300 emails/day metered safely across hourly tranches (< 80/hr).
     * **Cumulative Capacity**: Exactly **600 verified B2B corporate emails per day** delivered with < 1s latency.
   - **Dual-Mailbox Load Balancing & Rotation**:
     * Senders alternate round-robin: Mailbox 1 (Tosin) <-> Mailbox 2 (Matthew).
@@ -686,3 +699,58 @@ This version has breaking changes — APIs, conventions, and file structure may 
     * Non-hotel businesses must NEVER receive hotel room copy.
     * If a lead does not match any specific sector, it strictly receives the **Universal Neutral Commercial Quoting Assistant** hook (*"Good day [Name] team. After-hours clients asking for prices wait hours for replies. We built a 24/7 WhatsApp quoting bot for your firm. May I send a demo?"* — strictly <= 158 chars, with ZERO medical or solar terms).
 
+
+## 43. PERMANENT MANDATE: OFFICIAL CAC CORPORATE IDENTITY, NIGERIAN MARKET SIMPLE CONVERSION COPY & OPTIMUM 86-DISTRICT SCRAPER (SOLIDIFIED IN MEMORY)
+- **1. OFFICIAL CORPORATE IDENTITY & BANK SETTLEMENT (ZERO LEGACY NAMES)**:
+  - **Official Registered Business Name**: **`Bethelmind Digital Solutions`** *(CAC Certified Nigerian Enterprise)*.
+  - **Official Corporate Bank Account**:
+    * **Bank Name**: **`Moniepoint Microfinance Bank`**
+    * **Account Number**: **`6805375225`**
+    * **Account Name**: **`Bethelmind Digital Solutions`**
+  - **CAC Trust & Security Practice**:
+    * Every `/preview/[lead_id]` prototype page, sticky conversion bar, invoice, and email footer displays the **CAC Certified Nigerian Enterprise Badge** + **CAC Public Registry Verification (`search.cac.gov.ng`)** + **Corporate Bank Name Match (`Bethelmind Digital Solutions`)**.
+    * Never upload raw, unwatermarked CAC certificates on public web pages (prevents impersonation); provide a watermarked copy on WhatsApp upon a client's request.
+  - **Strict Prohibition**: NEVER use `Bethelmind Analytics`, `Bethelmind Analytics & Strategy`, `ApexReach`, or personal OPay `7034297995` (`Oyelakin Tosin Matthew`) anywhere in the codebase, templates, or outreach. (Keep `@bethelmindanalytics.com` email addresses and `https://www.bethelmindanalytics.com` domain URLs intact).
+
+- **2. NIGERIAN MARKET HIGH-CONVERSION SIMPLE COPY ARCHITECTURE (ZERO BIG GRAMMAR / ZERO TECH JARGON)**:
+  - **Core Copy Principle**: Speak to Nigerian businessmen and businesswomen in warm, respectful, everyday Nigerian business English (*"Good day Boss / Management at [Business Name], Well done with your business!"*). Avoid foreign technical jargon (*"third-party directory listings"*, *"50% Milestone Deposit"*, *"Turnkey Handover"*, *"Reconciliation Shield"*).
+  - **Channel A — GSM SMS ("SMS-to-WhatsApp DEMO Trigger", Strictly $\le 158$ Chars, Zero URLs)**:
+    * Cold SMS MUST NOT contain raw `https://` links (bypasses MTN/Airtel URL spam filters and eliminates Nigerian BVN/phishing link suspicion).
+    * Standard 1-Page SMS Template (`scripts/dispatch_120_sms_campaign.ts`):
+      `Hello [Business Name], we built a free sample website for your business so customers find you on Google. WhatsApp DEMO to 08022791227 - Bethelmind Digital Solutions`
+  - **Channel B — Instant Inbound WhatsApp Auto-Lookup Closer (`postContactCloserEngine.ts` & `autoresponderEngine.ts`)**:
+    * When any prospect texts `"DEMO"`, `"YES"`, `"SITE"`, or `"Hello"` to **`0802 279 1227`**, `lookupLeadByPhoneOrText()` automatically matches their phone number or message against `local_db/leads_db.json`.
+    * Immediately replies (< 3s) greeting them by their **Exact Business Name** and sending their clickable `/preview/[slug]` sample website link + 15-second Nigerian voice note + simple 2-tier pricing (`₦35,000` Starter Go-Live or `₦25,000/month` Pay-Small-Small / `₦75,000` Deposit for Full `.com`/`.com.ng` Custom Website) into **Moniepoint MFB · `6805375225` · `Bethelmind Digital Solutions`**.
+  - **Channel C — Outbound WhatsApp & B2B Corporate Emails (`multiSmtpPooler.ts` & `execute_today_300_emails_and_webforms.ts`)**:
+    * Subject Line: `We built a free sample website for [Business Name] (Check on your phone)`
+    * Simple, friendly body copy explaining that when customers search for `[Business Name]` on Google right now, they see competitors instead — so we already built a ready-made sample website + 24/7 WhatsApp Customer Assistant they can check free on their phone (`₦0 to view`) with a 15-second voice note greeting.
+
+- **3. OPTIMUM 86-DISTRICT × 36-SECTOR DEEP MULTI-PAGE NON-WEBSITE SCRAPER ARCHITECTURE**:
+  - **86 High-Density Nigerian Commercial Districts × 36 Commercial Sectors (`src/lib/scraping/heavyNationwideB2BEmailHarvester.ts`)**:
+    * Continuously sweeps 86 commercial hubs across all 36 States + FCT (Ikeja, Lekki, Victoria Island, Alaba, Trade Fair, Surulere, Yaba, Festac, Wuse, Garki, Maitama, Trans Amadi, GRA Port Harcourt, Bodija, Sabon Gari Kano, Ariaria Aba, Main Market Onitsha, Nnewi, Asaba, Warri, Owerri, Enugu, Uyo, Benin, Kaduna, Jos, Ilorin, Abeokuta, Akure, Osogbo, etc.).
+  - **Deep Multi-Page Directory & Search Pagination (`src/lib/directoryScrapers.ts`)**:
+    * `fetchBusinessListLeads` scans deep pages (`pages 1–24`, up to 45 cards/page, 12x concurrent profile enrichment).
+    * `fetchFinelibLeads` covers 16+ state slugs and 10+ commercial categories plus direct city search queries.
+    * `fetchGoogleDorkLeads` & `fetchBingSerpLeads` target strictly non-website directory and social profiles (`jiji.ng`, `businesslist.com.ng`, `finelib.com`, `facebook.com`, `instagram.com`, `vconnect.com`).
+  - **Continuous Multi-Wave Orchestrator (`scripts/launch_massive_nationwide_harvest_now.ts`)**:
+    * Runs in an autonomous 8-wave loop with 5-engine deduplication, Nigerian carrier validation (`MTN`, `Airtel`, `Glo`, `9mobile`), and automatic `/preview/[slug]` prototype assignment, strictly rejecting any business that already owns a standalone website (`hasWebsite === false` invariant).
+
+## 44. PERMANENT MANDATE: NIGERIAN SME SAMPLE WEBSITE (`/preview/[lead_id]`) & FRICTIONLESS CLAIMING ARCHITECTURE
+- **1. INSTANT VISUAL PAYOFF ("SAMPLE WEBSITE FIRST" RULE ON `/preview/[lead_id]`)**:
+  - When a Nigerian business owner clicks their preview link from SMS, WhatsApp, or Email, **Section 1 right below the top bar (`src/app/preview/[lead_id]/page.tsx`) MUST render their actual live Sample Website (`<LandingPage>`) inside a realistic `.com.ng` browser frame (`https://www.[businessname].com.ng`)**.
+  - Never bury the client's sample website below 3–4 screenfuls of agency sales copy. They must see their own company name, industry hero, 15-second voice note, services, and WhatsApp buttons within 0.5 seconds of page load.
+- **2. 100% UNIFIED "OCTOBER 50% SME DIGITAL GROWTH PROMO" PRICING ACROSS ALL SECTIONS (`LandingPage.tsx`, `page.tsx`, WhatsApp Closer & Emails)**:
+  - Protects 100% of our corporate prestige (`₦130,000–₦240,000` normal agency value) while giving Nigerian business owners an urgent, low-friction milestone entry because 80% of their sample website is already built in advance:
+    1. **Option 1 — Official `.COM.NG` Business Website + WhatsApp Closer (`starter_35k` / `standard_full_65k`)**:
+       - **Normal Agency Price**: ~~`₦130,000`~~
+       - **October 50% Promo Total**: **`₦65,000`** *(Includes 1 Full Year `.com.ng` Domain & Hosting — Zero Monthly Rent!)*
+       - **To Start Today (Milestone Deposit)**: **`₦35,000` Deposit** *(Pay the `₦30,000` balance ONLY after the website is live on Google with their real shop photos!)*
+    2. **Option 2 — Corporate `.COM` Domain + 3 Official Staff Emails & AI Quoting Suite (`corporate_60k`)**:
+       - **Normal Agency Price**: ~~`₦240,000`~~
+       - **October 50% Promo Total**: **`₦120,000`**
+       - **To Start Today (50% Milestone Deposit)**: **`₦60,000` Deposit** *(Pay `₦60,000` balance on handover within 48 hours)*
+    3. **Option 3 — Free Custom Photo & Price Preview First (`zero_risk_staging`)**:
+       - **`₦0 Upfront`** — 1-tap WhatsApp button allowing skeptical Nigerian business owners to send 3–5 real shop photos, their phone number, and price list to `0802 279 1227` so our engineer updates their sample page before they pay a single kobo (automatically locking in their 50% October Promo rate).
+- **3. FRICTIONLESS WHATSAPP-FIRST & MONIEPOINT CORPORATE CLAIMING (`#claim`)**:
+  - **Primary Claim Path**: 1-Tap **"💬 Claim October Promo on WhatsApp"** and **"✏️ Send My Real Photos/Prices First (Free)"** buttons at the top of `#claim` for business owners who dislike filling forms on mobile.
+  - **Corporate Bank Settlement Box**: Clearly labeled **`🏛️ Official CAC Corporate Bank Account: Moniepoint Microfinance Bank · 6805375225 · Bethelmind Digital Solutions`** with 1-tap `📋 Copy`, 1-tap **`✅ I Have Transferred — Send Receipt on WhatsApp (Instant Setup)`**, and optional receipt upload.

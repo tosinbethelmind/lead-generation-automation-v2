@@ -31,7 +31,7 @@ async function main() {
   try {
     const transporter = createHostingerTransporter(465);
     const sRes = await transporter.sendMail({
-      from: '"Tosin | Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+      from: '"Tosin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
       to: 'bethelmindrecruit@gmail.com',
       subject: `⚡ Bethelmind Hostinger SMTP Live Confirmation [${new Date().toLocaleTimeString()} WAT]`,
       text: 'Hello Admin, this is a real network-delivered test confirming Hostinger SMTP operates with zero failure.'
@@ -44,7 +44,7 @@ async function main() {
     try {
       const transporter587 = createHostingerTransporter(587);
       const sRes587 = await transporter587.sendMail({
-        from: '"Tosin | Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+        from: '"Tosin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
         to: 'bethelmindrecruit@gmail.com',
         subject: `⚡ Bethelmind Hostinger SMTP 587 Live Confirmation [${new Date().toLocaleTimeString()} WAT]`,
         text: 'Hello Admin, Hostinger SMTP Port 587 STARTTLS failover confirmed.'

@@ -32,7 +32,7 @@ async function testAll() {
 
   try {
     const info = await transporter.sendMail({
-      from: '"Tosin | Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+      from: '"Tosin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
       to: 'bethelmindrecruit@gmail.com',
       subject: '🟢 LIVE EMAIL SYSTEM OPERATIONAL',
       text: 'Hello Tosin,\n\nYour Hostinger SMTP and Brevo outreach pipeline is 100% active and verified.'

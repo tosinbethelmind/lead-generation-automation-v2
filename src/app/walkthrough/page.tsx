@@ -141,7 +141,7 @@ function WalkthroughContent() {
           </div>
           <div>
             <div style={{ fontWeight: 700, fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
-              Bethelmind Analytics
+              Bethelmind Digital Solutions
             </div>
             <div style={{ fontSize: '0.75rem', color: '#38bdf8', fontWeight: 600 }}>
               Lagos Commercial Growth Desk
@@ -913,7 +913,7 @@ function WalkthroughContent() {
           borderTop: '1px solid rgba(255,255,255,0.06)',
           paddingTop: '24px'
         }}>
-          <div>Bethelmind Analytics Lagos Desk • Plot 12, Commercial Corridor, Lagos, Nigeria</div>
+          <div>Bethelmind Digital Solutions • Plot 12, Commercial Corridor, Lagos, Nigeria</div>
           <div style={{ marginTop: '4px' }}>Direct Support &amp; Closer Desk: 0802 279 1227 • bethelmindrecruit@gmail.com</div>
         </footer>
       </main>

@@ -128,6 +128,11 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: '/site/:site_id',
+        destination: '/sites/:site_id',
+        permanent: true,
+      },
+      {
         source: '/assets/apexreach-demo.webm',
         destination: '/walkthrough',
         permanent: false,

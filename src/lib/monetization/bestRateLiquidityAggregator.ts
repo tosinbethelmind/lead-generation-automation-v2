@@ -12,7 +12,7 @@
  *    to MAXIMIZE your net spread profit from ₦25 to ₦30–₦35/USD.
  * 3. ⚡ Sub-3 Second Automated Exclusive Liquidity Hold.
  * 4. 📲 Instant High-Priority SMS Trigger to Admin Line (0802 279 1227).
- * 5. 🏦 Direct-to-OPay Liquidation Routing (7034297995 - Oyelakin Tosin Matthew).
+ * 5. 🏦 Direct-to-OPay Liquidation Routing (6805375225 - Bethelmind Digital Solutions).
  */
 
 import { OPAY_BENEFICIARY_CONFIG } from './directNairaAutoLiquidationRouter';

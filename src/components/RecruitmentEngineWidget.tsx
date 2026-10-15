@@ -44,7 +44,7 @@ export function RecruitmentEngineWidget() {
   const [activeTab, setActiveTab] = useState<'jobs' | 'talent_pool' | 'sourcing_ai' | 'cv_grader' | 'interviews'>('jobs');
 
   const [copiedWidgetUrl, setCopiedWidgetUrl] = useState(false);
-  const widgetUrl = typeof window !== 'undefined' ? `${window.location.origin}/tools/recruitment` : 'https://apexreach.app/tools/recruitment';
+  const widgetUrl = typeof window !== 'undefined' ? `${window.location.origin}/tools/recruitment` : 'https://bethelmind.app/tools/recruitment';
   const whatsappWidgetShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out this free 24-Hour AI Recruitment & Talent Engine (Hire vetted candidates in under 24 hours): ${widgetUrl}`)}`;
 
   // Job Positions State
@@ -500,7 +500,7 @@ export function RecruitmentEngineWidget() {
       scheduledAt: schedDateTime,
       durationMins: 30,
       mode: schedMode,
-      meetingLink: schedMode === 'in_person' ? 'Office HQ (Victoria Island, Lagos)' : `https://apexreach.app/preview/interview/slot_${Date.now()}`,
+      meetingLink: schedMode === 'in_person' ? 'Office HQ (Victoria Island, Lagos)' : `https://bethelmind.app/preview/interview/slot_${Date.now()}`,
       interviewerName: 'Lead Hiring Manager',
       status: 'scheduled',
       notes: 'Confirmed candidate interview slot.',

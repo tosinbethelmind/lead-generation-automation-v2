@@ -2,7 +2,7 @@
  * @file scripts/dispatch_200_sms_campaign.ts
  * 
  * 📱 200-LEAD STRICT CARRIER GSM SMS DISPATCH CAMPAIGN (ZERO-INTERNATIONAL / NIGERIAN CARRIERS ONLY)
- * Bethelmind Analytics Lagos Desk · Commercial Growth Engine
+ * Bethelmind Digital Solutions · Commercial Growth Engine
  * 
  * Strict Invariants:
  * 1. Exactly 200 unique verified commercial Nigerian leads (MTN, Airtel, Glo, 9mobile only).

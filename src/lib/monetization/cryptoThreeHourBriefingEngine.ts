@@ -8,7 +8,7 @@
  * 2. 🎯 TOP 3 EXACT STEPS YOU SHOULD TAKE RIGHT NOW (1-Click instant action links, < 45s execution).
  * 3. 🏛️ Active Multi-Pillar Pipeline: B2B Importers, Expired Domain Snipes, GMB Rescues, B2B Lead Bundles, Micro-SaaS Paywalls, Appointment Routers, Diaspora Escrow, & White-Label Agencies (CAC Excluded).
  * 4. ⚡ Quantitative & Delta-Neutral Yield: CEX-DEX Latency, Perp Basis, CoW Intent Solver & Jito Solana.
- * 5. 🏦 100% Direct Settlement to OPay: 7034297995 (Oyelakin Tosin Matthew).
+ * 5. 🏦 100% Direct Settlement to OPay: 6805375225 (Bethelmind Digital Solutions).
  */
 
 import fs from 'fs';
@@ -295,7 +295,7 @@ export async function checkAndDispatchThreeHourBriefing(forceDispatch: boolean =
           <!-- FOOTER -->
           <div style="background: #030712; padding: 16px 24px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #1e293b;">
             Dispatched every 3 hours by Bethelmind Autonomous 24/7 AI Supervisor • Closer Desk: +234 802 279 1227<br>
-            All yields convert to Naira (₦1,520/$) and settle directly via NIP to OPay (7034297995 - Oyelakin Tosin Matthew).
+            All yields convert to Naira (₦1,520/$) and settle directly via NIP to OPay (6805375225 - Bethelmind Digital Solutions).
           </div>
 
         </div>

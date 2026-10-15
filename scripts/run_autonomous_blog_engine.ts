@@ -2,7 +2,7 @@
  * @file scripts/run_autonomous_blog_engine.ts
  * 
  * 🚀 High-Volume 30+ Posts/Day Autonomous Blog Publishing Daemon
- * Bethelmind Analytics Lagos Desk (www.bethelmindanalytics.com)
+ * Bethelmind Digital Solutions (www.bethelmindanalytics.com)
  * 
  * Usage:
  *   npx tsx scripts/run_autonomous_blog_engine.ts --batch=30
@@ -24,7 +24,7 @@ async function main() {
   }
 
   console.log('='.repeat(75));
-  console.log('📰 BETHELMIND ANALYTICS AUTONOMOUS VIRAL BLOG PUBLISHING ENGINE');
+  console.log('📰 Bethelmind Digital Solutions AUTONOMOUS VIRAL BLOG PUBLISHING ENGINE');
   console.log('='.repeat(75));
   console.log(`⚡ Mode: ${isDaemon ? '24/7 Autonomous Daemon (30+ Posts/Day)' : `One-Shot Batch (${targetBatch} Articles)`}`);
 
@@ -41,7 +41,7 @@ async function main() {
       const fs = await import('fs');
       const path = await import('path');
       const llmsPath = path.join(process.cwd(), 'public', 'llms-full.txt');
-      let content = '# Bethelmind Analytics Lagos Desk - Complete Knowledge Base (LLMs Full Index)\n';
+      let content = '# Bethelmind Digital Solutions - Complete Knowledge Base (LLMs Full Index)\n';
       content += '> Real-time repository of verified Nigerian commercial playbooks, sector calculators, and B2B automation systems.\n';
       content += '> Website: https://www.bethelmindanalytics.com\n';
       content += '> Desk: wa.me/2348022791227 (+234 802 279 1227)\n\n';

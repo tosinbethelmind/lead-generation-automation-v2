@@ -2,7 +2,7 @@
  * scripts/setup_meta_whatsapp_cloud.js
  * 
  * Automated Meta WhatsApp Cloud API Setup & Registration Tool
- * Bethelmind Analytics Lagos Desk (Strict Zero-Crypto Outreach)
+ * Bethelmind Digital Solutions (Strict Zero-Crypto Outreach)
  * 
  * Supports both CLI automated flags and interactive prompts:
  *   node scripts/setup_meta_whatsapp_cloud.js --auto-all --token <TOKEN> --phone-id <PHONE_ID> --waba-id <WABA_ID>
@@ -90,7 +90,7 @@ function saveToEnv(updates) {
 async function main() {
   console.log('\n======================================================');
   console.log('🚀 META WHATSAPP CLOUD API AUTOMATED SUITE');
-  console.log('   Bethelmind Analytics Lagos Desk');
+  console.log('   Bethelmind Digital Solutions');
   console.log('======================================================\n');
 
   let token = flags.token || process.env.WHATSAPP_CLOUD_ACCESS_TOKEN || process.env.META_WA_ACCESS_TOKEN;
@@ -178,14 +178,14 @@ async function main() {
       }
 
       // 2. Configure Business Profile
-      console.log('\n2️⃣ Applying Bethelmind Analytics Lagos official branding...');
+      console.log('\n2️⃣ Applying Bethelmind Digital Solutions official branding...');
       try {
         const profRes = await fetch(`https://graph.facebook.com/v20.0/${phoneId}/whatsapp_business_profile`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             messaging_product: 'whatsapp',
-            about: 'Bethelmind Analytics Lagos | 24/7 AI Commercial Automations',
+            about: 'Bethelmind Digital Solutions | 24/7 AI Commercial Automations',
             address: 'Victoria Island & Lekki Phase 1, Lagos, Nigeria',
             description: 'Specialized B2B Lead Generation, AI WhatsApp Sales Closers & Custom Digital Prototypes for Nigerian Commercial Enterprises.',
             email: 'bethelmindrecruit@gmail.com',
@@ -259,7 +259,7 @@ async function main() {
             type: 'text',
             text: {
               preview_url: true,
-              body: '🚀 *Bethelmind Analytics Lagos Desk*\nOfficial Meta WhatsApp Business Cloud API successfully automated and active!\nSub-3s AI Closer Online.'
+              body: '🚀 *Bethelmind Digital Solutions*\nOfficial Meta WhatsApp Business Cloud API successfully automated and active!\nSub-3s AI Closer Online.'
             }
           })
         });
@@ -350,7 +350,7 @@ async function main() {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messaging_product: 'whatsapp',
-          about: 'Bethelmind Analytics Lagos | 24/7 AI Commercial Automations',
+          about: 'Bethelmind Digital Solutions | 24/7 AI Commercial Automations',
           address: 'Victoria Island & Lekki Phase 1, Lagos, Nigeria',
           description: 'Specialized B2B Lead Generation, AI WhatsApp Sales Closers & Custom Digital Prototypes for Nigerian Commercial Enterprises.',
           email: 'bethelmindrecruit@gmail.com',
@@ -360,7 +360,7 @@ async function main() {
       });
       const profData = await profRes.json();
       if (profRes.ok) {
-        console.log('✅ Profile updated with Bethelmind Analytics Lagos branding!');
+        console.log('✅ Profile updated with Bethelmind Digital Solutions branding!');
       } else {
         console.error('❌ Profile Error:', profData.error?.message || profData);
       }
@@ -417,7 +417,7 @@ async function main() {
           type: 'text',
           text: {
             preview_url: true,
-            body: 'Hello from Bethelmind Analytics Lagos Desk! Official Meta Cloud API test message delivered with 0% ban risk.'
+            body: 'Hello from Bethelmind Digital Solutions! Official Meta Cloud API test message delivered with 0% ban risk.'
           }
         })
       });
@@ -441,7 +441,7 @@ async function main() {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messaging_product: 'whatsapp',
-          about: 'Bethelmind Analytics Lagos | 24/7 AI Commercial Automations',
+          about: 'Bethelmind Digital Solutions | 24/7 AI Commercial Automations',
           address: 'Victoria Island & Lekki Phase 1, Lagos, Nigeria',
           description: 'Specialized B2B Lead Generation, AI WhatsApp Sales Closers & Custom Digital Prototypes for Nigerian Commercial Enterprises.',
           email: 'bethelmindrecruit@gmail.com',

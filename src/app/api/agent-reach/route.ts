@@ -2,7 +2,7 @@
  * @file src/app/api/agent-reach/route.ts
  * 
  * REST API Interface for Agent-Reach No-API Multi-Platform Intelligence Layer
- * Bethelmind Analytics Commercial Growth System
+ * Bethelmind Digital Solutions Commercial Growth System
  */
 
 import { NextRequest, NextResponse } from 'next/server';

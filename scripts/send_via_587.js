@@ -18,7 +18,7 @@ async function sendVia587() {
   });
 
   const mailOptions = {
-    from: '"Oyelakin Tosin | Bethelmind Analytics" <tosin@bethelmindanalytics.com>',
+    from: '"Oyelakin Tosin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
     to: 'bethelmindrecruit@gmail.com',
     replyTo: 'tosin@bethelmindanalytics.com',
     subject: '🧪 [LIVE TEST] Lagos 10K Multi-Sector Outreach Engine (Aug 15 – Aug 21, 2026)',
@@ -34,7 +34,7 @@ Sample Interactive Demo Portal URL:
 👉 https://www.bethelmindanalytics.com/preview/eko-luxury-suites?src=10k_lagos
 
 Best regards,
-Bethelmind Analytics Lagos Hub`,
+Bethelmind Digital Solutions Hub`,
     html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f172a; color: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid #3b82f6;">
       <h2 style="color: #60a5fa; margin-top: 0;">🚀 Lagos 10K Multi-Sector Blended Outreach Engine</h2>
       <p style="color: #cbd5e1; font-size: 14px;"><strong>Sprint Window:</strong> Aug 15 – Aug 21, 2026</p>
@@ -54,7 +54,7 @@ Bethelmind Analytics Lagos Hub`,
       </a>
 
       <p style="color: #64748b; font-size: 12px; margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
-        Bethelmind Analytics & Strategy • Victoria Island / Ikeja Lagos • +234 802 279 1227
+        Bethelmind Digital Solutions • Victoria Island / Ikeja Lagos • +234 802 279 1227
       </p>
     </div>`
   };

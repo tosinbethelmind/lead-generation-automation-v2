@@ -1,7 +1,7 @@
 /**
  * @file src/lib/trafficAutomationMaster.ts
  * 
- * Bethelmind Analytics Autonomous Multi-Channel Traffic Generation Master Engine.
+ * Bethelmind Digital Solutions Autonomous Multi-Channel Traffic Generation Master Engine.
  * 
  * Automates high-converting traffic funnels across:
  * 1. Google Search & Programmatic SEO (Exact-match keyword sets & landing pages)
@@ -122,7 +122,7 @@ ${product.deliverablesList.map(d => `✔ ${d}`).join('\n')}
 👉 [b]Instant Checkout on Selar:[/b] [url=${selarUrl}]${selarUrl}[/url]
 👉 [b]1-Tap WhatsApp Desk (0802 279 1227):[/b] [url=${whatsappDeskUrl}]Chat With Our Verification Team On WhatsApp[/url]
 
-[i]Dispatched by Bethelmind Analytics Lagos Due-Diligence Desk.[/i]`
+[i]Dispatched by Bethelmind Digital Solutions Due-Diligence Desk.[/i]`
   };
 
   // 2. Diaspora Facebook & Community Post Generator
@@ -197,7 +197,7 @@ How does your team handle due-diligence and risk mitigation for Nigerian operati
       'Verified Due-Diligence Kit',
       'Download Instantly Today',
       '100% Safe & Tested Blueprint',
-      'Bethelmind Analytics Lagos'
+      'Bethelmind Digital Solutions'
     ],
     descriptions: [
       product.shortDesc.length > 90 ? product.shortDesc.substring(0, 87) + '...' : product.shortDesc,

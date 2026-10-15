@@ -48,7 +48,7 @@ export default function IntegrationBlueprintDashboard() {
   ]);
 
   const platformSnippets = {
-    wordpress: `<!-- Bethelmind Analytics WordPress & WooCommerce Embed Code -->
+    wordpress: `<!-- Bethelmind Digital Solutions WordPress & WooCommerce Embed Code -->
 <script>
   (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
   var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;
@@ -58,13 +58,13 @@ export default function IntegrationBlueprintDashboard() {
   })(window,document,'script','BethelmindSDK');
 </script>`,
 
-    shopify: `<!-- Bethelmind Analytics Shopify Theme Liquid Snippet (paste inside theme.liquid before </head>) -->
+    shopify: `<!-- Bethelmind Digital Solutions Shopify Theme Liquid Snippet (paste inside theme.liquid before </head>) -->
 <script src="https://www.bethelmindanalytics.com/sdk/bethel-integration-sdk.js"
         data-site-id="shopify_{{ shop.permanent_domain }}"
         data-enable-capi="true"
         async></script>`,
 
-    webflow: `<!-- Bethelmind Analytics Webflow Custom Code (Paste into Project Settings -> Custom Code -> Header) -->
+    webflow: `<!-- Bethelmind Digital Solutions Webflow Custom Code (Paste into Project Settings -> Custom Code -> Header) -->
 <script src="https://www.bethelmindanalytics.com/sdk/bethel-integration-sdk.js"
         data-site-id="webflow_site_id"
         data-enable-heatmaps="true"

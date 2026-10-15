@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       channelUrl: config.whatsappChannelUrl || 'https://whatsapp.com/channel/0029VbDFgKP4o7qM58yY9v2l',
-      businessSignature: config.businessSignature || '*Bethelmind Analytics Lagos Team*',
+      businessSignature: config.businessSignature || '*Bethelmind Digital Solutions Team*',
       adminDeskPhone: config.adminWhatsAppPhone || '08022791227',
       currentSchedule: {
         monday: 'Industry Teardown & Leak Audit (High Group Forwards)',

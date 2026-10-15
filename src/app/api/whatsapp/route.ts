@@ -81,7 +81,7 @@ export async function GET() {
     const { baileysClient } = await import('@/lib/whatsapp/baileys_gateway_client');
     const status = await baileysClient.getStatus();
     return NextResponse.json({
-      service: 'ApexReach Baileys WhatsApp Gateway',
+      service: 'Bethelmind Digital Solutions Baileys WhatsApp Gateway',
       gatewayStatus: status.status,
       qrCodeUrl: status.qrCodeUrl,
       lastPairingCode: status.lastPairingCode

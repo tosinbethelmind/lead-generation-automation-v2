@@ -6,7 +6,7 @@
  * Features:
  * 1. Automatically computes Live Wholesale Floor (e.g. ₦1,348/$), Client Locked Rate (e.g. ₦1,373/$), and ₦25 spread from live feeds.
  * 2. Displays Full Direct Contact Details of Verified Diamond Merchant (Desk Head, WhatsApp, Phone, Physical Office).
- * 3. 100% Direct Payout to OPay (7034297995 - Oyelakin Tosin Matthew).
+ * 3. 100% Direct Payout to OPay (6805375225 - Bethelmind Digital Solutions).
  */
 
 import { TOP_RATED_DIAMOND_MERCHANTS } from './topRatedMerchantVault';

@@ -75,7 +75,7 @@ async function dispatchMerchantTransparencySuite() {
     const card = `🏢 *DEAL #${d.id}: ${d.clientName.toUpperCase()}*
 🆔 *DEAL REF:* \`${d.ref}\`
 📦 *VOLUME:* ${d.volume}
-💰 *YOUR SPREAD PROFIT:* *+${d.profit}* (Direct to OPay 7034297995)
+💰 *YOUR SPREAD PROFIT:* *+${d.profit}* (Direct to OPay 6805375225)
 ━━━━━━━━━━━━━━━━━━━━━━
 🏦 *CHOSEN LIQUIDITY MERCHANT DETAILS (FOR CORRESPONDENCE):*
 • *Desk Name:* ${d.merchant.deskName}
@@ -88,7 +88,7 @@ async function dispatchMerchantTransparencySuite() {
 
 ⚡ *CLIENT PROPOSAL SUMMARY:*
 • Buyer Deposit: ${d.buyerTotalNaira}
-• Escrow Account: OPay \`7034297995\` (Oyelakin Tosin Matthew)
+• Escrow Account: OPay \`6805375225\` (Bethelmind Digital Solutions)
 • Action: Ready to dispatch to client with 1-click on WhatsApp.
 ━━━━━━━━━━━━━━━━━━━━━━`;
 

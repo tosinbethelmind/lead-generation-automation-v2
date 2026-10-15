@@ -2,7 +2,7 @@
  * @file src/lib/scraping/stealthClassifiedsScraper.ts
  * 
  * 🥷 PUPPETEER-EXTRA STEALTH CLASSIFIEDS PHONE REVEALER
- * Bethelmind Analytics Lagos Desk · 2026 Edition
+ * Bethelmind Digital Solutions · 2026 Edition
  * 
  * Capabilities:
  * 1. Bypasses Cloudflare / Bot detection on classifieds (Jiji.ng, BusinessList.com.ng).

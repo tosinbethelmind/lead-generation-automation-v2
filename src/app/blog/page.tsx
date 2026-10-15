@@ -6,21 +6,21 @@ import { MASTER_PAYOUT } from '@/data/monetizationCatalog';
 import { FeaturedMonetizationVault } from '@/components/blog/FeaturedMonetizationVault';
 
 export const metadata: Metadata = {
-  title: 'B2B Commercial Intelligence & Growth Blog | Bethelmind Analytics Lagos',
+  title: 'B2B Commercial Intelligence & Growth Blog | Bethelmind Digital Solutions',
   description:
     'Practical playbooks, market intelligence, solar BOQ models, real estate yields, and AI automation blueprints for Nigerian commercial leaders and diaspora investors.',
   openGraph: {
-    title: 'Bethelmind Analytics — B2B Commercial Growth & AI Automation Blog',
+    title: 'Bethelmind Digital Solutions — B2B Commercial Growth & AI Automation Blog',
     description:
       'Practical playbooks on leveraging AI, solar energy, real estate, and B2B automation for rapid commercial growth.',
     url: 'https://www.bethelmindanalytics.com/blog',
-    siteName: 'Bethelmind Analytics Lagos Desk',
+    siteName: 'Bethelmind Digital Solutions',
     images: [
       {
         url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80',
         width: 1200,
         height: 630,
-        alt: 'Bethelmind Analytics Commercial Intelligence Blog',
+        alt: 'Bethelmind Digital Solutions Commercial Intelligence Blog',
       },
     ],
     locale: 'en_NG',

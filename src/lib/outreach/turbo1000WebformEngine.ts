@@ -2,7 +2,7 @@
  * @file src/lib/outreach/turbo1000WebformEngine.ts
  * 
  * 🚀 TURBO 1,000/DAY COMMERCIAL WEB CONTACT FORM OUTREACH ENGINE
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * ⚡ CAPABILITIES:
  * 1. 30-Worker Parallel Concurrency Pool (processes 1,000 commercial sites in under 5 minutes).
@@ -72,7 +72,7 @@ export class Turbo1000WebformEngine {
     const subject = `24/7 AI Sales Portal & Operational Review for ${businessName}`;
     const message = `Good day ${businessName} Management Team,
 
-My name is Tosin from Bethelmind Analytics Lagos Desk. We recently conducted an operational review for commercial enterprises in ${category || 'your sector'} and noticed prospective customers inquiring after business hours experience delays before receiving quotes.
+My name is Tosin from Bethelmind Digital Solutions. We recently conducted an operational review for commercial enterprises in ${category || 'your sector'} and noticed prospective customers inquiring after business hours experience delays before receiving quotes.
 
 We have custom-configured a 24/7 AI WhatsApp Sales & Quoting Portal prototype for ${businessName}.
 
@@ -89,7 +89,7 @@ WhatsApp: ${this.adminWa}
 Email: ${this.senderEmail}
 
 Best regards,
-${this.senderName} · Bethelmind Analytics Lagos Desk`;
+${this.senderName} · Bethelmind Digital Solutions`;
 
     return { subject, message };
   }

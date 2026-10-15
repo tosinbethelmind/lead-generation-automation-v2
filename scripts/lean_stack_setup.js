@@ -56,13 +56,13 @@ async function checkPortOpen(host, port, timeout = 3000) {
 
 async function runSetup() {
   console.log('⚡ ====================================================================');
-  console.log('⚡ ApexReach Ultra-Lean Automated Setup & Health Check ($10/mo Stack)');
+  console.log('⚡ Bethelmind Digital Solutions Ultra-Lean Automated Setup & Health Check ($10/mo Stack)');
   console.log('⚡ ====================================================================\n');
 
   // 1. Check PostgreSQL Database Connection
   console.log('1️⃣  Checking Database Connection...');
   const { Client } = require('pg');
-  const dbUrl = process.env.DATABASE_URL || 'postgresql://postgres:LeanStackPassword123!@localhost:5432/apexreach';
+  const dbUrl = process.env.DATABASE_URL || 'postgresql://postgres:LeanStackPassword123!@localhost:5432/Bethelmind Digital Solutions';
 
   try {
     const client = new Client({ connectionString: dbUrl, connectionTimeoutMillis: 5000 });
@@ -116,7 +116,7 @@ async function runSetup() {
   const appPort = parseInt(process.env.PORT || '3006', 10);
   const isAppOpen = await checkPortOpen('127.0.0.1', appPort);
   if (isAppOpen) {
-    console.log(`   ✅ ApexReach Next.js Application is online and responding on port ${appPort}!`);
+    console.log(`   ✅ Bethelmind Digital Solutions Next.js Application is online and responding on port ${appPort}!`);
   } else {
     console.log(`   ℹ️ Web App server port ${appPort} is not running yet. Run 'npm run dev' or 'docker compose up' to start it.`);
   }

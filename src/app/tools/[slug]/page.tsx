@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: ToolPageProps) {
       title: 'Nigerian WhatsApp Voice Note Generator — Automated Audio Outreach NG',
       description: 'Convert text sales messages into realistic Nigerian accent audio voice notes for WhatsApp sales automation. Boost reply rates by 4x.',
       openGraph: {
-        title: 'Nigerian WhatsApp Voice Note Generator — Bethelmind Analytics',
+        title: 'Nigerian WhatsApp Voice Note Generator — Bethelmind Digital Solutions',
         description: 'Human-like Nigerian voice note automation for WhatsApp CRM and lead qualification.',
       },
     };
@@ -49,14 +49,14 @@ export async function generateMetadata({ params }: ToolPageProps) {
 
   if (slug === 'integrations') {
     return {
-      title: 'Seamless Web & CRM Integration Blueprint | Bethelmind Analytics Automation Suite',
+      title: 'Seamless Web & CRM Integration Blueprint | Bethelmind Digital Solutions Automation Suite',
       description: 'Connect platform lead generation tools, Meta CAPI, GA4, WhatsApp API, and Paystack/Moniepoint webhooks to any website or business app in under 60 seconds.',
     };
   }
 
   const formattedTitle = (slug || 'tool').replace(/-/g, ' ').toUpperCase();
   return {
-    title: `Free ${formattedTitle} Business Tool | Bethelmind Analytics Nigeria`,
+    title: `Free ${formattedTitle} Business Tool | Bethelmind Digital Solutions Nigeria`,
     description: `Free standalone business automation calculator, instant PDF quote generator, and interactive lead tool for ${formattedTitle} in Nigeria. Share on WhatsApp or bookmark for instant use.`,
   };
 }

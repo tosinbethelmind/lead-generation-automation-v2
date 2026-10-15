@@ -13,6 +13,12 @@
  *   7. Chatwoot & CRM Local Sync (local_db/central_omnichannel_inbox.json & chatwoot_sync.json)
  */
 
+// ── Gated: Standalone daemon is disabled to prevent 440 session replacement on Line 1 ──
+if (process.env.ALLOW_STANDALONE_BAILEYS !== 'true') {
+  console.log('⚠️ [Notice] whatsapp_multiline_daemon.js is disabled to protect evolution_api_server.js from session collisions.');
+  process.exit(0);
+}
+
 const express = require('express');
 const cors = require('cors');
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, Browsers } = require('@whiskeysockets/baileys');
@@ -1356,7 +1362,7 @@ app.get('/', (req, res) => {
         </div>
         <div class="client-info-card">
           <div class="info-label">Settlement Rail</div>
-          <div class="info-val" style="font-size:0.85rem; color:#4ade80;">OPay (7034297995 - Oyelakin Tosin Matthew)</div>
+          <div class="info-val" style="font-size:0.85rem; color:#4ade80;">OPay (6805375225 - Bethelmind Digital Solutions)</div>
         </div>
       </div>
     </div>
@@ -1466,7 +1472,7 @@ app.get('/', (req, res) => {
       } else if (type === 'demo') {
         input.value = \`Hello \${name}! Here is the interactive demo tailored for your company: \${demo} — Tap the link to inspect it and let me know your thoughts!\`;
       } else if (type === 'bank') {
-        input.value = \`Here are our official company settlement details for the milestone deposit:\\n\\nBank: OPay Digital Services\\nAccount Number: 7034297995\\nAccount Name: Oyelakin Tosin Matthew\\n\\nOnce transfer is confirmed, our engineering team initiates your 48-Hour deployment immediately!\`;
+        input.value = \`Here are our official company settlement details for the milestone deposit:\\n\\nBank: Moniepoint Microfinance Bank\\nAccount Number: 6805375225\\nAccount Name: Bethelmind Digital Solutions\\n\\nOnce transfer is confirmed, our engineering team initiates your 48-Hour deployment immediately!\`;
       }
       input.focus();
     }

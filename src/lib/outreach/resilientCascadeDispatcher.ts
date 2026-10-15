@@ -2,7 +2,7 @@
  * @file src/lib/outreach/resilientCascadeDispatcher.ts
  * 
  * 🛡️ UNIFIED RESILIENT MULTI-TIER OMNICHANNEL FAILOVER & DISPATCH CASCADE
- * Bethelmind Analytics Lagos Desk · Commercial Growth Engine
+ * Bethelmind Digital Solutions · Commercial Growth Engine
  * 
  * Capabilities:
  * 1. Email Cascade: Brevo API v3 -> Hostinger 587 STARTTLS -> Hostinger 465 SSL -> Resend / Gmail OAuth2.
@@ -123,7 +123,7 @@ export async function dispatchResilientEmail(options: {
     });
 
     const info = await transporter587.sendMail({
-      from: '"Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+      from: '"Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
       to: `"${toName}" <${toEmail}>`,
       subject,
       text: textContent,
@@ -162,7 +162,7 @@ export async function dispatchResilientEmail(options: {
     });
 
     const info = await transporter465.sendMail({
-      from: '"Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+      from: '"Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
       to: `"${toName}" <${toEmail}>`,
       subject,
       text: textContent,
@@ -417,7 +417,7 @@ Connect directly with our desk:
 WhatsApp: +234 802 279 1227 (https://wa.me/2348022791227)
 Email: tosin@bethelmindanalytics.com
 
-Tosin Oyelakin · Bethelmind Analytics Lagos Desk`;
+Tosin Oyelakin · Bethelmind Digital Solutions`;
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -426,7 +426,7 @@ Tosin Oyelakin · Bethelmind Analytics Lagos Desk`;
 <body style="margin:0; padding:20px; background-color:#0b1329; font-family:'Segoe UI', Arial, sans-serif; color:#f8fafc;">
   <div style="max-width:600px; margin:0 auto; background:#0f172a; border:1px solid #1e293b; border-radius:12px; overflow:hidden;">
     <div style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding:24px; text-align:center;">
-      <div style="color:#e0f2fe; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">⚡ Bethelmind Analytics Lagos Desk</div>
+      <div style="color:#e0f2fe; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">⚡ Bethelmind Digital Solutions</div>
       <h1 style="color:#ffffff; margin:0; font-size:20px; font-weight:800;">24/7 AI Quoting & Sales Portal</h1>
       <p style="color:#bae6fd; margin:6px 0 0 0; font-size:13px;">Custom Prototype for <strong>${cleanName}</strong></p>
     </div>

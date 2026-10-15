@@ -10,7 +10,7 @@
  * 4. Human Co-Pilot Approval Gate: Live payment account is NEVER dispatched
  *    to a client without the user's explicit 1-tap approval on Admin WhatsApp.
  * 5. Deterministic Math Check: wholesaleCost + netProfit === totalDeposit (0 kobo error).
- * 6. Direct-to-OPay Profit Routing: 7034297995 (Oyelakin Tosin Matthew).
+ * 6. Direct-to-OPay Profit Routing: 6805375225 (Bethelmind Digital Solutions).
  */
 
 import fs from 'fs';
@@ -38,7 +38,7 @@ export interface PendingApprovalTicket {
 
 export class StrictEscrowArbitrageSupervisor {
   private adminPhone: string = '2348022791227';
-  private opayAccount: string = '7034297995';
+  private opayAccount: string = '6805375225';
   private stateFilePath: string = path.join(__dirname, '../../../local_db/escrow_supervisor_state.json');
 
   constructor() {

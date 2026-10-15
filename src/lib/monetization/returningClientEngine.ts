@@ -12,7 +12,7 @@
  *    - Assigns their Next Batch ID (e.g. BATCH-2, BATCH-3) with verified merchant escrow vault.
  * 3. 🚨 High-Priority Instant Notification to Admin Line (0802 279 1227):
  *    - Alerts you immediately when a repeat client wants to clear another container.
- * 4. 🏦 Direct-to-OPay Profit Routing (7034297995 - Oyelakin Tosin Matthew).
+ * 4. 🏦 Direct-to-OPay Profit Routing (6805375225 - Bethelmind Digital Solutions).
  */
 
 import fs from 'fs';
@@ -81,7 +81,7 @@ export function handleReturningClientInquiry(phone: string, incomingMessage: str
       `📊 *FAST-TRACK BATCH ALLOCATION: ${newBatchId}*\n` +
       `• Live Locked Rate: ₦1,520 / USD *(Guaranteed VIP Commercial Rate)*\n` +
       `• Execution Speed: Under 15 Minutes Direct to Factory\n` +
-      `• Escrow Deposit Vault: OPay Digital Services \`7034297995\` (Oyelakin Tosin Matthew - Bethelmind Trust)\n\n` +
+      `• Escrow Deposit Vault: Moniepoint Microfinance Bank \`6805375225\` (Bethelmind Digital Solutions - Bethelmind Trust)\n\n` +
       `Please drop your new China invoice / supplier wallet address below, and our desk will generate your instant settlement confirmation immediately!`;
 
     const adminNotification = `🚨 *[REPEAT VIP CLIENT INQUIRY RECEIVED!]*\n\n` +
@@ -90,7 +90,7 @@ export function handleReturningClientInquiry(phone: string, incomingMessage: str
       `• Historical Volume: $${matchedVip.totalVolumeClearedUSD.toLocaleString()} USD\n` +
       `• Client Message: "${incomingMessage}"\n` +
       `• Generated Batch: \`${newBatchId}\`\n\n` +
-      `💰 *Potential Spread on Next Batch:* ~+₦1,000,000 to +₦1,625,000 NGN (Direct to OPay 7034297995)`;
+      `💰 *Potential Spread on Next Batch:* ~+₦1,000,000 to +₦1,625,000 NGN (Direct to OPay 6805375225)`;
 
     return {
       isReturningVip: true,
@@ -105,7 +105,7 @@ export function handleReturningClientInquiry(phone: string, incomingMessage: str
   return {
     isReturningVip: false,
     newBatchId: `BATCH-1-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
-    vipResponse: `Good day! Thank you for contacting Bethelmind Analytics Institutional Escrow Desk. Our live locked wholesale rate is ₦1,520/$. Please drop your China invoice or order volume to receive your dedicated escrow deposit details.`,
+    vipResponse: `Good day! Thank you for contacting Bethelmind Digital Solutions Institutional Escrow Desk. Our live locked wholesale rate is ₦1,520/$. Please drop your China invoice or order volume to receive your dedicated escrow deposit details.`,
     adminNotification: `📩 *[NEW INBOUND LEAD INQUIRY]*\nFrom: +${cleanPhone}\nMessage: "${incomingMessage}"`
   };
 }

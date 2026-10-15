@@ -164,7 +164,7 @@ export function generateHeadhuntingPitch(
 ): ExecutiveHeadhuntingPitch {
   const message = `Hi ${candidateName}, I've been following your impressive work in ${targetRole} at ${currentCompany}. We are expanding our senior leadership team in Lagos and looking for a proven specialist to lead high-ticket projects (${offeredCompRange} + performance perks). Would you be open to a confidential 10-minute coffee chat this week?`;
 
-  const whatsapp = `Hi ${candidateName}, ApexReach Executive Search here. Your track record at ${currentCompany} caught our attention. We are hiring a ${targetRole} in Lagos with competitive compensation (${offeredCompRange}). Are you open to a brief confidential chat?`;
+  const whatsapp = `Hi ${candidateName}, Bethelmind Digital Solutions Executive Search here. Your track record at ${currentCompany} caught our attention. We are hiring a ${targetRole} in Lagos with competitive compensation (${offeredCompRange}). Are you open to a brief confidential chat?`;
 
   return {
     candidateName,
@@ -370,7 +370,7 @@ export const SEED_INTERVIEW_SLOTS: InterviewSlot[] = [
     scheduledAt: '2026-08-07T10:00:00.000Z',
     durationMins: 30,
     mode: 'video_webrtc',
-    meetingLink: 'https://apexreach.app/preview/interview/slot_101',
+    meetingLink: 'https://bethelmind.app/preview/interview/slot_101',
     interviewerName: 'Head of Operations',
     status: 'scheduled',
     notes: 'Shortlisted candidate - Excellent solar BOQ & lithium battery background.',
@@ -595,7 +595,7 @@ export function scheduleInterview(params: {
   const slotId = `slot_${Date.now()}`;
   const meetingLink = params.mode === 'in_person' 
     ? 'In-Person (Office Headquarters)' 
-    : `https://apexreach.app/preview/interview/${slotId}`;
+    : `https://bethelmind.app/preview/interview/${slotId}`;
 
   const slot: InterviewSlot = {
     id: slotId,
@@ -609,7 +609,7 @@ export function scheduleInterview(params: {
     meetingLink,
     interviewerName: params.interviewerName || 'Hiring Manager',
     status: 'scheduled',
-    notes: 'Automated interview slot booked via ApexReach Recruitment Engine.',
+    notes: 'Automated interview slot booked via Bethelmind Digital Solutions Recruitment Engine.',
   };
 
   interviewSlotsMemoryStore.unshift(slot);

@@ -3,7 +3,7 @@
  * 
  * 🛡️ ULTRA-SAFE SLOW-DRIP WHATSAPP WARM-UP & 24/7 INBOUND LISTENER
  * 
- * Bethelmind Analytics Lagos Desk · Commercial Growth Engine
+ * Bethelmind Digital Solutions · Commercial Growth Engine
  * 
  * 🚨 Hardened Anti-Ban Cadence (30-Minute Rest & Warm-Up Protocol):
  * 1. Safe Outreach Limit: Strictly 30 messages per active line per day.
@@ -105,7 +105,7 @@ function formatAutoReply(text) {
 
   // Pricing inquiries
   if (/price|cost|how much|fee|pay|pricing|expensive|cheap|charges|amount/i.test(lower)) {
-    return `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Analytics Lagos* business tools.
+    return `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Digital Solutions* business tools.
 
 We keep our rates completely transparent with ZERO hidden fees:
 
@@ -149,11 +149,11 @@ Connect directly with our Lagos Desk Head:
   if (/who|where|office|address|location|scam|real|legit|call|number/i.test(lower)) {
     return `Good afternoon Sir/Ma!
 
-We are *Bethelmind Analytics Lagos Desk*, a registered commercial technology enterprise based in Lagos, Nigeria.
+We are *Bethelmind Digital Solutions*, a registered commercial technology enterprise based in Lagos, Nigeria.
 • Head of Desk: Tosin Oyelakin
 • Official Hotline / Direct WhatsApp: 0802 279 1227 (wa.me/2348022791227)
 • Corporate Website: https://www.bethelmindanalytics.com
-• Bank Settlement: Direct OPay Merchant Integration (Oyelakin Tosin Matthew)
+• Bank Settlement: Direct OPay Merchant Integration (Bethelmind Digital Solutions)
 
 We help Nigerian SMEs eliminate after-hours sales loss by deploying automated 24/7 WhatsApp response tools.
 
@@ -161,7 +161,7 @@ You do NOT pay anything upfront to review your demo. Feel free to inspect our pl
   }
 
   // General polite reply
-  return `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Analytics Lagos Desk*.
+  return `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Digital Solutions*.
 
 Our senior technical consultant is reviewing your message right now.
 

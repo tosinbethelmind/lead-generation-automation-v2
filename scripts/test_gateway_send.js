@@ -8,7 +8,7 @@ async function testGateway() {
   try {
     const res = await axios.post(url, {
       to: '+2348022791227',
-      message: 'Hello Tosin! Live Android GSM SMS Gateway verified for Bethelmind Analytics.'
+      message: 'Hello Tosin! Live Android GSM SMS Gateway verified for Bethelmind Digital Solutions.'
     }, {
       headers: {
         'Content-Type': 'application/json',

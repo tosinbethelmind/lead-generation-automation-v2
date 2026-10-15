@@ -8,7 +8,7 @@
  * 2. ⚡ Funding Rate Flip Circuit Breaker: Auto-unrolls perp positions if 8h funding turns negative.
  * 3. 🔄 Self-Healing Process Restarts: Recovers dead connections or stalled WebSockets instantly.
  * 4. 📲 High-Priority SMS Escalation: Dispatches instant Tailscale SMS to Admin line (0802 279 1227) on any anomaly.
- * 5. 🏦 Guaranteed Settlement Integrity: Enforces direct Naira liquidation to OPay (7034297995).
+ * 5. 🏦 Guaranteed Settlement Integrity: Enforces direct Naira liquidation to OPay (6805375225).
  */
 
 import { OPAY_BENEFICIARY_CONFIG } from './directNairaAutoLiquidationRouter';

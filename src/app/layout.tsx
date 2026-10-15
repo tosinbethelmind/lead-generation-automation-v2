@@ -73,10 +73,10 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Bethelmind Analytics — AI Lead Generation & Business Automation Nigeria',
+    title: 'Bethelmind Digital Solutions — AI Lead Generation & Business Automation Nigeria',
     description: 'Never lose another paying client to slow replies. Automated WhatsApp AI agent, instant sector calculator quotes, Lagos B2B leads, and Moniepoint/Paystack payment verification.',
     url: 'https://www.bethelmindanalytics.com',
-    siteName: 'Bethelmind Analytics',
+    siteName: 'Bethelmind Digital Solutions',
     locale: 'en_NG',
     type: 'website',
     images: [
@@ -84,13 +84,13 @@ export const metadata: Metadata = {
         url: 'https://www.bethelmindanalytics.com/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Bethelmind Analytics AI Lead Generation Platform Nigeria',
+        alt: 'Bethelmind Digital Solutions AI Lead Generation Platform Nigeria',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Bethelmind Analytics — AI Lead Generation & Business Automation Nigeria',
+    title: 'Bethelmind Digital Solutions — AI Lead Generation & Business Automation Nigeria',
     description: 'AI-assisted WhatsApp sales agent, lead harvesting, CRM, and solar quote calculators for Nigerian businesses.',
     images: ['https://www.bethelmindanalytics.com/og-image.png'],
   },
@@ -102,7 +102,7 @@ const jsonLdSchema = {
     {
       '@type': 'Organization',
       '@id': 'https://www.bethelmindanalytics.com/#organization',
-      name: 'Bethelmind Analytics & Strategy',
+      name: 'Bethelmind Digital Solutions',
       url: 'https://www.bethelmindanalytics.com',
       logo: 'https://www.bethelmindanalytics.com/favicon.ico',
       description: 'Nigeria’s premier AI-powered lead generation and sales automation suite. Offering 24/7 WhatsApp AI customer care agents, Lagos B2B business lead harvesting, Solar Quote Pro calculators, and automated bank transfer verification.',
@@ -123,7 +123,7 @@ const jsonLdSchema = {
     {
       '@type': 'LocalBusiness',
       '@id': 'https://www.bethelmindanalytics.com/#localbusiness',
-      name: 'Bethelmind Analytics Nigeria',
+      name: 'Bethelmind Digital Solutions Nigeria',
       image: 'https://www.bethelmindanalytics.com/og-image.png',
       telephone: '+2348022791227',
       priceRange: '₦15,000 - ₦75,000 NGN',
@@ -143,7 +143,7 @@ const jsonLdSchema = {
     {
       '@type': 'SoftwareApplication',
       '@id': 'https://www.bethelmindanalytics.com/#software',
-      name: 'Bethelmind Analytics B2B Suite',
+      name: 'Bethelmind Digital Solutions B2B Suite',
       operatingSystem: 'All',
       applicationCategory: 'BusinessApplication',
       offers: {
@@ -165,10 +165,10 @@ const jsonLdSchema = {
       mainEntity: [
         {
           '@type': 'Question',
-          name: 'How does Bethelmind Analytics generate B2B leads in Nigeria?',
+          name: 'How does Bethelmind Digital Solutions generate B2B leads in Nigeria?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Bethelmind Analytics utilizes automated Lagos & nationwide B2B scrapers to harvest verified business names, WhatsApp phone numbers, emails, and decision-maker contact details across 27+ Lagos districts, Abuja, and major commercial hubs in Nigeria.'
+            text: 'Bethelmind Digital Solutions utilizes automated Lagos & nationwide B2B scrapers to harvest verified business names, WhatsApp phone numbers, emails, and decision-maker contact details across 27+ Lagos districts, Abuja, and major commercial hubs in Nigeria.'
           }
         },
         {
@@ -193,7 +193,7 @@ const jsonLdSchema = {
       '@type': 'WebSite',
       '@id': 'https://www.bethelmindanalytics.com/#website',
       url: 'https://www.bethelmindanalytics.com',
-      name: 'Bethelmind Analytics',
+      name: 'Bethelmind Digital Solutions',
       publisher: {
         '@id': 'https://www.bethelmindanalytics.com/#organization',
       },

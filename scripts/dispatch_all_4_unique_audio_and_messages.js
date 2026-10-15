@@ -24,7 +24,7 @@ async function dispatchAllUniqueSuites() {
       cleanPhone: '2348185587222',
       audioFile: path.join(__dirname, '../public/audio/Bethelmind_15s_Jacio.wav'),
       audioName: 'Bethelmind_15s_Jacio.wav',
-      voiceTranscript: 'Good day Alhaji, management at Jacio International in ASPAMDA Trade Fair. Tosin here from Bethelmind Analytics. Why wait weeks on Form M? We have locked 1,520 Naira per Dollar for your 65,000 Dollar Guangzhou container wire today, with 15-minute delivery and 100% Providus Bank escrow safety. Check the quick details below with reference BM-OTC-701-JACIO and let us clear your batch today. Thank you.',
+      voiceTranscript: 'Good day Alhaji, management at Jacio International in ASPAMDA Trade Fair. Tosin here from Bethelmind Digital Solutions. Why wait weeks on Form M? We have locked 1,520 Naira per Dollar for your 65,000 Dollar Guangzhou container wire today, with 15-minute delivery and 100% Providus Bank escrow safety. Check the quick details below with reference BM-OTC-701-JACIO and let us clear your batch today. Thank you.',
       proposal: `⚡ *[BETHELMIND INSTITUTIONAL FX & ESCROW]*
 Ref: *BM-OTC-701-JACIO*
 
@@ -55,7 +55,7 @@ Good day management at Jacio! Why wait weeks on Form M or risk black market dela
       cleanPhone: '2348033079719',
       audioFile: path.join(__dirname, '../public/audio/Bethelmind_15s_Maldini.wav'),
       audioName: 'Bethelmind_15s_Maldini.wav',
-      voiceTranscript: 'Good day Executive Team at Maldini Granites in Surulere. Tosin here from Bethelmind Analytics. Avoid costly bank delays for your stone supplier wires. We have locked 1,520 Naira per Dollar for your 65,000 Dollar container batch today, with 15-minute direct delivery and 100% bank escrow protection. Check the breakdown below under reference BM-OTC-702-MALDINI. Thank you.',
+      voiceTranscript: 'Good day Executive Team at Maldini Granites in Surulere. Tosin here from Bethelmind Digital Solutions. Avoid costly bank delays for your stone supplier wires. We have locked 1,520 Naira per Dollar for your 65,000 Dollar container batch today, with 15-minute direct delivery and 100% bank escrow protection. Check the breakdown below under reference BM-OTC-702-MALDINI. Thank you.',
       proposal: `⚡ *[BETHELMIND INSTITUTIONAL FX & ESCROW]*
 Ref: *BM-OTC-702-MALDINI*
 
@@ -86,7 +86,7 @@ Good day management at Maldini! Avoid costly bank delays for your container frei
       cleanPhone: '2348107540008',
       audioFile: path.join(__dirname, '../public/audio/Bethelmind_15s_Fouani.wav'),
       audioName: 'Bethelmind_15s_Fouani.wav',
-      voiceTranscript: 'Good day Procurement Team at Fouani on Allen Avenue, Ikeja. Tosin here from Bethelmind Analytics. We have secured a locked commercial rate of 1,520 Naira per Dollar for your 50,000 Dollar electronics container invoice today, with 15-minute factory clearance and full institutional escrow safety. Check your proposal below under reference BM-OTC-703-FOUANI. Thank you.',
+      voiceTranscript: 'Good day Procurement Team at Fouani on Allen Avenue, Ikeja. Tosin here from Bethelmind Digital Solutions. We have secured a locked commercial rate of 1,520 Naira per Dollar for your 50,000 Dollar electronics container invoice today, with 15-minute factory clearance and full institutional escrow safety. Check your proposal below under reference BM-OTC-703-FOUANI. Thank you.',
       proposal: `⚡ *[BETHELMIND INSTITUTIONAL FX & ESCROW]*
 Ref: *BM-OTC-703-FOUANI*
 
@@ -117,7 +117,7 @@ Good day management at Fouani! Fast-track your commercial electronics container 
       cleanPhone: '2348170417114',
       audioFile: path.join(__dirname, '../public/audio/Bethelmind_15s_Cohbs.wav'),
       audioName: 'Bethelmind_15s_Cohbs.wav',
-      voiceTranscript: 'Good day Management at COHBS International in Ikeja. Tosin here from Bethelmind Analytics. We have locked 1,520 Naira per Dollar for your 35,000 Dollar industrial hardware supplier invoice today, with 15-minute factory payment and 100% escrow security. Check your details below under reference BM-OTC-704-COHBS. Thank you.',
+      voiceTranscript: 'Good day Management at COHBS International in Ikeja. Tosin here from Bethelmind Digital Solutions. We have locked 1,520 Naira per Dollar for your 35,000 Dollar industrial hardware supplier invoice today, with 15-minute factory payment and 100% escrow security. Check your details below under reference BM-OTC-704-COHBS. Thank you.',
       proposal: `⚡ *[BETHELMIND INSTITUTIONAL FX & ESCROW]*
 Ref: *BM-OTC-704-COHBS*
 
@@ -143,7 +143,7 @@ Good day management at COHBS! Fast-track your industrial hardware supplier invoi
 
     const card = `🏢 *CLIENT #${c.id}: ${c.name.toUpperCase()}*
 🆔 *REF:* \`${c.ref}\` | 📦 *VOLUME:* ${c.volume}
-💰 *YOUR SPREAD PROFIT:* *+${c.profit}* (Settles to OPay 7034297995)
+💰 *YOUR SPREAD PROFIT:* *+${c.profit}* (Settles to OPay 6805375225)
 ━━━━━━━━━━━━━━━━━━━━━━
 🎙️ *THIS CLIENT'S UNIQUE 15s VOICE NOTE SCRIPT:*
 _"${c.voiceTranscript}"_

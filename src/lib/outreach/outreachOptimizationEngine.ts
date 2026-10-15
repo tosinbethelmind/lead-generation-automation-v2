@@ -2,14 +2,14 @@
  * @file src/lib/outreach/outreachOptimizationEngine.ts
  * 
  * High-Throughput B2B Commercial Outreach & Optimization Engine
- * Bethelmind Analytics Commercial Growth System
+ * Bethelmind Digital Solutions Commercial Growth System
  * 
  * Invariants & Strict Rules:
  * 1. ZERO-CRYPTO B2B FOCUS: Strict Engine 1 commercial offers (DFY SME Websites, 1-Line Embeds, Sector Tools).
  * 2. SINGLE-CREDIT SMS: Exactly <= 158 characters per GSM SMS (1 carrier credit = ₦6.00).
  * 3. WHATSAPP QUOTA: Strictly 30 messages/line/day across connected lines (60 msgs total/day).
  * 4. 100% REAL-ACTION INVARIANT: Zero fake/simulated dispatch records. Only confirmed network dispatches.
- * 5. DIRECT-TO-OPAY COMMISSIONS: All payout flows route to OPay 7034297995 (Oyelakin Tosin Matthew).
+ * 5. DIRECT-TO-OPAY COMMISSIONS: All payout flows route to OPay 6805375225 (Bethelmind Digital Solutions).
  */
 
 import fs from 'fs';
@@ -35,7 +35,7 @@ export const DEFAULT_OUTREACH_CONFIG: OutreachConfig = {
   maxWhatsAppPerLineDay: 30,
   maxEmailPerDay: 1000,
   smsGatewayUrl: process.env.TAILSCALE_SMS_URL || 'http://10.132.90.251:8082',
-  opayAccountNumber: '7034297995'
+  opayAccountNumber: '6805375225'
 };
 
 export interface OutreachDispatchRecord {
@@ -131,14 +131,14 @@ Deliverables Included:
 Direct Support & Inbound Desk: wa.me/2348022791227 | 0802 279 1227
 
 Best regards,
-Bethelmind Analytics Lagos Desk`;
+Bethelmind Digital Solutions`;
 
   assertZeroCryptoCompliance(bodyText);
 
   const bodyHtml = `
 <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
   <div style="background: #0f172a; padding: 24px; border-radius: 8px 8px 0 0; color: #ffffff;">
-    <h2 style="margin: 0; font-size: 20px; color: #38bdf8;">Bethelmind Analytics Lagos Desk</h2>
+    <h2 style="margin: 0; font-size: 20px; color: #38bdf8;">Bethelmind Digital Solutions</h2>
     <p style="margin: 4px 0 0 0; font-size: 13px; color: #94a3b8;">Commercial Growth & 24/7 AI Automation</p>
   </div>
   <div style="padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; background: #ffffff;">

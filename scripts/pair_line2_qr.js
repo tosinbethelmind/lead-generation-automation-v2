@@ -29,7 +29,7 @@ async function start() {
     logger: pino({ level: 'silent' }),
     auth: state,
     printQRInTerminal: false,
-    browser: ['Bethelmind Analytics', 'Chrome', '124.0.0']
+    browser: ['Bethelmind Digital Solutions', 'Chrome', '124.0.0']
   });
 
   sock.ev.on('creds.update', saveCreds);

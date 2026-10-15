@@ -442,7 +442,7 @@ async function harvestNominatimOSMZone(keyword, category, lgaName) {
     const searchQ = `${keyword} in ${lgaName} Lagos Nigeria`;
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQ)}&format=json&addressdetails=1&limit=25`;
     const resp = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ApexReachLagosHarvester/8.0' },
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Bethelmind Digital SolutionsLagosHarvester/8.0' },
       signal: AbortSignal.timeout(9000),
     });
 

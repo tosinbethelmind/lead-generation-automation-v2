@@ -51,7 +51,7 @@ export function scanCargoCommunityWhales(): FreightWhaleLead[] {
     const prefilledMessage = encodeURIComponent(
       `Good day management at ${lead.name}!\n\n` +
       `We audited your commercial operations at ${lead.address || lead.area}.\n` +
-      `Bethelmind Analytics provides direct locked wholesale FX/USDT supplier clearance for China/international factory invoices with 15-minute locked rate protection and 3-minute verified escrow settlement.\n\n` +
+      `Bethelmind Digital Solutions provides direct locked wholesale FX/USDT supplier clearance for China/international factory invoices with 15-minute locked rate protection and 3-minute verified escrow settlement.\n\n` +
       `Would you like to review our live locked commercial rate for today?`
     );
 

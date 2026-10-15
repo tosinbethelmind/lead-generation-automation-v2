@@ -8,7 +8,7 @@ async function testAllFailovers() {
 
   let passedTests = 0;
   let totalTests = 5;
-  const headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ApexReachFailoverTest/1.0' };
+  const headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Bethelmind Digital SolutionsFailoverTest/1.0' };
 
   // ---------------------------------------------------------------------------
   // TEST 1: Lead Harvester Engine Multi-Source Failover

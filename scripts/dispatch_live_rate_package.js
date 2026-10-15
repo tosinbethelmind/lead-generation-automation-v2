@@ -44,7 +44,7 @@ We know your desk regularly clears container shipments from China. Rather than e
 • *Wholesale Desk Cost:* ₦1,350 / USD
 • *Client Quoted Rate:* *₦1,375 / USD*
 • *Client Benefit:* Cheaper than street BDC (₦1,415) by ₦40/$ (Saves ₦2.6M NGN!)
-• *YOUR SPREAD PROFIT:* *+₦1,625,000 NGN* (OPay 7034297995)
+• *YOUR SPREAD PROFIT:* *+₦1,625,000 NGN* (OPay 6805375225)
 
 📋 *UPDATED LIVE PROPOSAL:*
 ${liveProposal}

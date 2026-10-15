@@ -50,7 +50,7 @@ async function compileAndDispatchExecutiveBriefing() {
     
     <!-- Header -->
     <div style="border-bottom: 2px solid #238636; padding-bottom: 16px; margin-bottom: 20px;">
-      <h2 style="color: #58a6ff; margin: 0; font-size: 20px;">🚀 Bethelmind Analytics — Hourly Executive Dossier</h2>
+      <h2 style="color: #58a6ff; margin: 0; font-size: 20px;">🚀 Bethelmind Digital Solutions — Hourly Executive Dossier</h2>
       <p style="color: #8b949e; font-size: 13px; margin: 6px 0 0 0;">
         Lagos Local Time: <strong>${timeString} WAT (${dateString})</strong> | Operating Mode: <strong>24/7 Autonomous (0% Ban Risk)</strong>
       </p>
@@ -127,7 +127,7 @@ async function compileAndDispatchExecutiveBriefing() {
       to: 'bethelmindrecruit@gmail.com',
       subject: `🚀 [Hourly Executive Briefing] ${timeString} WAT — 24/7 Engine & Customer Journey Dossier`,
       html: htmlContent,
-      fromName: 'Bethelmind Analytics Lagos Executive Desk'
+      fromName: 'Bethelmind Digital Solutions Executive Desk'
     });
 
     if (result.success) {

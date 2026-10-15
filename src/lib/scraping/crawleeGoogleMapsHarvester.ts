@@ -2,7 +2,7 @@
  * @file src/lib/scraping/crawleeGoogleMapsHarvester.ts
  * 
  * 🗺️ CRAWLEE + KATANA + METASCRAPER NATIONWIDE COMMERCIAL HARVESTER
- * Bethelmind Analytics Lagos Desk · 2026 High-Yield Edition
+ * Bethelmind Digital Solutions · 2026 High-Yield Edition
  * 
  * Combines:
  * 1. Apify Crawlee for queue management & multi-threaded concurrency.

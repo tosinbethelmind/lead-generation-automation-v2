@@ -22,7 +22,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: 'Instant WhatsApp Speed-to-Lead & Catalog Closer',
     sector: 'Retail & E-Commerce',
     desc: 'Sub-3s WhatsApp DM replies with natural Nigerian voice notes, instant catalog pricing, and automated Paystack/OPay payment links.',
-    pricing: '₦15k–₦30k/mo (₦35k Setup)',
+    pricing: '₦35,000 Deposit (₦65k Promo Total • ₦0 Monthly)',
     href: '/solutions',
   },
   {
@@ -33,8 +33,8 @@ const FLAGSHIP_SOLUTIONS = [
     title: 'Solar & Inverter Instant Quotation Engine',
     sector: 'Solar & Energy',
     desc: 'Interactive appliance load picker generating instant WhatsApp BOQ proposals and diesel replacement fuel savings analysis.',
-    pricing: '₦25k–₦50k/mo (₦100k Setup)',
-    href: '/tools/solar-quote-pro',
+    pricing: '₦35,000 Deposit (₦65k Promo Total • ₦0 Monthly)',
+    href: '/solar',
   },
   {
     id: 'fake-alert-proof',
@@ -44,7 +44,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: '"Fake Alert Proof" Bank Transfer Reconciliation',
     sector: 'Supermarkets & Wholesale',
     desc: 'Validates payments strictly via Direct NIBSS/OPay/Moniepoint webhooks with green tablet cashier notifications. Zero fake alert fraud.',
-    pricing: '₦10k/mo + 0.5% cap',
+    pricing: '₦35,000 Deposit (₦65k Promo Total • ₦0 Monthly)',
     href: '/solutions',
   },
   {
@@ -55,7 +55,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: 'Hyperlocal Dispatch & Waybill Tracker',
     sector: 'Logistics & Haulage',
     desc: 'Island-to-Mainland distance fee comparer, automated customer SMS/WhatsApp waybill tracking, and Pay-on-Delivery cash ledger.',
-    pricing: '₦20k–₦45k/mo',
+    pricing: '₦35,000 Deposit (₦65k Promo Total • ₦0 Monthly)',
     href: '/solutions',
   },
   {
@@ -66,7 +66,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: 'Tenant Service Charge & Rent Escrow Manager',
     sector: 'Real Estate & Landlords',
     desc: 'Automated 60/30/7-day rent countdowns, digital stamped receipts, and facility diesel maintenance breakdown per tenant unit.',
-    pricing: '₦50k–₦150k/mo',
+    pricing: '₦35,000 Deposit (₦65k Promo Total • ₦0 Monthly)',
     href: '/solutions',
   },
   {
@@ -77,7 +77,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: 'Automated Service Booking & Deposit Lock',
     sector: 'Clinics, Spas & Salons',
     desc: '24/7 appointment calendar locking client slots with upfront OPay/card commitments to eliminate 40% no-show losses.',
-    pricing: '₦15k–₦35k/mo',
+    pricing: '₦35,000 Deposit (₦65k Promo Total • ₦0 Monthly)',
     href: '/solutions',
   },
 ];
@@ -99,7 +99,7 @@ export default function SolutionsSection() {
         <div style={{ textAlign: 'center', marginBottom: 44 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.22)', borderRadius: 100, padding: '5px 16px', marginBottom: 14 }}>
             <Sparkles style={{ width: 14, height: 14, color: '#10b981' }} />
-            <span style={{ fontSize: '0.76rem', color: '#10b981', fontWeight: 700 }}>The 10 High-Conversion Sector Monetization Tools</span>
+            <span style={{ fontSize: '0.76rem', color: '#10b981', fontWeight: 700 }}>🇳🇬 October 50% SME Promo • The 10 High-Conversion Sector Tools</span>
           </div>
           <h2
             id="solutions-heading"
@@ -108,7 +108,7 @@ export default function SolutionsSection() {
             Ready-to-Pitch B2B Business Revenue Suite
           </h2>
           <p style={{ color: '#94a3b8', fontSize: '0.96rem', maxWidth: 680, margin: '0 auto', lineHeight: 1.6 }}>
-            Eliminate operational leaks and after-hours customer drop-offs. Deploy as a <strong>24-Hour Done-For-You Turnkey Prototype</strong> (₦75k deposit) or a <strong>1-Line Embed Script</strong> on your current website.
+            Eliminate operational leaks and after-hours customer drop-offs. Under our <strong>October 50% SME Promo</strong>, launch any tool + your Official <code>.com.ng</code> Website for <strong>₦65,000 Total</strong> (Normal Price: <span style={{ textDecoration: 'line-through', color: '#f87171' }}>₦130,000</span>) — start today with a <strong>₦35,000 Deposit</strong> or embed on your existing site for <strong>₦35,000 One-Time</strong>.
           </p>
         </div>
 

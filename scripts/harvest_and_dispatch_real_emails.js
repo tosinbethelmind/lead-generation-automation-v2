@@ -2,7 +2,7 @@
  * @file scripts/harvest_and_dispatch_real_emails.js
  * 
  * High-Velocity B2B Email Harvester, DNS MX Validator & Outreach Dispatcher
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  */
 
 const fs = require('fs');
@@ -48,7 +48,7 @@ async function verifyMxRecord(email) {
 async function sendEmailViaBrevo(toEmail, toName, subject, htmlContent, textContent) {
   const url = 'https://api.brevo.com/v3/smtp/email';
   const payload = {
-    sender: { name: 'Bethelmind Analytics Lagos Desk', email: 'tosin@bethelmindanalytics.com' },
+    sender: { name: 'Bethelmind Digital Solutions', email: 'tosin@bethelmindanalytics.com' },
     to: [{ email: toEmail, name: toName }],
     subject: subject,
     htmlContent: htmlContent,
@@ -77,7 +77,7 @@ async function sendEmailViaBrevo(toEmail, toName, subject, htmlContent, textCont
 
 async function sendEmailViaHostinger(toEmail, toName, subject, htmlContent, textContent) {
   return transporter.sendMail({
-    from: '"Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+    from: '"Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
     to: `"${toName}" <${toEmail}>`,
     subject: subject,
     text: textContent,
@@ -93,7 +93,7 @@ function generateEmailContent(name, category, area, previewUrl) {
   const subject = `24/7 AI Sales & Instant Quoting Portal for ${cleanName}`;
   const textContent = `Good day Team at ${cleanName},
 
-My name is Tosin Oyelakin from Bethelmind Analytics Lagos Desk.
+My name is Tosin Oyelakin from Bethelmind Digital Solutions.
 
 We recently reviewed commercial operations in ${cleanArea} and noticed that potential customers reaching out after business hours often experience response delays before receiving formal quotes or pricing.
 
@@ -114,7 +114,7 @@ Email: tosin@bethelmindanalytics.com
 
 Best regards,
 Tosin Oyelakin
-Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
+Lead Solutions Strategist · Bethelmind Digital Solutions`;
 
   const htmlContent = `
 <!DOCTYPE html>
@@ -123,7 +123,7 @@ Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
 <body style="margin:0; padding:20px; background-color:#0b1329; font-family:'Segoe UI', Arial, sans-serif; color:#f8fafc;">
   <div style="max-width:600px; margin:0 auto; background:#0f172a; border:1px solid #1e293b; border-radius:12px; overflow:hidden;">
     <div style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding:24px; text-align:center;">
-      <div style="color:#e0f2fe; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">⚡ Bethelmind Analytics Lagos Desk</div>
+      <div style="color:#e0f2fe; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">⚡ Bethelmind Digital Solutions</div>
       <h1 style="color:#ffffff; margin:0; font-size:20px; font-weight:800;">24/7 AI Quoting & Sales Portal</h1>
       <p style="color:#bae6fd; margin:6px 0 0 0; font-size:13px;">Custom Pre-Built Prototype for <strong>${cleanName}</strong></p>
     </div>
@@ -147,7 +147,7 @@ Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
       <div style="border-top:1px solid #1e293b; padding-top:18px; margin-top:20px; font-size:13px; color:#94a3b8; line-height:1.6;">
         📱 <strong>WhatsApp Desk:</strong> <a href="https://wa.me/2348022791227" style="color:#38bdf8; text-decoration:none; font-weight:700;">+234 802 279 1227</a><br>
         📧 <strong>Email:</strong> <a href="mailto:tosin@bethelmindanalytics.com" style="color:#38bdf8; text-decoration:none;">tosin@bethelmindanalytics.com</a><br><br>
-        <strong>Tosin Oyelakin</strong> · <em>Bethelmind Analytics Lagos Desk</em>
+        <strong>Tosin Oyelakin</strong> · <em>Bethelmind Digital Solutions</em>
       </div>
     </div>
   </div>
@@ -159,7 +159,7 @@ Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
 
 async function run() {
   console.log('========================================================================');
-  console.log('🚀 BETHELMIND ANALYTICS: VALIDATING & DISPATCHING GENUINE B2B EMAILS');
+  console.log('🚀 Bethelmind Digital Solutions: VALIDATING & DISPATCHING GENUINE B2B EMAILS');
   console.log('========================================================================\n');
 
   // Load existing leads

@@ -31,7 +31,7 @@ export default function AdminSettingsIntegrationsPage() {
 
   // Form State
   const [config, setConfig] = useState<any>({
-    businessSignature: 'Bethelmind Analytics & Strategy',
+    businessSignature: 'Bethelmind Digital Solutions',
     dryRun: true,
     outreachChannel: 'multichannel',
     emailProvider: 'smtp',

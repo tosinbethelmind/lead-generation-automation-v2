@@ -356,7 +356,7 @@ export async function generateAISchedule(nicheFocus?: string, locationFocus?: st
   // Get current lead metrics
   const stats = await getDbStats();
   
-  const prompt = `You are the Campaign Scheduler AI for Bethelmind Analytics & Strategy lead automation.
+  const prompt = `You are the Campaign Scheduler AI for Bethelmind Digital Solutions lead automation.
 Your task is to generate a highly optimized 30-day lead generation plan (4 weeks, 3 queries per week = 12 total queries).
 The goal is to expand our contact pipeline with high-quality local business targets while avoiding duplication of existing data.
 

@@ -5,7 +5,7 @@ import { NextRequest } from 'next/server';
 
 async function runTests() {
   console.log('====================================================');
-  console.log('🧪 Starting ApexReach Engine Verification Test Suite');
+  console.log('🧪 Starting Bethelmind Digital Solutions Engine Verification Test Suite');
   console.log('====================================================\n');
 
   let passed = 0;

@@ -18,12 +18,14 @@ export function ExecutivePdfQuoteModal({
   category = 'Commercial Enterprise',
   location = 'Lagos, Nigeria',
   toolType = 'Solar Hybrid & Energy Quoting Suite',
-  claimFeeNgn = 150000,
-  depositFeeNgn = 75000,
+  claimFeeNgn = 65000,
+  depositFeeNgn = 35000,
   adminPhone = '2348022791227',
 }: ExecutivePdfQuoteModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const normalAgencyPrice = claimFeeNgn * 2;
+  const balanceFeeNgn = Math.max(0, claimFeeNgn - depositFeeNgn);
 
   const handleOpenPreview = () => {
     setIsOpen(true);
@@ -58,7 +60,7 @@ export function ExecutivePdfQuoteModal({
     : (!cleanAdminPhone.startsWith('234') && cleanAdminPhone.length === 10 ? '234' + cleanAdminPhone : cleanAdminPhone || '2348022791227');
 
   const directWhatsAppUrl = `https://wa.me/${safeAdminPhone}?text=${encodeURIComponent(
-    `Hello Bethelmind Lagos Desk! I just generated the Official Technical Proposal for *${businessName}* [Ref: ${quoteRef}]. We want to activate the ₦${depositFeeNgn.toLocaleString()} deposit for deployment.`
+    `Hello Bethelmind Lagos Desk! I just generated the Official October 50% Promo Proposal for *${businessName}* [Ref: ${quoteRef}]. We want to start today with the ₦${depositFeeNgn.toLocaleString()} deposit (Total Promo Price: ₦${claimFeeNgn.toLocaleString()} instead of ₦${normalAgencyPrice.toLocaleString()}).`
   )}`;
 
   return (
@@ -145,7 +147,7 @@ export function ExecutivePdfQuoteModal({
 <body>
   <div class="header">
     <div>
-      <h2 style="margin:0; font-size:18px; font-weight:900;">BETHELMIND ANALYTICS LAGOS DESK</h2>
+      <h2 style="margin:0; font-size:18px; font-weight:900;">Bethelmind Digital Solutions</h2>
       <div style="font-size:11px; color:#0284c7; font-weight:bold;">COMMERCIAL SYSTEMS & LEAD AUTOMATION</div>
       <div class="badge">OFFICIAL TECHNICAL & COMMERCIAL SPECIFICATION</div>
     </div>
@@ -203,14 +205,14 @@ export function ExecutivePdfQuoteModal({
 
   <div class="pricing">
     <div class="price-box primary">
-      <div style="font-size:10px; font-weight:bold; color:#0369a1;">50% ACTIVATION DEPOSIT</div>
+      <div style="font-size:10px; font-weight:bold; color:#0369a1;">🇳🇬 OCTOBER 50% PROMO — DEPOSIT TO START</div>
       <div style="font-size:22px; font-weight:900; color:#0284c7; font-family:monospace;">₦${depositFeeNgn.toLocaleString()}</div>
-      <div style="font-size:10px; color:#475569;">Triggers domain purchase, cloud staging, and 48-hour delivery countdown</div>
+      <div style="font-size:10px; color:#475569;">Starts your .com.ng domain registration, custom photo upload & 48-hour live delivery</div>
     </div>
     <div class="price-box">
-      <div style="font-size:10px; font-weight:bold; color:#64748b;">TOTAL CONTRACT VALUE</div>
-      <div style="font-size:22px; font-weight:900; color:#0f172a; font-family:monospace;">₦${claimFeeNgn.toLocaleString()}</div>
-      <div style="font-size:10px; color:#475569;">Remaining balance payable only upon verified production handover</div>
+      <div style="font-size:10px; font-weight:bold; color:#64748b;">OCTOBER 50% PROMO TOTAL (NORMAL: <span style="text-decoration:line-through; color:#ef4444;">₦${normalAgencyPrice.toLocaleString()}</span>)</div>
+      <div style="font-size:22px; font-weight:900; color:#0f172a; font-family:monospace;">₦${claimFeeNgn.toLocaleString()} <span style="font-size:11px; color:#10b981;">(Save 50%)</span></div>
+      <div style="font-size:10px; color:#475569;">Remaining balance (₦${balanceFeeNgn.toLocaleString()}) payable ONLY after you inspect & approve live on Google</div>
     </div>
   </div>
 

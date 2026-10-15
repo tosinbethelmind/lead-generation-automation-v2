@@ -2,7 +2,7 @@
  * @file scripts/dispatch_150_sms_campaign.ts
  * 
  * 📱 150-LEAD CARRIER GSM SMS OUTREACH DISPATCHER & STRICT COST GUARD
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  * 
  * Invariants & Cost Protection Guarantees:
  * 1. Strict Daily Hard Cap: Exactly 150 SMS maximum per calendar day across all runs.
@@ -145,7 +145,7 @@ async function sendSmsViaGateway(phone: string, text: string) {
 
 async function main() {
   console.log('========================================================================');
-  console.log('📱 BETHELMIND ANALYTICS: STRICT COST-GUARDED 150 SMS DISPATCHER');
+  console.log('📱 Bethelmind Digital Solutions: STRICT COST-GUARDED 150 SMS DISPATCHER');
   console.log('   Hard Quota Ceiling : Max 150 SMS / Calendar Day');
   console.log('   Char Safety Limit  : Max 140 Characters (Guaranteed 1 Carrier Credit)');
   console.log('   Carrier Filter     : Strict Domestic Nigerian Mobile Carriers Only');

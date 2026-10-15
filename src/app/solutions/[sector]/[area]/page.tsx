@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const areaName = AREAS[area] || area.replace(/-/g, ' ');
 
   if (!sectorData) {
-    return { title: 'Bethelmind Analytics Solutions' };
+    return { title: 'Bethelmind Digital Solutions Solutions' };
   }
 
   return {
@@ -169,7 +169,7 @@ export default async function ProgrammaticSolutionPage({ params }: PageProps) {
 
         {/* Trust Badges */}
         <div className="text-center text-xs text-slate-500">
-          <p>Dispatched & Certified by Bethelmind Analytics Lagos Due-Diligence Desk.</p>
+          <p>Dispatched & Certified by Bethelmind Digital Solutions Due-Diligence Desk.</p>
         </div>
       </main>
     </div>

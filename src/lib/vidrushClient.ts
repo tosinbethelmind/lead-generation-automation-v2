@@ -1,6 +1,6 @@
 /**
  * Helper client to trigger VidRush AI Content & Video Manufacturing Engine
- * when a new lead is ingested via Facebook Webhooks or Outreach Arm in ApexReach
+ * when a new lead is ingested via Facebook Webhooks or Outreach Arm in Bethelmind Digital Solutions
  */
 
 export interface LeadPayload {

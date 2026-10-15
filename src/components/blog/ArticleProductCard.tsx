@@ -94,7 +94,7 @@ export const ArticleProductCard: React.FC<ArticleProductCardProps> = ({
       {/* Guarantee & Compliance Note */}
       <div className="mt-4 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
         <span>🔒 Settlement Account: <strong>{MASTER_PAYOUT.bankName}</strong> ({MASTER_PAYOUT.accountNumber} — {MASTER_PAYOUT.accountName})</span>
-        <span className="text-amber-400/80">⚡ 100% Verified by Bethelmind Analytics Lagos Desk</span>
+        <span className="text-amber-400/80">⚡ 100% Verified by Bethelmind Digital Solutions</span>
       </div>
 
       {/* Direct OPay Modal */}

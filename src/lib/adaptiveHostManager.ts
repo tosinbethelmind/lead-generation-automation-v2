@@ -55,7 +55,7 @@ const DEFAULT_HOSTS: HostMetric[] = [
   {
     id: 'render',
     name: 'Render (Web Service / Worker)',
-    url: 'https://apexreach-247-worker.onrender.com',
+    url: 'https://bethelmind-247-worker.onrender.com',
     priority: 4,
     status: 'ONLINE',
     latencyMs: 320,

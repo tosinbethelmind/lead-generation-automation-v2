@@ -32,7 +32,7 @@ SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
 
 GEMINI_API_KEY=YOUR_GOOGLE_AI_STUDIO_KEY
 DRY_RUN=true
-BUSINESS_SIGNATURE=ApexReach
+BUSINESS_SIGNATURE=Bethelmind Digital Solutions
 `;
 
 if (fs.existsSync(envPath)) {
@@ -76,7 +76,7 @@ const htmlSummary = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ApexReach Lead Engine — Handover & Onboarding Summary</title>
+  <title>Bethelmind Digital Solutions Lead Engine — Handover & Onboarding Summary</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #07090e; color: #e2e8f0; margin: 0; padding: 40px; }
     .container { max-width: 800px; margin: 0 auto; background: #0f172a; border: 1px solid #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
@@ -90,7 +90,7 @@ const htmlSummary = `<!DOCTYPE html>
 <body>
   <div class="container">
     <span class="badge">Official Software Handover</span>
-    <h1>ApexReach B2B Lead Engine</h1>
+    <h1>Bethelmind Digital Solutions B2B Lead Engine</h1>
     <p>Congratulations! Your software and website project has been fully audited, validated, and packaged for handover.</p>
     
     <h2>1. Deliverables Included</h2>

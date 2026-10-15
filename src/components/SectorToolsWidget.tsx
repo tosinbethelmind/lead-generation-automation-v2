@@ -450,8 +450,8 @@ export function SectorToolsWidget({
                       businessName={businessName}
                       category="Solar & Renewable Energy"
                       toolType={`Solar Hybrid ${kva}kVA BOQ & Energy Audit`}
-                      claimFeeNgn={150000}
-                      depositFeeNgn={75000}
+                      claimFeeNgn={65000}
+                      depositFeeNgn={35000}
                       adminPhone={merchantPhone}
                     />
                   </div>
@@ -548,8 +548,8 @@ export function SectorToolsWidget({
                       businessName={businessName}
                       category="Automotive & Tokunbo Importer"
                       toolType="Tokunbo Customs Tariff & Port Clearance Assessment"
-                      claimFeeNgn={150000}
-                      depositFeeNgn={75000}
+                      claimFeeNgn={65000}
+                      depositFeeNgn={35000}
                       adminPhone={merchantPhone}
                     />
                   </div>
@@ -652,8 +652,8 @@ export function SectorToolsWidget({
                       businessName={businessName}
                       category="Real Estate & Property Development"
                       toolType="Property Mortgage Amortization & Installment Schedule"
-                      claimFeeNgn={150000}
-                      depositFeeNgn={75000}
+                      claimFeeNgn={65000}
+                      depositFeeNgn={35000}
                       adminPhone={merchantPhone}
                     />
                   </div>
@@ -745,8 +745,8 @@ export function SectorToolsWidget({
                       businessName={businessName}
                       category="Healthcare Clinics & Medical"
                       toolType="Clinic Patient Booking & HMO Co-Pay Schedule"
-                      claimFeeNgn={150000}
-                      depositFeeNgn={75000}
+                      claimFeeNgn={65000}
+                      depositFeeNgn={35000}
                       adminPhone={merchantPhone}
                     />
                   </div>
@@ -833,8 +833,8 @@ export function SectorToolsWidget({
                       businessName={businessName}
                       category="Schools & Education"
                       toolType="School Tuition Ledger & Automated Result PIN Portal"
-                      claimFeeNgn={150000}
-                      depositFeeNgn={75000}
+                      claimFeeNgn={65000}
+                      depositFeeNgn={35000}
                       adminPhone={merchantPhone}
                     />
                   </div>
@@ -924,8 +924,8 @@ export function SectorToolsWidget({
                       businessName={businessName}
                       category="Logistics & Haulage"
                       toolType="Interstate Waybill & Cargo Delivery Schedule"
-                      claimFeeNgn={150000}
-                      depositFeeNgn={75000}
+                      claimFeeNgn={65000}
+                      depositFeeNgn={35000}
                       adminPhone={merchantPhone}
                     />
                   </div>
@@ -1016,8 +1016,8 @@ export function SectorToolsWidget({
                       businessName={businessName}
                       category="Law Firms & Legal Practitioners"
                       toolType="CAC Registration & Legal Retainer Proposal"
-                      claimFeeNgn={150000}
-                      depositFeeNgn={75000}
+                      claimFeeNgn={65000}
+                      depositFeeNgn={35000}
                       adminPhone={merchantPhone}
                     />
                   </div>
@@ -1105,8 +1105,8 @@ export function SectorToolsWidget({
                       businessName={businessName}
                       category="Hotels & Shortlet Apartments"
                       toolType="Direct Shortlet Booking & Caution Fee Agreement"
-                      claimFeeNgn={150000}
-                      depositFeeNgn={75000}
+                      claimFeeNgn={65000}
+                      depositFeeNgn={35000}
                       adminPhone={merchantPhone}
                     />
                   </div>
@@ -1186,14 +1186,19 @@ export function SectorToolsWidget({
         </div>
       </div>
 
-      {/* 1-Line Embed Modal (For Existing Websites - ₦35k Upgrade) */}
+      {/* 1-Line Embed Modal (For Existing Websites - October 50% Promo: ₦35k Upgrade) */}
       {showEmbedModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-slate-900 border border-cyan-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative text-slate-100">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <span className="p-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg font-bold">💻</span>
-                <h3 className="text-base font-bold text-white">1-Line Script Embed Upgrade (₦35,000)</h3>
+                <div>
+                  <h3 className="text-base font-bold text-white">1-Line Script Embed Upgrade</h3>
+                  <span className="text-[11px] font-bold text-emerald-400">
+                    🇳🇬 October 50% Promo: <span className="line-through text-rose-400">₦70,000</span> → ₦35,000 One-Time
+                  </span>
+                </div>
               </div>
               <button
                 onClick={() => setShowEmbedModal(false)}
@@ -1204,7 +1209,7 @@ export function SectorToolsWidget({
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              Already have an active website on WordPress, Wix, or custom hosting? Keep your existing hosting, domain, and SEO rankings 100% untouched. Paste this 1-line script right before your <code className="text-cyan-400 font-mono">&lt;/body&gt;</code> tag:
+              Already have an active website on WordPress, Wix, or custom hosting? Keep your existing hosting, domain, and SEO rankings 100% untouched. Paste this 1-line script right before your <code className="text-cyan-400 font-mono">&lt;/body&gt;</code> tag, or claim the <strong>Full .COM.NG Website + Calculator</strong> for the same <strong>₦35,000 Deposit</strong>!
             </p>
 
             <div className="relative bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs font-mono text-cyan-300 overflow-x-auto">
@@ -1221,13 +1226,13 @@ export function SectorToolsWidget({
               </button>
 
               <a
-                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Lagos Desk! I want to order the 1-Line Script Embed Upgrade (₦35,000) for *${businessName}*. Please send payment details and setup instructions!`)}`}
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Lagos Desk! I want to claim the October 50% Promo (₦35,000) for *${businessName}*. Please send setup instructions!`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-center"
               >
                 <MessageCircle className="w-4 h-4 fill-current" />
-                <span>Order Embed Upgrade →</span>
+                <span>Claim ₦35k October Promo →</span>
               </a>
             </div>
 

@@ -88,7 +88,7 @@ export async function GET() {
   return NextResponse.json(
     {
       success: true,
-      service: 'Bethelmind Analytics Sector Engines API',
+      service: 'Bethelmind Digital Solutions Sector Engines API',
       version: '2026.1',
       totalSectors: Object.keys(SECTOR_PROFILES).length,
       sectors: SECTOR_PROFILES,
@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
 
     if (action === 'cac_name_check') {
       const { proposedName } = body;
-      const result = checkCacNameAvailability(proposedName || 'BETHELMIND ANALYTICS LAGOS LTD');
+      const result = checkCacNameAvailability(proposedName || 'Bethelmind Digital Solutions LTD');
       return NextResponse.json({ success: true, result });
     }
 
@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
       const { contractType, partyA, partyB, termsValueNgn } = body;
       const result = generateLegalContractTemplate(
         contractType || 'memart',
-        partyA || 'Bethelmind Analytics Client',
+        partyA || 'Bethelmind Digital Solutions Client',
         partyB || 'Partner Enterprise',
         Number(termsValueNgn || 500000)
       );
@@ -217,7 +217,7 @@ export async function POST(req: NextRequest) {
 
     if (action === 'virtual_account_dva') {
       const { merchantName, amountNgn, customerName } = body;
-      const result = generateVirtualAccountDva(merchantName || 'ApexReach Store', Number(amountNgn || 25000), customerName || 'Customer');
+      const result = generateVirtualAccountDva(merchantName || 'Bethelmind Digital Solutions Store', Number(amountNgn || 25000), customerName || 'Customer');
       return NextResponse.json({ success: true, result });
     }
 
@@ -239,7 +239,7 @@ export async function POST(req: NextRequest) {
 
     if (action === 'nigerian_ai_tone') {
       const { businessName, leadName, tone } = body;
-      const result = formatNigerianAiOutreachTone(businessName || 'ApexReach', leadName || 'Chief', tone || 'friendly');
+      const result = formatNigerianAiOutreachTone(businessName || 'Bethelmind Digital Solutions', leadName || 'Chief', tone || 'friendly');
       return NextResponse.json({ success: true, result });
     }
 

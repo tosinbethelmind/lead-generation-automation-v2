@@ -1,6 +1,6 @@
 /**
  * master_247_supervisor.js
- * Master 24/7 Non-Stop Automation Supervisor for ApexReach & 10K Lagos Engine.
+ * Master 24/7 Non-Stop Automation Supervisor for Bethelmind Digital Solutions & 10K Lagos Engine.
  * 
  * Manages:
  * 1. Lagos 10K Continuous Harvester (python scripts/colab_lagos_10k_runner.py --loop)

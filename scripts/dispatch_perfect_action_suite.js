@@ -22,8 +22,8 @@ async function runPerfectActionSuite() {
       phone: '0818 558 7222',
       cleanPhone: '2348185587222',
       smsStage1: 'Good day! Please is this the management team at Jacio International in ASPAMDA Trade Fair?',
-      smsStage2: 'Bethelmind Analytics: Locked $65k China supplier FX rate at N1,520/$ with instant escrow. Call/WA 08022791227 to confirm.',
-      waMessage: 'Good day Jacio International team! Bethelmind Analytics has locked your $65,000 USD supplier clearance rate at ₦1,520/$ with instant escrow.'
+      smsStage2: 'Bethelmind Digital Solutions: Locked $65k China supplier FX rate at N1,520/$ with instant escrow. Call/WA 08022791227 to confirm.',
+      waMessage: 'Good day Jacio International team! Bethelmind Digital Solutions has locked your $65,000 USD supplier clearance rate at ₦1,520/$ with instant escrow.'
     },
     {
       id: 2,
@@ -36,8 +36,8 @@ async function runPerfectActionSuite() {
       phone: '0803 307 9719',
       cleanPhone: '2348033079719',
       smsStage1: 'Good day! Please is this the commercial desk for Maldini Granites & Marble in Surulere?',
-      smsStage2: 'Bethelmind Analytics: Locked $65k freight & supplier FX rate at N1,520/$ with instant escrow. Call/WA 08022791227 to confirm.',
-      waMessage: 'Good day Maldini Imports team! Bethelmind Analytics has locked your $65,000 USD supplier clearance rate at ₦1,520/$ with instant escrow.'
+      smsStage2: 'Bethelmind Digital Solutions: Locked $65k freight & supplier FX rate at N1,520/$ with instant escrow. Call/WA 08022791227 to confirm.',
+      waMessage: 'Good day Maldini Imports team! Bethelmind Digital Solutions has locked your $65,000 USD supplier clearance rate at ₦1,520/$ with instant escrow.'
     },
     {
       id: 3,
@@ -50,8 +50,8 @@ async function runPerfectActionSuite() {
       phone: '0810 754 0008',
       cleanPhone: '2348107540008',
       smsStage1: 'Good day! Please is this the procurement desk for Fouani on Allen Avenue, Ikeja?',
-      smsStage2: 'Bethelmind Analytics: Locked $85k factory clearance rate at N1,520/$ with instant escrow. Call/WA 08022791227 to confirm.',
-      waMessage: 'Good day Fouani Ikeja management! Bethelmind Analytics has locked your $85,000 USD supplier clearance rate at ₦1,520/$ with instant escrow.'
+      smsStage2: 'Bethelmind Digital Solutions: Locked $85k factory clearance rate at N1,520/$ with instant escrow. Call/WA 08022791227 to confirm.',
+      waMessage: 'Good day Fouani Ikeja management! Bethelmind Digital Solutions has locked your $85,000 USD supplier clearance rate at ₦1,520/$ with instant escrow.'
     },
     {
       id: 4,
@@ -64,8 +64,8 @@ async function runPerfectActionSuite() {
       phone: '0817 041 7114',
       cleanPhone: '2348170417114',
       smsStage1: 'Good day! Please is this the management at COHBS International in Ikeja?',
-      smsStage2: 'Bethelmind Analytics: Locked $35k hardware supplier rate at N1,520/$ with instant escrow. Call/WA 08022791227 to confirm.',
-      waMessage: 'Good day COHBS International! Bethelmind Analytics has locked your $35,000 USD supplier clearance rate at ₦1,520/$ with instant escrow.'
+      smsStage2: 'Bethelmind Digital Solutions: Locked $35k hardware supplier rate at N1,520/$ with instant escrow. Call/WA 08022791227 to confirm.',
+      waMessage: 'Good day COHBS International! Bethelmind Digital Solutions has locked your $35,000 USD supplier clearance rate at ₦1,520/$ with instant escrow.'
     }
   ];
 
@@ -75,7 +75,7 @@ async function runPerfectActionSuite() {
 
 Total Deals: 4 High-Volume Importers
 Total Order Flow: $250,000 USD
-Total Net Profit: *₦6,250,000 NGN* (Direct-to-OPay: 7034297995)
+Total Net Profit: *₦6,250,000 NGN* (Direct-to-OPay: 6805375225)
 
 Below are your individual deal cards with:
 1️⃣ 1-Click Direct WhatsApp Bridge

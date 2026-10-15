@@ -15,7 +15,7 @@ async function testHostinger() {
 
   try {
     const info = await transporter.sendMail({
-      from: '"Tosin Oyelakin | Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+      from: '"Tosin Oyelakin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
       replyTo: 'bethelmindrecruit@gmail.com',
       to: 'bethelmindrecruit@gmail.com',
       subject: 'Hostinger Direct SMTP Delivery Test (Voice Note Attached)',

@@ -134,8 +134,8 @@ export async function dispatchSecureEmail(options: {
 }): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
     const { transporter, fromAddress } = await getPooledSmtpTransporter();
-    const from = `"${options.fromName || 'Tosin | Bethelmind Analytics Lagos Desk'}" <${fromAddress}>`;
-    const finalHtml = options.html || options.htmlContent || '<p>Bethelmind Analytics Lagos Outreach</p>';
+    const from = `"${options.fromName || 'Tosin | Bethelmind Digital Solutions'}" <${fromAddress}>`;
+    const finalHtml = options.html || options.htmlContent || '<p>Bethelmind Digital Solutions Outreach</p>';
 
     const mailObj: any = {
       from,
@@ -171,8 +171,8 @@ export async function dispatchSecureEmail(options: {
         tls: { rejectUnauthorized: false }
       } as any);
 
-      const from = `"${options.fromName || 'Tosin | Bethelmind Analytics Lagos Desk'}" <${creds.user}>`;
-      const finalHtml = options.html || options.htmlContent || '<p>Bethelmind Analytics Lagos Outreach</p>';
+      const from = `"${options.fromName || 'Tosin | Bethelmind Digital Solutions'}" <${creds.user}>`;
+      const finalHtml = options.html || options.htmlContent || '<p>Bethelmind Digital Solutions Outreach</p>';
 
       const fallbackMailObj: any = {
         from,
@@ -202,12 +202,12 @@ export async function dispatchSecureEmail(options: {
           tls: { rejectUnauthorized: false }
         } as any);
 
-        const from = `"${options.fromName || 'Tosin | Bethelmind Analytics Lagos Desk'}" <bethelmindrecruit@gmail.com>`;
+        const from = `"${options.fromName || 'Tosin | Bethelmind Digital Solutions'}" <bethelmindrecruit@gmail.com>`;
         const gmailMailObj: any = {
           from,
           to: options.to,
           subject: options.subject,
-          html: options.html || options.htmlContent || '<p>Bethelmind Analytics Lagos Outreach</p>'
+          html: options.html || options.htmlContent || '<p>Bethelmind Digital Solutions Outreach</p>'
         };
         if (options.text) gmailMailObj.text = options.text;
         if (options.attachments && options.attachments.length > 0) {

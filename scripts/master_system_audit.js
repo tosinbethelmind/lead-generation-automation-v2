@@ -43,7 +43,7 @@ function runCommandAsync(cmd) {
 
 async function main() {
   console.log('====================================================================');
-  console.log('🌟 ApexReach Master Automated System Audit & Optimization Check');
+  console.log('🌟 Bethelmind Digital Solutions Master Automated System Audit & Optimization Check');
   console.log('====================================================================\n');
 
   console.log('1️⃣ Running Scaling & Concurrency Test Suite...');

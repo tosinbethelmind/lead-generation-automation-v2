@@ -253,7 +253,7 @@ Generate a JSON object containing the modified design overrides. Only modify wha
         const emailSubject = `📊 Bethelmind Sync Digest: ${results.gitDeploysProcessed.length} site(s) deployed`;
         const emailBody = `Hi Admin,
 
-Here is your automated synchronization digest summary from Bethelmind Analytics & Strategy:
+Here is your automated synchronization digest summary from Bethelmind Digital Solutions:
 
 ==================================================
 1. AI REDESIGNS COMPLETED:
@@ -281,7 +281,7 @@ ${results.gitDeployErrors.length > 0
 All successful deployments are now building on Vercel.
 
 Best regards,
-Bethelmind Analytics & Strategy Automation Service`;
+Bethelmind Digital Solutions Automation Service`;
 
         try {
           await sendNotificationEmail(adminEmail, emailSubject, emailBody);

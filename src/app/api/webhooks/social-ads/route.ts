@@ -75,7 +75,7 @@ export async function GET(req: Request) {
 
   return NextResponse.json({
     status: 'ACTIVE',
-    service: 'ApexReach Zero-Failure Social & Google Ad Webhook Gateway 2026',
+    service: 'Bethelmind Digital Solutions Zero-Failure Social & Google Ad Webhook Gateway 2026',
     metaVerification: 'Ready',
     googleAdsVerification: 'Ready',
   });

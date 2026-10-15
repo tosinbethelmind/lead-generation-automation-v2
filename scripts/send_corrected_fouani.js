@@ -19,7 +19,7 @@ async function sendCorrectedFouani() {
 _Good day! Please is this the procurement desk for Fouani on Allen Avenue, Ikeja?_
 
 🔵 *SMS STAGE 2 (RATE OFFER):*
-_Bethelmind Analytics: Locked $50k factory clearance rate at N1,520/$ with instant escrow. Call/WA 08022791227 to confirm._
+_Bethelmind Digital Solutions: Locked $50k factory clearance rate at N1,520/$ with instant escrow. Call/WA 08022791227 to confirm._
 ━━━━━━━━━━━━━━━━━━━━━━`;
 
   const res = await fetch('http://localhost:5005/api/send', {

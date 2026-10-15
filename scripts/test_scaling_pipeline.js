@@ -74,7 +74,7 @@ async function fetchHttp(url, timeoutMs = 15000) {
 
 async function main() {
   console.log('====================================================================');
-  console.log('🚀 ApexReach Automated Scaling & Pipeline Test Suite (Phase 1 & 2)');
+  console.log('🚀 Bethelmind Digital Solutions Automated Scaling & Pipeline Test Suite (Phase 1 & 2)');
   console.log('====================================================================\n');
 
   let passedCount = 0;

@@ -166,7 +166,7 @@ async function fetchWebsiteContact(url, timeoutMs = 4000) {
 
 async function runBatchEnrichment() {
   console.log('====================================================');
-  console.log('⚡ BETHELMIND ANALYTICS CONTACT ENRICHMENT PIPELINE');
+  console.log('⚡ Bethelmind Digital Solutions CONTACT ENRICHMENT PIPELINE');
   console.log('====================================================\n');
 
   const filePath = path.join(process.cwd(), 'local_db', 'leads_db.json');

@@ -2,7 +2,7 @@
  * @file src/lib/scraping/scrapingAccelerationEngine.ts
  * 
  * High-Speed Resilient Commercial Scraping Acceleration Engine (2026 Edition)
- * Bethelmind Analytics Commercial Growth System
+ * Bethelmind Digital Solutions Commercial Growth System
  * 
  * Powered by:
  * - p-limit: Dynamic concurrency control preventing IP rate limits & socket exhaustion.

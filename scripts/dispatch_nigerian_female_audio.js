@@ -40,7 +40,7 @@ We know your desk regularly clears container shipments from China. Rather than e
 🔊 *Voice Profile:* **Nigerian Female Executive (Ezinne Neural)** — Cool, calm, professional, and natural.
 
 🎙️ *VOICE NOTE TRANSCRIPT:*
-_"Good day Alhaji, this is Tosin from Bethelmind Analytics Lagos Desk. We know your desk regularly clears container shipments from China. Rather than experiencing 3-week Form M delays or high black market rates, our institutional desk has reserved a locked wholesale rate of 1,520 Naira per Dollar for your next container clearance today, with 15-minute factory delivery and 100 percent Providus Bank escrow protection. Drop your proforma invoice below to secure this batch today. Thank you, sir."_
+_"Good day Alhaji, this is Tosin from Bethelmind Digital Solutions. We know your desk regularly clears container shipments from China. Rather than experiencing 3-week Form M delays or high black market rates, our institutional desk has reserved a locked wholesale rate of 1,520 Naira per Dollar for your next container clearance today, with 15-minute factory delivery and 100 percent Providus Bank escrow protection. Drop your proforma invoice below to secure this batch today. Thank you, sir."_
 
 📋 *PROPOSAL TEXT:*
 ${proposalText}

@@ -2,7 +2,7 @@
  * @file scripts/massive_10k_nationwide_harvester_daemon.js
  * 
  * 🇳🇬 ACCELERATED NIGERIA-WIDE 10,000 LEADS/DAY AUTONOMOUS HARVESTER DAEMON
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * Capabilities:
  * 1. Multi-Engine Parallel Harvester across all 36 Nigerian States + FCT & 50+ Commercial Sectors.

@@ -2,7 +2,7 @@
  * @file scripts/continuous_smart_webform_submitter.ts
  * 
  * 🌐 AUTONOMOUS 300 DAILY WEB CONTACT FORM SUBMISSION DAEMON
- * Bethelmind Analytics Lagos Desk · 2026 Edition
+ * Bethelmind Digital Solutions · 2026 Edition
  * 
  * Key Architecture:
  * 1. 100% Decoupled from Email Daemon (Email pauses will NEVER block webforms).
@@ -115,7 +115,7 @@ async function runWebformBatch(maxPerBatch = 25) {
           notes: ''
         } as any,
         'WebContactForm',
-        'Bethelmind Analytics Lagos Desk'
+        'Bethelmind Digital Solutions'
       );
 
       lead.webform_submitted = true;

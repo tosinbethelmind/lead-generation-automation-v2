@@ -73,7 +73,7 @@ function buildTestWhatsAppUrl(phone, toolName, resultObj) {
     .filter(([k, v]) => typeof v !== 'object' && v !== null && v !== undefined)
     .map(([k, v]) => `• *${k}*: ${typeof v === 'number' ? '₦' + v.toLocaleString() : v}`);
 
-  const text = `*${toolName} — 2026 Quote Breakdown*\n\n` + summaryLines.join('\n') + `\n\n_Generated via Bethelmind Analytics_`;
+  const text = `*${toolName} — 2026 Quote Breakdown*\n\n` + summaryLines.join('\n') + `\n\n_Generated via Bethelmind Digital Solutions_`;
   return `https://wa.me/${normPhone}?text=${encodeURIComponent(text)}`;
 }
 

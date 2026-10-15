@@ -7,7 +7,7 @@
  * 1. Free Multi-RPC Load Balancer & Instant Failover.
  * 2. Offline eth_call Pre-Flight Simulation (Zero Wasted Gas).
  * 3. Autonomous Watchdog & Dynamic Circuit Breaker.
- * 4. 100% Direct Settlement to OPay (7034297995 - Oyelakin Tosin Matthew).
+ * 4. 100% Direct Settlement to OPay (6805375225 - Bethelmind Digital Solutions).
  */
 
 import { freeRpcManager } from '../src/lib/monetization/freeOpenSourceRpcFailover';

@@ -3,7 +3,7 @@
  * 
  * 🎧 24/7 DEDICATED INBOUND WHATSAPP SALES CLOSER & AUTO-REPLY LISTENER
  * 
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  * 
  * Listens 24/7 to all connected WhatsApp lines (Admin Desk + Outreach lines)
  * and delivers instantaneous, persuasive Nigerian closing sales replies to every inquiry!
@@ -50,7 +50,7 @@ function formatNigerianAutoReply(text) {
 
   // Pricing inquiries
   if (/price|cost|how much|fee|pay|pricing|expensive|cheap|charges|amount/i.test(lower)) {
-    return `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Analytics Lagos* business tools.
+    return `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Digital Solutions* business tools.
 
 We keep our rates completely transparent with ZERO hidden fees:
 
@@ -94,11 +94,11 @@ Connect directly with our Lagos Desk Head:
   if (/who|where|office|address|location|scam|real|legit|call|number/i.test(lower)) {
     return `Good afternoon Sir/Ma!
 
-We are *Bethelmind Analytics Lagos Desk*, a registered commercial technology enterprise based in Lagos, Nigeria.
+We are *Bethelmind Digital Solutions*, a registered commercial technology enterprise based in Lagos, Nigeria.
 • Head of Desk: Tosin Oyelakin
 • Official Hotline / Direct WhatsApp: 0802 279 1227 (wa.me/2348022791227)
 • Corporate Website: https://www.bethelmindanalytics.com
-• Bank Settlement: Direct OPay Merchant Integration (Oyelakin Tosin Matthew)
+• Bank Settlement: Direct OPay Merchant Integration (Bethelmind Digital Solutions)
 
 We help Nigerian SMEs eliminate after-hours sales loss by deploying automated 24/7 WhatsApp response tools.
 
@@ -106,7 +106,7 @@ You do NOT pay anything upfront to review your demo. Feel free to inspect our pl
   }
 
   // General polite reply
-  return `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Analytics Lagos Desk*.
+  return `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Digital Solutions*.
 
 Our senior technical consultant is reviewing your message right now.
 
@@ -226,7 +226,7 @@ class AutoReplyWorker {
 async function main() {
   console.log('='.repeat(80));
   console.log('🎧 24/7 DEDICATED INBOUND WHATSAPP AUTO-RESPONDER & SALES CLOSER DESK');
-  console.log('   Bethelmind Analytics Lagos Desk');
+  console.log('   Bethelmind Digital Solutions');
   console.log('='.repeat(80) + '\n');
 
   for (const line of LISTENER_LINES) {

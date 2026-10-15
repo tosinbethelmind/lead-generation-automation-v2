@@ -151,30 +151,83 @@ export async function fetchOutscraperLeads(query: string, seedTag = 'lagos_10k_b
 export function getBusinessListPath(query: string, state = 'Nigeria'): string {
   const q = query.toLowerCase();
   const s = state.toLowerCase();
-  const statePrefix = s.includes('abuja') ? 'location/abuja' : (s.includes('rivers') || s.includes('port harcourt')) ? 'location/port-harcourt' : (s.includes('ibadan') || s.includes('oyo')) ? 'location/ibadan' : (s.includes('kano')) ? 'location/kano' : (s.includes('lagos')) ? 'location/lagos' : 'category';
 
-  if (q.includes('solar') || q.includes('inverter') || q.includes('energy')) return 'category/solar-energy';
-  if (q.includes('hotel') || q.includes('shortlet') || q.includes('hospitality')) return statePrefix === 'category' ? 'category/hotels' : `${statePrefix}/hotels`;
-  if (q.includes('hospital') || q.includes('clinic') || q.includes('dental') || q.includes('doctor') || q.includes('health')) return statePrefix === 'category' ? 'category/hospitals-clinics' : `${statePrefix}/hospitals`;
-  if (q.includes('estate') || q.includes('property') || q.includes('rent') || q.includes('realtor')) return statePrefix === 'category' ? 'category/real-estate' : `${statePrefix}/real-estate`;
-  if (q.includes('school') || q.includes('academy') || q.includes('college') || q.includes('education')) return statePrefix === 'category' ? 'category/schools' : `${statePrefix}/schools`;
-  if (q.includes('auto') || q.includes('car') || q.includes('mechanic') || q.includes('dealer')) return statePrefix === 'category' ? 'category/car-dealers' : `${statePrefix}/car-dealers`;
-  if (q.includes('logistics') || q.includes('transport') || q.includes('haulage') || q.includes('courier')) return statePrefix === 'category' ? 'category/logistics' : `${statePrefix}/logistics`;
-  if (q.includes('generator')) return 'category/generators-commercial-industrial';
-  if (q.includes('security')) return 'category/security-services';
-  return 'category/solar-energy';
+  let locSlug = '';
+  if (s.includes('abuja') || s.includes('fct')) locSlug = 'abuja';
+  else if (s.includes('rivers') || s.includes('port harcourt')) locSlug = 'port-harcourt';
+  else if (s.includes('ibadan') || s.includes('oyo')) locSlug = 'ibadan';
+  else if (s.includes('kano')) locSlug = 'kano';
+  else if (s.includes('enugu')) locSlug = 'enugu';
+  else if (s.includes('benin') || s.includes('edo')) locSlug = 'benin-city';
+  else if (s.includes('kaduna')) locSlug = 'kaduna';
+  else if (s.includes('uyo') || s.includes('akwa ibom')) locSlug = 'uyo';
+  else if (s.includes('owerri') || s.includes('imo')) locSlug = 'owerri';
+  else if (s.includes('warri') || s.includes('delta') || s.includes('asaba')) locSlug = 'warri';
+  else if (s.includes('abeokuta') || s.includes('ogun') || s.includes('ota')) locSlug = 'abeokuta';
+  else if (s.includes('calabar') || s.includes('cross river')) locSlug = 'calabar';
+  else if (s.includes('jos') || s.includes('plateau')) locSlug = 'jos';
+  else if (s.includes('ilorin') || s.includes('kwara')) locSlug = 'ilorin';
+  else if (s.includes('onitsha') || s.includes('anambra') || s.includes('nnewi') || s.includes('awka')) locSlug = 'onitsha';
+  else if (s.includes('aba') || s.includes('abia') || s.includes('umuahia')) locSlug = 'aba';
+  else if (s.includes('akure') || s.includes('ondo')) locSlug = 'akure';
+  else if (s.includes('osogbo') || s.includes('osun')) locSlug = 'osogbo';
+  else if (s.includes('lagos') || s.includes('ikeja') || s.includes('lekki') || s.includes('victoria island')) locSlug = 'lagos';
+
+  const catRoutes: [RegExp, string][] = [
+    [/solar|inverter|renewable|battery/, 'solar-energy'],
+    [/hotel|shortlet|hospitality|resort|guest house|suite/, 'hotels'],
+    [/hospital|clinic|dental|doctor|health|medical|diagnostic|optician/, 'hospitals-clinics'],
+    [/pharmacy|pharmaceutical|drug/, 'pharmacies'],
+    [/estate|property|rent|realtor|developer|housing|land/, 'real-estate'],
+    [/school|academy|college|education|university|training/, 'schools'],
+    [/auto|car|mechanic|dealer|vehicle|tokunbo|spare part/, 'car-dealers'],
+    [/logistics|transport|haulage|courier|freight|shipping|clearing|cargo/, 'logistics'],
+    [/generator|mikano|perkins|power|industrial/, 'generators-commercial-industrial'],
+    [/security|cctv|guard|surveillance/, 'security-services'],
+    [/construct|building|contractor|civil|engineering|architect/, 'construction'],
+    [/building material|cement|hardware|roofing|tile|plumbing/, 'building-materials'],
+    [/beauty|salon|spa|barber|cosmetic|hair|makeup/, 'beauty-salons'],
+    [/restaurant|cater|bakery|food|fast food|lounge|cafe/, 'restaurants'],
+    [/law|legal|attorney|solicitor|chamber/, 'lawyers'],
+    [/account|audit|tax|finance|bookkeeping|consult/, 'accountants'],
+    [/event|wedding|banquet|hall|decorator|planner/, 'event-planning'],
+    [/print|publish|branding|signage|packaging/, 'printing'],
+    [/computer|it |software|web|tech|laptop|phone/, 'computer-services'],
+    [/clean|laundry|fumigation|pest|janitorial/, 'cleaning-services'],
+    [/furniture|interior|wood|upholstery|decor/, 'furniture'],
+    [/agro|farm|poultry|agric|feed|milling|cold room/, 'agriculture'],
+    [/cloth|boutique|fashion|tailor|garment|textile/, 'clothing-accessories'],
+    [/supermarket|retail|shopping|grocery|store/, 'supermarkets'],
+    [/travel|tour|visa|airline|ticketing/, 'travel-agencies'],
+    [/insurance|pension|hmO|underwriting/, 'insurance-companies'],
+    [/oil|gas|petroleum|marine|energy/, 'oil-gas']
+  ];
+
+  let matchedCat = 'solar-energy';
+  for (const [regex, slug] of catRoutes) {
+    if (regex.test(q)) {
+      matchedCat = slug;
+      break;
+    }
+  }
+
+  // Alternate between category-wide pages and location-specific pages for maximum breadth
+  if (locSlug && Math.random() < 0.45) {
+    return `location/${locSlug}`;
+  }
+  return `category/${matchedCat}`;
 }
 
 /**
  * Scrape Real Merchants from Jiji Nigeria via Direct REST API & Deep Nuxt Phone Unpacking (Streaming Multi-Page)
  */
-export async function fetchJijiMerchantLeads(query: string, seedTag = 'nigeria_nationwide', maxPages = 1): Promise<DirectoryLead[]> {
+export async function fetchJijiMerchantLeads(query: string, seedTag = 'nigeria_nationwide', maxPages = 4): Promise<DirectoryLead[]> {
   const leads: DirectoryLead[] = [];
   const seenLocalPhones = new Set<string>();
   const limit = pLimit(10);
 
   for (let page = 1; page <= maxPages; page++) {
-    if (leads.length >= 15) break;
+    if (leads.length >= 60) break;
 
     try {
       const apiUrl = `https://jiji.ng/api_web/v1/listing?query=${encodeURIComponent(query)}&page=${page}`;
@@ -405,16 +458,22 @@ export async function fetchJijiMerchantLeads(query: string, seedTag = 'nigeria_n
 /**
  * Scrape Verified Corporate Listings from BusinessList.com.ng (Active Category Engine)
  */
-export async function fetchBusinessListLeads(categoryOrQuery: string, state = 'Nigeria', maxPages = 1): Promise<DirectoryLead[]> {
+export async function fetchBusinessListLeads(categoryOrQuery: string, state = 'Nigeria', maxPages = 4): Promise<DirectoryLead[]> {
   const leads: DirectoryLead[] = [];
   const seenBizPhones = new Set<string>();
-  const limit = pLimit(10);
+  const limit = pLimit(12);
 
-  for (let page = 1; page <= maxPages; page++) {
-    if (leads.length >= 20) break;
+  const catPath = getBusinessListPath(categoryOrQuery, state);
+  const startPage = Math.floor(Math.random() * 20) + 1;
+  const pagesToScan: number[] = [];
+  for (let i = 0; i < maxPages; i++) {
+    pagesToScan.push(((startPage + i - 1) % 24) + 1);
+  }
+
+  for (const page of pagesToScan) {
+    if (leads.length >= 75) break;
 
     try {
-      const catPath = getBusinessListPath(categoryOrQuery, state);
       const url = page > 1 
         ? `https://www.businesslist.com.ng/${catPath}/${page}`
         : `https://www.businesslist.com.ng/${catPath}`;
@@ -427,7 +486,7 @@ export async function fetchBusinessListLeads(categoryOrQuery: string, state = 'N
       const cards: { name: string; href: string; address: string; cardText: string; inlinePhone: string; inlineEmail: string }[] = [];
 
       $('.company, .company_header, div[class*="company"]').each((i, el) => {
-        if (cards.length >= 35) return;
+        if (cards.length >= 45) return;
 
         const titleNode = $(el).find('h4 a, h3 a, a.company_name, a[href*="/company/"]').first();
         let name = titleNode.text().trim();
@@ -455,7 +514,7 @@ export async function fetchBusinessListLeads(categoryOrQuery: string, state = 'N
         });
       });
 
-      // Parallel card enrichment with bounded pool (10 concurrent requests, 2500ms timeout)
+      // Parallel card enrichment with bounded pool (12 concurrent requests, 2500ms timeout)
       const enrichmentTasks = cards.map(card => limit(async () => {
         let rawPhone = card.inlinePhone;
         let email = card.inlineEmail;
@@ -566,29 +625,55 @@ export async function fetchBusinessListLeads(categoryOrQuery: string, state = 'N
 }
 
 /**
- * Scrape Verified Commercial Leads from Finelib Nigeria Directory
+ * Scrape Verified Commercial Leads from Finelib Nigeria Directory (Multi-City & Deep Search)
  */
 export async function fetchFinelibLeads(query: string, state = 'Lagos'): Promise<DirectoryLead[]> {
   try {
     const qLower = query.toLowerCase();
-    const citySlug = state.toLowerCase().includes('abuja') ? 'abuja' : state.toLowerCase().includes('rivers') || state.toLowerCase().includes('port') ? 'port-harcourt' : state.toLowerCase().includes('ibadan') || state.toLowerCase().includes('oyo') ? 'ibadan' : state.toLowerCase().includes('kano') ? 'kano' : 'lagos';
-    
-    // Check if query maps to a direct high-density city category
-    let targetUrl = `https://www.finelib.com/search.php?q=${encodeURIComponent(query)}`;
-    if (qLower.includes('cloth') || qLower.includes('boutique') || qLower.includes('fashion')) {
-      targetUrl = `https://www.finelib.com/cities/${citySlug}/business/clothing`;
-    } else if (qLower.includes('clean')) {
-      targetUrl = `https://www.finelib.com/cities/${citySlug}/business/cleaning-services`;
-    } else if (qLower.includes('electric') || qLower.includes('solar')) {
-      targetUrl = `https://www.finelib.com/cities/${citySlug}/business/electrical-services`;
-    } else if (qLower.includes('construct') || qLower.includes('build')) {
-      targetUrl = `https://www.finelib.com/cities/${citySlug}/business/construction`;
-    } else if (qLower.includes('beauty') || qLower.includes('salon') || qLower.includes('spa')) {
-      targetUrl = `https://www.finelib.com/cities/${citySlug}/business/beauty-services`;
-    } else if (qLower.includes('auto') || qLower.includes('car') || qLower.includes('mechanic')) {
-      targetUrl = `https://www.finelib.com/cities/${citySlug}/automotive`;
-    } else if (qLower.includes('hotel') || qLower.includes('shortlet') || qLower.includes('lodg')) {
-      targetUrl = `https://www.finelib.com/cities/${citySlug}/accommodation`;
+    const sLower = state.toLowerCase();
+    let citySlug = 'lagos';
+    if (sLower.includes('abuja') || sLower.includes('fct')) citySlug = 'abuja';
+    else if (sLower.includes('rivers') || sLower.includes('port')) citySlug = 'port-harcourt';
+    else if (sLower.includes('ibadan') || sLower.includes('oyo')) citySlug = 'ibadan';
+    else if (sLower.includes('kano')) citySlug = 'kano';
+    else if (sLower.includes('enugu')) citySlug = 'enugu';
+    else if (sLower.includes('benin') || sLower.includes('edo')) citySlug = 'benin-city';
+    else if (sLower.includes('kaduna')) citySlug = 'kaduna';
+    else if (sLower.includes('owerri') || sLower.includes('imo')) citySlug = 'owerri';
+    else if (sLower.includes('uyo') || sLower.includes('akwa')) citySlug = 'uyo';
+    else if (sLower.includes('warri') || sLower.includes('delta') || sLower.includes('asaba')) citySlug = 'warri';
+    else if (sLower.includes('abeokuta') || sLower.includes('ogun')) citySlug = 'abeokuta';
+    else if (sLower.includes('calabar')) citySlug = 'calabar';
+    else if (sLower.includes('jos') || sLower.includes('plateau')) citySlug = 'jos';
+    else if (sLower.includes('ilorin') || sLower.includes('kwara')) citySlug = 'ilorin';
+    else if (sLower.includes('onitsha') || sLower.includes('anambra') || sLower.includes('awka')) citySlug = 'onitsha';
+    else if (sLower.includes('aba') || sLower.includes('abia')) citySlug = 'aba';
+
+    // Alternate between search.php with city+query and city category pages
+    const useSearchQuery = Math.random() < 0.55;
+    let targetUrl = `https://www.finelib.com/search.php?q=${encodeURIComponent(`${query} ${state}`)}`;
+    if (!useSearchQuery) {
+      if (qLower.includes('cloth') || qLower.includes('boutique') || qLower.includes('fashion')) {
+        targetUrl = `https://www.finelib.com/cities/${citySlug}/business/clothing`;
+      } else if (qLower.includes('clean') || qLower.includes('laundry')) {
+        targetUrl = `https://www.finelib.com/cities/${citySlug}/business/cleaning-services`;
+      } else if (qLower.includes('electric') || qLower.includes('solar') || qLower.includes('inverter')) {
+        targetUrl = `https://www.finelib.com/cities/${citySlug}/business/electrical-services`;
+      } else if (qLower.includes('construct') || qLower.includes('build') || qLower.includes('cement')) {
+        targetUrl = `https://www.finelib.com/cities/${citySlug}/business/construction`;
+      } else if (qLower.includes('beauty') || qLower.includes('salon') || qLower.includes('spa')) {
+        targetUrl = `https://www.finelib.com/cities/${citySlug}/business/beauty-services`;
+      } else if (qLower.includes('auto') || qLower.includes('car') || qLower.includes('mechanic')) {
+        targetUrl = `https://www.finelib.com/cities/${citySlug}/automotive`;
+      } else if (qLower.includes('hotel') || qLower.includes('shortlet') || qLower.includes('lodg')) {
+        targetUrl = `https://www.finelib.com/cities/${citySlug}/accommodation`;
+      } else if (qLower.includes('estate') || qLower.includes('property')) {
+        targetUrl = `https://www.finelib.com/cities/${citySlug}/business/real-estate`;
+      } else if (qLower.includes('school') || qLower.includes('academy') || qLower.includes('education')) {
+        targetUrl = `https://www.finelib.com/cities/${citySlug}/education`;
+      } else if (qLower.includes('hospital') || qLower.includes('clinic') || qLower.includes('dental') || qLower.includes('medical')) {
+        targetUrl = `https://www.finelib.com/cities/${citySlug}/health`;
+      }
     }
 
     const resp = await directoryHttpClient.get(targetUrl, { timeout: 6000 });
@@ -603,7 +688,7 @@ export async function fetchFinelibLeads(query: string, state = 'Lagos'): Promise
     const categoryBoxes = $('div.box-682, div.bx-inner');
     if (categoryBoxes.length > 0) {
       categoryBoxes.each((_, el) => {
-        if (leads.length >= 25) return;
+        if (leads.length >= 35) return;
         const nameEl = $(el).find('h2, h3, h4, a').first();
         let name = nameEl.text().trim();
         name = name.replace(/^\d+\.?\s*/, '').replace(/view profile|more info|write a review/gi, '').trim();
@@ -611,12 +696,13 @@ export async function fetchFinelibLeads(query: string, state = 'Lagos'): Promise
 
         const boxText = $(el).text();
         const phones = boxText.match(phonePattern) || [];
-        if (phones.length === 0) return;
+        const emails = extractEmailsFromText(boxText) || [];
+        if (phones.length === 0 && emails.length === 0) return;
 
-        const normPhone = normalizePhone(phones[0], 'NG');
-        if (!normPhone) return;
+        const normPhone = phones[0] ? normalizePhone(phones[0], 'NG') : '';
+        if (!normPhone && emails.length === 0) return;
 
-        const hash = crypto.createHash('sha256').update(`finelib_card_${name.toLowerCase()}_${normPhone}`).digest('hex').substring(0, 16);
+        const hash = crypto.createHash('sha256').update(`finelib_card_${name.toLowerCase()}_${normPhone || emails[0]}`).digest('hex').substring(0, 16);
         leads.push({
           lead_id: `finelib_${hash}`,
           source: 'BUSINESSLIST' as any,
@@ -625,9 +711,9 @@ export async function fetchFinelibLeads(query: string, state = 'Lagos'): Promise
           address: `${state}, Nigeria`,
           area: state,
           city: state,
-          phone_e164: normPhone,
-          phone_raw: phones[0],
-          email: '',
+          phone_e164: normPhone || '',
+          phone_raw: phones[0] || '',
+          email: emails[0] || '',
           website: '',
           rating: 4.8,
           reviews_count: 12,
@@ -650,7 +736,7 @@ export async function fetchFinelibLeads(query: string, state = 'Lagos'): Promise
     // 2. Search listing fallback (dl dt items)
     const items: { name: string; link: string; summary: string }[] = [];
     $('dl dt').each((i, dt) => {
-      if (items.length >= 12) return;
+      if (items.length >= 16) return;
       const a = $(dt).find('a').first();
       let name = a.text().trim();
       name = name.replace(/^\d+\)\.?\s*/, '').trim();
@@ -663,7 +749,7 @@ export async function fetchFinelibLeads(query: string, state = 'Lagos'): Promise
 
     if (items.length === 0) return [];
 
-    const fetchPromises = items.slice(0, 8).map(async (item) => {
+    const fetchPromises = items.slice(0, 12).map(async (item) => {
       try {
         const fullUrl = item.link.startsWith('http') ? item.link : `https://www.finelib.com${item.link.startsWith('/') ? '' : '/'}${item.link}`;
         const pageResp = await directoryHttpClient.get(fullUrl, { timeout: 3500 });
@@ -682,7 +768,7 @@ export async function fetchFinelibLeads(query: string, state = 'Lagos'): Promise
           }
         }
 
-        if (validPhone) {
+        if (validPhone || emails[0]) {
           const hash = crypto.createHash('sha256').update(`finelib_${item.name.toLowerCase()}`).digest('hex').substring(0, 16);
           return {
             lead_id: `finelib_${hash}`,
@@ -726,21 +812,20 @@ export async function fetchFinelibLeads(query: string, state = 'Lagos'): Promise
 }
 
 /**
- * Option E: Google Dorking Search Harvester
- * Harvests decision-makers & intent-based leads via high-yield search dorks:
- *  - site:jiji.ng "solar" "080"
- *  - site:facebook.com/pages "dentist" "lagos" "whatsapp"
- *  - site:ng.linkedin.com/in "Managing Director" "Lagos"
+ * Option E: Google Dorking Search Harvester (Strict Non-Website Directory & Social Profiles)
  */
 export async function fetchGoogleDorkLeads(query: string, category = 'General B2B'): Promise<DirectoryLead[]> {
   try {
     const dorks = [
-      `site:jiji.ng "${query}" "080" OR "090" OR "070"`,
-      `site:facebook.com "${query}" "Lagos" "WhatsApp"`,
-      `site:ng.linkedin.com/in "${query}" "Lagos"`,
+      `site:jiji.ng "${query}" "080" OR "090" OR "070" OR "081"`,
+      `site:businesslist.com.ng/company "${query}" "080" OR "081" OR "090" OR "070"`,
+      `site:finelib.com/listing "${query}" "080" OR "081" OR "090"`,
+      `site:facebook.com "${query}" "Nigeria" "080" OR "081" OR "090" "WhatsApp"`,
+      `site:instagram.com "${query}" "Lagos" OR "Abuja" "080" OR "081" OR "090"`,
+      `site:vconnect.com "${query}" "080" OR "081" OR "090"`,
     ];
     const selectedDork = dorks[Math.floor(Math.random() * dorks.length)];
-    const serpResults = await fetchSERPWithFallback(selectedDork, 10);
+    const serpResults = await fetchSERPWithFallback(selectedDork, 15);
 
     const leads: DirectoryLead[] = [];
     for (const item of serpResults) {
@@ -753,18 +838,19 @@ export async function fetchGoogleDorkLeads(query: string, category = 'General B2
       const phones = extractPhonesFromText(`${title} ${snippet}`);
       const emails = extractEmailsFromText(`${title} ${snippet}`);
       const normPhone = phones.length > 0 ? normalizePhone(phones[0], 'NG') : null;
+      if (!normPhone && emails.length === 0) continue;
 
       const cleanName = title.split('-')[0].split('|')[0].replace(/http.*/g, '').trim();
-      const hash = crypto.createHash('sha256').update(`dork_${cleanName.toLowerCase()}`).digest('hex').substring(0, 16);
+      const hash = crypto.createHash('sha256').update(`dork_${cleanName.toLowerCase()}_${normPhone || emails[0]}`).digest('hex').substring(0, 16);
 
       leads.push({
         lead_id: `dork_${hash}`,
         source: 'GOOGLE_DORK' as any,
         name: cleanName,
         category,
-        address: 'Lagos, Nigeria',
-        area: 'Lagos',
-        city: 'Lagos',
+        address: 'Nigeria',
+        area: 'Nigeria',
+        city: 'Nigeria',
         phone_e164: normPhone || '',
         phone_raw: phones[0] || '',
         email: emails[0] || '',
@@ -779,7 +865,7 @@ export async function fetchGoogleDorkLeads(query: string, category = 'General B2
         status: 'NEW',
         last_contacted_at: '',
         duplicate_of_lead_id: '',
-        business_summary: `${cleanName} — Direct intent B2B prospect from Google Dork search.`,
+        business_summary: `${cleanName} — Direct intent B2B prospect from Directory/Social Dork search.`,
         notes: `Extracted via Google Dorking search (${selectedDork})`,
       });
     }

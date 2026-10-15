@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
       for (const lead of selectedLeads) {
         const previewUrl = `${origin}/preview/${encodeURIComponent(lead.lead_id)}`;
         const phone = lead.phone_e164 || lead.phone_raw;
-        const msg = `Good day ${lead.name} team, we built a 24/7 client booking website for your ${lead.area || 'Lagos'} branch: ${previewUrl} — Claim with ₦0 setup or WhatsApp our desk: 08022791227. - Bethelmind Analytics`;
+        const msg = `Good day ${lead.name} team, we built a 24/7 client booking website for your ${lead.area || 'Lagos'} branch: ${previewUrl} — Claim with ₦0 setup or WhatsApp our desk: 08022791227. - Bethelmind Digital Solutions`;
 
         try {
           if (!config.dryRun) {
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
             if (lead.email && lead.email.includes('@')) {
               try {
                 const emailSubject = `Automating 24/7 Inquiries & Online Bookings for ${lead.name}`;
-                const emailBody = `Good day Management Team at ${lead.name},\n\nWe engineered a custom interactive website prototype & 24/7 WhatsApp AI agent tailored for your business in ${lead.area || 'Lagos'}.\n\n▶️ Test your live demo & 35s voice note here: ${previewUrl}\n\nPrefer WhatsApp? Chat directly with our desk: https://wa.me/2348022791227\n\nWarm regards,\nTosin & The Bethelmind Analytics Lagos Team\nDirect WhatsApp Desk: +234 802 279 1227`;
+                const emailBody = `Good day Management Team at ${lead.name},\n\nWe engineered a custom interactive website prototype & 24/7 WhatsApp AI agent tailored for your business in ${lead.area || 'Lagos'}.\n\n▶️ Test your live demo & 35s voice note here: ${previewUrl}\n\nPrefer WhatsApp? Chat directly with our desk: https://wa.me/2348022791227\n\nWarm regards,\nTosin & The Bethelmind Digital Solutions Team\nDirect WhatsApp Desk: +234 802 279 1227`;
                 await sendSmtpMessage(lead.email, emailSubject, emailBody);
               } catch (_) {}
             }
@@ -226,7 +226,7 @@ export async function POST(req: NextRequest) {
           const smsRes = await sendSmsMessage(
             smsLead,
             previewUrl,
-            `ApexReach: Interactive website prototype created for ${sampleLead.name}. Review live setup: ${previewUrl}`,
+            `Bethelmind Digital Solutions: Interactive website prototype created for ${sampleLead.name}. Review live setup: ${previewUrl}`,
             { bypassDnc: true }
           );
           results.sms = { success: true, target: targetPhone, details: smsRes };
@@ -254,7 +254,7 @@ export async function POST(req: NextRequest) {
       if (doEmail) {
         const emailHtml = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-            <h2 style="color: #10b981;">ApexReach Website Prototype Ready</h2>
+            <h2 style="color: #10b981;">Bethelmind Digital Solutions Website Prototype Ready</h2>
             <p>We built a customized website prototype tailored for <strong>${sampleLead.name}</strong>.</p>
             <div style="background: #f8fafc; border-left: 4px solid #10b981; padding: 16px; margin: 20px 0;">
               <p style="margin: 0 0 10px;"><strong>Live Prototype:</strong> <a href="${previewUrl}" style="color: #10b981; font-weight: bold;">${previewUrl}</a></p>

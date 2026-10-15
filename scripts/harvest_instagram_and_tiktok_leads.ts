@@ -3,7 +3,7 @@
  * 
  * 📸 HIGH-YIELD INSTAGRAM & TIKTOK NIGERIAN BUSINESS HARVESTER
  * 
- * Bethelmind Analytics Lagos Desk · Commercial B2B Revenue Growth Engine
+ * Bethelmind Digital Solutions · Commercial B2B Revenue Growth Engine
  * 
  * Extracts thousands of verified Nigerian commercial vendor leads across Instagram & TikTok:
  * 1. Public Search Index Dorking (site:instagram.com & site:tiktok.com/@)

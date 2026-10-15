@@ -123,7 +123,7 @@ function startRunner() {
 }
 
 console.log('====================================================');
-console.log('🔁 ApexReach Keep-Alive Runner Starting');
+console.log('🔁 Bethelmind Digital Solutions Keep-Alive Runner Starting');
 console.log(`   Project: ${projectDir}`);
 console.log('   Heartbeat: every 5 minutes');
 console.log('   Sleep detection: active');

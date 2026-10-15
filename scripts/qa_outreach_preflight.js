@@ -2,7 +2,7 @@
  * @file scripts/qa_outreach_preflight.js
  * 
  * Strict Automated Pre-Outreach Quality Assurance & Gatekeeper Engine
- * Bethelmind Analytics Commercial Growth System
+ * Bethelmind Digital Solutions Commercial Growth System
  * 
  * Enforces:
  * 1. Zero Raw UUID / Placeholder Policy on Live Landing Pages.

@@ -9,7 +9,7 @@
  * 3. Builds atomic 5-instruction bundles with dynamic Jito tip (50% rule) submitted directly
  *    to Jito Block Engine (`https://mainnet.block-engine.jito.wtf`).
  * 4. 0% Failed Transaction Gas Penalty: Transactions that do not win block inclusion cost $0.00 SOL.
- * 5. Automatically converts settled SOL/USDC profits to Naira and routes to OPay (7034297995).
+ * 5. Automatically converts settled SOL/USDC profits to Naira and routes to OPay (6805375225).
  */
 
 import { routeDirectToOPay, DirectNairaSettlement } from './directNairaAutoLiquidationRouter';

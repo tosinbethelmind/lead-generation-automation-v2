@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       dva: {
         bankName: 'Moniepoint Microfinance Bank',
         accountNumber: dva.accountNumber,
-        accountName: `ApexReach / ${bName.substring(0, 15)}`,
+        accountName: `Bethelmind Digital Solutions / ${bName.substring(0, 15)}`,
         instructions: `Transfer ₦${amountNgn.toLocaleString()} to ${dva.accountNumber} (Moniepoint MFB). Payment auto-verifies in 10 seconds!`,
       },
     });

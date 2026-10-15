@@ -223,7 +223,7 @@ export async function sendExecutiveAiBriefingEmail(): Promise<{ success: boolean
               </div>
 
               <div style="margin-top: 24px; padding-top: 14px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8; text-align: center;">
-                <p style="margin: 0;">Dispatched automatically by <b>Bethelmind Analytics Strategic Intelligence Layer</b></p>
+                <p style="margin: 0;">Dispatched automatically by <b>Bethelmind Digital Solutions Strategic Intelligence Layer</b></p>
               </div>
             </div>
           `

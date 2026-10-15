@@ -44,7 +44,7 @@ https://wa.me/2348033079719?text=Good%20day%20Maldini%20Imports%20team!%20Bethel
 https://wa.me/2348170417114?text=Good%20day%20COHBS%20International!%20Bethelmind%20Analytics%20has%20locked%20your%20%2435%2C000%20USD%20supplier%20clearance%20rate%20at%20%E2%82%A61%2C520%2F%24%20with%20instant%20escrow.
 
 🏦 *All Spreads Settle Direct to OPay:*
-OPay: 7034297995 (Oyelakin Tosin Matthew)`;
+OPay: 6805375225 (Bethelmind Digital Solutions)`;
 
   const candidateDirs = [
     path.join(__dirname, '../local_db/baileys_auth_permanent_master'),

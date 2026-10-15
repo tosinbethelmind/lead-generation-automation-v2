@@ -105,7 +105,7 @@ export async function GET() {
       lines: {
         adminLine: '0802 279 1227 (Active)',
         outboundPool: 'Active (3 Lines)',
-        payoutBank: 'OPay Digital Services (7034297995)'
+        payoutBank: 'Moniepoint Microfinance Bank (6805375225)'
       }
     },
     activeProspects,

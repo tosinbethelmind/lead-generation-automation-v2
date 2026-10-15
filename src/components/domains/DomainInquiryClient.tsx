@@ -79,7 +79,7 @@ export default function DomainInquiryClient({ decodedDomain, waUrl }: DomainInqu
         </li>
         <li className="flex items-start gap-2.5">
           <span className="text-emerald-400 font-bold">✓</span>
-          <span><strong>Official Verification Escrow:</strong> Verified ownership handover via Bethelmind Analytics Admin Desk.</span>
+          <span><strong>Official Verification Escrow:</strong> Verified ownership handover via Bethelmind Digital Solutions Admin Desk.</span>
         </li>
       </ul>
 

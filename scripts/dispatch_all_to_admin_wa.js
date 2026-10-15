@@ -84,7 +84,7 @@ async function dispatchAllToAdminWhatsApp() {
 • Active Deals: 6 Genuine Commercial Importers
 • Total Order Flow: $335,000 USD
 • Total Spread Profit: *₦8,375,000 NGN*
-• Settlement Destination: OPay 7034297995 (Oyelakin Tosin Matthew)
+• Settlement Destination: OPay 6805375225 (Bethelmind Digital Solutions)
 
 👇 *Here are your 6 individual 1-Click Action Cards:*`;
 
@@ -130,7 +130,7 @@ ${deal.url}`;
 1. Tap any of the 6 deal links above to open the WhatsApp chat.
 2. Send Step 1: *"Good day! Please is this the management team at [Business Name]?"*
 3. When they reply, send the prefilled settlement proposal.
-4. Once Naira clears in institutional escrow, your ₦25/$ spread settles straight to OPay (7034297995).`;
+4. Once Naira clears in institutional escrow, your ₦25/$ spread settles straight to OPay (6805375225).`;
 
   await fetch('http://localhost:5005/api/send', {
     method: 'POST',

@@ -72,7 +72,7 @@ export default function InvoiceModal({
   const itemsListFormatted = items.map(i => `• ${i.name} (₦${i.price.toLocaleString()} x ${i.qty})`).join('\n');
   
   const waMsg =
-    `Hello Bethelmind Analytics,\n\n` +
+    `Hello Bethelmind Digital Solutions,\n\n` +
     `I have generated Pro-Forma Invoice #${generatedInvoiceNo}.\n\n` +
     `Client: ${clientName || 'My Business'}\n` +
     `Industry: ${clientIndustry}\n` +

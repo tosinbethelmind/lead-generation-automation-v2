@@ -7,12 +7,12 @@ const MESSAGE_TEMPLATES = [
   {
     id: 'claim_ready',
     label: '✅ Website is Ready — Claim It Now',
-    text: (name: string) => `Hello ${name}! Your business website is now LIVE and ready for you to claim. I'm your assigned support from Bethelmind Analytics. Click the link below to verify your details and activate your domain. Reply here if you need any help!`
+    text: (name: string) => `Hello ${name}! Your business website is now LIVE and ready for you to claim. I'm your assigned support from Bethelmind Digital Solutions. Click the link below to verify your details and activate your domain. Reply here if you need any help!`
   },
   {
     id: 'payment_confirm',
     label: '💳 Payment Received — Activating Now',
-    text: (name: string) => `Hello ${name}! We have received your payment successfully. Your website is now being activated. I will send you your live domain link within the next 24 hours. Thank you for trusting Bethelmind Analytics! 🚀`
+    text: (name: string) => `Hello ${name}! We have received your payment successfully. Your website is now being activated. I will send you your live domain link within the next 24 hours. Thank you for trusting Bethelmind Digital Solutions! 🚀`
   },
   {
     id: 'redesign_update',
@@ -27,7 +27,7 @@ const MESSAGE_TEMPLATES = [
   {
     id: 'follow_up',
     label: '📞 Follow-Up Support Check',
-    text: (name: string) => `Hello ${name}! This is your support assistant from Bethelmind Analytics checking in. Is there anything you need help with regarding your website? We're here 24/7 to assist you. Just reply to this message!`
+    text: (name: string) => `Hello ${name}! This is your support assistant from Bethelmind Digital Solutions checking in. Is there anything you need help with regarding your website? We're here 24/7 to assist you. Just reply to this message!`
   },
 ];
 

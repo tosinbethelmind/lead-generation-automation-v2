@@ -2,7 +2,7 @@
  * @file src/lib/scraping/breakthroughTrioHarvester.ts
  * 
  * 🇳🇬 ACCELERATED BREAKTHROUGH TRIO HARVESTER (2026 EDITION)
- * Bethelmind Analytics Lagos Desk · Commercial B2B Revenue Growth Engine
+ * Bethelmind Digital Solutions · Commercial B2B Revenue Growth Engine
  * 
  * Exclusively focused on the 3 Highest-Breakthrough Sectors in Nigeria:
  * 1. ⚡ Commercial Solar & Inverter Showrooms / Contractors (Fastest 24-48h cash close)

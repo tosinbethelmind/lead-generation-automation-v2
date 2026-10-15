@@ -40,7 +40,7 @@ const LEADS_DB_PATH = path.join(LOCAL_DB, 'leads_db.json');
 
 async function runModernizedPipeline() {
   console.log('\n╔══════════════════════════════════════════════════════════════════════╗');
-  console.log('║   🇳🇬 BETHELMIND ANALYTICS LAGOS — MODERNIZED COMMERCIAL ENGINE      ║');
+  console.log('║   🇳🇬 Bethelmind Digital Solutions — MODERNIZED COMMERCIAL ENGINE      ║');
   console.log('║   SearchPhone + OpenPlanter + PinchTab + Lightpanda + Capacitor      ║');
   console.log('╚══════════════════════════════════════════════════════════════════════╝\n');
 
@@ -130,7 +130,7 @@ async function runModernizedPipeline() {
   console.log(`   ✓ Executive Identity: ${dossier.entity.primaryDirectorOrLead}`);
   console.log(`   ✓ Corporate Trust Grade: ${dossier.riskAssessment.compositeGrade}`);
   console.log(`   ✓ Dossier Storage: ${outPath}`);
-  console.log(`   💰 Value: ₦${dossier.metadata.priceTierNGN.toLocaleString()} NGN (Settlement: OPay 7034297995)`);
+  console.log(`   💰 Value: ₦${dossier.metadata.priceTierNGN.toLocaleString()} NGN (Settlement: OPay 6805375225)`);
 
   // Step 5: Capacitor Mobile App Staging Hook
   console.log('\n📱 [5/5] Pre-Generating Capacitor Android Mobile App Wrapper (₦250,000 Bundle)...');
@@ -147,7 +147,7 @@ async function runModernizedPipeline() {
   console.log('✅ High-Ticket Intelligence: OpenPlanter due diligence dossier compiled (₦150k tier).');
   console.log('✅ Mobile App Upsell: Capacitor Android wrapper prepared (₦250k bundle).');
   console.log('✅ Cloud Edge: Cloudflare Lagos PoP worker configured for sub-15ms hydration.');
-  console.log('✅ Payout Destination: 100% Direct-to-OPay (7034297995 - Oyelakin Tosin Matthew).');
+  console.log('✅ Payout Destination: 100% Direct-to-OPay (6805375225 - Bethelmind Digital Solutions).');
   console.log('══════════════════════════════════════════════════════════════════════\n');
 
   logger.info('PIPELINE_COMPLETE', 'Unified Modernized Commercial Engine completed successfully');

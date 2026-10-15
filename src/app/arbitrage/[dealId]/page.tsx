@@ -10,14 +10,14 @@
  * 2. 🧠 Smart AI Assistant Step-by-Step Plain English Breakdown.
  * 3. ⏱️ Live 15-Minute Guaranteed Rate Lock Countdown Timer.
  * 4. 📲 1-Tap Pre-Filled WhatsApp 3-Way Handshake Launch Button.
- * 5. 🏦 Direct-to-OPay Liquidation Confirmation (7034297995 - Oyelakin Tosin Matthew).
+ * 5. 🏦 Direct-to-OPay Liquidation Confirmation (6805375225 - Bethelmind Digital Solutions).
  */
 
 import React from 'react';
 import ArbitragePortalClient from '@/components/arbitrage/ArbitragePortalClient';
 
 export const metadata = {
-  title: 'Executive Arbitrage & Escrow Settlement Portal | Bethelmind Analytics',
+  title: 'Executive Arbitrage & Escrow Settlement Portal | Bethelmind Digital Solutions',
   description: 'Verified B2B Institutional Escrow & Arbitrage Settlement Desk.'
 };
 

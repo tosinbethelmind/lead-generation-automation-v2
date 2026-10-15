@@ -84,7 +84,7 @@ function processLead(lead) {
 
 async function runMasterConsolidation() {
   console.log('====================================================');
-  console.log('🚀 APEXREACH MASTER LEAD CONSOLIDATION & SYNC');
+  console.log('🚀 Bethelmind Digital Solutions MASTER LEAD CONSOLIDATION & SYNC');
   console.log('====================================================\n');
 
   // 1. Process files in local_db
@@ -142,7 +142,7 @@ async function runMasterConsolidation() {
   }
 
   // 2. Process root Excel files
-  const rootFiles = ['leads.xlsx', 'ApexReach_Leads_Template.xlsx'];
+  const rootFiles = ['leads.xlsx', 'bethelmind_.xlsx'];
   for (const f of rootFiles) {
     const full = path.join(rootDir, f);
     if (fs.existsSync(full)) {

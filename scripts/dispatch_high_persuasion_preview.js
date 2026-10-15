@@ -37,7 +37,7 @@ Good day management. We understand you already have regular BDC/exchange channel
 
 🏦 *CBN-LICENSED INSTITUTIONAL ESCROW DEPOSIT:*
 • *Escrow Bank:* Providus Bank / Wema Bank (CBN Licensed)
-• *Account Name:* Bethelmind Analytics / OTC Settlement Trust
+• *Account Name:* Bethelmind Digital Solutions / OTC Settlement Trust
 • *Escrow Vault Account:* 9928371029
 • *Payment Narration / Ref:* BM-OTC-701-JACIO
 
@@ -60,7 +60,7 @@ Would you like us to confirm this $65k allocation for your factory clearance tod
 👉 Web Audio Player: ${playerLink}
 
 🎙️ *2. VOICE NOTE TRANSCRIPT (RECORD ON WHATSAPP):*
-_"Good day Alhaji / Management at Jacio International. This is Tosin from Bethelmind Analytics Lagos Desk. We understand you already have your regular exchange dealers for your China container wires. But we also know the daily headaches with regular BDC guys: unconfirmed transfers, price gouging, and 24 to 48 hours of delays that stall your container clearing in Guangzhou. With Bethelmind Analytics, you get 3 massive advantages: First, a guaranteed wholesale rate of 1,520 Naira per Dollar. Second, your factory receives the wire in under 15 minutes with official Swift MT103 proof. And most importantly, you are 100% protected by our CBN-licensed Providus Bank Escrow Vault 9928371029. Your money never goes to a personal account; it is locked safely in institutional trust until your supplier confirms receipt. You don't have to change your regular dealer—just test a single batch today and experience the speed and bank safety yourself. Check the official breakdown below. Thank you."_
+_"Good day Alhaji / Management at Jacio International. This is Tosin from Bethelmind Digital Solutions. We understand you already have your regular exchange dealers for your China container wires. But we also know the daily headaches with regular BDC guys: unconfirmed transfers, price gouging, and 24 to 48 hours of delays that stall your container clearing in Guangzhou. With Bethelmind Digital Solutions, you get 3 massive advantages: First, a guaranteed wholesale rate of 1,520 Naira per Dollar. Second, your factory receives the wire in under 15 minutes with official Swift MT103 proof. And most importantly, you are 100% protected by our CBN-licensed Providus Bank Escrow Vault 9928371029. Your money never goes to a personal account; it is locked safely in institutional trust until your supplier confirms receipt. You don't have to change your regular dealer—just test a single batch today and experience the speed and bank safety yourself. Check the official breakdown below. Thank you."_
 
 🟢 *3. 1-CLICK WHATSAPP PROPOSAL (WITH BDC COMPARISON & ESCROW):*
 👉 ${waUrl}

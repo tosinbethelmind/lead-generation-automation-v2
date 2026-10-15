@@ -2,7 +2,7 @@
  * @file src/lib/scraping/mcpScraperBridge.ts
  * 
  * Model Context Protocol (MCP) & High-Performance Scraping Bridge
- * Bethelmind Analytics Commercial Growth System
+ * Bethelmind Digital Solutions Commercial Growth System
  * 
  * Bridges MCP servers:
  * - @modelcontextprotocol/server-puppeteer

@@ -1,7 +1,7 @@
 /**
  * @file src/lib/monetization/tenSectorMonetizationTools.ts
  * 
- * BETHELMIND ANALYTICS: 10 HIGH-CONVERSION SECTOR MONETIZATION TOOLS
+ * Bethelmind Digital Solutions: 10 HIGH-CONVERSION SECTOR MONETIZATION TOOLS
  * 
  * Ready-to-Pitch B2B Revenue Engines for Nigerian Commercial Enterprises:
  * 1.  Instant WhatsApp Speed-to-Lead & Catalog Closer (₦15k–₦30k/mo)

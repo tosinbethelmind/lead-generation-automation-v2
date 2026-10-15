@@ -15,7 +15,7 @@ export function inspectAllCryptoEnginesLive() {
   console.log('====================================================================================================');
   console.log(`🕒 Timestamp: ${new Date().toISOString()} (WAT Timezone)`);
   console.log(`🌐 Production Domain: https://www.bethelmindanalytics.com`);
-  console.log(`🏦 Direct Payout Destination: OPay Digital Services (7034297995 - Oyelakin Tosin Matthew)`);
+  console.log(`🏦 Direct Payout Destination: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)`);
   console.log(`✨ Mode: 100% LIVE REAL-TIME AUDIT (Zero Mock Numbers / Pure Live Telemetry)\n`);
 
   console.log('────────────────────────────────────────────────────────────────────────────────────────────────────');
@@ -82,7 +82,7 @@ export function inspectAllCryptoEnginesLive() {
 
   console.log('====================================================================================================');
   console.log('🛡️ OVERALL ARBITRAGE SYSTEM HEALTH: 7/7 ENGINES RUNNING 24/7 IN CLUSTER');
-  console.log('🏦 Direct Liquidation Router: Armed & Locked to OPay (7034297995 - Oyelakin Tosin Matthew)');
+  console.log('🏦 Direct Liquidation Router: Armed & Locked to OPay (6805375225 - Bethelmind Digital Solutions)');
   console.log('====================================================================================================\n');
 }
 

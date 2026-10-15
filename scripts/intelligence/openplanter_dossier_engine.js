@@ -64,8 +64,8 @@ function buildCorporateDossier(lead) {
     metadata: {
       dossierId,
       generatedAt: new Date().toISOString(),
-      issuer: 'Bethelmind Analytics Lagos — Institutional Intelligence Desk',
-      settlementAccount: 'OPay Digital Services (7034297995 - Oyelakin Tosin Matthew)',
+      issuer: 'Bethelmind Digital Solutions — Institutional Intelligence Desk',
+      settlementAccount: 'Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)',
       priceTierNGN: 150000,
       classification: 'CONFIDENTIAL B2B COUNTERPARTY AUDIT'
     },

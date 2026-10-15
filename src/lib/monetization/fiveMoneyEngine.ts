@@ -1,7 +1,7 @@
 /**
  * @file src/lib/monetization/fiveMoneyEngine.ts
  * 
- * BETHELMIND ANALYTICS 5 MONEY ENGINE (100% AUTONOMOUS ZERO-TOUCH CLOUD SUITE).
+ * Bethelmind Digital Solutions 5 MONEY ENGINE (100% AUTONOMOUS ZERO-TOUCH CLOUD SUITE).
  * 
  * Harmonizes the 5 fastest, highest-converting B2B cash engines:
  * 
@@ -15,7 +15,7 @@
  * - Isolated Promise.allSettled sandboxing (if 1 API fails, others run untouched).
  * - Circuit breakers with 2.5s fallback to Supabase / local_db cache.
  * - Deterministic integer financial assertions.
- * - 100% Direct Settlement to OPay: 7034297995 (Oyelakin Tosin Matthew).
+ * - 100% Direct Settlement to OPay: 6805375225 (Bethelmind Digital Solutions).
  */
 
 import fs from 'fs';

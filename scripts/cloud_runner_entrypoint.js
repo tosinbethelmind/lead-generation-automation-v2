@@ -1,7 +1,7 @@
 /**
  * @file scripts/cloud_runner_entrypoint.js
  * 
- * BETHELMIND ANALYTICS 100% AUTONOMOUS 24/7 CLOUD ORCHESTRATOR & SUPERVISOR.
+ * Bethelmind Digital Solutions 100% AUTONOMOUS 24/7 CLOUD ORCHESTRATOR & SUPERVISOR.
  * 
  * Runs 100% autonomously without needing any manual button clicks:
  * 1. Health Server for Koyeb (Port 8080)
@@ -21,7 +21,7 @@ const PORT = parseInt(process.env.PORT || '8080', 10);
 const projectDir = path.resolve(__dirname, '..');
 
 console.log('========================================================================');
-console.log('🚀 BETHELMIND ANALYTICS: 100% FULLY AUTONOMOUS 24/7 CLOUD ENGINE');
+console.log('🚀 Bethelmind Digital Solutions: 100% FULLY AUTONOMOUS 24/7 CLOUD ENGINE');
 console.log('========================================================================\n');
 
 // ── 1. Koyeb HTTP Health Check Server ───────────────────────────────────────
@@ -30,7 +30,7 @@ const server = http.createServer((req, res) => {
   res.end(JSON.stringify({
     status: 'ONLINE',
     mode: 'FULLY_AUTONOMOUS_24_7',
-    brand: 'Bethelmind Analytics B2B Engine',
+    brand: 'Bethelmind Digital Solutions B2B Engine',
     timestamp: new Date().toISOString(),
     watTime: new Date().toLocaleString('en-US', { timeZone: 'Africa/Lagos' }),
     closerDesk: '+234 802 279 1227',

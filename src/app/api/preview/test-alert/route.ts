@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
         type: 'text',
         text: {
           body:
-            `🔔 *Test Customer Alert — Bethelmind Analytics & Strategy*\n\n` +
+            `🔔 *Test Customer Alert — Bethelmind Digital Solutions*\n\n` +
             `Hello! A customer just submitted an inquiry on *${businessLabel}*'s new website.\n\n` +
             `📋 *Customer Name:* Sample Customer\n` +
             `📞 *Phone:* +234 800 000 0000\n` +
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
       config.twilioFromNumber
     ) {
       const spokenMessage =
-        `Hello! This is a test notification from Bethelmind Analytics & Strategy. ` +
+        `Hello! This is a test notification from Bethelmind Digital Solutions. ` +
         `A customer has just booked an appointment at ${businessLabel}. ` +
         `Their new automated website is live and working. ` +
         `Please claim your website today to activate this system permanently. ` +

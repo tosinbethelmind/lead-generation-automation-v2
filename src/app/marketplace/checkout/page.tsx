@@ -95,7 +95,7 @@ function CheckoutContent() {
             <CheckCircle style={{ width: 36, height: 36, color: '#10b981' }} />
           </div>
           <h2 style={{ color: '#f8fafc', fontSize: '1.8rem', fontWeight: 800, margin: '0 0 8px' }}>🎉 Workspace Provisioned!</h2>
-          <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>Welcome to Bethelmind Analytics! Your account is active and ready.</p>
+          <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>Welcome to Bethelmind Digital Solutions! Your account is active and ready.</p>
         </div>
 
         <div style={{ background: 'rgba(6,182,212,0.06)', border: '1px solid rgba(6,182,212,0.2)', borderRadius: 16, padding: 24, marginBottom: 28 }}>
@@ -140,7 +140,7 @@ function CheckoutContent() {
       </Link>
 
       <h1 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: 8, fontFamily: "'Outfit', sans-serif" }}>Checkout</h1>
-      <p style={{ color: '#94a3b8', marginBottom: 36 }}>Complete your order to provision your Bethelmind Analytics workspace instantly.</p>
+      <p style={{ color: '#94a3b8', marginBottom: 36 }}>Complete your order to provision your Bethelmind Digital Solutions workspace instantly.</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 32 }} className="checkout-grid">
         {/* Left Form */}

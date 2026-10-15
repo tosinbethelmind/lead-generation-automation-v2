@@ -8,7 +8,7 @@
  * 3. GSM SMS via Tailscale Android Gateway (http://10.132.90.251:8082).
  * 4. Executive B2B Email via Hostinger SMTP (IPv4 Port 587).
  * 5. Throttled WhatsApp Outreach across Line 2 & Line 3 (30 leads/day/line).
- * 6. 100% Direct-to-OPay revenue routing (7034297995 - Oyelakin Tosin Matthew).
+ * 6. 100% Direct-to-OPay revenue routing (6805375225 - Bethelmind Digital Solutions).
  */
 
 const fs = require('fs');
@@ -240,10 +240,10 @@ async function runMassiveZeroCryptoOutreach(options = {}) {
           const emailSubject = `Automating 24/7 Inquiries & Online Bookings for ${lead.name || 'Your Business'}`;
           assertZeroCryptoCompliance(emailSubject);
 
-          const emailBody = `Good day Management at ${lead.name || 'Commercial SME'},\n\nWe pre-built a 24/7 AI WhatsApp Sales & Quoting Portal for your facility.\n\nView N0 upfront preview: ${PRODUCTION_DOMAIN}/preview/${safeLeadId}\n\nBethelmind Analytics Desk: 0802 279 1227`;
+          const emailBody = `Good day Management at ${lead.name || 'Commercial SME'},\n\nWe pre-built a 24/7 AI WhatsApp Sales & Quoting Portal for your facility.\n\nView N0 upfront preview: ${PRODUCTION_DOMAIN}/preview/${safeLeadId}\n\nBethelmind Digital Solutions Desk: 0802 279 1227`;
 
           const info = await sharedTransporter.sendMail({
-            from: `"Bethelmind Analytics" <${process.env.SMTP_USER || 'tosin@bethelmindanalytics.com'}>`,
+            from: `"Bethelmind Digital Solutions" <${process.env.SMTP_USER || 'tosin@bethelmindanalytics.com'}>`,
             to: lead.email,
             subject: emailSubject,
             text: emailBody

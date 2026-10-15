@@ -6,7 +6,7 @@ const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../config.json')
 
 const payload = JSON.stringify({
   sender: {
-    name: 'Tosin | Bethelmind Analytics Lagos Desk',
+    name: 'Tosin | Bethelmind Digital Solutions',
     email: 'tosin@bethelmindanalytics.com'
   },
   to: [
@@ -15,7 +15,7 @@ const payload = JSON.stringify({
   subject: '🎉 CLOUDFLARE + BREVO DKIM LIVE - 100% INBOX VERIFIED',
   htmlContent: `
     <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #0b1329; color: #f8fafc; border-radius: 8px;">
-      <h2 style="color: #38bdf8;">⚡ Bethelmind Analytics Lagos Desk</h2>
+      <h2 style="color: #38bdf8;">⚡ Bethelmind Digital Solutions</h2>
       <p>Hello Admin,</p>
       <p>This is a live transactional email sent from <strong>tosin@bethelmindanalytics.com</strong> via Brevo API with active Cloudflare nameservers and DKIM keys (<code>brevo1._domainkey</code> & <code>brevo2._domainkey</code>)!</p>
       <p>Your email engine is now 100% authenticated for high deliverability!</p>

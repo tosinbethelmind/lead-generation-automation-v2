@@ -34,7 +34,7 @@ async function controlHFSpace(action: 'resume' | 'pause'): Promise<{ success: bo
       const { data } = await supabase
         .from('app_settings')
         .select('value')
-        .eq('key', 'apexreach_runtime_config')
+        .eq('key', 'bethelmind_')
         .maybeSingle();
       if (data?.value) {
         const parsed = JSON.parse(data.value);
@@ -73,7 +73,7 @@ async function triggerGitHubWorkflow(tokenStr: string, repoStr: string): Promise
       'Accept': 'application/vnd.github+json',
       'Authorization': `Bearer ${tokenStr}`,
       'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'ApexReach-App'
+      'User-Agent': 'Bethelmind Digital Solutions-App'
     },
     body: JSON.stringify({
       event_type: 'run-queue'
@@ -146,7 +146,7 @@ export async function GET() {
         const { data } = await supabase
           .from('app_settings')
           .select('value')
-          .eq('key', 'apexreach_runtime_config')
+          .eq('key', 'bethelmind_')
           .maybeSingle();
         if (data?.value) {
           const parsed = JSON.parse(data.value);
@@ -286,7 +286,7 @@ export async function POST(req: Request) {
       const { data } = await supabase
         .from('app_settings')
         .select('value')
-        .eq('key', 'apexreach_runtime_config')
+        .eq('key', 'bethelmind_')
         .maybeSingle();
       if (data?.value) {
         const parsed = JSON.parse(data.value);
@@ -396,7 +396,7 @@ export async function DELETE() {
       const { data } = await supabase
         .from('app_settings')
         .select('value')
-        .eq('key', 'apexreach_runtime_config')
+        .eq('key', 'bethelmind_')
         .maybeSingle();
       if (data?.value) {
         const parsed = JSON.parse(data.value);

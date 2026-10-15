@@ -2,7 +2,7 @@
  * @file src/lib/leadClassifier.ts
  * 
  * 🛡️ BULLETPROOF BUSINESS-NAME-FIRST SECTOR CLASSIFIER & HOOK GENERATOR
- * Bethelmind Analytics Lagos Desk · Commercial Growth Engine
+ * Bethelmind Digital Solutions · Commercial Growth Engine
  */
 
 export interface SectorDefinition {

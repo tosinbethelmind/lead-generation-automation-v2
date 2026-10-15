@@ -2,7 +2,7 @@
  * @file scripts/test_2026_scrapling_fallback_suite.ts
  * 
  * 🛡️ COMPREHENSIVE 2026 ZERO-FAILURE SCRAPING & FALLBACK SUITE TEST
- * Bethelmind Analytics Lagos Desk · Commercial Growth Engine
+ * Bethelmind Digital Solutions · Commercial Growth Engine
  * 
  * Tests:
  * 1. Scrapling Adaptive DOM Extractor on mutated/unpredictable HTML structures.

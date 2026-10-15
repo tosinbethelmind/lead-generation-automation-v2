@@ -7,7 +7,7 @@
  * 1. High-Volume Lead Harvest (400+ to 1,200+ leads/day)
  * 2. Automated High-Value Verification (Tier 1 Whale / Tier 2 High-Ticket Scoring)
  * 3. 20-Engine Quantitative Crypto Arbitrage & Wholesale OTC Importer Spread Realizer
- * 4. 100% Direct-to-OPay Yield Routing (7034297995 - Oyelakin Tosin Matthew)
+ * 4. 100% Direct-to-OPay Yield Routing (6805375225 - Bethelmind Digital Solutions)
  * 5. Micro-Footprint Execution (< 35MB RAM, Zero CPU Loop Spinning)
  */
 

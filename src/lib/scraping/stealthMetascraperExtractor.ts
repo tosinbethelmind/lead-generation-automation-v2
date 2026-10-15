@@ -2,7 +2,7 @@
  * @file src/lib/scraping/stealthMetascraperExtractor.ts
  * 
  * 🔍 METASCRAPER & DISPOSABLE EMAIL GUARD
- * Bethelmind Analytics Lagos Desk · 2026 Edition
+ * Bethelmind Digital Solutions · 2026 Edition
  * 
  * Capabilities:
  * 1. Rich metadata extraction (Business Title, Description, Favicon, Social Links) via Metascraper.
@@ -99,6 +99,7 @@ export class StealthMetascraperExtractor {
     } catch (_) {}
 
     const $ = cheerio.load(html);
+    $('div, p, td, th, li, br, span, h1, h2, h3, h4, h5, a').after(' ');
     const bodyText = $('body').text();
 
     // 1. Extract Emails
@@ -113,7 +114,9 @@ export class StealthMetascraperExtractor {
 
     const allEmails = [...inlineEmails, ...mailtoEmails];
     for (const em of allEmails) {
-      const clean = em.toLowerCase().trim();
+      let clean = em.toLowerCase().trim();
+      // Strip any leading role + Nigerian phone digits accidentally concatenated before the email username
+      clean = clean.replace(/^.*?(?:\+?234|0)[789][01]\d{8}([a-z][a-z0-9._%+-]*@)/i, '$1');
       if (this.isGenuineCommercialEmail(clean) && !result.emails.includes(clean)) {
         result.emails.push(clean);
       }

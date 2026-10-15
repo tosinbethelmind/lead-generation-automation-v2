@@ -15,7 +15,7 @@ const projectDir = path.resolve(__dirname, '..');
 let runnerProcess = null;
 let whatsappProcess = null;
 
-console.log('🚀 Starting ApexReach Phase 1 Automated Runner (500 Active Users)...');
+console.log('🚀 Starting Bethelmind Digital Solutions Phase 1 Automated Runner (500 Active Users)...');
 
 function startProcess(command, args, label) {
   console.log(`[Phase1 Daemon] 🚀 Launching ${label}...`);

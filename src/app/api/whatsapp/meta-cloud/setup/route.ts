@@ -172,11 +172,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 5. Update Business Profile with Bethelmind Analytics Lagos Branding
+    // 5. Update Business Profile with Bethelmind Digital Solutions Branding
     if (action === 'profile' || action === 'full_setup') {
       try {
         const profRes = await updateMetaBusinessProfile({
-          about: 'Bethelmind Analytics Lagos | 24/7 AI Commercial Automations',
+          about: 'Bethelmind Digital Solutions | 24/7 AI Commercial Automations',
           address: 'Victoria Island & Lekki Phase 1, Lagos, Nigeria',
           description: 'Specialized B2B Lead Generation, AI WhatsApp Sales Closers & Custom Digital Prototypes for Nigerian Commercial Enterprises.',
           email: 'bethelmindrecruit@gmail.com',
@@ -209,7 +209,7 @@ export async function POST(req: NextRequest) {
         const cleanTestPhone = testPhone.replace(/\D/g, '');
         const testRes = await sendMetaCloudTextMessage(
           cleanTestPhone,
-          '🚀 *Bethelmind Analytics Lagos Desk*\nOfficial Meta WhatsApp Business Cloud API successfully automated and linked!\nZero ban risk • Sub-3s AI Closer Active.',
+          '🚀 *Bethelmind Digital Solutions*\nOfficial Meta WhatsApp Business Cloud API successfully automated and linked!\nZero ban risk • Sub-3s AI Closer Active.',
           conf
         );
         results.testDispatch = { success: true, messageId: testRes?.messages?.[0]?.id };

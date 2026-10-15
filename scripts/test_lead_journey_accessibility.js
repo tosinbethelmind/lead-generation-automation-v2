@@ -18,7 +18,7 @@ async function requestHttp(urlPath, method = 'GET', data = null, headers = {}) {
     const opts = {
       method,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ApexReachLeadJourneyTester/1.0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Bethelmind Digital SolutionsLeadJourneyTester/1.0',
         ...headers
       },
       signal: controller.signal
@@ -43,7 +43,7 @@ async function requestHttp(urlPath, method = 'GET', data = null, headers = {}) {
 
 async function runLeadJourneyAccessibilityTests() {
   console.log('====================================================================');
-  console.log('🏁 ApexReach Lead Journey, Accessibility & Drop-Out Recovery Test');
+  console.log('🏁 Bethelmind Digital Solutions Lead Journey, Accessibility & Drop-Out Recovery Test');
   console.log('====================================================================\n');
 
   let passed = 0;

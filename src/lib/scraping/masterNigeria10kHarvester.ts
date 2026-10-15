@@ -2,7 +2,7 @@
  * @file src/lib/scraping/masterNigeria10kHarvester.ts
  * 
  * 🇳🇬 ACCELERATED NIGERIA-WIDE 10,000 LEADS/DAY MULTI-STRATEGY MASTER HARVESTER (2026 EDITION)
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * 🚀 UPGRADES IMPLEMENTED FOR MAXIMUM MULTIPLIED RESULTS:
  * 1. ⚡ SPEED & SCALE MULTIPLICATION (10,000+ LEADS/DAY):
@@ -467,16 +467,21 @@ export class MasterNigeria10kHarvester {
 
           if (Array.isArray(hubLeads)) {
             for (const lead of hubLeads) {
-              const ph = lead.phone.replace(/\D/g, '');
-              const e164 = lead.phone_e164.replace(/\D/g, '');
+              const ph = (lead.phone || '').replace(/\D/g, '');
+              const e164 = (lead.phone_e164 || '').replace(/\D/g, '');
+              const em = (lead.email || '').trim().toLowerCase();
+              const web = (lead.website || '').trim().toLowerCase().replace(/\/$/, '');
+              const dedupKey = ph || em || web;
 
-              if (!this.seenPhoneBloomFilter.has(ph) && !this.seenPhoneBloomFilter.has(e164)) {
-                this.seenPhoneBloomFilter.add(ph);
-                this.seenPhoneBloomFilter.add(e164);
+              if (dedupKey && !this.seenPhoneBloomFilter.has(dedupKey) && (!e164 || !this.seenPhoneBloomFilter.has(e164))) {
+                this.seenPhoneBloomFilter.add(dedupKey);
+                if (ph) this.seenPhoneBloomFilter.add(ph);
+                if (e164) this.seenPhoneBloomFilter.add(e164);
+                if (em) this.seenPhoneBloomFilter.add(em);
                 harvestedLeads.push(lead);
                 syncQueue.push(lead);
 
-                if (carrierBreakdown[lead.carrier] !== undefined) {
+                if (lead.carrier && carrierBreakdown[lead.carrier] !== undefined) {
                   carrierBreakdown[lead.carrier]++;
                 }
 
@@ -661,6 +666,17 @@ export class MasterNigeria10kHarvester {
         .catch(() => {})
     );
 
+    sourcePromises.push(
+      fetchBingSerpLeads(`${hub.sector} ${hub.state}`, hub.sector)
+        .then(rawItems => {
+          for (const raw of rawItems) {
+            const validated = this.processRawLead(raw, 'BING_SERP', hub);
+            if (validated) leads.push(validated);
+          }
+        })
+        .catch(() => {})
+    );
+
     // 9. Unified Scraper Cluster with curl_cffi Chrome 124 TLS Anti-Bot Evasion
     const matchedSector = UNIFIED_COMMERCIAL_SECTORS.find(s => 
       hub.sector.toLowerCase().includes(s.key) || 
@@ -672,8 +688,10 @@ export class MasterNigeria10kHarvester {
       c.state.toLowerCase().includes(hub.state.toLowerCase())
     ) || { name: hub.state, state: hub.state, finelibSlug: 'lagos', bizlistSlug: 'lagos' };
 
+    const deepPage = Math.floor(Math.random() * 10) + 2;
     const directoryTargets = [
-      `https://www.businesslist.com.ng/${matchedSector.businessListPath}`,
+      `https://www.businesslist.com.ng/${matchedSector.businessListPath}/${deepPage}`,
+      `https://www.businesslist.com.ng/location/${matchedCity.bizlistSlug}/${deepPage}`,
       `https://www.finelib.com/search.php?q=${encodeURIComponent(hub.query)}`
     ];
     const targetUrl = directoryTargets[Math.floor(Math.random() * directoryTargets.length)];
@@ -727,33 +745,31 @@ export class MasterNigeria10kHarvester {
     const rawPhone = raw.phone_raw || raw.phone || raw.phone_e164 || '';
     const rawEmail = raw.email || '';
 
-    if (!rawName || !rawPhone) return null;
-
-    const validatedPhone = validateNigerianCarrier(rawPhone);
-    if (!validatedPhone.isValid) return null;
+    if (!rawName) return null;
 
     const cleanBizName = sanitizeBusinessName(rawName, hub.sector).cleanName;
     if (!cleanBizName || cleanBizName.length < 3) return null;
 
+    const validatedPhone = validateNigerianCarrier(rawPhone);
     const cleanEmail = rawEmail ? sanitizeBusinessEmail(rawEmail).cleanEmail || '' : '';
 
     const websiteFound = Boolean(
       raw.website &&
       raw.website.startsWith('http') &&
-      !raw.website.includes('jiji.ng') &&
-      !raw.website.includes('businesslist') &&
-      !raw.website.includes('finelib') &&
-      !raw.website.includes('vconnect') &&
-      !raw.website.includes('facebook.com') &&
-      !raw.website.includes('instagram.com')
+      !/jiji\.ng|businesslist|finelib|vconnect|africabizinfo|africabz|nigeriayp|infobel|facebook\.com|instagram\.com|bing\.com|google\.com/i.test(raw.website)
     );
 
-    const offerType = websiteFound ? 'ONE_LINE_EMBED_UPGRADE' : 'TURNKEY_DFY_PROTOTYPE';
+    // STRICT NON-WEBSITE MANDATE (Section 1B): Only harvest businesses WITHOUT a standalone website
+    if (websiteFound) return null;
+    if (!validatedPhone.isValid && !cleanEmail) return null;
+
+    const offerType = 'TURNKEY_DFY_PROTOTYPE';
 
     const previewSlug = cleanBizName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     const previewUrl = `https://www.bethelmindanalytics.com/preview/${previewSlug}`;
 
-    const hash = crypto.createHash('sha256').update(`${cleanBizName}_${validatedPhone.cleanLocal}`).digest('hex').substring(0, 14);
+    const uniqueToken = validatedPhone.cleanLocal || cleanEmail || cleanBizName;
+    const hash = crypto.createHash('sha256').update(`${cleanBizName}_${uniqueToken}`).digest('hex').substring(0, 14);
     const leadId = `lead_ng_${hash}`;
 
     const areaVal = raw.area || raw.city || hub.name;
@@ -769,9 +785,9 @@ export class MasterNigeria10kHarvester {
       area: areaVal,
       city: hub.state,
       state: hub.state,
-      phone: validatedPhone.cleanLocal,
-      phone_e164: validatedPhone.phoneE164,
-      phone_raw: validatedPhone.cleanLocal,
+      phone: validatedPhone.isValid ? validatedPhone.cleanLocal : '',
+      phone_e164: validatedPhone.isValid ? validatedPhone.phoneE164 : '',
+      phone_raw: validatedPhone.isValid ? validatedPhone.cleanLocal : '',
       carrier: validatedPhone.carrier,
       email: cleanEmail,
       website: raw.website || '',
@@ -800,11 +816,15 @@ export class MasterNigeria10kHarvester {
     // 1. Sync to Local Database Atomic
     try {
       const existing = readJsonFileSyncWithRetry(this.localDbPath, []);
-      const combined = [...leads, ...existing];
+      const combined = [...existing, ...leads];
       const unique = new Map<string, any>();
       for (const item of combined) {
-        if (item.phone && !unique.has(item.phone)) {
-          unique.set(item.phone, item);
+        const pDigits = String(item.phone || item.phone_e164 || '').replace(/\D/g, '');
+        const pTail = pDigits.length >= 10 ? pDigits.slice(-10) : '';
+        const eClean = String(item.email || '').trim().toLowerCase();
+        const key = pTail || (eClean.includes('@') ? eClean : '');
+        if (key && !unique.has(key)) {
+          unique.set(key, item);
         }
       }
       writeJsonFileSyncAtomic(this.localDbPath, Array.from(unique.values()));

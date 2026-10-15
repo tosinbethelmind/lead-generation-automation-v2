@@ -21,7 +21,7 @@ async function sendLiveAdminUpdate() {
 
 👑 Admin Desk: 0802 279 1227
 📧 Outreach Sender: tosin@bethelmindanalytics.com
-💳 OPay Settlement: 7034297995 (Oyelakin Tosin Matthew)
+💳 OPay Settlement: 6805375225 (Bethelmind Digital Solutions)
 
 📊 PIPELINE TELEMETRY:
 • Active Opportunities: ${engineState.totalActiveOpportunities} Commercial Leads

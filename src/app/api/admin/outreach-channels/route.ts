@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
         },
         email: {
           configured: emailConfigured,
-          senderName: config.businessSignature || process.env.BUSINESS_SIGNATURE || 'Bethelmind Analytics',
+          senderName: config.businessSignature || process.env.BUSINESS_SIGNATURE || 'Bethelmind Digital Solutions',
           senderEmail: config.smtpUser || process.env.ADMIN_EMAIL || 'tosin@bethelmindanalytics.com',
           status: 'online'
         },
@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
       if (channel === 'email') {
         const targetEmail = email || process.env.ADMIN_EMAIL || 'bethelmindrecruit@gmail.com';
         const subject = `🧪 [TEST] Live Email Outreach Dispatch for ${sampleBizName}`;
-        const emailBody = `Dear Management Team,\n\nThis is a live test notification from your Bethelmind Outreach Engine.\n\nInteractive Demo Portal:\n👉 ${previewUrl}\n\nClaim Link:\n👉 ${claimUrl}\n\nBest regards,\nOyelakin Tosin | Bethelmind Analytics`;
+        const emailBody = `Dear Management Team,\n\nThis is a live test notification from your Bethelmind Outreach Engine.\n\nInteractive Demo Portal:\n👉 ${previewUrl}\n\nClaim Link:\n👉 ${claimUrl}\n\nBest regards,\nOyelakin Tosin | Bethelmind Digital Solutions`;
 
         await sendNotificationEmail(targetEmail, subject, emailBody, true);
         await addLog('UI Test Dispatch', 'SUCCESS', `Email Test dispatched to ${targetEmail}`);
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
       const results: string[] = [];
 
       // 1. WhatsApp Sample (Method A & Method B preview)
-      const waSampleMsg = `🧪 *[BETHELMIND ANALYTICS LAGOS 10K B2B TEST DISPATCH]*\n\nGood day Tosin 👋\n\n*🅰️ METHOD A (Gift Demo Pitch):*\n"Good day ${sampleBizName} team. We built a fast, interactive mobile website prototype for your brand in ${sampleArea} at zero charge: ${previewUrl}. It already includes automated WhatsApp ordering and Paystack card payments. Take a look and let us know if you would like to claim it for your business."\n\n*🅱️ METHOD B (Revenue Leak Pitch):*\n"Hello ${sampleBizName}, noticed that customers searching for your services in ${sampleArea} have to manually DM for prices and bank transfers. We designed an automated system with Paystack checkout. We have a 60-second live demo ready. Reply YES to view."\n\n⚡ *Claim Portal:* ${claimUrl}`;
+      const waSampleMsg = `🧪 *[Bethelmind Digital Solutions 10K B2B TEST DISPATCH]*\n\nGood day Tosin 👋\n\n*🅰️ METHOD A (Gift Demo Pitch):*\n"Good day ${sampleBizName} team. We built a fast, interactive mobile website prototype for your brand in ${sampleArea} at zero charge: ${previewUrl}. It already includes automated WhatsApp ordering and Paystack card payments. Take a look and let us know if you would like to claim it for your business."\n\n*🅱️ METHOD B (Revenue Leak Pitch):*\n"Hello ${sampleBizName}, noticed that customers searching for your services in ${sampleArea} have to manually DM for prices and bank transfers. We designed an automated system with Paystack checkout. We have a 60-second live demo ready. Reply YES to view."\n\n⚡ *Claim Portal:* ${claimUrl}`;
       const whatsappDirectUrl = `https://wa.me/${cleanTarget}?text=${encodeURIComponent(waSampleMsg)}`;
 
       try {
@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
       // 2. Email Sample
       try {
         const emailSubject = `New Mobile Website Prototype & Online Ordering for ${sampleBizName}`;
-        const emailBody = `Dear Management Team,\n\nWe reviewed your business profile in ${sampleArea} and created a complete interactive website prototype for ${sampleBizName}:\n\n👉 View Live Prototype: ${previewUrl}\n\nWhat is already built inside:\n• Direct WhatsApp order & table booking integration\n• Instant Paystack online checkout engine\n• Mobile speed optimization & local Lagos Google Maps SEO\n\nIf you would like to claim and launch this website under your own domain, simply visit: ${claimUrl}\n\nBest regards,\nApexReach Digital Team | Lagos Commercial Engine`;
+        const emailBody = `Dear Management Team,\n\nWe reviewed your business profile in ${sampleArea} and created a complete interactive website prototype for ${sampleBizName}:\n\n👉 View Live Prototype: ${previewUrl}\n\nWhat is already built inside:\n• Direct WhatsApp order & table booking integration\n• Instant Paystack online checkout engine\n• Mobile speed optimization & local Lagos Google Maps SEO\n\nIf you would like to claim and launch this website under your own domain, simply visit: ${claimUrl}\n\nBest regards,\nBethelmind Digital Solutions Digital Team | Lagos Commercial Engine`;
         await sendNotificationEmail(targetEmail, emailSubject, emailBody, true);
         results.push(`Email: Delivered to ${targetEmail}`);
       } catch (err: any) {
@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
           phone_e164: targetPhone.startsWith('+') ? targetPhone : `+${targetPhone}`,
           company: sampleBizName
         };
-        const smsText = `[ApexReach] Live Website Prototype ready for ${sampleBizName} in ${sampleArea}: ${previewUrl} - Claim your site before Aug 23 (STOP to opt out)`;
+        const smsText = `[Bethelmind Digital Solutions] Live Website Prototype ready for ${sampleBizName} in ${sampleArea}: ${previewUrl} - Claim your site before Aug 23 (STOP to opt out)`;
         const smsRes = await sendSmsMessage(lead, previewUrl, smsText);
         results.push(`SMS: ${smsRes}`);
       } catch (err: any) {

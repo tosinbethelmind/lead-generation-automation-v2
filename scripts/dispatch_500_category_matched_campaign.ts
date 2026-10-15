@@ -58,7 +58,7 @@ function generateEmailBody(lead: any, categoryKey: string) {
   <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 20px; line-height: 1.6;">
     <h2 style="color: #0f172a; font-size: 18px; margin-bottom: 12px;">Automating 24/7 AI Quotes & Client Booking for ${cleanName}</h2>
     <p>Good day Lead Engineering & Management Team at <strong>${cleanName}</strong>,</p>
-    <p>My name is Tosin from Bethelmind Analytics Lagos Desk.</p>
+    <p>My name is Tosin from Bethelmind Digital Solutions.</p>
     <p>We recently conducted a digital operations review for your commercial facility in <strong>${area}</strong>. We noticed that prospective clients inquiring about your equipment and services after business hours are unable to get instant pricing quotes or automated WhatsApp booking confirmations.</p>
     <p>To solve this, our engineering desk pre-built a private 24/7 AI WhatsApp Quoting & Booking Portal specifically for <strong>${cleanName}</strong>.</p>
     
@@ -80,14 +80,14 @@ function generateEmailBody(lead: any, categoryKey: string) {
     <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
     <p style="font-size: 12px; color: #64748b; margin: 0;">
       <strong>Tosin Oyelakin</strong> | Lead Solutions Strategist<br>
-      Bethelmind Analytics Lagos Desk • 0802 279 1227
+      Bethelmind Digital Solutions • 0802 279 1227
     </p>
   </div>
   `;
 
   const text = `Good day Lead Engineering & Management Team at ${cleanName},
 
-My name is Tosin from Bethelmind Analytics Lagos Desk.
+My name is Tosin from Bethelmind Digital Solutions.
 
 We recently conducted a digital operations review for your commercial facility in ${area}. We noticed that prospective clients inquiring about your equipment and services after business hours are unable to get instant pricing quotes or automated WhatsApp booking confirmations.
 
@@ -107,7 +107,7 @@ WhatsApp: https://wa.me/2348022791227 (0802 279 1227)
 Best regards,
 Tosin Oyelakin
 Lead Solutions Strategist
-Bethelmind Analytics Lagos Desk`;
+Bethelmind Digital Solutions`;
 
   return { html, text, previewUrl, cleanName, subject: `Automating 24/7 AI Quotes & Client Booking for ${cleanName}` };
 }
@@ -185,7 +185,7 @@ async function run500BatchCampaign() {
         subject: emailData.subject,
         htmlContent: emailData.html,
         text: emailData.text,
-        fromName: 'Tosin | Bethelmind Analytics Lagos Desk',
+        fromName: 'Tosin | Bethelmind Digital Solutions',
         attachments
       });
 

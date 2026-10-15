@@ -2,7 +2,7 @@
  * @file src/lib/blog/googleIndexingPinger.ts
  * 
  * ⚡ Instant Google & Search Engine Indexing Pinger
- * Bethelmind Analytics Lagos Desk (www.bethelmindanalytics.com)
+ * Bethelmind Digital Solutions (www.bethelmindanalytics.com)
  * 
  * Capabilities:
  * - Direct Google Search Indexing API submission for sub-45-minute crawling

@@ -2,7 +2,7 @@
  * @file src/lib/blog/sectorCaseStudies.ts
  * 
  * Sector-to-Blog Case Study Mapping Engine
- * Bethelmind Analytics Lagos Desk (www.bethelmindanalytics.com)
+ * Bethelmind Digital Solutions (www.bethelmindanalytics.com)
  */
 
 export interface SectorCaseStudy {

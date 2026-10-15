@@ -13,7 +13,7 @@
  * 2. Automated Breakthrough Trio Harvester (Solar, Real Estate, Shortlets in Lagos, Abuja, PH, Ibadan)
  * 3. Mobile Outreach Stager (Trojan Horse 147-char SMS & WhatsApp Permission Loops)
  * 4. 24/7 Revenue Closer & Admin Alert Desk (Instant WhatsApp notification to 0802 279 1227)
- * 5. 100% Direct-to-OPay Naira Settlement (7034297995 - Oyelakin Tosin Matthew)
+ * 5. 100% Direct-to-OPay Naira Settlement (6805375225 - Bethelmind Digital Solutions)
  */
 
 import fs from 'fs';
@@ -29,9 +29,9 @@ const ORCHESTRATOR_LOG_PATH = path.join(LOCAL_DB, 'orchestrator_execution_log.js
 
 const ADMIN_WA_PHONE = process.env.ADMIN_WA_PHONE || '2348022791227';
 const OPAY_ACCOUNT = {
-  bank: 'OPay Digital Services',
-  number: '7034297995',
-  name: 'Oyelakin Tosin Matthew'
+  bank: 'Moniepoint Microfinance Bank',
+  number: '6805375225',
+  name: 'Bethelmind Digital Solutions'
 };
 
 export interface OrchestrationReport {
@@ -54,7 +54,7 @@ export class UnifiedBreakthroughOrchestrator {
   public runPreFlightCheck(): boolean {
     console.log('\n[Stage 1: Pre-Flight Verification Loop]');
     console.log('  🔍 Verifying payout ledger destination...');
-    if (OPAY_ACCOUNT.number !== '7034297995') {
+    if (OPAY_ACCOUNT.number !== '6805375225') {
       console.error('  ❌ CRITICAL: Unauthorized payout account modification!');
       return false;
     }
@@ -156,7 +156,7 @@ export class UnifiedBreakthroughOrchestrator {
     const startTime = Date.now();
     console.log('========================================================================');
     console.log('👑 LAUNCHING UNIFIED BREAKTHROUGH REVENUE ORCHESTRATOR');
-    console.log('Bethelmind Analytics Lagos Desk · 2026 Commercial Growth Engine');
+    console.log('Bethelmind Digital Solutions · 2026 Commercial Growth Engine');
     console.log('========================================================================');
 
     // 1. Pre-flight check

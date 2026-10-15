@@ -2,7 +2,7 @@
  * @file src/app/api/admin/antigravity-copilot/route.ts
  * 
  * 🧠 ANTIGRAVITY AI PROMPT ENGINE & MOBILE COPILOT
- * Bethelmind Analytics Lagos Desk · Intelligent WebApp Command & Review Engine
+ * Bethelmind Digital Solutions · Intelligent WebApp Command & Review Engine
  * 
  * Capabilities:
  * 1. Landing Page & Prototype Review (Conversion rate, CTAs, 1-tap WhatsApp hooks, load speed)
@@ -125,7 +125,7 @@ function generateAntigravityResponse(prompt: string, category: string): { respon
 **Funnel Conversion Metrics:**
 - **Stage 1 (Sub-3s Response):** Inbound prospect WhatsApp messages auto-route to Admin Closer Desk (\`0802 279 1227\`).
 - **Stage 2 (Commercial Invoicing):** 48-Hour delivery SLA with 50% milestone deposit options (₦75k deposit / ₦150k DFY build, ₦35k embed).
-- **Stage 3 (OPay Payout Settlement):** 100% direct-to-OPay bank transfers (\`7034297995\` - Oyelakin Tosin Matthew).
+- **Stage 3 (OPay Payout Settlement):** 100% direct-to-OPay bank transfers (\`6805375225\` - Bethelmind Digital Solutions).
 
 **Key Recommendations to Double Conversions:**
 1. **Immediate Voice Follow-Up:** Respond to WhatsApp inquiries with an 8-second quick voice note confirming their business name. Voice notes increase deposit closing by 3.2x in Nigeria.
@@ -168,7 +168,7 @@ function generateAntigravityResponse(prompt: string, category: string): { respon
 - **Commercial Webforms:** ${metrics.webformsToday}/300 delivered today
 - **Consolidated Leads:** ${metrics.totalLeadsCount} commercial businesses ready
 - **Admin Closer Desk:** +234 802 279 1227
-- **Direct Payout:** OPay Digital Services (\`7034297995\`)
+- **Direct Payout:** Moniepoint Microfinance Bank (\`6805375225\`)
 
 All 10 Sector Monetization Tools and DFY prototypes are active and operational. Type a specific review command (e.g. *"Review landing page"*, *"Audit 600 email outreach"*, *"Check conversion funnel"*) for deep diagnostics.`,
     actions: [

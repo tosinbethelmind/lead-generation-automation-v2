@@ -86,7 +86,7 @@ async function runResilientLagosHarvester(dryRun = false) {
         ? 'https://lead-generation-automation-v2-sigma.vercel.app/api/cron/harvest'
         : 'http://localhost:3006/api/outreach/lagos10k?refresh=true';
       const res = await fetch(targetUrl, {
-        headers: { 'User-Agent': 'ApexReach-LagosScraper/1.0' },
+        headers: { 'User-Agent': 'Bethelmind Digital Solutions-LagosScraper/1.0' },
         signal: AbortSignal.timeout(8000)
       });
       if (res.ok) {

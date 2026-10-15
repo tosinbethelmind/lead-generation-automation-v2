@@ -2,7 +2,7 @@
  * @file scripts/audit_blog_performance.ts
  * 
  * 📊 100% Real-Data Blog Performance & Telemetry Auditor
- * Bethelmind Analytics Lagos Desk (www.bethelmindanalytics.com)
+ * Bethelmind Digital Solutions (www.bethelmindanalytics.com)
  * 
  * Usage:
  *   npx tsx scripts/audit_blog_performance.ts
@@ -29,7 +29,7 @@ interface TelemetryEvent {
 
 function runAudit() {
   console.log('='.repeat(80));
-  console.log('📊 BETHELMIND ANALYTICS — 100% REAL BLOG PERFORMANCE & TELEMETRY AUDIT');
+  console.log('📊 Bethelmind Digital Solutions — 100% REAL BLOG PERFORMANCE & TELEMETRY AUDIT');
   console.log('   Strict Real-Figures Invariant Active — Zero Synthetic / Seeded Numbers');
   console.log('='.repeat(80));
 

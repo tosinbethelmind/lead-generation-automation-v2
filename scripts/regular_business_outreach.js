@@ -70,7 +70,7 @@ ${claimUrl}
 (💡 Prefer hands-free? Reply to this message with a short WhatsApp Voice Note or text "CLAIM" to lock your domain immediately)
 
 {To your growth|Warm regards},
-Tosin | Bethelmind Analytics & Strategy
+Tosin | Bethelmind Digital Solutions
 (Reply STOP anytime to unsubscribe)`;
 
   template = template.replace(/\[COMPANY_NAME\]/g, companyName);
@@ -105,7 +105,7 @@ ${dashboardUrl}
 3. 💬 Your 24/7 AI Concierge is now actively quoting visitors and generating instant invoices.
 
 {To your continued success|Warm regards},
-Client Success Team | Bethelmind Analytics & Strategy
+Client Success Team | Bethelmind Digital Solutions
 contact@bethelmindanalytics.com`;
 
   template = template.replace(/\[COMPANY_NAME\]/g, companyName);

@@ -81,7 +81,7 @@ Please review this lead in the admin dashboard or contact the client directly.
 ${clientEmail ? `Reply directly to: ${clientEmail}` : ''}
 
 Best regards,
-Bethelmind Analytics & Strategy Automation Engine`;
+Bethelmind Digital Solutions Automation Engine`;
 
       await sendNotificationEmail(adminEmail, subject, emailBody);
     }

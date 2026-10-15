@@ -11,7 +11,7 @@
  * 3. Automated Dual-Wave Outreach (Carrier SMS Gateway + Hostinger B2B Email)
  * 4. Inbound-Only WhatsApp Conversion Bridge (0% Ban Penalty -> 0802 279 1227)
  * 5. 20-Engine Quantitative Crypto Arbitrage & Wholesale Importer Spread Realizer
- * 6. 100% Direct Payout Settlement to OPay (7034297995 - Oyelakin Tosin Matthew)
+ * 6. 100% Direct Payout Settlement to OPay (6805375225 - Bethelmind Digital Solutions)
  * 7. Zero-Load Local & Permanent Cloud Execution
  * ===============================================================================
  */
@@ -97,7 +97,7 @@ async function sendExecutiveEmail(lead: any, previewUrl: string, cleanName: stri
     <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #0b0f19; color: #f3f4f6; border-radius: 12px; overflow: hidden; border: 1px solid #1e293b;">
       <div style="background: linear-gradient(135deg, #0f172a, #1e3a8a); padding: 26px 30px; text-align: left; border-bottom: 1px solid #334155;">
         <div style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">
-          BETHELMIND ANALYTICS LAGOS • B2B COMMERCIAL DEPLOYMENT
+          Bethelmind Digital Solutions • B2B COMMERCIAL DEPLOYMENT
         </div>
         <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 900;">
           Automating 24/7 Inquiries & Bookings for ${cleanName}
@@ -129,14 +129,14 @@ async function sendExecutiveEmail(lead: any, previewUrl: string, cleanName: stri
         </p>
       </div>
       <div style="background: #060911; padding: 16px 30px; border-top: 1px solid #1e293b; font-size: 11px; color: #64748b; text-align: center;">
-        Bethelmind Analytics Lagos Team • Commercial B2B Automation Engine
+        Bethelmind Digital Solutions Team • Commercial B2B Automation Engine
       </div>
     </div>
   `;
 
   try {
     await transporter.sendMail({
-      from: '"Bethelmind Analytics Lagos" <tosin@bethelmindanalytics.com>',
+      from: '"Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
       to: email,
       subject: `Automating 24/7 Inquiries & Online Bookings for ${cleanName}`,
       html

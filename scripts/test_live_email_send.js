@@ -25,7 +25,7 @@ async function sendLiveTestEmail() {
   const previewUrl = 'https://www.bethelmindanalytics.com/preview/eko-luxury-suites?src=10k_lagos';
 
   const mailOptions = {
-    from: `"Tosin | Bethelmind Analytics" <${config.smtpUser}>`,
+    from: `"Tosin | Bethelmind Digital Solutions" <${config.smtpUser}>`,
     to: targetEmail,
     subject: '🧪 [LIVE TEST] Lagos 10K Multi-Sector Blended Outreach Engine (Aug 15 – Aug 21, 2026)',
     text: `Hello Tosin,
@@ -44,7 +44,7 @@ Sample Interactive Demo Portal URL:
 If you received this email, your Hostinger SMTP delivery pipeline is 100% OPERATIONAL!
 
 Warm regards,
-Bethelmind Analytics Lagos Hub
+Bethelmind Digital Solutions Hub
 https://www.bethelmindanalytics.com`,
     html: `<div style="font-family: Arial, sans-serif; background-color: #0f172a; color: #ffffff; padding: 24px; border-radius: 12px;">
       <h2 style="color: #38bdf8; margin-top: 0;">🧪 Lagos 10K Multi-Sector Blended Outreach Engine</h2>
@@ -56,7 +56,7 @@ https://www.bethelmindanalytics.com`,
       </div>
       <p>Test interactive 2-minute live demo portal:</p>
       <a href="${previewUrl}" style="display: inline-block; background-color: #0284c7; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold;">👉 Open Demo Portal</a>
-      <p style="color: #64748b; font-size: 12px; margin-top: 24px;">Bethelmind Analytics & Strategy • Lagos State</p>
+      <p style="color: #64748b; font-size: 12px; margin-top: 24px;">Bethelmind Digital Solutions • Lagos State</p>
     </div>`
   };
 

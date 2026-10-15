@@ -133,8 +133,8 @@ Good day management! Fast-track your commercial electronics container invoices:
 • *Merchant Hotline:* \`${d.merchantHotline}\`
 
 💰 *YOUR PRIVATE PROFIT DESTINATION (NEVER SHOWN TO CLIENT):*
-• Bank: *OPay Digital Services*
-• Account: \`7034297995\` (*Oyelakin Tosin Matthew*)
+• Bank: *Moniepoint Microfinance Bank*
+• Account: \`6805375225\` (*Bethelmind Digital Solutions*)
 
 🟢 *1-CLICK WHATSAPP PROPOSAL (WITH OFFICIAL DESK VAULT):*
 👉 ${waUrl}

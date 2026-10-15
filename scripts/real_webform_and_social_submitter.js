@@ -26,7 +26,7 @@ const SUBMISSIONS_LOG = path.join(LOCAL_DB, 'real_webform_submissions.json');
 const JOURNEYS_DB = path.join(LOCAL_DB, 'lead_journeys.json');
 
 const SENDER_INFO = {
-  name: 'Tosin | Bethelmind Analytics Lagos Desk',
+  name: 'Tosin | Bethelmind Digital Solutions',
   email: 'tosin@bethelmindanalytics.com',
   phone: '08022791227',
   whatsapp: '+2348022791227'
@@ -62,7 +62,7 @@ function formatProposalMessage(lead) {
 
   return `Good day Executive Management at ${cleanName},
 
-Tosin here from Bethelmind Analytics Lagos Desk (Plot 12 Commercial Corridor, VI). 
+Tosin here from Bethelmind Digital Solutions (Plot 12 Commercial Corridor, VI). 
 
 We recently conducted a digital operations review for commercial businesses in ${area}. We noticed prospective clients looking for your products after hours or on weekends are unable to get instant pricing quotes or automated WhatsApp bookings.
 
@@ -78,7 +78,7 @@ WhatsApp: https://wa.me/2348022791227 (0802 279 1227)
 Email: tosin@bethelmindanalytics.com
 
 Best regards,
-Bethelmind Analytics Lagos Team`;
+Bethelmind Digital Solutions Team`;
 }
 
 async function findContactForm(websiteUrl) {

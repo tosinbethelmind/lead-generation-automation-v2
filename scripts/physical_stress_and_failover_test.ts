@@ -6,7 +6,7 @@
  * Physical Tests:
  * 1. Test 15-Minute Guaranteed Rate Lock Math & Expiry String Generator
  * 2. Test Automated 1-Click WhatsApp 3-Way Handshake Payload Integrity
- * 3. Test Direct-to-OPay Liquidation Calculations (7034297995)
+ * 3. Test Direct-to-OPay Liquidation Calculations (6805375225)
  * 4. Test Multi-Persona Testnet Sybil Cluster Output
  * 5. Test Guru Level 4 Multicall3 Invariant Sweeper Simulation
  * 6. Test 3-Hour Executive Email Dispatcher (Hostinger SMTP IPv4)
@@ -45,8 +45,8 @@ async function runAdvancedPhysicalStressTests() {
   try {
     process.stdout.write('[2/5] Testing Direct-to-OPay Liquidation & Beneficiary Lock... ');
     const payout = routeDirectToOPay('OTC China Freight Spread', 0, 500000);
-    const isCorrectAccount = payout.payoutAccountNumber === '7034297995' && payout.payoutBankName === 'OPay Digital Services';
-    const isCorrectName = payout.payoutAccountName === 'Oyelakin Tosin Matthew';
+    const isCorrectAccount = payout.payoutAccountNumber === '6805375225' && payout.payoutBankName === 'Moniepoint Microfinance Bank';
+    const isCorrectName = payout.payoutAccountName === 'Bethelmind Digital Solutions';
 
     if (isCorrectAccount && isCorrectName && payout.netNairaPayoutNGN === 500000) {
       console.log(`✅ [PASS] Beneficiary: ${payout.payoutAccountName} (${payout.payoutAccountNumber}) | Amount: ₦${payout.netNairaPayoutNGN.toLocaleString()}`);

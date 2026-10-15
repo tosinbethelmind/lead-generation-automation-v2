@@ -2,7 +2,7 @@
  * @file scripts/execute_tonight_300_campaign.ts
  * 
  * 🚀 LIVE 300+ PER CHANNEL HIGH-VOLUME OUTREACH DISPATCHER (TONIGHT CAMPAIGN)
- * Bethelmind Analytics Lagos Desk · 100% Real-Action Invariant
+ * Bethelmind Digital Solutions · 100% Real-Action Invariant
  * 
  * Dispatches:
  * 1. 📧 300 Verified B2B Emails (Brevo API v3 & Hostinger SMTP Dual Pool)
@@ -36,7 +36,7 @@ const CAMPAIGN_LOG_PATH = path.join(LOCAL_DB, 'night_campaign_telemetry.json');
 // Brevo Client config
 const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
 const SENDER_EMAIL = 'tosin@bethelmindanalytics.com';
-const SENDER_NAME = 'Tosin | Bethelmind Analytics Lagos Desk';
+const SENDER_NAME = 'Tosin | Bethelmind Digital Solutions';
 const SMS_GATEWAY_URL = process.env.SMS_GATEWAY_URL || 'http://10.226.108.45:8082/message';
 const SMS_GATEWAY_TOKEN = process.env.SMS_GATEWAY_TOKEN || 'f34af5ea-f657-41b1-b83e-4a59eb786e57';
 
@@ -128,7 +128,7 @@ async function submitWebContactFormFast(websiteUrl, leadName, leadArea) {
 
     const message = `Good day Team at ${cleanName},
 
-My name is Tosin from Bethelmind Analytics Lagos Desk. We prepared a 24/7 automated WhatsApp quoting & instant customer response portal custom-built for ${cleanName} in ${leadArea || 'Lagos'}.
+My name is Tosin from Bethelmind Digital Solutions. We prepared a 24/7 automated WhatsApp quoting & instant customer response portal custom-built for ${cleanName} in ${leadArea || 'Lagos'}.
 
 Test-drive your live mobile preview here:
 ${previewUrl}
@@ -137,7 +137,7 @@ WhatsApp Closer Desk: +234 802 279 1227
 Email: tosin@bethelmindanalytics.com
 
 Best regards,
-Bethelmind Analytics Lagos Desk`;
+Bethelmind Digital Solutions`;
 
     const origin = new URL(websiteUrl).origin;
     const contactUrl = `${origin}/contact`;
@@ -181,7 +181,7 @@ Bethelmind Analytics Lagos Desk`;
 
 async function runNight300Campaign() {
   console.log('========================================================================');
-  console.log('🌟 BETHELMIND ANALYTICS: 300 PER CHANNEL NIGHT OUTREACH CAMPAIGN');
+  console.log('🌟 Bethelmind Digital Solutions: 300 PER CHANNEL NIGHT OUTREACH CAMPAIGN');
   console.log('   Target: 300 Emails | 300 SMS | 300 Web Contact Forms');
   console.log('========================================================================\n');
 
@@ -217,7 +217,7 @@ async function runNight300Campaign() {
     const subject = `Quick question regarding late-night customer inquiries for ${cleanName}`;
     const textBody = `Good day ${cleanName} Team,
 
-My name is Tosin from Bethelmind Analytics Lagos Desk. We prepared a 24/7 automated AI WhatsApp sales & quoting prototype custom-built for ${cleanName} in ${area}.
+My name is Tosin from Bethelmind Digital Solutions. We prepared a 24/7 automated AI WhatsApp sales & quoting prototype custom-built for ${cleanName} in ${area}.
 
 Key Features Pre-Installed:
 - 24/7 AI WhatsApp Assistant (< 3s Nigerian tone response time)
@@ -231,10 +231,10 @@ Direct WhatsApp Desk: +234 802 279 1227
 Email: tosin@bethelmindanalytics.com
 
 Best regards,
-Tosin Oyelakin · Bethelmind Analytics Lagos Desk`;
+Tosin Oyelakin · Bethelmind Digital Solutions`;
 
     const htmlBody = `<div style="font-family: Arial, sans-serif; background:#0f172a; color:#ffffff; padding:24px; border-radius:12px;">
-      <h2 style="color:#38bdf8;">⚡ Bethelmind Analytics Lagos Desk</h2>
+      <h2 style="color:#38bdf8;">⚡ Bethelmind Digital Solutions</h2>
       <p>Good day Team at <strong>${cleanName}</strong>,</p>
       <p>We prepared a custom 24/7 automated sales & quoting portal pre-built for your operations in ${area}.</p>
       <div style="margin:20px 0;">

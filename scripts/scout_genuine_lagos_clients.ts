@@ -21,7 +21,7 @@ export async function runClientScoutingAudit(querySector?: string) {
   console.log('🔍 BETHELMIND 100% GENUINE LAGOS COMMERCIAL CLIENT & IMPORTER SCOUTING ENGINE');
   console.log('====================================================================================================');
   console.log(`🕒 Timestamp: ${new Date().toISOString()} (WAT Timezone)`);
-  console.log(`🏦 Direct Settlement: OPay (7034297995 - Oyelakin Tosin Matthew)`);
+  console.log(`🏦 Direct Settlement: OPay (6805375225 - Bethelmind Digital Solutions)`);
   console.log(`🛡️ Rule #5 Anti-Synthetic Filter: STRICTLY ENFORCED (0% Mock Leads)\n`);
 
   const allGenuine = getGenuineCommercialLeads();

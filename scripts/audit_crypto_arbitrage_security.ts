@@ -8,7 +8,7 @@
  * 2. URL Injection & Parameter Sanitization in 1-Click WhatsApp Bridges
  * 3. Reentrancy & Frontrunning Protection Verification (Private RPC Tunnels)
  * 4. Error Handling & Graceful Network Fallbacks
- * 5. Bank Account & Beneficiary Immutability (OPay 7034297995 lock)
+ * 5. Bank Account & Beneficiary Immutability (OPay 6805375225 lock)
  */
 
 import fs from 'fs';
@@ -64,16 +64,16 @@ export function runComprehensiveSecurityAudit(): AuditItem[] {
 
   // 2. Beneficiary Immutability Check
   const isBeneficiaryLocked = 
-    OPAY_BENEFICIARY_CONFIG.accountNumber === '7034297995' &&
-    OPAY_BENEFICIARY_CONFIG.bankName === 'OPay Digital Services' &&
-    OPAY_BENEFICIARY_CONFIG.accountName === 'Oyelakin Tosin Matthew';
+    OPAY_BENEFICIARY_CONFIG.accountNumber === '6805375225' &&
+    OPAY_BENEFICIARY_CONFIG.bankName === 'Moniepoint Microfinance Bank' &&
+    OPAY_BENEFICIARY_CONFIG.accountName === 'Bethelmind Digital Solutions';
 
   results.push({
     checkName: 'Direct OPay Beneficiary Lock',
     category: 'INTEGRITY',
     status: isBeneficiaryLocked ? 'PASS' : 'FAIL',
     details: isBeneficiaryLocked 
-      ? 'Passed: OPay Account (7034297995 - Oyelakin Tosin Matthew) is hardcoded as immutable recipient.' 
+      ? 'Passed: OPay Account (6805375225 - Bethelmind Digital Solutions) is hardcoded as immutable recipient.' 
       : 'Failed: Beneficiary config differs from authorized owner.'
   });
 

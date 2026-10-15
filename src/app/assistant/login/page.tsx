@@ -94,7 +94,7 @@ export default function AssistantLoginPage() {
             Assistant Workstation
           </h1>
           <p style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 600, margin: 0 }}>
-            Bethelmind Analytics — Claim & Support Desk
+            Bethelmind Digital Solutions — Claim & Support Desk
           </p>
           <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '8px 0 0' }}>
             Enter your assigned assistant access token below

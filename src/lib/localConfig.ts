@@ -220,7 +220,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   liveLink: 'https://www.bethelmindanalytics.com',
   // Outreach
   dryRun: true,
-  businessSignature: 'Bethelmind Analytics & Strategy',
+  businessSignature: 'Bethelmind Digital Solutions',
   outreachChannel: 'gmail',
   // WhatsApp template (optional)
   whatsappMessageTemplate: '',
@@ -258,14 +258,14 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   smtpUser: '',
   smtpPass: '',
   smtpFrom: '',
-  smtpSenderName: 'Bethelmind Analytics & Strategy',
+  smtpSenderName: 'Bethelmind Digital Solutions',
   // ── SMTP Preset Default ─────────────────────────────────────
   smtpPreset: 'custom',
 
   // SendGrid Settings
   sendgridApiKey: '',
   sendgridFromEmail: '',
-  sendgridSenderName: 'Bethelmind Analytics & Strategy',
+  sendgridSenderName: 'Bethelmind Digital Solutions',
 
   // Baileys Settings
   whatsappBaileysUrl: 'http://localhost:3007',
@@ -353,7 +353,7 @@ const DEFAULT_CONFIG: RuntimeConfig = {
   backendHosts: [
     'https://bethelmind-lead-engine.fly.dev',
     'https://huggingface.co/spaces/bethelmind/lead-engine',
-    'https://apexreach-247-worker.onrender.com',
+    'https://bethelmind-247-worker.onrender.com',
     'http://localhost:3000'
   ],
 };
@@ -374,8 +374,8 @@ export function getConfigFilePath(workerIndexOverride?: string): string {
   const workerIndex = workerIndexOverride || getWorkerIndex();
   const baseName = workerIndex ? `config.worker-${workerIndex}.json` : 'config.json';
   
-  if (process.env.APEXREACH_CONFIG_PATH) {
-    return path.resolve(/*turbopackIgnore: true*/ process.env.APEXREACH_CONFIG_PATH);
+  if (process.env.BETHELMIND_CONFIG_PATH) {
+    return path.resolve(/*turbopackIgnore: true*/ process.env.BETHELMIND_CONFIG_PATH);
   }
   
   return isServerless

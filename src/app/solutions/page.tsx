@@ -2,7 +2,7 @@
 
 /**
  * @file src/app/solutions/page.tsx
- * 🚀 BETHELMIND ANALYTICS CUSTOMER ACQUISITION & REVENUE SUITE
+ * 🚀 Bethelmind Digital Solutions CUSTOMER ACQUISITION & REVENUE SUITE
  * 
  * Redesigned for Maximum Client Customer Growth:
  * Direct-Response Customer Generation, Speed-to-Lead, and Cash Recovery for Nigerian SMEs.
@@ -52,8 +52,8 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
     accentColor: '#10b981',
     setupFeeNGN: '₦35,000',
     retainerNGN: '₦15,000 – ₦30,000/mo',
-    turnkeyFeeNGN: '₦150,000 (₦75k Deposit)',
-    embedFeeNGN: '₦35,000',
+    turnkeyFeeNGN: '₦65,000 Promo (₦35k Deposit)',
+    embedFeeNGN: '₦35,000 Promo',
     theCustomerLeak: '70% of Nigerian Instagram and WhatsApp leads buy from the first vendor who replies. If you take 2 hours to answer "How much?", they have already paid your competitor.',
     howItGetsYouCustomers: [
       'Instant sub-2s responses in natural Nigerian accent voice notes that build human rapport',
@@ -98,8 +98,8 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
     accentColor: '#f59e0b',
     setupFeeNGN: '₦40,000',
     retainerNGN: '₦20,000/mo',
-    turnkeyFeeNGN: '₦150,000 (₦75k Deposit)',
-    embedFeeNGN: '₦35,000',
+    turnkeyFeeNGN: '₦65,000 Promo (₦35k Deposit)',
+    embedFeeNGN: '₦35,000 Promo',
     theCustomerLeak: 'When wealthy customers search "Best dentist in Lekki" or "Car AC repair in Ikeja", they only call the businesses with 100+ 5-star Google reviews at the top of the map.',
     howItGetsYouCustomers: [
       'Optimizes your Google Business profile with local high-intent keywords and geotags',
@@ -121,8 +121,8 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
     accentColor: '#ef4444',
     setupFeeNGN: '₦45,000',
     retainerNGN: '₦25,000 – ₦45,000/mo',
-    turnkeyFeeNGN: '₦150,000 (₦75k Deposit)',
-    embedFeeNGN: '₦35,000',
+    turnkeyFeeNGN: '₦65,000 Promo (₦35k Deposit)',
+    embedFeeNGN: '₦35,000 Promo',
     theCustomerLeak: 'SMEs sit on 2,000+ past customer contacts and never re-contact them, wasting money constantly running expensive new ads instead of selling to people who already trust them.',
     howItGetsYouCustomers: [
       'Segments past buyers by product interest and purchase recency',
@@ -167,8 +167,8 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
     accentColor: '#ec4899',
     setupFeeNGN: '₦35,000',
     retainerNGN: '₦15,000 – ₦35,000/mo',
-    turnkeyFeeNGN: '₦150,000 (₦75k Deposit)',
-    embedFeeNGN: '₦35,000',
+    turnkeyFeeNGN: '₦65,000 Promo (₦35k Deposit)',
+    embedFeeNGN: '₦35,000 Promo',
     theCustomerLeak: 'Service businesses lose 30% to 50% of booked appointments to no-shows who casually cancel last-minute, leaving staff idle and chairs empty while serious paying clients were turned away.',
     howItGetsYouCustomers: [
       '24/7 calendar showing real-time open time slots for your team',
@@ -278,7 +278,7 @@ export default function SolutionsPage() {
           </p>
 
           {/* DUAL DELIVERY MODE TOGGLE */}
-          <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 4, gap: 4, marginBottom: 36 }}>
+          <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 4, gap: 4, marginBottom: 36, flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
               onClick={() => setDeliveryMode('turnkey')}
               style={{
@@ -297,7 +297,7 @@ export default function SolutionsPage() {
               }}
             >
               <Zap style={{ width: 16, height: 16 }} />
-              <span>Option A: 24h Turnkey DFY Website (₦75k Deposit)</span>
+              <span>🇳🇬 Option A: Full .COM.NG Website + Tool (₦35k Deposit / ₦65k October Promo)</span>
             </button>
             <button
               onClick={() => setDeliveryMode('embed')}
@@ -317,7 +317,7 @@ export default function SolutionsPage() {
               }}
             >
               <Code2 style={{ width: 16, height: 16 }} />
-              <span>Option B: 1-Line Embed Script Upgrade (₦35k Setup)</span>
+              <span>Option B: 1-Line Embed on Existing Site (₦35k October Promo)</span>
             </button>
           </div>
         </section>
@@ -327,7 +327,7 @@ export default function SolutionsPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 24 }}>
             {CUSTOMER_ACQUISITION_ENGINES.map(engine => {
               const IconComponent = engine.icon;
-              const waText = encodeURIComponent(`Hello Bethelmind Lagos Desk,\n\nI want to deploy Engine #${engine.number}: *${engine.title}* to get more paying customers for my business (${engine.targetNiche}).\n\nDelivery preference: ${deliveryMode === 'turnkey' ? '24h Turnkey Website (₦75k deposit)' : '1-Line Embed Upgrade (₦35k setup)'}`);
+              const waText = encodeURIComponent(`Hello Bethelmind Lagos Desk,\n\nI want to claim the October 50% Promo for Engine #${engine.number}: *${engine.title}* (${engine.targetNiche}).\n\nDelivery preference: ${deliveryMode === 'turnkey' ? 'Full .COM.NG Website + Tool (₦35k Deposit / ₦65k Promo Total)' : '1-Line Embed Upgrade (₦35k Promo Setup)'}`);
               const waUrl = `https://wa.me/2348022791227?text=${waText}`;
 
               return (

@@ -91,7 +91,7 @@ async function sendBrevoMessage(to: string, subject: string, body: string, confi
   if (!activeKey) {
     throw new Error('Brevo API Key is not configured.');
   }
-  const senderName = config.brevoSenderName || 'Bethelmind Analytics & Strategy';
+  const senderName = config.brevoSenderName || 'Bethelmind Digital Solutions';
   const senderEmail = config.brevoSenderEmail;
   if (!senderEmail) {
     throw new Error('Brevo Sender Email is not configured.');
@@ -442,7 +442,7 @@ ${gitNotice}
 Please contact them at ${clientEmail} as soon as possible to finalize their website build and assist with custom domain mapping.
 
 Best regards,
-Bethelmind Analytics & Strategy Lead Engine`;
+Bethelmind Digital Solutions Lead Engine`;
 
     if (adminEmail && !config.dryRun) {
       try {

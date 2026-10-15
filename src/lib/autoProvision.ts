@@ -125,10 +125,11 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
   const projectId = process.env.VERCEL_PROJECT_ID;
   const appOrigin = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
   const sanitizedName = activeLead.name ? activeLead.name.toLowerCase().replace(/[^a-z0-9]/g, '') : 'client';
-  const subdomainUrl = `https://${sanitizedName}.bethelmindanalytics.com`;
+  const instantHostedUrl = `${appOrigin}/sites/${leadId}`;
+  const subdomainUrl = instantHostedUrl;
   const handoverPortalUrl = `${appOrigin}/handover/${leadId}`;
 
-  let liveUrl = subdomainUrl;
+  let liveUrl = instantHostedUrl;
   let deploymentId: string | undefined;
   let customDomainBindingStatus: 'BOUND' | 'PENDING_DNS' | 'NOT_REQUESTED' = 'NOT_REQUESTED';
 
@@ -136,7 +137,9 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
   if (customDomain && customDomain.trim()) {
     const bound = await bindCustomDomainToCloudflare(customDomain);
     customDomainBindingStatus = bound ? 'BOUND' : 'PENDING_DNS';
-    liveUrl = customDomain.startsWith('http') ? customDomain : `https://${customDomain.trim()}`;
+    if (bound) {
+      liveUrl = customDomain.startsWith('http') ? customDomain : `https://${customDomain.trim()}`;
+    }
   }
 
   // 2. Attempt Vercel API Instant Production Deployment if token exists
@@ -176,19 +179,19 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
     }
   }
 
-  // If liveUrl wasn't customized, fallback to site route
-  if (!liveUrl || liveUrl === subdomainUrl) {
-    liveUrl = `${appOrigin}/site/${leadId}`;
+  // Always guarantee an immediately working live URL on our /sites/[leadId] route
+  if (!liveUrl) {
+    liveUrl = instantHostedUrl;
   }
 
   const dnsInstructions = [
-    { type: 'CNAME', host: '@', target: 'bethelmindanalytics.com' },
-    { type: 'CNAME', host: 'www', target: 'bethelmindanalytics.com' },
+    { type: 'A', host: '@', target: '76.76.21.21' },
+    { type: 'CNAME', host: 'www', target: 'cname.vercel-dns.com' },
   ];
 
   // 3. Mark lead status as CONTACTED / CLAIMED with Payment Ref in DB
   const timestamp = new Date().toISOString();
-  const notesUpdate = `${activeLead.notes || ''}\n[PROVISIONED_SUCCESS] Deployed to ${liveUrl} (Subdomain: ${subdomainUrl}) on ${timestamp}. Ref: ${paymentReference || 'N/A'}. Features: ${selectedFeatures.join(', ')}`;
+  const notesUpdate = `${activeLead.notes || ''}\n[PROVISIONED_SUCCESS] Deployed to ${liveUrl} (Target Domain: ${customDomain || 'Pending'}) on ${timestamp}. Ref: ${paymentReference || 'N/A'}. Features: ${selectedFeatures.join(', ')}`;
   
   if (!activeLead.notes?.includes('[PREVIEW_DEMO]')) {
     try {
@@ -207,20 +210,20 @@ export async function autoProvisionClientSite(payload: ProvisionPayload): Promis
 
   // 4. Dispatch automated Email Welcome Credentials
   try {
-    const emailSubject = `🎉 Your Website is Live! Access Your Handover Portal for ${activeLead.name}`;
+    const emailSubject = `🎉 Your Official Website is Ready! Access & Handover Portal for ${activeLead.name}`;
     const emailBody = `Hello ${clientName},\n\n` +
-      `Congratulations! Your website for ${activeLead.name} has been successfully provisioned and is live at:\n` +
-      `${subdomainUrl}\n\n` +
-      `🔑 Your Client Handover Portal:\n${handoverPortalUrl}\n\n` +
-      `🌐 Custom Domain Setup (Optional):\n` +
-      `To point your own domain (e.g. www.yourbusiness.com) to your site, add these 2 DNS CNAME records at your domain provider:\n` +
-      `- CNAME @ -> bethelmindanalytics.com\n` +
-      `- CNAME www -> bethelmindanalytics.com\n\n` +
+      `Congratulations! Your official mobile website for ${activeLead.name} is now live and hosted at:\n` +
+      `${instantHostedUrl}\n\n` +
+      `🔑 Your Client Handover & Customization Portal:\n${handoverPortalUrl}\n\n` +
+      `🌐 Custom Domain Setup (${customDomain || 'Included in Your Package'}):\n` +
+      `Our engineering team is registering/connecting your custom domain (${customDomain || '.com.ng / .com'}) to your live storefront automatically. If you already own the domain, simply add these 2 DNS records:\n` +
+      `- A Record (@) -> 76.76.21.21\n` +
+      `- CNAME Record (www) -> cname.vercel-dns.com\n\n` +
       `Selected Package: ${selectedStrategy}\n` +
-      `Payment Ref: ${paymentReference || 'N/A'}\n\n` +
-      `Our engineering team is on standby to assist with DNS setup.\n\n` +
+      `Deposit / Payment Ref: ${paymentReference || 'N/A'}\n\n` +
+      `Send your 3–5 shop/product photos on WhatsApp (+234 802 279 1227) anytime so we can update your gallery immediately.\n\n` +
       `Best regards,\n` +
-      `Bethelmind Analytics Engineering Team`;
+      `Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)`;
     
     await sendNotificationEmail(clientEmail, emailSubject, emailBody);
   } catch (e: any) {

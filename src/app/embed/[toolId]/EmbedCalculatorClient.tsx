@@ -130,7 +130,7 @@ export default function EmbedCalculatorClient({ toolId }: EmbedCalculatorClientP
             .filter(([k, v]) => typeof v !== 'object')
             .map(([k, v]) => `• ${formatLabel(k)}: ${typeof v === 'number' && k.toLowerCase().includes('ngn') ? formatNaira(v) : v}`)
             .join('\n') +
-          `\n\n_Powered by Bethelmind Analytics_`
+          `\n\n_Powered by Bethelmind Digital Solutions_`
       )}`
     : '#';
 
@@ -170,7 +170,7 @@ export default function EmbedCalculatorClient({ toolId }: EmbedCalculatorClientP
           rel="noreferrer"
           style={{ fontSize: '0.72rem', color: '#64748b', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}
         >
-          Bethelmind Analytics <ExternalLink size={11} />
+          Bethelmind Digital Solutions <ExternalLink size={11} />
         </a>
       </div>
 

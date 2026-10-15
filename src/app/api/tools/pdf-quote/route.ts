@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   <table class="header-table">
     <tr>
       <td class="title-cell">
-        <div class="brand-title">Bethelmind Analytics Lagos Desk</div>
+        <div class="brand-title">Bethelmind Digital Solutions</div>
         <div class="brand-sub">Commercial Systems & Automated Lead Architectures</div>
         <div class="badge">Official Technical & Commercial Proposal</div>
       </td>

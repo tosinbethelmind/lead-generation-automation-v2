@@ -166,7 +166,7 @@ async function sendViaBrevoApi(lead, payload, mp3Base64) {
 }
 
 const SENDER = {
-  name: 'Tosin Oyelakin | Bethelmind Analytics Lagos Desk',
+  name: 'Tosin Oyelakin | Bethelmind Digital Solutions',
   email: 'tosin@bethelmindanalytics.com',
   replyTo: 'bethelmindrecruit@gmail.com',
   phone: '08022791227',
@@ -219,7 +219,7 @@ function buildEmail(lead) {
   const textContent = 
 `Good day Management Team at ${bName},
 
-My name is Tosin from Bethelmind Analytics Lagos Desk (Plot 12 Commercial Corridor, Victoria Island).
+My name is Tosin from Bethelmind Digital Solutions (Plot 12 Commercial Corridor, Victoria Island).
 
 During our recent operational review of commercial businesses in ${area}, we identified that prospective clients inquiring about your ${sector} products after hours often experience delays before getting an official quote or booking confirmation.
 
@@ -244,7 +244,7 @@ Best regards,
 
 Tosin Oyelakin
 Lead Solutions Consultant
-Bethelmind Analytics Lagos Desk
+Bethelmind Digital Solutions
 Commercial Office: Plot 12, Commercial Corridor, Victoria Island, Lagos
 WhatsApp / Direct Desk: +234 802 279 1227`;
 
@@ -254,13 +254,13 @@ WhatsApp / Direct Desk: +234 802 279 1227`;
 <head><meta charset="utf-8"></head>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #1e293b; max-width: 620px; margin: 0 auto; padding: 20px;">
   <div style="border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 20px;">
-    <h3 style="margin: 0; color: #0f172a;">Bethelmind Analytics Lagos Desk</h3>
+    <h3 style="margin: 0; color: #0f172a;">Bethelmind Digital Solutions</h3>
     <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">Enterprise Business Automation &amp; Conversion Infrastructure</p>
   </div>
 
   <p>Good day Management Team at <strong>${bName}</strong>,</p>
 
-  <p>My name is Tosin from <strong>Bethelmind Analytics Lagos Desk</strong>.</p>
+  <p>My name is Tosin from <strong>Bethelmind Digital Solutions</strong>.</p>
 
   <p>During our operational review of ${sector} enterprises in ${area}, we identified that prospective clients reaching out after hours often experience delays in obtaining instant pricing quotes or booking confirmations.</p>
 
@@ -300,7 +300,7 @@ WhatsApp / Direct Desk: +234 802 279 1227`;
 
   <p style="font-size: 12px; color: #64748b; margin: 0;">
     <strong>Tosin Oyelakin</strong> | Lead Solutions Consultant<br/>
-    Bethelmind Analytics Lagos Desk<br/>
+    Bethelmind Digital Solutions<br/>
     Plot 12, Commercial Corridor, Victoria Island, Lagos<br/>
     Email: tosin@bethelmindanalytics.com | Phone: 0802 279 1227
   </p>

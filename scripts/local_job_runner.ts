@@ -156,7 +156,7 @@ async function checkActiveRunnerBackend(): Promise<string> {
     const { data } = await supabaseWithRetry(() => supabase!
       .from('app_settings')
       .select('value')
-      .eq('key', 'apexreach_runtime_config')
+      .eq('key', 'bethelmind_')
       .maybeSingle()
     );
 
@@ -1008,7 +1008,7 @@ async function checkLagosDailyScraper() {
       const isActive = await isActiveRunner();
       if (!isActive) return;
       console.log(`[${new Date().toISOString()}] 🔄 Running background Git-batch sync check...`);
-      const cronSecret = process.env.CRON_SECRET || 'apexreach_sync_secret';
+      const cronSecret = process.env.CRON_SECRET || 'bethelmind_';
       const response = await fetch(`${LOCAL_BASE_URL}/api/deploy/batch-sync?secret=${cronSecret}`, {
         method: 'GET'
       });

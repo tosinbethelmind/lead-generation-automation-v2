@@ -60,7 +60,7 @@ async function runDirectSimulationSuite() {
       smsProvider: 'cascade',
       smsGatewayUrl: 'http://10.255.255.1:8082', // Intentionally unreachable to trigger Termii fallback
       termiiApiKey: 'tlv_HilsNNhBaQtzgLkf0nyq1Maie3kfr27xDYW2_d-JD6M',
-      businessSignature: 'Bethelmind Analytics'
+      businessSignature: 'Bethelmind Digital Solutions'
     };
 
     let cascadeTriggered = false;

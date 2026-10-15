@@ -11,7 +11,7 @@
  * 3. 🎯 PILLAR 3: Live LST / Stablecoin NAV Depeg Alpha Radar (1.3%–1.7% risk-free NAV arb)
  * 
  * 100% Direct Settlement Destination:
- * OPay Digital Services - 7034297995 (Oyelakin Tosin Matthew)
+ * Moniepoint Microfinance Bank - 6805375225 (Bethelmind Digital Solutions)
  */
 
 import { scanAndAggregateBestLiquidityDealAsync } from '../src/lib/monetization/bestRateLiquidityAggregator';

@@ -2,7 +2,7 @@
  * @file src/lib/integrations/brevoClient.ts
  * 
  * Brevo Multi-Account Rotator & Automated API Client (2026 Edition)
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * Features:
  * 1. Multi-Account Rotation: Supports multiple Brevo API keys & sender emails for combined daily quotas (300 + 300 + 300... = 1,000+ free emails/day).
@@ -70,7 +70,7 @@ export class BrevoClient {
     // Parse single or comma-separated API keys
     const rawKeys = apiKey || process.env.BREVO_API_KEYS || process.env.BREVO_API_KEY || config.brevoApiKey || '';
     const rawEmails = senderEmail || process.env.BREVO_SENDER_EMAILS || process.env.BREVO_SENDER_EMAIL || config.brevoSenderEmail || 'tosin@bethelmindanalytics.com';
-    const rawNames = senderName || process.env.BREVO_SENDER_NAMES || process.env.BREVO_SENDER_NAME || config.brevoSenderName || 'Bethelmind Analytics & Strategy';
+    const rawNames = senderName || process.env.BREVO_SENDER_NAMES || process.env.BREVO_SENDER_NAME || config.brevoSenderName || 'Bethelmind Digital Solutions';
 
     const keysList = rawKeys.split(',').map(k => k.trim()).filter(Boolean);
     const emailsList = rawEmails.split(',').map(e => e.trim()).filter(Boolean);
@@ -80,13 +80,13 @@ export class BrevoClient {
       this.accounts = keysList.map((k, i) => ({
         apiKey: k,
         senderEmail: emailsList[i] || emailsList[0] || 'tosin@bethelmindanalytics.com',
-        senderName: namesList[i] || namesList[0] || 'Bethelmind Analytics & Strategy'
+        senderName: namesList[i] || namesList[0] || 'Bethelmind Digital Solutions'
       }));
     } else {
       this.accounts = [{
         apiKey: '',
         senderEmail: 'tosin@bethelmindanalytics.com',
-        senderName: 'Bethelmind Analytics & Strategy'
+        senderName: 'Bethelmind Digital Solutions'
       }];
     }
   }
@@ -94,7 +94,7 @@ export class BrevoClient {
   /**
    * Add an additional Brevo account for automated rotation
    */
-  public addAccount(apiKey: string, senderEmail: string, senderName = 'Bethelmind Analytics & Strategy') {
+  public addAccount(apiKey: string, senderEmail: string, senderName = 'Bethelmind Digital Solutions') {
     if (apiKey && senderEmail) {
       this.accounts.push({ apiKey: apiKey.trim(), senderEmail: senderEmail.trim(), senderName: senderName.trim() });
     }

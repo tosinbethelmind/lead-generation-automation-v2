@@ -33,9 +33,9 @@ Good day management! Why wait weeks on Form M or risk black market delays?
 • *Speed:* Under 15 Minutes Direct to Factory
 
 🏦 *100% VERIFIED ESCROW VAULT (TIER-3 KYC ACTIVE):*
-• *Bank:* OPay Digital Services
-• *Account Name:* Oyelakin Tosin Matthew (Bethelmind Escrow Trust)
-• *Account Number:* 7034297995
+• *Bank:* Moniepoint Microfinance Bank
+• *Account Name:* Bethelmind Digital Solutions (Bethelmind Escrow Trust)
+• *Account Number:* 6805375225
 • *Payment Narration:* BM-OTC-701-JACIO
 • *Safety:* 100% verified KYC account. Funds locked safely until your factory confirms receipt.
 
@@ -63,9 +63,9 @@ Good day management! Avoid costly bank delays for your container freight wires:
 • *Speed:* Under 15 Minutes Direct to Supplier
 
 🏦 *100% VERIFIED ESCROW VAULT (TIER-3 KYC ACTIVE):*
-• *Bank:* OPay Digital Services
-• *Account Name:* Oyelakin Tosin Matthew (Bethelmind Escrow Trust)
-• *Account Number:* 7034297995
+• *Bank:* Moniepoint Microfinance Bank
+• *Account Name:* Bethelmind Digital Solutions (Bethelmind Escrow Trust)
+• *Account Number:* 6805375225
 • *Payment Narration:* BM-OTC-702-MALDINI
 • *Safety:* 100% verified KYC account. Funds locked safely until your supplier confirms receipt.
 
@@ -93,9 +93,9 @@ Good day management! Fast-track your commercial electronics container invoices:
 • *Speed:* Under 15 Minutes Direct to Factory
 
 🏦 *100% VERIFIED ESCROW VAULT (TIER-3 KYC ACTIVE):*
-• *Bank:* OPay Digital Services
-• *Account Name:* Oyelakin Tosin Matthew (Bethelmind Escrow Trust)
-• *Account Number:* 7034297995
+• *Bank:* Moniepoint Microfinance Bank
+• *Account Name:* Bethelmind Digital Solutions (Bethelmind Escrow Trust)
+• *Account Number:* 6805375225
 • *Payment Narration:* BM-OTC-703-FOUANI
 • *Safety:* 100% verified KYC account. Funds locked safely until your factory confirms receipt.
 
@@ -110,9 +110,9 @@ Good day management! Fast-track your commercial electronics container invoices:
 🆔 *REF:* \`${d.ref}\` | 💰 *PROFIT:* *+${d.profit}*
 ━━━━━━━━━━━━━━━━━━━━━━
 🏦 *VERIFIED TIER-3 KYC ESCROW ACCOUNT:*
-• Bank: *OPay Digital Services*
-• Account: \`7034297995\`
-• Name: *Oyelakin Tosin Matthew (Bethelmind Escrow Trust)*
+• Bank: *Moniepoint Microfinance Bank*
+• Account: \`6805375225\`
+• Name: *Bethelmind Digital Solutions (Bethelmind Escrow Trust)*
 • Status: 🟢 *100% Active & Verified (No KYC limits / No errors)*
 
 🟢 *1-CLICK WHATSAPP PROPOSAL (WITH VERIFIED OPAY ACCOUNT):*

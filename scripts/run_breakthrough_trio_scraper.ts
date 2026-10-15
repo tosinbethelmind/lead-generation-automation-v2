@@ -2,7 +2,7 @@
  * @file scripts/run_breakthrough_trio_scraper.ts
  * 
  * 🇳🇬 COMMAND RUNNER: Targeted Breakthrough Trio Lead Scraper
- * Bethelmind Analytics Lagos Desk · Commercial B2B Revenue Growth Engine
+ * Bethelmind Digital Solutions · Commercial B2B Revenue Growth Engine
  * 
  * Exclusively Harvests:
  * 1. ⚡ Commercial Solar & Inverter Showrooms / Contractors

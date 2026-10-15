@@ -8,7 +8,7 @@
  *    live Selar orders, or real-time mempool discoveries occur.
  * 2. 0% Synthetic, Mock, or Simulated test emails are dispatched.
  * 3. Enforces 100% Production Domain Integrity (https://www.bethelmindanalytics.com).
- * 4. Beneficiary strictly locked to OPay (7034297995 - Oyelakin Tosin Matthew).
+ * 4. Beneficiary strictly locked to OPay (6805375225 - Bethelmind Digital Solutions).
  */
 
 import fs from 'fs';
@@ -89,7 +89,7 @@ export async function dispatchLiveOnlyCryptoStatusUpdate(): Promise<{ success: b
               ⚡ Live Inbound Transaction Ready For Settlement
             </h1>
             <p style="color: #a7f3d0; margin: 6px 0 0 0; font-size: 13px;">
-              Direct Beneficiary: <strong>OPay Digital Services (${OPAY_BENEFICIARY_CONFIG.accountNumber} - ${OPAY_BENEFICIARY_CONFIG.accountName})</strong>
+              Direct Beneficiary: <strong>Moniepoint Microfinance Bank (${OPAY_BENEFICIARY_CONFIG.accountNumber} - ${OPAY_BENEFICIARY_CONFIG.accountName})</strong>
             </p>
           </div>
           <div style="padding: 24px;">

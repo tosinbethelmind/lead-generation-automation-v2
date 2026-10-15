@@ -8,7 +8,7 @@
  * 2. Matches user swap intents directly against internal P2P/OTC liquidity desks or multi-hop DEX routes.
  * 3. Zero Public Mempool Risk: Solvers compete in off-chain batch auctions, completely immune to sandwich bots.
  * 4. Captures 5 to 25 bps spread on filled order flow without requiring toxic front-running gas bidding.
- * 5. Automatically converts filled solver rewards to Naira into OPay (7034297995).
+ * 5. Automatically converts filled solver rewards to Naira into OPay (6805375225).
  */
 
 import { routeDirectToOPay, DirectNairaSettlement } from './directNairaAutoLiquidationRouter';

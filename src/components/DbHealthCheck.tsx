@@ -313,7 +313,7 @@ export default function DbHealthCheck() {
 
 // SQL Script to be displayed and copied
 const MIGRATION_SQL = `-- ============================================================================
--- Supabase Schema DDL Migration for Bethelmind Analytics & Strategy Lead Engine
+-- Supabase Schema DDL Migration for Bethelmind Digital Solutions Lead Engine
 -- Creates all tables with id (uuid primary key), created_at (timestamptz) and RLS.
 -- ============================================================================
 

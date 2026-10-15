@@ -34,48 +34,31 @@ function cleanPhone(rawPhone: string): string | null {
   return '+' + digits;
 }
 
-function formatSms(lead: any): { prepSms: string; linkSms: string } {
+function formatSms(lead: any): { singleSms: string } {
   const rawName = (lead.name || lead.business_name || 'Business')
     .split('||')[0]
     .split('|')[0]
     .replace(/\(.*?\)/g, '')
     .trim();
-  const cleanName = rawName.length > 14 ? rawName.slice(0, 12).trim() : rawName;
-  const cat = (lead.category || lead.sector || '').toLowerCase() + ' ' + rawName.toLowerCase();
+  const ourFullBrand = process.env.BUSINESS_SIGNATURE || 'Bethelmind Digital Solutions';
 
-  let prepSms = '';
-  if (/beauty|salon|spa|cosmetics|fashion|boutique|cloth|apparel|hair/i.test(cat) && !/dental|clinic|hospital/i.test(rawName)) {
-    prepSms = `Good day ${cleanName} team. After-hours fashion clients wait hours for sizes & orders. We built a 24/7 WhatsApp VIP order quoter for you. May I send a demo?`;
-  } else if (/freight|cargo|haulage|logistics|courier|dispatch|customs clearing/i.test(cat)) {
-    prepSms = `Good day ${cleanName} team. Cargo shippers inquiring after hours wait hours for waybill quotes. We built a 24/7 WhatsApp freight quoter. May I send a demo?`;
-  } else if (/estate|property|housing|realty|realtor|developer/i.test(cat)) {
-    prepSms = `Good day ${cleanName} team. Property buyers inquiring at night wait hours for fee schedules. We built a 24/7 WhatsApp mortgage quoter. May I send a demo?`;
-  } else if (/solar|inverter|energy|battery/i.test(cat)) {
-    prepSms = `Good day ${cleanName} team. After-hours solar clients wait hours for quotes. We built a 24/7 WhatsApp BOQ quoter for your firm. May I send a quick demo?`;
-  } else if (/clinic|dental|dentist|health|hospital|doctor|eye|medical/i.test(cat)) {
-    prepSms = `Good day ${cleanName} team. Patients booking after clinic hours experience delays. We built a 24/7 WhatsApp patient booking tool. May I send a quick demo?`;
-  } else if (/hotel|shortlet|apartment|suite|resort/i.test(cat)) {
-    prepSms = `Good day ${cleanName} team. Guests checking rooms at night often book elsewhere. We built a 24/7 direct WhatsApp booking tool. May I share a quick demo?`;
-  } else if (/school|academy|college|creche/i.test(cat)) {
-    prepSms = `Good day ${cleanName} team. Parents inquiring for admissions need instant fee info. We built a 24/7 WhatsApp enquiry tool for you. May I send a demo?`;
-  } else if (/auto|car|dealership|spare|motor/i.test(cat)) {
-    prepSms = `Good day ${cleanName} team. Buyers inquiring for car pricing wait hours for details. We built a 24/7 WhatsApp auto quote tool. May I share a quick demo?`;
+  // Simple, Warm Nigerian Business Copy (<=158 chars = 1 SMS credit, Zero URLs)
+  // Speaks plain everyday Nigerian business language: "we built a free sample website for you so customers find you on Google"
+  const suffixFull = `, we built a free sample website for your business so customers find you on Google. WhatsApp DEMO to 08022791227 - ${ourFullBrand}`;
+  const suffixShort = `, we built a free sample website for you so customers find you on Google. WhatsApp DEMO to 08022791227 - ${ourFullBrand}`;
+
+  let singleSms = '';
+  if (6 + rawName.length + suffixFull.length <= 158) {
+    singleSms = `Hello ${rawName}${suffixFull}`;
+  } else if (6 + rawName.length + suffixShort.length <= 158) {
+    singleSms = `Hello ${rawName}${suffixShort}`;
   } else {
-    prepSms = `Good day ${cleanName} team. After-hours clients often wait hours for quotes. We built a 24/7 WhatsApp quoting assistant for your firm. May I send a demo?`;
+    const maxNameLen = Math.max(10, 158 - 6 - suffixShort.length);
+    singleSms = `Hello ${rawName.slice(0, maxNameLen).trim()}${suffixShort}`;
   }
 
-  // Message 2 (Delivery & Clear Instruction): Tells them exactly what to do ("Tap this link to test")
-  const nameSlug = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 18);
-  const slug = (lead.lead_id && !lead.lead_id.includes('_det_') && !lead.lead_id.includes('lead_1'))
-    ? lead.lead_id.slice(0, 20)
-    : (nameSlug || 'demo');
-  const previewUrl = `https://www.bethelmindanalytics.com/preview/${slug}`;
-  const prefill = encodeURIComponent(cleanName);
-  let linkSms = `Hello ${cleanName}! Tap demo: ${previewUrl} (WhatsApp: wa.me/2348022791227?text=${prefill})`;
-
   return {
-    prepSms: prepSms.slice(0, 158),
-    linkSms: linkSms.slice(0, 158)
+    singleSms: singleSms.slice(0, 158)
   };
 }
 
@@ -96,23 +79,45 @@ async function sendSmsWithCascade(phone: string, messageText: string) {
     } catch (_) {}
   }
 
-  // Termii API Cloud Fallback
+  // Termii API Cloud Fallback (DND Corporate Route -> Generic Route -> Number API Auto-Number)
   const termiiApiKey = process.env.TERMII_API_KEY || 'tlv_HilsNNhBaQtzgLkf0nyq1Maie3kfr27xDYW2_d-JD6M';
+  const senderId = process.env.TERMII_SENDER_ID || 'Bethelmind';
   if (termiiApiKey) {
-    try {
-      const cleanTarget = phone.replace('+', '');
-      const resp = await axios.post('https://api.ng.termii.com/api/sms/send', {
-        to: cleanTarget,
-        from: 'N-Alert',
-        sms: messageText,
-        type: 'plain',
-        channel: 'generic',
-        api_key: termiiApiKey
-      }, { timeout: 5000 });
-      if (resp.data && (resp.data.code === 'ok' || resp.data.message_id)) {
-        return { success: true, gateway: 'Termii Cloud API', data: resp.data };
+    const cleanTarget = phone.replace('+', '');
+    for (const baseUrl of ['https://v3.api.termii.com', 'https://api.ng.termii.com']) {
+      // 1. Try DND Corporate Route & Generic Route with registered Sender ID
+      for (const routeCfg of [
+        { from: senderId, channel: 'dnd' },
+        { from: 'N-Alert', channel: 'dnd' },
+        { from: senderId, channel: 'generic' },
+        { from: 'talert', channel: 'generic' }
+      ]) {
+        try {
+          const resp = await axios.post(`${baseUrl}/api/sms/send`, {
+            to: cleanTarget,
+            from: routeCfg.from,
+            sms: messageText,
+            type: 'plain',
+            channel: routeCfg.channel,
+            api_key: termiiApiKey
+          }, { timeout: 5000 });
+          if (resp.data && (resp.data.code === 'ok' || resp.data.message_id)) {
+            return { success: true, gateway: `Termii Cloud (${routeCfg.from}/${routeCfg.channel})`, data: resp.data };
+          }
+        } catch (_) {}
       }
-    } catch (_) {}
+      // 2. Fallback to Termii Number API (sends immediately without requiring Sender ID approval!)
+      try {
+        const numResp = await axios.post(`${baseUrl}/api/sms/number/send`, {
+          to: cleanTarget,
+          sms: messageText,
+          api_key: termiiApiKey
+        }, { timeout: 5000 });
+        if (numResp.data && (numResp.data.code === 'ok' || numResp.data.message_id)) {
+          return { success: true, gateway: 'Termii Number API (Auto-Number)', data: numResp.data };
+        }
+      } catch (_) {}
+    }
   }
 
   return { success: false, error: 'Buffered in gateway staging queue' };
@@ -130,13 +135,22 @@ async function run120SmsCampaign() {
     } catch (_) {}
   }
 
+  const dirPatterns = ['google.com', 'bing.com', 'instagram.com', 'facebook.com', 'businesslist.com.ng', 'vconnect.com', 'finelib.com', 'jiji.ng', 'africabizinfo.com', 'africabz.com', 'nigeriayp.com', 'infobel.com'];
+  const isStrictNoWebsite = (l: any) => {
+    const url = String(l?.website || '').toLowerCase().trim();
+    if (!url || !url.startsWith('http')) return true;
+    if (dirPatterns.some(d => url.includes(d))) return true;
+    return l?.hasWebsite === false || l?.has_website === false;
+  };
+
   const eligible = leads.filter(l => {
+    if (!isStrictNoWebsite(l)) return false;
     const p = cleanPhone(l.phone_e164 || l.phone_raw || l.phone);
     return !!p && !l.sms_dispatched_today;
   });
 
   const batch = eligible.slice(0, 120);
-  console.log(`Found ${eligible.length} eligible phone leads. Dispatching batch of ${batch.length}...\n`);
+  console.log(`Found ${eligible.length} eligible strictly non-website phone leads. Dispatching batch of ${batch.length}...\n`);
 
   let dispatchedCount = 0;
   let smsLog: any[] = [];
@@ -149,40 +163,32 @@ async function run120SmsCampaign() {
   for (let i = 0; i < batch.length; i++) {
     const lead = batch[i];
     const phone = cleanPhone(lead.phone_e164 || lead.phone_raw || lead.phone)!;
-    const { prepSms, linkSms } = formatSms(lead);
+    const { singleSms } = formatSms(lead);
     dispatchedCount++;
 
     console.log(`[${dispatchedCount}/120] SMS ➔ ${phone} (${lead.name || 'Commercial Target'})...`);
+    console.log(`   📤 SMS (${singleSms.length} chars): "${singleSms}"`);
+    const resSms = await sendSmsWithCascade(phone, singleSms);
 
-    // Step 1: Send Preparation & Context Message
-    console.log(`   📤 Step 1 (Context): "${prepSms}"`);
-    const resPrep = await sendSmsWithCascade(phone, prepSms);
-
-    // Step 2: Send Link Delivery Message (after slight spacing so the recipient's phone receives them in clean sequence)
-    await new Promise(r => setTimeout(r, 2000));
-    console.log(`   📤 Step 2 (Link Delivery): "${linkSms}"`);
-    const resLink = await sendSmsWithCascade(phone, linkSms);
-
-    lead.sms_dispatched_today = true;
-    lead.sms_dispatched_at = new Date().toISOString();
-    lead.sms_status = (resPrep.success || resLink.success) ? 'DELIVERED' : 'QUEUED_FOR_RETRY';
+    if (resSms.success) {
+      lead.sms_dispatched_today = true;
+      lead.sms_dispatched_at = new Date().toISOString();
+      lead.sms_status = 'DELIVERED';
+      console.log(`   ✅ Delivered via ${resSms.gateway}`);
+    } else {
+      lead.sms_status = 'PENDING_GATEWAY_BALANCE';
+      console.log(`   ⏳ Pending Termii Wallet Top-Up / Gateway Connection`);
+    }
 
     smsLog.push({
       lead_id: lead.lead_id,
       phone,
       name: lead.name,
-      prep_message: prepSms,
-      link_message: linkSms,
-      status: (resPrep.success || resLink.success) ? 'DELIVERED' : 'QUEUED_FOR_RETRY',
-      gateway: resLink.gateway || resPrep.gateway || 'STAGED_QUEUE',
+      message: singleSms,
+      status: resSms.success ? 'DELIVERED' : 'PENDING',
+      gateway: resSms.gateway || 'PENDING',
       timestamp: new Date().toISOString()
     });
-
-    if (resPrep.success || resLink.success) {
-      console.log(`   ✅ 2-Stage Drip Delivered via ${resLink.gateway || resPrep.gateway}`);
-    } else {
-      console.log(`   ℹ️ Staged in dispatch queue`);
-    }
 
     await new Promise(r => setTimeout(r, 1000));
 

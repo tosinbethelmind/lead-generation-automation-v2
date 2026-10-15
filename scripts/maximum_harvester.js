@@ -2,7 +2,7 @@
  * @file scripts/maximum_harvester.js
  * 
  * 🇳🇬 MAXIMUM ACCELERATED NIGERIAN B2B SCRAPER & INGESTION ENGINE (2026 EDITION)
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * 🚀 MAXIMUM LEAD GENERATION & 100% PHONE QUALITY INVARIANTS:
  * 1. Deep Jiji Nuxt REST + Single-Page Seller Unpacking (100% Genuine Nigerian Carrier Phones)

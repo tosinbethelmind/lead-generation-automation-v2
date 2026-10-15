@@ -11,7 +11,7 @@
  *    - Automatically sends verified Merchant Escrow Clearing Account to Client.
  *    - Simultaneously notifies Institutional Merchant Desk Head with trade payload.
  *    - Activates NIBSS Real-Time Escrow Credit Monitor.
- *    - Upon factory clearance & MT103 receipt, routes +₦25/USD spread to OPay (7034297995).
+ *    - Upon factory clearance & MT103 receipt, routes +₦25/USD spread to OPay (6805375225).
  */
 
 import { TOP_RATED_DIAMOND_MERCHANTS } from './topRatedMerchantVault';
@@ -157,7 +157,7 @@ export class OneTapApprovalEscrowGate {
       `• *Wholesale Ask Floor:* ₦${ticket.wholesaleRateNGN.toLocaleString()} / USD\n` +
       `• *Escrow Deposit Expected:* ₦${ticket.totalNairaDepositNGN.toLocaleString()} NGN into ${merchant.escrowBank} (${escrowAccNum})\n` +
       `• *China Factory Wire Instruction:* ${ticket.chinaSupplierDetails}\n\n` +
-      `⚡ *Action Required by Desk:* Monitor escrow credit, execute Swift MT103 wire in < 15 mins upon confirmation, and route +₦${ticket.userCommissionProfitNGN.toLocaleString()} NGN commission spread to OPay: 7034297995 (Oyelakin Tosin Matthew).`;
+      `⚡ *Action Required by Desk:* Monitor escrow credit, execute Swift MT103 wire in < 15 mins upon confirmation, and route +₦${ticket.userCommissionProfitNGN.toLocaleString()} NGN commission spread to OPay: 6805375225 (Bethelmind Digital Solutions).`;
 
     ticket.status = 'APPROVED_AND_DISPATCHED';
 

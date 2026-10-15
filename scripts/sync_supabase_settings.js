@@ -25,7 +25,7 @@ async function sync() {
     lastGitHubDispatchTime: 0
   };
 
-  console.log(`Upserting apexreach_runtime_config (activeRunnerBackend: "${payload.activeRunnerBackend}") in Supabase app_settings...`);
+  console.log(`Upserting bethelmind_ (activeRunnerBackend: "${payload.activeRunnerBackend}") in Supabase app_settings...`);
   
   let success = false;
   let delay = 1000;
@@ -34,7 +34,7 @@ async function sync() {
       const { data, error } = await supabase
         .from('app_settings')
         .upsert({
-          key: 'apexreach_runtime_config',
+          key: 'bethelmind_',
           value: JSON.stringify(payload),
           updated_at: new Date().toISOString()
         }, { onConflict: 'key' })

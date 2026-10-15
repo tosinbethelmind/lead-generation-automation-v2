@@ -7,7 +7,7 @@
  * 1. Co-branded Trade Union Escrow Portals (Alaba Electronics, ASPAMDA Auto, Computer Village).
  * 2. Guaranteed ₦15–₦20/USD Spread on Bulk Association Volume ($100k–$500k/week).
  * 3. Formal Corporate Escrow Retention Agreement & CAC Indemnity Clauses.
- * 4. Payout Settlement: 100% Direct-to-OPay (7034297995 - Oyelakin Tosin Matthew).
+ * 4. Payout Settlement: 100% Direct-to-OPay (6805375225 - Bethelmind Digital Solutions).
  */
 
 import { OPAY_BENEFICIARY_CONFIG } from './directNairaAutoLiquidationRouter';

@@ -2,7 +2,7 @@
  * @file src/lib/voice/pipecatVoiceBridge.ts
  * 
  * 🎙️ PIPECAT-INSPIRED 30-SECOND SPEED-TO-LEAD VOICE NOTE & CALLBACK BRIDGE
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  * 
  * Capabilities:
  * 1. Triggers automated 15-second personalized voice note briefings upon lead click.

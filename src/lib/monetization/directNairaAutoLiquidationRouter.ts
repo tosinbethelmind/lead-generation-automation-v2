@@ -10,9 +10,9 @@
  *   and routed directly into the user's OPay Account.
  * 
  * User Beneficiary Details:
- * - Bank Name: OPay Digital Services
- * - Account Number: 7034297995
- * - Account Name: Oyelakin Tosin Matthew
+ * - Bank Name: Moniepoint Microfinance Bank
+ * - Account Number: 6805375225
+ * - Account Name: Bethelmind Digital Solutions
  */
 
 import fs from 'fs';

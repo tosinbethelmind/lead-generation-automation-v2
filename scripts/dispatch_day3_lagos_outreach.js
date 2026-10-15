@@ -1,7 +1,7 @@
 /**
  * scripts/dispatch_day3_lagos_outreach.js
  * 
- * Bethelmind Analytics Day 3 Outreach Dispatcher (Wednesday, Aug 19, 2026)
+ * Bethelmind Digital Solutions Day 3 Outreach Dispatcher (Wednesday, Aug 19, 2026)
  * Target Batch: 45 Fresh Verified Commercial Lagos Leads
  * 
  * High-Converting Architecture:
@@ -161,7 +161,7 @@ function recordActivity(activity) {
 
 async function run() {
   console.log('===============================================================');
-  console.log('🚀 BETHELMIND ANALYTICS DAY 3 MULTI-TOUCH OUTREACH ENGINE');
+  console.log('🚀 Bethelmind Digital Solutions DAY 3 MULTI-TOUCH OUTREACH ENGINE');
   console.log(`📅 Date: ${new Date().toLocaleDateString('en-NG')} | Safe Batch Limit: 45 Leads`);
   console.log('===============================================================\n');
 
@@ -246,14 +246,14 @@ async function run() {
         `👉 ${previewUrl}\n\n` +
         `(Takes under 10 minutes to activate on your existing website with 0 downtime).\n\n` +
         `Best regards,\n` +
-        `*Tosin — Bethelmind Analytics Lagos Desk*`;
+        `*Tosin — Bethelmind Digital Solutions*`;
     } else {
       companionText = `Good day *${cleanName}* Management! 👋\n\n` +
         `We have verified and attached your private interactive website prototype and 24/7 WhatsApp booking desk:\n` +
         `👉 ${previewUrl}\n\n` +
         `Includes your Google Maps SEO setup, instant Paystack/Moniepoint payments, and ₦0 upfront review.\n\n` +
         `Let us know if you would like any customizations before deployment!\n` +
-        `— *Bethelmind Analytics Lagos Team*`;
+        `— *Bethelmind Digital Solutions Team*`;
     }
 
     console.log(`   💬 Dispatching Companion Text Bubble...`);
@@ -270,7 +270,7 @@ async function run() {
         type: 'day3_outreach_dispatched',
         lead_id: leadId,
         deal_id: '',
-        description: `Bethelmind Analytics Day 3 1-to-1 Voice+Text Combo dispatched to ${cleanName} (${phone})`,
+        description: `Bethelmind Digital Solutions Day 3 1-to-1 Voice+Text Combo dispatched to ${cleanName} (${phone})`,
         metadata: JSON.stringify({ category: rawCategory, area, hasWebsite, previewUrl, vnDelivered: vnSuccess }),
         channel: 'whatsapp',
         actor: 'system'

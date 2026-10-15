@@ -141,7 +141,7 @@ export default function HeroSection({
 
   const demoWaLink = buildWhatsAppLink(
     paymentConfig.whatsappNumber,
-    `Hi Bethelmind Analytics,\n\nI would like to request a live demo for my business.\n\nBusiness Name: ${businessName || 'My Business'}\nIndustry: ${profile.name}\nLocation/Region: ${targetDistrict}\n\nPlease let me know when we can connect.`,
+    `Hi Bethelmind Digital Solutions,\n\nI would like to request a live demo for my business.\n\nBusiness Name: ${businessName || 'My Business'}\nIndustry: ${profile.name}\nLocation/Region: ${targetDistrict}\n\nPlease let me know when we can connect.`,
   );
 
   return (
@@ -755,7 +755,7 @@ export default function HeroSection({
                 </div>
 
                 <a
-                  href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Analytics! I generated an instant Solar BOQ for a ${calculatedSolar.tierLabel} (${calculatedSolar.loadWatts}W peak load) with estimated monthly savings of ${calculatedSolar.fuelSaved}. Please provide delivery & installation timeline.`)}`}
+                  href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I generated an instant Solar BOQ for a ${calculatedSolar.tierLabel} (${calculatedSolar.loadWatts}W peak load) with estimated monthly savings of ${calculatedSolar.fuelSaved}. Please provide delivery & installation timeline.`)}`}
                   target="_blank"
                   rel="noreferrer noopener"
                   style={{

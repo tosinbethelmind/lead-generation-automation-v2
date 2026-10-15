@@ -2,7 +2,7 @@
  * @file src/lib/outreach/outreachAccelerationHub.ts
  * 
  * High-Throughput Multi-Channel Outreach Acceleration Hub (2026 Edition)
- * Bethelmind Analytics Commercial Growth System
+ * Bethelmind Digital Solutions Commercial Growth System
  * 
  * Performance & Invariant Guarantees:
  * - p-limit: Controlled async concurrency for SMS (2 sockets) and Email (5 sockets).

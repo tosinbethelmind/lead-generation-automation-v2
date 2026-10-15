@@ -1,7 +1,7 @@
 /**
  * @file scripts/qa_traffic_and_outreach_watchdog.js
  * 
- * Bethelmind Analytics Zero-Failure Quality Assurance & Preflight Watchdog.
+ * Bethelmind Digital Solutions Zero-Failure Quality Assurance & Preflight Watchdog.
  * 
  * Automatically audits:
  * 1. Supabase Cloud read/write health & table availability.

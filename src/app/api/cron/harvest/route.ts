@@ -12,7 +12,7 @@ export async function GET(req: Request) {
   const key = url.searchParams.get('key');
   
   // Optional simple auth key protection if secret provided
-  const cronSecret = process.env.CRON_SECRET || 'apexreach_cron_secret_2026';
+  const cronSecret = process.env.CRON_SECRET || 'bethelmind_';
   if (key && key !== cronSecret) {
     return NextResponse.json({ error: 'Unauthorized cron invocation' }, { status: 401 });
   }

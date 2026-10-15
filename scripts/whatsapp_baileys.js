@@ -1,3 +1,9 @@
+// ── Gated: Standalone Baileys socket is disabled to prevent 440 session replacement on Line 1 ──
+if (process.env.ALLOW_STANDALONE_BAILEYS !== 'true') {
+  console.log('⚠️ [Notice] Standalone whatsapp_baileys.js is disabled to protect evolution_api_server.js from session collisions.');
+  process.exit(0);
+}
+
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, Browsers } = require('@whiskeysockets/baileys');
 const qrcodeTerminal = require('qrcode-terminal');
 const QRCode = require('qrcode');
@@ -57,8 +63,8 @@ function extractMessageText(msg) {
   if (m.interactiveResponseMessage?.body?.text) return m.interactiveResponseMessage.body.text;
   if (m.listResponseMessage?.singleSelectReply?.selectedRowId) return m.listResponseMessage.singleSelectReply.selectedRowId;
   if (m.listResponseMessage?.title) return m.listResponseMessage.title;
-  if (m.imageMessage?.caption) return m.imageMessage.caption;
-  if (m.videoMessage?.caption) return m.videoMessage.caption;
+  if (m.imageMessage) return m.imageMessage.caption ? `${m.imageMessage.caption} [Photo Received]` : '[Photo Received]';
+  if (m.videoMessage) return m.videoMessage.caption ? `${m.videoMessage.caption} [Video Received]` : '[Video Received]';
   if (m.documentMessage?.caption) return m.documentMessage.caption;
   if (m.audioMessage) return '[Voice Note Received]';
   if (m.locationMessage) return `[Location Shared: ${m.locationMessage.name || m.locationMessage.address || 'GPS'}]`;
@@ -474,13 +480,14 @@ async function executeCloserReply(targetRecipient, incomingText = '', rawMsg = n
       area: customerArea,
       phone: cleanPhone,
       hasWebsite: false,
-      previewUrl: customerPreviewUrl
+      previewUrl: customerPreviewUrl,
+      hasMediaImage: Boolean(rawMsg?.message?.imageMessage)
     });
     replyText = closerRes.messageText;
     intent = closerRes.intent;
     directPaymentEligible = closerRes.directPaymentEligible;
   } catch (_) {
-    replyText = `Good day! 👋 Welcome to Bethelmind Analytics Lagos Desk.\n\nWe created a free sample website for your business (*${customerName}*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\n${customerPreviewUrl}\n\nOur full setup fee is ₦75,000 deposit to start (₦150,000 total, ready in 48 hours). Please let us know if you want to get started!`;
+    replyText = `Good day! 👋 Welcome to Bethelmind Digital Solutions.\n\nWe created a free sample website for your business (*${customerName}*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\n${customerPreviewUrl}\n\nUnder our 🇳🇬 October 50% SME Promo, complete setup is ₦35,000 deposit to start (₦65,000 total, ready in 48 hours). Please let us know if you want to get started!`;
   }
 
   if (connectionStatus !== 'connected' || !sock) {
@@ -760,7 +767,7 @@ app.post('/web-inquiry', async (req, res) => {
       replyText = closerRes.messageText;
       intent = closerRes.intent;
     } catch (e) {
-      replyText = `Hello ${cleanSenderName}! 👋 Thank you for contacting Bethelmind Analytics Lagos Desk.\n\nWe build 24/7 AI WhatsApp Quoting Assistants and Turnkey Websites delivered in 48 Hours.\n\n• Turnkey Website + WhatsApp AI: ₦75,000 deposit to start (₦150,000 total)\n• 1-Line Embed Upgrade: ₦35,000 deposit\n\nBank: OPay Digital Services | Account: 7034297995 | Name: Oyelakin Tosin Matthew\n\nHow can we help you launch today?`;
+      replyText = `Hello ${cleanSenderName}! 👋 Thank you for contacting Bethelmind Digital Solutions.\n\nWe build 24/7 AI WhatsApp Quoting Assistants and Turnkey Websites delivered in 48 Hours.\n\n• Turnkey Website + WhatsApp AI: ₦75,000 deposit to start (₦150,000 total)\n• 1-Line Embed Upgrade: ₦35,000 deposit\n\nBank: Moniepoint Microfinance Bank | Account: 6805375225 | Name: Bethelmind Digital Solutions\n\nHow can we help you launch today?`;
     }
 
     let autoDeliveredToCustomer = false;
@@ -1331,7 +1338,7 @@ app.get('/', (req, res) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Bethelmind Analytics — Admin WhatsApp Desk (+234 802 279 1227)</title>
+      <title>Bethelmind Digital Solutions — Admin WhatsApp Desk (+234 802 279 1227)</title>
       <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px; max-width: 520px; width: 100%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }

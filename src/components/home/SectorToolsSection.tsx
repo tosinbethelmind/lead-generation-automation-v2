@@ -807,6 +807,57 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
         )}
       </div>
 
+      {/* October 50% SME Promo Direct Conversion Card Inside Every Calculator Result */}
+      <div
+        style={{
+          marginTop: 6,
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(15,23,42,0.95) 100%)',
+          border: '1px solid rgba(16,185,129,0.35)',
+          borderRadius: 16,
+          padding: '14px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 12,
+        }}
+      >
+        <div>
+          <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            🇳🇬 OCTOBER 50% SME DIGITAL GROWTH PROMO
+          </div>
+          <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#f8fafc', marginTop: 2 }}>
+            Get This Calculator + Your Official .COM.NG Website:{' '}
+            <span style={{ textDecoration: 'line-through', color: '#f87171' }}>₦130,000</span>{' '}
+            <span style={{ color: '#34d399' }}>→ ₦65,000 Total</span>
+          </div>
+          <div style={{ fontSize: '0.73rem', color: '#94a3b8', marginTop: 2 }}>
+            Start today with <strong style={{ color: '#fff' }}>₦35,000 Deposit</strong> (Pay ₦30k balance ONLY after live on Google) • Moniepoint: <strong style={{ color: '#38bdf8' }}>6805375225</strong>
+          </div>
+        </div>
+        <a
+          href={buildWhatsAppLink(
+            paymentConfig.whatsappNumber,
+            `Hello Bethelmind Lagos Desk! I just tested the *${toolName}* calculator and want to claim the October 50% Promo (₦35,000 Deposit / ₦65,000 Total instead of ₦130,000) to launch this tool + Official .COM.NG Website for my business!`
+          )}
+          target="_blank"
+          rel="noreferrer noopener"
+          style={{
+            background: '#10b981',
+            color: '#022c22',
+            textDecoration: 'none',
+            borderRadius: 10,
+            padding: '9px 14px',
+            fontSize: '0.78rem',
+            fontWeight: 900,
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
+          }}
+        >
+          🟢 Claim ₦35k Promo →
+        </a>
+      </div>
+
       <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.72rem', textAlign: 'center' }}>
         💡 Illustrative estimate. Actual figures depend on exact parameters, custom options, and your team's review.
       </p>

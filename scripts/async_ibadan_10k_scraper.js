@@ -89,7 +89,7 @@ async function runResilientIbadanHarvester(dryRun = false) {
         ? 'https://www.bethelmindanalytics.com/api/outreach/ibadan10k?refresh=true'
         : 'http://localhost:3006/api/outreach/ibadan10k?refresh=true';
       const res = await fetch(targetUrl, {
-        headers: { 'User-Agent': 'ApexReach-IbadanScraper/1.0' },
+        headers: { 'User-Agent': 'Bethelmind Digital Solutions-IbadanScraper/1.0' },
         signal: AbortSignal.timeout(8000)
       });
       if (res.ok) {

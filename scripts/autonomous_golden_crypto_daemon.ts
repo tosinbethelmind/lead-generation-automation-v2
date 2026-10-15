@@ -10,7 +10,7 @@
  * 4. ⚡ Tiered B2B Spread Desk (₦22–₦35/$), Dynamic Virtual Escrow, & Whale Radar
  * 5. 🌐 10-Wallet Cloud Testnet Sybil Cluster (Monad/Berachain/Story - 0% gas)
  * 6. 🎯 Base L2 & Arbitrum NAV Depeg Watchdog (ezETH / weETH)
- * 7. 🏦 100% Direct Settlement to OPay (7034297995 - Oyelakin Tosin Matthew)
+ * 7. 🏦 100% Direct Settlement to OPay (6805375225 - Bethelmind Digital Solutions)
  */
 
 import { scanAndAggregateBestLiquidityDealAsync } from '../src/lib/monetization/bestRateLiquidityAggregator';

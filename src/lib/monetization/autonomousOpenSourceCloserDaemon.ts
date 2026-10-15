@@ -98,7 +98,7 @@ export class AutonomousOpenSourceCloserDaemon {
             const baileys = new BaileysGatewayClient();
             baileys.sendMessage({
               phone: '2348022791227',
-              message: `🔔 *NEW 10-MIN DEMO BOOKED*\n\n🏢 Business: *${appt.customer_name}*\n📱 Phone: ${appt.customer_phone}\n📅 Slot: ${appt.date} (${appt.time_slot})\n📂 Sector: ${appt.sector || 'SME'}\n\n*Proforma Invoice Generated:*\n₦75,000 Milestone Deposit (OPay: 7034297995)\nBalance on live approval.\n\nTap to chat lead: wa.me/${(appt.customer_phone || '').replace(/[^0-9]/g, '')}`,
+              message: `🔔 *NEW 10-MIN DEMO BOOKED*\n\n🏢 Business: *${appt.customer_name}*\n📱 Phone: ${appt.customer_phone}\n📅 Slot: ${appt.date} (${appt.time_slot})\n📂 Sector: ${appt.sector || 'SME'}\n\n*Proforma Invoice Generated:*\n₦75,000 Milestone Deposit (OPay: 6805375225)\nBalance on live approval.\n\nTap to chat lead: wa.me/${(appt.customer_phone || '').replace(/[^0-9]/g, '')}`,
               simulateTyping: false
             }).catch(() => {});
           }

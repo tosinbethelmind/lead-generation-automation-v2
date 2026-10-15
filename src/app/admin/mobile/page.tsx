@@ -682,7 +682,7 @@ What would you like to review or upgrade?
 
                   <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
                     <a
-                      href={`https://wa.me/${lead.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.name} team! I am reaching out from Bethelmind Analytics regarding your 24/7 quoting portal.`)}`}
+                      href={`https://wa.me/${lead.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${lead.name} team! I am reaching out from Bethelmind Digital Solutions regarding your 24/7 quoting portal.`)}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{

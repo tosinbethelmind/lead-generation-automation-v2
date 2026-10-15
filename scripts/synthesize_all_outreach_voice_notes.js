@@ -113,15 +113,15 @@ async function synthesizeAllVoiceNotes() {
     // Engine-specific high-converting script (Expert Copywriting & Closing Tuned)
     let scriptText = '';
     if (lead.engine === 'ENGINE_4_BUNDLE') {
-      scriptText = `Hello growth team at ${cleanName}! Tosin here from Bethelmind Analytics Lagos. If you run B2B outreach in Lagos, we packaged clean, verified decision-maker databases across Lekki, Victoria Island, Ikeja, and ASPAMDA with zero synthetic data. Grab a twenty-five hundred Naira sample pack or the full database via the instant download link below!`;
+      scriptText = `Hello growth team at ${cleanName}! Tosin here from Bethelmind Digital Solutions. If you run B2B outreach in Lagos, we packaged clean, verified decision-maker databases across Lekki, Victoria Island, Ikeja, and ASPAMDA with zero synthetic data. Grab a twenty-five hundred Naira sample pack or the full database via the instant download link below!`;
     } else if (lead.engine === 'ENGINE_3_DOMAIN') {
-      scriptText = `Hello executive team at ${cleanName}! Tosin from Bethelmind Analytics Lagos. We noticed your official domain, ${domainName}, recently expired. We secured it into temporary priority holding to protect your Google search traffic. Tap your link below to verify ownership and reclaim custody before public release!`;
+      scriptText = `Hello executive team at ${cleanName}! Tosin from Bethelmind Digital Solutions. We noticed your official domain, ${domainName}, recently expired. We secured it into temporary priority holding to protect your Google search traffic. Tap your link below to verify ownership and reclaim custody before public release!`;
     } else if (lead.engine === 'ENGINE_1_GMB' || (!lead.hasWebsite && lead.rating)) {
-      scriptText = `Hello management at ${cleanName}! Tosin here from Bethelmind Analytics Lagos. Your Google Maps profile in ${area} has great reviews, but primary ownership is unverified and exposed to competitor edits. Tap your private audit link below to see what Google is showing your customers right now!`;
+      scriptText = `Hello management at ${cleanName}! Tosin here from Bethelmind Digital Solutions. Your Google Maps profile in ${area} has great reviews, but primary ownership is unverified and exposed to competitor edits. Tap your private audit link below to see what Google is showing your customers right now!`;
     } else if (lead.engine === 'ENGINE_2_SOLAR' || category.toLowerCase().includes('solar') || category.toLowerCase().includes('hospital')) {
       scriptText = `Good day ${cleanName}! Tosin from Bethelmind Lagos. If your facility in ${area} spends over one million Naira monthly on diesel and NEPA, our free load sizer calculates your exact solar battery savings in two minutes. Tap your preview link below to see your exact monthly savings on screen!`;
     } else {
-      scriptText = `Hello team at ${cleanName}! Tosin from Bethelmind Analytics Lagos. Customers looking for your products in ${area} after hours can't get instant pricing on WhatsApp. We pre-built an interactive 24/7 quoting portal specifically for ${cleanName}. Tap your live preview link right below to see how it handles your late-night inquiries!`;
+      scriptText = `Hello team at ${cleanName}! Tosin from Bethelmind Digital Solutions. Customers looking for your products in ${area} after hours can't get instant pricing on WhatsApp. We pre-built an interactive 24/7 quoting portal specifically for ${cleanName}. Tap your live preview link right below to see how it handles your late-night inquiries!`;
     }
 
 

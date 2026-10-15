@@ -174,8 +174,8 @@ export async function sendWhatsAppMessage(
     .replace(/{{\s*preview_url\s*}}/g, previewUrl)
     .replace(/{{\s*whatsappChannelUrl\s*}}/g, config.whatsappChannelUrl || 'https://whatsapp.com/channel/0029VbDFgKP4o7qM58yY9v2l')
     .replace(/{{\s*channelUrl\s*}}/g, config.whatsappChannelUrl || 'https://whatsapp.com/channel/0029VbDFgKP4o7qM58yY9v2l')
-    .replace(/{{\s*businessSignature\s*}}/g, config.businessSignature || 'Bethelmind Analytics Lagos')
-    .replace(/{{\s*signature\s*}}/g, config.businessSignature || 'Bethelmind Analytics Lagos');
+    .replace(/{{\s*businessSignature\s*}}/g, config.businessSignature || 'Bethelmind Digital Solutions')
+    .replace(/{{\s*signature\s*}}/g, config.businessSignature || 'Bethelmind Digital Solutions');
 
   // Enforce opt-out footer on offer/pitch messages (if not an icebreaker and not already present)
   if (!options?.isIcebreaker && !message.toLowerCase().includes('stop')) {
@@ -206,7 +206,7 @@ export async function sendWhatsAppMessage(
               parameters: [
                 { type: 'text', text: lead.name },
                 { type: 'text', text: previewUrl },
-                { type: 'text', text: config.businessSignature || 'Bethelmind Analytics Lagos' }
+                { type: 'text', text: config.businessSignature || 'Bethelmind Digital Solutions' }
               ]
             }
           ]

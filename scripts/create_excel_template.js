@@ -24,7 +24,7 @@ const configData = [
   ['apify_dataset_id', '', 'Dataset ID containing scraped leads', '', 'whatsapp_template_name', 'lead_intro_v1', 'The exact name in Meta Manager'],
   ['', '', '', '', 'whatsapp_template_language_code', 'en_US', 'Language code'],
   ['', '', '', '', 'whatsapp_opt_out_keyword', 'STOP', ''],
-  ['', '', '', '', 'business_signature', 'Bethelmind Analytics & Strategy', ''],
+  ['', '', '', '', 'business_signature', 'Bethelmind Digital Solutions', ''],
   [],
   ['jiji_seed_url', 'max_pages_per_seed', 'max_vendors_per_seed', 'max_listings_per_vendor', 'verified_only', 'min_listings_count', 'required_keywords', 'exclude_keywords'],
   ['https://jiji.ng/ikeja/cars', 5, 20, 0, 'TRUE', 5, '', ''],
@@ -45,6 +45,6 @@ const logsHeaders = ['run_id', 'ts', 'step', 'url_or_id', 'result', 'error'];
 const wsLogs = XLSX.utils.aoa_to_sheet([logsHeaders]);
 XLSX.utils.book_append_sheet(wb, wsLogs, 'Logs');
 
-const outputPath = path.join(__dirname, '..', 'ApexReach_Leads_Template.xlsx');
+const outputPath = path.join(__dirname, '..', 'bethelmind_.xlsx');
 XLSX.writeFile(wb, outputPath);
 console.log('Template created successfully at ' + outputPath);

@@ -2,7 +2,7 @@
  * @file src/lib/scraping/crawleeScraperEngine.ts
  * 
  * 🚀 CRAWLEE & FIRECRAWL-INSPIRED DEEP COMMERCIAL SCRAPER ENGINE
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  * 
  * Architecture:
  * 1. Resilient Async Request Queue with Memory Heap Shield.

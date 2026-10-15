@@ -2,7 +2,7 @@
  * @file src/lib/blog/blogEngine.ts
  * 
  * 🚀 High-Velocity Commercial Blog Engine
- * Bethelmind Analytics Lagos Desk (www.bethelmindanalytics.com)
+ * Bethelmind Digital Solutions (www.bethelmindanalytics.com)
  * 
  * Core Features:
  * - Real-time disk cache for sub-10ms response time

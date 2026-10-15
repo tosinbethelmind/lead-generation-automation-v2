@@ -145,7 +145,7 @@ export default function PreviewPage() {
       copy: tailoredCopy,
       paymentConfig: {
         paystackPublicKey: '',
-        claimFeeNGN: 150000,
+        claimFeeNGN: 35000,
         moniepointBankName: 'Moniepoint Microfinance Bank',
         moniepointAccountNumber: '6805375225',
         moniepointAccountName: 'Bethelmind Digital Solutions',
@@ -343,7 +343,7 @@ export default function PreviewPage() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <a
-              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Analytics Lagos Desk! I am reviewing the live 24/7 AI quoting prototype for *${data.lead.name}* (${data.lead.category}) in ${data.lead.area || data.lead.city || 'Lagos'}.\n\nDemo Link: https://www.bethelmindanalytics.com/preview/${leadId}\n\nPlease show me how the 2-second WhatsApp quoter works with our services and pricing (₦0 Upfront Preview).`)}`}
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I am reviewing the live 24/7 AI quoting prototype for *${data.lead.name}* (${data.lead.category}) in ${data.lead.area || data.lead.city || 'Lagos'}.\n\nDemo Link: https://www.bethelmindanalytics.com/preview/${leadId}\n\nPlease show me how the 2-second WhatsApp quoter works with our services and pricing (₦0 Upfront Preview).`)}`}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -387,19 +387,96 @@ export default function PreviewPage() {
         </div>
       </header>
 
-      {/* ── SECTION 1: EXECUTIVE VALUE & HERO SIMULATOR ── */}
-      <section style={{ width: '100%', position: 'relative' }}>
-        <NigerianSmeHeroExplainer
+      {/* ── SECTION 1: THE CLIENT'S LIVE SAMPLE WEBSITE (SHOWN IMMEDIATELY ON LOAD) ── */}
+      <section 
+        style={{ 
+          maxWidth: '1180px', 
+          margin: '16px auto 32px auto', 
+          padding: '0 12px', 
+          boxSizing: 'border-box' 
+        }}
+      >
+        <div 
+          style={{ 
+            border: '2px solid rgba(16, 185, 129, 0.35)', 
+            borderRadius: '22px', 
+            overflow: 'hidden', 
+            background: '#040711',
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.85)' 
+          }}
+        >
+          {/* Realistic Browser Address Bar Header showing their own .com.ng domain */}
+          <div 
+            style={{ 
+              background: '#0f172a', 
+              padding: '12px 18px', 
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '10px'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444' }}></span>
+              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b' }}></span>
+              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }}></span>
+              <span style={{ fontSize: '0.82rem', color: '#e2e8f0', marginLeft: '6px', fontFamily: 'monospace', background: 'rgba(255,255,255,0.06)', padding: '3px 10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                🔒 https://www.{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com.ng
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#34d399', background: 'rgba(16, 185, 129, 0.15)', padding: '4px 10px', borderRadius: '8px' }}>
+                ● Live Sample Website for {data.lead.name}
+              </span>
+              <a
+                href="#claim"
+                style={{
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  color: '#022c22',
+                  background: '#10b981',
+                  padding: '4px 12px',
+                  borderRadius: '8px',
+                  textDecoration: 'none'
+                }}
+              >
+                Activate Website ↓
+              </a>
+            </div>
+          </div>
+
+          <LandingPage data={data} leadId={leadId} isPreview={true} />
+        </div>
+      </section>
+
+      {/* ── SECTION 2: INTERACTIVE SECTOR CALCULATOR & CUSTOMER QUOTING TOOL ── */}
+      <section 
+        style={{ 
+          maxWidth: '1080px', 
+          margin: '28px auto', 
+          padding: '0 16px', 
+          boxSizing: 'border-box' 
+        }}
+      >
+        <div style={{ marginBottom: '16px', textAlign: 'center' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>
+            🛠️ Built-In Customer Price &amp; Booking Calculator
+          </span>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ffffff', margin: 0 }}>
+            Test How Your Customers Get Instant Quotes on WhatsApp
+          </h2>
+        </div>
+        <SectorToolsWidget
+          businessCategory={data.lead.category}
           businessName={data.lead.name}
-          category={data.lead.category}
-          area={data.lead.area || data.lead.city || 'Lagos'}
-          phone={data.lead.phone_raw}
-          previewUrl={`https://www.bethelmindanalytics.com/preview/${leadId}`}
-          adminPhone="2348022791227"
+          merchantPhone="2348022791227"
+          hasWebsite={Boolean(data.lead.business_summary?.includes('http') || (data.lead as Record<string, unknown>)?.website || (data as Record<string, unknown>)?.hasWebsite)}
         />
       </section>
 
-      {/* ── SECTION 2: EXECUTIVE DECISION MATRIX (DIRECT & INSTANT) ── */}
+      {/* ── SECTION 3: OCTOBER 50% SME DIGITAL GROWTH PROMO MATRIX ── */}
       <section 
         style={{ 
           maxWidth: '1080px', 
@@ -411,25 +488,25 @@ export default function PreviewPage() {
         <div 
           style={{
             background: 'linear-gradient(180deg, #0f172a 0%, #090e1a 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            border: '1px solid rgba(16, 185, 129, 0.35)',
             borderRadius: '24px',
             padding: '32px 24px',
             boxShadow: '0 20px 40px -15px rgba(0,0,0,0.7)',
             textAlign: 'center'
           }}
         >
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: '9999px', color: '#38bdf8', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px' }}>
-            <span>⚡ Clear Commercial Choice</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.45)', borderRadius: '9999px', color: '#34d399', fontSize: '0.78rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px' }}>
+            <span>🇳🇬 OCTOBER INDEPENDENCE &amp; EMBER-MONTH SME PROMO — 50% OFF PRE-BUILT SETUP (ENDS OCT 31)</span>
           </div>
           <h2 style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 900, color: '#ffffff', margin: '0 0 10px 0', letterSpacing: '-0.02em' }}>
-            Choose How You Want to Activate for <span style={{ color: '#38bdf8' }}>{data.lead.name}</span>
+            Stop Losing Google Customers Searching for <span style={{ color: '#38bdf8' }}>{data.lead.name}</span>
           </h2>
-          <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: '640px', margin: '0 auto 32px auto', lineHeight: 1.6 }}>
-            Zero unnecessary technical jargon. Select the exact plan that fits your current operational setup:
+          <p style={{ color: '#cbd5e1', fontSize: '0.94rem', maxWidth: '720px', margin: '0 auto 32px auto', lineHeight: 1.6 }}>
+            Normally, building a corporate website + 24/7 WhatsApp Assistant from scratch costs <strong>₦130,000–₦240,000</strong>. Because 80% of the sample website for <strong>{data.lead.name}</strong> is already built above, you enjoy a <strong>50% October Promo Subsidy</strong> — and you only pay a milestone deposit today while paying the balance <strong>after your website is live on Google!</strong>
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '20px', textAlign: 'left' }}>
-            {/* OPTION 1: COMPLETE DIGITAL LAUNCH (FOR BUSINESSES WITHOUT A WEBSITE) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', textAlign: 'left' }}>
+            {/* OPTION 1: OCTOBER 50% PROMO — OFFICIAL .COM.NG WEBSITE (₦65K TOTAL · ₦35K DEPOSIT TODAY) */}
             <div 
               style={{
                 background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%)',
@@ -444,38 +521,33 @@ export default function PreviewPage() {
               }}
             >
               <div style={{ position: 'absolute', top: '-12px', right: '20px', background: '#10b981', color: '#022c22', fontSize: '0.72rem', fontWeight: 900, padding: '4px 12px', borderRadius: '9999px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Recommended for Non-Website Businesses
+                🇳🇬 50% October Promo
               </div>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#34d399', background: 'rgba(16, 185, 129, 0.2)', padding: '4px 10px', borderRadius: '8px', textTransform: 'uppercase' }}>
-                    Option 1 · Fast Online Launch
+                    Option 1 · Official .COM.NG
                   </span>
-                  <span style={{ fontSize: '0.75rem', color: '#6ee7b7' }}>Live in 48 Hours</span>
+                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 700 }}>₦130,000</span>
                 </div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
-                  Complete Web Presence + 24/7 AI Bot
+                <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
+                  Official `.COM.NG` Website + WhatsApp Closer
                 </h3>
-                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', margin: '12px 0 16px 0' }}>
-                  ₦45,000 <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 500 }}>one-time setup</span>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', margin: '10px 0 4px 0' }}>
+                  ₦65,000 <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>October Promo Total</span>
                 </div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.86rem', color: '#cbd5e1', lineHeight: 1.8 }}>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> <strong>Official Mobile-Optimized Website</strong> (No technical setup needed)
-                  </li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> <strong>24/7 WhatsApp AI Closer</strong> (&lt; 3s instant quotes &amp; product info)
-                  </li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> <strong>Instant Moniepoint/Bank Alert Shield</strong> (Eliminates fake alert fraud)
-                  </li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> <strong>₦0 Upfront Demo Review</strong> — Inspect on your phone before paying
-                  </li>
+                <div style={{ fontSize: '0.82rem', color: '#fde047', fontWeight: 800, marginBottom: '14px' }}>
+                  👉 Start Today With ₦35,000 Deposit (Pay ₦30k Balance After Going Live!)
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.75 }}>
+                  <li>✓ Free 1-Year `.com.ng` domain &amp; hosting (Zero monthly fee)</li>
+                  <li>✓ We put your real shop photos, phone number &amp; price list</li>
+                  <li>✓ Customers message your WhatsApp directly from Google</li>
+                  <li>✓ Google Maps location pin &amp; 24–48hr live handover</li>
                 </ul>
               </div>
               <a
-                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I want to launch the Complete Web Presence + 24/7 Bot (₦45,000) for *${data.lead.name}*. Please send activation details.`)}`}
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want to lock in Option 1 under the October 50% Promo (₦65,000 Promo Total · ₦35,000 Deposit today, ₦30,000 balance after going live). Please help me get started.`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -494,15 +566,15 @@ export default function PreviewPage() {
                   textAlign: 'center'
                 }}
               >
-                <span>Launch for {data.lead.name} (₦45,000) →</span>
+                <span>Lock October Promo (₦35,000 Deposit) →</span>
               </a>
             </div>
 
-            {/* OPTION 2: ENTERPRISE AUTOMATION SUITE */}
+            {/* OPTION 2: OCTOBER 50% PROMO — CORPORATE .COM + STAFF EMAILS SUITE (₦120K TOTAL · ₦60K DEPOSIT) */}
             <div 
               style={{
                 background: 'rgba(15, 23, 42, 0.7)',
-                border: '1px solid rgba(56, 189, 248, 0.35)',
+                border: '1px solid rgba(56, 189, 248, 0.4)',
                 borderRadius: '20px',
                 padding: '24px',
                 display: 'flex',
@@ -514,33 +586,28 @@ export default function PreviewPage() {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#38bdf8', background: 'rgba(56, 189, 248, 0.12)', padding: '4px 10px', borderRadius: '8px', textTransform: 'uppercase' }}>
-                    Option 2 · Full Growth Suite
+                    Option 2 · Corporate .COM Suite
                   </span>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Includes Custom Domain (.com.ng)</span>
+                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 700 }}>₦240,000</span>
                 </div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
-                  Custom Domain + Priority Automation
+                <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
+                  International `.COM` + Staff Emails &amp; AI Suite
                 </h3>
-                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', margin: '12px 0 16px 0' }}>
-                  ₦85,000 <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 500 }}>(₦40k milestone deposit)</span>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', margin: '10px 0 4px 0' }}>
+                  ₦120,000 <span style={{ fontSize: '0.82rem', color: '#38bdf8', fontWeight: 700 }}>October Promo Total</span>
                 </div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.86rem', color: '#cbd5e1', lineHeight: 1.8 }}>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> Dedicated custom domain (e.g. yourbusiness.com.ng)
-                  </li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> Automated WhatsApp customer appointment / order ledger
-                  </li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> Google Business Profile SEO ranking optimization
-                  </li>
-                  <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> Full 60-Day maintenance & concierge support
-                  </li>
+                <div style={{ fontSize: '0.82rem', color: '#7dd3fc', fontWeight: 800, marginBottom: '14px' }}>
+                  👉 Start Today With ₦60,000 Deposit (Pay ₦60k Balance on Handover!)
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.75 }}>
+                  <li>✓ International `.com` domain (`www.{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com`)</li>
+                  <li>✓ 3 Official corporate emails (`info@{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com`)</li>
+                  <li>✓ Interactive customer calculator + Google #1 SEO setup</li>
+                  <li>✓ 100% Full Code &amp; Domain Ownership + 60-Day VIP Support</li>
                 </ul>
               </div>
               <a
-                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I want to request the Custom Domain + Priority Automation (₦85,000) for *${data.lead.name}*. Please send the invoice card.`)}`}
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I want Option 2 under the October 50% Promo: Corporate .COM + Staff Emails Suite (₦120,000 Promo Total · ₦60,000 Deposit today) for *${data.lead.name}*. Please send the official invoice.`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -556,87 +623,112 @@ export default function PreviewPage() {
                   fontWeight: 800,
                   fontSize: '0.9rem',
                   textDecoration: 'none',
-                  transition: 'all 0.2s',
                   textAlign: 'center'
                 }}
               >
-                <span>Select Custom Domain Suite →</span>
+                <span>Lock Corporate .COM Promo (₦60k Deposit) →</span>
+              </a>
+            </div>
+
+            {/* OPTION 3: SEND PHOTOS / PRICE LIST FOR FREE UPDATE FIRST */}
+            <div 
+              style={{
+                background: 'rgba(15, 23, 42, 0.7)',
+                border: '1px solid rgba(245, 158, 11, 0.4)',
+                borderRadius: '20px',
+                padding: '24px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                position: 'relative'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#fbbf24', background: 'rgba(245, 158, 11, 0.15)', padding: '4px 10px', borderRadius: '8px', textTransform: 'uppercase' }}>
+                    Option 3 · Zero Upfront Risk
+                  </span>
+                  <span style={{ fontSize: '0.75rem', color: '#fde68a' }}>See Changes First</span>
+                </div>
+                <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
+                  Send Your Real Shop Photos &amp; Prices First
+                </h3>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#fbbf24', margin: '10px 0 4px 0' }}>
+                  ₦0 <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 500 }}>to customize preview</span>
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#fde68a', fontWeight: 800, marginBottom: '14px' }}>
+                  👉 Pay only after you see your real photos &amp; love it!
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.75 }}>
+                  <li>✓ Send us 3–5 photos of your work/shop on WhatsApp</li>
+                  <li>✓ Send your real phone number, address &amp; price list</li>
+                  <li>✓ Our engineer updates your sample website free</li>
+                  <li>✓ Automatically reserves your 50% October Promo rate</li>
+                </ul>
+              </div>
+              <a
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I viewed the sample website for *${data.lead.name}* (${data.lead.area || data.lead.city || 'Nigeria'}).\n\nI want to send you my real shop photos, phone number, and prices on WhatsApp so you can update the sample page for me first under the October 50% Promo.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '12px 20px',
+                  borderRadius: '12px',
+                  background: 'rgba(245, 158, 11, 0.18)',
+                  border: '1px solid #f59e0b',
+                  color: '#fbbf24',
+                  fontWeight: 800,
+                  fontSize: '0.9rem',
+                  textDecoration: 'none',
+                  textAlign: 'center'
+                }}
+              >
+                <span>✏️ Send My Photos on WhatsApp First (Free) →</span>
               </a>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* ── SECTION 3: INTERACTIVE SECTOR CALCULATOR & TROJAN HORSE TOOLS ── */}
-      <section 
-        style={{ 
-          maxWidth: '1080px', 
-          margin: '28px auto', 
-          padding: '0 16px', 
-          boxSizing: 'border-box' 
-        }}
-      >
-        <div style={{ marginBottom: '16px', textAlign: 'center' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>
-            🛠️ Interactive Commercial Tool Suite
-          </span>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ffffff', margin: 0 }}>
-            Test Drive the Quoting Tool Engineered for Your Industry
-          </h2>
-        </div>
-        <SectorToolsWidget
-          businessCategory={data.lead.category}
-          businessName={data.lead.name}
-          merchantPhone="2348022791227"
-          hasWebsite={Boolean(data.lead.business_summary?.includes('http') || (data.lead as Record<string, unknown>)?.website || (data as Record<string, unknown>)?.hasWebsite)}
-        />
-      </section>
-
-      {/* ── SECTION 4: FULL WEBSITE PREVIEW SHELL (CLEAN PROGRESSIVE DISCLOSURE) ── */}
-      <section 
-        style={{ 
-          maxWidth: '1140px', 
-          margin: '36px auto', 
-          padding: '0 16px', 
-          boxSizing: 'border-box' 
-        }}
-      >
-        <div 
-          style={{ 
-            border: '1px solid rgba(255, 255, 255, 0.1)', 
-            borderRadius: '24px', 
-            overflow: 'hidden', 
-            background: '#040711',
-            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8)' 
-          }}
-        >
-          <div 
-            style={{ 
-              background: '#0f172a', 
-              padding: '14px 20px', 
-              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          {/* CAC CERTIFIED BUSINESS & CORPORATE BANK ACCOUNT TRUST SHIELD */}
+          <div
+            style={{
+              marginTop: '20px',
+              padding: '14px 18px',
+              borderRadius: '14px',
+              background: 'rgba(16, 185, 129, 0.08)',
+              border: '1px solid rgba(16, 185, 129, 0.25)',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
               flexWrap: 'wrap',
-              gap: '12px'
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '14px',
+              fontSize: '0.82rem',
+              color: '#e2e8f0'
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444' }}></span>
-              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b' }}></span>
-              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }}></span>
-              <span style={{ fontSize: '0.82rem', color: '#94a3b8', marginLeft: '8px', fontFamily: 'monospace' }}>
-                https://www.{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com.ng (Live Staging)
-              </span>
-            </div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981', background: 'rgba(16, 185, 129, 0.15)', padding: '4px 10px', borderRadius: '8px' }}>
-              ● 100% Mobile Ready Prototype
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#34d399', fontWeight: 800 }}>
+              🏛️ CAC Certified Nigerian Business (Bethelmind Digital Solutions)
+            </span>
+            <span style={{ color: '#475569' }}>•</span>
+            <span>
+              <strong>Official Corporate Account:</strong> Moniepoint Microfinance Bank · <strong>6805375225</strong> · <strong>Bethelmind Digital Solutions</strong>
             </span>
           </div>
-
-          <LandingPage data={data} leadId={leadId} isPreview={true} />
         </div>
+      </section>
+
+      {/* ── SECTION 4: EXECUTIVE VALUE & VOICE SUMMARY ── */}
+      <section style={{ width: '100%', position: 'relative' }}>
+        <NigerianSmeHeroExplainer
+          businessName={data.lead.name}
+          category={data.lead.category}
+          area={data.lead.area || data.lead.city || 'Lagos'}
+          phone={data.lead.phone_raw}
+          previewUrl={`https://www.bethelmindanalytics.com/preview/${leadId}`}
+          adminPhone="2348022791227"
+        />
       </section>
 
       {/* ── SECTION 5: OPERATIONAL BLUEPRINT & VERIFIED CASE STUDY ── */}

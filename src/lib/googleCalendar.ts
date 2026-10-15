@@ -37,7 +37,7 @@ export function generateGoogleCalendarBooking(options: CalendarBookingOptions): 
     leadName,
     leadPhone = '',
     leadEmail = '',
-    description = 'Strategy & Consultation Call with Bethelmind Analytics Team',
+    description = 'Strategy & Consultation Call with Bethelmind Digital Solutions Team',
     durationMinutes = 30,
     startDateIso
   } = options;
@@ -55,7 +55,7 @@ export function generateGoogleCalendarBooking(options: CalendarBookingOptions): 
 
   const eventTitle = encodeURIComponent(`${title} - ${leadName}`);
   const eventDetails = encodeURIComponent(
-    `${description}\n\nClient Name: ${leadName}\nPhone: ${leadPhone}\nEmail: ${leadEmail}\nHost: Bethelmind Analytics & Strategy`
+    `${description}\n\nClient Name: ${leadName}\nPhone: ${leadPhone}\nEmail: ${leadEmail}\nHost: Bethelmind Digital Solutions`
   );
   const location = encodeURIComponent('Google Meet / WhatsApp Video Call');
 

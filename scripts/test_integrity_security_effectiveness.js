@@ -21,7 +21,7 @@ async function requestHttp(urlPath, method = 'GET', data = null, headers = {}) {
     const opts = {
       method,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ApexReachSystemAudit/1.0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Bethelmind Digital SolutionsSystemAudit/1.0',
         ...headers
       },
       signal: controller.signal
@@ -48,7 +48,7 @@ async function requestHttp(urlPath, method = 'GET', data = null, headers = {}) {
 
 async function runIntegritySecurityEffectivenessTests() {
   console.log('====================================================================');
-  console.log('🛡️ ApexReach Master Integrity, Vulnerability & Effectiveness Audit');
+  console.log('🛡️ Bethelmind Digital Solutions Master Integrity, Vulnerability & Effectiveness Audit');
   console.log('====================================================================\n');
 
   let passed = 0;

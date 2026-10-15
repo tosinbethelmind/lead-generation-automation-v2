@@ -1,6 +1,6 @@
 /**
  * @file src/config/payment.ts
- * Centralised payment configuration for Bethelmind Analytics.
+ * Centralised payment configuration for Bethelmind Digital Solutions.
  *
  * CURRENT MODE: manual_opay_transfer
  * All payment details are read from public environment variables.
@@ -8,7 +8,7 @@
  *
  * HOW TO CONFIGURE:
  * Set the following in your .env.local (never commit .env.local):
- *   NEXT_PUBLIC_PAYMENT_ACCOUNT_NAME="Bethelmind Analytics & Strategy"
+ *   NEXT_PUBLIC_PAYMENT_ACCOUNT_NAME="Bethelmind Digital Solutions"
  *   NEXT_PUBLIC_PAYMENT_BANK_NAME="OPay"
  *   NEXT_PUBLIC_PAYMENT_ACCOUNT_NUMBER="YOUR_REAL_OPAY_ACCOUNT_NUMBER"
  *   NEXT_PUBLIC_BUSINESS_WHATSAPP_NUMBER="2348022791227"
@@ -71,16 +71,15 @@ export const paymentConfig: PaymentConfig = {
 
   instructions: [
     'Select your preferred package below.',
-    'Transfer the exact displayed amount to the official Moniepoint account shown.',
+    'Transfer the exact displayed amount to our official CAC-registered corporate Moniepoint account (6805375225 — Bethelmind Digital Solutions).',
     'Use the generated payment reference as your transfer narration where possible.',
     'Take a screenshot of your bank transfer confirmation.',
     'Tap "Send Receipt on WhatsApp" and attach the screenshot.',
-    'We will confirm your payment and send onboarding instructions within one business day.',
+    'We will confirm your payment and activate your deployment immediately.',
   ],
 
   safetyNote:
-    'Always confirm the account name shown on this page before sending payment. ' +
-    'Do not send money to unofficial accounts or individuals claiming to represent Bethelmind Digital Solutions.',
+    '🏛️ CAC Certified Nigerian Enterprise: Always confirm our official corporate account name (Bethelmind Digital Solutions · Moniepoint 6805375225) before sending payment.',
 };
 
 /**

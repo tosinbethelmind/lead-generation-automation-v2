@@ -23,12 +23,12 @@ function setupWindowsStartup() {
   }
 
   const projectDir = path.resolve(__dirname, '..');
-  const batFilePath = path.join(startupDir, 'run_apexreach_runner.bat');
+  const batFilePath = path.join(startupDir, 'run_bethelmind_.bat');
 
   const batContent = `@echo off
-title ApexReach Background Runner
+title Bethelmind Digital Solutions Background Runner
 echo ========================================================
-echo 🚀 ApexReach Automated Startup Runner
+echo 🚀 Bethelmind Digital Solutions Automated Startup Runner
 echo Project Directory: ${projectDir}
 echo ========================================================
 cd /d "${projectDir}"
@@ -42,7 +42,7 @@ echo [2/3] Verifying dependencies...
 call npm install --no-audit --no-fund
 
 echo.
-echo [3/3] Starting ApexReach Services (Dev, Runner, WhatsApp)...
+echo [3/3] Starting Bethelmind Digital Solutions Services (Dev, Runner, WhatsApp)...
 npm run start-all
 
 pause

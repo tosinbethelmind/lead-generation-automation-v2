@@ -2,7 +2,7 @@
  * @file scripts/test_resilient_scraper_cascade.js
  * 
  * 🧪 MULTI-TIER SCRAPING CASCADE INTEGRATION TEST (WITH DIRECTORY + SERP + BROWSERLESS FAILOVER)
- * Bethelmind Analytics Lagos Desk
+ * Bethelmind Digital Solutions
  */
 
 const fs = require('fs');
@@ -158,7 +158,7 @@ async function harvestTier3Browserless(targetUrl, sector, city) {
 
 async function runCascadeTest() {
   console.log('========================================================================');
-  console.log('🛡️ BETHELMIND ANALYTICS: 3-TIER SCRAPING CASCADE INTEGRATION TEST');
+  console.log('🛡️ Bethelmind Digital Solutions: 3-TIER SCRAPING CASCADE INTEGRATION TEST');
   console.log('========================================================================\n');
 
   let harvestedLeads = [];

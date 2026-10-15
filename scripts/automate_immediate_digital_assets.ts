@@ -9,7 +9,7 @@
  * 3. 🏠 Asset #3: 2026 Real Estate Cashflow & Landlord Operating System (Cashflow Property Tips Traffic)
  * 
  * Direct Cashflow Gateway:
- * - OPay Digital Services (7034297995 - Oyelakin Tosin Matthew)
+ * - Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)
  * - Selar Multi-Currency Master Payout: https://selar.com/showlove/bethelmind
  */
 
@@ -44,7 +44,7 @@ const DIGITAL_ASSETS: DigitalAssetConfig[] = [
     targetChannel: 'AI Tool Genius (@AIToolGenius)',
     niche: 'AI Tools & Tech',
     pricing: { ngn: '₦14,000', usd: '$9' },
-    payoutRoute: 'OPay (7034297995 - Oyelakin Tosin Matthew) via Selar',
+    payoutRoute: 'OPay (6805375225 - Bethelmind Digital Solutions) via Selar',
     deliverableBundleUrl: 'https://pnsrjsyiygxdcxkpgbzx.supabase.co/storage/v1/object/public/rendered-videos/da-aitools-bundle.zip',
     freebieLeadMagnetUrl: 'https://pnsrjsyiygxdcxkpgbzx.supabase.co/storage/v1/object/public/rendered-videos/da-aitools-freebie.pdf',
     selarCheckoutUrl: 'https://selar.com/showlove/bethelmind?product=da-aitools',
@@ -63,10 +63,10 @@ const DIGITAL_ASSETS: DigitalAssetConfig[] = [
   {
     id: 'da-b2bleadgen',
     name: 'Instant WhatsApp Speed-to-Lead & Catalog Closer Bot Template',
-    targetChannel: 'Bethelmind Analytics Lagos Desk (wa.me/2348022791227)',
+    targetChannel: 'Bethelmind Digital Solutions (wa.me/2348022791227)',
     niche: 'B2B Commercial Growth & SME Automation',
     pricing: { ngn: '₦25,000 (Self-Install) / ₦75,000 (Turnkey DFY Setup)', usd: '$19 / $50' },
-    payoutRoute: 'OPay (7034297995 - Oyelakin Tosin Matthew) via Direct Transfer & Selar',
+    payoutRoute: 'OPay (6805375225 - Bethelmind Digital Solutions) via Direct Transfer & Selar',
     deliverableBundleUrl: 'https://pnsrjsyiygxdcxkpgbzx.supabase.co/storage/v1/object/public/rendered-videos/da-b2bleadgen-bundle.zip',
     freebieLeadMagnetUrl: 'https://pnsrjsyiygxdcxkpgbzx.supabase.co/storage/v1/object/public/rendered-videos/da-b2bleadgen-freebie.pdf',
     selarCheckoutUrl: 'https://selar.com/showlove/bethelmind?product=da-b2bleadgen',
@@ -86,7 +86,7 @@ const DIGITAL_ASSETS: DigitalAssetConfig[] = [
     targetChannel: 'Cashflow Property Tips (@CashflowPropertyTips)',
     niche: 'Real Estate Investing',
     pricing: { ngn: '₦20,000', usd: '$15' },
-    payoutRoute: 'OPay (7034297995 - Oyelakin Tosin Matthew) via Selar',
+    payoutRoute: 'OPay (6805375225 - Bethelmind Digital Solutions) via Selar',
     deliverableBundleUrl: 'https://pnsrjsyiygxdcxkpgbzx.supabase.co/storage/v1/object/public/rendered-videos/da-realestate-bundle.zip',
     freebieLeadMagnetUrl: 'https://pnsrjsyiygxdcxkpgbzx.supabase.co/storage/v1/object/public/rendered-videos/da-realestate-freebie.pdf',
     selarCheckoutUrl: 'https://selar.com/showlove/bethelmind?product=da-realestate',
@@ -156,7 +156,7 @@ async function runMonetizationAutomation() {
   const manifestPath = path.join(outDir, 'digital_assets_monetization_live.json');
   const manifestData = {
     generatedAt: new Date().toISOString(),
-    payoutBank: 'OPay Digital Services (7034297995 - Oyelakin Tosin Matthew)',
+    payoutBank: 'Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)',
     selarMasterLink: 'https://selar.com/showlove/bethelmind',
     assets: DIGITAL_ASSETS.map(a => ({
       ...a,
@@ -171,7 +171,7 @@ async function runMonetizationAutomation() {
   const copyPackPath = path.join(outDir, 'MONETIZATION_COPY_PACK.md');
   let mdContent = `# 🚀 LIVE DIGITAL ASSET MONETIZATION & PINNED COMMENT PACK\n\n`;
   mdContent += `*Generated: ${new Date().toLocaleString()}*\n`;
-  mdContent += `*Direct Payout Account: OPay Digital Services (7034297995 - Oyelakin Tosin Matthew)*\n\n`;
+  mdContent += `*Direct Payout Account: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)*\n\n`;
 
   DIGITAL_ASSETS.forEach((a, i) => {
     mdContent += `## Asset #${i + 1}: ${a.name} (${a.pricing.ngn} / ${a.pricing.usd})\n`;

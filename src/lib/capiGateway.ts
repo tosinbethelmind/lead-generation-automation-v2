@@ -68,7 +68,7 @@ export async function sendMetaCapiEvent(payload: CapiEventPayload) {
     event_name: payload.eventName,
     event_time: payload.eventTime || Math.floor(Date.now() / 1000),
     event_id: payload.eventId,
-    event_source_url: payload.eventSourceUrl || 'https://apexreach-leads.vercel.app',
+    event_source_url: payload.eventSourceUrl || 'https://bethelmind-leads.vercel.app',
     action_source: 'website',
     user_data,
     custom_data: payload.customData || {}

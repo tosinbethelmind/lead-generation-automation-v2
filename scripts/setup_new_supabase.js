@@ -74,7 +74,7 @@ function updateEnv(newValues) {
 async function main() {
   console.log(`\n${colors.cyan}${colors.bold}`);
   console.log('══════════════════════════════════════════════════════');
-  console.log('  🚀 Bethelmind Analytics — Supabase Migration Setup  ');
+  console.log('  🚀 Bethelmind Digital Solutions — Supabase Migration Setup  ');
   console.log('══════════════════════════════════════════════════════');
   console.log(colors.reset);
   console.log('Please enter the credentials from your NEW Supabase project.');

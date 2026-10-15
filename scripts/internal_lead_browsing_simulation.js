@@ -1,7 +1,7 @@
 /**
  * scripts/internal_lead_browsing_simulation.js
  * 
- * Master ApexReach Lead Journey, Website Redesign, Feature Usage & Security Audit Suite
+ * Master Bethelmind Digital Solutions Lead Journey, Website Redesign, Feature Usage & Security Audit Suite
  * Simulates:
  * 1. Internal browsing across all 18 front-end app routes
  * 2. Full website claim & package tier customization (Express, Growth, VIP, Luxury)
@@ -26,7 +26,7 @@ async function requestHttp(urlPath, method = 'GET', data = null, headers = {}) {
     const opts = {
       method,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ApexReachInternalLeadSimulator/3.0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Bethelmind Digital SolutionsInternalLeadSimulator/3.0',
         ...headers
       },
       signal: controller.signal
@@ -51,7 +51,7 @@ async function requestHttp(urlPath, method = 'GET', data = null, headers = {}) {
 
 async function runMasterSimulationSuite() {
   console.log('====================================================================');
-  console.log('🌐 ApexReach Comprehensive Webapp Lead Journey & Security Audit');
+  console.log('🌐 Bethelmind Digital Solutions Comprehensive Webapp Lead Journey & Security Audit');
   console.log('====================================================================\n');
 
   let passed = 0;

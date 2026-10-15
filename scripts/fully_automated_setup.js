@@ -25,7 +25,7 @@ function ensurePgInstalled() {
 async function runFullyAutomatedSetup() {
   console.log(colors.cyan + colors.bright);
   console.log('====================================================');
-  console.log('      ApexReach Headless Setup & Migration          ');
+  console.log('      Bethelmind Digital Solutions Headless Setup & Migration          ');
   console.log('====================================================' + colors.reset);
   console.log('Running fully automated headless configuration setup...\n');
 
@@ -68,7 +68,7 @@ async function runFullyAutomatedSetup() {
   // Ensure default environment values are set to prevent errors
   process.env.STORAGE_MODE = process.env.STORAGE_MODE || envVars.STORAGE_MODE || 'local';
   process.env.DRY_RUN = process.env.DRY_RUN || envVars.DRY_RUN || 'true';
-  process.env.BUSINESS_SIGNATURE = process.env.BUSINESS_SIGNATURE || envVars.BUSINESS_SIGNATURE || 'ApexReach';
+  process.env.BUSINESS_SIGNATURE = process.env.BUSINESS_SIGNATURE || envVars.BUSINESS_SIGNATURE || 'Bethelmind Digital Solutions';
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';

@@ -2,7 +2,7 @@
  * @file src/lib/monetization/agentReachLeadPackager.ts
  * 
  * Agent-Reach Enhanced B2B Lead Packager & Selar Monetization Engine
- * Bethelmind Analytics Commercial Growth System
+ * Bethelmind Digital Solutions Commercial Growth System
  * 
  * - Generates high-value Selar digital lead packs enriched with Agent-Reach data
  *   (Verified Instagram/LinkedIn/Facebook social handles, active catalogs, and direct WhatsApp CTAs).

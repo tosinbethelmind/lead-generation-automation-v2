@@ -31,11 +31,11 @@ export async function POST(req: NextRequest) {
       name: 'Test Recipient',
       phone_raw: testNumber,
       phone_e164: testNumber,
-      company: 'Bethelmind Analytics & Strategy Test'
+      company: 'Bethelmind Digital Solutions Test'
     };
 
     const previewUrl = `${new URL(req.url).origin}/preview/test-sms`;
-    const testMessage = `This is a test message from Bethelmind Analytics & Strategy to verify your SMS provider (${config.smsProvider}) settings.`;
+    const testMessage = `This is a test message from Bethelmind Digital Solutions to verify your SMS provider (${config.smsProvider}) settings.`;
 
     const details = await sendSmsMessage(mockLead, previewUrl, testMessage, config);
 

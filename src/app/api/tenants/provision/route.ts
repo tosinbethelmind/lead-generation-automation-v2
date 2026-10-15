@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     try {
       const { sendNotificationEmail } = await import('@/lib/email');
       const tierDetails = NIGERIAN_MARKET_TIERS.find(t => t.id === package_tier);
-      const subject = `🚀 Welcome to ApexReach! Your ${tierDetails?.name || package_tier} is Ready`;
+      const subject = `🚀 Welcome to Bethelmind Digital Solutions! Your ${tierDetails?.name || package_tier} is Ready`;
       const emailBody = `Welcome, ${owner_name || business_name}!\n\nYour ${tierDetails?.badge || package_tier.toUpperCase()} is fully provisioned.\n\nPortal URL: ${portalUrl}\nAccess Token: ${tenant.access_token}\n\nKeep this token private as it grants access to your workspace.`;
       await sendNotificationEmail(owner_email, subject, emailBody);
 

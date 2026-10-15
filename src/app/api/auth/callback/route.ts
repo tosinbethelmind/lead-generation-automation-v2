@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
         await supabase
           .from('app_settings')
           .upsert({
-            key: 'apexreach_runtime_config',
+            key: 'bethelmind_',
             value: JSON.stringify(updatedConfig),
             updated_at: new Date().toISOString()
           }, { onConflict: 'key' });

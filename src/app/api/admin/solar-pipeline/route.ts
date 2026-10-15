@@ -385,7 +385,7 @@ export async function POST(req: NextRequest) {
                 'Accept': 'application/vnd.github+json',
                 'Authorization': `Bearer ${githubToken}`,
                 'X-GitHub-Api-Version': '2022-11-28',
-                'User-Agent': 'ApexReach-App-Solar5k'
+                'User-Agent': 'Bethelmind Digital Solutions-App-Solar5k'
               },
               body: JSON.stringify({ 
                 event_type: 'run-solar-5k',

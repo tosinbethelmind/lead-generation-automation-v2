@@ -2,7 +2,7 @@
 
 /**
  * @file src/components/home/Navbar.tsx
- * Ultra-Premium, Responsive Glassmorphism Navigation Bar for Bethelmind Analytics.
+ * Ultra-Premium, Responsive Glassmorphism Navigation Bar for Bethelmind Digital Solutions.
  *
  * Designed to prevent horizontal overflow, eliminate visual clutter, and ensure 
  * 100% functional navigation across desktop, tablet, and mobile viewports.
@@ -141,7 +141,7 @@ export default function Navbar() {
       {/* Brand Logo */}
       <Link
         href="/home"
-        aria-label="Bethelmind Analytics Home"
+        aria-label="Bethelmind Digital Solutions Home"
         style={{
           display: 'flex',
           alignItems: 'center',

@@ -2,7 +2,7 @@
  * @file scripts/autonomous_247_master_daemon.ts
  * 
  * 🚀 PERMANENT 24/7 AUTONOMOUS COMMERCIAL GROWTH & OUTREACH DAEMON
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * CORE RESPONSIBILITIES:
  * 1. Continuous Nigeria-Wide 10,000 Leads/Day Multi-Engine Harvester (36 States + FCT).
@@ -90,7 +90,7 @@ function generateEmailPayload(lead: any) {
   const subject = `Quick question regarding late-night customer inquiries for ${cleanName}`;
   const textContent = `Good day ${cleanName} Team,
 
-My name is Tosin from Bethelmind Analytics Lagos Desk. We recently conducted an operational review for commercial businesses in ${area} and noticed prospective clients inquiring after business hours experience delays before receiving quotes.
+My name is Tosin from Bethelmind Digital Solutions. We recently conducted an operational review for commercial businesses in ${area} and noticed prospective clients inquiring after business hours experience delays before receiving quotes.
 
 We have custom-built a 24/7 AI WhatsApp Sales & Quoting Portal for ${cleanName}.
 
@@ -108,7 +108,7 @@ Email: tosin@bethelmindanalytics.com
 
 Best regards,
 Tosin Oyelakin
-Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
+Lead Solutions Strategist · Bethelmind Digital Solutions`;
 
   const htmlContent = `
 <!DOCTYPE html>
@@ -117,13 +117,13 @@ Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
 <body style="margin:0; padding:20px; background-color:#0b1329; font-family:'Segoe UI', Arial, sans-serif; color:#f8fafc;">
   <div style="max-width:600px; margin:0 auto; background:#0f172a; border:1px solid #1e293b; border-radius:12px; overflow:hidden;">
     <div style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding:24px; text-align:center;">
-      <div style="color:#e0f2fe; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">⚡ Bethelmind Analytics Lagos Desk</div>
+      <div style="color:#e0f2fe; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">⚡ Bethelmind Digital Solutions</div>
       <h1 style="color:#ffffff; margin:0; font-size:20px; font-weight:800;">24/7 AI Quoting & WhatsApp Portal</h1>
       <p style="color:#bae6fd; margin:6px 0 0 0; font-size:13px;">Pre-built private prototype for <strong>${cleanName}</strong></p>
     </div>
     <div style="padding:28px;">
       <p style="font-size:15px; color:#cbd5e1; line-height:1.6; margin-top:0;">Good day Team at <strong>${cleanName}</strong>,</p>
-      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">My name is Tosin from Bethelmind Analytics. We prepared a 24/7 automated WhatsApp sales & quoting prototype custom-built for ${cleanName} in ${area}.</p>
+      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">My name is Tosin from Bethelmind Digital Solutions. We prepared a 24/7 automated WhatsApp sales & quoting prototype custom-built for ${cleanName} in ${area}.</p>
       <div style="text-align:center; margin:24px 0;">
         <a href="${previewUrl}" style="display:inline-block; background:linear-gradient(135deg, #0284c7, #2563eb); color:#ffffff; padding:14px 32px; border-radius:8px; font-weight:800; font-size:15px; text-decoration:none;">👉 Test Drive Your Live Prototype Online</a>
         <div style="font-size:12px; color:#64748b; margin-top:8px;">(100% Free ₦0 Upfront Review on your phone)</div>
@@ -131,7 +131,7 @@ Lead Solutions Strategist · Bethelmind Analytics Lagos Desk`;
       <div style="border-top:1px solid #1e293b; padding-top:18px; margin-top:20px; font-size:13px; color:#94a3b8; line-height:1.6;">
         📱 <strong>WhatsApp Desk:</strong> <a href="https://wa.me/2348022791227" style="color:#38bdf8; text-decoration:none; font-weight:700;">+234 802 279 1227</a><br>
         📧 <strong>Email:</strong> <a href="mailto:tosin@bethelmindanalytics.com" style="color:#38bdf8; text-decoration:none;">tosin@bethelmindanalytics.com</a><br><br>
-        <strong>Tosin Oyelakin</strong> · <em>Bethelmind Analytics Lagos Desk</em>
+        <strong>Tosin Oyelakin</strong> · <em>Bethelmind Digital Solutions</em>
       </div>
     </div>
   </div>
@@ -224,7 +224,7 @@ async function executeDailyOutreachPass() {
     } catch (brevoErr: any) {
       try {
         await hostinger.sendMail({
-          from: '"Tosin | Bethelmind Analytics Lagos Desk" <tosin@bethelmindanalytics.com>',
+          from: '"Tosin | Bethelmind Digital Solutions" <tosin@bethelmindanalytics.com>',
           to: lead.email,
           subject: payload.subject,
           text: payload.textContent,

@@ -136,7 +136,7 @@ async function consolidateAllLeads() {
   }
 
   // 2. Process root Excel files
-  const rootFiles = ['leads.xlsx', 'ApexReach_Leads_Template.xlsx'];
+  const rootFiles = ['leads.xlsx', 'bethelmind_.xlsx'];
   for (const rf of rootFiles) {
     const rPath = path.join(__dirname, '..', rf);
     if (fs.existsSync(rPath)) {
@@ -200,7 +200,7 @@ async function consolidateAllLeads() {
 
   console.log(`\n📌 VERIFIED ENGINE BREAKDOWN:`);
   console.log(`   • Total Consolidated Leads:             ${allConsolidatedLeads.length.toLocaleString()}`);
-  console.log(`   • Verified Regular Lagos B2B Pool:      ${lagosRegularCount.toLocaleString()} 🎯 (ApexReach Engine)`);
+  console.log(`   • Verified Regular Lagos B2B Pool:      ${lagosRegularCount.toLocaleString()} 🎯 (Bethelmind Digital Solutions Engine)`);
   console.log(`   • Lagos Leads with Verified Phone:      ${lagosPhoneCount.toLocaleString()}`);
   console.log(`   • Lagos Leads with Verified Email:      ${lagosEmailCount.toLocaleString()}`);
   console.log(`   • Solar Energy Prospects (Isolated):    ${solarCount.toLocaleString()}`);

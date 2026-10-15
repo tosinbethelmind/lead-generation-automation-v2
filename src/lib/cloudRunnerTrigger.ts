@@ -27,11 +27,11 @@ export async function triggerCloudRunnerIfNeeded(): Promise<boolean> {
     const { data } = await supabase
       .from('app_settings')
       .select('value')
-      .eq('key', 'apexreach_runtime_config')
+      .eq('key', 'bethelmind_')
       .maybeSingle();
 
     if (!data?.value) {
-      console.log('[RunnerTrigger] No apexreach_runtime_config found in Supabase.');
+      console.log('[RunnerTrigger] No bethelmind_ found in Supabase.');
       return false;
     }
 
@@ -81,7 +81,7 @@ export async function triggerCloudRunnerIfNeeded(): Promise<boolean> {
     await supabase
       .from('app_settings')
       .upsert({
-        key: 'apexreach_runtime_config',
+        key: 'bethelmind_',
         value: JSON.stringify(parsedConfig),
         updated_at: new Date().toISOString()
       }, { onConflict: 'key' });
@@ -95,7 +95,7 @@ export async function triggerCloudRunnerIfNeeded(): Promise<boolean> {
         'Accept': 'application/vnd.github+json',
         'Authorization': `Bearer ${githubToken}`,
         'X-GitHub-Api-Version': '2022-11-28',
-        'User-Agent': 'ApexReach-App-Trigger'
+        'User-Agent': 'Bethelmind Digital Solutions-App-Trigger'
       },
       body: JSON.stringify({
         event_type: 'run-queue'

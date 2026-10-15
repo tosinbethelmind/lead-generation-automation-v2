@@ -35,7 +35,7 @@ async function runFullVerificationSuite() {
   const engineState = await executeFiveMoneyEngine();
   assert(engineState.totalActiveOpportunities > 0, `Total Active Opportunities (${engineState.totalActiveOpportunities}) > 0`);
   assert(engineState.totalPipelineYieldNGN >= 6000000, `Consolidated Pipeline Yield (₦${engineState.totalPipelineYieldNGN.toLocaleString()} NGN) >= ₦6,000,000 NGN`);
-  assert(engineState.beneficiaryAccount.accountNumber === '7034297995', `OPay Account matches 7034297995`);
+  assert(engineState.beneficiaryAccount.accountNumber === '6805375225', `OPay Account matches 6805375225`);
 
   // 2. Test Audio Voice Notes & Dynamic Audio Directory
   console.log('\n--- 2. Testing Voice Note Audio Assets ---');
@@ -89,9 +89,9 @@ async function runFullVerificationSuite() {
 
   // 6. Test OPay Destination Consistency
   console.log('\n--- 6. Testing Direct OPay Settlement Config ---');
-  assert(OPAY_BENEFICIARY_CONFIG.bankName === 'OPay Digital Services', 'Bank Name is OPay Digital Services');
-  assert(OPAY_BENEFICIARY_CONFIG.accountNumber === '7034297995', 'Account Number is 7034297995');
-  assert(OPAY_BENEFICIARY_CONFIG.accountName === 'Oyelakin Tosin Matthew', 'Beneficiary is Oyelakin Tosin Matthew');
+  assert(OPAY_BENEFICIARY_CONFIG.bankName === 'Moniepoint Microfinance Bank', 'Bank Name is Moniepoint Microfinance Bank');
+  assert(OPAY_BENEFICIARY_CONFIG.accountNumber === '6805375225', 'Account Number is 6805375225');
+  assert(OPAY_BENEFICIARY_CONFIG.accountName === 'Bethelmind Digital Solutions', 'Beneficiary is Bethelmind Digital Solutions');
 
   console.log('\n========================================================================');
   console.log(`🎉 TEST SUITE COMPLETED: ${passedTests} / ${totalTests} TESTS PASSED (100% PASS RATE)`);

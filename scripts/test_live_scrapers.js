@@ -131,7 +131,7 @@ async function main() {
 
   console.log('');
   console.log(BOLD('═══════════════════════════════════════════════════════'));
-  console.log(BOLD(' ApexReach Live Scraper Test Suite'));
+  console.log(BOLD(' Bethelmind Digital Solutions Live Scraper Test Suite'));
   console.log(BOLD(`  Target: ${BASE_URL}`));
   console.log(BOLD('═══════════════════════════════════════════════════════'));
   console.log('');

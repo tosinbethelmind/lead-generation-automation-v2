@@ -65,7 +65,7 @@ export default function TypebotLeadConverter({
   };
 
   const waLeadMsg = encodeURIComponent(
-    `Hello Bethelmind Analytics Closer Desk! I just ran the live 24/7 quoting simulation on the ${businessName} prototype (${area}). Phone: ${phoneInput || 'Inquiry'}. I want to claim the ₦0 Upfront staging portal!`
+    `Hello Bethelmind Digital Solutions Closer Desk! I just ran the live 24/7 quoting simulation on the ${businessName} prototype (${area}). Phone: ${phoneInput || 'Inquiry'}. I want to claim the ₦0 Upfront staging portal!`
   );
 
   return (
@@ -212,7 +212,7 @@ export default function TypebotLeadConverter({
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-between pt-2">
             <div className="text-xs text-slate-400 flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-sky-400" />
-              <span>₦0 Upfront Preview · Verified Bethelmind Analytics Lagos Desk</span>
+              <span>₦0 Upfront Preview · Verified Bethelmind Digital Solutions</span>
             </div>
             <a
               href={`https://wa.me/2348022791227?text=${waLeadMsg}`}

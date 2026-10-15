@@ -46,7 +46,7 @@ export default function StickyMobileConversionBar({
   const offerText = isExistingWeb ? '1-Line WhatsApp Embed Upgrade' : 'Turnkey Business Website + 24/7 AI Assistant';
 
   const prefilledMessage = encodeURIComponent(
-    `Hello Bethelmind Digital Solutions! I am testing the live 24/7 quoting prototype for *${businessName}* (${category}) in ${area}.\n\nDemo Link: ${previewLink}\n\nPlease show me how the 2-second WhatsApp auto-reply works with our services and prices (₦0 Upfront Preview).`
+    `Hello Bethelmind Digital Solutions! I just viewed the live website prototype for *${businessName}* (${category}) in ${area}.\n\nDemo Link: ${previewLink}\n\nPlease help me lock in our October 50% Promo Website (₦65k Promo Total · ₦35,000 Deposit today, balance after going live on Google).`
   );
   const waUrl = `https://wa.me/${adminPhone}?text=${prefilledMessage}`;
 
@@ -102,11 +102,11 @@ export default function StickyMobileConversionBar({
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
             <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 6px #ffffff', flexShrink: 0 }}></span>
             <div style={{ textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.9, display: 'block', fontWeight: 700 }}>
-                {isExistingWeb ? '1-Line Embed Upgrade' : '24/7 AI WhatsApp Demo (₦0 Upfront)'}
+              <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.95, display: 'block', fontWeight: 800, color: '#fef08a' }}>
+                🇳🇬 Oct 50% Promo (₦65k) · Start With ₦35k Deposit
               </span>
               <span style={{ fontSize: '0.85rem', fontWeight: 800, display: 'block', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                🟢 Test 2-Sec WhatsApp Demo →
+                🟢 Claim October Promo on WhatsApp →
               </span>
             </div>
           </div>
@@ -182,12 +182,12 @@ export default function StickyMobileConversionBar({
       <div className="flex items-center justify-center gap-3 mt-1.5 text-[10px] text-slate-400 font-medium">
         <span className="flex items-center gap-1 text-emerald-400">
           <Zap className="w-3 h-3 text-emerald-400 fill-current" />
-          {isExistingWeb ? '10-Minute Install · Zero Downtime' : '₦0 Upfront Demo · ₦15k Pilot Setup'}
+          🏛️ CAC Certified: Bethelmind Digital Solutions
         </span>
         <span>•</span>
         <span className="flex items-center gap-1 text-slate-300">
           <ShieldCheck className="w-3 h-3 text-emerald-400" />
-          Moniepoint & OPay Verified
+          Corporate Moniepoint Verified (6805375225)
         </span>
       </div>
 

@@ -2,7 +2,7 @@
  * @file src/lib/scraping/crossRepoTaxonomy.ts
  * 
  * 🇳🇬 CROSS-REPOSITORY NIGERIAN COMMERCIAL TAXONOMY MATRIX
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * Harvests high-intent commercial sector queries and contractor categories inspired by:
  * 1. Solar ROI Proposal Builder (Solar Contractors, Generator vs Solar, Hospital & Hotel Power)

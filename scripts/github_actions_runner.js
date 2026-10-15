@@ -355,7 +355,7 @@ async function runCronChecks() {
 
   // 3. Trigger Git batch synchronization trigger
   try {
-    const cronSecret = process.env.CRON_SECRET || 'apexreach_sync_secret';
+    const cronSecret = process.env.CRON_SECRET || 'bethelmind_';
     const syncUrl = `${SCRAPER_API_BASE_URL.replace(/\/$/, '')}/api/deploy/batch-sync?secret=${cronSecret}`;
     await fetch(syncUrl, { method: 'GET' });
   } catch (e) {}
@@ -425,7 +425,7 @@ async function main() {
     const remainingJobs = await supabaseRequest('GET', 'scrape_jobs?status=eq.queued&limit=1');
     if (remainingJobs && remainingJobs.length > 0) {
       log('🔄 Queue is not empty and job runner timed out. Querying configuration for chain-trigger...');
-      const appSettings = await supabaseRequest('GET', 'app_settings?key=eq.apexreach_runtime_config');
+      const appSettings = await supabaseRequest('GET', 'app_settings?key=eq.bethelmind_');
       if (appSettings && appSettings.length > 0) {
         const parsed = JSON.parse(appSettings[0].value || '{}');
         const token = parsed.githubToken || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
@@ -439,7 +439,7 @@ async function main() {
               'Accept': 'application/vnd.github+json',
               'Authorization': `Bearer ${token}`,
               'X-GitHub-Api-Version': '2022-11-28',
-              'User-Agent': 'ApexReach-App-ChainTrigger'
+              'User-Agent': 'Bethelmind Digital Solutions-App-ChainTrigger'
             },
             body: JSON.stringify({ event_type: 'run-queue' })
           });

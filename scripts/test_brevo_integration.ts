@@ -2,7 +2,7 @@
  * @file scripts/test_brevo_integration.ts
  * 
  * Multi-Account Brevo Integration Preflight & Verification Script
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * Audits:
  * 1. Brevo API credentials & account connectivity across single or multiple accounts.
@@ -19,7 +19,7 @@ import { BrevoClient } from '../src/lib/integrations/brevoClient';
 
 async function runBrevoVerification() {
   console.log('====================================================');
-  console.log('🚀 BETHELMIND ANALYTICS - BREVO MULTI-ACCOUNT AUDIT');
+  console.log('🚀 Bethelmind Digital Solutions - BREVO MULTI-ACCOUNT AUDIT');
   console.log('====================================================\n');
 
   const client = new BrevoClient();

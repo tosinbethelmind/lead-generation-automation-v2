@@ -6,7 +6,7 @@
  * - Professional Nigerian commercial tone
  * - Direct customized prototype demo link
  * - Clear Turnkey (₦150k / ₦75k) vs 1-Line Embed (₦35k / ₦65k) pricing
- * - Official OPay settlement rail (7034297995 - Oyelakin Tosin Matthew)
+ * - Official OPay settlement rail (6805375225 - Bethelmind Digital Solutions)
  * - Zero crypto terminology
  */
 
@@ -17,7 +17,7 @@ const closerResponses = [
     lineIdOverride: 3,
     message: `Good evening Team at *Hairport Beauty Salon & Spa*! 👋
 
-Thank you for reaching out to Bethelmind Analytics Lagos Desk.
+Thank you for reaching out to Bethelmind Digital Solutions.
 
 To answer your question on how the WhatsApp Booking Assistant works:
 1. *24/7 Instant Booking*: When a client messages after salon hours, our AI assistant responds in under 3 seconds, displays your salon treatment menu, and lets them pick their service time and stylist.
@@ -33,7 +33,7 @@ https://www.bethelmindanalytics.com/preview/hairport-beauty-salon-and-spa
 May I activate your 48-Hour deployment or would you prefer a quick voice call demo first?
 
 Warm regards,
-Tosin — Bethelmind Analytics Lagos Desk
+Tosin — Bethelmind Digital Solutions
 Direct Closer Hotline: 0802 279 1227`
   },
   {
@@ -42,7 +42,7 @@ Direct Closer Hotline: 0802 279 1227`
     lineIdOverride: 6,
     message: `Good evening Team at *Auto Auction Mall*! 🚗
 
-Thank you for reaching out to Bethelmind Analytics Lagos Desk.
+Thank you for reaching out to Bethelmind Digital Solutions.
 
 Here is the demo link for your automated dealership quoting tool:
 👉 https://www.bethelmindanalytics.com/preview/auto-auction-mall
@@ -54,12 +54,12 @@ Here is the demo link for your automated dealership quoting tool:
 • *1-Line Embed WhatsApp Sales AI:* ₦35,000 deposit (₦65,000 total)
 • *Complete Turnkey Dealership Website + WhatsApp Quoter:* ₦75,000 deposit (₦150,000 total, delivered in 48 Hours).
 
-Official Settlement: OPay Digital Services (7034297995 - Oyelakin Tosin Matthew).
+Official Settlement: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions).
 
 Would you like us to configure your active vehicle inventory into this quoter tomorrow morning?
 
 Warm regards,
-Tosin — Bethelmind Analytics Lagos Desk
+Tosin — Bethelmind Digital Solutions
 Hotline: 0802 279 1227`
   },
   {
@@ -79,12 +79,12 @@ Here is your custom-built interactive salon prototype demo:
 • *1-Line Embed WhatsApp AI Assistant:* ₦35,000 setup (₦65,000 total)
 • *100% Done-For-You Turnkey Website:* ₦75,000 deposit (₦150,000 total, 48-Hour delivery guarantee).
 
-All payments route safely through OPay Digital Services (7034297995 - Oyelakin Tosin Matthew).
+All payments route safely through Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions).
 
 Please test drive the demo and let me know if you would like us to customize the service list with your exact salon prices!
 
 Warm regards,
-Tosin — Bethelmind Analytics Lagos Desk
+Tosin — Bethelmind Digital Solutions
 Direct WhatsApp: wa.me/2348022791227`
   },
   {
@@ -93,7 +93,7 @@ Direct WhatsApp: wa.me/2348022791227`
     lineIdOverride: 6,
     message: `Good evening Engr & Team at *Solar Wizard Nigeria*! ☀️⚡
 
-Thank you for reaching out to Bethelmind Analytics Lagos Desk.
+Thank you for reaching out to Bethelmind Digital Solutions.
 
 To answer your question on integrating the instant WhatsApp BOQ calculator:
 • *Zero Code Integration:* We supply a single 1-line script that embeds directly into your existing web page, OR you can route traffic directly via a short WhatsApp link.
@@ -106,12 +106,12 @@ https://www.bethelmindanalytics.com/preview/solar-wizard-nigeria
 • *Solar BOQ WhatsApp Quoting Engine:* ₦35,000 deposit (₦65,000 total)
 • *Full Turnkey Commercial Solar Website + Engine:* ₦75,000 deposit (₦150,000 total, 48h SLA).
 
-Settlement Rail: OPay Digital Services (7034297995 - Oyelakin Tosin Matthew).
+Settlement Rail: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions).
 
 Shall we provision your custom battery/panel pricing tiers on the calculator?
 
 Warm regards,
-Tosin — Bethelmind Analytics Lagos Desk
+Tosin — Bethelmind Digital Solutions
 Hotline: 0802 279 1227`
   }
 ];

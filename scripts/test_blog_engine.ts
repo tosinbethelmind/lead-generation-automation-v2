@@ -1,6 +1,6 @@
 /**
  * @file scripts/test_blog_engine.ts
- * Verification test suite for Bethelmind Analytics High-Monetization Blog Engine
+ * Verification test suite for Bethelmind Digital Solutions High-Monetization Blog Engine
  */
 
 import { BlogEngine } from '../src/lib/blog/blogEngine';

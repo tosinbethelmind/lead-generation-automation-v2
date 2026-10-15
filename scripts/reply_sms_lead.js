@@ -77,7 +77,7 @@ function buildSmsReply(lead, incomingText = '') {
   if (/price|cost|how much|fee|charges/i.test(lower)) {
     reply = `Good day ${cleanName}! Preview is ₦0 free. Setup is ₦75,000 deposit (₦150k total, 48h SLA) or ₦35k for existing sites. WhatsApp: wa.me/2348022791227`;
   } else if (/who are you|where did you get|who is this/i.test(lower)) {
-    reply = `We are Bethelmind Analytics Lagos. We built a free sample website & 24/7 WhatsApp quoter for your business. Chat us: wa.me/2348022791227`;
+    reply = `We are Bethelmind Digital Solutions. We built a free sample website & 24/7 WhatsApp quoter for your business. Chat us: wa.me/2348022791227`;
   } else {
     // Default: Clarification & Free Preview Invitation
     reply = `Good day ${cleanName}! We made a free sample website for your business to get clients on WhatsApp. View free: ${previewUrl} or call 08022791227`;

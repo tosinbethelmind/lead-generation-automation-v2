@@ -164,7 +164,7 @@ export async function updateMetaBusinessProfile(params: {
 
   const body: any = {
     messaging_product: 'whatsapp',
-    about: params.about || 'Bethelmind Analytics Lagos | 24/7 AI Commercial Automations',
+    about: params.about || 'Bethelmind Digital Solutions | 24/7 AI Commercial Automations',
     address: params.address || 'Victoria Island & Lekki Phase 1, Lagos, Nigeria',
     description: params.description || 'Specialized B2B Lead Generation, AI WhatsApp Sales Closers & Custom Digital Prototypes for Nigerian Commercial Enterprises.',
     email: params.email || 'bethelmindrecruit@gmail.com',
@@ -290,7 +290,7 @@ export async function createMetaOutreachTemplate(
       {
         type: 'HEADER',
         format: 'TEXT',
-        text: 'Bethelmind Analytics Lagos | Operational Update'
+        text: 'Bethelmind Digital Solutions | Operational Update'
       },
       {
         type: 'BODY',

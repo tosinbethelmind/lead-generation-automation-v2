@@ -1,7 +1,7 @@
 /**
  * scripts/dispatch_day2_whatsapp_followup.js
  * 
- * Bethelmind Analytics WhatsApp Follow-Up & Live Prototype Dispatcher for Day 2 Leads
+ * Bethelmind Digital Solutions WhatsApp Follow-Up & Live Prototype Dispatcher for Day 2 Leads
  * 
  * Safety & Quality:
  * - 100% Genuine Nigerian Commercial Mobile Numbers ONLY
@@ -128,7 +128,7 @@ function recordActivity(activity) {
 
 async function run() {
   console.log('===============================================================');
-  console.log('🚀 BETHELMIND ANALYTICS DAY 2 WHATSAPP FOLLOW-UP ENGINE');
+  console.log('🚀 Bethelmind Digital Solutions DAY 2 WHATSAPP FOLLOW-UP ENGINE');
   console.log(`📅 Date: ${new Date().toLocaleDateString('en-NG')} | Dual-Line Rotator Active (3007/3009)`);
   console.log('===============================================================\n');
 
@@ -184,19 +184,19 @@ async function run() {
 
     let message = '';
     if (hasWebsite) {
-      message = `Good day team at *${cleanName}*! 👋 Following up from Bethelmind Analytics Lagos — we've finalized your interactive 24/7 WhatsApp AI Quoting & Appointment Portal preview attached to your website.\n\n` +
+      message = `Good day team at *${cleanName}*! 👋 Following up from Bethelmind Digital Solutions — we've finalized your interactive 24/7 WhatsApp AI Quoting & Appointment Portal preview attached to your website.\n\n` +
         `You can test how your clients get instant quotes & PDF bookings directly here:\n` +
         `👉 ${previewUrl}\n\n` +
         `(Takes under 10 minutes to activate on your existing website with 0 downtime).\n\n` +
         `Best regards,\n` +
-        `*Tosin — Bethelmind Analytics Lagos Desk*`;
+        `*Tosin — Bethelmind Digital Solutions*`;
     } else {
-      message = `Good day *${cleanName}* Management! 👋 Tosin from Bethelmind Analytics Lagos here.\n\n` +
+      message = `Good day *${cleanName}* Management! 👋 Tosin from Bethelmind Digital Solutions here.\n\n` +
         `We have completed and verified your private interactive website prototype and 24/7 WhatsApp booking desk:\n` +
         `👉 ${previewUrl}\n\n` +
         `Includes your Google Maps SEO setup, instant Paystack/Moniepoint payments, and ₦0 upfront review.\n\n` +
         `Let us know if you would like any customizations before deployment!\n` +
-        `— *Bethelmind Analytics Lagos Team*`;
+        `— *Bethelmind Digital Solutions Team*`;
     }
 
     const res = await sendWhatsAppWithFailover(phone, message, lineId);
@@ -211,7 +211,7 @@ async function run() {
         type: 'day2_outreach_dispatched',
         lead_id: leadId,
         deal_id: '',
-        description: `Bethelmind Analytics Day 2 Follow-Up dispatched to ${cleanName} (${phone}) via Line ${res.lineId}`,
+        description: `Bethelmind Digital Solutions Day 2 Follow-Up dispatched to ${cleanName} (${phone}) via Line ${res.lineId}`,
         metadata: JSON.stringify({ category: rawCategory, hasWebsite, previewUrl, lineId: res.lineId }),
         channel: 'whatsapp',
         actor: 'system'

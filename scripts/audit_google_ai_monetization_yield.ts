@@ -2,12 +2,12 @@
  * @file scripts/audit_google_ai_monetization_yield.ts
  * 
  * 🏆 Comprehensive SEO, AI Citation (GEO), and High-Yield Monetization Auditor
- * Bethelmind Analytics Lagos Desk (www.bethelmindanalytics.com)
+ * Bethelmind Digital Solutions (www.bethelmindanalytics.com)
  * 
  * Verifies and confirms:
  * 1. Google Ranking Factors (Semantic HTML, Schema.org BlogPosting, FAQPage, OpenGraph, Canonical, Sitemap)
  * 2. Generative Engine Optimization (GEO) & AI Citations (Gemini, Perplexity, ChatGPT Search, llms.txt)
- * 3. High-Velocity Cashflow & Conversion Rails (OPay 7034297995, WhatsApp 08022791227, Selar, ₦75k Turnkey)
+ * 3. High-Velocity Cashflow & Conversion Rails (OPay 6805375225, WhatsApp 08022791227, Selar, ₦75k Turnkey)
  */
 
 import * as fs from 'fs';

@@ -35,7 +35,7 @@ export async function dispatchMultiChannelFailSafeAlert(payload: FailSafeAlertPa
     `• Client: ${importerName}\n` +
     `• Volume: $${orderVolumeUSD.toLocaleString()} USD (₦${nairaAmount.toLocaleString()} NGN)\n` +
     `• Status: ${status}\n` +
-    `• Settlement Destination: OPay 7034297995 (Oyelakin Tosin Matthew)\n` +
+    `• Settlement Destination: OPay 6805375225 (Bethelmind Digital Solutions)\n` +
     `\n🔒 *Security Guarantee:* Escrow Vault is 100% locked in Providus Bank. All funds are safe and proceeding normally.`;
 
   console.log(`[Fail-Safe Watchdog] Dispatching multi-channel status for ${dealId}...`);
@@ -66,7 +66,7 @@ export async function dispatchMultiChannelFailSafeAlert(payload: FailSafeAlertPa
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone: adminPhone,
-          message: `BETHELMIND ALERT: Deal ${dealId} (${importerName} - $${orderVolumeUSD}k). Status: ${status}. Escrow locked in Providus Bank. Profit routes to OPay 7034297995.`
+          message: `BETHELMIND ALERT: Deal ${dealId} (${importerName} - $${orderVolumeUSD}k). Status: ${status}. Escrow locked in Providus Bank. Profit routes to OPay 6805375225.`
         })
       });
       console.log(`✅ [Fail-Safe SMS]: Carrier SMS alert dispatched.`);

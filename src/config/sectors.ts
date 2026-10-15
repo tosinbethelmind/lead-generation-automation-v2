@@ -1,6 +1,6 @@
 /**
  * @file src/config/sectors.ts
- * Sector profile data for the Bethelmind Analytics homepage.
+ * Sector profile data for the Bethelmind Digital Solutions homepage.
  *
  * IMPORTANT — Demo Data Notice:
  * Tool descriptions, recommended workflows, and sector names are

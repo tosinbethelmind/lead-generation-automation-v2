@@ -16,7 +16,7 @@
  *    - Pillar 6: Diaspora 4K Construction Milestone Escrow (3.5% Royalty)
  *    - Pillar 7: White-Label Agency Licensing MRR (₦150k + ₦35k/mo)
  *    *(Pillar 4 CAC Excluded)*
- * 4. 🏦 100% Direct Settlement to OPay: 7034297995 (Oyelakin Tosin Matthew).
+ * 4. 🏦 100% Direct Settlement to OPay: 6805375225 (Bethelmind Digital Solutions).
  */
 
 import fs from 'fs';
@@ -313,7 +313,7 @@ export async function checkAndDispatchB2BThreeHourBriefing(forceDispatch: boolea
           <!-- FOOTER -->
           <div style="background: #030712; padding: 16px 24px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #1e293b;">
             Dispatched every 3 hours by Bethelmind Autonomous 24/7 B2B Supervisor • Closer Desk: +234 802 279 1227<br>
-            All B2B revenues liquidate directly via NIP / Paystack / Moniepoint to OPay (7034297995 - Oyelakin Tosin Matthew).
+            All B2B revenues liquidate directly via NIP / Paystack / Moniepoint to OPay (6805375225 - Bethelmind Digital Solutions).
           </div>
 
         </div>

@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const pitchDetails = getPitchDetails(mockLead as any, origin, 'ApexReach Team');
+    const pitchDetails = getPitchDetails(mockLead as any, origin, 'Bethelmind Digital Solutions Team');
 
     // Formulate realistic simulated customer order message
     const orderRef = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     let simulatedMessage = `⚡ *LIVE TEST ORDER SIMULATION for ${businessName}*\n`;
     simulatedMessage += `*Ref:* ${orderRef}\n`;
     simulatedMessage += `*Customer:* ${sampleCustomerName}\n`;
-    simulatedMessage += `*Channel:* ApexReach WebApp Direct Checkout\n\n`;
+    simulatedMessage += `*Channel:* Bethelmind Digital Solutions WebApp Direct Checkout\n\n`;
 
     if (category.toLowerCase().includes('solar')) {
       simulatedMessage += `*Request:* 5.5kVA Solar Hybrid BOQ Package\n`;

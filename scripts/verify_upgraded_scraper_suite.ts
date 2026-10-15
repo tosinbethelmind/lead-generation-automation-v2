@@ -2,7 +2,7 @@
  * scripts/verify_upgraded_scraper_suite.ts
  * 
  * Preflight Verification Suite for Upgraded Scraper Engines
- * Bethelmind Analytics Commercial Growth Engine
+ * Bethelmind Digital Solutions Commercial Growth Engine
  * 
  * Verifies:
  * 1. Python bridge & installed engines (curl_cffi, crawl4ai, browser_use, autoscraper, firecrawl, scrapy).
@@ -19,7 +19,7 @@ const execAsync = util.promisify(exec);
 
 async function main() {
   console.log('====================================================');
-  console.log('🚀 BETHELMIND ANALYTICS SCRAPER SUITE VERIFICATION');
+  console.log('🚀 Bethelmind Digital Solutions SCRAPER SUITE VERIFICATION');
   console.log('====================================================\n');
 
   // Step 1: Check Python bridge & installed engines

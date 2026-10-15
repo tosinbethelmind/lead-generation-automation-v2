@@ -12,7 +12,7 @@
  * 6. 🌍 Pillar 6: Diaspora 4K Construction Milestone Escrow (3.5% Royalty)
  * 7. 🏢 Pillar 7: Turnkey White-Label Agency Licensing MRR (₦150k + ₦35k/mo)
  * 8. 📧 Dedicated 3-Hour AI Executive B2B Action Briefing to bethelmindrecruit@gmail.com
- * 9. 🏦 100% Direct Settlement to OPay: 7034297995 (Oyelakin Tosin Matthew)
+ * 9. 🏦 100% Direct Settlement to OPay: 6805375225 (Bethelmind Digital Solutions)
  */
 
 import { scanTurnkeyWebsiteLeads } from '../src/lib/monetization/turnkeyWebsiteEngine';

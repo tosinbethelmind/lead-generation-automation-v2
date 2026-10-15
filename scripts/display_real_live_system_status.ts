@@ -13,7 +13,7 @@ export function inspectRealLiveEngineState() {
   console.log('========================================================================================');
   console.log(`🕒 Timestamp: ${new Date().toISOString()} (WAT)`);
   console.log(`🌐 Production Domain: https://www.bethelmindanalytics.com`);
-  console.log(`🏦 Direct Payout Beneficiary: OPay Digital Services (7034297995 - Oyelakin Tosin Matthew)\n`);
+  console.log(`🏦 Direct Payout Beneficiary: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)\n`);
 
   console.log('────────────────────────────────────────────────────────────────────────────────────────');
   console.log('🖥️ 1. ACTUAL BACKGROUND PROCESSES RUNNING RIGHT NOW');

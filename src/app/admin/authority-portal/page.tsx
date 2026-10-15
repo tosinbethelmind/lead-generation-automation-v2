@@ -291,7 +291,7 @@ export default function AdminAuthorityPortalDashboard() {
 
                   <a
                     href={`https://wa.me/${claim.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                      `Hello ${claim.owner_name || 'there'}! This is Bethelmind Analytics Concierge Desk regarding your ${claim.service_needed || 'inquiry'} on our Authority Portal.`
+                      `Hello ${claim.owner_name || 'there'}! This is Bethelmind Digital Solutions Concierge Desk regarding your ${claim.service_needed || 'inquiry'} on our Authority Portal.`
                     )}`}
                     target="_blank"
                     rel="noreferrer"

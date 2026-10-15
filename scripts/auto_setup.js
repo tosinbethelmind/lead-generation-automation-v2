@@ -33,7 +33,7 @@ function ensurePgInstalled() {
 async function runAutoSetup() {
   console.log(colors.cyan + colors.bright);
   console.log('====================================================');
-  console.log('      ApexReach Fully Automated Setup Wizard        ');
+  console.log('      Bethelmind Digital Solutions Fully Automated Setup Wizard        ');
   console.log('====================================================' + colors.reset);
   console.log('This wizard will automate your Supabase database schema setup and sync your environment variables.\n');
 
@@ -119,7 +119,7 @@ async function runAutoSetup() {
   const defaultGemini = envVars.GEMINI_API_KEY || config.geminiApiKey || '';
   const geminiApiKey = (await question(`Gemini API Key [${defaultGemini}]: `)).trim() || defaultGemini;
 
-  const defaultSignature = envVars.BUSINESS_SIGNATURE || config.businessSignature || 'ApexReach';
+  const defaultSignature = envVars.BUSINESS_SIGNATURE || config.businessSignature || 'Bethelmind Digital Solutions';
   const businessSignature = (await question(`Business Signature [${defaultSignature}]: `)).trim() || defaultSignature;
 
   const defaultDryRun = envVars.DRY_RUN || (config.dryRun !== undefined ? String(config.dryRun) : 'true');

@@ -265,7 +265,7 @@ Details:
 - Paystack Ref: ${reference}
 
 Best regards,
-Bethelmind Analytics & Strategy Lead Engine`;
+Bethelmind Digital Solutions Lead Engine`;
 
           try {
             await sendNotificationEmail(adminEmail, adminSubject, adminBody);

@@ -2,7 +2,7 @@
  * @file scripts/leadClassifier.js
  * 
  * 🛡️ BULLETPROOF BUSINESS-NAME-FIRST SECTOR CLASSIFIER & HOOK GENERATOR
- * Bethelmind Analytics Lagos Desk · Commercial Growth Engine
+ * Bethelmind Digital Solutions · Commercial Growth Engine
  * 
  * INVARIANT RULES:
  * 1. Business Name is the PRIMARY GROUND TRUTH. Never let a scraper query search term

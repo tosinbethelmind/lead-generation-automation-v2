@@ -78,7 +78,7 @@ Your funds are held safely in CBN-regulated institutional trust. The wholesale d
 🛡️ *PRE-FLIGHT CONFIRMATION GUARD ACTIVE:*
 • *Merchant Assigned:* AlphaDesk OTC (#402) — Alhaji Kabir (\`+234 809 112 4022\`)
 • *Mandatory Client Verification:* Embedded in proposal text.
-• *Profit Destination:* OPay \`7034297995\` (Oyelakin Tosin Matthew)
+• *Profit Destination:* OPay \`6805375225\` (Bethelmind Digital Solutions)
 
 🟢 *1-CLICK WHATSAPP PROPOSAL (WITH MANDATORY VERIFICATION INSTRUCTION):*
 👉 ${waUrl}

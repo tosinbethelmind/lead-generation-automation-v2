@@ -24,13 +24,13 @@ async function sendEmail() {
 
   try {
     const info = await transporter.sendMail({
-      from: `"Bethelmind Analytics Lagos Desk" <${config.smtpFrom}>`,
+      from: `"Bethelmind Digital Solutions" <${config.smtpFrom}>`,
       to: 'bethelmindrecruit@gmail.com',
-      subject: '🚀 Bethelmind Analytics — 24/7 Engine, Traffic & Quality Assurance Update',
+      subject: '🚀 Bethelmind Digital Solutions — 24/7 Engine, Traffic & Quality Assurance Update',
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 24px; line-height: 1.6; color: #0f172a; max-width: 680px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px;">
           <div style="border-bottom: 2px solid #3b82f6; padding-bottom: 16px; margin-bottom: 20px;">
-            <h1 style="color: #1e3a8a; margin: 0; font-size: 22px;">Bethelmind Analytics & Strategy</h1>
+            <h1 style="color: #1e3a8a; margin: 0; font-size: 22px;">Bethelmind Digital Solutions</h1>
             <p style="color: #64748b; margin: 4px 0 0 0; font-size: 14px;">24/7 Cloud Architecture & Growth Engine Executive Briefing</p>
           </div>
 
@@ -61,7 +61,7 @@ async function sendEmail() {
           <p style="font-size: 14px; color: #334155;">In compliance with strict ban-prevention policy, cold Carrier SMS and B2B emails are <b>staged safely</b>. When ready to dispatch, simply run <code>TRIGGER_OUTREACH_MANUAL.bat</code>.</p>
 
           <div style="margin-top: 30px; padding-top: 18px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8; text-align: center;">
-            <p style="margin: 0;">Dispatched by <b>Bethelmind Analytics Lagos Due-Diligence & Automation Desk</b></p>
+            <p style="margin: 0;">Dispatched by <b>Bethelmind Digital Solutions Due-Diligence & Automation Desk</b></p>
           </div>
         </div>
       `

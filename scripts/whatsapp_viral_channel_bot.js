@@ -157,7 +157,7 @@ We build your live interactive prototype first. You review and test-drive it on 
     category: 'build_in_public',
     dayOfWeek: 'Saturday',
     title: '🛠️ *BUILD IN PUBLIC: How We Scaled Our High-Speed Edge Infrastructure to Sub-15ms*',
-    body: `Quick peek under the hood of Bethelmind Analytics:
+    body: `Quick peek under the hood of Bethelmind Digital Solutions:
 
 When building website prototypes for Nigerian mobile users, standard WordPress templates take 6-10 seconds to load over local networks.
 
@@ -202,7 +202,7 @@ Here is your master recap and quick access links to everything we dropped:
 ];
 
 const CHANNEL_URL = 'https://whatsapp.com/channel/0029VbDFgKP4o7qM58yY9v2l';
-const SIGNATURE = '*Bethelmind Analytics Lagos Team*';
+const SIGNATURE = '*Bethelmind Digital Solutions Team*';
 
 function getPost() {
   if (category) {
