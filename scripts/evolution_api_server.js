@@ -364,7 +364,7 @@ function extractMessageText(msg) {
 async function handleInboundMessage(inst, msg) {
   try {
     const senderJid = msg.key?.remoteJid || '';
-    if (!senderJid.endsWith('@s.whatsapp.net')) return; // ignore groups, broadcasts, newsletters
+    if (!senderJid.endsWith('@s.whatsapp.net') && !senderJid.endsWith('@lid')) return; // ignore groups, broadcasts, newsletters
 
     // Check if message is a self-test message (sent from or to 0802 279 1227)
     const isSelfTest = senderJid.includes('8022791227') && inst.id === 1;
@@ -386,7 +386,7 @@ async function handleInboundMessage(inst, msg) {
       }
     }
 
-    const cleanSender = senderJid.replace('@s.whatsapp.net', '');
+    const cleanSender = senderJid.replace('@s.whatsapp.net', '').replace('@lid', '');
     const localDbDir = path.join(__dirname, '../local_db');
     const blacklistPath = path.join(localDbDir, 'opt_out_blacklist.json');
 
