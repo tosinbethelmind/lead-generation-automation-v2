@@ -803,10 +803,69 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
   };
 }
 
+const { generateGeminiReply } = require('./gemini_closer');
+
+/**
+ * 🚀 High-Intelligence Hybrid Closer:
+ * 1. Executes Deterministic Guardrails first for transactions (Accounts, Receipts, Photos, Opt-outs).
+ * 2. Invokes Gemini 3.5 Flash for unique product/produce questions, custom workflows & dynamic negotiations.
+ * 3. Falls back gracefully to deterministic matrix on any network hiccup or timeout (> 2.8s).
+ */
+async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
+  // 1. Run deterministic matrix first
+  const deterministicDecision = handlePostContactInquiry(clientMessage, leadData);
+
+  // If critical transactional intent, return immediately (zero hallucination risk)
+  const CRITICAL_TRANSACTIONAL_INTENTS = [
+    'OPT_OUT',
+    'PHOTO_RECEIVED_AUTO_UPDATED',
+    'PAYMENT_RECEIPT_PROVISIONED',
+    'CUSTOM_DOMAIN_LOCKED',
+    'READY_TO_PAY_INVOICE',
+    'HUMAN_ESCALATION_DESK'
+  ];
+
+  if (CRITICAL_TRANSACTIONAL_INTENTS.includes(deterministicDecision.intent)) {
+    return deterministicDecision;
+  }
+
+  // If client sent a simple short greeting, keep fast deterministic copy
+  const rawMsg = String(clientMessage || '').trim();
+  if (rawMsg.length < 15 && deterministicDecision.intent === 'CASUAL_GREETING') {
+    return deterministicDecision;
+  }
+
+  // 2. For custom questions, unique product inquiries, or fallback cases, invoke Gemini 3.5 Flash
+  try {
+    const geminiText = await generateGeminiReply(rawMsg, {
+      businessName: leadData.businessName,
+      category: leadData.category,
+      area: leadData.area,
+      previewUrl: leadData.previewUrl
+    });
+
+    if (geminiText && geminiText.trim().length > 15) {
+      return {
+        ...deterministicDecision,
+        intent: 'GEMINI_DYNAMIC_PRODUCT_CLOSER',
+        messageText: geminiText.trim(),
+        isAiGenerated: true
+      };
+    }
+  } catch (err) {
+    console.warn('[Closer Engine] Gemini dynamic closer skipped, using deterministic fallback:', err.message);
+  }
+
+  // 3. Fallback to deterministic decision
+  return deterministicDecision;
+}
+
 module.exports = {
   handlePostContactInquiry,
+  handlePostContactInquiryAsync,
   lookupLeadForWhatsApp,
   autoProvisionSiteFromWhatsApp,
   CORPORATE_BANK,
   toSafeSlug
 };
+

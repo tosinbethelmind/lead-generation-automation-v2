@@ -413,10 +413,10 @@ async function handleInboundMessage(inst, msg) {
 
     // Dynamically load upgraded closer engine
     delete require.cache[require.resolve('./lib/closer_engine')];
-    const { handlePostContactInquiry, lookupLeadForWhatsApp } = require('./lib/closer_engine');
+    const { handlePostContactInquiryAsync, lookupLeadForWhatsApp } = require('./lib/closer_engine');
 
     const leadInfo = lookupLeadForWhatsApp(cleanSender, text);
-    const decision = handlePostContactInquiry(text, {
+    const decision = await handlePostContactInquiryAsync(text, {
       businessName: leadInfo.businessName,
       category: leadInfo.category,
       area: leadInfo.area,
