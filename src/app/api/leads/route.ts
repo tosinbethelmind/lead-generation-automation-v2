@@ -15,8 +15,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(stats, { headers });
     }
     
+    const limitParam = searchParams.get('limit');
+    const limit = limitParam ? parseInt(limitParam, 10) : 100;
+    
     const leads = await getLeads();
-    return NextResponse.json(leads, { headers });
+    const boundedLeads = Number.isFinite(limit) && limit > 0 ? leads.slice(0, limit) : leads.slice(0, 200);
+    return NextResponse.json(boundedLeads, { headers });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
