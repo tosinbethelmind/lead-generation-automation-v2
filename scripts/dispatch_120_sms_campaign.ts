@@ -43,9 +43,9 @@ function formatSms(lead: any): { singleSms: string } {
   const ourFullBrand = process.env.BUSINESS_SIGNATURE || 'Bethelmind Digital Solutions';
 
   // Simple, Warm Nigerian Business Copy (<=158 chars = 1 SMS credit, Zero URLs)
-  // Speaks plain everyday Nigerian business language: "we built a free sample website for you so customers find you on Google"
-  const suffixFull = `, we built a free sample website for your business so customers find you on Google. WhatsApp DEMO to 08022791227 - ${ourFullBrand}`;
-  const suffixShort = `, we built a free sample website for you so customers find you on Google. WhatsApp DEMO to 08022791227 - ${ourFullBrand}`;
+  // Uses competitor loss hook: "stop losing Google customers to competitors"
+  const suffixFull = `, stop losing Google customers to competitors. We built a free sample website for your shop. WhatsApp DEMO to 08022791227 - ${ourFullBrand}`;
+  const suffixShort = `, stop losing Google clients. We built a free sample website for your shop. WhatsApp DEMO to 08022791227 - ${ourFullBrand}`;
 
   let singleSms = '';
   if (6 + rawName.length + suffixFull.length <= 158) {

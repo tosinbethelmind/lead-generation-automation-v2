@@ -219,9 +219,9 @@ Well done with your business! My name is Tosin from Bethelmind Digital Solutions
 
 Right now, when customers search for "${cleanName}" on Google, they cannot find your official website — instead, Google shows your competitors in ${area}.
 
-To help you get more customers easily without waiting weeks for a developer, we already built a ready-made Official Mobile Website + 24/7 WhatsApp Customer Assistant for ${cleanName}.
+Tired of typing prices and account numbers in your DMs all day? Unlike ordinary apps where you have to build everything yourself, we already built your ready-made Official Mobile Website + 24/7 WhatsApp Customer Assistant for ${cleanName} — 100% Done-For-You (₦0 to view).
 
-Tap below to check your sample website free on your phone right now (₦0 to view):
+Tap below to check your sample website free on your phone right now:
 ${previewUrl}
 
 What Your New Website Does for ${cleanName}:
@@ -232,7 +232,7 @@ What Your New Website Does for ${cleanName}:
 🇳🇬 October 50% SME Digital Growth Promo (Because Your Sample Is Already 80% Built):
 1. Option 1 (Official .COM.NG Website + WhatsApp Assistant): ₦65,000 Total (Normal Price ₦130,000) — Start today with ₦35,000 Deposit, and pay the ₦30,000 balance ONLY after your website is live on Google with your real photos!
 2. Option 2 (Corporate .COM Website + 3 Official Staff Emails): ₦120,000 Total (Normal Price ₦240,000) — Start today with ₦60,000 Deposit.
-3. Want to see your real shop photos on it first? Send 3–5 photos of your work on WhatsApp (+234 802 279 1227) and we will update your sample page FREE before you pay a kobo!
+3. Want to see your real shop photos on it first? Send 2–3 photos of your work on WhatsApp (+234 802 279 1227) and we will update your sample page FREE before you pay shishi!
 4. Official CAC Registered Company Account: Moniepoint Microfinance Bank · 6805375225 · Bethelmind Digital Solutions.
 
 (Listen to the short 15-second voice note attached for a quick greeting).
@@ -259,7 +259,7 @@ Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)`;
     <div style="padding:24px;">
       <p style="font-size:15px; color:#cbd5e1; line-height:1.6; margin-top:0;">Good day Boss / Management at <strong>${cleanName}</strong>,</p>
       <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">Well done with your business! Right now, when customers search for <strong>${cleanName}</strong> on Google, they cannot find your official website — instead, Google shows your competitors in ${area}.</p>
-      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">To help you get more customers easily without waiting weeks for a developer, we already built a ready-made <strong>Official Mobile Website + 24/7 WhatsApp Customer Assistant</strong> for <strong>${cleanName}</strong> so you can check it free on your phone first (<strong>₦0 to view</strong>).</p>
+      <p style="font-size:14px; color:#cbd5e1; line-height:1.6;">Tired of typing prices and account numbers in your DMs all day? Unlike ordinary apps where you have to build everything yourself, we already built a ready-made <strong>Official Mobile Website + 24/7 WhatsApp Customer Assistant</strong> for <strong>${cleanName}</strong> — 100% Done-For-You so you can check it free on your phone first (<strong>₦0 before you pay shishi</strong>).</p>
       
       <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:14px; margin:16px 0; text-align:center;">
         <div style="color:#38bdf8; font-size:13px; font-weight:700; margin-bottom:4px;">🎙️ 15-Second Voice Note Attached</div>
@@ -268,14 +268,14 @@ Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)`;
 
       <div style="text-align:center; margin:22px 0;">
         <a href="${previewUrl}" style="display:inline-block; background:linear-gradient(135deg, #0284c7, #2563eb); color:#ffffff; padding:14px 28px; border-radius:8px; font-weight:800; font-size:15px; text-decoration:none;">👉 Check ${cleanName}'s Sample Website</a>
-        <div style="font-size:12px; color:#64748b; margin-top:6px;">(Free to check on your phone — ₦0 upfront)</div>
+        <div style="font-size:12px; color:#64748b; margin-top:6px;">(Free to check on your phone — ₦0 upfront before you pay shishi)</div>
       </div>
 
       <div style="background:#111c35; border:1px solid #10b981; border-radius:8px; padding:14px 16px; margin:18px 0; text-align:left;">
         <div style="color:#34d399; font-size:12px; font-weight:800; text-transform:uppercase; margin-bottom:8px;">🇳🇬 October 50% SME Promo (Because Your Sample Is Already 80% Built)</div>
         <div style="color:#e2e8f0; font-size:13px; line-height:1.6; margin-bottom:6px;">• <strong>Option 1 (Official .COM.NG Website): ₦65,000 Total</strong> <span style="text-decoration:line-through; color:#94a3b8;">(₦130k)</span> — <strong>Start today with ₦35,000 Deposit</strong>, and pay the ₦30,000 balance ONLY after your website is live with your real photos!</div>
         <div style="color:#e2e8f0; font-size:13px; line-height:1.6; margin-bottom:6px;">• <strong>Option 2 (Corporate .COM + Staff Emails): ₦120,000 Total</strong> <span style="text-decoration:line-through; color:#94a3b8;">(₦240k)</span> — <strong>Start today with ₦60,000 Deposit</strong> (Includes <code>.com</code> domain &amp; official company emails).</div>
-        <div style="color:#fde68a; font-size:12.5px; line-height:1.5; margin-bottom:6px;">• <strong>✏️ Want to see your real shop photos first?</strong> Send 3–5 photos on WhatsApp and we will update your sample page <strong>FREE (₦0)</strong> before you pay!</div>
+        <div style="color:#fde68a; font-size:12.5px; line-height:1.5; margin-bottom:6px;">• <strong>✏️ Want to see your real shop photos first?</strong> Send 2–3 photos on WhatsApp and we will update your sample page <strong>FREE (₦0) before you pay shishi</strong>!</div>
         <div style="color:#94a3b8; font-size:12px; line-height:1.5; border-top:1px solid #1e293b; padding-top:6px; margin-top:6px;">🏛️ <strong>CAC Registered Company Account:</strong> Moniepoint MFB · <strong>6805375225</strong> · <strong>Bethelmind Digital Solutions</strong></div>
       </div>
 

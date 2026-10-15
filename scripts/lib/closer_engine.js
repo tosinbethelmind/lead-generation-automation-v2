@@ -413,9 +413,10 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       isOptOut: false,
       messageText:
         `Good day Boss at *${name}*! 👋\n\n` +
-        `We noticed *${name}* doesn't have an official website on Google yet in ${area}, so we already built one for you in advance to test free on your phone:\n` +
+        `Competitors on Google are currently taking orders meant for *${name}* because you don't have an official website yet in ${area}.\n\n` +
+        `So we already built a ready-made mobile website for you in advance to test free on your phone (₦0 upfront):\n` +
         `👉 ${previewUrl}\n\n` +
-        `How does it look to you? Send 2 photos of your shop/work here and we'll add them FREE today!`,
+        `How does it look to you? Send 2 photos of your shop/work here make we add am FREE today before you pay shishi!`,
       suggestedAction: 'ENGAGE_CONVERSATION',
       directPaymentEligible: true
     };
@@ -427,12 +428,42 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       intent: 'TRUST_SCAM_OR_LEGIT',
       isOptOut: false,
       messageText:
-        `I understand you 100% Boss — too many scams around! 🛡️\n\n` +
-        `That's why you pay ₦0 upfront. Your website is already built to test free on your phone:\n` +
+        `I understand you 100% Boss — too many scams online! 🛡️\n\n` +
+        `That's why you don't pay ₦1 shishi upfront. Your website is already built to test free on your phone:\n` +
         `👉 ${previewUrl}\n\n` +
-        `Plus, you only pay into our CAC Corporate Account (*Moniepoint MFB: 6805375225 - Bethelmind Digital Solutions*), never personal.\n\n` +
+        `Plus, you only pay into our verified CAC Corporate Account (*Moniepoint MFB: 6805375225 - Bethelmind Digital Solutions*), never personal.\n\n` +
         `Send 2 photos of your shop here right now make we upload them FREE first so you see it with your own eyes!`,
       suggestedAction: 'REASSURE_AND_CLOSE',
+      directPaymentEligible: true
+    };
+  }
+
+  // ── 8A. COMPETITOR BUMPA / CATLOG / DIY APPS COMPARISON ───────────────────
+  if (/\b(bumpa|catlog|takeapp|mainstack|shopify|wordpress|wix)\b/i.test(msg)) {
+    return {
+      intent: 'COMPETITOR_BUMPA_CATLOG_OBJECTION',
+      isOptOut: false,
+      messageText:
+        `With apps like Bumpa or Catlog, you have to spend days uploading 50 pictures, typing prices, and configuring everything yourself Boss.\n\n` +
+        `With us, **we already built the entire website for you 100% Done-For-You** — complete with 24/7 WhatsApp AI and Google Search ranking!\n\n` +
+        `👉 Test yours free right now: ${previewUrl}\n\n` +
+        `Send 2 photos of your shop make we add am free before you pay shishi!`,
+      suggestedAction: 'HIGHLIGHT_DFY_ADVANTAGE',
+      directPaymentEligible: true
+    };
+  }
+
+  // ── 8A2. FREELANCE DEVELOPER / "SOMEONE IS BUILDING FOR ME" ───────────────
+  if (/\b(my developer|another developer|freelancer|someone is building|web designer|have a developer|contractor)\b/i.test(msg)) {
+    return {
+      intent: 'COMPETITOR_FREELANCER_DEV_OBJECTION',
+      isOptOut: false,
+      messageText:
+        `Most freelance developers collect 50% upfront and make you wait 2 to 4 weeks with plenty excuses Boss.\n\n` +
+        `With us, **your website is already built right now** — you can test it on your phone before paying ₦1 shishi:\n` +
+        `👉 ${previewUrl}\n\n` +
+        `No delays, no stories. Send 2 pictures here make we add them FREE today!`,
+      suggestedAction: 'HIGHLIGHT_ZERO_WAITING',
       directPaymentEligible: true
     };
   }
@@ -443,10 +474,11 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       intent: 'INSTAGRAM_VS_WEBSITE_OBJECTION',
       isOptOut: false,
       messageText:
-        `Instagram is great Boss! But when big corporate clients or diaspora buyers search Google for *"${category}"* in ${area}, Instagram doesn't show up.\n\n` +
-        `Plus, your website displays your full price list so you never have to type "Check DM for price" 50 times a day!\n\n` +
+        `Instagram is great Boss, but "DM for price" is killing sales! Buyers hate waiting, and typing account numbers 20 times a day is tiring.\n\n` +
+        `Plus, corporate and diaspora clients searching Google won't see your Instagram page.\n\n` +
+        `Your website shows your full catalog and closes sales automatically on WhatsApp 24/7:\n` +
         `👉 Test it here: ${previewUrl}\n\n` +
-        `Want us to add 2 of your best products to it free today?`,
+        `Send 2 photos here make we add am free before you pay shishi!`,
       suggestedAction: 'HANDLE_SOCIAL_OBJECTION',
       directPaymentEligible: true
     };
@@ -460,7 +492,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       messageText:
         `I hear you Boss! 🤝 But think of it: losing just 1 customer on Google costs more than ₦35k.\n\n` +
         `Under our promo, you only pay *₦35,000 deposit* to launch today (or *₦25,000/month pay-small-small*). You pay the balance only when it's live on Google!\n\n` +
-        `Or send 2 pictures of your shop here right now — let's update it FREE first. Deal?`,
+        `Send 2 pictures of your shop here right now — let's update it FREE first before you pay shishi. Deal?`,
       suggestedAction: 'DECONSTRUCT_PRICE_AND_CLOSE',
       directPaymentEligible: true
     };
@@ -760,11 +792,11 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
     isOptOut: false,
     messageText:
       `Good day Boss at *${name}*! 👋\n\n` +
-      `When customers search Google for *"${category}"* in ${area}, competitors take the sales because *${name}* doesn't have an official website yet.\n\n` +
+      `When customers search Google for *"${category}"* in ${area}, competitors take your sales because *${name}* doesn't have an official website yet.\n\n` +
       `We already built your website in advance so you can test it free on your phone:\n` +
       `👉 ${previewUrl}\n\n` +
-      `• Send 2 photos of your shop here — we will update it *FREE today*!\n` +
-      `• Or reply *1* to launch for *₦35,000 deposit* (balance only after going live).\n\n` +
+      `• Send 2 photos of your shop here — we will update it *FREE before you pay shishi*!\n` +
+      `• Or reply *1* to launch for *₦35,000 deposit* (or *₦25,000/month pay-small-small*).\n\n` +
       `How does the layout look to you?`,
     suggestedAction: 'SEND_ADAPTIVE_PITCH',
     directPaymentEligible: true
