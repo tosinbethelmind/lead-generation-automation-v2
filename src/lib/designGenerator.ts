@@ -358,11 +358,15 @@ Business Details:
 - Upgrade Method Note: ${lead.embedNote || ''}
 
 Guidelines:
-1. Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. If the business has an existing website dominant color (and it's a valid hex code), prioritize using or adapting that color as the primary theme color.
-2. Under "testimonials", use or adapt the real Google reviews provided in "Actual Google Reviews (JSON)" to populate the testimonials list (up to 3 items) instead of fabricating completely random names/reviews.
-3. Under "services", incorporate the actual services from "Services Offered (JSON array)" if present, or expand upon them matching the category. Make sure there are exactly 3 services.
-4. Try to select a "heroImage" URL from the "Business Photos (JSON array)" if there are any valid URLs. If none, do not specify it (it will default to a high-quality Unsplash category image).
-5. CRITICAL UPGRADE & MODERNIZATION PIPELINE RULES:
+1. STRICT NIGERIAN SME & SEO ACCESSIBILITY RULE:
+   Use COMMON, SEARCH-ENGINE-OPTIMIZED, HIGH-CONVERTING BUSINESS WORDS that any Nigerian shop owner, contractor, or customer will instantly relate with.
+   - DO NOT USE COMPLEX TECH JARGON like: 'DisCo Band A Tariff ROI', 'LiFePO4 sizing matrix', 'WebRTC virtual inspection', '5% WHT Ledger', 'HMO Tariff authorization reconciler', 'multi-tenancy', 'SSR edge cache', or 'broadsheet automation'.
+   - USE COMMON RELATABLE WORDS like: 'Solar & Inverter Price List', 'Cut NEPA Blackout Stress', 'Save ₦80k+ on Generator Fuel Monthly', 'Verified Houses & Land for Sale in ${lead.area}', '1-Tap WhatsApp Inspection Booking', 'Book Doctor Consultation in ${lead.area}', 'Clean Tokunbo Cars with Verified Customs Duty', 'Check Term Fees Online', 'Instant Bank Transfer Receipt (Moniepoint/OPay)'.
+2. Choose design tokens (primary color, accent color, background, text color, font, headingFont, bodyFont, CSS gradient) that match the mood and premium/luxurious vibe of this specific business. If the business has an existing website dominant color (and it's a valid hex code), prioritize using or adapting that color as the primary theme color.
+3. Under "testimonials", use or adapt the real Google reviews provided in "Actual Google Reviews (JSON)" to populate the testimonials list (up to 3 items) instead of fabricating completely random names/reviews.
+4. Under "services", incorporate the actual services from "Services Offered (JSON array)" if present, or expand upon them matching the category. Make sure there are exactly 3 services.
+5. Try to select a "heroImage" URL from the "Business Photos (JSON array)" if there are any valid URLs. If none, do not specify it (it will default to a high-quality Unsplash category image).
+6. CRITICAL UPGRADE & MODERNIZATION PIPELINE RULES:
    If the business has an existing website (i.e. Existing Website URL is not 'None' and is not empty), you MUST generate copy specifically pitching a "website upgrade" and "automation modernization" rather than pitching a "new website" or "getting online". Use the platform-specific context below:
    
    UPGRADE STRATEGY = "${lead.upgradeStrategy || 'script_embed'}" — adapt your pitch accordingly:
@@ -423,210 +427,209 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
   // 1. SOLAR & RENEWABLE ENERGY
   if (/solar|inverter|energy|battery|power|lifepo4/.test(cat)) {
     return {
-      heroTitle: `${name} — 24/7 AI Solar Sizing & Instant Quotes`,
-      heroSubtitle: `Generate 5kVA–20kVA Solar Hybrid BOQs, DisCo Band A Tariff ROI, and LiFePO4 battery sizing sent to your customer's WhatsApp in 2 minutes.`,
+      heroTitle: `${name} — Affordable Solar & Inverter Systems in ${area}`,
+      heroSubtitle: `Cut NEPA blackout stress, save ₦80k+ on fuel monthly, and get instant solar pricing and battery load sizing directly on WhatsApp.`,
       services: [
-        { title: '⚡ 24/7 WhatsApp AI Solar BOQ Engine', description: 'Sizes inverters, mono panels, and LiFePO4 batteries automatically based on customer appliance loads.', icon: '⚡' },
-        { title: '📊 DisCo Band A vs. Solar ROI Calculator', description: 'Calculates grid tariff avoidance (₦209.50/kWh) and monthly generator diesel savings vs solar payback.', icon: '📊' },
-        { title: '💳 Instant Branded PDF Proposal & Bank Gateway', description: 'Generates professional itemized BOQ quotes with instant OPay & Moniepoint transfer verification.', icon: '📄' }
+        { title: '☀️ Instant WhatsApp Solar Price & Load Sizer', description: 'Select your home or shop appliances (fridge, AC, TV, lights) and get the exact inverter and battery system size with price in 2 minutes.', icon: '⚡' },
+        { title: '⛽ Generator Fuel Savings Calculator', description: 'See exactly how much money you save on petrol and diesel every month when you switch to solar power.', icon: '📊' },
+        { title: '🛡️ Genuine Warranty & Direct Bank Payment', description: 'Verified solar installations with full warranty and instant Moniepoint or OPay bank transfer receipts.', icon: '📄' }
       ],
-      aboutText: `${name} is a premier solar EPC & inverter integration contractor in ${area}. We help residential and commercial clients eliminate diesel generator costs with high-yield hybrid solar systems.`,
+      aboutText: `${name} is a trusted solar energy and inverter installation company in ${area}. We help homes, shops, and offices enjoy 24/7 power and cut generator fuel costs with quality solar setups.`,
       testimonials: [
-        { name: 'Engr. Femi Adeleke', text: 'The instant solar sizing calculator saved our sales team hours of site assessments. Clients love the fast PDF proposals!', rating: 5 },
-        { name: 'Dr. (Mrs) Alabi', text: 'Clean 10kVA hybrid setup. Responsive 24/7 WhatsApp support and transparent pricing.', rating: 5 }
+        { name: 'Engr. Femi Adeleke', text: 'The instant solar price calculator gave us an accurate budget on WhatsApp before the engineer visited. Clean installation!', rating: 5 },
+        { name: 'Dr. (Mrs) Alabi', text: 'Super fast response on WhatsApp. We cut our diesel bill by 80% with their 5kVA hybrid setup in Lagos.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };
   }
 
   // 2. REAL ESTATE & LUXURY HOMES
   if (/estate|property|home|realty|housing|developer|land/.test(cat)) {
     return {
-      heroTitle: `${name} — Luxury Properties & Automated Investor Leads`,
-      heroSubtitle: `Capture high-net-worth local & diaspora buyers with 1-click mortgage calculators, off-plan milestone escrow, and WhatsApp virtual inspections.`,
+      heroTitle: `${name} — Verified Properties, Houses & Land for Sale in ${area}`,
+      heroSubtitle: `Explore verified lands, luxury duplexes, and commercial properties with 1-tap WhatsApp inspection bookings and flexible installment payment plans.`,
       services: [
-        { title: '🏠 Mortgage & Off-Plan Installment Sizer', description: 'Calculates down-payments, survey/deed ancillary levies, and monthly building milestones automatically.', icon: '🏠' },
-        { title: '🌍 Diaspora Forex & WebRTC Virtual Inspection', description: 'Computes parallel USD/GBP conversion rates and schedules live 1-click video property walk-throughs.', icon: '📹' },
-        { title: '📋 Realtor Commission & 5% WHT Ledger', description: 'Routes verified buyer leads to sales agents and tracks deal closures with automated documentation.', icon: '🤝' }
+        { title: '🏡 Verified Land & House Listings', description: 'Browse genuine properties with clean C of O and Governor\'s Consent with clear photos, video tours, and prices.', icon: '🏠' },
+        { title: '📅 1-Tap WhatsApp Inspection Booking', description: 'Book physical site visits or live video walk-throughs in 5 seconds directly on WhatsApp.', icon: '📹' },
+        { title: '💰 Flexible Installment & Payment Calculator', description: 'Calculate down payments and monthly installment breakdown without back-and-forth phone calls.', icon: '🤝' }
       ],
-      aboutText: `${name} delivers premier luxury homes, commercial developments, and vetted land banking opportunities across ${area}. Trusted for verified titles, Governor's Consent, and architectural excellence.`,
+      aboutText: `${name} is a premier real estate development and property marketing firm in ${area}. We connect home buyers and diaspora investors with verified titles, secure land banking, and luxury homes.`,
       testimonials: [
-        { name: 'Chief Olumide B.', text: 'The virtual tour and installment schedule gave us complete peace of mind investing from the UK.', rating: 5 },
-        { name: 'Barr. Folake T.', text: 'Transparent documentation and seamless buying experience. Excellent team in Lagos.', rating: 5 }
+        { name: 'Chief Olumide B.', text: 'The video walk-through and installment plan gave us complete peace of mind buying land from the UK.', rating: 5 },
+        { name: 'Barr. Folake T.', text: 'Verified Governor\'s Consent and transparent documentation. Highly dependable real estate team.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };
   }
 
   // 3. MEDICAL & HEALTHCARE CLINICS (Evaluated before auto to avoid 'healthcare' matching 'care')
   if (/medical|clinic|doctor|health|hospital|pharmacy|dental|dentist|optician|eye|lab|surgery/.test(cat)) {
     return {
-      heroTitle: `${name} — 24/7 Patient Triage & HMO Telehealth Portal`,
-      heroSubtitle: `Streamline patient appointments, HMO co-pay authorizations, and diagnostic lab package bookings with zero waiting room delays.`,
+      heroTitle: `${name} — Quality Healthcare & Fast Clinic Booking in ${area}`,
+      heroSubtitle: `Book doctor consultations, view medical checkup packages, and schedule appointments on WhatsApp with zero waiting room delays.`,
       services: [
-        { title: '🩺 HMO Claims & Tariff Authorization Reconciler', description: 'Verifies Reliance, AXA Mansard, Hygeia, and Leadway HMO tariff copays in under 3 seconds.', icon: '🩺' },
-        { title: '🏥 Surgery & Admission Deposit Estimator', description: 'Itemizes ward rates, theatre fees, and deposits with transparent printable estimates.', icon: '🏥' },
-        { title: '📅 24/7 WhatsApp Patient Triage & Booking', description: 'Books doctor consultation slots and sends automated pre-visit fasting instructions.', icon: '📅' }
+        { title: '🩺 1-Tap Doctor Consultation Booking', description: 'Book your preferred doctor or specialist with instant WhatsApp confirmation and clinic directions.', icon: '🩺' },
+        { title: '🧪 Medical Lab Tests & Checkup Packages', description: 'View comprehensive health screening packages, blood tests, and transparent prices upfront.', icon: '🏥' },
+        { title: '💳 HMO Coverage & Safe Cashless Payments', description: 'Check HMO approval or pay consultation deposits directly via secure Moniepoint or OPay transfer.', icon: '📅' }
       ],
-      aboutText: `${name} provides compassionate, world-class healthcare services in ${area}. Committed to clinical excellence, modern diagnostic technology, and rapid patient recovery.`,
+      aboutText: `${name} provides compassionate, world-class healthcare services in ${area}. Committed to clinical excellence, modern diagnostic equipment, and rapid patient recovery.`,
       testimonials: [
         { name: 'Mrs. Kemi Johnson', text: 'Booking our family consultation via WhatsApp saved us hours at the reception. Superb doctors!', rating: 5 },
-        { name: 'Pastor David E.', text: 'Clean facilities, prompt triage, and seamless HMO verification.', rating: 5 }
+        { name: 'Pastor David E.', text: 'Clean hospital facilities, prompt attention, and seamless HMO verification.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };
   }
 
   // 4. AUTOMOTIVE & TOKUNBO IMPORTERS
   if (/(\bcar\b|\bcars\b|auto|motor|vehicle|tokunbo|dealership|mechanic|garage)/.test(cat)) {
     return {
-      heroTitle: `${name} — Direct Tokunbo Imports & Instant Duty Quotes`,
-      heroSubtitle: `Provide buyers instant customs duty assessments, trade-in valuations, and 24/7 WhatsApp vehicle inventory updates across Lagos.`,
+      heroTitle: `${name} — Clean Tokunbo & Nigerian Used Cars for Sale in ${area}`,
+      heroSubtitle: `Browse inspected vehicles with verified customs duty papers, check transparent car prices, and book test drives directly on WhatsApp.`,
       services: [
-        { title: '🚗 Customs Duty Assessment (PAAR) Calculator', description: 'Estimates VIN duty, NAC levy, and port clearing fees accurately for prospective buyers.', icon: '🚗' },
-        { title: '🔄 Car Swap & Trade-In Valuation Engine', description: 'Offers prospective clients instant asset appraisals to capture and close high-value upgrade leads.', icon: '🔄' },
-        { title: '🤖 24/7 WhatsApp Stock & Test Drive Assistant', description: 'Sends live showroom photos, specs, and inspection bookings directly to customer phones.', icon: '📱' }
+        { title: '🚗 Clean Showroom Inventory & Prices', description: 'Browse Toyota, Lexus, Mercedes and more with high-resolution photos, mileage, and clear prices.', icon: '🚗' },
+        { title: '📄 Verified Customs Papers & VIN Check', description: 'Buy with peace of mind with original Nigerian customs clearing papers and vehicle inspection reports.', icon: '🔄' },
+        { title: '🔄 Car Swap & Easy Test Drive Booking', description: 'Value your current car for a trade-in upgrade and book your physical test drive on WhatsApp.', icon: '📱' }
       ],
       aboutText: `${name} is a leading automotive dealership in ${area} providing thoroughly inspected Nigerian used and foreign used (Tokunbo) vehicles with genuine customs documentation.`,
       testimonials: [
-        { name: 'Capt. Ibrahim M.', text: 'Fair trade-in valuation and transparent customs clearing breakdown. Got my SUV in 48 hours.', rating: 5 },
-        { name: 'Segun Oladipo', text: 'Best dealership experience in Lagos. Verified VIN and clean engine.', rating: 5 }
+        { name: 'Capt. Ibrahim M.', text: 'Fair trade-in valuation and transparent customs clearing papers. Got my SUV in 48 hours without stress.', rating: 5 },
+        { name: 'Segun Oladipo', text: 'Best car dealership experience in Lagos. Clean engine, verified VIN, and swift delivery.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };
   }
 
   // 5. SCHOOLS & ACADEMIES
   if (/school|academy|education|college|creche|tutor/.test(cat)) {
     return {
-      heroTitle: `${name} — Excellence in Education & Smart Portal`,
-      heroSubtitle: `Simplify termly tuition fee schedules, CBT exam scoring, and WhatsApp result checker PIN generation for modern parents.`,
+      heroTitle: `${name} — Academic Excellence & Smart School Portal in ${area}`,
+      heroSubtitle: `Check school fees breakdown, apply for admission online, and access student termly report sheets easily on your mobile phone.`,
       services: [
-        { title: '🎓 Termly Tuition & Boarding Fee Estimator', description: 'Calculates tuition, uniforms, and books with flexible structured installment plans.', icon: '🎓' },
-        { title: '📜 CBT Exam Scoring & Automated Broadsheet', description: 'Computes continuous assessments and generates printable termly performance reports.', icon: '📜' },
-        { title: '🔑 WhatsApp Result PIN Dispenser', description: 'Dispenses scratch card result checker PINs automatically upon instant OPay transfer.', icon: '🔑' }
+        { title: '🎓 School Fees Payment & Installment Breakdown', description: 'View transparent termly tuition fees for Creche, Primary, and Secondary with easy bank transfers.', icon: '🎓' },
+        { title: '📝 Online Admission & Entrance Form', description: 'Enroll new students easily from home without queuing at the school admin office.', icon: '📜' },
+        { title: '📱 Termly Result Checker on WhatsApp', description: 'Parents can check their child\'s report sheet and term performance directly on their phone.', icon: '🔑' }
       ],
-      aboutText: `${name} is an esteemed educational institution in ${area} nurturing academic excellence, moral leadership, and creative innovation in every student.`,
+      aboutText: `${name} is an esteemed educational institution in ${area} nurturing academic excellence, moral discipline, and leadership skills in every pupil and student.`,
       testimonials: [
-        { name: 'Dr. (Mrs) Okafor', text: 'The online fee breakdown and instant result PIN access make termly registration stress-free.', rating: 5 },
-        { name: 'Engr. Taiwo B.', text: 'Outstanding academic standards and very responsive administration.', rating: 5 }
+        { name: 'Dr. (Mrs) Okafor', text: 'The online fee breakdown and instant result checker on mobile make termly registration stress-free.', rating: 5 },
+        { name: 'Engr. Taiwo B.', text: 'Outstanding academic standards, dedicated teachers, and very responsive school management.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };
   }
 
   // 6. LAW FIRMS & LEGAL PRACTITIONERS
   if (/law|legal|attorney|solicitor|advocate|barrister|cac/.test(cat)) {
     return {
-      heroTitle: `${name} — Premier Corporate & Commercial Legal Suite`,
-      heroSubtitle: `Automate CAC compliance audits, SCUML anti-money laundering checks, and retainer debit note generation for corporate clients.`,
+      heroTitle: `${name} — Trusted Legal Counsel & Corporate Law Practice in ${area}`,
+      heroSubtitle: `Get expert legal advice on CAC business registration, property title verification, contracts, and court representation without delay.`,
       services: [
-        { title: '⚖️ CAC Filing, Stamp Duty & RC Number Calculator', description: 'Itemizes statutory government filing fees and stamp duties for business incorporations.', icon: '⚖️' },
-        { title: '🛡️ SCUML Compliance & Corporate Shield', description: 'Audits company compliance status and generates statutory debit notes in minutes.', icon: '🛡️' },
-        { title: '📄 1-Click Retainer & NDA Contract Generator', description: 'Generates branded legal retainers with digital signature and OPay escrow settlement.', icon: '📄' }
+        { title: '⚖️ Business CAC Registration & Corporate Filing', description: 'Register your Business Name, Limited Liability Company (Ltd), or NGO with zero hassle.', icon: '⚖️' },
+        { title: '📜 Property Title & Land Due Diligence', description: 'Verify Governor\'s Consent, Gazette, and Deed of Assignment before buying land in Nigeria.', icon: '🛡️' },
+        { title: '💼 1-Tap Legal Consultation Booking', description: 'Schedule a confidential consultation with experienced legal counsel directly on WhatsApp.', icon: '📄' }
       ],
-      aboutText: `${name} is a distinguished law practice in ${area} providing astute counsel in corporate law, real estate conveyancing, intellectual property, and commercial dispute resolution.`,
+      aboutText: `${name} is a distinguished law firm in ${area} providing astute counsel in corporate law, real estate conveyancing, intellectual property, and commercial dispute resolution.`,
       testimonials: [
-        { name: 'MD, Global Tech Ltd', text: 'Prompt CAC corporate filing and seamless retainer invoicing. Essential legal partners for our business.', rating: 5 },
-        { name: 'Alhaji Sanusi K.', text: 'Thorough due diligence and contract negotiation. Highly recommended legal team.', rating: 5 }
+        { name: 'MD, Global Tech Ltd', text: 'Prompt CAC company registration and solid contract drafting. Essential legal partners for our business.', rating: 5 },
+        { name: 'Alhaji Sanusi K.', text: 'Thorough due diligence on our land acquisition in Lagos. Highly dependable legal team.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };
   }
 
   // 7. HOTELS & SHORTLET APARTMENTS
   if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge|dining|lounge|restaurant/.test(cat)) {
     return {
-      heroTitle: `${name} — Luxury Stay & Direct Booking Engine`,
-      heroSubtitle: `Bypass 20% OTA commissions with direct 24/7 WhatsApp bookings, caution deposit verification, and generator diesel power tracking.`,
+      heroTitle: `${name} — Luxury Rooms & Serviced Shortlet Apartments in ${area}`,
+      heroSubtitle: `Enjoy 24/7 electricity, high-speed WiFi, clean suites, and secure parking. Book directly on WhatsApp and save agency commissions.`,
       services: [
-        { title: '🏨 24/7 Direct WhatsApp Booking Engine', description: 'Collects verified guest dates and deposits directly into your bank without intermediary fees.', icon: '🏨' },
-        { title: '⚡ Power & Diesel Expense Reconciliation', description: 'Monitors daily kWh consumption and manages automatic caution deposit refund calculation.', icon: '⚡' },
-        { title: '💳 Moniepoint & OPay Caution Deposit Gateway', description: 'Instant transfer verification and automated check-in digital key dispatch.', icon: '💳' }
+        { title: '🏨 24/7 Direct Room & Suite Booking', description: 'Check available dates, room rates, and book instantly on WhatsApp without extra middleman fees.', icon: '🏨' },
+        { title: '⚡ 24/7 Uninterrupted Light & High-Speed WiFi', description: 'Rest easy with uninterrupted generator backup power, smart TVs, and premium amenities.', icon: '⚡' },
+        { title: '💳 Instant Caution Deposit & Check-In Key', description: 'Safe bank transfer verification with fast, seamless check-in and checkout.', icon: '💳' }
       ],
       aboutText: `${name} offers serene, luxurious accommodations in ${area} featuring 24/7 uninterrupted power, high-speed fiber internet, and bespoke hospitality services.`,
       testimonials: [
         { name: 'Amaka Eze', text: 'Loved the fast WhatsApp booking and instant check-in. The apartment was immaculate with 24/7 power!', rating: 5 },
         { name: 'Tunde Bakare', text: 'Top tier shortlet in Lagos. Seamless caution deposit refund right after checkout.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };
   }
 
   // 8. BOUTIQUES, HAUTE COUTURE & BEAUTY SPAS
   if (/boutique|fashion|style|beauty|salon|spa|hair|cloth|tailor|apparel/.test(cat)) {
     return {
-      heroTitle: `${name} — Haute Couture & Bespoke Style Studio`,
-      heroSubtitle: `Showcase lookbooks, collect custom measurement profiles, and accept instant 24/7 WhatsApp wardrobe orders across Lagos.`,
+      heroTitle: `${name} — Trendy Fashion Boutique & Beauty Studio in ${area}`,
+      heroSubtitle: `Browse our latest designer clothing, shoes, bags, and luxury hair collections. Order your size on WhatsApp with fast same-day dispatch.`,
       services: [
-        { title: '👗 Bespoke Measurement & Fitting Sizer', description: 'Collects customer bust/waist/hip dimensions and fabric selections seamlessly online.', icon: '👗' },
-        { title: '💎 WhatsApp Lookbook & VIP Pre-Order Engine', description: 'Delivers high-res collection catalogs and takes pre-order deposits directly into your bank.', icon: '💎' },
-        { title: '💳 Moniepoint & OPay Checkout Gateway', description: 'Instant transfer verification and dispatch waybill generator for local and worldwide courier.', icon: '💳' }
+        { title: '👗 New Arrivals & Lookbook Catalog', description: 'Browse stylish ready-to-wear, fabrics, and beauty products with clear prices and size guides.', icon: '👗' },
+        { title: '🛍️ 1-Tap WhatsApp Order Desk', description: 'Tap to order your size and color without typing or back-and-forth "how much" questions in DM.', icon: '💎' },
+        { title: '🚚 Fast Nationwide Delivery & Waybill', description: 'Swift same-day delivery within Lagos and reliable dispatch waybill tracking across Nigeria.', icon: '💳' }
       ],
       aboutText: `${name} is an elite fashion house and beauty sanctuary in ${area} crafting bespoke luxury apparel and delivering transformative styling experiences.`,
       testimonials: [
-        { name: 'Stephanie Okonkwo', text: 'The online measurement form and WhatsApp catalog made ordering my wedding guest outfit so effortless!', rating: 5 },
-        { name: 'Folake Adeyemi', text: 'Flawless tailoring, exquisite fabrics, and prompt delivery in Lekki. Truly 5-star service.', rating: 5 }
+        { name: 'Stephanie Okonkwo', text: 'The WhatsApp catalog made ordering my wedding guest outfit so effortless. Perfect fit and prompt delivery!', rating: 5 },
+        { name: 'Folake Adeyemi', text: 'Flawless tailoring, exquisite fabrics, and same-day delivery in Lekki. Truly 5-star service.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };
   }
 
-  // 8. LOGISTICS, HAULAGE & DISPATCH
+  // 9. LOGISTICS, HAULAGE & DISPATCH
   if (/logistics|haulage|courier|dispatch|delivery|freight|cargo|truck/.test(cat)) {
     return {
-      heroTitle: `${name} — Smart Logistics & Instant Delivery Pricing`,
-      heroSubtitle: `Compute intra-Lagos bike delivery fees, interstate 30-ton haulage diesel expenses, and POD rider cash remittances on autopilot.`,
+      heroTitle: `${name} — Fast & Reliable Dispatch Delivery in ${area}`,
+      heroSubtitle: `Same-day parcel delivery across Lagos and nationwide interstate haulage. Transparent delivery fees and real-time package updates on WhatsApp.`,
       services: [
-        { title: '📦 Intra-Lagos Delivery Fee Sizer (Ikeja to Lekki)', description: 'Calculates dynamic delivery rates based on distance, pickup zone, and package weight.', icon: '📦' },
-        { title: '🚚 Interstate Haulage Diesel & Union Tax Estimator', description: 'Computes diesel litre allocations, highway taxes, and net profit per trip corridor.', icon: '🚚' },
-        { title: '💵 POD Rider Cash Collection Reconciler', description: 'Tracks cash on delivery remittances and waybill confirmations in real time.', icon: '💵' }
+        { title: '📦 Fast Same-Day Pickup & Delivery', description: 'Swift bike and van dispatch for documents, food, retail orders, and parcels across the city.', icon: '📦' },
+        { title: '🚚 Interstate Cargo & Haulage Services', description: 'Safe interstate truck delivery for commercial goods and raw materials with waybill tracking.', icon: '🚚' },
+        { title: '💵 Instant Delivery Price Quote on WhatsApp', description: 'Get your exact delivery rate in 3 seconds based on pickup and drop-off locations.', icon: '💵' }
       ],
       aboutText: `${name} provides dependable dispatch, haulage, and supply chain logistics across ${area} and nationwide, ensuring safe, punctual cargo delivery.`,
       testimonials: [
         { name: 'Boutique Owner, Lekki', text: 'Their automated delivery fee quote makes customer checkout effortless on our WhatsApp page.', rating: 5 },
         { name: 'Manager, FMCG Distributors', text: 'Reliable haulage dispatch and transparent diesel reconciliation for our interstate fleet.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };
   }
 
-  // 9. EVENT CENTERS & BANQUET HALLS
+  // 10. EVENT CENTERS & BANQUET HALLS
   if (/event|hall|banquet|decor|cater|party|wedding/.test(cat)) {
     return {
-      heroTitle: `${name} — Grand Events & Automated Date Reservations`,
-      heroSubtitle: `Size banquet seating capacities, decor lighting packages, and overtime caution bonds with instant WhatsApp event quotes.`,
+      heroTitle: `${name} — Elegant Event Center & Party Hall in ${area}`,
+      heroSubtitle: `Host your wedding reception, birthday party, and corporate conference in a spacious, fully air-conditioned hall with ample parking.`,
       services: [
-        { title: '🎉 Guest Capacity & Banquet Decor Estimator', description: 'Sizes hall packages, lighting, and sound gear tailored to guest headcount.', icon: '🎉' },
-        { title: '⏰ Overtime & Caution Bond Calculator', description: 'Computes hourly overtime rates and post-event sanitization bonds accurately.', icon: '⏰' },
-        { title: '📅 24/7 WhatsApp Event Date Checker', description: 'Allows wedding and corporate planners to check date availability and lock reservation deposits.', icon: '📅' }
+        { title: '🎉 Spacious Air-Conditioned Hall & Seating', description: 'Accommodates 200 to 1,500 guests with elegant banquet or conference seating arrangement.', icon: '🎉' },
+        { title: '⚡ 24/7 Heavy-Duty Power & Secure Parking', description: 'Uninterrupted generator power supply, clean luxury restrooms, and 24/7 armed security.', icon: '⏰' },
+        { title: '📅 Check Hall Availability on WhatsApp', description: 'Check open event dates and lock your booking deposit with instant WhatsApp confirmation.', icon: '📅' }
       ],
       aboutText: `${name} is an exquisite event center in ${area} featuring climate-controlled banquet halls, ample secure parking, and majestic aesthetics for memorable celebrations.`,
       testimonials: [
-        { name: 'Mrs. Yetunde A.', text: 'Our wedding reception was spectacular! The decor pricing calculator gave us complete budget clarity.', rating: 5 },
-        { name: 'Corporate Events Lead', text: 'Prime location, impeccable facilities, and easy date reservation system.', rating: 5 }
+        { name: 'Mrs. Yetunde A.', text: 'Our wedding reception was spectacular! The hall was cool, spacious, and the lighting was breathtaking.', rating: 5 },
+        { name: 'Corporate Events Lead', text: 'Prime location, impeccable facilities, uninterrupted generator light, and easy booking system.', rating: 5 }
       ],
-      ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };
   }
 
   // DEFAULT / GENERAL PROFESSIONAL SERVICES
   return {
-    heroTitle: `${name} — 24/7 AI Sales & Automation Engine`,
-    heroSubtitle: `Capture 3.5x more local clients in ${area} with automated WhatsApp auto-responders, instant quote generators, and direct bank payments.`,
+    heroTitle: `${name} — Official Online Storefront & WhatsApp Order Desk in ${area}`,
+    heroSubtitle: `Get discovered on Google search, showcase your products and services with clear prices, and close more sales 24/7 on WhatsApp.`,
     services: [
-      { title: '🤖 24/7 WhatsApp AI Customer Concierge', description: 'Answers customer inquiries, voice notes, and price requests automatically within 3 seconds.', icon: '🤖' },
-      { title: '⚡ 1-Click Instant Quote & Proposal Estimator', description: 'Generates branded PDF invoices and service quotes sent directly to customer phones.', icon: '⚡' },
-      { title: '💳 Moniepoint & OPay Direct Transfer Gateway', description: 'Collects verified customer payments straight into your bank account with instant receipts.', icon: '💳' }
+      { title: '🚀 Get Found on Google Search', description: 'Stop losing local customers to competitors when people search Google for services in your area.', icon: '🚀' },
+      { title: '📱 24/7 WhatsApp Price List & Order Desk', description: 'No more typing prices one by one in DM. Customers view your catalog and place orders directly on WhatsApp.', icon: '📱' },
+      { title: '💳 Moniepoint & OPay Verified Bank Transfer', description: 'Collect customer payments safely with instant confirmation and zero fear of fake bank alerts.', icon: '💳' }
     ],
-    aboutText: `${name} is a verified enterprise in ${area} dedicated to delivering top-tier services, responsive customer support, and measurable value to every client.`,
+    aboutText: `${name} is a verified commercial enterprise in ${area} dedicated to delivering top-tier services, responsive customer support, and measurable value to every client.`,
     testimonials: [
-      { name: 'Chukwuemeka A.', text: 'The WhatsApp AI autoresponder responded to our late-night inquiry instantly. Exceptional setup!', rating: 5 },
-      { name: 'Adaeze O.', text: 'Transparent quotes and very smooth payment process. Highly recommended business in Lagos.', rating: 5 }
+      { name: 'Chukwuemeka A.', text: 'The WhatsApp autoresponder answered our late-night inquiry instantly. Very professional service!', rating: 5 },
+      { name: 'Adaeze O.', text: 'Clear prices, quick response, and smooth payment confirmation. Highly recommended business in Lagos.', rating: 5 }
     ],
-    ctaText: hasWebsite ? 'Get 1-Line Embed Upgrade (₦35,000)' : 'Claim 100% DFY Website (₦75k Deposit)'
+    ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
   };
-
 }
 
 export async function generateCopyWithVertexAI(

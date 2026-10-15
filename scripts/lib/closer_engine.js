@@ -437,10 +437,11 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       intent: 'CASUAL_GREETING',
       isOptOut: false,
       messageText:
-        `Good day Boss / Management at *${name}*! 👋 Thank you for reaching out.\n\n` +
-        `We were researching established businesses in ${area} and built an *official mobile website + 24/7 WhatsApp quoting assistant* for *${name}* to test free:\n\n` +
-        `👉 *Tap here to check your sample website (₦0 to view):*\n${previewUrl}\n\n` +
-        `How does it look to you? Would you like us to customize it with your real shop photos or price list for free?`,
+        `Good day Boss at *${name}*! 👋 Thank you for reaching out.\n\n` +
+        `When potential customers search Google for *"${category}"* or *"${name}"* in ${area} right now, your competitors show up and take those sales because you do not have an official website yet.\n\n` +
+        `Instead of waiting 3 weeks for a developer, we already built your *official mobile website + 24/7 WhatsApp order & quoting assistant* in advance so you can test it free on your phone:\n\n` +
+        `👉 *Tap here to test your website (100% Free):*\n${previewUrl}\n\n` +
+        `Send 2 or 3 photos of your shop/work right here on WhatsApp and we will load them onto your site FREE today! How does the layout look to you?`,
       suggestedAction: 'ENGAGE_CONVERSATION',
       directPaymentEligible: true
     };
@@ -452,20 +453,20 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       intent: 'TRUST_SCAM_OR_LEGIT',
       isOptOut: false,
       messageText:
-        `We completely understand your caution Sir/Ma — with so many online scams in Nigeria today, being careful is 100% wise! 🛡️\n\n` +
-        `Here is why you are 100% protected with *Bethelmind Digital Solutions*:\n\n` +
+        `We completely understand your caution Boss — with so many online scams in Nigeria today, being careful is 100% wise! 🛡️\n\n` +
+        `Here is why you have zero fear with *Bethelmind Digital Solutions*:\n\n` +
         `1️⃣ *Registered Nigerian Corporate Entity (CAC):*\n` +
-        `You never pay into a personal account. All settlements go strictly to our verified corporate bank account:\n` +
+        `You never pay into any personal or individual account. All transactions go strictly to our verified CAC corporate bank account:\n` +
         `• Bank: *${CORPORATE_BANK.bankName}*\n` +
         `• Account No: *${CORPORATE_BANK.accountNumber}*\n` +
         `• Account Name: *${CORPORATE_BANK.accountName}*\n\n` +
-        `2️⃣ *Zero-Risk "Test Before You Pay" Guarantee:*\n` +
+        `2️⃣ *Zero-Risk "Test Before You Pay 1 Naira" Guarantee:*\n` +
         `We don't ask you to pay blindly. We already built your working website in advance to test on your phone free:\n` +
         `👉 ${previewUrl}\n\n` +
         `3️⃣ *Free Shop Photo Test (₦0 Commitment):*\n` +
-        `Send 3 photos of your shop/work right here on WhatsApp. We will upload them to your website FREE first. Only when you see your real work on the site and love it do you proceed!\n\n` +
+        `Send 2 or 3 photos of your shop/work right here on WhatsApp. We will upload them to your website FREE first. Only when you see your real work live on the site and love it do you proceed!\n\n` +
         `4️⃣ *Direct Hotline:* You can speak with our Lagos Desk lead directly on this line (0802 279 1227).\n\n` +
-        `Drop 3 photos of *${name}* here right now and let us prove it to you!`,
+        `Drop 2 photos of *${name}* here right now and let us prove it to you!`,
       suggestedAction: 'REASSURE_AND_CLOSE',
       directPaymentEligible: true
     };
@@ -477,17 +478,69 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       intent: 'INSTAGRAM_VS_WEBSITE_OBJECTION',
       isOptOut: false,
       messageText:
-        `Great question Boss! Many business owners in ${area} ask this exact same thing. 👍\n\n` +
-        `Here is why top vendors combine their Instagram with an Official Website:\n\n` +
-        `1️⃣ *High-Budget Corporate Buyers Don't Search Instagram:*\n` +
-        `When major companies, schools, or government contractors search Google for *"${category} in ${area}"*, Instagram profiles rarely show up — only official websites rank at the top.\n\n` +
-        `2️⃣ *No More "Check DM for Price" / 2 AM Lost Sales:*\n` +
-        `When clients visit your Instagram at night or while you're busy, you lose them if you don't reply within 5 minutes. Your website + WhatsApp assistant quotes them, shows prices, and takes orders automatically 24/7.\n\n` +
+        `Great question Boss! Many vendors in ${area} ask this exact same thing. 👍\n\n` +
+        `Here is why top Nigerian business owners combine their Instagram with an Official Website:\n\n` +
+        `1️⃣ *High-Budget Corporate Clients Search Google, NOT Instagram:*\n` +
+        `When corporate companies, schools, diaspora buyers, or government clients search Google for *"${category} in ${area}"*, Instagram profiles rarely show up — only businesses with official websites get the big contracts.\n\n` +
+        `2️⃣ *Tired of Answering "How Much?" in DM?*\n` +
+        `When clients visit your Instagram at night or while you're busy, you lose them if you don't reply within 5 minutes. Your website displays your full price list, takes orders, and collects payment 24/7.\n\n` +
         `3️⃣ *No Risk of Account Suspension:*\n` +
-        `Instagram can disable an account anytime with zero appeal. Your website and custom domain belong 100% to *${name}* forever.\n\n` +
-        `👉 *See how clean ${name}'s website looks alongside your WhatsApp:*\n${previewUrl}\n\n` +
+        `Instagram can disable or shadowban an account anytime with zero warning. Your website and custom domain belong 100% to *${name}* forever.\n\n` +
+        `👉 *See how clean ${name}'s website looks on phone:*\n${previewUrl}\n\n` +
         `You can start today under our 50% promo with just *₦35,000 deposit* (balance only after it's live) or send 3 shop photos here first to update it FREE!`,
       suggestedAction: 'HANDLE_SOCIAL_OBJECTION',
+      directPaymentEligible: true
+    };
+  }
+
+  // ── 8B. PRICE OBJECTION / "TOO EXPENSIVE" / "REDUCE AM" / DISCOUNT ────────
+  if (/expensive|e cost|costly|too much|too high|any discount|reduce am|reduce the price|last price|how much last|discount|budget is low|no money/i.test(msg)) {
+    return {
+      intent: 'PRICE_DISCOUNT_OR_EXPENSIVE',
+      isOptOut: false,
+      messageText:
+        `We hear you loud and clear Boss! Cash flow is everything in business today. 🤝\n\n` +
+        `Let's look at the real math together:\n\n` +
+        `1️⃣ *The Cost of Losing Customers:* Losing just 1 or 2 serious clients a month to your competitors on Google costs way more than ₦35,000.\n\n` +
+        `2️⃣ *Less Than ₦1,200 a Day:* ₦35,000 is less than ₦1,200 a day for one month — less than the price of daily generator fuel — to own an official website that brings you high-paying clients forever.\n\n` +
+        `3️⃣ *Normal Web Agencies Charge ₦150k–₦350k:* Under our October 50% promo, you get the entire setup (Domain + 1-Yr Cloud Hosting + 24/7 WhatsApp AI) for just *₦65,000 total* (start with *₦35,000 deposit*, balance only after going live!).\n\n` +
+        `4️⃣ *Pay-Small-Small Option:* If cash is tight today, you can also launch with our *Option B: ₦25,000/month pay-small-small*.\n\n` +
+        `👉 *Inspect your prototype free first:* ${previewUrl}\n\n` +
+        `Send 2 or 3 photos of your shop right here on WhatsApp make we update it FREE first. You don't pay 1 kobo until you are 100% happy with what you see!`,
+      suggestedAction: 'DECONSTRUCT_PRICE_AND_CLOSE',
+      directPaymentEligible: true
+    };
+  }
+
+  // ── 8C. "LET ME THINK ABOUT IT" / PROCRASTINATION HOOK ─────────────────────
+  if (/think about it|get back to you|let me think|not ready now|not ready yet|\bmaybe later\b|\bnot now\b|call me next week|next month|discuss with my partner|discuss with my husband|discuss with my wife/i.test(msg)) {
+    return {
+      intent: 'THINK_ABOUT_IT_OR_LATER',
+      isOptOut: false,
+      messageText:
+        `No problem at all Boss! Taking your time to plan is 100% wise. 👍\n\n` +
+        `While you think about it, why not send 2 or 3 photos of your shop or work right here on WhatsApp? We will load them onto your website for *FREE today*.\n\n` +
+        `That way, you can show your business partner, spouse, or manager exactly how *${name}*'s official website looks on a real phone before making any financial decision.\n\n` +
+        `Zero commitment, ₦0 upfront. Just drop 2 pictures here and let us do the work for you free!`,
+      suggestedAction: 'NURTURE_WITH_FREE_MOCKUP',
+      directPaymentEligible: true
+    };
+  }
+
+  // ── 8D. "HOW DOES IT WORK?" / PROCESS EXPLANATION ─────────────────────────
+  if (/how does it work|how it works|explain better|what will you do|wetin be the work|how will it help me|how does the website work|how does the assistant work/i.test(msg)) {
+    return {
+      intent: 'HOW_DOES_IT_WORK',
+      isOptOut: false,
+      messageText:
+        `It is very simple Boss! Here is how it brings you more customers and saves you stress:\n\n` +
+        `1️⃣ *Customers Find You on Google:* When someone in ${area} searches for *"${category}"*, they find *${name}*'s official website instead of your competitors.\n\n` +
+        `2️⃣ *Browse Catalog & Clear Prices:* They open your website on their phone, see your services, photos, and prices upfront.\n\n` +
+        `3️⃣ *1-Tap WhatsApp Order:* Instead of typing "How much?" in DM, they tap "Order on WhatsApp", which sends you their exact order and delivery address in 5 seconds.\n\n` +
+        `4️⃣ *24/7 Automatic Closer:* Even when you are asleep or busy attending to a customer, your WhatsApp assistant replies immediately, quotes prices, and gives your Moniepoint/OPay account for direct payment.\n\n` +
+        `👉 *Test it on your phone right now:* ${previewUrl}\n\n` +
+        `Drop 3 pictures of your shop here right now make we set up your real products free!`,
+      suggestedAction: 'EXPLAIN_SIMPLICITY',
       directPaymentEligible: true
     };
   }
@@ -603,7 +656,9 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
     };
   }
 
-  // ── 15. SECTOR-SPECIFIC INQUIRIES (Only if message explicitly mentions sector topics) ──
+  // ── 15. SECTOR-SPECIFIC INQUIRIES ─────────────────────────────────────────
+
+  // A. Solar & Inverter
   if (/solar|inverter|battery|kwa|kva|load|panel|panels|backup|nepa|phcn|sizing/i.test(msg)) {
     return {
       intent: 'SECTOR_SOLAR_SPECIALIST',
@@ -613,6 +668,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
         `For solar and inverter businesses, a generic website doesn't close sales. That's why we built the *Interactive Solar Load Sizer & Instant WhatsApp BOQ Engine* into your site:\n\n` +
         `• Customers select their appliances (Freezers, ACs, TVs, Lighting, Pumping machines).\n` +
         `• System automatically calculates total watt-hours, required inverter kVA, battery bank size, and solar panel count.\n` +
+        `• Shows them how much money they save on generator fuel every month!\n` +
         `• Generates an instant Bill of Quantities (BOQ) quote with your pricing and drops it directly into your WhatsApp ready to close!\n\n` +
         `👉 *Test your live Solar Prototype here:* ${previewUrl}\n\n` +
         `Under our October 50% promo, full setup is *₦65,000* (*₦35,000 deposit* to launch). Reply *1* to activate!`,
@@ -621,16 +677,17 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
     };
   }
 
+  // B. Boutique & Fashion Retail
   if (/cloth|boutique|fashion|shoe|bag|wear|dress|fabric|accessories/i.test(msg)) {
     return {
       intent: 'SECTOR_FASHION_RETAIL',
       isOptOut: false,
       messageText:
         `Hello Boss / Ma at *${name}*! 👗\n\n` +
-        `For fashion and retail vendors, we equip your website with the *Mobile Catalog & WhatsApp Stock Closer*:\n\n` +
-        `• Customers can browse your collections with size & color variant filters.\n` +
-        `• 1-Tap "Order on WhatsApp" button pre-fills the exact item code, size, and price so you never waste time asking "which picture?".\n` +
-        `• Built-in low-stock alerts to create urgent buying desire.\n\n` +
+        `For fashion and retail vendors, tired of answering "How much?" 50 times in DM? We equip your website with the *Mobile Catalog & WhatsApp Stock Closer*:\n\n` +
+        `• Customers can browse your latest collections with size & color options.\n` +
+        `• 1-Tap "Order on WhatsApp" button pre-fills the exact item name, size, and price so you never waste time asking "which picture?".\n` +
+        `• Collects customer delivery address and payments straight into your Moniepoint/OPay account.\n\n` +
         `👉 *Inspect your fashion storefront prototype:* ${previewUrl}\n\n` +
         `Send us 3 to 5 photos of your hottest products right here on WhatsApp and we will load them onto your storefront FREE today!`,
       suggestedAction: 'SOLICIT_FASHION_PHOTOS',
@@ -638,7 +695,8 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
     };
   }
 
-  if (/salon|hair|wig|braid|spa|beauty|makeup|barber|nails/i.test(msg)) {
+  // C. Beauty, Hair & Spa
+  if (/salon|hair|wig|braid|\bspa\b|beauty|makeup|barber|nails/i.test(msg)) {
     return {
       intent: 'SECTOR_BEAUTY_SALON',
       isOptOut: false,
@@ -646,11 +704,119 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
         `Hello Boss / Queen at *${name}*! 💄\n\n` +
         `For salons and beauty studios, no-shows and time-wasters are the biggest headache. That's why your website includes the *Automated Service Booking & Deposit Lock Engine*:\n\n` +
         `• Clients pick hairstyle/treatment, choose stylist, and select date & time slot.\n` +
-        `• Locks their appointment with a non-refundable deposit directly to your account.\n` +
+        `• Locks their appointment with a commitment deposit directly to your account.\n` +
         `• Auto-sends appointment confirmation and directions to their WhatsApp.\n\n` +
         `👉 *Test your live salon booking link:* ${previewUrl}\n\n` +
         `Reply *1* to activate for *₦35,000 deposit* or drop your service price list here to update it free!`,
       suggestedAction: 'CLOSE_SALON_BOOKING',
+      directPaymentEligible: true
+    };
+  }
+
+  // D. Real Estate & Land Banking
+  if (/estate|property|house|land|duplex|c of o|governor|realtor|rent|shortlet|inspection/i.test(msg)) {
+    return {
+      intent: 'SECTOR_REAL_ESTATE',
+      isOptOut: false,
+      messageText:
+        `Good day Boss at *${name}*! 🏡\n\n` +
+        `For real estate developers and agencies, high-value local and diaspora buyers search Google for verified properties. That's why your website includes:\n\n` +
+        `• Verified property listings with clear photos, video walk-throughs, and pricing.\n` +
+        `• 1-Tap WhatsApp Inspection Booking (prospects book physical site visits in 5 seconds).\n` +
+        `• Flexible installment & down-payment breakdown calculator.\n\n` +
+        `👉 *Inspect your real estate portal prototype:* ${previewUrl}\n\n` +
+        `Reply *1* to register your custom domain (*₦35k deposit*) or send 3 property listings here to update it free!`,
+      suggestedAction: 'CLOSE_REAL_ESTATE',
+      directPaymentEligible: true
+    };
+  }
+
+  // E. Automotive, Tokunbo & Mechanics
+  if (/car|auto|vehicle|tokunbo|customs|dealership|mechanic|spare part|toyota|lexus|mercedes/i.test(msg)) {
+    return {
+      intent: 'SECTOR_AUTOMOTIVE_CARS',
+      isOptOut: false,
+      messageText:
+        `Salute Boss at *${name}*! 🚗\n\n` +
+        `For car dealerships and automotive centers, buyers want verified prices and customs papers without stress. Your website includes:\n\n` +
+        `• Clean showroom inventory with photos, mileage, and clear prices.\n` +
+        `• Verified customs duty clearing and VIN check badges.\n` +
+        `• 1-Tap WhatsApp Test Drive & Car Swap request button.\n\n` +
+        `👉 *Check your automotive showroom link:* ${previewUrl}\n\n` +
+        `Send 2 or 3 photos of available cars to update your live showroom FREE today!`,
+      suggestedAction: 'CLOSE_AUTOMOTIVE',
+      directPaymentEligible: true
+    };
+  }
+
+  // F. Healthcare, Clinic & Pharmacy
+  if (/clinic|doctor|hospital|medical|health|pharmacy|dental|lab test|consultation/i.test(msg)) {
+    return {
+      intent: 'SECTOR_MEDICAL_HEALTH',
+      isOptOut: false,
+      messageText:
+        `Good day Dr / Management at *${name}*! 🩺\n\n` +
+        `For clinics, pharmacies, and diagnostic centers, patients want quick appointments without sitting in waiting rooms for hours. Your website includes:\n\n` +
+        `• 1-Tap Doctor Consultation & Clinic Booking on WhatsApp.\n` +
+        `• Comprehensive medical test and checkup package price lists.\n` +
+        `• Fast HMO check and safe bank transfer deposits.\n\n` +
+        `👉 *Test your medical portal link:* ${previewUrl}\n\n` +
+        `Reply *1* to activate for *₦35,000 deposit* or drop your clinic services here to update it free!`,
+      suggestedAction: 'CLOSE_MEDICAL',
+      directPaymentEligible: true
+    };
+  }
+
+  // G. Schools & Academies
+  if (/school|academy|college|tuition|fees|creche|nursery|primary|secondary|admission|result/i.test(msg)) {
+    return {
+      intent: 'SECTOR_SCHOOL_EDUCATION',
+      isOptOut: false,
+      messageText:
+        `Good day Administrator at *${name}*! 🎓\n\n` +
+        `For schools and academies, managing term fees and inquiries shouldn't require manual paperwork. Your portal includes:\n\n` +
+        `• Transparent termly tuition & boarding fee breakdown with bank transfer verification.\n` +
+        `• Online student admission form for new parents.\n` +
+        `• Termly report sheet / result checker access directly on mobile.\n\n` +
+        `👉 *Inspect your school portal prototype:* ${previewUrl}\n\n` +
+        `Reply *1* to launch (*₦35k deposit*) or drop your fee schedule here to customize it free!`,
+      suggestedAction: 'CLOSE_SCHOOL',
+      directPaymentEligible: true
+    };
+  }
+
+  // H. Logistics, Dispatch & Haulage
+  if (/dispatch|delivery|logistics|courier|haulage|waybill|rider|cargo|freight/i.test(msg)) {
+    return {
+      intent: 'SECTOR_LOGISTICS_DISPATCH',
+      isOptOut: false,
+      messageText:
+        `Salute Boss at *${name}*! 📦\n\n` +
+        `For logistics and dispatch companies, answering "how much is delivery to Lekki/Ikeja?" all day wastes valuable time. Your website includes:\n\n` +
+        `• Instant delivery fee quote based on pickup and drop-off areas.\n` +
+        `• 1-Tap WhatsApp pickup request with parcel details.\n` +
+        `• Waybill and package status updates sent to customer phones.\n\n` +
+        `👉 *Test your logistics delivery portal:* ${previewUrl}\n\n` +
+        `Reply *1* to activate under our 50% promo (*₦35,000 deposit*)!`,
+      suggestedAction: 'CLOSE_LOGISTICS',
+      directPaymentEligible: true
+    };
+  }
+
+  // I. Event Centers & Halls
+  if (/event|hall|banquet|wedding|reception|party|decor|catering/i.test(msg)) {
+    return {
+      intent: 'SECTOR_EVENT_CENTER',
+      isOptOut: false,
+      messageText:
+        `Good day Management at *${name}*! 🎉\n\n` +
+        `For event centers and banquet halls, event planners want to see hall capacity, photos, and open dates quickly. Your website includes:\n\n` +
+        `• Air-conditioned hall gallery and banquet seating capacity details.\n` +
+        `• 24/7 WhatsApp date availability checker.\n` +
+        `• Hall reservation deposit lock directly into your corporate bank account.\n\n` +
+        `👉 *Inspect your event center website:* ${previewUrl}\n\n` +
+        `Drop 3 photos of your hall here right now to update your live gallery free!`,
+      suggestedAction: 'CLOSE_EVENT_CENTER',
       directPaymentEligible: true
     };
   }
@@ -677,12 +843,13 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
     isOptOut: false,
     messageText:
       `Good day Boss at *${name}*! 👋 Thank you for your message.\n\n` +
-      `Regarding your inquiry about *${name}* in ${area}:\n` +
-      `We already built a live sample website + 24/7 WhatsApp assistant tailored specifically for *${name}* so you don't have to wait weeks for a developer:\n\n` +
+      `Regarding *${name}* in ${area}:\n` +
+      `When customers search Google for *"${category}"* in your area, your direct competitors are taking the sales because you do not have an official website yet.\n\n` +
+      `We already built your live official mobile website + 24/7 WhatsApp quoting assistant in advance so you don't have to wait weeks for a developer:\n\n` +
       `👉 *Test your website on your phone right now (100% Free):*\n${previewUrl}\n\n` +
-      `🚀 *Next Steps:* \n` +
-      `• *Drop 3–5 photos of your shop/work* right here on WhatsApp and we will load them onto your site FREE today.\n` +
-      `• *Reply "1"* to lock in our October 50% Promo (*₦35,000 deposit*, balance only after your custom domain is live!).\n\n` +
+      `🚀 *2 Easy Ways to Proceed:* \n` +
+      `1️⃣ *Drop 2–3 photos of your shop/work* right here on WhatsApp and we will load them onto your site FREE today.\n` +
+      `2️⃣ *Reply "1"* to lock in our October 50% Promo (*₦35,000 deposit*, balance only after your custom domain is live!).\n\n` +
       `🏛️ *CAC Corporate Account:* Moniepoint MFB · *6805375225* · *Bethelmind Digital Solutions*\n\n` +
       `How can we best assist you today?`,
     suggestedAction: 'SEND_ADAPTIVE_PITCH',
