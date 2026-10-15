@@ -763,6 +763,7 @@ app.get('/', (req, res) => {
       <div class="summary-item online">Online &amp; Active: <b>${onlineCount} / 7</b></div>
       <div class="summary-item">Architecture: <b>1 Admin Closer + 6 Outreach Desks</b></div>
       <button class="btn btn-green" style="font-size:0.85rem;padding:8px 16px;cursor:pointer;" onclick="lockAllSessions()">🔒 Permanently Lock All 7 Lines</button>
+      <button class="btn" style="background:#4338ca;font-size:0.85rem;padding:8px 16px;cursor:pointer;color:#ffffff;font-weight:800;" onclick="triggerCloudScraper()">⚡ Trigger Cloud Lead Scraper (Hourly Pass)</button>
       <a href="/test-ai" class="btn" style="background:#0284c7;font-size:0.85rem;padding:8px 16px;text-decoration:none;font-weight:800;">🤖 Test Live AI Sales Assistant Simulator</a>
     </div>
     <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
@@ -963,6 +964,23 @@ app.get('/', (req, res) => {
         btn.disabled = false;
       }
     }
+
+    async function triggerCloudScraper() {
+      const btn = event.target;
+      const orig = btn.innerText;
+      btn.innerText = 'Harvesting Leads on VPS...';
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/trigger-scraper', { method: 'POST' });
+        const data = await res.json();
+        alert('🚀 SUCCESS: ' + (data.message || 'Scraper started in background!'));
+      } catch (err) {
+        alert('Scraper error: ' + err.message);
+      } finally {
+        btn.innerText = orig;
+        btn.disabled = false;
+      }
+    }
   </script>
 </body>
 </html>`);
@@ -1082,6 +1100,14 @@ app.post('/api/test-ai-reply', (req, res) => {
   const msg = req.body.message || '';
   const decision = formatInboundCloserReply(msg);
   res.json({ success: true, reply: decision.text, isOptOut: decision.isOptOut });
+});
+
+// API endpoint to trigger VPS cloud lead scraper
+app.post('/api/trigger-scraper', (req, res) => {
+  const { spawn } = require('child_process');
+  const child = spawn('/root/run_scraper.sh', [], { detached: true, stdio: 'ignore', shell: true });
+  child.unref();
+  res.json({ success: true, message: 'Cloud scraper pass initiated successfully on VPS!' });
 });
 
 // ── Status Endpoint per Line for Rapid Live Polling ─────────────────────────
