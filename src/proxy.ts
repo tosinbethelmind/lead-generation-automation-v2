@@ -166,6 +166,10 @@ export async function proxy(req: NextRequest) {
   let targetSiteSlug = '';
 
   if (isPlatformDomain) {
+    // If request is on the apex domain itself (bethelmindanalytics.com or www.bethelmindanalytics.com), do not rewrite
+    if (hostWithoutPort === 'bethelmindanalytics.com' || hostWithoutPort === 'www.bethelmindanalytics.com' || hostWithoutPort === 'bethelmind.com' || hostWithoutPort === 'localhost') {
+      return NextResponse.next();
+    }
     const subdomain = parts[0];
     if (MAIN_DOMAINS.has(subdomain) || RESERVED_SUBDOMAINS.has(subdomain)) {
       return NextResponse.next();
