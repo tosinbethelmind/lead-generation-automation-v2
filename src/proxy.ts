@@ -98,7 +98,15 @@ export async function proxy(req: NextRequest) {
     const tokenQuery = url.searchParams.get('token');
     if (tokenQuery) {
       if (rawValidTokens.some(t => safeCompareStrings(tokenQuery.trim(), t.trim()))) {
-        return NextResponse.next();
+        const res = NextResponse.next();
+        res.cookies.set('admin-token', tokenQuery.trim(), {
+          path: '/',
+          httpOnly: false,
+          maxAge: 60 * 60 * 24 * 365, // 1 year
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production'
+        });
+        return res;
       }
       const loginUrl = new URL('/api/admin/login', req.url);
       loginUrl.searchParams.set('token', tokenQuery);

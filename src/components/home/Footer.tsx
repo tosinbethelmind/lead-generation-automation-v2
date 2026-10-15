@@ -71,8 +71,8 @@ export default function Footer() {
                   </li>
                 ))}
                 <li>
-                  <Link href="/admin" style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem' }}>
-                    Login
+                  <Link href="/admin/mobile?token=bethelmind_admin_2026" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 700 }}>
+                    📱 Mobile Command Center
                   </Link>
                 </li>
               </ul>

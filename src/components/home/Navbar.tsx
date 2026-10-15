@@ -375,19 +375,21 @@ export default function Navbar() {
         }}
       >
         <Link
-          href="/admin"
+          href="/admin/mobile?token=bethelmind_admin_2026"
           className="desktop-only nav-login-link"
           style={{
-            color: '#94a3b8',
+            color: '#38bdf8',
             textDecoration: 'none',
             fontSize: '0.82rem',
-            fontWeight: 600,
-            padding: '6px 10px',
+            fontWeight: 700,
+            padding: '6px 12px',
             borderRadius: 8,
-            transition: 'color 0.2s ease',
+            border: '1px solid rgba(56, 189, 248, 0.3)',
+            background: 'rgba(56, 189, 248, 0.08)',
+            transition: 'all 0.2s ease',
           }}
         >
-          Login
+          📱 Mobile Desk
         </Link>
 
         {/* WhatsApp Button */}
@@ -581,6 +583,29 @@ export default function Navbar() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <Link
+              href="/admin/mobile?token=bethelmind_admin_2026"
+              onClick={() => setMenuOpen(false)}
+              style={{
+                gridColumn: '1 / -1',
+                textAlign: 'center',
+                padding: '11px 0',
+                borderRadius: 10,
+                border: '1px solid #38bdf8',
+                background: 'rgba(56, 189, 248, 0.12)',
+                color: '#38bdf8',
+                textDecoration: 'none',
+                fontWeight: 800,
+                fontSize: '0.86rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+              }}
+            >
+              📱 Mobile Command Hub (Desk Login)
+            </Link>
+
             <a
               href={waLink}
               target="_blank"
