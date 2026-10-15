@@ -176,7 +176,7 @@ function hasSavedSession(authDir) {
     const stat = fs.statSync(credsFile);
     if (stat.size < 50) return null;
     const creds = JSON.parse(fs.readFileSync(credsFile, 'utf8'));
-    if (creds && creds.registered === true && creds.me && creds.me.id) {
+    if (creds && creds.me && creds.me.id) {
       return {
         phone: creds.me.id.split(':')[0],
         name: creds.me.name || creds.me.notify || ''
@@ -193,6 +193,24 @@ function resolveAuthDir(inst) {
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
   }
+
+  // If targetDir has no valid registered session, auto-restore from persistent backup vaults!
+  if (!hasSavedSession(targetDir)) {
+    const backupDirs = [
+      path.join(__dirname, '../config/baileys_auth_backups', inst.canonicalDir),
+      path.join(localDb, `${inst.canonicalDir}_backup`),
+      path.join(localDb, `${inst.canonicalDir}_solidified_backup`),
+      path.join(localDb, 'baileys_auth_permanent_master', inst.canonicalDir)
+    ];
+    for (const bDir of backupDirs) {
+      if (hasSavedSession(bDir)) {
+        console.log(`[Evolution API] 🔄 Restoring preserved valid session for ${inst.label} from ${path.basename(bDir)}...`);
+        copyCoreAuthKeys(bDir, targetDir);
+        break;
+      }
+    }
+  }
+
   return targetDir;
 }
 
@@ -218,21 +236,15 @@ function updateLineRegistry(inst, isConnected, phone = '') {
 function copyCoreAuthKeys(from, to) {
   if (!fs.existsSync(from)) return 0;
   if (!fs.existsSync(to)) fs.mkdirSync(to, { recursive: true });
-  let count = 0;
   try {
-    const files = fs.readdirSync(from);
-    for (const element of files) {
-      if (element === 'creds.json' || element.startsWith('app-state') || element.startsWith('identity-key') || element.startsWith('device-list')) {
-        const srcFile = path.join(from, element);
-        const destFile = path.join(to, element);
-        try {
-          fs.copyFileSync(srcFile, destFile);
-          count++;
-        } catch (_) {}
-      }
+    const srcCreds = path.join(from, 'creds.json');
+    const destCreds = path.join(to, 'creds.json');
+    if (fs.existsSync(srcCreds)) {
+      fs.copyFileSync(srcCreds, destCreds);
+      return 1;
     }
   } catch (_) {}
-  return count;
+  return 0;
 }
 
 function permanentLockSession(inst, authDir) {
@@ -295,6 +307,7 @@ function authMiddleware(req, res, next) {
     req.path === '/send-voicenote' ||
     req.path.startsWith('/api/') || 
     req.path.startsWith('/pair') ||
+    req.path.startsWith('/scan') ||
     req.path.startsWith('/instance/pairingCode') ||
     req.path.startsWith('/instance/request-qr') ||
     req.path.startsWith('/request-qr') ||
@@ -315,78 +328,63 @@ function authMiddleware(req, res, next) {
 
 app.use(authMiddleware);
 
-// ── 24/7 INBOUND SALES CLOSER & AUTO-REPLY HANDLER ─────────────────────────
-const inboundCooldowns = new Map();
+// ── 24/7 INBOUND SALES CLOSER, PHOTO INGESTOR & AUTO-REPLY HANDLER ─────────
+const processedEvolutionMsgIds = new Set();
+const lastReplyTimestamps = new Map();
 
 function extractMessageText(msg) {
-  if (!msg.message) return '';
-  const m = msg.message;
-  return m.conversation ||
-    m.extendedTextMessage?.text ||
-    m.imageMessage?.caption ||
-    m.videoMessage?.caption ||
-    m.buttonsResponseMessage?.selectedDisplayText ||
-    m.listResponseMessage?.title ||
-    m.templateButtonReplyMessage?.selectedId ||
-    m.ephemeralMessage?.message?.conversation ||
-    m.ephemeralMessage?.message?.extendedTextMessage?.text ||
-    m.viewOnceMessage?.message?.conversation ||
-    m.viewOnceMessageV2?.message?.conversation ||
-    m.viewOnceMessageV2?.message?.extendedTextMessage?.text ||
-    '';
-}
+  if (!msg || !msg.message) return '';
+  let m = msg.message;
+  // Unwrap nested wrappers
+  if (m.ephemeralMessage?.message) m = m.ephemeralMessage.message;
+  if (m.viewOnceMessage?.message) m = m.viewOnceMessage.message;
+  if (m.viewOnceMessageV2?.message) m = m.viewOnceMessageV2.message;
+  if (m.documentWithCaptionMessage?.message) m = m.documentWithCaptionMessage.message;
 
-function formatInboundCloserReply(text) {
-  const lower = (text || '').toLowerCase().trim();
-
-  // 1. Opt-out / Disinterest / Stop requests (STOP SENDING IMMEDIATELY)
-  if (/^(no|stop|cancel|unsubscribe|remove|not interested|dont message|don't message|not keen|never|leave me|stop it|opt out|optout|block)\b/i.test(lower) ||
-      /\b(not interested|not keen|stop messaging|remove my number|stop sending|no thanks|no thank you|dont contact|don't contact)\b/i.test(lower)) {
-    return {
-      isOptOut: true,
-      text: `Understood and acknowledged Sir/Ma. We have immediately removed your number from all future outreach. We wish your business continuous success!`
-    };
+  if (m.conversation) return m.conversation;
+  if (m.extendedTextMessage?.text) return m.extendedTextMessage.text;
+  if (m.imageMessage) {
+    return m.imageMessage.caption ? `${m.imageMessage.caption} [Photo Received]` : '[Photo Received]';
   }
-
-  // 2. Pricing inquiries
-  if (/price|cost|how much|fee|pay|pricing|expensive|cheap|charges|amount/i.test(lower)) {
-    return {
-      isOptOut: false,
-      text: `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Analytics Lagos* business tools.\n\nWe keep our rates completely transparent with ZERO hidden fees:\n\n1️⃣ *Option A: 1-Line Self-Install Embed* — *₦35,000* (one-time setup).\n   Ideal if you already have a website and just want the 24/7 quoting bot & calculator added in 5 minutes.\n\n2️⃣ *Option B: Full 100% Done-For-You (DFY) Turnkey* — *₦150,000* (Deposit: ₦75,000 to begin).\n   We deliver everything within 48 hours:\n   • Custom .com / .ng business domain\n   • 24/7 AI WhatsApp Sales Bot configured on your business line\n   • Automated Paystack & OPay bank transfer reconciliation (stops fake alerts)\n   • 30-day technical support & staff handover\n\nYou can test drive the interactive demo on your phone right now:\n👉 https://www.bethelmindanalytics.com\n\nWhich option fits your budget better (1-Line Embed ₦35k or Full Turnkey ₦150k / ₦75k deposit)?\nYou can also call or message our Head of Desk directly:\n👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`
-    };
+  if (m.videoMessage) {
+    return m.videoMessage.caption ? `${m.videoMessage.caption} [Video Received]` : '[Video Received]';
   }
-
-  // 3. Positive interest / demo requests
-  if (/yes|send|ok|sure|show me|interested|demo|proceed|details|link|share|go ahead|tell me more|how does it work/i.test(lower)) {
-    return {
-      isOptOut: false,
-      text: `Thank you so much Sir/Ma! We are excited to show you.\n\nHere is the live interactive prototype (test it directly on your mobile device, ₦0 Upfront):\n👉 https://www.bethelmindanalytics.com\n\n📌 *What to test when you open it:*\n1. Try the instant price calculator to see how fast it quotes.\n2. Tap the WhatsApp demo button to experience the sub-3s automated response.\n\nOnce set up on your official business line, it captures paying customers day and night without your staff having to type repetitive replies.\n\nWould you like our technical team to schedule a quick 10-minute activation for your business today?\nConnect directly with our Lagos Desk Head:\n👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`
-    };
-  }
-
-  // 4. Verification / Location / Legitimacy
-  if (/who|where|office|address|location|scam|real|legit|call|number/i.test(lower)) {
-    return {
-      isOptOut: false,
-      text: `Good day Sir/Ma!\n\nWe are *Bethelmind Analytics Lagos Desk*, a registered commercial technology enterprise based in Lagos, Nigeria.\n• Head of Desk: Tosin Oyelakin\n• Official Hotline / Direct WhatsApp: 0802 279 1227 (wa.me/2348022791227)\n• Corporate Website: https://www.bethelmindanalytics.com\n• Bank Settlement: Direct OPay Merchant Integration (Oyelakin Tosin Matthew)\n\nWe help Nigerian businesses eliminate after-hours sales loss by deploying automated 24/7 WhatsApp response tools.\n\nYou do NOT pay anything upfront to review your demo. Feel free to inspect our platform or call 0802 279 1227 to speak with Tosin directly.`
-    };
-  }
-
-  // 5. General polite response for interested/curious prospects
-  return {
-    isOptOut: false,
-    text: `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Analytics Lagos Desk*.\n\nOur senior technical consultant is reviewing your message right now.\n\nIn the meantime, you can test drive how our 24/7 automated quoting tool works on your phone:\n👉 https://www.bethelmindanalytics.com\n\nTo speak directly with our Head of Desk for immediate setup:\n👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`
-  };
+  if (m.audioMessage) return '[Voice Note Received]';
+  if (m.buttonsResponseMessage?.selectedDisplayText) return m.buttonsResponseMessage.selectedDisplayText;
+  if (m.buttonsResponseMessage?.selectedButtonId) return m.buttonsResponseMessage.selectedButtonId;
+  if (m.templateButtonReplyMessage?.selectedId) return m.templateButtonReplyMessage.selectedId;
+  if (m.templateButtonReplyMessage?.selectedDisplayText) return m.templateButtonReplyMessage.selectedDisplayText;
+  if (m.listResponseMessage?.title) return m.listResponseMessage.title;
+  if (m.listResponseMessage?.singleSelectReply?.selectedRowId) return m.listResponseMessage.singleSelectReply.selectedRowId;
+  if (m.interactiveResponseMessage?.body?.text) return m.interactiveResponseMessage.body.text;
+  if (m.documentMessage?.caption) return m.documentMessage.caption;
+  return '';
 }
 
 async function handleInboundMessage(inst, msg) {
   try {
     const senderJid = msg.key?.remoteJid || '';
     if (!senderJid.endsWith('@s.whatsapp.net')) return; // ignore groups, broadcasts, newsletters
-    if (senderJid === '2348022791227@s.whatsapp.net') return; // ignore admin desk self
 
+    // Check if message is a self-test message (sent from or to 0802 279 1227)
+    const isSelfTest = senderJid.includes('8022791227') && inst.id === 1;
+    // Only process self-test if it has user content and is not our own bot's template reply
     const text = extractMessageText(msg);
     if (!text || !text.trim()) return;
+
+    if (isSelfTest && (text.includes('Good day Boss') || text.includes('OFFICIAL OCTOBER 50% PROMO') || text.includes('TEST CONFIRMATION'))) {
+      return; // prevent recursive bot reply loops with self
+    }
+
+    const msgId = msg.key?.id;
+    if (msgId) {
+      if (processedEvolutionMsgIds.has(msgId)) return;
+      processedEvolutionMsgIds.add(msgId);
+      if (processedEvolutionMsgIds.size > 2000) {
+        const first = processedEvolutionMsgIds.values().next().value;
+        processedEvolutionMsgIds.delete(first);
+      }
+    }
 
     const cleanSender = senderJid.replace('@s.whatsapp.net', '');
     const localDbDir = path.join(__dirname, '../local_db');
@@ -402,25 +400,45 @@ async function handleInboundMessage(inst, msg) {
       return;
     }
 
+    // Rapid spam filter: ignore identical burst packets within 3 seconds
     const now = Date.now();
-    const lastReply = inboundCooldowns.get(senderJid) || 0;
-    if (now - lastReply < 10 * 60 * 1000) {
-      console.log(`[Inbound Closer] Cooldown active for +${cleanSender}. Skipping repeated auto-reply.`);
+    const lastTime = lastReplyTimestamps.get(cleanSender) || 0;
+    if (now - lastTime < 3000) {
+      console.log(`[Inbound Closer] Packet burst from +${cleanSender} within 3s. Skipping duplicate.`);
       return;
     }
-    inboundCooldowns.set(senderJid, now);
+    lastReplyTimestamps.set(cleanSender, now);
 
-    console.log(`\n🎧 [Inbound Closer] New inquiry on ${inst.label} from +${cleanSender}: "${text.trim().substring(0, 80)}"`);
-    const decision = formatInboundCloserReply(text);
-    const replyText = decision.text;
+    console.log(`\n🎧 [Inbound Closer] Message received on ${inst.label} from +${cleanSender}: "${text.trim().substring(0, 80)}"`);
+
+    // Dynamically load upgraded closer engine
+    delete require.cache[require.resolve('./lib/closer_engine')];
+    const { handlePostContactInquiry, lookupLeadForWhatsApp } = require('./lib/closer_engine');
+
+    const leadInfo = lookupLeadForWhatsApp(cleanSender, text);
+    const decision = handlePostContactInquiry(text, {
+      businessName: leadInfo.businessName,
+      category: leadInfo.category,
+      area: leadInfo.area,
+      phone: cleanSender,
+      slug: leadInfo.slug,
+      previewUrl: leadInfo.previewUrl,
+      hasMediaImage: Boolean(msg.message?.imageMessage)
+    });
+
+    const replyText = decision.messageText;
 
     // Simulate natural typing delay (800ms - 1500ms)
-    await inst.socket.presenceSubscribe(senderJid);
-    await inst.socket.sendPresenceUpdate('composing', senderJid);
-    await new Promise(r => setTimeout(r, 1200));
+    try {
+      await inst.socket.presenceSubscribe(senderJid);
+      await inst.socket.sendPresenceUpdate('composing', senderJid);
+      const typingTime = Math.min(Math.max(replyText.length * 12, 1000), 2500);
+      await new Promise(r => setTimeout(r, typingTime));
+      await inst.socket.sendPresenceUpdate('paused', senderJid);
+    } catch (_) {}
 
     await inst.socket.sendMessage(senderJid, { text: replyText });
-    console.log(`✅ [Inbound Closer] Auto-reply dispatched to +${cleanSender}! (Opt-out: ${decision.isOptOut})`);
+    console.log(`✅ [Inbound Closer] Autonomous reply dispatched to +${cleanSender} (${leadInfo.businessName}) [Intent: ${decision.intent}]`);
 
     // If client requested opt-out / not interested, permanently add to blacklist and mark in leads_db.json
     if (decision.isOptOut) {
@@ -437,7 +455,7 @@ async function handleInboundMessage(inst, msg) {
           const leads = JSON.parse(fs.readFileSync(leadsDbP, 'utf8'));
           let modified = false;
           leads.forEach(l => {
-            const p = (l.phone_e164 || l.phone || '').replace(/\D/g, '');
+            const p = (l.phone_e164 || l.phone || l.phone_raw || '').replace(/\D/g, '');
             if (p === cleanSender || (cleanSender.endsWith(p) && p.length >= 10)) {
               l.opt_out = true;
               l.opt_out_at = new Date().toISOString();
@@ -452,17 +470,39 @@ async function handleInboundMessage(inst, msg) {
       // Notify Admin Closer Desk that contact asked to stop
       if (inst.id !== 1 && instances.instance_1?.socket && instances.instance_1?.state === 'open') {
         try {
-          const optOutAlert = `🛑 *[OPT-OUT CONFIRMED]*\n• From: +${cleanSender}\n• Client Message: "${text.trim()}"\n• Action: Removed from all campaigns permanently.`;
+          const optOutAlert = `🛑 *[OPT-OUT CONFIRMED]*\n• From: +${cleanSender} (${leadInfo.businessName})\n• Client Message: "${text.trim()}"\n• Action: Removed from all campaigns permanently.`;
           await instances.instance_1.socket.sendMessage('2348022791227@s.whatsapp.net', { text: optOutAlert });
         } catch (_) {}
       }
     } else {
-      // Alert Admin Closer Desk (0802 279 1227) if positive message came on an outreach line
-      if (inst.id !== 1 && instances.instance_1?.socket && instances.instance_1?.state === 'open') {
+      // Alert Admin Closer Desk (0802 279 1227) on positive or active client inquiries
+      if (instances.instance_1?.socket && instances.instance_1?.state === 'open') {
         try {
-          const adminAlert = `🚨 *[INBOUND LEAD ALERT]* on *${inst.label}*\n• From: +${cleanSender}\n• Client Message: "${text.trim()}"\n• Action: Auto-reply closer sent with demo link.\n• Jump in: wa.me/${cleanSender}`;
+          const intentEmoji =
+            decision.intent === 'READY_TO_PAY_INVOICE' ? '💰' :
+            decision.intent === 'CUSTOM_DOMAIN_LOCKED' ? '🌐' :
+            decision.intent === 'PAYMENT_RECEIPT_PROVISIONED' ? '🎉' :
+            decision.intent === 'PHOTO_RECEIVED_AUTO_UPDATED' ? '📸' : '🚨';
+
+          const adminAlert =
+`${intentEmoji} *[INBOUND LEAD ACTIVE]* on *${inst.label}*
+━━━━━━━━━━━━━━━━━━━━━━
+🏢 *Business:* ${leadInfo.businessName} (${leadInfo.area})
+📱 *Client Phone:* +${cleanSender}
+🎯 *Intent:* ${decision.intent}
+🔗 *Live Site:* ${leadInfo.liveSiteUrl}
+👀 *Preview:* ${leadInfo.previewUrl}
+━━━━━━━━━━━━━━━━━━━━━━
+💬 *Client Said:* 
+"${text.trim().substring(0, 140)}"
+━━━━━━━━━━━━━━━━━━━━━━
+🤖 *AI Replied Autonomously:*
+"${replyText.substring(0, 150)}..."
+━━━━━━━━━━━━━━━━━━━━━━
+⚡ *Jump into WhatsApp:* wa.me/${cleanSender}`;
+
           await instances.instance_1.socket.sendMessage('2348022791227@s.whatsapp.net', { text: adminAlert });
-          console.log(`📢 [Admin Alert] Dispatched lead notification to 0802 279 1227!`);
+          console.log(`📢 [Admin Alert] Dispatched lead notification for ${leadInfo.businessName} to 0802 279 1227!`);
         } catch (alertErr) {
           console.warn(`[Admin Alert Warning]:`, alertErr.message);
         }
@@ -478,10 +518,14 @@ async function handleInboundMessage(inst, msg) {
       }
       crm.unshift({
         sender: cleanSender,
+        businessName: leadInfo.businessName,
         lineId: inst.id,
         lineLabel: inst.label,
         message: text.trim(),
         replySent: true,
+        intent: decision.intent,
+        previewUrl: leadInfo.previewUrl,
+        liveSiteUrl: leadInfo.liveSiteUrl,
         optOut: decision.isOptOut,
         timestamp: new Date().toISOString()
       });
@@ -532,7 +576,7 @@ async function startInstanceSocket(key, isUserInitiated = false) {
       logger: pino({ level: 'silent' }),
       auth: state,
       printQRInTerminal: false,
-      browser: ['Ubuntu', 'Chrome', '20.0.04'],
+      browser: Browsers.windows('Desktop'),
       syncFullHistory: false,
       markOnlineOnConnect: true,
       keepAliveIntervalMs: 25000,
@@ -570,8 +614,10 @@ async function startInstanceSocket(key, isUserInitiated = false) {
         console.log(`   Phone Number : +${inst.phone}`);
         console.log(`======================================================\n`);
 
-        // Automatically permanently lock session across 5 redundant vaults
-        permanentLockSession(inst, authDir);
+        // Permanently lock session asynchronously (prevents blocking event loop and socket keepalive)
+        setTimeout(() => {
+          try { permanentLockSession(inst, authDir); } catch (_) {}
+        }, 3000);
       }
 
       if (connection === 'close') {
@@ -596,17 +642,12 @@ async function startInstanceSocket(key, isUserInitiated = false) {
         }
 
         // 2. EXPLICIT LOGGED OUT (401 ONLY)
-        // Never wipe keys on 408 (timedOut) or 428 (connectionClosed) - those are routine socket reconnects!
+        // Keep auth files safe so user does not lose session state unexpectedly. Auto-flag for reconnect.
         if (statusCode === DisconnectReason.loggedOut || statusCode === 401) {
-          console.log(`[Evolution API] 🔒 Session unlinked / logged out for ${inst.label}.`);
+          console.log(`[Evolution API] 🔒 Session unlinked / logged out for ${inst.label}. Preserving auth state to allow recovery/re-link without data loss.`);
           inst.hasSavedLink = false;
-          inst.phone = '';
           inst.qr = '';
           inst.pairingCode = '';
-          try {
-            const credsFile = path.join(authDir, 'creds.json');
-            if (fs.existsSync(credsFile)) fs.unlinkSync(credsFile);
-          } catch (_) {}
           updateLineRegistry(inst, false);
           return;
         }
@@ -624,9 +665,20 @@ async function startInstanceSocket(key, isUserInitiated = false) {
 
     // Inbound Sales Closer & Auto-Reply Listener
     inst.socket.ev.on('messages.upsert', async ({ messages, type }) => {
-      if (type !== 'notify') return;
-      for (const msg of messages) {
-        if (!msg.message || msg.key?.fromMe) continue;
+      console.log(`[Evolution API] 📥 Raw messages.upsert event: count=${messages?.length}, type=${type} on ${inst.label}`);
+      for (const msg of messages || []) {
+        if (!msg.message) continue;
+        const senderJid = msg.key?.remoteJid || '';
+        const fromMe = Boolean(msg.key?.fromMe);
+        const text = extractMessageText(msg);
+        console.log(`[Evolution API] 📩 Packet from ${senderJid} (fromMe: ${fromMe}): "${text}"`);
+        
+        // Allow self-test if user typed into their own chat (08022791227)
+        const isSelfTest = senderJid.includes('8022791227') && inst.id === 1;
+        if (fromMe && !isSelfTest) {
+          console.log(`[Evolution API] ⏭️ Skipping message (fromMe: true and not self-test)`);
+          continue;
+        }
         await handleInboundMessage(inst, msg);
       }
     });
@@ -1137,9 +1189,17 @@ app.get('/pair/:lineNum', (req, res) => {
     <!-- TAB 1: 8-DIGIT PAIRING CODE (PRIMARY & FASTEST) -->
     <div id="tabCode" class="tab-content active">
       <div id="codeArea">
-        <div style="padding:20px 0;">
-          <button class="btn btn-green" onclick="requestCode()">🔢 Generate 8-Digit Pairing Code</button>
-        </div>
+        ${inst.pairingCode ? `
+          <div class="code-card">
+            <div class="code-label">YOUR 8-DIGIT PAIRING CODE</div>
+            <div class="code-value" id="dispCode">${inst.pairingCode}</div>
+            <button class="btn-copy" onclick="copyCode('${inst.pairingCode}')">📋 Copy 8-Digit Code</button>
+          </div>
+        ` : `
+          <div style="padding:20px 0;">
+            <button class="btn btn-green" onclick="requestCode()">🔢 Generate 8-Digit Pairing Code</button>
+          </div>
+        `}
       </div>
       <div class="steps">
         <b>How to link with code on phone (+${inst.displayPhone}):</b><br/>
@@ -1208,7 +1268,7 @@ app.get('/pair/:lineNum', (req, res) => {
               renderQr(sData.qr);
             } else if (tries > 15) {
               clearInterval(t);
-              qrArea.innerHTML = '<div style="color:#f87171;padding:16px;">QR generation taking longer over mobile network. Please use the <b>8-Digit Phone Code</b> tab above for instant pairing!</div>';
+              qrArea.innerHTML = '<div style="color:#f87171;padding:16px;line-height:1.6;">QR generation taking longer over mobile network.<br/><button class="btn btn-green" style="margin-top:14px;font-size:0.95rem;padding:12px;" onclick="switchTab(\'code\')">👉 Click Here for 8-Digit Code (Instant)</button></div>';
             }
           }, 1000);
         }
@@ -1564,6 +1624,80 @@ app.all(['/instance/request-qr/:instanceName', '/request-qr/:instanceName'], asy
   }
 });
 
+// ── Direct 1-Click Browser QR Scanner Page ──────────────────────────────────
+app.get(['/scan', '/scan/:line'], async (req, res) => {
+  const lineParam = req.params.line || '1';
+  const inst = Object.values(instances).find(i => String(i.id) === lineParam || i.name === lineParam || i.key === lineParam) || instances.instance_1;
+
+  if (!inst.qr || inst.state !== 'connecting') {
+    try {
+      await startQrSocket(inst.key);
+    } catch (_) {}
+  }
+
+  const qrSrc = inst.qr || '';
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan WhatsApp QR Code — ${inst.label}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: #0b141a; color: #e9edef; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; text-align: center; }
+    .card { background: #111b21; border: 1px solid #222e35; border-radius: 16px; padding: 32px 24px; max-width: 480px; width: 100%; box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
+    h1 { font-size: 20px; font-weight: 700; color: #00a884; margin-bottom: 8px; }
+    p { font-size: 14px; color: #8696a0; margin-bottom: 24px; line-height: 1.5; }
+    .qr-container { background: white; padding: 16px; border-radius: 12px; display: inline-block; margin-bottom: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+    .qr-container img { display: block; width: 280px; height: 280px; }
+    .instructions { text-align: left; background: #202c33; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+    .instructions ol { padding-left: 20px; color: #d1d7db; font-size: 13px; line-height: 1.8; }
+    .status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 20px; background: rgba(0, 168, 132, 0.15); color: #00a884; }
+    .refresh-btn { background: #00a884; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 12px; }
+    .refresh-btn:hover { background: #02906f; }
+  </style>
+  <script>
+    // Auto-refresh until connected
+    setInterval(async () => {
+      try {
+        const res = await fetch('/instance/connectionState/${inst.name}');
+        const data = await res.json();
+        if (data?.instance?.state === 'open') {
+          document.getElementById('status-box').innerHTML = '✅ CONNECTED & ONLINE! Redirecting...';
+          document.getElementById('status-box').style.color = '#00a884';
+          setTimeout(() => { window.location.href = '/'; }, 2000);
+        }
+      } catch (_) {}
+    }, 2500);
+  </script>
+</head>
+<body>
+  <div class="card">
+    <h1>📱 Scan QR Code to Link WhatsApp</h1>
+    <p><strong>${inst.label}</strong></p>
+    
+    <div class="qr-container">
+      ${qrSrc ? `<img id="qr-img" src="${qrSrc}" alt="WhatsApp QR Code" />` : `<div style="width:280px;height:280px;display:flex;align-items:center;justify-content:center;color:#333;">Generating QR Code... Refreshing in 3s</div><script>setTimeout(()=>window.location.reload(), 3000);</script>`}
+    </div>
+
+    <div class="instructions">
+      <ol>
+        <li>Open <strong>WhatsApp</strong> on your phone</li>
+        <li>Tap <strong>Settings</strong> or <strong>Menu (⋮)</strong> → <strong>Linked Devices</strong></li>
+        <li>Tap <strong>Link a Device</strong> and point your camera at this QR code</li>
+      </ol>
+    </div>
+
+    <div id="status-box" class="status">⚡ Waiting for scan...</div>
+    <br/>
+    <a href="/scan/${inst.id}" class="refresh-btn">🔄 Refresh QR Code</a>
+  </div>
+</body>
+</html>`;
+
+  res.send(html);
+});
+
 app.post('/instance/pairingCode/:instanceName', async (req, res) => {
   const name = req.params.instanceName;
   const inst = Object.values(instances).find(i => i.name === name || String(i.id) === name || i.key === name) || instances.instance_1;
@@ -1674,25 +1808,34 @@ app.listen(PORT, () => {
   console.log(`   Preserved  : All saved session keys permanently locked`);
   console.log(`================================================================\n`);
 
-  // Check and keep all existing genuinely registered saved sessions active with stagger
-  let staggerIdx = 0;
-  Object.keys(instances).forEach(key => {
+  // Connect Line 1 (Admin Closer Desk) immediately
+  const adminInst = instances.instance_1;
+  const adminAuthDir = resolveAuthDir(adminInst);
+  const adminSaved = hasSavedSession(adminAuthDir);
+  if (adminSaved) {
+    adminInst.phone = adminSaved.phone;
+    adminInst.hasSavedLink = true;
+    console.log(`[Evolution API] 💾 ${adminInst.label}: Launching authoritative closer socket (+${adminSaved.phone})...`);
+    startInstanceSocket('instance_1', true);
+  } else {
+    adminInst.state = 'close';
+    adminInst.hasSavedLink = false;
+    console.log(`[Evolution API] 📱 ${adminInst.label}: Ready for pairing code / QR link.`);
+  }
+
+  // Set secondary lines to ready state without competing connection storms
+  for (let id = 2; id <= 7; id++) {
+    const key = `instance_${id}`;
     const inst = instances[key];
     const authDir = resolveAuthDir(inst);
     const saved = hasSavedSession(authDir);
     if (saved) {
       inst.phone = saved.phone;
       inst.hasSavedLink = true;
-      const delay = staggerIdx * 4000;
-      staggerIdx++;
-      console.log(`[Evolution API] 💾 ${inst.label}: Saved link preserved for +${saved.phone}. Staggered auto-connect in ${delay / 1000}s...`);
-      setTimeout(() => {
-        startInstanceSocket(key, false);
-      }, delay);
+      console.log(`[Evolution API] 💾 ${inst.label}: Saved link preserved for +${saved.phone} (Standby mode).`);
     } else {
       inst.state = 'close';
       inst.hasSavedLink = false;
-      console.log(`[Evolution API] 📱 ${inst.label}: Ready for pairing code / QR link.`);
     }
-  });
+  }
 });
