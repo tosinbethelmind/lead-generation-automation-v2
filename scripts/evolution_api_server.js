@@ -718,7 +718,8 @@ app.get('/', (req, res) => {
 <html>
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="6">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="8">
   <title>Bethelmind 7-Line WhatsApp Command Center</title>
   <style>
     body { background: #070d1e; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 24px; }
