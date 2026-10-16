@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 
 export default function MobileAdminCommandCenter() {
-  const [activeTab, setActiveTab] = useState<'radar' | 'closer' | 'claim' | 'onboard' | 'ai_tester'>('radar');
+  const [activeTab, setActiveTab] = useState<'radar' | 'closer' | 'claim' | 'onboard' | 'ai_tester' | 'hubs'>('radar');
   const [telemetry, setTelemetry] = useState<any>(null);
   const [activeProspects, setActiveProspects] = useState<any[]>([]);
   const [crmLeads, setCrmLeads] = useState<any[]>([]);
@@ -357,7 +357,8 @@ export default function MobileAdminCommandCenter() {
           { key: 'closer', label: '💬 Inbound Closer', count: crmLeads.length },
           { key: 'claim', label: '🌐 Claim Site', count: activeProspects.length },
           { key: 'onboard', label: '🔑 Custom Domain', count: provisionedSites.length },
-          { key: 'ai_tester', label: '🧠 AI Brain Test', count: 'Live' }
+          { key: 'ai_tester', label: '🧠 AI Brain Test', count: 'Live' },
+          { key: 'hubs', label: '🏛️ All Hubs', count: '8 Desks' }
         ].map(tab => (
           <button
             key={tab.key}
@@ -1260,6 +1261,58 @@ export default function MobileAdminCommandCenter() {
           </div>
         )}
 
+        {/* ── TAB 6: ALL ADMIN HUBS DIRECTORY ────────────────────────── */}
+        {activeTab === 'hubs' && (
+          <div style={{ padding: '16px' }}>
+            <div style={{ marginBottom: '16px' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: 800, margin: '0 0 4px', color: '#ffffff' }}>
+                🏛️ Complete Platform Admin Portals
+              </h2>
+              <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>
+                Every single management desk is accessible right here on your phone with full super-admin powers.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gap: '10px' }}>
+              {[
+                { title: 'Multi-Engine Lead CRM Hub', desc: 'Search, filter, view details & export all scraped Nigerian businesses', path: '/admin/crm', tag: 'Core CRM' },
+                { title: 'Solar Scraper & Pipeline', desc: 'Manage solar installers, battery quotes, load sheets & BOQ requests', path: '/admin/solar-pipeline', tag: 'High-Ticket' },
+                { title: 'AI Approvals & Outbox', desc: 'Review scheduled outreach dispatches, approve emails, webforms & SMS', path: '/admin/approvals', tag: 'Outreach' },
+                { title: 'Customer AI Agent Studio', desc: 'Fine-tune 24/7 WhatsApp AI Closer prompts, responses & objection rules', path: '/admin/ai-agent', tag: 'AI Closer' },
+                { title: 'Traffic & Viral Authority Portal', desc: 'Monitor organic search traffic, blog articles & diaspora tools', path: '/admin/authority-portal', tag: 'Traffic' },
+                { title: 'Software & Site Handover Studio', desc: 'Generate official client credentials, login packs & handover PDFs', path: '/admin/handover', tag: 'Client Delivery' },
+                { title: 'Settings & Cloud Integrations', desc: 'Check Hostinger SMTP, Brevo, Termii SMS, Moniepoint & Evolution API', path: '/admin/settings', tag: 'Config' },
+                { title: 'Full Desktop Executive Console', desc: 'Switch to the wide-screen desktop view with comprehensive chart analytics', path: '/admin', tag: 'Master View' }
+              ].map(portal => (
+                <a
+                  key={portal.path}
+                  href={`/api/admin/login?token=bethelmind_admin_2026&redirect=${encodeURIComponent(portal.path)}`}
+                  style={{
+                    display: 'block',
+                    background: '#0b1120',
+                    border: '1px solid #1e293b',
+                    borderRadius: '12px',
+                    padding: '14px',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 800, color: '#38bdf8' }}>{portal.title}</span>
+                    <span style={{ fontSize: '9px', background: '#0284c7', color: '#ffffff', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>{portal.tag}</span>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#94a3b8', margin: '0 0 10px', lineHeight: '1.4' }}>{portal.desc}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, color: '#10b981' }}>
+                    <span>Open Portal</span>
+                    <ArrowUpRight size={12} />
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
       </main>
 
       {/* Persistent Bottom Mobile Navigation Bar */}
@@ -1272,8 +1325,8 @@ export default function MobileAdminCommandCenter() {
         backdropFilter: 'blur(20px)',
         borderTop: '1px solid #1e293b',
         display: 'grid',
-        gridTemplateColumns: 'repeat(5, 1fr)',
-        padding: '8px 4px 12px 4px',
+        gridTemplateColumns: 'repeat(6, 1fr)',
+        padding: '8px 2px 12px 2px',
         zIndex: 100
       }}>
         {[
@@ -1281,7 +1334,8 @@ export default function MobileAdminCommandCenter() {
           { key: 'closer', label: 'Closer', icon: MessageSquare },
           { key: 'claim', label: 'Claim', icon: PlusCircle },
           { key: 'onboard', label: 'Domains', icon: Globe },
-          { key: 'ai_tester', label: 'AI Test', icon: Bot }
+          { key: 'ai_tester', label: 'AI Test', icon: Bot },
+          { key: 'hubs', label: 'All Hubs', icon: Layers }
         ].map(item => {
           const Icon = item.icon;
           const isActive = activeTab === item.key;
