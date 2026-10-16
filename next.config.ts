@@ -133,6 +133,31 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/webapp',
+        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+        permanent: false,
+      },
+      {
+        source: '/web-app',
+        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+        permanent: false,
+      },
+      {
+        source: '/app',
+        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+        permanent: false,
+      },
+      {
+        source: '/mobile',
+        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+        permanent: false,
+      },
+      {
+        source: '/control',
+        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+        permanent: false,
+      },
+      {
         source: '/assets/apexreach-demo.webm',
         destination: '/walkthrough',
         permanent: false,
