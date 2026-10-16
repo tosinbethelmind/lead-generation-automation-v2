@@ -208,9 +208,17 @@ function autoProvisionSiteFromWhatsApp(leadInfo, updates = {}) {
       siteConfig.theme.heroImage = updates.photoDataUrl;
     }
 
-    fs.writeFileSync(sitePath, JSON.stringify(siteConfig, null, 2), 'utf8');
+    // Atomic write to prevent file corruption under high concurrency
+    const tempSitePath = `${sitePath}.${Date.now()}.${Math.random().toString(36).substring(2, 7)}.tmp`;
+    fs.writeFileSync(tempSitePath, JSON.stringify(siteConfig, null, 2), 'utf8');
+    try {
+      fs.renameSync(tempSitePath, sitePath);
+    } catch (_) {
+      fs.copyFileSync(tempSitePath, sitePath);
+      try { fs.unlinkSync(tempSitePath); } catch (__) {}
+    }
 
-    // If custom domain specified, write alias config
+    // If custom domain specified, write alias config atomically
     let customDomainLiveSlug = slug;
     const activeDomain = siteConfig.preferredDomain;
     if (activeDomain) {
@@ -223,7 +231,14 @@ function autoProvisionSiteFromWhatsApp(leadInfo, updates = {}) {
       if (domainPrefix && domainPrefix.length >= 2) {
         customDomainLiveSlug = domainPrefix;
         const domainPath = path.join(sitesDir, `${domainPrefix}.json`);
-        fs.writeFileSync(domainPath, JSON.stringify(siteConfig, null, 2), 'utf8');
+        const tempDomainPath = `${domainPath}.${Date.now()}.${Math.random().toString(36).substring(2, 7)}.tmp`;
+        fs.writeFileSync(tempDomainPath, JSON.stringify(siteConfig, null, 2), 'utf8');
+        try {
+          fs.renameSync(tempDomainPath, domainPath);
+        } catch (_) {
+          fs.copyFileSync(tempDomainPath, domainPath);
+          try { fs.unlinkSync(tempDomainPath); } catch (__) {}
+        }
       }
     }
 

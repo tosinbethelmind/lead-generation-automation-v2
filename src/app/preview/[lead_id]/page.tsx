@@ -387,11 +387,97 @@ export default function PreviewPage() {
         </div>
       </header>
 
+      {/* ── HIGH-CONVERTING HERO HOOK & 1-TAP CLAIM ACTION (SEEN IN 2 SECONDS ON MOBILE) ── */}
+      <section 
+        style={{ 
+          maxWidth: '1180px', 
+          margin: '12px auto 8px auto', 
+          padding: '0 14px', 
+          boxSizing: 'border-box' 
+        }}
+      >
+        <div
+          style={{
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%)',
+            border: '2px solid rgba(16, 185, 129, 0.45)',
+            borderRadius: '18px',
+            padding: '18px 20px',
+            boxShadow: '0 12px 30px rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#34d399', background: 'rgba(16, 185, 129, 0.2)', padding: '4px 12px', borderRadius: '9999px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              ⚡ 100% PRE-BUILT DEMO FOR {data.lead.name.toUpperCase()}
+            </span>
+            <span style={{ fontSize: '0.76rem', color: '#fde047', fontWeight: 800 }}>
+              ₦0 Upfront to Test on Your Phone
+            </span>
+          </div>
+
+          <h1 style={{ fontSize: 'clamp(1.15rem, 3vw, 1.65rem)', fontWeight: 900, color: '#ffffff', margin: 0, lineHeight: 1.35 }}>
+            Competitors on Google are stealing customers searching for <span style={{ color: '#38bdf8' }}>{data.lead.name}</span>. We already built your official website below!
+          </h1>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
+            <a
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am the owner of *${data.lead.name}* (${data.lead.category}) in ${data.lead.area || data.lead.city || 'Lagos'}.\n\nI just reviewed our preview website (https://www.bethelmindanalytics.com/preview/${leadId}).\n\nI want to claim this website under the October 50% Promo (₦35,000 deposit to launch). Please assist me!`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                flex: '1 1 280px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                padding: '14px 24px',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#ffffff',
+                borderRadius: '12px',
+                fontSize: '0.96rem',
+                fontWeight: 900,
+                textDecoration: 'none',
+                boxShadow: '0 6px 20px rgba(16, 185, 129, 0.45)',
+                textAlign: 'center'
+              }}
+            >
+              <span>🟢 Claim This Website on WhatsApp (₦0 Upfront) →</span>
+            </a>
+
+            <a
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Good day Bethelmind! Here are 2 photos of my shop/goods for *${data.lead.name}*. Please update my sample website free (https://www.bethelmindanalytics.com/preview/${leadId}) before I pay shishi!`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                flex: '1 1 240px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                padding: '14px 20px',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                color: '#e2e8f0',
+                borderRadius: '12px',
+                fontSize: '0.86rem',
+                fontWeight: 800,
+                textDecoration: 'none',
+                textAlign: 'center'
+              }}
+            >
+              <span>📷 Send 2 Photos to Add Free First →</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ── SECTION 1: THE CLIENT'S LIVE SAMPLE WEBSITE (SHOWN IMMEDIATELY ON LOAD) ── */}
       <section 
         style={{ 
           maxWidth: '1180px', 
-          margin: '16px auto 32px auto', 
+          margin: '12px auto 28px auto', 
           padding: '0 12px', 
           boxSizing: 'border-box' 
         }}
