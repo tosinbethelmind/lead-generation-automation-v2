@@ -74,8 +74,8 @@ async function sendTermiiSms(toPhone: string, text: string) {
  */
 async function triggerWhatsAppCloser(phoneClean: string, text: string, leadName: string, slug: string) {
   try {
-    const evolutionUrl = process.env.EVOLUTION_API_URL || 'http://localhost:8080';
-    const apiKey = process.env.EVOLUTION_API_KEY || 'B37h3lm1nd_2026_Ev0lut10n_K3y';
+    const evolutionUrl = process.env.EVOLUTION_API_URL || (process.env.NODE_ENV === 'production' ? 'http://127.0.0.1:8080' : 'http://localhost:8080');
+    const apiKey = process.env.EVOLUTION_API_KEY || 'evolution_bethelmind_secret_2026';
 
     // Send WhatsApp DM directly to client with preview link & 2-photo hook
     const waText = 
@@ -86,22 +86,27 @@ async function triggerWhatsAppCloser(phoneClean: string, text: string, leadName:
       `• *Option 1 (Starter Promo):* ₦35,000 deposit to launch (or ₦25,000/month pay-small-small).\n` +
       `• Send 2 photos of your shop here make we add am FREE today before you pay shishi!`;
 
-    await axios.post(`${evolutionUrl}/message/sendText/bethelmind-line-1`, {
+    // Non-blocking fire-and-forget: SMS listening must NEVER be interrupted or delayed by WhatsApp
+    axios.post(`${evolutionUrl}/message/sendText/bethelmind_instance_1`, {
       number: phoneClean,
       text: waText
     }, {
       headers: { apikey: apiKey },
-      timeout: 5000
-    }).catch(() => {});
+      timeout: 3000
+    }).catch((e) => {
+      console.warn('[Termii WhatsApp Bridge Warning (Client)]: ', e.message);
+    });
 
-    // Alert Admin Closer Hotline (0802 279 1227)
-    await axios.post(`${evolutionUrl}/message/sendText/bethelmind-line-1`, {
+    // Alert Admin Closer Hotline (0802 279 1227) concurrently
+    axios.post(`${evolutionUrl}/message/sendText/bethelmind_instance_1`, {
       number: '2348022791227',
       text: `🚨 *INBOUND SMS LEAD RECEIVED!*\n\n📱 *From:* +${phoneClean}\n🏢 *Business:* ${leadName}\n💬 *Message:* "${text}"\n🔗 *Preview:* https://www.bethelmindanalytics.com/preview/${slug}`
     }, {
       headers: { apikey: apiKey },
-      timeout: 5000
-    }).catch(() => {});
+      timeout: 3000
+    }).catch((e) => {
+      console.warn('[Termii WhatsApp Bridge Warning (Admin)]: ', e.message);
+    });
   } catch (err: any) {
     console.warn('[Termii WhatsApp Bridge Warning]:', err.message);
   }
