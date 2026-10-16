@@ -151,6 +151,8 @@ export function classifyLeadSector(lead: { name?: string; business_name?: string
   return GENERAL_SME_FALLBACK;
 }
 
+export const classifyLead = classifyLeadSector;
+
 export function formatSmsGuaranteed(lead: any) {
   const rawName = cleanBusinessName(lead.name || lead.business_name || lead.leadName || 'Business');
   const shortBrand = getShortBrand(rawName);
