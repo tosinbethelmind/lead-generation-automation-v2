@@ -42,7 +42,7 @@
     ".next/static",
     ".next/build",
     ".next/dev",
-    "tools",
+    "./tools",
     "video",
     "scratch",
     "scripts",

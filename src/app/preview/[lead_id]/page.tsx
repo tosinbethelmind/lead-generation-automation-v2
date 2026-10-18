@@ -24,7 +24,7 @@ function resolveSectorPalette(cat: string = ''): 'solar' | 'luxury' | 'healthcar
   if (/solar|inverter|energy|battery|power/.test(lower)) return 'solar';
   if (/medical|clinic|doctor|health|hospital|pharmacy|dental|optician/.test(lower)) return 'healthcare';
   if (/car|auto|motor|vehicle|dealership|tokunbo/.test(lower)) return 'automotive';
-  if (/estate|property|home|realty|developer|hotel|shortlet|luxury/.test(lower)) return 'luxury';
+  if (/estate|property|home|realty|developer|hotel|shortlet|luxury|salon|spa|beauty|hair|fashion/.test(lower)) return 'luxury';
   return 'bethelmind';
 }
 

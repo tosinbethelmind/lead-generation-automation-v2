@@ -403,26 +403,54 @@ export default function MobileAdminCommandCenter() {
             </div>
 
             {/* Quota Progress Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))', gap: '10px', marginBottom: '14px' }}>
               <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', padding: '12px' }}>
                 <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>EMAILS TODAY</div>
-                <div style={{ fontSize: '22px', fontWeight: 800, color: '#38bdf8', margin: '4px 0' }}>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#38bdf8', margin: '4px 0' }}>
                   {telemetry?.emails?.sentToday || 0}
-                  <span style={{ fontSize: '12px', color: '#64748b' }}>/600</span>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>/600</span>
                 </div>
                 <div style={{ width: '100%', height: '4px', background: '#1e293b', borderRadius: '2px', overflow: 'hidden' }}>
                   <div style={{ width: `${telemetry?.emails?.percent || 0}%`, height: '100%', background: '#38bdf8' }} />
                 </div>
               </div>
 
-              <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', padding: '12px' }}>
-                <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>WEBFORMS TODAY</div>
-                <div style={{ fontSize: '22px', fontWeight: 800, color: '#10b981', margin: '4px 0' }}>
-                  {telemetry?.webforms?.sentToday || 0}
-                  <span style={{ fontSize: '12px', color: '#64748b' }}>/300</span>
+              <div style={{ background: '#0f172a', border: '1px solid #10b981', borderRadius: '12px', padding: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '10px', color: '#6ee7b7', fontWeight: 700 }}>WHATSAPP TODAY</span>
+                  <span style={{ fontSize: '8px', background: 'rgba(16,185,129,0.2)', color: '#34d399', padding: '1px 4px', borderRadius: '4px', fontWeight: 700 }}>5 LINES</span>
+                </div>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#10b981', margin: '4px 0' }}>
+                  {telemetry?.whatsapp?.sentToday || 0}
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>/100</span>
                 </div>
                 <div style={{ width: '100%', height: '4px', background: '#1e293b', borderRadius: '2px', overflow: 'hidden' }}>
-                  <div style={{ width: `${telemetry?.webforms?.percent || 0}%`, height: '100%', background: '#10b981' }} />
+                  <div style={{ width: `${telemetry?.whatsapp?.percent || 0}%`, height: '100%', background: '#10b981' }} />
+                </div>
+              </div>
+
+              <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', padding: '12px' }}>
+                <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>WEBFORMS TODAY</div>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#a855f7', margin: '4px 0' }}>
+                  {telemetry?.webforms?.sentToday || 0}
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>/300</span>
+                </div>
+                <div style={{ width: '100%', height: '4px', background: '#1e293b', borderRadius: '2px', overflow: 'hidden' }}>
+                  <div style={{ width: `${telemetry?.webforms?.percent || 0}%`, height: '100%', background: '#a855f7' }} />
+                </div>
+              </div>
+
+              <div style={{ background: '#0f172a', border: '1px solid #f59e0b', borderRadius: '12px', padding: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '10px', color: '#fde68a', fontWeight: 700 }}>AIRTEL SMS TODAY</span>
+                  <span style={{ fontSize: '8px', background: 'rgba(245,158,11,0.2)', color: '#fbbf24', padding: '1px 4px', borderRadius: '4px', fontWeight: 700 }}>AIRTEL SIM</span>
+                </div>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#f59e0b', margin: '4px 0' }}>
+                  {telemetry?.sms?.sentToday || 0}
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>/120</span>
+                </div>
+                <div style={{ width: '100%', height: '4px', background: '#1e293b', borderRadius: '2px', overflow: 'hidden' }}>
+                  <div style={{ width: `${telemetry?.sms?.percent || 0}%`, height: '100%', background: '#f59e0b' }} />
                 </div>
               </div>
             </div>
@@ -1275,6 +1303,7 @@ export default function MobileAdminCommandCenter() {
 
             <div style={{ display: 'grid', gap: '10px' }}>
               {[
+                { title: '📱 7-Line WhatsApp Pairing Hub', desc: 'Link all 7 WhatsApp SIM lines via 8-digit codes or QR scan directly on the VPS', path: '/whatsapp', tag: 'WhatsApp Engine' },
                 { title: 'Multi-Engine Lead CRM Hub', desc: 'Search, filter, view details & export all scraped Nigerian businesses', path: '/admin/crm', tag: 'Core CRM' },
                 { title: 'Solar Scraper & Pipeline', desc: 'Manage solar installers, battery quotes, load sheets & BOQ requests', path: '/admin/solar-pipeline', tag: 'High-Ticket' },
                 { title: 'AI Approvals & Outbox', desc: 'Review scheduled outreach dispatches, approve emails, webforms & SMS', path: '/admin/approvals', tag: 'Outreach' },

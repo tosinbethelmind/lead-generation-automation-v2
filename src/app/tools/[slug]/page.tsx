@@ -11,16 +11,92 @@ interface ToolPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  return [
+    { slug: 'solar-boq' },
+    { slug: 'solar-quote-pro' },
+    { slug: 'solar-quote' },
+    { slug: 'salon-booking' },
+    { slug: 'tokunbo-duty' },
+    { slug: 'mortgage-calc' },
+    { slug: 'clinic-booking' },
+    { slug: 'school-tuition' },
+    { slug: 'logistics-waybill' },
+    { slug: 'cac-filing' },
+    { slug: 'shortlet-booking' },
+    { slug: 'recruitment' },
+    { slug: 'integrations' },
+    { slug: 'social-ads' },
+  ];
+}
+
+function slugToCategory(slug: string): string {
+  switch (slug) {
+    case 'salon-booking':
+    case 'beauty':
+    case 'spa':
+      return 'Beauty & Hair Salon';
+    case 'solar-boq':
+    case 'solar-quote':
+    case 'solar-quote-pro':
+    case 'solar':
+      return 'Solar & Renewable Energy';
+    case 'tokunbo-duty':
+    case 'auto':
+    case 'car-clearing':
+      return 'Automobile & Tokunbo Dealership';
+    case 'mortgage-calc':
+    case 'mortgage':
+    case 'real-estate':
+      return 'Real Estate & Property Development';
+    case 'clinic-booking':
+    case 'healthcare':
+    case 'clinic':
+      return 'Clinic & Healthcare HMO';
+    case 'school-tuition':
+    case 'education':
+    case 'school':
+      return 'Private Education & Schools';
+    case 'logistics-waybill':
+    case 'logistics':
+      return 'Logistics & Freight Haulage';
+    case 'cac-filing':
+    case 'legal':
+      return 'Legal & CAC Corporate Services';
+    case 'shortlet-booking':
+    case 'hospitality':
+    case 'shortlet':
+      return 'Shortlet & Hospitality Apartments';
+    case 'social-ads':
+      return 'Social Ad Automation & Growth';
+    default:
+      return 'Solar & Renewable Energy';
+  }
+}
+
 export async function generateMetadata({ params }: ToolPageProps) {
   const { slug } = await params;
   
-  if (slug === 'solar-quote-pro' || slug === 'solar-quote') {
+  if (slug === 'solar-quote-pro' || slug === 'solar-quote' || slug === 'solar-boq') {
     return {
       title: 'Solar Quote Pro Calculator Nigeria — Free Inverter & Battery Sizing Tool Lagos',
       description: 'Calculate exact solar inverter, load requirement, and battery backup pricing in 2 minutes. Free interactive solar sizing & PDF quote generator for Nigerian installers and property owners.',
       openGraph: {
         title: 'Solar Quote Pro Calculator Nigeria — Free Solar Sizing & PDF Quote Generator',
         description: 'Instant load sizing, battery requirement calculation, and installer quote matching across Lagos, Abuja, & Port Harcourt.',
+      },
+    };
+  }
+
+  if (slug === 'salon-booking' || slug === 'beauty') {
+    return {
+      title: '24/7 Salon Booking & No-Show Deposit Lock Engine Nigeria — Free Stylist Slot Calculator',
+      description: 'Automate salon appointments, hair extension pricing, stylist slot booking, and fake-alert-proof 25% deposit locks on WhatsApp.',
+      openGraph: {
+        title: '24/7 Salon Booking & Deposit Lock Engine Nigeria',
+        description: 'Eliminate empty stylist chairs and fake alerts with instant WhatsApp booking and OPay/Moniepoint deposit locks.',
       },
     };
   }
@@ -68,6 +144,8 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
     return <IntegrationBlueprintDashboard />;
   }
 
+  const detectedCategory = slugToCategory(slug);
+
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8">
       <div className="max-w-5xl mx-auto space-y-6">
@@ -113,7 +191,7 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
         {slug === 'recruitment' ? (
           <RecruitmentEngineWidget />
         ) : (
-          <SectorToolsWidget />
+          <SectorToolsWidget businessCategory={detectedCategory} />
         )}
       </div>
 

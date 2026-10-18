@@ -31,6 +31,23 @@ const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindana
 export async function GET() {
   const todayStr = new Date().toISOString().split('T')[0];
 
+  // Try fetching live telemetry from Contabo VPS first (port 8080)
+  try {
+    const vpsRes = await fetch('http://169.58.182.92:8080/mobile-telemetry', { 
+      headers: {
+        'apikey': 'evolution_bethelmind_secret_2026'
+      },
+      signal: AbortSignal.timeout(4000),
+      cache: 'no-store'
+    });
+    if (vpsRes.ok) {
+      const vpsData = await vpsRes.json();
+      if (vpsData && vpsData.telemetry) {
+        return NextResponse.json(vpsData);
+      }
+    }
+  } catch (_) {}
+
   // 1. Emails Telemetry
   let emailsSentToday = 0;
   let totalEmailsAllTime = 0;
@@ -131,6 +148,19 @@ export async function GET() {
     } catch (_) {}
   }
 
+  // 6. WhatsApp Telemetry (Live outreach counts)
+  let waSentToday = 0;
+  let waActiveLines = 5;
+  const WA_LOG_PATH = path.join(LOCAL_DB, 'whatsapp_daily_outreach_log.json');
+  if (fs.existsSync(WA_LOG_PATH)) {
+    try {
+      const waLog = JSON.parse(fs.readFileSync(WA_LOG_PATH, 'utf8'));
+      if (waLog.date === todayStr) {
+        waSentToday = waLog.totalSentToday || 0;
+      }
+    } catch (_) {}
+  }
+
   return NextResponse.json({
     success: true,
     telemetry: {
@@ -140,6 +170,12 @@ export async function GET() {
         targetDaily: 600,
         totalAllTime: totalEmailsAllTime,
         percent: Math.min(100, Math.round((emailsSentToday / 600) * 100))
+      },
+      whatsapp: {
+        sentToday: waSentToday,
+        targetDaily: 100,
+        activeLines: waActiveLines,
+        percent: Math.min(100, Math.round((waSentToday / 100) * 100))
       },
       webforms: {
         sentToday: webformsToday,

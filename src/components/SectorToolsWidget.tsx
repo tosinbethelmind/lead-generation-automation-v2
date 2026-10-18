@@ -15,13 +15,15 @@ import {
   calculateHmoCoPayAndTelehealth,
   calculateLogisticsDeliveryFee,
   calculateCacFilingFees,
-  calculateShortletBookingAndCaution
+  calculateShortletBookingAndCaution,
+  calculateBeautySalonStylistBooking
 } from '@/lib/sectorModules';
 import { Code, Copy, Check, MessageCircle, Sparkles, ExternalLink, Zap, ShieldCheck } from 'lucide-react';
 
 export type SectorToolTab = 
   | 'solar' 
   | 'auto' 
+  | 'beauty'
   | 'mortgage' 
   | 'healthcare' 
   | 'education' 
@@ -41,6 +43,7 @@ interface SectorToolsWidgetProps {
 
 export function detectCategoryTab(category: string = ''): SectorToolTab {
   const c = category.toLowerCase();
+  if (/salon|spa|beauty|hair|barber|makeup|skincare|nails|aesthetic|cosmetic/.test(c)) return 'beauty';
   if (/solar|inverter|energy|battery|power|panel|clean energy/.test(c)) return 'solar';
   if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge|dining|lounge|restaurant|bar|cafe/.test(c)) return 'hospitality';
   if (/(\bcar\b|\bcars\b|auto|motor|vehicle|tokunbo|dealership|mechanic|garage|tyre|spare)/.test(c)) return 'auto';
@@ -152,6 +155,11 @@ export function SectorToolsWidget({
   const [nightlyRate, setNightlyRate] = useState(75000);
   const [nightsCount, setNightsCount] = useState(3);
 
+  // Beauty & Salon
+  const [beautyCategory, setBeautyCategory] = useState<'hair_extensions' | 'bridal_styling' | 'spa_facial' | 'nail_bar'>('hair_extensions');
+  const [hairLength, setHairLength] = useState(22);
+  const [stylistTier, setStylistTier] = useState<'senior' | 'master_director'>('senior');
+
   // DVA
   const [amountNgn, setAmountNgn] = useState(25000);
   const [customerName, setCustomerName] = useState('Valued Lead');
@@ -208,6 +216,8 @@ export function SectorToolsWidget({
         setResult(calculateCacFilingFees(entityTypeMap[companyType] || 'company_ltd', Number(payload.shareCapitalNgn || authorizedCapital)));
       } else if (action === 'shortlet_booking') {
         setResult(calculateShortletBookingAndCaution(nightlyRate, nightsCount, 30000));
+      } else if (action === 'beauty_salon_booking' || action === 'salon_booking') {
+        setResult(calculateBeautySalonStylistBooking(beautyCategory, hairLength, stylistTier));
       }
     } catch (err) {
       console.warn('Fallback calculation failed:', err);
@@ -280,6 +290,14 @@ export function SectorToolsWidget({
             }`}
           >
             🚗 Tokunbo Duty & VIN
+          </button>
+          <button
+            onClick={() => { setActiveTab('beauty'); setResult(null); }}
+            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
+              activeTab === 'beauty' ? 'bg-pink-500/20 border border-pink-500/50 text-pink-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            💅 Salon & Spa Deposit Lock
           </button>
           <button
             onClick={() => { setActiveTab('mortgage'); setResult(null); }}
@@ -548,6 +566,125 @@ export function SectorToolsWidget({
                       businessName={businessName}
                       category="Automotive & Tokunbo Importer"
                       toolType="Tokunbo Customs Tariff & Port Clearance Assessment"
+                      claimFeeNgn={65000}
+                      depositFeeNgn={35000}
+                      adminPhone={merchantPhone}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* BEAUTY, SALON & SPA TAB */}
+          {activeTab === 'beauty' && (
+            <div className="space-y-4">
+              <FeatureShareBar toolTitle="24/7 Salon Booking & Deposit Lock Engine" toolSlug="salon-booking" description="Stylist Slot Allocation, Hair Extensions Estimator & No-Show Deposit Lock" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Service Required</label>
+                  <select
+                    value={beautyCategory}
+                    onChange={e => setBeautyCategory(e.target.value as any)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-pink-500"
+                  >
+                    <option value="hair_extensions">Raw Hair Extensions & Weaving</option>
+                    <option value="bridal_styling">Bridal Hair & Makeup Package</option>
+                    <option value="spa_facial">Luxury Spa Facial & Glow Treatment</option>
+                    <option value="nail_bar">Full Gel Nail Bar & Pedicure</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Hair Length (Inches)</label>
+                  <input
+                    type="number"
+                    value={hairLength}
+                    onChange={e => setHairLength(Number(e.target.value))}
+                    min={10}
+                    max={36}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-pink-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Stylist Experience Tier</label>
+                  <select
+                    value={stylistTier}
+                    onChange={e => setStylistTier(e.target.value as any)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-pink-500"
+                  >
+                    <option value="senior">Senior Stylist (Standard)</option>
+                    <option value="master_director">Master Creative Director (+40%)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button
+                onClick={() =>
+                  handleRunCalculation('beauty_salon_booking', {
+                    serviceCategory: beautyCategory,
+                    hairLengthInches: hairLength,
+                    stylistTier
+                  })
+                }
+                disabled={loading}
+                className="w-full py-3 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg flex items-center justify-center gap-2"
+              >
+                {loading ? 'Calculating Booking Slot...' : '💅 Calculate Total Booking Cost & Lock Appointment Deposit'}
+              </button>
+
+              {result && (
+                <div className="bg-slate-950 border border-pink-500/30 rounded-2xl p-5 space-y-3">
+                  <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                    <span className="text-xs text-pink-400 font-bold uppercase">Appointment & Deposit Lock Summary</span>
+                    <span className="text-xs text-emerald-400 font-mono font-bold">{result.bookingConfirmationCode || 'VIP-SLOT-CONFIRMED'}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                    <div className="bg-slate-900 p-3 rounded-xl">
+                      <span className="text-xs text-slate-400 block">Total Service Value</span>
+                      <span className="text-base font-bold text-slate-200">
+                        <KineticNumber prefix="₦" value={result.totalBookingCostNgn || 85000} />
+                      </span>
+                    </div>
+                    <div className="bg-slate-900 p-3 rounded-xl border border-pink-500/40">
+                      <span className="text-xs text-pink-400 font-bold block">Mandatory 25% Deposit Lock</span>
+                      <span className="text-base font-extrabold text-pink-300">
+                        <KineticNumber prefix="₦" value={result.mandatoryDeposit25PercentNgn || 21250} />
+                      </span>
+                    </div>
+                    <div className="bg-slate-900 p-3 rounded-xl">
+                      <span className="text-xs text-slate-400 block">Balance on Arrival</span>
+                      <span className="text-base font-bold text-emerald-400">
+                        <KineticNumber prefix="₦" value={result.balancePayableAtSalonNgn || 63750} />
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-pink-950/20 border border-pink-500/20 rounded-xl text-xs text-pink-200 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-pink-400 shrink-0" />
+                    <span>{result.salonPolicyRemark || 'SEAT LOCKED: 25% deposit secures chair reservation. Balance payable on arrival.'}</span>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <a
+                      href={buildSectorWhatsAppQuoteMessage(
+                        businessName,
+                        'Beauty, Salon & Spa',
+                        'Salon Booking & Deposit Lock Engine',
+                        `Total Value: ₦${(result.totalBookingCostNgn || 85000).toLocaleString()} · Deposit Lock: ₦${(result.mandatoryDeposit25PercentNgn || 21250).toLocaleString()}`,
+                        merchantPhone
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
+                    >
+                      <MessageCircle className="w-4 h-4 fill-current" />
+                      <span>🟢 Send Booking to WhatsApp & Claim Prototype →</span>
+                    </a>
+
+                    <ExecutivePdfQuoteModal
+                      businessName={businessName}
+                      category="Beauty, Salon & Wellness Studio"
+                      toolType="24/7 WhatsApp Appointment Booking & Deposit Lock Engine"
                       claimFeeNgn={65000}
                       depositFeeNgn={35000}
                       adminPhone={merchantPhone}

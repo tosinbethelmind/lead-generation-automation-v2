@@ -24,8 +24,9 @@ const JOURNEYS_PATH = path.join(LOCAL_DB, 'lead_journeys.json');
 const SMS_TOKEN = 'f34af5ea-f657-41b1-b83e-4a59eb786e57';
 
 const GATEWAY_CANDIDATES = [
-  'http://192.168.0.121:8082/message',
+  'http://100.107.243.108:8082/',
   'http://100.107.243.108:8082/message',
+  'http://192.168.0.121:8082/message',
   'http://127.0.0.1:8082/message'
 ];
 
@@ -56,21 +57,7 @@ function isGenuineLead(lead) {
   return true;
 }
 
-function cleanBusinessName(name) {
-  if (!name) return 'Commercial Business';
-  let cleaned = name.split('||')[0].split('|')[0].split('-')[0].trim();
-  // Strip common listing filler prefixes if present
-  cleaned = cleaned.replace(/^(brand\s*new|clean\s*used|tokunbo|furnished|functional|standard)\s+/i, '');
-  return cleaned.trim() || 'Commercial Business';
-}
-
-function getShortBrand(rawName) {
-  const words = rawName.split(/\s+/);
-  if (words.length <= 2) return rawName.slice(0, 16);
-  let candidate = words[0] + ' ' + words[1];
-  if (candidate.length > 16) candidate = words[0];
-  return candidate.slice(0, 16).trim();
-}
+const { cleanBusinessName, getShortBrand } = require('./lib/nameSanitizer');
 
 function generateSlug(name, leadId) {
   if (leadId && typeof leadId === 'string' && leadId.length > 3 && !leadId.startsWith('lead_')) {
@@ -84,12 +71,12 @@ function generateSlug(name, leadId) {
 
 const { formatSmsGuaranteed } = require('./leadClassifier');
 
-function formatSms(lead) {
+function formatSingleSms(lead) {
   const res = formatSmsGuaranteed(lead);
   return {
-    prepSms: res.prepSms,
-    linkSms: res.linkSms,
-    previewUrl: res.previewUrl
+    message: res.prepSms,
+    previewUrl: res.previewUrl,
+    shortBrand: res.shortBrand
   };
 }
 
@@ -168,25 +155,20 @@ async function run120SmsCampaign() {
     const lead = eligible[i];
     const phone = cleanPhone(lead.phone || lead.phone_e164 || lead.phone_raw);
     const bName = cleanBusinessName(lead.name || lead.business_name);
-    const { prepSms, linkSms, previewUrl } = formatSms(lead);
+    const { message, previewUrl } = formatSingleSms(lead);
 
     console.log(`[${i + 1}/${targetCount}] 📱 Target: ${bName} (${phone})`);
-    console.log(`   📤 Msg 1 (${prepSms.length}c): "${prepSms}"`);
+    console.log(`   📤 SMS (${message.length}c): "${message}"`);
 
-    // Step 1: Send Hook Message
-    const resPrep = await sendSmsWithCascade(phone, prepSms);
+    // Send single credit message (strictly <= 158 chars)
+    const res = await sendSmsWithCascade(phone, message);
 
-    // Step 2: Send Demo Link Message (2.5s pacing between Message 1 and Message 2)
-    await sleep(2500);
-    console.log(`   📤 Msg 2 (${linkSms.length}c): "${linkSms}"`);
-    const resLink = await sendSmsWithCascade(phone, linkSms);
-
-    if (resPrep.success || resLink.success) {
+    if (res.success) {
       deliveredCount++;
       lead.sms_dispatched_today = true;
       lead.sms_dispatched_at = new Date().toISOString();
       lead.sms_status = 'DELIVERED';
-      lead.sms_gateway = resLink.gateway || resPrep.gateway;
+      lead.sms_gateway = res.gateway;
 
       // Update lead_journeys.json
       const leadId = lead.id || lead.lead_id || `lead_${generateSlug(bName)}`;

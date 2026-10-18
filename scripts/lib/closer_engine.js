@@ -16,6 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const { cleanBusinessName, getShortBrand, isGarbageOrId } = require('./nameSanitizer');
 
 const CORPORATE_BANK = {
   bankName: 'Moniepoint Microfinance Bank',
@@ -80,10 +81,7 @@ function lookupLeadForWhatsApp(senderPhone, incomingText = '') {
       }
 
       if (matchedLead) {
-        customerName = String(matchedLead.business_name || matchedLead.name || '')
-          .split('||')[0]
-          .split('|')[0]
-          .trim();
+        customerName = cleanBusinessName(matchedLead.business_name || matchedLead.name || '', '');
         customerArea = matchedLead.area || matchedLead.city || matchedLead.state || 'Lagos';
         customerCategory = matchedLead.category || matchedLead.sector || 'Commercial Business';
         if (!targetSlug) {
@@ -102,12 +100,15 @@ function lookupLeadForWhatsApp(senderPhone, incomingText = '') {
       incomingText.match(/(?:built|website|sample|demo|page)\s+for\s+\*?([A-Za-z0-9\s&.,'-]{3,45})\*?/i) ||
       incomingText.match(/claim\s+the\s+website\s+for\s+\*?([A-Za-z0-9\s&.,'-]{3,45})\*?/i);
     if (forMatch && forMatch[1]) {
-      customerName = forMatch[1].replace(/[*_]/g, '').trim();
+      customerName = cleanBusinessName(forMatch[1].replace(/[*_]/g, '').trim(), '');
     }
   }
 
-  if (!customerName) {
-    customerName = targetSlug ? targetSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Your Business';
+  if (!customerName || isGarbageOrId(customerName)) {
+    const prettySlug = targetSlug && !isGarbageOrId(targetSlug) 
+      ? targetSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) 
+      : 'Your Business';
+    customerName = cleanBusinessName(prettySlug, 'Your Business');
   }
   if (!targetSlug) {
     targetSlug = customerName !== 'Your Business' ? toSafeSlug(customerName, phoneTail || 'demo') : (phoneTail || 'demo');
@@ -303,6 +304,44 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       messageText: `No problem at all Sir/Ma! Your number has been removed immediately. Wishing *${name}* continuous business success! — Bethelmind Digital Solutions`,
       suggestedAction: 'DNC_SUPPRESS',
       directPaymentEligible: false
+    };
+  }
+
+  // ── 1B. DETECT WHATSAPP BUSINESS AUTOMATED GREETING / AWAY MESSAGE ────────
+  if (/thank you for contacting|thanks for reaching out|welcome to|please let us know how we can help|we are currently away|our working hours are|auto-reply|automated message|how may we help you/i.test(msg)) {
+    return {
+      intent: 'WHATSAPP_AUTO_GREETING_DETECTED',
+      isOptOut: false,
+      isAutoReply: true,
+      messageText:
+        `Salute Boss! Caught your WhatsApp auto-reply. 🤝\n\n` +
+        `Quick question for the owner or manager at *${name}*:\n` +
+        `When after-hours buyers message for prices, room rates, or bookings at night, would an automated WhatsApp assistant that closes sales for you help your business?\n\n` +
+        `We built a 15-second free demo for *${name}* to test on your phone:\n` +
+        `👉 ${previewUrl}\n\n` +
+        `Takes ₦0 upfront to test. Let me know what you think!`,
+      suggestedAction: 'ENGAGE_AFTER_AUTO_REPLY',
+      directPaymentEligible: true
+    };
+  }
+
+  // ── 1C. PERMISSION AFFIRMATIVE ("Yes", "Send it", "Show me", "How", "Okay", "Send link") ──
+  if (/^(yes|yeah|yep|yup|send it|send demo|send link|show me|okay|ok|i want to see|tell me more|how does it work|how|interested|go ahead|let me see|share am|drop link|send)\b/i.test(msg) && msg.length < 40) {
+    return {
+      intent: 'AFFIRMATIVE_PERMISSION_GRANTED',
+      isOptOut: false,
+      messageText:
+        `Awesome! Here is the live demo assistant we built for *${name}*:\n` +
+        `👉 ${previewUrl}\n\n` +
+        `Tap the green "Test WhatsApp Demo" button on that page to see how your customers experience it.\n\n` +
+        `🔥 *Here is our 100% Risk-Free Guarantee:*\n` +
+        `1. We customize it with your real shop photos and price list FREE today.\n` +
+        `2. You test it live for 48 hours on your own phone.\n` +
+        `3. If you love it, you can launch your official setup for just ₦25,000/month (Pay-Small-Small) or a ₦35,000 one-time starter setup.\n` +
+        `4. If you don't love it, you pay ₦0.00 shishi.\n\n` +
+        `Drop 2 photos of your shop or your price list here right now make we load am free for you!`,
+      suggestedAction: 'AWAIT_DEMO_FEEDBACK',
+      directPaymentEligible: true
     };
   }
 
@@ -606,7 +645,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
   }
 
   // ── 13. TALK TO A HUMAN / PHONE CALL REQUEST ─────────────────────────────
-  if (/call me|speak to human|talk to someone|call you|phone number|agent|real person|voice call/i.test(msg)) {
+  if (/call me|speak to human|talk to someone|call you|phone number|agent|real person|voice call|call us|can i call|can you call|let's talk|speak with you|human|representative|customer care|talk to a person|person to talk|are you a bot|are you a robot/i.test(msg)) {
     return {
       intent: 'HUMAN_ESCALATION_DESK',
       isOptOut: false,

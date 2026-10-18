@@ -1,7 +1,7 @@
 .next
 .netlify
 node_modules
-tools/
+/tools/
 *.tmp*
 *.log
 local_db/

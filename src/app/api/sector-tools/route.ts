@@ -63,6 +63,7 @@ import {
   calculateSecurityGuardRosterAndPatrol,
   calculateEstateVisitorPassCapacity,
   calculateB2bProformaInvoice,
+  calculateBeautySalonStylistBooking,
 } from '@/lib/sectorModules';
 import { TEN_SECTOR_MONETIZATION_TOOLS } from '@/lib/monetization/tenSectorMonetizationTools';
 import { SECTOR_PROFILES } from '@/config/sectors';
@@ -149,9 +150,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, result });
     }
 
-    if (action === 'cac_fees') {
-      const { entityType, shareCapital } = body;
-      const result = calculateCacFilingFees(entityType || 'company_ltd', Number(shareCapital || 1000000));
+    if (action === 'cac_fees' || action === 'cac_filing') {
+      const { entityType, shareCapital, shareCapitalNgn } = body;
+      const result = calculateCacFilingFees(entityType || 'company_ltd', Number(shareCapital || shareCapitalNgn || 1000000));
       return NextResponse.json({ success: true, result });
     }
 
@@ -201,6 +202,16 @@ export async function POST(req: NextRequest) {
         hmoProvider || 'Reliance HMO',
         procedureName || 'Dental Scaling & Polishing',
         Number(totalProcedureCostNgn || 35000)
+      );
+      return NextResponse.json({ success: true, result });
+    }
+
+    if (action === 'beauty_salon_booking' || action === 'salon_booking') {
+      const { serviceCategory, hairLengthInches, stylistTier } = body;
+      const result = calculateBeautySalonStylistBooking(
+        serviceCategory || 'hair_extensions',
+        Number(hairLengthInches || 22),
+        stylistTier || 'senior'
       );
       return NextResponse.json({ success: true, result });
     }
