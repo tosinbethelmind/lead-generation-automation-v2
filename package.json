@@ -11,6 +11,7 @@
     "lint": "eslint",
     "redeploy": "npx vercel --prod --yes",
     "typecheck": "node --max-old-space-size=1536 ./node_modules/typescript/bin/tsc --noEmit",
+    "test:qa": "node scripts/deep_landing_page_and_tool_tester.js",
     "modern:run": "node scripts/run_modernized_commercial_engine.js",
     "audit:blog": "npx tsx scripts/audit_blog_performance.ts",
     "build:apk": "node scripts/build_client_apk.js",

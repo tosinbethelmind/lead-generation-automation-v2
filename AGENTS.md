@@ -52,13 +52,19 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - All prospect interaction metrics (page views, calculator runs, video views) MUST reflect only verified incoming client telemetry.
 - **100% DIRECT-TO-OPAY COMMISSIONS**: All revenue, setup deposits, and product sales route directly to **Moniepoint Microfinance Bank** (`6805375225` - Bethelmind Digital Solutions).
 
-## 2B. PERMANENT OPERATING MANDATE: STRICT FAIR USAGE OF DATA & BANDWIDTH CONSERVATION (SOLIDIFIED IN PERMANENT MEMORY)
-- **1. HOST ENVIRONMENT INVARIANT (METERED CELLULAR BROADBAND)**:
-  - The host laptop runs on metered / mobile cellular broadband. Uncontrolled data consumption, rapid polling loops, and redundant asset downloads severely deplete the user's mobile data bundle and are **STRICTLY PROHIBITED**.
-  - Every script, daemon, background runner, crawler, and dispatcher MUST strictly observe fair usage of internet data, network bandwidth, memory (RAM), and CPU.
-- **2. HEAVY SCRAPING 100% CLOUD-ONLY (ZERO RUNAWAY LOCAL SCRAPING)**:
-  - Continuous nationwide lead scraping (10,000–30,000 leads/day) is **100% offloaded to GitHub Actions Cloud** (`.github/workflows/autonomous_247_cloud_engine.yml`), running on GitHub's free unlimited cloud runners every 30 minutes 24/7.
-  - **Local laptop scraping is strictly restricted**: Local runners must NEVER execute continuous 10s-30s scraping loops. Local harvesting is capped at small bounded batches ($\le 25$ leads) with a mandatory **4-hour rest cooldown**. If `leads_db.json` already contains unsent leads, local scraping is automatically paused to conserve data.
+## 2B. PERMANENT OPERATING MANDATE: STRICT VPS-FIRST OFFLOAD & LAPTOP DATA/RESOURCE PROTECTION (SOLIDIFIED IN PERMANENT MEMORY)
+- **1. CONTABO VPS 100% OFFLOAD INVARIANT (`169.58.182.92`)**:
+  - The user operates a dedicated Contabo VPS (`169.58.182.92`) running 24/7 with unlimited high-speed broadband.
+  - **All continuous background operations MUST be 100% offloaded to the VPS or GitHub Actions Cloud**:
+    - WhatsApp Multi-Line Outbound Engine: PM2 `bethelmind-wa-outreach` on VPS.
+    - Evolution API Instance Server: PM2 `bethelmind-evolution` on VPS (port 8080).
+    - Airtel Android GSM SMS Gateway Listener: PM2 `bethelmind-airtel-sms` on VPS.
+    - Heavy 24/7 Lead Scraping: 100% offloaded to GitHub Actions Cloud (`.github/workflows/autonomous_247_cloud_engine.yml`).
+- **2. HOST ENVIRONMENT INVARIANT (METERED CELLULAR BROADBAND & ZERO LAPTOP DRAIN)**:
+  - The host laptop runs on metered / mobile cellular broadband with limited hardware specs. Uncontrolled data consumption, rapid polling loops, and redundant asset downloads severely deplete the user's mobile data bundle and are **STRICTLY PROHIBITED**.
+  - **Zero local background daemons on laptop**: Never run continuous 10s-30s scraping loops or background daemons on the local machine.
+  - **Local RAM & CPU Hygiene**: Local workers are strictly capped at `< 120MB per worker` (`--max-old-space-size=128`), CPU `< 5%`. Zombie processes (`next dev`, orphaned node instances) must be aggressively terminated.
+  - **Micro-Payload QA**: Testing on the laptop must strictly use lightweight, bounded, on-demand micro-requests ($\le 64$ KB per probe) without fetching heavy media assets.
 - **3. SUPABASE CLOUD EGRESS CIRCUIT BREAKER & LOCAL-FIRST ARCHITECTURE**:
   - If Supabase Cloud returns `exceed_egress_quota`, HTTP 429, or quota restriction violations, ALL cloud RPC/queue polling MUST immediately sleep and back off for **15 to 30 minutes**.
   - The local runner MUST NEVER poll Supabase in rapid 1s-5s loops when quota is exceeded.

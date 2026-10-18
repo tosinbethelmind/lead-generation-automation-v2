@@ -1,22 +1,37 @@
-# Antigravity Persistent Memory: Outreach & Engine Directives
+# Bethelmind Digital Solutions: Permanent Operating Memory & VPS Directives
 
-1. **Engine Scope**: Exclusively **10K Lagos Engine** (Bethelmind Analytics).
-2. **Exclusion**: **`solarquotepro.ng` is strictly excluded** from active outreach.
-3. **SMS Architecture**: Strictly **Tailscale Android SMS Gateway** (`http://10.132.90.251:8082` with token `f34af5ea-f657-41b1-b83e-4a59eb786e57`). **Termii is completely excluded / NOT used**.
-4. **Product Offer**: **Bethelmind Analytics B2B Website Prototype, WhatsApp Automation & Paystack Instant Setup Claim Portal** for Lagos businesses.
-5. **Strict Branding**: Exclusively **Bethelmind Analytics**. NEVER use `ApexReach` in templates, signatures, SMS, or emails.
-6. **WhatsApp Line Architecture & Solidification**:
-   - **Admin Line (Approvals & Alerts ONLY):** `+234 802 279 1227` (`ADMIN_WA_PHONE`). Never dispatch cold messages from this number.
-   - **Line 1 (Primary Cold Outreach):** `+234 702 626 6946` (`OUTREACH_WA_PHONE_1`, Port `3007`, Name: `Tosin 1`). Primary Auth: `local_db/baileys_auth`, Solidified Backup: `local_db/baileys_auth_solidified_backup`.
-   - **Line 2 (Rotator Cold Outreach):** `+234 904 605 0469` (`OUTREACH_WA_PHONE_2`, Port `3009`, Name: `TOSIN New`). Primary Auth: `local_db/baileys_auth_line2`, Solidified Backup: `local_db/baileys_auth_line2_solidified_backup`.
-   - **Self-Healing Persistence**: Both sessions are locked into memory and persistent disk. Any missing keys auto-restore from the solidified backups on boot without requiring re-pairing.
-7. **Current Campaign Cycle**: Monday, Aug 17, 2026 to Sunday, Aug 23, 2026.
-8. **Strict Manual Gate for Engines 1 & 3**:
-   - **No active outreach** is allowed for Engine 1 (GMB Rescue) and Engine 3 (Expired Domains).
-   - The scraping and accumulation processes for both engines must run continuously in the background.
-   - Outreach execution for these segments remains paused until manually authorized by the user once a sufficient quantity is accumulated.
-9. **Autonomous Customer Friction & Optimization Watchdog**:
-   - The AI agent will continuously monitor user movements on the landing page and website templates (clicks, scrolls, time spent, widget interactions, rage clicks).
-   - Telemetry must be audited periodically by the `autonomous_customer_friction_tracker.ts` background daemon and stored in `local_db/landing_page_friction_audit.json`.
-   - This data is locked in memory and must be used as intelligence for programmatic upgrades, optimizing call-to-actions, reducing mobile input friction, and boosting conversion velocity over time.
+## 1. VPS-FIRST OFFLOAD ARCHITECTURE (STRICT ZERO-LAPTOP-RESOURCE DRAIN)
+- **100% Remote Offload on Contabo VPS (`169.58.182.92`)**:
+  - The user operates a dedicated Contabo VPS (`169.58.182.92`, root auth configured) running 24/7 with unlimited high-speed data.
+  - **All continuous, heavy, or automated outreach daemons MUST execute on the VPS or GitHub Actions Cloud**:
+    - **Multi-Line WhatsApp Outreach**: PM2 process `bethelmind-wa-outreach` on VPS.
+    - **Evolution API WhatsApp Instance Manager**: PM2 process `bethelmind-evolution` on VPS (port 8080).
+    - **Airtel Android GSM SMS Gateway**: PM2 process `bethelmind-airtel-sms` on VPS.
+    - **Heavy Nigeria-Wide Lead Scraping**: GitHub Actions Cloud (`.github/workflows/autonomous_247_cloud_engine.yml`) running 24/7 every 30 minutes.
+- **Strict Local Laptop Resource & Cellular Data Guard**:
+  - **The user's laptop runs on metered mobile cellular broadband**. Uncontrolled data consumption or continuous background polling is **STRICTLY PROHIBITED**.
+  - **Zero local runaway scrapers or daemons**: Local laptop must NEVER run 24/7 background scraping loops, heavy Playwright/Chromium instances, or rapid database pollers.
+  - **Laptop Worker Memory Cap**: Memory strictly capped at `< 120MB per worker` (`--max-old-space-size=128`), CPU `< 5%`.
+  - **No Zombie Processes**: Stale node instances, zombie dev servers, or orphaned headless browsers must be immediately terminated.
+  - **Data-Saver Test Probes**: All local test suites (e.g. `npm run test:qa`) must run lightweight, bounded, on-demand micro-requests ($\le 64$ KB per probe) and drop heavy binary media.
 
+## 2. STRICT BRANDING & CAC CORPORATE SETTLEMENT INVARIANT
+- **Sole Corporate Identity**: Strictly **Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)**.
+- **Zero-Crypto Invariant**: Cold customer outreach is 100% commercial B2B. Zero crypto terms, zero wallet references, zero escrow jargon.
+- **Settlement Account**: All client setup fees, deposits, and retainers route 100% to our verified corporate bank account:
+  - **Bank**: `Moniepoint Microfinance Bank`
+  - **Account Number**: `6805375225`
+  - **Account Name**: `Bethelmind Digital Solutions`
+- **Admin & Closer Desk**: `0802 279 1227` (`ADMIN_WA_PHONE`) / `bethelmindrecruit@gmail.com`. Cold outreach CTA links route directly to `wa.me/2348022791227`. Never dispatch cold outbound bulk outreach from the admin phone.
+
+## 3. STRICT NON-WEBSITE COMMERCIAL FOCUS (`hasWebsite === false`)
+- **Target Audience**: 100% verified Nigerian commercial businesses that do NOT have a standalone website (directory-only profiles on Jiji, BusinessList, Finelib, VConnect, Google Maps).
+- **Core Hook**: *"When prospective customers search for [Business Name] on Google, only third-party directories show up alongside ads for direct competitors. We already built your live Official Mobile Website + 24/7 WhatsApp Booking & Quoting Assistant to test free: https://www.bethelmindanalytics.com/preview/[slug]"*.
+- **2-Tier Pricing**:
+  - **Starter Go-Live**: `₦35,000` one-time (or `₦25,000/month` Pay-Small-Small).
+  - **Full Turnkey Custom Domain Suite**: `₦75,000` 50% deposit (`₦150,000` total).
+
+## 4. SMS & OUTREACH BOUNDS
+- **Single Credit Constraint**: Exactly 1 SMS ($\le 158$ characters, zero links) per lead to prevent multi-credit airtime drain.
+- **Caps**: Exactly 120 SMS/day, 600 verified emails/day (Dual Hostinger pool), 30 WhatsApp msgs/line/day.
+- **Real Metrics Only**: Zero simulated or fake reporting. All metrics must reflect confirmed network events.
