@@ -132656,5 +132656,29 @@
     "status": "NEW",
     "engineTag": "HIGH_SPEED_ROTATIONAL_NO_WEBSITE_HARVESTER",
     "created_at": "2026-10-18T01:40:08Z"
+  },
+  {
+    "id": "biz_1792291457899_0",
+    "lead_id": "biz_1792291457899_0",
+    "slug": "the-shield-clinic",
+    "name": "The Shield Clinic",
+    "business_name": "The Shield Clinic",
+    "phone": "07011733484",
+    "phone_e164": "+2347011733484",
+    "carrier": "Airtel",
+    "email": null,
+    "category": "Healthcare & Medical Clinics",
+    "sector": "Healthcare & Medical Clinics",
+    "area": "Nigeria",
+    "address": "Plot 4 Close D, Peace Valley Estate, TransWoji Road,Rivers,Port Harcourt, Nigeria",
+    "website": null,
+    "has_website": false,
+    "hasWebsite": false,
+    "preview_url": "https://www.bethelmindanalytics.com/preview/the-shield-clinic",
+    "source": "BUSINESSLIST_NG_STRICT_NO_WEBSITE",
+    "confidenceScore": 98,
+    "status": "NEW",
+    "engineTag": "HIGH_SPEED_ROTATIONAL_NO_WEBSITE_HARVESTER",
+    "created_at": "2026-10-18T02:44:17Z"
   }
 ]
