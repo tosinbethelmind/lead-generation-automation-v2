@@ -146,7 +146,19 @@ async function run120SmsCampaign() {
   const countArg = process.argv.find(a => a.startsWith('--count='));
   const userLimit = countArg ? parseInt(countArg.split('=')[1], 10) : 120;
   const targetCount = Math.min(eligible.length, isNaN(userLimit) ? 120 : userLimit);
-  console.log(`🚀 Commencing 2-message sequence dispatch to ${targetCount} leads...\n`);
+
+  // ── PRE-FLIGHT QA & SITE HEALTH GUARD ──────────────────────────────────────
+  const { runFastPreflight } = require('./deep_landing_page_and_tool_tester');
+  console.log('🛡️ [QA Guard] Running pre-flight verification before SMS dispatch...');
+  const preflight = await runFastPreflight('https://www.bethelmindanalytics.com');
+  if (!preflight.ok) {
+    console.error('🚨 [DISPATCH ABORTED] Pre-flight QA check failed! Outreach halted to protect SMS airtime.');
+    console.error('Blockers:', preflight.failed);
+    process.exit(1);
+  }
+  console.log('✅ [QA Guard] Live production verified. Proceeding with campaign.\n');
+
+  console.log(`🚀 Commencing single SMS dispatch to ${targetCount} leads...\n`);
 
   let deliveredCount = 0;
   let failedCount = 0;

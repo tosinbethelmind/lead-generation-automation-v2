@@ -13,22 +13,28 @@
  * 6. Trust & Payment Consistency (Moniepoint MFB, 6805375225, Bethelmind Digital Solutions).
  */
 
-const args = process.argv.slice(2);
-const isLocal = args.includes('--local');
-let BASE_URL = 'https://www.bethelmindanalytics.com';
+const DEFAULT_PRODUCTION_URL = 'https://www.bethelmindanalytics.com';
 
-for (const arg of args) {
-  if (arg.startsWith('--url=')) {
-    BASE_URL = arg.replace('--url=', '').trim();
+function parseCliArgs() {
+  const args = process.argv.slice(2);
+  const isLocal = args.includes('--local');
+  let baseUrl = DEFAULT_PRODUCTION_URL;
+
+  for (const arg of args) {
+    if (arg.startsWith('--url=')) {
+      baseUrl = arg.replace('--url=', '').trim();
+    }
   }
+
+  if (isLocal) {
+    baseUrl = 'http://localhost:3006';
+  }
+
+  return { baseUrl, isFast: args.includes('--fast') };
 }
 
-if (isLocal) {
-  BASE_URL = 'http://localhost:3006';
-}
-
-async function fetchUrl(urlPath, options = {}) {
-  const fullUrl = urlPath.startsWith('http') ? urlPath : new URL(urlPath, BASE_URL).toString();
+async function fetchUrl(urlPath, baseUrl = DEFAULT_PRODUCTION_URL, options = {}) {
+  const fullUrl = urlPath.startsWith('http') ? urlPath : new URL(urlPath, baseUrl).toString();
   const start = Date.now();
   
   try {
@@ -68,7 +74,61 @@ async function fetchUrl(urlPath, options = {}) {
   }
 }
 
-async function runTestSuite() {
+/**
+ * Fast sub-second preflight check for campaign dispatchers.
+ * Uses < 15KB data and completes in < 1.5s.
+ */
+async function runFastPreflight(baseUrl = DEFAULT_PRODUCTION_URL) {
+  console.log(`🔍 [QA Pre-Flight] Probing target environment: ${baseUrl}...`);
+  
+  const checks = [
+    { path: '/', label: 'Home Page' },
+    { path: '/preview/future-link-car', label: 'Preview Engine' },
+    { path: '/tools/solar-boq', label: 'Solar Tool' },
+    { path: '/tools/salon-booking', label: 'Salon Tool' },
+    { path: '/api/preview/generate?leadId=future-link-car', label: 'Preview API' }
+  ];
+
+  const results = [];
+  const failed = [];
+
+  for (const c of checks) {
+    const res = await fetchUrl(c.path, baseUrl);
+    results.push(res);
+    if (!res.success || res.status !== 200) {
+      failed.push(`${c.label} (${c.path}) returned status ${res.status}`);
+    } else {
+      console.log(`   ✓ ${c.label} (${c.path}) -> HTTP ${res.status} (${res.durationMs}ms)`);
+    }
+  }
+
+  // Check bank account in preview API
+  const apiRes = results[4];
+  if (apiRes.json?.paymentConfig?.moniepointAccountNumber !== '6805375225') {
+    failed.push(`Stale Bank Account returned: ${apiRes.json?.paymentConfig?.moniepointAccountNumber} (Expected Moniepoint 6805375225)`);
+  }
+
+  if (failed.length > 0) {
+    console.error(`🚨 [QA Pre-Flight FAILED] Found ${failed.length} blocker(s):`);
+    failed.forEach(f => console.error(`   - ${f}`));
+    return { ok: false, failed };
+  }
+
+  console.log('✅ [QA Pre-Flight PASSED] Core endpoints & Moniepoint 6805375225 verified. Safe to dispatch!');
+  return { ok: true, failed: [] };
+}
+
+/**
+ * Comprehensive 34-point Full-Stack QA & Conversion Suite
+ */
+async function runTestSuite(customBaseUrl) {
+  const { baseUrl: cliBaseUrl, isFast } = parseCliArgs();
+  const BASE_URL = customBaseUrl || cliBaseUrl;
+
+  if (isFast) {
+    return runFastPreflight(BASE_URL);
+  }
+
   console.log('========================================================================');
   console.log('🚀 RUNNING ADVANCED FULL-STACK QA & CONVERSION TEST SUITE');
   console.log('🌐 Target Environment: ' + BASE_URL);
@@ -112,7 +172,7 @@ async function runTestSuite() {
   ];
 
   for (const r of publicRoutes) {
-    const res = await fetchUrl(r.path);
+    const res = await fetchUrl(r.path, BASE_URL);
     const isOk = res.success && res.status === 200;
     record(`${r.label} (${r.path})`, isOk, `Status: ${res.status}, Latency: ${res.durationMs}ms`);
 
@@ -131,7 +191,7 @@ async function runTestSuite() {
   // --------------------------------------------------------------------------
   console.log('\n--- TEST GROUP 2: Preview Generation API ---');
   
-  const previewRes = await fetchUrl('/api/preview/generate?leadId=future-link-car');
+  const previewRes = await fetchUrl('/api/preview/generate?leadId=future-link-car', BASE_URL);
   record('Preview API returns HTTP 200', previewRes.status === 200, `Status: ${previewRes.status}`);
   
   if (previewRes.json) {
@@ -203,7 +263,7 @@ async function runTestSuite() {
   ];
 
   for (const s of sectorActions) {
-    const res = await fetchUrl('/api/sector-tools', {
+    const res = await fetchUrl('/api/sector-tools', BASE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: s.payload
@@ -219,7 +279,7 @@ async function runTestSuite() {
   console.log('\n--- TEST GROUP 4: Edge Cases & Error Recovery ---');
 
   // Test 1: Empty payload
-  const emptyRes = await fetchUrl('/api/sector-tools', {
+  const emptyRes = await fetchUrl('/api/sector-tools', BASE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: {}
@@ -227,7 +287,7 @@ async function runTestSuite() {
   record('API handles empty action gracefully without 500 crash', emptyRes.status === 200 || emptyRes.status === 400, `Status: ${emptyRes.status}`);
 
   // Test 2: Negative and zero numbers
-  const negativeRes = await fetchUrl('/api/sector-tools', {
+  const negativeRes = await fetchUrl('/api/sector-tools', BASE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: { action: 'solar_boq', kva: -5, backupHours: 0 }
@@ -239,7 +299,7 @@ async function runTestSuite() {
   // --------------------------------------------------------------------------
   console.log('\n--- TEST GROUP 5: Conversion Trust & CTA Links ---');
 
-  const previewResObj = await fetchUrl('/preview/future-link-car');
+  const previewResObj = await fetchUrl('/preview/future-link-car', BASE_URL);
   const previewHtml = previewResObj.data || '';
 
   const hasWhatsAppCloserLink = previewHtml.includes('wa.me/2348022791227') || previewHtml.includes('2348022791227');
@@ -265,7 +325,21 @@ async function runTestSuite() {
   }
   console.log('========================================================================\n');
 
-  return { passed, failed, issues };
+  return { passed, failed, issues, ok: failed === 0 };
 }
 
-runTestSuite().catch(err => console.error('Suite crashed:', err));
+module.exports = {
+  runTestSuite,
+  runFastPreflight
+};
+
+if (require.main === module) {
+  runTestSuite().then(res => {
+    if (!res.ok) {
+      process.exit(1);
+    }
+  }).catch(err => {
+    console.error('Suite crashed:', err);
+    process.exit(1);
+  });
+}
