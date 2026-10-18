@@ -156712,5 +156712,29 @@
     "status": "NEW",
     "engineTag": "HIGH_SPEED_ROTATIONAL_NO_WEBSITE_HARVESTER",
     "created_at": "2026-10-18T21:58:47Z"
+  },
+  {
+    "id": "biz_1792367464029_0",
+    "lead_id": "biz_1792367464029_0",
+    "slug": "itse-sagay-company",
+    "name": "Itse Sagay & Company",
+    "business_name": "Itse Sagay & Company",
+    "phone": "08023276308",
+    "phone_e164": "+2348023276308",
+    "carrier": "Airtel",
+    "email": null,
+    "category": "Law Firms & Legal Chambers",
+    "sector": "Law Firms & Legal Chambers",
+    "area": "Nigeria",
+    "address": "3, Tafawa Balewa Crescent, Surulere,Lagos, Nigeria",
+    "website": null,
+    "has_website": false,
+    "hasWebsite": false,
+    "preview_url": "https://www.bethelmindanalytics.com/preview/itse-sagay-company",
+    "source": "BUSINESSLIST_NG_STRICT_NO_WEBSITE",
+    "confidenceScore": 98,
+    "status": "NEW",
+    "engineTag": "HIGH_SPEED_ROTATIONAL_NO_WEBSITE_HARVESTER",
+    "created_at": "2026-10-18T23:51:04Z"
   }
 ]
