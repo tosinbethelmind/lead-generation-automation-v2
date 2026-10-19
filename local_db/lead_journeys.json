@@ -110629,18 +110629,18 @@
   "864066d9-6674-41c0-9393-f5098d29118b": {
     "leadId": "864066d9-6674-41c0-9393-f5098d29118b",
     "leadName": "Teso Tech Solar Energy System",
-    "category": "Solar Energy Enterprise",
+    "category": "Solar & Inverter Systems",
     "phone": "+2348103597426",
     "email": "",
     "area": "Sapele",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 75,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
     "previewUrl": "https://www.bethelmindanalytics.com/preview/864066d9-6674-41c0-9393-f5098d29118b",
-    "createdAt": "2026-09-03T18:56:33.440Z",
-    "lastActiveIso": "2026-09-03T18:56:33.440Z",
-    "lastUpdatedWat": "07:56 pm WAT (3 Sept)",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -110652,37 +110652,22 @@
     },
     "events": [
       {
-        "id": "evt_init_1788461794378_cge5",
+        "id": "evt_1792405707706_0r6g",
         "leadId": "864066d9-6674-41c0-9393-f5098d29118b",
         "leadName": "Teso Tech Solar Energy System",
-        "businessCategory": "Solar Energy Enterprise",
+        "businessCategory": "Solar & Inverter Systems",
         "phone": "+2348103597426",
         "email": "",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Outreach Dispatched Across Channels",
-        "description": "Lead profile verified in Sapele. Dedicated prototype and Ezinne voice note activated.",
-        "channelUsed": "Social & Direct Inbox",
-        "timestamp": "2026-09-03T18:56:33.440Z",
-        "timestampWat": "07:56 pm WAT (3 Sept)",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/864066d9-6674-41c0-9393-f5098d29118b)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
           "previewUrl": "https://www.bethelmindanalytics.com/preview/864066d9-6674-41c0-9393-f5098d29118b",
-          "area": "Sapele",
-          "category": "Solar Energy Enterprise"
+          "voiceNoteAttached": true
         }
-      },
-      {
-        "id": "j_evt_1788522274557_t25t",
-        "leadId": "864066d9-6674-41c0-9393-f5098d29118b",
-        "leadName": "Teso Tech Solar Energy System",
-        "businessCategory": "Solar Energy Enterprise",
-        "phone": "+2348103597426",
-        "email": "",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Direct Carrier GSM SMS Dispatched",
-        "description": "Dispatched operational leak hook with demo link to +2348103597426.",
-        "channelUsed": "Carrier GSM SMS",
-        "timestamp": "2026-09-03T18:56:31.867Z",
-        "timestampWat": "03/09/2026, 19:56:31"
       }
     ]
   },
@@ -149834,19 +149819,19 @@
   },
   "lead_ng_c145b6f384682e": {
     "leadId": "lead_ng_c145b6f384682e",
-    "leadName": "ZEE RESIDENCE",
-    "category": "Electronics & Solar Inverters",
-    "phone": "07083979976",
+    "leadName": "Zee Residence",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347083979976",
     "email": "zeeresidenceng@gmail.com",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/zee-residence",
-    "createdAt": "2026-09-06T04:25:02.855Z",
-    "lastActiveIso": "2026-09-06T04:25:02.855Z",
-    "lastUpdatedWat": "05:25:02 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_c145b6f384682e",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -149858,93 +149843,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1788668702856_dj4f",
+        "id": "evt_1792405707672_svu8",
         "leadId": "lead_ng_c145b6f384682e",
-        "leadName": "ZEE RESIDENCE",
+        "leadName": "Zee Residence",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347083979976",
+        "email": "zeeresidenceng@gmail.com",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/zee-residence)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-06T04:25:02.856Z",
-        "timestampWat": "05:25:02 WAT",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_c145b6f384682e)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/zee-residence",
-          "messageId": "<052617cd-121f-3b39-a191-e4042ef7da5b@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1788685395005_s42e",
-        "leadId": "lead_ng_c145b6f384682e",
-        "leadName": "ZEE RESIDENCE",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/zee-residence)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-06T09:03:15.005Z",
-        "timestampWat": "10:03:15 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/zee-residence",
-          "messageId": "<2adaf1b5-f8b5-6b42-0322-e2fb4d769a1f@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1788780892362_2odw",
-        "leadId": "lead_ng_c145b6f384682e",
-        "leadName": "ZEE RESIDENCE",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/zee-residence)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-07T11:34:52.362Z",
-        "timestampWat": "12:34:52 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/zee-residence",
-          "messageId": "<64ad12f6-a0e3-6c45-488f-e18f1a2967cb@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1788899053940_ix77",
-        "leadId": "lead_ng_c145b6f384682e",
-        "leadName": "ZEE RESIDENCE",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/zee-residence)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-08T20:24:13.940Z",
-        "timestampWat": "21:24:13 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/zee-residence",
-          "messageId": "<8386f702-c490-1e9f-e5c1-b262766310b4@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1789049469318_583m",
-        "leadId": "lead_ng_c145b6f384682e",
-        "leadName": "ZEE RESIDENCE",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/zee-residence)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-10T14:11:09.318Z",
-        "timestampWat": "15:11:09 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/zee-residence",
-          "messageId": "<5ea084c5-b234-ce1b-705b-2f589cc57cbf@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_c145b6f384682e",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -150474,18 +150387,18 @@
   "lead_ng_518187bcb67bec": {
     "leadId": "lead_ng_518187bcb67bec",
     "leadName": "Teyei's Couture",
-    "category": "Agro Processing, Real Estate & Mining Tools",
-    "phone": "09066136413",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349066136413",
     "email": "info@teyeiscouture.com",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/teyei-s-couture",
-    "createdAt": "2026-09-06T04:25:37.269Z",
-    "lastActiveIso": "2026-09-06T04:25:37.269Z",
-    "lastUpdatedWat": "05:25:37 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_518187bcb67bec",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -150497,75 +150410,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1788668737269_6kb7",
+        "id": "evt_1792405707677_or85",
         "leadId": "lead_ng_518187bcb67bec",
         "leadName": "Teyei's Couture",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349066136413",
+        "email": "info@teyeiscouture.com",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/teyei-s-couture)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-06T04:25:37.269Z",
-        "timestampWat": "05:25:37 WAT",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_518187bcb67bec)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/teyei-s-couture",
-          "messageId": "<8076bfe2-6043-56d4-0b0e-09ee85caa15a@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1788780923140_d6ix",
-        "leadId": "lead_ng_518187bcb67bec",
-        "leadName": "Teyei's Couture",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/teyei-s-couture)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-07T11:35:23.140Z",
-        "timestampWat": "12:35:23 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/teyei-s-couture",
-          "messageId": "<e1f8ef41-ae6b-9e11-2a23-221967cfe9ad@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1788899173705_e324",
-        "leadId": "lead_ng_518187bcb67bec",
-        "leadName": "Teyei's Couture",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/teyei-s-couture)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-08T20:26:13.718Z",
-        "timestampWat": "21:26:13 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/teyei-s-couture",
-          "messageId": "<5030b766-72e0-ecf9-92a9-b3c4b793c185@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1789049476670_2377",
-        "leadId": "lead_ng_518187bcb67bec",
-        "leadName": "Teyei's Couture",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/teyei-s-couture)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-10T14:11:16.670Z",
-        "timestampWat": "15:11:16 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/teyei-s-couture",
-          "messageId": "<9828c72a-db86-6e05-8b03-77f395b60885@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_518187bcb67bec",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -150780,18 +150639,18 @@
   "lead_ng_23da369c7faf13": {
     "leadId": "lead_ng_23da369c7faf13",
     "leadName": "urban oasis apartment",
-    "category": "Logistics, Solar Inverters & Agro Machinery",
-    "phone": "08117331984",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348117331984",
     "email": "fridayelijah0012@gmail.com",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/urban-oasis-apartment",
-    "createdAt": "2026-09-06T04:25:50.208Z",
-    "lastActiveIso": "2026-09-06T04:25:50.208Z",
-    "lastUpdatedWat": "05:25:50 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_23da369c7faf13",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -150803,75 +150662,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1788668750208_ckkf",
+        "id": "evt_1792405707678_rvn9",
         "leadId": "lead_ng_23da369c7faf13",
         "leadName": "urban oasis apartment",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348117331984",
+        "email": "fridayelijah0012@gmail.com",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/urban-oasis-apartment)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-06T04:25:50.209Z",
-        "timestampWat": "05:25:50 WAT",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_23da369c7faf13)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/urban-oasis-apartment",
-          "messageId": "<9c8a52d0-7f6c-2e68-7ddd-4b9baadef03b@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1788780936277_25na",
-        "leadId": "lead_ng_23da369c7faf13",
-        "leadName": "urban oasis apartment",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/urban-oasis-apartment)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-07T11:35:36.277Z",
-        "timestampWat": "12:35:36 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/urban-oasis-apartment",
-          "messageId": "<64f2abd1-c573-22fa-0772-d0cfcdd4f06d@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1788899255113_eejb",
-        "leadId": "lead_ng_23da369c7faf13",
-        "leadName": "urban oasis apartment",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/urban-oasis-apartment)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-08T20:27:35.113Z",
-        "timestampWat": "21:27:35 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/urban-oasis-apartment",
-          "messageId": "<568fdb85-2297-a174-a61e-e2c5b9236cca@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1789049483026_7wlo",
-        "leadId": "lead_ng_23da369c7faf13",
-        "leadName": "urban oasis apartment",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/urban-oasis-apartment)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-10T14:11:23.026Z",
-        "timestampWat": "15:11:23 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/urban-oasis-apartment",
-          "messageId": "<d38f54cd-a07f-a1a0-f5d4-ab2ef600a8b3@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_23da369c7faf13",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -153993,18 +153798,18 @@
   "lead_ng_4177159c261ad7": {
     "leadId": "lead_ng_4177159c261ad7",
     "leadName": "The Liquor Store",
-    "category": "Digital Agencies, Printers & Boutiques",
-    "phone": "08134793895",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348134793895",
     "email": "theliquorstoreclub@gmail.com",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/the-liquor-store",
-    "createdAt": "2026-09-06T08:06:03.773Z",
-    "lastActiveIso": "2026-09-06T08:06:03.773Z",
-    "lastUpdatedWat": "09:06:03 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_4177159c261ad7",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -154016,75 +153821,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1788681963860_iwqc",
+        "id": "evt_1792405707667_rxa7",
         "leadId": "lead_ng_4177159c261ad7",
         "leadName": "The Liquor Store",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348134793895",
+        "email": "theliquorstoreclub@gmail.com",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/the-liquor-store)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-06T08:06:03.860Z",
-        "timestampWat": "09:06:03 WAT",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_4177159c261ad7)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/the-liquor-store",
-          "messageId": "<02237095-6660-a4b5-c922-7fcca7d3f2c0@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1788692019631_hj2k",
-        "leadId": "lead_ng_4177159c261ad7",
-        "leadName": "The Liquor Store",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/the-liquor-store)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-06T10:53:39.631Z",
-        "timestampWat": "11:53:39 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/the-liquor-store",
-          "messageId": "<17d782eb-f929-b2f0-aa12-91bae1e09703@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1788780851398_4f12",
-        "leadId": "lead_ng_4177159c261ad7",
-        "leadName": "The Liquor Store",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/the-liquor-store)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-07T11:34:11.398Z",
-        "timestampWat": "12:34:11 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/the-liquor-store",
-          "messageId": "<307afff1-cd6d-24c1-0015-64fcba9c1f6c@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1789048812373_pk5d",
-        "leadId": "lead_ng_4177159c261ad7",
-        "leadName": "The Liquor Store",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/the-liquor-store)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-10T14:00:12.373Z",
-        "timestampWat": "15:00:12 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/the-liquor-store",
-          "messageId": "<3da0aa2e-f02b-ca46-f744-41498261988a@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_4177159c261ad7",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -157044,18 +156795,18 @@
   "lead_ng_4a62562e72688a": {
     "leadId": "lead_ng_4a62562e72688a",
     "leadName": "Eco Gemini Foods",
-    "category": "Solar Contractors, Heavy Haulage & Marine Equipment",
-    "phone": "08031920963",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348031920963",
     "email": "ask@ecogeminifoods.com",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/eco-gemini-foods",
-    "createdAt": "2026-09-08T20:22:55.647Z",
-    "lastActiveIso": "2026-09-08T20:22:55.647Z",
-    "lastUpdatedWat": "21:22:55 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_4a62562e72688a",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -157067,39 +156818,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1788898975648_n6vx",
+        "id": "evt_1792405707670_tfj3",
         "leadId": "lead_ng_4a62562e72688a",
         "leadName": "Eco Gemini Foods",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348031920963",
+        "email": "ask@ecogeminifoods.com",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Hostinger Direct SMTP Email & Voice Note Delivered",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/eco-gemini-foods)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-08T20:22:55.648Z",
-        "timestampWat": "21:22:55 WAT",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_4a62562e72688a)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/eco-gemini-foods",
-          "messageId": "<d4394c95-e08f-21ee-0d2f-39b8aa4723c0@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
-        }
-      },
-      {
-        "id": "evt_smtp_1789049459587_b03v",
-        "leadId": "lead_ng_4a62562e72688a",
-        "leadName": "Eco Gemini Foods",
-        "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/eco-gemini-foods)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-10T14:10:59.587Z",
-        "timestampWat": "15:10:59 WAT",
-        "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/eco-gemini-foods",
-          "messageId": "<6c21e0a4-4b0c-1fce-471e-4e3d2da2d69e@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_4a62562e72688a",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -157863,18 +157596,18 @@
   "lead_b2b_6y0rqig": {
     "leadId": "lead_b2b_6y0rqig",
     "leadName": "JamiTech Energy Solutions LTD",
-    "category": "Security and CCTV Surveillance",
-    "phone": "08164922753",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348164922753",
     "email": "info@jamitechenergy.com",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/jamitech-energy-solutions-ltd",
-    "createdAt": "2026-09-10T14:25:16.929Z",
-    "lastActiveIso": "2026-09-10T14:25:16.929Z",
-    "lastUpdatedWat": "15:25:16 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_b2b_6y0rqig",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -157886,21 +157619,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1789050316929_gzbf",
+        "id": "evt_1792405707694_lp25",
         "leadId": "lead_b2b_6y0rqig",
         "leadName": "JamiTech Energy Solutions LTD",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348164922753",
+        "email": "info@jamitechenergy.com",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/jamitech-energy-solutions-ltd)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-10T14:25:16.929Z",
-        "timestampWat": "15:25:16 WAT",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_b2b_6y0rqig)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/jamitech-energy-solutions-ltd",
-          "messageId": "<32548b99-6ae5-0a81-f9a3-cc416a9b991c@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_b2b_6y0rqig",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -160608,18 +160341,18 @@
   "b58d3117-93fb-4279-a094-69e79dbbeb71": {
     "leadId": "b58d3117-93fb-4279-a094-69e79dbbeb71",
     "leadName": "Cola Solar Kaduna",
-    "category": "Solar energy system service",
+    "category": "Solar & Inverter Systems",
     "phone": "+2349054602041",
     "email": "info@colaess.com.cn",
     "area": "central",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
     "previewUrl": "https://www.bethelmindanalytics.com/preview/b58d3117-93fb-4279-a094-69e79dbbeb71",
-    "createdAt": "2026-09-10T14:31:14.362Z",
-    "lastActiveIso": "2026-09-10T14:31:14.362Z",
-    "lastUpdatedWat": "15:31:14 WAT",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -160631,21 +160364,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1789050674362_pzbl",
+        "id": "evt_1792405707728_t83q",
         "leadId": "b58d3117-93fb-4279-a094-69e79dbbeb71",
         "leadName": "Cola Solar Kaduna",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349054602041",
+        "email": "info@colaess.com.cn",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (brevo_api_v3)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/b58d3117-93fb-4279-a094-69e79dbbeb71)",
-        "channelUsed": "Brevo API v3",
-        "timestamp": "2026-09-10T14:31:14.362Z",
-        "timestampWat": "15:31:14 WAT",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/b58d3117-93fb-4279-a094-69e79dbbeb71)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
           "previewUrl": "https://www.bethelmindanalytics.com/preview/b58d3117-93fb-4279-a094-69e79dbbeb71",
-          "messageId": "<202609101431.10992461366@smtp-relay.mailin.fr>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -163848,18 +163581,18 @@
   "lead_ng_b1c5c20e402de6": {
     "leadId": "lead_ng_b1c5c20e402de6",
     "leadName": "British International School Lagos",
-    "category": "Electronics & Solar Inverters",
+    "category": "Solar & Inverter Systems",
     "phone": "+2347061743619",
     "email": "office@bipsnigeria.org",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/british-international-school-lagos",
-    "createdAt": "2026-09-13T19:53:54.726Z",
-    "lastActiveIso": "2026-09-13T19:53:54.726Z",
-    "lastUpdatedWat": "20:53:54 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_b1c5c20e402de6",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -163871,21 +163604,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1789329234726_vm2s",
+        "id": "evt_1792405707673_d8sx",
         "leadId": "lead_ng_b1c5c20e402de6",
         "leadName": "British International School Lagos",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347061743619",
+        "email": "office@bipsnigeria.org",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/british-international-school-lagos)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-13T19:53:54.726Z",
-        "timestampWat": "20:53:54 WAT",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_b1c5c20e402de6)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/british-international-school-lagos",
-          "messageId": "<c3e49c83-a14d-990b-724c-631a7fc5d809@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_b1c5c20e402de6",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -163938,18 +163671,18 @@
   "lead_ng_14fd2b6b71e8c7": {
     "leadId": "lead_ng_14fd2b6b71e8c7",
     "leadName": "Twin Waters Entertainment Centre",
-    "category": "Electronics & Solar Inverters",
+    "category": "Solar & Inverter Systems",
     "phone": "+2349080077221",
-    "email": "info@twintowerslagos.com",
+    "email": "",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/twin-waters-entertainment-centre",
-    "createdAt": "2026-09-13T19:54:17.628Z",
-    "lastActiveIso": "2026-09-13T19:54:17.628Z",
-    "lastUpdatedWat": "20:54:17 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_14fd2b6b71e8c7",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -163961,21 +163694,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1789329257629_grhj",
+        "id": "evt_1792405707675_9i72",
         "leadId": "lead_ng_14fd2b6b71e8c7",
         "leadName": "Twin Waters Entertainment Centre",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349080077221",
+        "email": "",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/twin-waters-entertainment-centre)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-13T19:54:17.629Z",
-        "timestampWat": "20:54:17 WAT",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_14fd2b6b71e8c7)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/twin-waters-entertainment-centre",
-          "messageId": "<7e41080c-8d03-9773-6911-20f880278ddd@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_14fd2b6b71e8c7",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -163983,18 +163716,18 @@
   "lead_ng_ed4efeeaa0a5e5": {
     "leadId": "lead_ng_ed4efeeaa0a5e5",
     "leadName": "Fancy Baking Store",
-    "category": "Auto Hubs, Solar Inverters & Supermarkets",
+    "category": "Solar & Inverter Systems",
     "phone": "+2348037591670",
     "email": "hello@fancybakingstore.com",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/fancy-baking-store",
-    "createdAt": "2026-09-13T19:54:27.242Z",
-    "lastActiveIso": "2026-09-13T19:54:27.242Z",
-    "lastUpdatedWat": "20:54:27 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_ed4efeeaa0a5e5",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -164006,21 +163739,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1789329267243_lkxf",
+        "id": "evt_1792405707676_3kbv",
         "leadId": "lead_ng_ed4efeeaa0a5e5",
         "leadName": "Fancy Baking Store",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348037591670",
+        "email": "hello@fancybakingstore.com",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/fancy-baking-store)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-13T19:54:27.243Z",
-        "timestampWat": "20:54:27 WAT",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_ed4efeeaa0a5e5)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/fancy-baking-store",
-          "messageId": "<2f58a396-d6d3-807d-ef9c-04a9e26ffc78@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_ed4efeeaa0a5e5",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -164163,18 +163896,18 @@
   "lead_ng_55eb91815f00a6": {
     "leadId": "lead_ng_55eb91815f00a6",
     "leadName": "The Merch Store",
-    "category": "Agro Milling, Building Materials & Solar",
-    "phone": "09030843603",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349030843603",
     "email": "dokitaprisca@gmail.com",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/the-merch-store",
-    "createdAt": "2026-09-13T19:54:44.089Z",
-    "lastActiveIso": "2026-09-13T19:54:44.089Z",
-    "lastUpdatedWat": "20:54:44 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_55eb91815f00a6",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -164186,21 +163919,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1789329284089_71cp",
+        "id": "evt_1792405707685_sq88",
         "leadId": "lead_ng_55eb91815f00a6",
         "leadName": "The Merch Store",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349030843603",
+        "email": "dokitaprisca@gmail.com",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/the-merch-store)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-13T19:54:44.089Z",
-        "timestampWat": "20:54:44 WAT",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_55eb91815f00a6)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/the-merch-store",
-          "messageId": "<ea9514f4-d249-a536-cb4d-a4b7283037e8@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_55eb91815f00a6",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -164433,18 +164166,18 @@
   "0256590f-d82e-419a-b02a-236cf306f123": {
     "leadId": "0256590f-d82e-419a-b02a-236cf306f123",
     "leadName": "SMK Solar Nigeria",
-    "category": "Solar energy company",
+    "category": "Solar & Inverter Systems",
     "phone": "+2349016281695",
     "email": "contact@smksolar.com.ng",
     "area": "Oka",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
     "previewUrl": "https://www.bethelmindanalytics.com/preview/0256590f-d82e-419a-b02a-236cf306f123",
-    "createdAt": "2026-09-13T19:55:50.043Z",
-    "lastActiveIso": "2026-09-13T19:55:50.043Z",
-    "lastUpdatedWat": "20:55:50 WAT",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -164456,21 +164189,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1789329350044_1jaj",
+        "id": "evt_1792405707713_avw3",
         "leadId": "0256590f-d82e-419a-b02a-236cf306f123",
         "leadName": "SMK Solar Nigeria",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349016281695",
+        "email": "contact@smksolar.com.ng",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/0256590f-d82e-419a-b02a-236cf306f123)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-13T19:55:50.044Z",
-        "timestampWat": "20:55:50 WAT",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/0256590f-d82e-419a-b02a-236cf306f123)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
           "previewUrl": "https://www.bethelmindanalytics.com/preview/0256590f-d82e-419a-b02a-236cf306f123",
-          "messageId": "<f7d79f42-0c55-4b95-03fd-4930ab040fb4@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -164793,18 +164526,18 @@
   "06ce8c28-9c4d-442e-9c5d-79bff4f865e7": {
     "leadId": "06ce8c28-9c4d-442e-9c5d-79bff4f865e7",
     "leadName": "The Solar Haven Lagos",
-    "category": "Solar energy company",
+    "category": "Solar & Inverter Systems",
     "phone": "+2348058397042",
     "email": "support@solarhaven.com.ng",
     "area": "Ajah",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
     "previewUrl": "https://www.bethelmindanalytics.com/preview/06ce8c28-9c4d-442e-9c5d-79bff4f865e7",
-    "createdAt": "2026-09-13T19:56:56.163Z",
-    "lastActiveIso": "2026-09-13T19:56:56.163Z",
-    "lastUpdatedWat": "20:56:56 WAT",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -164816,21 +164549,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1789329416163_f68e",
+        "id": "evt_1792405707721_2wnv",
         "leadId": "06ce8c28-9c4d-442e-9c5d-79bff4f865e7",
         "leadName": "The Solar Haven Lagos",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348058397042",
+        "email": "support@solarhaven.com.ng",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/06ce8c28-9c4d-442e-9c5d-79bff4f865e7)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-13T19:56:56.163Z",
-        "timestampWat": "20:56:56 WAT",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/06ce8c28-9c4d-442e-9c5d-79bff4f865e7)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
           "previewUrl": "https://www.bethelmindanalytics.com/preview/06ce8c28-9c4d-442e-9c5d-79bff4f865e7",
-          "messageId": "<32bfabd7-3cdd-940c-fdd0-dc7d4ec35293@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -166836,18 +166569,18 @@
   "lead_b2b_4czk3i3": {
     "leadId": "lead_b2b_4czk3i3",
     "leadName": "Felicity Solar Ng",
-    "category": "Solar and Inverter installation",
-    "phone": "08171479561",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348171479561",
     "email": "+2348036153221ibrahim@felicitysolar.com",
     "area": "Lagos",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
-    "previewUrl": "https://www.bethelmindanalytics.com/preview/felicity-solar-ng",
-    "createdAt": "2026-09-14T10:26:17.917Z",
-    "lastActiveIso": "2026-09-14T10:26:17.917Z",
-    "lastUpdatedWat": "11:26:17 WAT",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_b2b_4czk3i3",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -166859,21 +166592,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1789381577918_6wja",
+        "id": "evt_1792405707649_oy4d",
         "leadId": "lead_b2b_4czk3i3",
         "leadName": "Felicity Solar Ng",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348171479561",
+        "email": "+2348036153221ibrahim@felicitysolar.com",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/felicity-solar-ng)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-14T10:26:17.918Z",
-        "timestampWat": "11:26:17 WAT",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_b2b_4czk3i3)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
-          "previewUrl": "https://www.bethelmindanalytics.com/preview/felicity-solar-ng",
-          "messageId": "<297abf25-0028-759e-1437-ac4a69422682@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_b2b_4czk3i3",
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -167196,18 +166929,18 @@
   "scout_havenhillsynergy_1789402922": {
     "leadId": "scout_havenhillsynergy_1789402922",
     "leadName": "Havenhill Synergy",
-    "category": "Solar & Renewable Energy",
-    "phone": "",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347063803881",
     "email": "info@havenhillsynergy.com",
     "area": "Ikeja",
     "currentStage": "OUTREACH_DISPATCHED",
-    "score": 65,
+    "score": 85,
     "heatScore": 35,
     "intentLevel": "WARM",
     "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_havenhillsynergy_1789402922",
-    "createdAt": "2026-09-15T06:53:22.563Z",
-    "lastActiveIso": "2026-09-15T06:53:22.563Z",
-    "lastUpdatedWat": "07:53:22 WAT",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
     "metrics": {
       "pageViews": 0,
       "calculatorInteractions": 0,
@@ -167219,21 +166952,21 @@
     },
     "events": [
       {
-        "id": "evt_smtp_1789455202564_fiwu",
+        "id": "evt_1792405707616_itkr",
         "leadId": "scout_havenhillsynergy_1789402922",
         "leadName": "Havenhill Synergy",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347063803881",
+        "email": "info@havenhillsynergy.com",
         "stage": "OUTREACH_DISPATCHED",
-        "title": "Executive B2B Proposal Delivered (hostinger_smtp_465_matthew)",
-        "description": "Executive B2B Proposal delivered with 15s voice note (https://www.bethelmindanalytics.com/preview/scout_havenhillsynergy_1789402922)",
-        "channelUsed": "Hostinger Direct SMTP (Port 465)",
-        "timestamp": "2026-09-15T06:53:22.564Z",
-        "timestampWat": "07:53:22 WAT",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/scout_havenhillsynergy_1789402922)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
         "metadata": {
           "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_havenhillsynergy_1789402922",
-          "messageId": "<9d3fb5e4-9b22-22ef-ba90-d3f8c35094a9@bethelmindanalytics.com>",
-          "voiceNoteAttached": true,
-          "voiceNoteSize": "21 KB",
-          "replyTo": "bethelmindrecruit@gmail.com"
+          "voiceNoteAttached": true
         }
       }
     ]
@@ -168179,6 +167912,3651 @@
           "voiceNoteAttached": true,
           "voiceNoteSize": "21 KB",
           "replyTo": "bethelmindrecruit@gmail.com"
+        }
+      }
+    ]
+  },
+  "scout_wavetraenergy_1789500024": {
+    "leadId": "scout_wavetraenergy_1789500024",
+    "leadName": "Wavetra Energy",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348180305391",
+    "email": "info@wavetra.com",
+    "area": "Ikeja",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_wavetraenergy_1789500024",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707604_p3j5",
+        "leadId": "scout_wavetraenergy_1789500024",
+        "leadName": "Wavetra Energy",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348180305391",
+        "email": "info@wavetra.com",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/scout_wavetraenergy_1789500024)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_wavetraenergy_1789500024",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "scout_pscsolaruknigeria_1789459552": {
+    "leadId": "scout_pscsolaruknigeria_1789459552",
+    "leadName": "PSC Solar UK Nigeria",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348120855444",
+    "email": "info@pscsolaruk.com",
+    "area": "Ikeja",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_pscsolaruknigeria_1789459552",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707605_25hz",
+        "leadId": "scout_pscsolaruknigeria_1789459552",
+        "leadName": "PSC Solar UK Nigeria",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348120855444",
+        "email": "info@pscsolaruk.com",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/scout_pscsolaruknigeria_1789459552)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_pscsolaruknigeria_1789459552",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "scout_solarkobo_1789459346": {
+    "leadId": "scout_solarkobo_1789459346",
+    "leadName": "SolarKobo",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348182818001",
+    "email": "sales@solarkobo.com",
+    "area": "Surulere",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_solarkobo_1789459346",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707607_b8tk",
+        "leadId": "scout_solarkobo_1789459346",
+        "leadName": "SolarKobo",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348182818001",
+        "email": "sales@solarkobo.com",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/scout_solarkobo_1789459346)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_solarkobo_1789459346",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "scout_beebeejumpsolar_1789459269": {
+    "leadId": "scout_beebeejumpsolar_1789459269",
+    "leadName": "Beebeejump Solar",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349090619011",
+    "email": "info@beebeejump.com",
+    "area": "Ikeja",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_beebeejumpsolar_1789459269",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707608_ke1p",
+        "leadId": "scout_beebeejumpsolar_1789459269",
+        "leadName": "Beebeejump Solar",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349090619011",
+        "email": "info@beebeejump.com",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/scout_beebeejumpsolar_1789459269)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_beebeejumpsolar_1789459269",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "scout_auxanosolar_1789459159": {
+    "leadId": "scout_auxanosolar_1789459159",
+    "leadName": "Auxano Solar",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347067956193",
+    "email": "info@auxanosolar.com",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_auxanosolar_1789459159",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707613_obmp",
+        "leadId": "scout_auxanosolar_1789459159",
+        "leadName": "Auxano Solar",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347067956193",
+        "email": "info@auxanosolar.com",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/scout_auxanosolar_1789459159)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_auxanosolar_1789459159",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "scout_rubitecsolar_1789458895": {
+    "leadId": "scout_rubitecsolar_1789458895",
+    "leadName": "Rubitec Solar",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347087054296",
+    "email": "info@rubitecsolar.com",
+    "area": "Ikeja",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_rubitecsolar_1789458895",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707614_0m8h",
+        "leadId": "scout_rubitecsolar_1789458895",
+        "leadName": "Rubitec Solar",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347087054296",
+        "email": "info@rubitecsolar.com",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/scout_rubitecsolar_1789458895)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/scout_rubitecsolar_1789458895",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_crawlee_c266ff213f703f": {
+    "leadId": "lead_crawlee_c266ff213f703f",
+    "leadName": "Divine Option Technical",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349039844917",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_c266ff213f703f",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707617_4hv3",
+        "leadId": "lead_crawlee_c266ff213f703f",
+        "leadName": "Divine Option Technical",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349039844917",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_crawlee_c266ff213f703f)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_c266ff213f703f",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_crawlee_48f011af414175": {
+    "leadId": "lead_crawlee_48f011af414175",
+    "leadName": "Kecpower Solar hub",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348081621588",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_48f011af414175",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707618_ud20",
+        "leadId": "lead_crawlee_48f011af414175",
+        "leadName": "Kecpower Solar hub",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348081621588",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_crawlee_48f011af414175)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_48f011af414175",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_crawlee_4fe57e0fdfdbf2": {
+    "leadId": "lead_crawlee_4fe57e0fdfdbf2",
+    "leadName": "KMT Solar",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348132229686",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_4fe57e0fdfdbf2",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707619_47s9",
+        "leadId": "lead_crawlee_4fe57e0fdfdbf2",
+        "leadName": "KMT Solar",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348132229686",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_crawlee_4fe57e0fdfdbf2)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_4fe57e0fdfdbf2",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_greenpower-overseas": {
+    "leadId": "solar_greenpower-overseas",
+    "leadName": "GreenPower Overseas",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348055066066",
+    "email": "officer08030973765e.nnoli@greenpowernig.comolaniyi",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_greenpower-overseas",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707624_69ml",
+        "leadId": "solar_greenpower-overseas",
+        "leadName": "GreenPower Overseas",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348055066066",
+        "email": "officer08030973765e.nnoli@greenpowernig.comolaniyi",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_greenpower-overseas)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_greenpower-overseas",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_sprintquest-energy-services": {
+    "leadId": "solar_sprintquest-energy-services",
+    "leadName": "SprintQuest Energy Services",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348173896741",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_sprintquest-energy-services",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707627_tdo8",
+        "leadId": "solar_sprintquest-energy-services",
+        "leadName": "SprintQuest Energy Services",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348173896741",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_sprintquest-energy-services)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_sprintquest-energy-services",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_adsat-global-investment-solution": {
+    "leadId": "solar_adsat-global-investment-solution",
+    "leadName": "Adsat Global Investment Solution",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348153350290",
+    "email": "manager08022781454adamaufuoma07@gmail.comayo",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_adsat-global-investment-solution",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707644_o3o4",
+        "leadId": "solar_adsat-global-investment-solution",
+        "leadName": "Adsat Global Investment Solution",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348153350290",
+        "email": "manager08022781454adamaufuoma07@gmail.comayo",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_adsat-global-investment-solution)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_adsat-global-investment-solution",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_hians-energy-solutions": {
+    "leadId": "solar_hians-energy-solutions",
+    "leadName": "HIANS Energy Solutions",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348103381192",
+    "email": "0129hainsng@gmail.comlois",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_hians-energy-solutions",
+    "createdAt": "2026-10-19T09:08:51.513Z",
+    "lastActiveIso": "2026-10-19T09:08:51.513Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707649_lblv",
+        "leadId": "solar_hians-energy-solutions",
+        "leadName": "HIANS Energy Solutions",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348103381192",
+        "email": "0129hainsng@gmail.comlois",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS & Executive Email with Voice Note Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_hians-energy-solutions)",
+        "channelUsed": "Airtel SMS + Brevo Email (Voice Note)",
+        "timestamp": "2026-10-19T09:08:51.513Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_hians-energy-solutions",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_crawlee_25feac820ca03e": {
+    "leadId": "lead_crawlee_25feac820ca03e",
+    "leadName": "Phillips Olly Global Enterprise",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348181830097",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_25feac820ca03e",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707650_rlec",
+        "leadId": "lead_crawlee_25feac820ca03e",
+        "leadName": "Phillips Olly Global Enterprise",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348181830097",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_crawlee_25feac820ca03e)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_25feac820ca03e",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_crawlee_d1c5f7c8ececfe": {
+    "leadId": "lead_crawlee_d1c5f7c8ececfe",
+    "leadName": "Wealth Energy",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348144069745",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_d1c5f7c8ececfe",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707650_suef",
+        "leadId": "lead_crawlee_d1c5f7c8ececfe",
+        "leadName": "Wealth Energy",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348144069745",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_crawlee_d1c5f7c8ececfe)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_d1c5f7c8ececfe",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_crawlee_f35aec3bff900f": {
+    "leadId": "lead_crawlee_f35aec3bff900f",
+    "leadName": "Solar Wizard Nigeria",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348066895402",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_f35aec3bff900f",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707651_pj5s",
+        "leadId": "lead_crawlee_f35aec3bff900f",
+        "leadName": "Solar Wizard Nigeria",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348066895402",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_crawlee_f35aec3bff900f)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_crawlee_f35aec3bff900f",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_saveworld-energy": {
+    "leadId": "solar_saveworld-energy",
+    "leadName": "SaveWorld Energy",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348169570145",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_saveworld-energy",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707654_h4i3",
+        "leadId": "solar_saveworld-energy",
+        "leadName": "SaveWorld Energy",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348169570145",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_saveworld-energy)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_saveworld-energy",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_zitronix-engineering": {
+    "leadId": "solar_zitronix-engineering",
+    "leadName": "Zitronix Engineering",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347084709074",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_zitronix-engineering",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707656_se45",
+        "leadId": "solar_zitronix-engineering",
+        "leadName": "Zitronix Engineering",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347084709074",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_zitronix-engineering)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_zitronix-engineering",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_det_410546867f0150c7": {
+    "leadId": "solar_det_410546867f0150c7",
+    "leadName": "StarTimes Solar",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348172397969",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_det_410546867f0150c7",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707657_tsmy",
+        "leadId": "solar_det_410546867f0150c7",
+        "leadName": "StarTimes Solar",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348172397969",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_det_410546867f0150c7)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_det_410546867f0150c7",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_det_29d514ff551e2702": {
+    "leadId": "solar_det_29d514ff551e2702",
+    "leadName": "Sun Craft Solar Energy",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348060085500",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_det_29d514ff551e2702",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707658_xqse",
+        "leadId": "solar_det_29d514ff551e2702",
+        "leadName": "Sun Craft Solar Energy",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348060085500",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_det_29d514ff551e2702)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_det_29d514ff551e2702",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_det_aba920c19c116570": {
+    "leadId": "solar_det_aba920c19c116570",
+    "leadName": "Green Market Africa",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347042383761",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_det_aba920c19c116570",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707658_e998",
+        "leadId": "solar_det_aba920c19c116570",
+        "leadName": "Green Market Africa",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347042383761",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_det_aba920c19c116570)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_det_aba920c19c116570",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_forward-edge-consulting": {
+    "leadId": "solar_forward-edge-consulting",
+    "leadName": "Forward Edge Consulting",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347039955591",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_forward-edge-consulting",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707661_0sxo",
+        "leadId": "solar_forward-edge-consulting",
+        "leadName": "Forward Edge Consulting",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347039955591",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_forward-edge-consulting)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_forward-edge-consulting",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_lekki-solar-tech": {
+    "leadId": "solar_lekki-solar-tech",
+    "leadName": "Lekki Solar Tech",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348022791227",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_lekki-solar-tech",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707665_9cvd",
+        "leadId": "solar_lekki-solar-tech",
+        "leadName": "Lekki Solar Tech",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348022791227",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_lekki-solar-tech)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_lekki-solar-tech",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_d26280c9f55432": {
+    "leadId": "lead_ng_d26280c9f55432",
+    "leadName": "Sims",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347051093233",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_d26280c9f55432",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707665_pp4a",
+        "leadId": "lead_ng_d26280c9f55432",
+        "leadName": "Sims",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347051093233",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_d26280c9f55432)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_d26280c9f55432",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_8ff96a363668c3": {
+    "leadId": "lead_ng_8ff96a363668c3",
+    "leadName": "Lokito Restaurant",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349070949514",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_8ff96a363668c3",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707667_v2uo",
+        "leadId": "lead_ng_8ff96a363668c3",
+        "leadName": "Lokito Restaurant",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349070949514",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_8ff96a363668c3)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_8ff96a363668c3",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_cea6eaa3f31777": {
+    "leadId": "lead_ng_cea6eaa3f31777",
+    "leadName": "NexEd",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348079081171",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_cea6eaa3f31777",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707668_p5yy",
+        "leadId": "lead_ng_cea6eaa3f31777",
+        "leadName": "NexEd",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348079081171",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_cea6eaa3f31777)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_cea6eaa3f31777",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_53206dc836af88": {
+    "leadId": "lead_ng_53206dc836af88",
+    "leadName": "Federal inland revenue services",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349070327605",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_53206dc836af88",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707669_gsel",
+        "leadId": "lead_ng_53206dc836af88",
+        "leadName": "Federal inland revenue services",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349070327605",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_53206dc836af88)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_53206dc836af88",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_0ef69ca001c879": {
+    "leadId": "lead_ng_0ef69ca001c879",
+    "leadName": "Capacity Food Plug",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348164275934",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_0ef69ca001c879",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707669_1l55",
+        "leadId": "lead_ng_0ef69ca001c879",
+        "leadName": "Capacity Food Plug",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348164275934",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_0ef69ca001c879)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_0ef69ca001c879",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_7d781dd5aee274": {
+    "leadId": "lead_ng_7d781dd5aee274",
+    "leadName": "Uyi Grand Hotel & Suites",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347065121283",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_7d781dd5aee274",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707671_o3uf",
+        "leadId": "lead_ng_7d781dd5aee274",
+        "leadName": "Uyi Grand Hotel & Suites",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347065121283",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_7d781dd5aee274)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_7d781dd5aee274",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_d8ffa3110a08e6": {
+    "leadId": "lead_ng_d8ffa3110a08e6",
+    "leadName": "Mama Twins African Kitchen",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347058213447",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_d8ffa3110a08e6",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707672_0qi1",
+        "leadId": "lead_ng_d8ffa3110a08e6",
+        "leadName": "Mama Twins African Kitchen",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347058213447",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_d8ffa3110a08e6)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_d8ffa3110a08e6",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_4096a8f7f64a7b": {
+    "leadId": "lead_ng_4096a8f7f64a7b",
+    "leadName": "Victoria Crown Plaza Hotel",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347031881523",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_4096a8f7f64a7b",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707674_tpsp",
+        "leadId": "lead_ng_4096a8f7f64a7b",
+        "leadName": "Victoria Crown Plaza Hotel",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347031881523",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_4096a8f7f64a7b)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_4096a8f7f64a7b",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_f739167fcc5f2c": {
+    "leadId": "lead_ng_f739167fcc5f2c",
+    "leadName": "Prince Ebeano Supermarket Maroko",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348086995353",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_f739167fcc5f2c",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707675_4gs0",
+        "leadId": "lead_ng_f739167fcc5f2c",
+        "leadName": "Prince Ebeano Supermarket Maroko",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348086995353",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_f739167fcc5f2c)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_f739167fcc5f2c",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_ea612f8ee1e7b8": {
+    "leadId": "lead_ng_ea612f8ee1e7b8",
+    "leadName": "Grace Hospital",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348054459702",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_ea612f8ee1e7b8",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707677_gl1b",
+        "leadId": "lead_ng_ea612f8ee1e7b8",
+        "leadName": "Grace Hospital",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348054459702",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_ea612f8ee1e7b8)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_ea612f8ee1e7b8",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_56ab2ca2eef7ff": {
+    "leadId": "lead_ng_56ab2ca2eef7ff",
+    "leadName": "Trumax Pharmacy and Supermarket",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348033886362",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_56ab2ca2eef7ff",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707679_6cth",
+        "leadId": "lead_ng_56ab2ca2eef7ff",
+        "leadName": "Trumax Pharmacy and Supermarket",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348033886362",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_56ab2ca2eef7ff)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_56ab2ca2eef7ff",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_water-investment-company-nigeria": {
+    "leadId": "solar_water-investment-company-nigeria",
+    "leadName": "Water Investment Company Nigeria",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348023253342",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_water-investment-company-nigeria",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707684_zvf9",
+        "leadId": "solar_water-investment-company-nigeria",
+        "leadName": "Water Investment Company Nigeria",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348023253342",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_water-investment-company-nigeria)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_water-investment-company-nigeria",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_a52c41d162b372": {
+    "leadId": "lead_ng_a52c41d162b372",
+    "leadName": "Iwaloye Adegoke Printing Press",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348034667031",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_a52c41d162b372",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707686_vsjq",
+        "leadId": "lead_ng_a52c41d162b372",
+        "leadName": "Iwaloye Adegoke Printing Press",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348034667031",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_a52c41d162b372)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_a52c41d162b372",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_4befa99c7071f5": {
+    "leadId": "lead_ng_4befa99c7071f5",
+    "leadName": "IMA Essential",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348036607900",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_4befa99c7071f5",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707686_vjwv",
+        "leadId": "lead_ng_4befa99c7071f5",
+        "leadName": "IMA Essential",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348036607900",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_4befa99c7071f5)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_4befa99c7071f5",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "solar_heliogrid-power": {
+    "leadId": "solar_heliogrid-power",
+    "leadName": "Heliogrid Power",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348050381054",
+    "email": "",
+    "area": "Lagos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_heliogrid-power",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707689_qq51",
+        "leadId": "solar_heliogrid-power",
+        "leadName": "Heliogrid Power",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348050381054",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/solar_heliogrid-power)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/solar_heliogrid-power",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "bizlist_1791451532248_8": {
+    "leadId": "bizlist_1791451532248_8",
+    "leadName": "Solarmart Photovoltaic Solutions",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348039529629",
+    "email": "",
+    "area": "Nigeria",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/bizlist_1791451532248_8",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707690_ixsr",
+        "leadId": "bizlist_1791451532248_8",
+        "leadName": "Solarmart Photovoltaic Solutions",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348039529629",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/bizlist_1791451532248_8)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/bizlist_1791451532248_8",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_7b7d44d1bde085": {
+    "leadId": "lead_ng_7b7d44d1bde085",
+    "leadName": "Solar Rechargeable Fan With Panel 16inches",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348089070069",
+    "email": "",
+    "area": "Ikara",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_7b7d44d1bde085",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707690_e7tx",
+        "leadId": "lead_ng_7b7d44d1bde085",
+        "leadName": "Solar Rechargeable Fan With Panel 16inches",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348089070069",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_7b7d44d1bde085)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_7b7d44d1bde085",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_8d3382ca7bf899": {
+    "leadId": "lead_ng_8d3382ca7bf899",
+    "leadName": "300watts Solar Generator Bh",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348169462632",
+    "email": "",
+    "area": "Gusau",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_8d3382ca7bf899",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707691_f354",
+        "leadId": "lead_ng_8d3382ca7bf899",
+        "leadName": "300watts Solar Generator Bh",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348169462632",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_8d3382ca7bf899)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_8d3382ca7bf899",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_ed1009f3251362": {
+    "leadId": "lead_ng_ed1009f3251362",
+    "leadName": "1kwh Itel Solar Generator With One 400w Solar Pane",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349033051479",
+    "email": "",
+    "area": "Akure",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_ed1009f3251362",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707692_t503",
+        "leadId": "lead_ng_ed1009f3251362",
+        "leadName": "1kwh Itel Solar Generator With One 400w Solar Pane",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349033051479",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_ed1009f3251362)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_ed1009f3251362",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_ng_f3d7d0642b6da5": {
+    "leadId": "lead_ng_f3d7d0642b6da5",
+    "leadName": "Top Ice Solar Technology Ltd",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348182008072",
+    "email": "",
+    "area": "Zamfara",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_f3d7d0642b6da5",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707693_b6sa",
+        "leadId": "lead_ng_f3d7d0642b6da5",
+        "leadName": "Top Ice Solar Technology Ltd",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348182008072",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_ng_f3d7d0642b6da5)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_ng_f3d7d0642b6da5",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "lead_b2b_r709gz1": {
+    "leadId": "lead_b2b_r709gz1",
+    "leadName": "Solar CCTV HD Camera 4G Security Surveillance",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348132389325",
+    "email": "support@jiji.ng",
+    "area": "Ojo",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_b2b_r709gz1",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707694_5y0o",
+        "leadId": "lead_b2b_r709gz1",
+        "leadName": "Solar CCTV HD Camera 4G Security Surveillance",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348132389325",
+        "email": "support@jiji.ng",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/lead_b2b_r709gz1)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/lead_b2b_r709gz1",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "e5f8ad4d-7bc7-49fc-ba88-cd07389a3336": {
+    "leadId": "e5f8ad4d-7bc7-49fc-ba88-cd07389a3336",
+    "leadName": "Canadian Solar Panel 350w",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349033232603",
+    "email": "",
+    "area": "Abeokuta South",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/e5f8ad4d-7bc7-49fc-ba88-cd07389a3336",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707695_2pdq",
+        "leadId": "e5f8ad4d-7bc7-49fc-ba88-cd07389a3336",
+        "leadName": "Canadian Solar Panel 350w",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349033232603",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/e5f8ad4d-7bc7-49fc-ba88-cd07389a3336)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/e5f8ad4d-7bc7-49fc-ba88-cd07389a3336",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "69e8447a-3877-49e3-96fb-b02b0fe8b764": {
+    "leadId": "69e8447a-3877-49e3-96fb-b02b0fe8b764",
+    "leadName": "Hybrid Inverter and Lithium Battery",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348035151485",
+    "email": "",
+    "area": "Amuwo-Odofin",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/69e8447a-3877-49e3-96fb-b02b0fe8b764",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707695_2xxf",
+        "leadId": "69e8447a-3877-49e3-96fb-b02b0fe8b764",
+        "leadName": "Hybrid Inverter and Lithium Battery",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348035151485",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/69e8447a-3877-49e3-96fb-b02b0fe8b764)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/69e8447a-3877-49e3-96fb-b02b0fe8b764",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "e06a0c67-d424-4848-b6b3-3262d4b4271b": {
+    "leadId": "e06a0c67-d424-4848-b6b3-3262d4b4271b",
+    "leadName": "2v 500ah Deep Cycle Battery for Solar Inverters an",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349159626180",
+    "email": "",
+    "area": "Ojo",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/e06a0c67-d424-4848-b6b3-3262d4b4271b",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707696_c3gj",
+        "leadId": "e06a0c67-d424-4848-b6b3-3262d4b4271b",
+        "leadName": "2v 500ah Deep Cycle Battery for Solar Inverters an",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349159626180",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/e06a0c67-d424-4848-b6b3-3262d4b4271b)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/e06a0c67-d424-4848-b6b3-3262d4b4271b",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "c96857d4-add8-417b-9c18-6467923daa39": {
+    "leadId": "c96857d4-add8-417b-9c18-6467923daa39",
+    "leadName": "Solar Inverters, Cement & Wholesale Trade Enterpri",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349075682489",
+    "email": "",
+    "area": "Sokoto Commercial Center",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/c96857d4-add8-417b-9c18-6467923daa39",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707697_s2v2",
+        "leadId": "c96857d4-add8-417b-9c18-6467923daa39",
+        "leadName": "Solar Inverters, Cement & Wholesale Trade Enterpri",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349075682489",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/c96857d4-add8-417b-9c18-6467923daa39)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/c96857d4-add8-417b-9c18-6467923daa39",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "7a6daec5-b20c-4c09-a23e-6f8b7199e440": {
+    "leadId": "7a6daec5-b20c-4c09-a23e-6f8b7199e440",
+    "leadName": "750w Jinko Bifical Solar Panel 156 Cells Best Impo",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348147731597",
+    "email": "",
+    "area": "Ojo",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/7a6daec5-b20c-4c09-a23e-6f8b7199e440",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707698_2tcr",
+        "leadId": "7a6daec5-b20c-4c09-a23e-6f8b7199e440",
+        "leadName": "750w Jinko Bifical Solar Panel 156 Cells Best Impo",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348147731597",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/7a6daec5-b20c-4c09-a23e-6f8b7199e440)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/7a6daec5-b20c-4c09-a23e-6f8b7199e440",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "e8822330-4a62-4264-97bc-e2a578602995": {
+    "leadId": "e8822330-4a62-4264-97bc-e2a578602995",
+    "leadName": "Dead Battery Buyer/We're Buyer of Weak Inverter Ba",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348130743316",
+    "email": "",
+    "area": "Port-Harcourt",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/e8822330-4a62-4264-97bc-e2a578602995",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707699_d45m",
+        "leadId": "e8822330-4a62-4264-97bc-e2a578602995",
+        "leadName": "Dead Battery Buyer/We're Buyer of Weak Inverter Ba",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348130743316",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/e8822330-4a62-4264-97bc-e2a578602995)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/e8822330-4a62-4264-97bc-e2a578602995",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "e5d74af5-9d39-4c9d-bf0c-1efe4d41b6e2": {
+    "leadId": "e5d74af5-9d39-4c9d-bf0c-1efe4d41b6e2",
+    "leadName": "Must Green Energy Solar Inverter 3kv",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349064106051",
+    "email": "",
+    "area": "Ojo",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/e5d74af5-9d39-4c9d-bf0c-1efe4d41b6e2",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707702_q6it",
+        "leadId": "e5d74af5-9d39-4c9d-bf0c-1efe4d41b6e2",
+        "leadName": "Must Green Energy Solar Inverter 3kv",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349064106051",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/e5d74af5-9d39-4c9d-bf0c-1efe4d41b6e2)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/e5d74af5-9d39-4c9d-bf0c-1efe4d41b6e2",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "d44b7156-9547-430a-abc2-102329f3332d": {
+    "leadId": "d44b7156-9547-430a-abc2-102329f3332d",
+    "leadName": "Solar Inverter Installation in Lagos",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347065660501",
+    "email": "",
+    "area": "Lekki",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/d44b7156-9547-430a-abc2-102329f3332d",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707703_wdow",
+        "leadId": "d44b7156-9547-430a-abc2-102329f3332d",
+        "leadName": "Solar Inverter Installation in Lagos",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347065660501",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/d44b7156-9547-430a-abc2-102329f3332d)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/d44b7156-9547-430a-abc2-102329f3332d",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "646620f8-9b3a-4e2c-823b-7b0b53f69573": {
+    "leadId": "646620f8-9b3a-4e2c-823b-7b0b53f69573",
+    "leadName": "We're Weak/Bad/Condemned Inverter Batteries Buyer.",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347088365222",
+    "email": "",
+    "area": "Magodo",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/646620f8-9b3a-4e2c-823b-7b0b53f69573",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707704_pvu2",
+        "leadId": "646620f8-9b3a-4e2c-823b-7b0b53f69573",
+        "leadName": "We're Weak/Bad/Condemned Inverter Batteries Buyer.",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347088365222",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/646620f8-9b3a-4e2c-823b-7b0b53f69573)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/646620f8-9b3a-4e2c-823b-7b0b53f69573",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "60840563-2793-406c-ace7-a7e9a7fb5e0d": {
+    "leadId": "60840563-2793-406c-ace7-a7e9a7fb5e0d",
+    "leadName": "Reliable Solar Installation in Ibadan – Efficient",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348062565896",
+    "email": "",
+    "area": "Ibadan",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/60840563-2793-406c-ace7-a7e9a7fb5e0d",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707705_7bdv",
+        "leadId": "60840563-2793-406c-ace7-a7e9a7fb5e0d",
+        "leadName": "Reliable Solar Installation in Ibadan – Efficient",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348062565896",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/60840563-2793-406c-ace7-a7e9a7fb5e0d)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/60840563-2793-406c-ace7-a7e9a7fb5e0d",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "33c16e91-cb0e-4b69-8aac-360b7a85354e": {
+    "leadId": "33c16e91-cb0e-4b69-8aac-360b7a85354e",
+    "leadName": "12kva Felicity Inverter Installed With 17.5kW Sola",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349039703062",
+    "email": "",
+    "area": "Port-Harcourt",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/33c16e91-cb0e-4b69-8aac-360b7a85354e",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707707_ql2s",
+        "leadId": "33c16e91-cb0e-4b69-8aac-360b7a85354e",
+        "leadName": "12kva Felicity Inverter Installed With 17.5kW Sola",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349039703062",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/33c16e91-cb0e-4b69-8aac-360b7a85354e)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/33c16e91-cb0e-4b69-8aac-360b7a85354e",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "c5d73506-12ff-44a9-af47-311994a503d9": {
+    "leadId": "c5d73506-12ff-44a9-af47-311994a503d9",
+    "leadName": "Solar Installation in Lagos – Panels, Inverter Bat",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348059915739",
+    "email": "",
+    "area": "Ajah",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/c5d73506-12ff-44a9-af47-311994a503d9",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707708_z4u0",
+        "leadId": "c5d73506-12ff-44a9-af47-311994a503d9",
+        "leadName": "Solar Installation in Lagos – Panels, Inverter Bat",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348059915739",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/c5d73506-12ff-44a9-af47-311994a503d9)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/c5d73506-12ff-44a9-af47-311994a503d9",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "2cd92352-b543-4e45-a544-c590529139c1": {
+    "leadId": "2cd92352-b543-4e45-a544-c590529139c1",
+    "leadName": "Solar Panels 600watts /550watts",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348064131396",
+    "email": "",
+    "area": "Ibadan",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/2cd92352-b543-4e45-a544-c590529139c1",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707708_a2x4",
+        "leadId": "2cd92352-b543-4e45-a544-c590529139c1",
+        "leadName": "Solar Panels 600watts /550watts",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348064131396",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/2cd92352-b543-4e45-a544-c590529139c1)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/2cd92352-b543-4e45-a544-c590529139c1",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "9f235090-127a-4bd8-b05f-fb3fb6ea9014": {
+    "leadId": "9f235090-127a-4bd8-b05f-fb3fb6ea9014",
+    "leadName": "Energy Saving Solar Generator With Rechargeable Ba",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349064396994",
+    "email": "",
+    "area": "Ijebu Ode",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/9f235090-127a-4bd8-b05f-fb3fb6ea9014",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707709_kdjy",
+        "leadId": "9f235090-127a-4bd8-b05f-fb3fb6ea9014",
+        "leadName": "Energy Saving Solar Generator With Rechargeable Ba",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349064396994",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/9f235090-127a-4bd8-b05f-fb3fb6ea9014)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/9f235090-127a-4bd8-b05f-fb3fb6ea9014",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "05f631e4-752b-4ce7-b22c-a8cce3196e99": {
+    "leadId": "05f631e4-752b-4ce7-b22c-a8cce3196e99",
+    "leadName": "10kwh Lithium Battery + 7.5kva Inverter + 100a MPP",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347055349986",
+    "email": "",
+    "area": "Osogbo",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/05f631e4-752b-4ce7-b22c-a8cce3196e99",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707709_qmmz",
+        "leadId": "05f631e4-752b-4ce7-b22c-a8cce3196e99",
+        "leadName": "10kwh Lithium Battery + 7.5kva Inverter + 100a MPP",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347055349986",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/05f631e4-752b-4ce7-b22c-a8cce3196e99)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/05f631e4-752b-4ce7-b22c-a8cce3196e99",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "06434dcc-ad74-423b-bf3d-d866806aa5ac": {
+    "leadId": "06434dcc-ad74-423b-bf3d-d866806aa5ac",
+    "leadName": "1kwh Energy Bean Solar Generator With Solar Panel",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349060236279",
+    "email": "",
+    "area": "Owerri",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/06434dcc-ad74-423b-bf3d-d866806aa5ac",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707710_ac3a",
+        "leadId": "06434dcc-ad74-423b-bf3d-d866806aa5ac",
+        "leadName": "1kwh Energy Bean Solar Generator With Solar Panel",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349060236279",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/06434dcc-ad74-423b-bf3d-d866806aa5ac)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/06434dcc-ad74-423b-bf3d-d866806aa5ac",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "67a21cca-281b-4a29-8863-4646a0cd7103": {
+    "leadId": "67a21cca-281b-4a29-8863-4646a0cd7103",
+    "leadName": "5m Prowess Inverter Battery",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348166508364",
+    "email": "",
+    "area": "Ikeja",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/67a21cca-281b-4a29-8863-4646a0cd7103",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707710_1cs3",
+        "leadId": "67a21cca-281b-4a29-8863-4646a0cd7103",
+        "leadName": "5m Prowess Inverter Battery",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348166508364",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/67a21cca-281b-4a29-8863-4646a0cd7103)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/67a21cca-281b-4a29-8863-4646a0cd7103",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "46156f54-bc2f-4d84-aecf-74e936d75632": {
+    "leadId": "46156f54-bc2f-4d84-aecf-74e936d75632",
+    "leadName": "Canadian Used Solar Panel 300w Installed At Abuja",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349055088179",
+    "email": "",
+    "area": "Central Business District",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/46156f54-bc2f-4d84-aecf-74e936d75632",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707710_tp5n",
+        "leadId": "46156f54-bc2f-4d84-aecf-74e936d75632",
+        "leadName": "Canadian Used Solar Panel 300w Installed At Abuja",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349055088179",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/46156f54-bc2f-4d84-aecf-74e936d75632)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/46156f54-bc2f-4d84-aecf-74e936d75632",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "a7de0f3f-878e-43c1-879e-a7341730482f": {
+    "leadId": "a7de0f3f-878e-43c1-879e-a7341730482f",
+    "leadName": "I Buy Condemned Inverter Batteries",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349067767860",
+    "email": "",
+    "area": "Wuse",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/a7de0f3f-878e-43c1-879e-a7341730482f",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707711_sajk",
+        "leadId": "a7de0f3f-878e-43c1-879e-a7341730482f",
+        "leadName": "I Buy Condemned Inverter Batteries",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349067767860",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/a7de0f3f-878e-43c1-879e-a7341730482f)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/a7de0f3f-878e-43c1-879e-a7341730482f",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "68d8e163-9ba8-419d-bc0d-b01ed4913580": {
+    "leadId": "68d8e163-9ba8-419d-bc0d-b01ed4913580",
+    "leadName": "We Are Buyer of Dead/Old Inverter Batteries",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348175823398",
+    "email": "",
+    "area": "Ogudu",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/68d8e163-9ba8-419d-bc0d-b01ed4913580",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707712_ax36",
+        "leadId": "68d8e163-9ba8-419d-bc0d-b01ed4913580",
+        "leadName": "We Are Buyer of Dead/Old Inverter Batteries",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348175823398",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/68d8e163-9ba8-419d-bc0d-b01ed4913580)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/68d8e163-9ba8-419d-bc0d-b01ed4913580",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "18e35321-3887-4fa3-b754-ec9c5b2d89a9": {
+    "leadId": "18e35321-3887-4fa3-b754-ec9c5b2d89a9",
+    "leadName": "JSMART SOLAR DISTRIBUTOR UYO",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348138931714",
+    "email": "",
+    "area": "Uyo",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/18e35321-3887-4fa3-b754-ec9c5b2d89a9",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707713_dk1v",
+        "leadId": "18e35321-3887-4fa3-b754-ec9c5b2d89a9",
+        "leadName": "JSMART SOLAR DISTRIBUTOR UYO",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348138931714",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/18e35321-3887-4fa3-b754-ec9c5b2d89a9)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/18e35321-3887-4fa3-b754-ec9c5b2d89a9",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "517b9616-015e-49d6-9c2e-bb31e0a01802": {
+    "leadId": "517b9616-015e-49d6-9c2e-bb31e0a01802",
+    "leadName": "Oasis Solar World",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348060960918",
+    "email": "",
+    "area": "Ilorin",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/517b9616-015e-49d6-9c2e-bb31e0a01802",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707714_8slz",
+        "leadId": "517b9616-015e-49d6-9c2e-bb31e0a01802",
+        "leadName": "Oasis Solar World",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348060960918",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/517b9616-015e-49d6-9c2e-bb31e0a01802)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/517b9616-015e-49d6-9c2e-bb31e0a01802",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "3389a6fc-f384-4932-a941-a9f12bd5dee9": {
+    "leadId": "3389a6fc-f384-4932-a941-a9f12bd5dee9",
+    "leadName": "Perennial Solar Inverters and Cctv Camera Service",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348086286109",
+    "email": "",
+    "area": "Akure",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/3389a6fc-f384-4932-a941-a9f12bd5dee9",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707715_w2w3",
+        "leadId": "3389a6fc-f384-4932-a941-a9f12bd5dee9",
+        "leadName": "Perennial Solar Inverters and Cctv Camera Service",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348086286109",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/3389a6fc-f384-4932-a941-a9f12bd5dee9)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/3389a6fc-f384-4932-a941-a9f12bd5dee9",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "fb17f67e-ac66-4488-ba16-201ec507e984": {
+    "leadId": "fb17f67e-ac66-4488-ba16-201ec507e984",
+    "leadName": "Primus Solar Nigeria Enterprise",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347088659977",
+    "email": "",
+    "area": "Ilorin",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/fb17f67e-ac66-4488-ba16-201ec507e984",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707715_noh1",
+        "leadId": "fb17f67e-ac66-4488-ba16-201ec507e984",
+        "leadName": "Primus Solar Nigeria Enterprise",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347088659977",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/fb17f67e-ac66-4488-ba16-201ec507e984)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/fb17f67e-ac66-4488-ba16-201ec507e984",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "7da147b6-fa61-4165-94bf-88d0dcda55f4": {
+    "leadId": "7da147b6-fa61-4165-94bf-88d0dcda55f4",
+    "leadName": "Best Selling Finix Mega 240v 12v Inverter Battery",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349169982731",
+    "email": "",
+    "area": "Surulere",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/7da147b6-fa61-4165-94bf-88d0dcda55f4",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707716_drhu",
+        "leadId": "7da147b6-fa61-4165-94bf-88d0dcda55f4",
+        "leadName": "Best Selling Finix Mega 240v 12v Inverter Battery",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349169982731",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/7da147b6-fa61-4165-94bf-88d0dcda55f4)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/7da147b6-fa61-4165-94bf-88d0dcda55f4",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "7182c243-17ca-4eb9-aea1-4f757f36082b": {
+    "leadId": "7182c243-17ca-4eb9-aea1-4f757f36082b",
+    "leadName": "4Pillar Solar Energy Solutions LTD",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349073019239",
+    "email": "",
+    "area": "New GRA",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/7182c243-17ca-4eb9-aea1-4f757f36082b",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707717_dhp3",
+        "leadId": "7182c243-17ca-4eb9-aea1-4f757f36082b",
+        "leadName": "4Pillar Solar Energy Solutions LTD",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349073019239",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/7182c243-17ca-4eb9-aea1-4f757f36082b)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/7182c243-17ca-4eb9-aea1-4f757f36082b",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "e0695d00-8edb-4960-8b19-4f060b02d4a4": {
+    "leadId": "e0695d00-8edb-4960-8b19-4f060b02d4a4",
+    "leadName": "PARADISE SOLAR",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348039109394",
+    "email": "",
+    "area": "Abeokuta",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/e0695d00-8edb-4960-8b19-4f060b02d4a4",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707720_kk5k",
+        "leadId": "e0695d00-8edb-4960-8b19-4f060b02d4a4",
+        "leadName": "PARADISE SOLAR",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348039109394",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/e0695d00-8edb-4960-8b19-4f060b02d4a4)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/e0695d00-8edb-4960-8b19-4f060b02d4a4",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "f084390a-0f21-4ae1-ac85-67ae8d8bddc8": {
+    "leadId": "f084390a-0f21-4ae1-ac85-67ae8d8bddc8",
+    "leadName": "Ensky Solar Nigeria",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349160010802",
+    "email": "",
+    "area": "Jakande",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/f084390a-0f21-4ae1-ac85-67ae8d8bddc8",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707722_fqpr",
+        "leadId": "f084390a-0f21-4ae1-ac85-67ae8d8bddc8",
+        "leadName": "Ensky Solar Nigeria",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349160010802",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/f084390a-0f21-4ae1-ac85-67ae8d8bddc8)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/f084390a-0f21-4ae1-ac85-67ae8d8bddc8",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "02370373-c50d-4f58-b5e1-871b86d7d6f1": {
+    "leadId": "02370373-c50d-4f58-b5e1-871b86d7d6f1",
+    "leadName": "We Buy Conden and Dead Inverter Batteries",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348184191816",
+    "email": "",
+    "area": "Gbagada",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/02370373-c50d-4f58-b5e1-871b86d7d6f1",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707723_qd36",
+        "leadId": "02370373-c50d-4f58-b5e1-871b86d7d6f1",
+        "leadName": "We Buy Conden and Dead Inverter Batteries",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348184191816",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/02370373-c50d-4f58-b5e1-871b86d7d6f1)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/02370373-c50d-4f58-b5e1-871b86d7d6f1",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "b25373c1-20e8-48d8-8197-ea22d198d0b5": {
+    "leadId": "b25373c1-20e8-48d8-8197-ea22d198d0b5",
+    "leadName": "Guarantee solar energy service",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349074386167",
+    "email": "",
+    "area": "Gubuchi",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/b25373c1-20e8-48d8-8197-ea22d198d0b5",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707724_vlmj",
+        "leadId": "b25373c1-20e8-48d8-8197-ea22d198d0b5",
+        "leadName": "Guarantee solar energy service",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349074386167",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/b25373c1-20e8-48d8-8197-ea22d198d0b5)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/b25373c1-20e8-48d8-8197-ea22d198d0b5",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "7e1b7f63-2292-4f45-8ed1-fd10b90731f4": {
+    "leadId": "7e1b7f63-2292-4f45-8ed1-fd10b90731f4",
+    "leadName": "SOLAR INVERTER",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348154535455",
+    "email": "",
+    "area": "Allen",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/7e1b7f63-2292-4f45-8ed1-fd10b90731f4",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707725_0wlv",
+        "leadId": "7e1b7f63-2292-4f45-8ed1-fd10b90731f4",
+        "leadName": "SOLAR INVERTER",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348154535455",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/7e1b7f63-2292-4f45-8ed1-fd10b90731f4)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/7e1b7f63-2292-4f45-8ed1-fd10b90731f4",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "78e9634a-fab5-44b7-8df7-c2252384c6a1": {
+    "leadId": "78e9634a-fab5-44b7-8df7-c2252384c6a1",
+    "leadName": "RCJ Solar Tech Solutions LTD",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348162857445",
+    "email": "",
+    "area": "Jos",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/78e9634a-fab5-44b7-8df7-c2252384c6a1",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707726_tu8l",
+        "leadId": "78e9634a-fab5-44b7-8df7-c2252384c6a1",
+        "leadName": "RCJ Solar Tech Solutions LTD",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348162857445",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/78e9634a-fab5-44b7-8df7-c2252384c6a1)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/78e9634a-fab5-44b7-8df7-c2252384c6a1",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "9fd271a5-5e8a-4593-88cc-5dfd3222f0cc": {
+    "leadId": "9fd271a5-5e8a-4593-88cc-5dfd3222f0cc",
+    "leadName": "Eccentric Solar Energy",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348065982565",
+    "email": "",
+    "area": "Sabo",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/9fd271a5-5e8a-4593-88cc-5dfd3222f0cc",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707727_843n",
+        "leadId": "9fd271a5-5e8a-4593-88cc-5dfd3222f0cc",
+        "leadName": "Eccentric Solar Energy",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348065982565",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/9fd271a5-5e8a-4593-88cc-5dfd3222f0cc)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/9fd271a5-5e8a-4593-88cc-5dfd3222f0cc",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "d03d4f67-a30a-4815-a3d2-33d12e728391": {
+    "leadId": "d03d4f67-a30a-4815-a3d2-33d12e728391",
+    "leadName": "Kaduna solar connect",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2347033059680",
+    "email": "",
+    "area": "Kakuri",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/d03d4f67-a30a-4815-a3d2-33d12e728391",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707727_6xse",
+        "leadId": "d03d4f67-a30a-4815-a3d2-33d12e728391",
+        "leadName": "Kaduna solar connect",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2347033059680",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/d03d4f67-a30a-4815-a3d2-33d12e728391)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/d03d4f67-a30a-4815-a3d2-33d12e728391",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "ede60430-6949-4dfe-a908-3d77a0c4cb21": {
+    "leadId": "ede60430-6949-4dfe-a908-3d77a0c4cb21",
+    "leadName": "NoLele Solar Technologies",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348184780165",
+    "email": "",
+    "area": "Alagbaka",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/ede60430-6949-4dfe-a908-3d77a0c4cb21",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707728_ubh0",
+        "leadId": "ede60430-6949-4dfe-a908-3d77a0c4cb21",
+        "leadName": "NoLele Solar Technologies",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348184780165",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/ede60430-6949-4dfe-a908-3d77a0c4cb21)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/ede60430-6949-4dfe-a908-3d77a0c4cb21",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "af70aed5-30ce-4244-80c8-8c8b6fe50173": {
+    "leadId": "af70aed5-30ce-4244-80c8-8c8b6fe50173",
+    "leadName": "Solar installer in Abeokuta",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2348161287598",
+    "email": "",
+    "area": "Abeokuta",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/af70aed5-30ce-4244-80c8-8c8b6fe50173",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707729_u1dx",
+        "leadId": "af70aed5-30ce-4244-80c8-8c8b6fe50173",
+        "leadName": "Solar installer in Abeokuta",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2348161287598",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/af70aed5-30ce-4244-80c8-8c8b6fe50173)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/af70aed5-30ce-4244-80c8-8c8b6fe50173",
+          "voiceNoteAttached": true
+        }
+      }
+    ]
+  },
+  "c805c096-c2b6-4979-a853-6e04743ba81f": {
+    "leadId": "c805c096-c2b6-4979-a853-6e04743ba81f",
+    "leadName": "FELICITY SOLAR MARYLAND ENUGU",
+    "category": "Solar & Inverter Systems",
+    "phone": "+2349131987611",
+    "email": "",
+    "area": "road",
+    "currentStage": "OUTREACH_DISPATCHED",
+    "score": 85,
+    "heatScore": 35,
+    "intentLevel": "WARM",
+    "previewUrl": "https://www.bethelmindanalytics.com/preview/c805c096-c2b6-4979-a853-6e04743ba81f",
+    "createdAt": "2026-10-19T09:49:27.868Z",
+    "lastActiveIso": "2026-10-19T09:49:27.868Z",
+    "lastUpdatedWat": "11:28:27 WAT",
+    "metrics": {
+      "pageViews": 0,
+      "calculatorInteractions": 0,
+      "videoWatchSec": 0,
+      "chatMessages": 0,
+      "checkoutAttempts": 0,
+      "totalTimeSec": 0,
+      "rageClicks": 0
+    },
+    "events": [
+      {
+        "id": "evt_1792405707729_3vtt",
+        "leadId": "c805c096-c2b6-4979-a853-6e04743ba81f",
+        "leadName": "FELICITY SOLAR MARYLAND ENUGU",
+        "businessCategory": "Solar & Inverter Systems",
+        "phone": "+2349131987611",
+        "email": "",
+        "stage": "OUTREACH_DISPATCHED",
+        "title": "Carrier GSM SMS Delivered",
+        "description": "Delivered tailored Solar BOQ Quoter hook & 6-Month Independence Bundle preview (https://www.bethelmindanalytics.com/preview/c805c096-c2b6-4979-a853-6e04743ba81f)",
+        "channelUsed": "Airtel SMS",
+        "timestamp": "2026-10-19T09:49:27.868Z",
+        "timestampWat": "11:28:27 WAT",
+        "metadata": {
+          "previewUrl": "https://www.bethelmindanalytics.com/preview/c805c096-c2b6-4979-a853-6e04743ba81f",
+          "voiceNoteAttached": true
         }
       }
     ]

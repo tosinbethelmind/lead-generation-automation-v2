@@ -92,12 +92,12 @@ export function handlePostContactInquiry(
   if (/account|bank|pay|invoice|transfer|send details|deposit|ready to start|moniepoint|opay|interested|proceed|i want|let's start|how do we start|how to start|deal|buy|get started|how much to start|give me account|payment|send account|ready|start now|set it up|close deal/i.test(msg)) {
     // Check if client specifically asked for Android App (₦125k deposit), Embed (₦35k), or Dossier (₦150k)
     let selectedPackage = 'Complete Turnkey Business Website + 24/7 AI WhatsApp Sales Assistant';
-    let totalCost = '₦65,000 NGN (October 50% Promo — Normal Price ₦130,000)';
+    let totalCost = '₦65,000 NGN (6-Month Independence Bundle · Waived Setup + Free Domain)';
     let depositAmount = '₦35,000 NGN (Balance of ₦30,000 payable AFTER going live)';
 
     if (/corporate|option 2|\.com\b|staff email/i.test(msg)) {
-      selectedPackage = 'Corporate .COM Domain + 3 Official Staff Emails & 24/7 AI Quoting Suite (October 50% Promo)';
-      totalCost = '₦120,000 NGN (October 50% Promo — Normal Price ₦240,000)';
+      selectedPackage = 'Corporate .COM Domain + 3 Official Staff Emails & 24/7 AI Quoting Suite (6-Month Independence Bundle)';
+      totalCost = '₦120,000 NGN (Turnkey Custom Domain Suite · 48h SLA)';
       depositAmount = '₦60,000 NGN (50% Milestone Deposit)';
     } else if (/app|android|mobile|apk|luxury/i.test(msg)) {
       selectedPackage = 'Luxury Web Portal + Branded Android Mobile App (.apk) with Customer Push Notifications';
@@ -116,8 +116,8 @@ export function handlePostContactInquiry(
     return {
       intent: 'READY_TO_PAY_INVOICE',
       messageText: 
-        `🤝 Wonderful decision, Boss / Management at *${name}*! Let's lock in your *October 50% SME Promo* and get your website live on Google.\n\n` +
-        `📋 *OFFICIAL OCTOBER PROMO INVOICE & AGREEMENT:*\n` +
+        `🤝 Wonderful decision, Boss / Management at *${name}*! Let's lock in your *6-Month Independence Bundle* and get your website live on Google.\n\n` +
+        `📋 *OFFICIAL 6-MONTH INDEPENDENCE BUNDLE INVOICE & AGREEMENT:*\n` +
         `• Package: *${selectedPackage}*\n` +
         `• October Promo Total: *${totalCost}*\n` +
         `• *Milestone Deposit to Start Today: ${depositAmount}*\n` +
@@ -160,19 +160,21 @@ export function handlePostContactInquiry(
     };
   }
 
-  // 4. Pricing / Packages Inquiry — October 50% SME Promo in Simple Nigerian Business Language
+  // 4. Pricing / Packages Inquiry — 6-Month Independence Bundle in Simple Nigerian Business Language
   if (/price|cost|how much|charges|fee|package|plans|rate|promo/i.test(msg)) {
     return {
       intent: 'PRICING_INQUIRY',
       messageText:
-        `Good day! 👋 Because we already built 80% of the sample website for *${name}* in advance, you qualify for our *🇳🇬 October 50% SME Digital Growth Promo*:\n\n` +
+        `Good day! 👋 Because we already built 80% of the sample website for *${name}* in advance, you qualify for our *6-Month Independence & Sector Growth Package*:\n\n` +
         `⭐ *Option 1: Official .COM.NG Business Website + WhatsApp Assistant*\n` +
         `• Normal Agency Price: ~₦130,000~\n` +
-        `• *October 50% Promo Total: ₦65,000* _(Includes 1 Full Year Domain & Hosting — Zero Monthly Rent!)_\n` +
-        `• 👉 *Start Today With Just ₦35,000 Deposit* _(Pay the ₦30,000 balance ONLY after your website is live with your real photos!)_\n\n` +
+        `• *6-Month Independence Bundle Total: ₦65,000* _(Includes 1 Full Year Domain & Hosting — Zero Monthly Rent!)_\n` +
+        `• 👉 *Start Today: ₦35,000 Deposit* _(Pay the ₦30,000 balance ONLY after your website is live with your real photos!)_\n` +
+        `• 💡 *Pay-Small-Small:* ₦25,000/month _(Zero lump sum commitment)_\n` +
+        `• 👑 *Best Value · 6-Month Independence Bundle: ₦75,000 Total* _(Setup fee waived + 2 Months Free Hosting + Free .COM.NG Domain!)_\n\n` +
         `🏆 *Option 2: Corporate .COM Website + 3 Official Staff Emails & AI Calculator*\n` +
         `• Normal Agency Price: ~₦240,000~\n` +
-        `• *October 50% Promo Total: ₦120,000*\n` +
+        `• *6-Month Independence Bundle Total: ₦120,000*\n` +
         `• 👉 *Start Today With ₦60,000 Deposit* _(Pay ₦60,000 balance after Google & Email handover)_\n\n` +
         `✏️ *Option 3: Free Custom Photo & Price Preview First (₦0 Upfront)*\n` +
         `• Send us 3–5 photos of your shop/work and your price list here on WhatsApp — we will update your sample page FREE so you see it before paying a kobo!\n\n` +
@@ -187,7 +189,7 @@ export function handlePostContactInquiry(
     };
   }
 
-  // 5. Request Demo / Link / "DEMO" Trigger from SMS — Warm Nigerian Tone + October 50% Promo
+  // 5. Request Demo / Link / "DEMO" Trigger from SMS — Warm Nigerian Tone + 6-Month Independence Bundle
   if (/link|demo|sample|preview|see it|show me|where/i.test(msg)) {
     return {
       intent: 'REQUEST_DEMO_LINK',
@@ -226,7 +228,7 @@ export function handlePostContactInquiry(
     };
   }
 
-  // Default: Simple, Warm Nigerian Business Handshake + October 50% Promo
+  // Default: Simple, Warm Nigerian Business Handshake + 6-Month Independence Bundle
   return {
     intent: 'GREETING_HANDSHAKE',
     messageText:

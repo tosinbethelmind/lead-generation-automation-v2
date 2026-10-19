@@ -60,7 +60,7 @@ export function ExecutivePdfQuoteModal({
     : (!cleanAdminPhone.startsWith('234') && cleanAdminPhone.length === 10 ? '234' + cleanAdminPhone : cleanAdminPhone || '2348022791227');
 
   const directWhatsAppUrl = `https://wa.me/${safeAdminPhone}?text=${encodeURIComponent(
-    `Hello Bethelmind Lagos Desk! I just generated the Official October 50% Promo Proposal for *${businessName}* [Ref: ${quoteRef}]. We want to start today with the ₦${depositFeeNgn.toLocaleString()} deposit (Total Promo Price: ₦${claimFeeNgn.toLocaleString()} instead of ₦${normalAgencyPrice.toLocaleString()}).`
+    `Hello Bethelmind Lagos Desk! I just generated the Official 6-Month Independence Proposal for *${businessName}* [Ref: ${quoteRef}]. We want to start today with the ₦${depositFeeNgn.toLocaleString()} deposit (Total Promo Price: ₦${claimFeeNgn.toLocaleString()} instead of ₦${normalAgencyPrice.toLocaleString()}).`
   )}`;
 
   return (

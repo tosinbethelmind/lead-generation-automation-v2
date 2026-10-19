@@ -14,7 +14,7 @@ const MERGED_PACKAGES = [
     name: '1-Line Website AI Embed',
     price: '₦35,000',
     numericPrice: 35000,
-    billingNote: 'October 50% Promo (Standard: ₦70,000) · Instant WhatsApp AI + Sector Calculator',
+    billingNote: 'Commercial Activation (Standard: ₦70,000) · Instant WhatsApp AI + Sector Calculator',
     renewalYear2: '₦25,000 / year starting in Year 2',
     features: [
       '⚡ 24/7 AI WhatsApp Sales & Price-List Closer',
@@ -29,10 +29,10 @@ const MERGED_PACKAGES = [
   },
   {
     id: 'growth',
-    name: 'Starter Official Website (.com.ng) — October 50% Promo',
+    name: 'Starter Official Website (.com.ng)',
     price: '₦65,000',
     numericPrice: 65000,
-    billingNote: 'October 50% Promo (Standard: ₦130,000) · Start Today with ₦35,000 50% Deposit',
+    billingNote: 'Commercial Activation (Standard: ₦130,000) · Start Today with ₦35,000 50% Deposit',
     renewalYear2: '₦35,000 / year starting in Year 2 (Domain + Cloud Hosting)',
     features: [
       '🌐 Official .com.ng Custom Domain Name Registered (1 Full Year)',
@@ -48,10 +48,10 @@ const MERGED_PACKAGES = [
   },
   {
     id: 'vip',
-    name: 'Full Growth Suite (.com + Corporate Emails) — October 50% Promo',
+    name: 'Full Growth Suite (.com + Corporate Emails)',
     price: '₦120,000',
     numericPrice: 120000,
-    billingNote: 'October 50% Promo (Standard: ₦240,000) · Start Today with ₦60,000 50% Deposit',
+    billingNote: 'Commercial Activation (Standard: ₦240,000) · Start Today with ₦60,000 50% Deposit',
     renewalYear2: '₦55,000 / year starting in Year 2 (International .com + Hosting)',
     features: [
       'Everything in Starter Official Website (.com.ng)',
@@ -70,7 +70,7 @@ const MERGED_PACKAGES = [
     name: 'Multi-Branch Enterprise Suite',
     price: '₦250,000',
     numericPrice: 250000,
-    billingNote: 'October 50% Promo (Standard: ₦500,000) · Multi-Location Inventory & Staff Routing',
+    billingNote: 'Commercial Activation (Standard: ₦500,000) · Multi-Location Inventory & Staff Routing',
     renewalYear2: '₦85,000 / year starting in Year 2',
     features: [
       '👑 100% White-Glove Setup & Dedicated Account Engineer',

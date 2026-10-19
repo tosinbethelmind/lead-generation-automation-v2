@@ -99,7 +99,7 @@ export default function SolutionsSection() {
         <div style={{ textAlign: 'center', marginBottom: 44 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.22)', borderRadius: 100, padding: '5px 16px', marginBottom: 14 }}>
             <Sparkles style={{ width: 14, height: 14, color: '#10b981' }} />
-            <span style={{ fontSize: '0.76rem', color: '#10b981', fontWeight: 700 }}>🇳🇬 October 50% SME Promo • The 10 High-Conversion Sector Tools</span>
+            <span style={{ fontSize: '0.76rem', color: '#10b981', fontWeight: 700 }}>🇳🇬 Sector Monetization Suite • The 10 High-Conversion Sector Tools</span>
           </div>
           <h2
             id="solutions-heading"
@@ -108,7 +108,7 @@ export default function SolutionsSection() {
             Ready-to-Pitch B2B Business Revenue Suite
           </h2>
           <p style={{ color: '#94a3b8', fontSize: '0.96rem', maxWidth: 680, margin: '0 auto', lineHeight: 1.6 }}>
-            Eliminate operational leaks and after-hours customer drop-offs. Under our <strong>October 50% SME Promo</strong>, launch any tool + your Official <code>.com.ng</code> Website for <strong>₦65,000 Total</strong> (Normal Price: <span style={{ textDecoration: 'line-through', color: '#f87171' }}>₦130,000</span>) — start today with a <strong>₦35,000 Deposit</strong> or embed on your existing site for <strong>₦35,000 One-Time</strong>.
+            Eliminate operational leaks and after-hours customer drop-offs. Under our <strong>6-Month Independence Bundle</strong>, launch any tool + your Official <code>.com.ng</code> Website for <strong>₦65,000 Total</strong> (Normal Price: <span style={{ textDecoration: 'line-through', color: '#f87171' }}>₦130,000</span>) — start today with a <strong>₦35,000 Deposit</strong> or embed on your existing site for <strong>₦35,000 One-Time</strong>.
           </p>
         </div>
 

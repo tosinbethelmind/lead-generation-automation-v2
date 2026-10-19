@@ -487,7 +487,7 @@ async function executeCloserReply(targetRecipient, incomingText = '', rawMsg = n
     intent = closerRes.intent;
     directPaymentEligible = closerRes.directPaymentEligible;
   } catch (_) {
-    replyText = `Good day! 👋 Welcome to Bethelmind Digital Solutions.\n\nWe created a free sample website for your business (*${customerName}*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\n${customerPreviewUrl}\n\nUnder our 🇳🇬 October 50% SME Promo, complete setup is ₦35,000 deposit to start (₦65,000 total, ready in 48 hours). Please let us know if you want to get started!`;
+    replyText = `Good day! 👋 Welcome to Bethelmind Digital Solutions.\n\nWe created a free sample website for your business (*${customerName}*) so you can see how customers can find you on Google and message you on WhatsApp 24/7.\n\n👉 You can view your sample website here:\n${customerPreviewUrl}\n\nUnder our 6-Month Independence Package, complete setup is ₦35,000 deposit to start (₦65,000 total, ready in 48 hours). Please let us know if you want to get started!`;
   }
 
   if (connectionStatus !== 'connected' || !sock) {

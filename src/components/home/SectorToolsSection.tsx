@@ -807,7 +807,7 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
         )}
       </div>
 
-      {/* October 50% SME Promo Direct Conversion Card Inside Every Calculator Result */}
+      {/* 6-Month Independence Package Direct Conversion Card Inside Every Calculator Result */}
       <div
         style={{
           marginTop: 6,
@@ -838,7 +838,7 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
         <a
           href={buildWhatsAppLink(
             paymentConfig.whatsappNumber,
-            `Hello Bethelmind Lagos Desk! I just tested the *${toolName}* calculator and want to claim the October 50% Promo (₦35,000 Deposit / ₦65,000 Total instead of ₦130,000) to launch this tool + Official .COM.NG Website for my business!`
+            `Hello Bethelmind Lagos Desk! I just tested the *${toolName}* calculator and want to claim the 6-Month Independence Bundle (₦75,000 Total / ₦35,000 Deposit) to launch this tool + Official .COM.NG Website for my business!`
           )}
           target="_blank"
           rel="noreferrer noopener"

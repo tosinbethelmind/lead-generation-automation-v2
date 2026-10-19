@@ -327,7 +327,7 @@ export default function SolutionsPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 24 }}>
             {CUSTOMER_ACQUISITION_ENGINES.map(engine => {
               const IconComponent = engine.icon;
-              const waText = encodeURIComponent(`Hello Bethelmind Lagos Desk,\n\nI want to claim the October 50% Promo for Engine #${engine.number}: *${engine.title}* (${engine.targetNiche}).\n\nDelivery preference: ${deliveryMode === 'turnkey' ? 'Full .COM.NG Website + Tool (₦35k Deposit / ₦65k Promo Total)' : '1-Line Embed Upgrade (₦35k Promo Setup)'}`);
+              const waText = encodeURIComponent(`Hello Bethelmind Lagos Desk,\n\nI want to claim the 6-Month Independence Bundle for Engine #${engine.number}: *${engine.title}* (${engine.targetNiche}).\n\nDelivery preference: ${deliveryMode === 'turnkey' ? 'Full .COM.NG Website + Tool (₦35k Deposit / ₦75k Total)' : '1-Line Embed Upgrade (₦35k Promo Setup)'}`);
               const waUrl = `https://wa.me/2348022791227?text=${waText}`;
 
               return (

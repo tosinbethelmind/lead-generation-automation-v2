@@ -1584,7 +1584,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
     }
   };
 
-  // Graded automation package selection (October 50% SME Promo Milestone Pricing)
+  // Graded automation package selection (6-Month Independence Bundle SME Promo Milestone Pricing)
   const [selectedStrategy, setSelectedStrategy] = useState<'starter_35k' | 'standard_full_65k' | 'corporate_60k' | 'zero_risk_staging' | 'script_embed' | 'basic_presence' | 'plugin' | 'full_rebuild'>(
     'starter_35k'
   );
@@ -3855,7 +3855,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 </div>
               )}
 
-              {/* Option 1: Standard Business .COM.NG Website (October 50% Promo: ₦65,000 Total · Start with ₦35,000 Deposit) */}
+              {/* Option 1: Standard Business .COM.NG Website (6-Month Independence Bundle: ₦65,000 Total · Start with ₦35,000 Deposit) */}
               <div style={{
                 background: '#ffffff',
                 borderRadius: '16px',
@@ -3996,7 +3996,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   </ul>
                 </div>
                 <a
-                  href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I just checked the sample website for *${lead.name}* (${lead.area || lead.city || 'Nigeria'}).\n\nLink: https://www.bethelmindanalytics.com/preview/${leadId}\n\nI want to send you my shop photos, phone number, and prices so you can update it for me to see first under the October 50% Promo.`)}`}
+                  href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I just checked the sample website for *${lead.name}* (${lead.area || lead.city || 'Nigeria'}).\n\nLink: https://www.bethelmindanalytics.com/preview/${leadId}\n\nI want to send you my shop photos, phone number, and prices so you can update it for me to see first under the 6-Month Independence Bundle.`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -4038,7 +4038,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             clientIndustry={lead.category}
             clientDistrict={lead.area || lead.city}
             items={[
-              { name: `${lead.name} Official Website & WhatsApp Assistant (October 50% Promo)`, price: getDynamicClaimFee() || 35000, qty: 1 },
+              { name: `${lead.name} Official Website & WhatsApp Assistant (6-Month Independence Bundle)`, price: getDynamicClaimFee() || 35000, qty: 1 },
               { name: '1-Year Domain Registration, Cloud Hosting & Google Map Pin', price: 0, qty: 1 }
             ]}
             paymentRef={`BMA-OCT-${leadId.slice(0, 6).toUpperCase()}`}
@@ -4080,11 +4080,11 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     ⚡ FASTEST OPTION (NO FORM FILLING NEEDED)
                   </span>
                   <p style={{ fontSize: '0.84rem', color: '#065f46', margin: '0 0 12px', fontWeight: 600 }}>
-                    Tap below to chat directly with our Lagos setup engineer on WhatsApp (`0802 279 1227`) — send your shop photos, price list, or claim your October 50% Promo:
+                    Tap below to chat directly with our Lagos setup engineer on WhatsApp (`0802 279 1227`) — send your shop photos, price list, or claim your 6-Month Independence Bundle:
                   </p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center' }}>
                     <a
-                      href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am the owner/manager of *${lead.name}* (${lead.area || lead.city || 'Nigeria'}).\n\nI just viewed our sample website: https://www.bethelmindanalytics.com/preview/${leadId}\n\nI want to claim our October 50% Promo website (₦65k Promo Total / ₦35k Deposit to start). How do we proceed?`)}`}
+                      href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am the owner/manager of *${lead.name}* (${lead.area || lead.city || 'Nigeria'}).\n\nI just viewed our sample website: https://www.bethelmindanalytics.com/preview/${leadId}\n\nI want to claim our 6-Month Independence Bundle website (₦65k Promo Total / ₦35k Deposit to start). How do we proceed?`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
@@ -4212,9 +4212,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     </div>
                   </div>
 
-                  {/* October 50% Promo Package Selection */}
+                  {/* 6-Month Independence Bundle Package Selection */}
                   <div style={{ marginBottom: '8px' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Select Your October 50% Promo Plan</label>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Select Your 6-Month Independence Bundle Plan</label>
                     <select
                       value={selectedStrategy}
                       onChange={(e) => setSelectedStrategy(e.target.value as any)}
@@ -4248,7 +4248,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                       marginBottom: '6px'
                     }}>
                       <span style={{ fontSize: '0.74rem', color: '#047857', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        October 50% Promo Amount Due Today
+                        6-Month Independence Bundle Amount Due Today
                       </span>
                       <div style={{ fontSize: '1.85rem', fontWeight: 900, color: '#0f172a', margin: '2px 0' }}>
                         ₦{getDynamicClaimFee().toLocaleString()}
@@ -4321,7 +4321,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                       {/* 1-Tap WhatsApp Receipt Confirmation + Optional Upload */}
                       <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <a
-                          href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I have just transferred *₦${getDynamicClaimFee().toLocaleString()}* to your Moniepoint account (6805375225 - Bethelmind Digital Solutions) to lock in the October 50% Promo website for *${lead.name}*.\n\nPreview Link: https://www.bethelmindanalytics.com/preview/${leadId}\n\nHere is my transfer receipt:`)}`}
+                          href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I have just transferred *₦${getDynamicClaimFee().toLocaleString()}* to your Moniepoint account (6805375225 - Bethelmind Digital Solutions) to lock in the 6-Month Independence Bundle website for *${lead.name}*.\n\nPreview Link: https://www.bethelmindanalytics.com/preview/${leadId}\n\nHere is my transfer receipt:`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{
@@ -4406,7 +4406,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     {claimLoading 
                       ? 'Saving Your Website Activation...' 
                       : getDynamicClaimFee() > 0
-                        ? `✅ Lock October 50% Promo (₦${getDynamicClaimFee().toLocaleString()} Today) →`
+                        ? `✅ Lock 6-Month Independence Bundle (₦${getDynamicClaimFee().toLocaleString()} Today) →`
                         : '✏️ Request Free Photo & Price Update First →'}
                   </button>
 
@@ -4436,14 +4436,14 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               <div style={{ padding: '20px 0' }}>
                 <Award size={60} style={{ color: '#10b981', margin: '0 auto 18px' }} />
                 <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', marginBottom: '10px' }}>
-                  October 50% Promo Slot Reserved for {lead.name}!
+                  6-Month Independence Bundle Slot Reserved for {lead.name}!
                 </h2>
                 <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: 1.6, marginBottom: '20px' }}>
-                  {claimMessage || `Thank you! Your October 50% Promo request for ${lead.name} has been logged. Tap the WhatsApp button below so our Lagos engineer can immediately receive your shop photos, price list, or payment receipt:`}
+                  {claimMessage || `Thank you! Your 6-Month Independence Bundle request for ${lead.name} has been logged. Tap the WhatsApp button below so our Lagos engineer can immediately receive your shop photos, price list, or payment receipt:`}
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
                   <a
-                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I just submitted the October 50% Promo website claim form for *${lead.name}*.\n\nName: ${claimForm.name || lead.name}\nPhone: ${claimForm.phone || lead.phone}\nPreferred Domain: ${claimForm.preferredDomain || 'Please suggest best domain'}\nSelected Plan: ${selectedStrategy === 'corporate_60k' ? 'Corporate .COM Suite (₦120k Promo · ₦60,000 Deposit)' : selectedStrategy === 'standard_full_65k' ? 'Official .COM.NG Website (₦65,000 Full Promo)' : selectedStrategy === 'zero_risk_staging' ? 'Update Photos/Prices First (₦0)' : 'Official .COM.NG Website (₦65k Promo · ₦35,000 Deposit)'}\n\nLink: https://www.bethelmindanalytics.com/preview/${leadId}`)}`}
+                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I just submitted the 6-Month Independence Bundle website claim form for *${lead.name}*.\n\nName: ${claimForm.name || lead.name}\nPhone: ${claimForm.phone || lead.phone}\nPreferred Domain: ${claimForm.preferredDomain || 'Please suggest best domain'}\nSelected Plan: ${selectedStrategy === 'corporate_60k' ? 'Corporate .COM Suite (₦120k Promo · ₦60,000 Deposit)' : selectedStrategy === 'standard_full_65k' ? 'Official .COM.NG Website (₦65,000 Full Promo)' : selectedStrategy === 'zero_risk_staging' ? 'Update Photos/Prices First (₦0)' : 'Official .COM.NG Website (₦65k Promo · ₦35,000 Deposit)'}\n\nLink: https://www.bethelmindanalytics.com/preview/${leadId}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{

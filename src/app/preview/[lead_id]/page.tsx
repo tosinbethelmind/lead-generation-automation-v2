@@ -423,7 +423,7 @@ export default function PreviewPage() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
             <a
-              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am the owner of *${data.lead.name}* (${data.lead.category}) in ${data.lead.area || data.lead.city || 'Lagos'}.\n\nI just reviewed our preview website (https://www.bethelmindanalytics.com/preview/${leadId}).\n\nI want to claim this website under the October 50% Promo (₦35,000 deposit to launch). Please assist me!`)}`}
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am the owner of *${data.lead.name}* (${data.lead.category}) in ${data.lead.area || data.lead.city || 'Lagos'}.\n\nI just reviewed our preview website (https://www.bethelmindanalytics.com/preview/${leadId}).\n\nI want to claim this website under the 6-Month Independence Bundle (₦75,000 Total / ₦35,000 Deposit). Please assist me!`)}`}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -622,8 +622,14 @@ export default function PreviewPage() {
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', margin: '10px 0 4px 0' }}>
                   ₦65,000 <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>October Promo Total</span>
                 </div>
-                <div style={{ fontSize: '0.82rem', color: '#fde047', fontWeight: 800, marginBottom: '14px' }}>
-                  👉 Start Today With ₦35,000 Deposit (Pay ₦30k Balance After Going Live!)
+                <div style={{ fontSize: '0.82rem', color: '#fde047', fontWeight: 800, marginBottom: '6px' }}>
+                  👉 Start Today: ₦35,000 Deposit (Pay ₦30k Balance After Going Live!)
+                </div>
+                <div style={{ fontSize: '0.80rem', color: '#38bdf8', fontWeight: 800, marginBottom: '6px', background: 'rgba(56, 189, 248, 0.12)', padding: '4px 8px', borderRadius: '6px', display: 'inline-block' }}>
+                  💡 Or Choose: ₦25,000/month "Pay-Small-Small" (Zero Lump Sum)
+                </div>
+                <div style={{ fontSize: '0.80rem', color: '#34d399', fontWeight: 800, marginBottom: '14px', background: 'rgba(16, 185, 129, 0.15)', padding: '5px 10px', borderRadius: '6px', display: 'block', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                  👑 6-Month Independence Bundle: ₦75,000 Total (Setup Fee Waived + 2 Months Free Hosting + Free .COM.NG Domain)
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.75 }}>
                   <li>✓ Free 1-Year `.com.ng` domain &amp; hosting (Zero monthly fee)</li>
@@ -632,28 +638,76 @@ export default function PreviewPage() {
                   <li>✓ Google Maps location pin &amp; 24–48hr live handover</li>
                 </ul>
               </div>
-              <a
-                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want to lock in Option 1 under the October 50% Promo (₦65,000 Promo Total · ₦35,000 Deposit today, ₦30,000 balance after going live). Please help me get started.`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '12px 20px',
-                  borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  color: '#ffffff',
-                  fontWeight: 900,
-                  fontSize: '0.9rem',
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
-                  textAlign: 'center'
-                }}
-              >
-                <span>Lock October Promo (₦35,000 Deposit) →</span>
-              </a>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <a
+                  href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want the 6-Month Independence Bundle (₦75,000 Total · Waived setup + 2 months free + free .com.ng domain). Please send the Moniepoint transfer details.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    padding: '12px 18px',
+                    borderRadius: '12px',
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    color: '#ffffff',
+                    fontWeight: 900,
+                    fontSize: '0.88rem',
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+                    textAlign: 'center'
+                  }}
+                >
+                  <span>👑 Lock 6-Month Bundle (₦75,000 Total) →</span>
+                </a>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <a
+                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want Option 1 under the 6-Month Independence Bundle (₦75,000 Total · ₦35,000 Deposit today, balance after going live). Please help me get started.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '8px 10px',
+                      borderRadius: '10px',
+                      background: 'rgba(16, 185, 129, 0.12)',
+                      border: '1px solid rgba(16, 185, 129, 0.35)',
+                      color: '#34d399',
+                      fontWeight: 800,
+                      fontSize: '0.74rem',
+                      textDecoration: 'none',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <span>₦35k Deposit (50% Plan)</span>
+                  </a>
+
+                  <a
+                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want to inquire about the ₦25,000/month "Pay-Small-Small" plan with zero lump sum setup. Please guide me.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '8px 10px',
+                      borderRadius: '10px',
+                      background: 'rgba(56, 189, 248, 0.12)',
+                      border: '1px solid rgba(56, 189, 248, 0.35)',
+                      color: '#38bdf8',
+                      fontWeight: 800,
+                      fontSize: '0.74rem',
+                      textDecoration: 'none',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <span>₦25k/mo Pay-Small-Small</span>
+                  </a>
+                </div>
+              </div>
             </div>
 
             {/* OPTION 2: OCTOBER 50% PROMO — CORPORATE .COM + STAFF EMAILS SUITE (₦120K TOTAL · ₦60K DEPOSIT) */}
@@ -693,7 +747,7 @@ export default function PreviewPage() {
                 </ul>
               </div>
               <a
-                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I want Option 2 under the October 50% Promo: Corporate .COM + Staff Emails Suite (₦120,000 Promo Total · ₦60,000 Deposit today) for *${data.lead.name}*. Please send the official invoice.`)}`}
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I want Option 2 under the Full Turnkey Custom Domain Suite (₦150,000 Total · ₦75,000 Milestone Deposit) for *${data.lead.name}*. Please send the official invoice.`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -753,7 +807,7 @@ export default function PreviewPage() {
                 </ul>
               </div>
               <a
-                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I viewed the sample website for *${data.lead.name}* (${data.lead.area || data.lead.city || 'Nigeria'}).\n\nI want to send you my real shop photos, phone number, and prices on WhatsApp so you can update the sample page for me first under the October 50% Promo.`)}`}
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I viewed the sample website for *${data.lead.name}* (${data.lead.area || data.lead.city || 'Nigeria'}).\n\nI want to send you my real shop photos, phone number, and prices on WhatsApp so you can update the sample page for me first under the 6-Month Independence Bundle.`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

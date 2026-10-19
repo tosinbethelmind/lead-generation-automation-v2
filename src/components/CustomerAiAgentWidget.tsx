@@ -242,14 +242,14 @@ export default function CustomerAiAgentWidget({
       : leadData.category?.toLowerCase().includes('medical') || leadData.category?.toLowerCase().includes('clinic')
       ? `🏥 Clinic Appointment Booking AI for ${leadData.name}`
       : `🎯 How ${leadData.name} Gets 4x More Leads`,
-    `🇳🇬 Claim October 50% Promo (₦35,000 Deposit)`,
+    `👑 Lock 6-Month Bundle (₦75,000 Total)`,
     `💳 View October Promo Pricing`,
     `📞 How to Send Payment Receipt`,
   ] : [
     '🎯 Explore Business Services',
     '⚡ Test Sector Calculators',
     '🚗 Tokunbo Customs & BOQ Tools',
-    '🇳🇬 Claim October 50% Promo (₦35k Deposit)',
+    '👑 Lock 6-Month Bundle (₦75k Total)',
     '🚀 How to Activate 24/7 AI System',
   ];
 

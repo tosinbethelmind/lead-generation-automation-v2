@@ -46,7 +46,7 @@ export default function StickyMobileConversionBar({
   const offerText = isExistingWeb ? '1-Line WhatsApp Embed Upgrade' : 'Turnkey Business Website + 24/7 AI Assistant';
 
   const prefilledMessage = encodeURIComponent(
-    `Hello Bethelmind Digital Solutions! I just viewed the live website prototype for *${businessName}* (${category}) in ${area}.\n\nDemo Link: ${previewLink}\n\nPlease help me lock in our October 50% Promo Website (₦65k Promo Total · ₦35,000 Deposit today, balance after going live on Google).`
+    `Hello Bethelmind Digital Solutions! I just viewed the live website prototype for *${businessName}* (${category}) in ${area}.\n\nDemo Link: ${previewLink}\n\nPlease help me lock in our 6-Month Independence Bundle (₦75k Total · ₦35k Deposit today, balance after live approval).`
   );
   const waUrl = `https://wa.me/${adminPhone}?text=${prefilledMessage}`;
 

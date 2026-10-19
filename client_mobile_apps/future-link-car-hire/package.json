@@ -1,0 +1,10 @@
+{
+  "name": "app-future-link-car-hire",
+  "version": "1.0.0",
+  "description": "Native Android application for Future Link Car Hire",
+  "private": true,
+  "scripts": {
+    "build": "echo Web assets ready in www/",
+    "open:android": "npx cap open android"
+  }
+}

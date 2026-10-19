@@ -712,7 +712,7 @@ export default function NigerianSmeHeroExplainer({
               <ShieldCheck size={13} style={{ color: '#34d399' }} /> ₦0 Upfront Demo
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <ShieldCheck size={13} style={{ color: '#34d399' }} /> 🇳🇬 October 50% Promo: ₦35,000 Deposit
+              <ShieldCheck size={13} style={{ color: '#34d399' }} /> 🇳🇬 6-Month Independence Bundle: ₦75,000 Total
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Clock size={13} style={{ color: '#34d399' }} /> 48h Delivery Guarantee
