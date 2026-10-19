@@ -17,9 +17,31 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /api/admin/journey-analytics
  * Returns real-time journey statistics, funnel analytics, hot leads, unified channel dispatches, and retargeting decisions.
- */
 export async function GET(req: NextRequest) {
   try {
+    // 1. Primary: Query live Contabo VPS journey engine
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+      const vpsRes = await fetch('http://169.58.182.92:8080/journey-analytics', {
+        signal: controller.signal,
+        headers: { 'Cache-Control': 'no-cache, no-store' },
+        cache: 'no-store'
+      });
+      clearTimeout(timeoutId);
+      if (vpsRes.ok) {
+        const vpsData = await vpsRes.json();
+        if (vpsData?.funnelStats?.totalTracked !== undefined) {
+          return NextResponse.json(vpsData, {
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0'
+            }
+          });
+        }
+      }
+    } catch (_) {}
+
+    // 2. Fallback: Local database computation
     const allJourneys = Object.values(getAllLocalLeadJourneys());
     const funnelStats = getJourneyFunnelMetrics();
     const recentJourneys = getRecentLeadJourneys(30);

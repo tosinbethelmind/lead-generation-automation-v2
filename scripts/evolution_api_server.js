@@ -345,6 +345,7 @@ function authMiddleware(req, res, next) {
     req.path.startsWith('/instance/lock') ||
     req.path.startsWith('/lock') ||
     req.path === '/mobile-telemetry' ||
+    req.path === '/journey-analytics' ||
     req.path.startsWith('/test-ai')
   ) {
     return next();
@@ -885,6 +886,99 @@ app.get('/mobile-telemetry', (req, res) => {
     },
     crmLeads,
     activeProspects
+  });
+});
+
+app.get('/journey-analytics', (req, res) => {
+  const localDb = path.join(__dirname, '../local_db');
+  let journeys = {};
+  const journeysPath = path.join(localDb, 'lead_journeys.json');
+  if (fs.existsSync(journeysPath)) {
+    try {
+      journeys = JSON.parse(fs.readFileSync(journeysPath, 'utf8'));
+    } catch (_) {}
+  }
+
+  const list = Object.values(journeys);
+  const now = Date.now();
+  const oneDayMs = 24 * 60 * 60 * 1000;
+
+  let outreachDispatched = 0;
+  let previewOpened = 0;
+  let calculatorUsed = 0;
+  let videoWatched = 0;
+  let checkoutInitiated = 0;
+  let convertedWon = 0;
+  let hotLeadsCount = 0;
+  let criticalLeadsCount = 0;
+  let activeTodayCount = 0;
+
+  for (const j of list) {
+    if (j.currentStage !== 'SCRAPED' && j.currentStage !== 'ENRICHED') outreachDispatched++;
+    if (j.metrics?.pageViews > 0) previewOpened++;
+    if (j.metrics?.calculatorInteractions > 0) calculatorUsed++;
+    if (j.metrics?.videoWatchSec > 0) videoWatched++;
+    if (j.metrics?.checkoutAttempts > 0) checkoutInitiated++;
+    if (j.currentStage === 'DEAL_WON' || j.currentStage === 'PILOT_ACTIVATED') convertedWon++;
+
+    if (j.intentLevel === 'CRITICAL') criticalLeadsCount++;
+    else if (j.intentLevel === 'HOT') hotLeadsCount++;
+
+    if (j.lastActiveIso && (now - new Date(j.lastActiveIso).getTime()) < oneDayMs) {
+      activeTodayCount++;
+    }
+  }
+
+  const funnelStats = {
+    totalTracked: list.length,
+    outreachDispatched,
+    previewOpened,
+    calculatorUsed,
+    videoWatched,
+    checkoutInitiated,
+    convertedWon,
+    hotLeadsCount,
+    criticalLeadsCount,
+    activeTodayCount
+  };
+
+  const hotLeads = list
+    .filter(j => (j.heatScore || 0) >= 30)
+    .sort((a, b) => (b.heatScore || 0) - (a.heatScore || 0))
+    .slice(0, 30);
+
+  let retargetingDecisions = [];
+  const decPath = path.join(localDb, 'retargeting_decisions.json');
+  if (fs.existsSync(decPath)) {
+    try {
+      const decMap = JSON.parse(fs.readFileSync(decPath, 'utf8'));
+      retargetingDecisions = Object.values(decMap).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    } catch (_) {}
+  }
+
+  const recentJourneys = list
+    .sort((a, b) => new Date(b.lastActiveIso || b.createdAt).getTime() - new Date(a.lastActiveIso || a.createdAt).getTime())
+    .slice(0, 30);
+
+  const liveFeed = recentJourneys
+    .flatMap(j => (j.events || []).map(e => ({
+      ...e,
+      leadName: j.leadName,
+      category: j.category,
+      heatScore: j.heatScore,
+      intentLevel: j.intentLevel,
+      area: j.area || 'Lagos'
+    })))
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, 40);
+
+  res.json({
+    success: true,
+    timestamp: new Date().toISOString(),
+    funnelStats,
+    hotLeads,
+    retargetingDecisions,
+    liveFeed
   });
 });
 
