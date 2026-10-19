@@ -841,7 +841,18 @@ app.get('/mobile-telemetry', (req, res) => {
     try {
       const smsLog = JSON.parse(fs.readFileSync(smsLogPath, 'utf8'));
       if (Array.isArray(smsLog)) {
-        smsSentToday = smsLog.filter(s => (s.timestamp || s.sent_at || s.date || '').startsWith(todayStr)).length;
+        smsSentToday = smsLog.filter(s => (s.delivered_at || s.timestamp || s.sent_at || s.date || '').startsWith(todayStr)).length;
+      }
+    } catch (_) {}
+  }
+
+  let emailsSentToday = 0;
+  const emailLogPath = path.join(localDb, 'email_dispatches.json');
+  if (fs.existsSync(emailLogPath)) {
+    try {
+      const emailLog = JSON.parse(fs.readFileSync(emailLogPath, 'utf8'));
+      if (Array.isArray(emailLog)) {
+        emailsSentToday = emailLog.filter(e => (e.delivered_at || e.timestamp || '').startsWith(todayStr)).length;
       }
     } catch (_) {}
   }
@@ -852,14 +863,14 @@ app.get('/mobile-telemetry', (req, res) => {
     success: true,
     telemetry: {
       date: todayStr,
-      emails: { sentToday: 600, targetDaily: 600, totalAllTime: 12450, percent: 100 },
+      emails: { sentToday: emailsSentToday, targetDaily: 600, totalAllTime: 12450, percent: Math.min(100, Math.round((emailsSentToday / 600) * 100)) },
       whatsapp: {
         sentToday: waSentToday,
         targetDaily: 100,
         activeLines: onlineLines,
         percent: Math.min(100, Math.round((waSentToday / 100) * 100))
       },
-      webforms: { sentToday: 300, targetDaily: 300, totalAllTime: 5410, percent: 100 },
+      webforms: { sentToday: 0, targetDaily: 300, totalAllTime: 5410, percent: 0 },
       sms: {
         sentToday: smsSentToday,
         targetDaily: 120,
