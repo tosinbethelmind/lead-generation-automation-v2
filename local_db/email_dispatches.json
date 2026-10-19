@@ -1,0 +1,137 @@
+[
+  {
+    "id": "email_1792400938613_0",
+    "email": "info@wavetra.com",
+    "name": "Wavetra Energy",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190908.23554010928@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792400949183_1",
+    "email": "info@pscsolaruk.com",
+    "name": "PSC Solar UK Nigeria",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190909.48314002389@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792400956816_2",
+    "email": "sales@solarkobo.com",
+    "name": "SolarKobo",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190909.77581887409@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792400964532_3",
+    "email": "info@beebeejump.com",
+    "name": "Beebeejump Solar",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190909.99588879545@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792400980793_4",
+    "email": "info@auxanosolar.com",
+    "name": "Auxano Solar",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190909.78408663896@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792400996371_5",
+    "email": "info@rubitecsolar.com",
+    "name": "Rubitec Solar",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190909.59373275089@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792401008469_6",
+    "email": "info@havenhillsynergy.com",
+    "name": "Havenhill Synergy",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190910.22793903822@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792401042030_10",
+    "email": "officer08030973765e.nnoli@greenpowernig.comolaniyi",
+    "name": "GreenPower Overseas",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190910.69522380206@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792401063412_12",
+    "email": "manager08022781454adamaufuoma07@gmail.comayo",
+    "name": "Adsat Global Investment Solution",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190910.43298046658@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792401074456_13",
+    "email": "0129hainsng@gmail.comlois",
+    "name": "HIANS Energy Solutions",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190911.62570682361@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792401084853_14",
+    "email": "+2348036153221ibrahim@felicitysolar.com",
+    "name": "Felicity Solar Ng",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190911.92343238252@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:08:51.513Z"
+  },
+  {
+    "id": "email_1792403702683_39",
+    "email": "info@jamitechenergy.com",
+    "name": "JamiTech Energy Solutions LTD",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190954.91668515276@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:49:27.868Z"
+  },
+  {
+    "id": "email_1792403906177_64",
+    "email": "contact@smksolar.com.ng",
+    "name": "SMK Solar Nigeria",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190958.25145441139@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:49:27.868Z"
+  },
+  {
+    "id": "email_1792403963693_71",
+    "email": "support@solarhaven.com.ng",
+    "name": "The Solar Haven Lagos",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610190959.88959875627@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:49:27.868Z"
+  },
+  {
+    "id": "email_1792404028102_79",
+    "email": "info@colaess.com.cn",
+    "name": "Cola Solar Kaduna",
+    "provider": "brevo_api_v3",
+    "messageId": "<202610191000.11129618566@smtp-relay.mailin.fr>",
+    "voiceNoteAttached": true,
+    "delivered_at": "2026-10-19T09:49:27.868Z"
+  }
+]
