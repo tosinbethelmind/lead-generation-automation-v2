@@ -17,6 +17,7 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /api/admin/journey-analytics
  * Returns real-time journey statistics, funnel analytics, hot leads, unified channel dispatches, and retargeting decisions.
+ */
 export async function GET(req: NextRequest) {
   try {
     // 1. Primary: Query live Contabo VPS journey engine
