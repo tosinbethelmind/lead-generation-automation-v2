@@ -44,7 +44,29 @@ const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindana
 export async function GET() {
   const todayStr = new Date().toISOString().split('T')[0];
 
-  // 1. Genuine Confirmed SMS Telemetry
+  // 1. Primary: Query Contabo VPS live telemetry server (24/7 PM2 Engine)
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const vpsRes = await fetch('http://169.58.182.92:8080/mobile-telemetry', {
+      signal: controller.signal,
+      headers: { 'Cache-Control': 'no-cache, no-store' },
+      cache: 'no-store'
+    });
+    clearTimeout(timeoutId);
+    if (vpsRes.ok) {
+      const vpsData = await vpsRes.json();
+      if (vpsData?.telemetry?.sms?.sentToday !== undefined) {
+        return NextResponse.json(vpsData, {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0'
+          }
+        });
+      }
+    }
+  } catch (_) {}
+
+  // 2. Fallback: Genuine Confirmed SMS Telemetry from local databases
   let smsSentToday = 0;
   let totalSmsAllTime = 0;
   const smsLog = readDbJson('sms_dispatches.json', []);
