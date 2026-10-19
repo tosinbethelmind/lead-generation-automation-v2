@@ -92,9 +92,17 @@ export interface FunnelStatistics {
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
 
 function getJourneyDbFilePath(): string {
-  return isServerless
-    ? path.join('/tmp', 'lead_journeys.json')
-    : path.join(process.cwd(), 'local_db', 'lead_journeys.json');
+  if (isServerless) {
+    const tmpPath = path.join('/tmp', 'lead_journeys.json');
+    const bundlePath = path.join(process.cwd(), 'local_db', 'lead_journeys.json');
+    if (!fs.existsSync(tmpPath) && fs.existsSync(bundlePath)) {
+      try {
+        fs.copyFileSync(bundlePath, tmpPath);
+      } catch (_) {}
+    }
+    return tmpPath;
+  }
+  return path.join(process.cwd(), 'local_db', 'lead_journeys.json');
 }
 
 export function getLagosWatTimestamp(date: Date = new Date()): string {
@@ -113,7 +121,14 @@ export function getLagosWatTimestamp(date: Date = new Date()): string {
 export function getAllLocalLeadJourneys(): Record<string, LeadJourneyRecord> {
   const filePath = getJourneyDbFilePath();
   try {
-    return readJsonFileSyncWithRetry<Record<string, LeadJourneyRecord>>(filePath, {});
+    let data = readJsonFileSyncWithRetry<Record<string, LeadJourneyRecord>>(filePath, {});
+    if ((!data || Object.keys(data).length === 0) && isServerless) {
+      const bundlePath = path.join(process.cwd(), 'local_db', 'lead_journeys.json');
+      if (fs.existsSync(bundlePath)) {
+        data = readJsonFileSyncWithRetry<Record<string, LeadJourneyRecord>>(bundlePath, {});
+      }
+    }
+    return data || {};
   } catch (_) {
     return {};
   }

@@ -7,12 +7,22 @@ export const revalidate = 0;
 
 function readJsonSafe(relPath: string) {
   const p = path.join(process.cwd(), relPath);
-  if (!fs.existsSync(p)) return null;
-  try {
-    return JSON.parse(fs.readFileSync(p, 'utf8'));
-  } catch {
-    return null;
+  if (fs.existsSync(p)) {
+    try {
+      return JSON.parse(fs.readFileSync(p, 'utf8'));
+    } catch {
+      return null;
+    }
   }
+  const tmp = path.join('/tmp', path.basename(relPath));
+  if (fs.existsSync(tmp)) {
+    try {
+      return JSON.parse(fs.readFileSync(tmp, 'utf8'));
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 export async function GET(req: NextRequest) {
@@ -74,8 +84,17 @@ export async function GET(req: NextRequest) {
     const rawDeals = readJsonSafe('local_db/pipeline_deals.json') || {};
     const deals = Array.isArray(rawDeals) ? rawDeals : Object.values(rawDeals);
 
-    // 6. WhatsApp Warmup State
-    const warmup = readJsonSafe('local_db/whatsapp_warmup_state.json');
+    // 6. Genuine Dispatches from SMS & Email logs
+    const rawSms = readJsonSafe('local_db/sms_dispatches.json') || [];
+    const smsCount = Array.isArray(rawSms) ? rawSms.length : 0;
+
+    const rawEmails = readJsonSafe('local_db/email_dispatches.json') || [];
+    const emailCount = Array.isArray(rawEmails) ? rawEmails.length : 0;
+
+    const totalSms = Math.max(smsCount, byChannel['sms'] || 0);
+    const totalEmail = Math.max(emailCount, byChannel['email'] || 0);
+    const totalWa = byChannel['whatsapp'] || 0;
+    const totalChatbot = byChannel['chatbot'] || 0;
 
     const headers = { 'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0' };
 
@@ -86,17 +105,17 @@ export async function GET(req: NextRequest) {
         totalLeads,
         totalContacted: contactedLeads.length,
         uniqueDispatched: uniqueContactedIds.size || contactedLeads.length,
-        totalDispatches: (byChannel['whatsapp'] || 149) + (byChannel['email'] || 44) + (byChannel['sms'] || 38),
+        totalDispatches: totalWa + totalEmail + totalSms,
         dispatchesByChannel: {
-          whatsapp: byChannel['whatsapp'] || 149,
-          email: byChannel['email'] || 44,
-          sms: byChannel['sms'] || 38,
-          chatbot: byChannel['chatbot'] || 2
+          whatsapp: totalWa,
+          email: totalEmail,
+          sms: totalSms,
+          chatbot: totalChatbot
         },
         conversions: {
-          total: (byType['lead_converted'] || 20) + (byType['ai_agent_lead_converted'] || 16),
-          direct: byType['lead_converted'] || 20,
-          aiQualified: byType['ai_agent_lead_converted'] || 16
+          total: (byType['lead_converted'] || 0) + (byType['ai_agent_lead_converted'] || 0),
+          direct: byType['lead_converted'] || 0,
+          aiQualified: byType['ai_agent_lead_converted'] || 0
         },
         appointmentsCount: appointments.length,
         inboundChatSessionsCount: sessions.length,

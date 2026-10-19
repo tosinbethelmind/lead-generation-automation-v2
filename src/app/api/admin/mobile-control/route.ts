@@ -20,16 +20,25 @@ const {
   CORPORATE_BANK 
 } = require('../../../../../scripts/lib/closer_engine');
 
-const LOCAL_DB = path.join(process.cwd(), 'local_db');
-const EMAIL_DISPATCHES_PATH = path.join(LOCAL_DB, 'email_dispatches.json');
-const EMAIL_STATE_PATH = path.join(LOCAL_DB, 'email_daemon_state.json');
-const SMS_DISPATCHES_PATH = path.join(LOCAL_DB, 'sms_dispatches.json');
-const ACTIVITIES_PATH = path.join(LOCAL_DB, 'activities.json');
-const WEBFORM_LOG_PATH = path.join(LOCAL_DB, 'real_webform_submissions.json');
-const LEADS_DB_PATH = path.join(LOCAL_DB, 'leads_db.json');
-const CRM_LEADS_PATH = path.join(LOCAL_DB, 'crm_leads.json');
-const SITES_DIR = path.join(process.cwd(), 'src/data/sites');
+function resolveDbPath(filename: string): string {
+  const local = path.join(process.cwd(), 'local_db', filename);
+  if (fs.existsSync(local)) return local;
+  const tmp = path.join('/tmp', filename);
+  if (fs.existsSync(tmp)) return tmp;
+  return local;
+}
 
+function readDbJson(filename: string, defaultValue: any = []): any {
+  const p = resolveDbPath(filename);
+  if (!fs.existsSync(p)) return defaultValue;
+  try {
+    return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch {
+    return defaultValue;
+  }
+}
+
+const SITES_DIR = path.join(process.cwd(), 'src/data/sites');
 const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
 
 export async function GET() {
@@ -38,125 +47,146 @@ export async function GET() {
   // 1. Genuine Confirmed SMS Telemetry
   let smsSentToday = 0;
   let totalSmsAllTime = 0;
-  if (fs.existsSync(SMS_DISPATCHES_PATH)) {
-    try {
-      const smsLog = JSON.parse(fs.readFileSync(SMS_DISPATCHES_PATH, 'utf8') || '[]');
-      if (Array.isArray(smsLog)) {
-        totalSmsAllTime = smsLog.length;
-        smsSentToday = smsLog.filter(s => (s.delivered_at || s.timestamp || s.sent_at || s.date || '').startsWith(todayStr)).length;
-      }
-    } catch (_) {}
+  const smsLog = readDbJson('sms_dispatches.json', []);
+  if (Array.isArray(smsLog)) {
+    totalSmsAllTime = smsLog.length;
+    smsSentToday = smsLog.filter(s => (s.delivered_at || s.timestamp || s.sent_at || s.date || '').startsWith(todayStr)).length;
   }
 
   // Fallback to activities.json if sms_dispatches is not present on serverless
-  if (smsSentToday === 0 && fs.existsSync(ACTIVITIES_PATH)) {
-    try {
-      const acts = JSON.parse(fs.readFileSync(ACTIVITIES_PATH, 'utf8') || '[]');
-      if (Array.isArray(acts)) {
-        smsSentToday = acts.filter(a => (a.timestamp || a.created_at || '').startsWith(todayStr) && (a.smsSent || a.channel === 'sms' || a.type?.includes('sms'))).length;
-      }
-    } catch (_) {}
+  if (smsSentToday === 0) {
+    const acts = readDbJson('activities.json', []);
+    if (Array.isArray(acts)) {
+      smsSentToday = acts.filter(a => (a.timestamp || a.created_at || '').startsWith(todayStr) && (a.smsSent || a.channel === 'sms' || a.type?.includes('sms'))).length;
+    }
   }
 
   // 2. Genuine Confirmed Emails Telemetry
   let emailsSentToday = 0;
   let totalEmailsAllTime = 0;
-  if (fs.existsSync(EMAIL_DISPATCHES_PATH)) {
-    try {
-      const emailLog = JSON.parse(fs.readFileSync(EMAIL_DISPATCHES_PATH, 'utf8') || '[]');
-      if (Array.isArray(emailLog)) {
-        totalEmailsAllTime = emailLog.length;
-        emailsSentToday = emailLog.filter(e => (e.delivered_at || e.timestamp || '').startsWith(todayStr)).length;
-      }
-    } catch (_) {}
+  const emailLog = readDbJson('email_dispatches.json', []);
+  if (Array.isArray(emailLog)) {
+    totalEmailsAllTime = emailLog.length;
+    emailsSentToday = emailLog.filter(e => (e.delivered_at || e.timestamp || '').startsWith(todayStr)).length;
   }
 
-  if (emailsSentToday === 0 && fs.existsSync(ACTIVITIES_PATH)) {
-    try {
-      const acts = JSON.parse(fs.readFileSync(ACTIVITIES_PATH, 'utf8') || '[]');
-      if (Array.isArray(acts)) {
-        emailsSentToday = acts.filter(a => (a.timestamp || a.created_at || '').startsWith(todayStr) && (a.emailSent || a.channel === 'email' || a.type?.includes('email'))).length;
-      }
-    } catch (_) {}
+  if (emailsSentToday === 0) {
+    const acts = readDbJson('activities.json', []);
+    if (Array.isArray(acts)) {
+      emailsSentToday = acts.filter(a => (a.timestamp || a.created_at || '').startsWith(todayStr) && (a.emailSent || a.channel === 'email' || a.type?.includes('email'))).length;
+    }
   }
 
-  if (fs.existsSync(EMAIL_STATE_PATH)) {
-    try {
-      const state = JSON.parse(fs.readFileSync(EMAIL_STATE_PATH, 'utf8'));
-      if (state.totalDeliveredAllTime) totalEmailsAllTime = Math.max(totalEmailsAllTime, state.totalDeliveredAllTime);
-    } catch (_) {}
+  const emailState = readDbJson('email_daemon_state.json', null);
+  if (emailState?.totalDeliveredAllTime) {
+    totalEmailsAllTime = Math.max(totalEmailsAllTime, emailState.totalDeliveredAllTime);
   }
 
   // 3. Webforms Telemetry
   let webformsToday = 0;
   let webformsTotal = 0;
-  if (fs.existsSync(WEBFORM_LOG_PATH)) {
-    try {
-      const logs = JSON.parse(fs.readFileSync(WEBFORM_LOG_PATH, 'utf8'));
-      if (Array.isArray(logs)) {
-        webformsTotal = logs.length;
-        webformsToday = logs.filter((l: any) =>
-          (l.submitted_at || l.deliveredAt || '').startsWith(todayStr) && l.success === true
-        ).length;
-      }
-    } catch (_) {}
+  const webformLogs = readDbJson('real_webform_submissions.json', []);
+  if (Array.isArray(webformLogs)) {
+    webformsTotal = webformLogs.length;
+    webformsToday = webformLogs.filter((l: any) =>
+      (l.submitted_at || l.deliveredAt || '').startsWith(todayStr) && l.success === true
+    ).length;
   }
 
   // 4. Genuine Leads Database & Active Prospects
   let totalLeadsCount = 0;
   let activeProspects: any[] = [];
-  if (fs.existsSync(LEADS_DB_PATH)) {
-    try {
-      const leads = JSON.parse(fs.readFileSync(LEADS_DB_PATH, 'utf8'));
-      const list = Array.isArray(leads) ? leads : Object.values(leads);
-      totalLeadsCount = list.length;
+  
+  const rawLeads = readDbJson('leads_db.json', []);
+  const list = Array.isArray(rawLeads) ? rawLeads : Object.values(rawLeads);
+  totalLeadsCount = list.length;
 
-      // Prioritize prospects contacted today
-      const contactedToday = list.filter((l: any) => (l.last_contacted_at || '').startsWith(todayStr));
-      const remainingLeads = list.filter((l: any) => !(l.last_contacted_at || '').startsWith(todayStr));
-      const combined = [...contactedToday.reverse(), ...remainingLeads.slice(-30).reverse()];
-
-      activeProspects = combined.slice(0, 35).map((l: any) => {
-        const rawName = String(l.name || l.business_name || 'Business').split('||')[0].split('|')[0].trim();
-        const cleanPhone = String(l.phone_e164 || l.phone || l.phone_raw || '').replace(/\D/g, '');
-        const slug = (l.preview_url && String(l.preview_url).replace(/^.*\/preview\//, '')) ||
-                     (l.id && !String(l.id).startsWith('lead_1') ? l.id : '') ||
-                     toSafeSlug(rawName, cleanPhone.slice(-10) || 'demo');
-        
-        // Highlight active hot prospect
-        const isHotProspect = cleanPhone.includes('8086286109') || rawName.toLowerCase().includes('perennial');
-
-        return {
-          id: l.id || l.lead_id || slug,
-          slug,
-          name: rawName,
-          category: l.category || 'Solar & Inverter Systems',
-          phone: cleanPhone,
-          displayPhone: cleanPhone.startsWith('234') ? '0' + cleanPhone.slice(3) : cleanPhone,
-          email: l.email || '',
-          area: l.area || l.city || 'Lagos',
-          outreach_sent: Boolean(l.last_contacted_at?.startsWith(todayStr) || l.email_sent || l.sms_sent),
-          status: isHotProspect ? 'PREVIEW_VIEWED (Active Hot)' : 'OUTREACH_DISPATCHED',
-          heatScore: isHotProspect ? 55 : 35,
-          claimed: Boolean(l.claimed),
-          previewUrl: `${APP_ORIGIN}/preview/${slug}`,
-          liveSiteUrl: `${APP_ORIGIN}/sites/${slug}`,
-          handoverUrl: `${APP_ORIGIN}/handover/${slug}`
-        };
-      });
-    } catch (_) {}
+  const rawJourneys = readDbJson('lead_journeys.json', {});
+  const journeysList: any[] = typeof rawJourneys === 'object' && rawJourneys !== null ? Object.values(rawJourneys) : [];
+  if (totalLeadsCount === 0 && journeysList.length > 0) {
+    totalLeadsCount = journeysList.length;
   }
+
+  // Find journeys contacted or active today
+  const activeTodayJourneys = journeysList.filter((j: any) => {
+    const lastActive = (j.lastActiveIso || j.createdAt || '').split('T')[0];
+    const hasTodayEvent = (j.events || []).some((e: any) => (e.timestamp || '').startsWith(todayStr));
+    return lastActive === todayStr || hasTodayEvent;
+  });
+
+  // Prioritize prospects contacted today
+  const contactedToday = list.filter((l: any) => (l.last_contacted_at || '').startsWith(todayStr));
+  const remainingLeads = list.filter((l: any) => !(l.last_contacted_at || '').startsWith(todayStr));
+  
+  // Build active prospect cards from journeys + leads
+  const journeyProspects = activeTodayJourneys.map((j: any) => {
+    const rawName = String(j.leadName || 'Solar Enterprise').trim();
+    const cleanPhone = String(j.phone || '').replace(/\D/g, '');
+    const isHotProspect = cleanPhone.includes('8086286109') || rawName.toLowerCase().includes('perennial') || (j.heatScore || 0) >= 50;
+    const slug = (j.previewUrl && String(j.previewUrl).replace(/^.*\/preview\//, '')) || j.leadId;
+
+    return {
+      id: j.leadId,
+      slug,
+      name: rawName,
+      category: j.category || 'Solar & Inverter Systems',
+      phone: cleanPhone,
+      displayPhone: cleanPhone.startsWith('234') ? '0' + cleanPhone.slice(3) : cleanPhone,
+      email: j.email || '',
+      area: j.area || 'Lagos',
+      outreach_sent: true,
+      status: isHotProspect ? 'PREVIEW_VIEWED (Active Hot)' : 'OUTREACH_DISPATCHED',
+      heatScore: isHotProspect ? Math.max(55, j.heatScore || 55) : (j.heatScore || 35),
+      claimed: false,
+      previewUrl: `${APP_ORIGIN}/preview/${slug}`,
+      liveSiteUrl: `${APP_ORIGIN}/sites/${slug}`,
+      handoverUrl: `${APP_ORIGIN}/handover/${slug}`
+    };
+  });
+
+  const generalProspects = [...contactedToday.reverse(), ...remainingLeads.slice(-30).reverse()].map((l: any) => {
+    const rawName = String(l.name || l.business_name || 'Business').split('||')[0].split('|')[0].trim();
+    const cleanPhone = String(l.phone_e164 || l.phone || l.phone_raw || '').replace(/\D/g, '');
+    const slug = (l.preview_url && String(l.preview_url).replace(/^.*\/preview\//, '')) ||
+                 (l.id && !String(l.id).startsWith('lead_1') ? l.id : '') ||
+                 toSafeSlug(rawName, cleanPhone.slice(-10) || 'demo');
+    
+    const isHotProspect = cleanPhone.includes('8086286109') || rawName.toLowerCase().includes('perennial');
+
+    return {
+      id: l.id || l.lead_id || slug,
+      slug,
+      name: rawName,
+      category: l.category || 'Solar & Inverter Systems',
+      phone: cleanPhone,
+      displayPhone: cleanPhone.startsWith('234') ? '0' + cleanPhone.slice(3) : cleanPhone,
+      email: l.email || '',
+      area: l.area || l.city || 'Lagos',
+      outreach_sent: Boolean(l.last_contacted_at?.startsWith(todayStr) || l.email_sent || l.sms_sent),
+      status: isHotProspect ? 'PREVIEW_VIEWED (Active Hot)' : 'OUTREACH_DISPATCHED',
+      heatScore: isHotProspect ? 55 : 35,
+      claimed: Boolean(l.claimed),
+      previewUrl: `${APP_ORIGIN}/preview/${slug}`,
+      liveSiteUrl: `${APP_ORIGIN}/sites/${slug}`,
+      handoverUrl: `${APP_ORIGIN}/handover/${slug}`
+    };
+  });
+
+  // Deduplicate and prioritize hot prospects first
+  const seenIds = new Set<string>();
+  const combinedProspects: any[] = [];
+  for (const p of [...journeyProspects, ...generalProspects]) {
+    if (!seenIds.has(p.id) && !seenIds.has(p.slug)) {
+      seenIds.add(p.id);
+      seenIds.add(p.slug);
+      combinedProspects.push(p);
+    }
+  }
+  activeProspects = combinedProspects.slice(0, 35);
 
   // 5. Inbound WhatsApp Leads (CRM)
-  let crmLeads: any[] = [];
-  if (fs.existsSync(CRM_LEADS_PATH)) {
-    try {
-      const crm = JSON.parse(fs.readFileSync(CRM_LEADS_PATH, 'utf8'));
-      if (Array.isArray(crm)) {
-        crmLeads = crm.slice(0, 30);
-      }
-    } catch (_) {}
-  }
+  const crmRaw = readDbJson('crm_leads.json', []);
+  const crmLeads = Array.isArray(crmRaw) ? crmRaw.slice(0, 30) : [];
 
   // 6. Provisioned Sites
   let provisionedSites: any[] = [];

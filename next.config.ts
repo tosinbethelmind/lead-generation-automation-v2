@@ -69,7 +69,11 @@ const nextConfig: NextConfig = {
   ],
   outputFileTracingExcludes: {
     '*': [
-      './local_db/**/*',
+      './local_db/**/*.log',
+      './local_db/**/*.tmp*',
+      './local_db/baileys_auth*/**/*',
+      './local_db/evolution_auth*/**/*',
+      './local_db/jiji_browser_profile/**/*',
       './data/raw_leads/**/*',
       './data/cache/**/*',
       './public/assets/audio/**/*',
@@ -77,7 +81,18 @@ const nextConfig: NextConfig = {
     ]
   },
   outputFileTracingIncludes: {
-    '/**': ['./data/blog_posts/**/*']
+    '/**': [
+      './data/blog_posts/**/*',
+      './local_db/sms_dispatches.json',
+      './local_db/email_dispatches.json',
+      './local_db/email_daemon_state.json',
+      './local_db/activities.json',
+      './local_db/lead_journeys.json',
+      './local_db/crm_leads.json',
+      './local_db/leads_db.json',
+      './local_db/real_webform_submissions.json',
+      './local_db/retargeting_decisions.json'
+    ]
   },
   async headers() {
     return [

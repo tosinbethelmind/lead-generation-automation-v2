@@ -118,7 +118,9 @@ export default function CleanExecutiveAdminDashboard() {
       }
 
       // 1b. Fetch Analytics & Responses
-      const analyticsRes = await fetch('/api/admin/analytics').catch(() => null);
+      const analyticsRes = await fetch('/api/admin/analytics', {
+        headers: { 'x-admin-token': 'bethelmind_admin_2026' }
+      }).catch(() => null);
       if (analyticsRes?.ok) {
         const aData = await analyticsRes.json();
         if (aData?.success) {

@@ -150,15 +150,30 @@ export const ACTIVITY_ICONS: Record<string, { icon: string; color: string; label
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
 
 function getActivitiesFilePath(): string {
-  return isServerless
-    ? path.join('/tmp', 'activities.json')
-    : path.join(process.cwd(), 'local_db', 'activities.json');
+  if (isServerless) {
+    const tmpPath = path.join('/tmp', 'activities.json');
+    const bundlePath = path.join(process.cwd(), 'local_db', 'activities.json');
+    if (!fs.existsSync(tmpPath) && fs.existsSync(bundlePath)) {
+      try {
+        fs.copyFileSync(bundlePath, tmpPath);
+      } catch (_) {}
+    }
+    return tmpPath;
+  }
+  return path.join(process.cwd(), 'local_db', 'activities.json');
 }
 
 function readLocalActivities(): Activity[] {
   try {
     const filePath = getActivitiesFilePath();
-    return readJsonFileSyncWithRetry<Activity[]>(filePath, []);
+    let acts = readJsonFileSyncWithRetry<Activity[]>(filePath, []);
+    if ((!acts || acts.length === 0) && isServerless) {
+      const bundlePath = path.join(process.cwd(), 'local_db', 'activities.json');
+      if (fs.existsSync(bundlePath)) {
+        acts = readJsonFileSyncWithRetry<Activity[]>(bundlePath, []);
+      }
+    }
+    return acts || [];
   } catch {
     return [];
   }

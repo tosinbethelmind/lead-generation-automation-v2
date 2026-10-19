@@ -148,7 +148,11 @@ export default function CustomerJourneyAnalyticsPage() {
 
   const fetchAnalytics = async () => {
     try {
-      const res = await fetch('/api/admin/journey-analytics');
+      const res = await fetch('/api/admin/journey-analytics', {
+        headers: {
+          'x-admin-token': 'bethelmind_admin_2026'
+        }
+      });
       const data = await res.json();
       if (data.success) {
         setFunnelStats(data.funnelStats);
@@ -178,7 +182,10 @@ export default function CustomerJourneyAnalyticsPage() {
     try {
       const res = await fetch('/api/admin/journey-analytics', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
         body: JSON.stringify({ action: 'run_audit' })
       });
       const data = await res.json();
@@ -199,7 +206,10 @@ export default function CustomerJourneyAnalyticsPage() {
     try {
       const res = await fetch('/api/admin/journey-analytics', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
         body: JSON.stringify({
           action: 'execute_decision',
           decisionId
@@ -229,7 +239,10 @@ export default function CustomerJourneyAnalyticsPage() {
       try {
         await fetch('/api/admin/journey-analytics', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-admin-token': 'bethelmind_admin_2026'
+          },
           body: JSON.stringify({ action: 'execute_decision', decisionId: d.id })
         });
         sent++;
@@ -244,7 +257,10 @@ export default function CustomerJourneyAnalyticsPage() {
     try {
       await fetch('/api/admin/journey-analytics', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
         body: JSON.stringify({ action: 'dismiss_decision', decisionId })
       });
       if (editingDecision?.id === decisionId) setEditingDecision(null);

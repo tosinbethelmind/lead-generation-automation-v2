@@ -84,7 +84,11 @@ export default function MobileAdminCommandCenter() {
 
   const fetchTelemetry = async () => {
     try {
-      const res = await fetch('/api/admin/mobile-control');
+      const res = await fetch('/api/admin/mobile-control', {
+        headers: {
+          'x-admin-token': 'bethelmind_admin_2026'
+        }
+      });
       if (res.ok) {
         const data = await res.json();
         setTelemetry(data.telemetry);
@@ -116,7 +120,10 @@ export default function MobileAdminCommandCenter() {
     try {
       const res = await fetch('/api/admin/mobile-control', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
         body: JSON.stringify({ action: actionKey })
       });
       const data = await res.json();
@@ -141,7 +148,10 @@ export default function MobileAdminCommandCenter() {
     try {
       const res = await fetch('/api/admin/mobile-control', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
         body: JSON.stringify({
           action: 'claim_lead_site',
           businessName: claimName,
@@ -172,7 +182,10 @@ export default function MobileAdminCommandCenter() {
     try {
       const res = await fetch('/api/admin/mobile-control', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
         body: JSON.stringify({
           action: 'onboard_client_domain',
           slug: onboardSlug,
@@ -203,7 +216,10 @@ export default function MobileAdminCommandCenter() {
     try {
       const res = await fetch('/api/admin/mobile-control', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
         body: JSON.stringify({
           action: 'test_ai_query',
           message: q,

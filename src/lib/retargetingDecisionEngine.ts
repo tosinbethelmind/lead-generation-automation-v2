@@ -73,15 +73,30 @@ export interface RetargetingDecision {
 const isServerless = !!(process.env.VERCEL || process.env.LAMBDA_TASK_ROOT || process.env.AWS_EXECUTION_ENV);
 
 function getDecisionsFilePath(): string {
-  return isServerless
-    ? path.join('/tmp', 'retargeting_decisions.json')
-    : path.join(process.cwd(), 'local_db', 'retargeting_decisions.json');
+  if (isServerless) {
+    const tmpPath = path.join('/tmp', 'retargeting_decisions.json');
+    const bundlePath = path.join(process.cwd(), 'local_db', 'retargeting_decisions.json');
+    if (!fs.existsSync(tmpPath) && fs.existsSync(bundlePath)) {
+      try {
+        fs.copyFileSync(bundlePath, tmpPath);
+      } catch (_) {}
+    }
+    return tmpPath;
+  }
+  return path.join(process.cwd(), 'local_db', 'retargeting_decisions.json');
 }
 
 export function getAllRetargetingDecisions(): Record<string, RetargetingDecision> {
   const filePath = getDecisionsFilePath();
   try {
-    return readJsonFileSyncWithRetry<Record<string, RetargetingDecision>>(filePath, {});
+    let data = readJsonFileSyncWithRetry<Record<string, RetargetingDecision>>(filePath, {});
+    if ((!data || Object.keys(data).length === 0) && isServerless) {
+      const bundlePath = path.join(process.cwd(), 'local_db', 'retargeting_decisions.json');
+      if (fs.existsSync(bundlePath)) {
+        data = readJsonFileSyncWithRetry<Record<string, RetargetingDecision>>(bundlePath, {});
+      }
+    }
+    return data || {};
   } catch (_) {
     return {};
   }
