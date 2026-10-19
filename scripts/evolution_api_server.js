@@ -942,10 +942,44 @@ app.get('/journey-analytics', (req, res) => {
     activeTodayCount
   };
 
-  const hotLeads = list
-    .filter(j => (j.heatScore || 0) >= 30)
-    .sort((a, b) => (b.heatScore || 0) - (a.heatScore || 0))
-    .slice(0, 30);
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // All today active leads with complete rich timeline
+  const todayActiveLeads = list
+    .filter(j => j.lastActiveIso && j.lastActiveIso.startsWith(todayStr))
+    .sort((a, b) => new Date(b.lastActiveIso).getTime() - new Date(a.lastActiveIso).getTime());
+
+  // Hot leads: prioritize today's active leads first, then highest heat scores
+  const hotLeads = [...list]
+    .sort((a, b) => {
+      const aToday = (a.lastActiveIso && a.lastActiveIso.startsWith(todayStr)) ? 1 : 0;
+      const bToday = (b.lastActiveIso && b.lastActiveIso.startsWith(todayStr)) ? 1 : 0;
+      if (bToday !== aToday) return bToday - aToday;
+      const bScore = (b.heatScore || 0);
+      const aScore = (a.heatScore || 0);
+      if (bScore !== aScore) return bScore - aScore;
+      return new Date(b.lastActiveIso || 0).getTime() - new Date(a.lastActiveIso || 0).getTime();
+    })
+    .slice(0, 100);
+
+  // Today's dispatches detail
+  let todaySmsList = [];
+  const smsLogPath = path.join(localDb, 'sms_dispatches.json');
+  if (fs.existsSync(smsLogPath)) {
+    try {
+      const allSms = JSON.parse(fs.readFileSync(smsLogPath, 'utf8'));
+      todaySmsList = allSms.filter(s => (s.delivered_at || s.timestamp || '').startsWith(todayStr));
+    } catch (_) {}
+  }
+
+  let todayEmailList = [];
+  const emailLogPath = path.join(localDb, 'email_dispatches.json');
+  if (fs.existsSync(emailLogPath)) {
+    try {
+      const allEmails = JSON.parse(fs.readFileSync(emailLogPath, 'utf8'));
+      todayEmailList = allEmails.filter(e => (e.delivered_at || e.timestamp || '').startsWith(todayStr));
+    } catch (_) {}
+  }
 
   let retargetingDecisions = [];
   const decPath = path.join(localDb, 'retargeting_decisions.json');
@@ -958,25 +992,36 @@ app.get('/journey-analytics', (req, res) => {
 
   const recentJourneys = list
     .sort((a, b) => new Date(b.lastActiveIso || b.createdAt).getTime() - new Date(a.lastActiveIso || a.createdAt).getTime())
-    .slice(0, 30);
+    .slice(0, 50);
 
   const liveFeed = recentJourneys
     .flatMap(j => (j.events || []).map(e => ({
       ...e,
+      leadId: j.leadId,
       leadName: j.leadName,
       category: j.category,
       heatScore: j.heatScore,
       intentLevel: j.intentLevel,
-      area: j.area || 'Lagos'
+      area: j.area || 'Lagos',
+      phone: j.phone || '',
+      email: j.email || '',
+      previewUrl: j.previewUrl || `https://www.bethelmindanalytics.com/preview/${j.leadId}`
     })))
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-    .slice(0, 40);
+    .slice(0, 60);
 
   res.json({
     success: true,
     timestamp: new Date().toISOString(),
     funnelStats,
     hotLeads,
+    todayActiveLeads,
+    todayDispatches: {
+      smsCount: todaySmsList.length,
+      emailCount: todayEmailList.length,
+      sms: todaySmsList.slice(0, 50),
+      emails: todayEmailList.slice(0, 50)
+    },
     retargetingDecisions,
     liveFeed
   });

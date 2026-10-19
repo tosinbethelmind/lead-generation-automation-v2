@@ -74,17 +74,14 @@ conn.on('ready', () => {
       }
 
       console.log(`Uploading ${path.basename(item.local)} (${fs.statSync(item.local).size} bytes) -> ${item.remote}...`);
-      const readStream = fs.createReadStream(item.local);
-      const writeStream = sftp.createWriteStream(item.remote);
-      writeStream.on('close', () => {
-        console.log(`✅ ${path.basename(item.local)} synced to VPS.`);
+      sftp.fastPut(item.local, item.remote, (err) => {
+        if (err) {
+          console.error(`SFTP fastPut error for ${item.remote}:`, err.message);
+        } else {
+          console.log(`✅ ${path.basename(item.local)} synced to VPS.`);
+        }
         uploadNext();
       });
-      writeStream.on('error', (wErr) => {
-        console.error(`SFTP write error for ${item.remote}:`, wErr);
-        uploadNext();
-      });
-      readStream.pipe(writeStream);
     }
 
     uploadNext();

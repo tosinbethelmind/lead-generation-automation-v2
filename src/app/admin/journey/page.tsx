@@ -126,6 +126,9 @@ interface LiveFeedEvent {
 export default function CustomerJourneyAnalyticsPage() {
   const [funnelStats, setFunnelStats] = useState<FunnelStats | null>(null);
   const [hotLeads, setHotLeads] = useState<LeadRecord[]>([]);
+  const [todayActiveLeads, setTodayActiveLeads] = useState<LeadRecord[]>([]);
+  const [todayDispatches, setTodayDispatches] = useState<{ smsCount: number; emailCount: number; sms: any[]; emails: any[] } | null>(null);
+  const [activeTabMode, setActiveTabMode] = useState<'TODAY' | 'ALL_TIME' | 'DISPATCHES'>('TODAY');
   const [decisions, setDecisions] = useState<RetargetingDecision[]>([]);
   const [liveFeed, setLiveFeed] = useState<LiveFeedEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -146,6 +149,37 @@ export default function CustomerJourneyAnalyticsPage() {
   const [selectedLine, setSelectedLine] = useState<'LINE_1' | 'LINE_2' | 'LINE_3'>('LINE_2');
   const [batchExecuting, setBatchExecuting] = useState(false);
 
+  const handleSelectLeadFromEvent = (evt: LiveFeedEvent) => {
+    const match = [...todayActiveLeads, ...hotLeads].find(l => l.leadId === evt.leadId || l.leadName === evt.leadName);
+    if (match) {
+      setSelectedLead(match);
+    } else {
+      setSelectedLead({
+        leadId: evt.leadId,
+        leadName: evt.leadName,
+        category: evt.category || 'Solar & Inverter Systems',
+        phone: evt.phone || '',
+        email: evt.email || '',
+        area: evt.area || 'Lagos',
+        heatScore: evt.heatScore || 35,
+        intentLevel: (evt.intentLevel as any) || 'WARM',
+        previewUrl: evt.previewUrl || `https://www.bethelmindanalytics.com/preview/${evt.leadId}`,
+        currentStage: evt.stage || 'OUTREACH_DISPATCHED',
+        lastActiveIso: evt.timestamp,
+        lastUpdatedWat: evt.timestampWat,
+        metrics: {
+          pageViews: 0,
+          calculatorInteractions: 0,
+          videoWatchSec: 0,
+          chatMessages: 0,
+          checkoutAttempts: 0,
+          totalTimeSec: 0
+        },
+        events: [evt]
+      });
+    }
+  };
+
   const fetchAnalytics = async () => {
     try {
       const res = await fetch('/api/admin/journey-analytics', {
@@ -157,6 +191,8 @@ export default function CustomerJourneyAnalyticsPage() {
       if (data.success) {
         setFunnelStats(data.funnelStats);
         setHotLeads(data.hotLeads || []);
+        setTodayActiveLeads(data.todayActiveLeads || []);
+        setTodayDispatches(data.todayDispatches || null);
         setDecisions(data.retargetingDecisions || []);
         setLiveFeed(data.liveFeed || []);
       }
@@ -296,6 +332,18 @@ export default function CustomerJourneyAnalyticsPage() {
       );
     });
   }, [hotLeads, searchQuery]);
+
+  // Filtered today active leads list
+  const filteredTodayLeads = useMemo(() => {
+    return todayActiveLeads.filter(lead => {
+      return (
+        lead.leadName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (lead.phone && lead.phone.includes(searchQuery)) ||
+        (lead.area && lead.area.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        lead.category.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
+  }, [todayActiveLeads, searchQuery]);
 
   const getHeatBadgeColor = (score: number) => {
     if (score >= 80) return 'bg-rose-500/20 text-rose-400 border-rose-500/40';
@@ -655,74 +703,131 @@ export default function CustomerJourneyAnalyticsPage() {
         {/* ── RIGHT COLUMN: HOT LEADS BEHAVIORAL LEADERBOARD ── */}
         <div className="lg:col-span-5 space-y-4">
           <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Flame className="w-5 h-5 text-rose-400" />
-                  Hot Leads Leaderboard
+                  {activeTabMode === 'TODAY' ? "Today's Active Solar Leads" : activeTabMode === 'DISPATCHES' ? "Today's Dispatches Ledger" : "Hot Leads Leaderboard"}
                 </h2>
-                <p className="text-xs text-slate-400">Prospects ranked by real-time behavioral interaction score.</p>
+                <p className="text-xs text-slate-400">
+                  {activeTabMode === 'TODAY' 
+                    ? "Verified leads touched today via Airtel SMS & Email outreach."
+                    : activeTabMode === 'DISPATCHES'
+                    ? "Detailed real-action carrier delivery logs for today."
+                    : "Prospects ranked by real-time behavioral interaction score."}
+                </p>
               </div>
-              <span className="text-xs font-mono text-slate-500">{filteredHotLeads.length} lead{filteredHotLeads.length === 1 ? '' : 's'}</span>
             </div>
 
-            {filteredHotLeads.length === 0 ? (
-              <div className="text-center py-16 text-slate-500 text-sm">
-                No hot leads recorded yet. As leads interact with preview prototypes, they will appear here.
-              </div>
-            ) : (
-              <div className="space-y-3 max-h-[680px] overflow-y-auto pr-1">
-                {filteredHotLeads.map((lead, idx) => (
-                  <div
-                    key={lead.leadId}
-                    onClick={() => setSelectedLead(lead)}
-                    className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-emerald-500/50 transition-all flex items-center justify-between gap-3 cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-mono font-bold text-xs text-slate-300 group-hover:bg-emerald-500/20 group-hover:text-emerald-400">
-                        #{idx + 1}
-                      </div>
-                      <div>
-                        <div className="font-bold text-white text-sm flex items-center gap-1.5">
-                          <span className="group-hover:text-emerald-400 transition-colors">{lead.leadName}</span>
-                          <span className={`px-2 py-0.2 text-[10px] font-extrabold rounded-full border ${getHeatBadgeColor(lead.heatScore)}`}>
-                            {lead.heatScore}★
-                          </span>
-                        </div>
-                        <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
-                          <span>{lead.category}</span>
-                          {lead.area && <span>• {lead.area}</span>}
-                        </div>
-                        {/* Micro-interaction icons */}
-                        <div className="flex items-center gap-3 text-[11px] text-slate-500 mt-1.5">
-                          <span className="flex items-center gap-1"><Eye className="w-3 h-3 text-cyan-400" /> {lead.metrics?.pageViews || 0}</span>
-                          <span className="flex items-center gap-1"><Calculator className="w-3 h-3 text-indigo-400" /> {lead.metrics?.calculatorInteractions || 0}</span>
-                          <span className="flex items-center gap-1"><Video className="w-3 h-3 text-purple-400" /> {lead.metrics?.videoWatchSec || 0}s</span>
-                          {lead.metrics?.checkoutAttempts > 0 && (
-                            <span className="flex items-center gap-1 text-rose-400 font-bold"><ShoppingCart className="w-3 h-3" /> Checkout</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+            {/* Tab switchers: Today's Active Leads vs All-Time Hot Leads vs Dispatches */}
+            <div className="flex items-center gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800 mb-4 text-xs font-semibold">
+              <button
+                onClick={() => setActiveTabMode('TODAY')}
+                className={`flex-1 py-1.5 px-2 rounded-lg transition-all text-center ${
+                  activeTabMode === 'TODAY' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                ⚡ Today ({filteredTodayLeads.length})
+              </button>
+              <button
+                onClick={() => setActiveTabMode('ALL_TIME')}
+                className={`flex-1 py-1.5 px-2 rounded-lg transition-all text-center ${
+                  activeTabMode === 'ALL_TIME' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                🔥 Hot Leads ({filteredHotLeads.length})
+              </button>
+              <button
+                onClick={() => setActiveTabMode('DISPATCHES')}
+                className={`flex-1 py-1.5 px-2 rounded-lg transition-all text-center ${
+                  activeTabMode === 'DISPATCHES' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                📨 Dispatches ({todayDispatches?.smsCount || 0})
+              </button>
+            </div>
 
-                    <div className="flex flex-col items-end gap-1.5 shrink-0">
-                      {lead.phone && (
-                        <a
-                          href={`https://wa.me/${lead.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Good day ${lead.leadName}, checking in regarding your interactive portal preview!`)}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="px-3 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1 transition-all"
-                        >
-                          <MessageSquare className="w-3 h-3" /> Chat
-                        </a>
-                      )}
-                      <span className="text-[11px] text-slate-500 group-hover:text-slate-300 flex items-center gap-0.5">
-                        Details <ChevronRight className="w-3 h-3" />
-                      </span>
+            {/* TAB CONTENT: DISPATCHES LEDGER */}
+            {activeTabMode === 'DISPATCHES' ? (
+              <div className="space-y-2.5 max-h-[640px] overflow-y-auto pr-1">
+                <div className="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2 flex items-center justify-between">
+                  <span>📱 Delivered Airtel GSM SMS ({todayDispatches?.smsCount || 0})</span>
+                  <span className="text-[10px] text-slate-500 font-normal">Single-credit Carrier Route</span>
+                </div>
+                {(todayDispatches?.sms || []).slice(0, 30).map((s: any, idx: number) => (
+                  <div key={idx} className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-white">{s.name}</span>
+                      <span className="text-[10px] text-slate-500 font-mono">{(s.delivered_at || '').split('T')[1]?.slice(0, 8) || ''} WAT</span>
+                    </div>
+                    <div className="text-slate-400 font-mono text-[11px]">{s.phone}</div>
+                    <div className="text-slate-300 text-[11px] bg-slate-900/60 p-2 rounded-lg border border-slate-800/80 leading-relaxed">
+                      "{s.message}"
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : (
+              /* TAB CONTENT: LEAD LIST (TODAY OR HOT LEADS) */
+              <div className="space-y-3 max-h-[680px] overflow-y-auto pr-1">
+                {(activeTabMode === 'TODAY' ? filteredTodayLeads : filteredHotLeads).length === 0 ? (
+                  <div className="text-center py-16 text-slate-500 text-sm">
+                    No leads matching current search.
+                  </div>
+                ) : (
+                  (activeTabMode === 'TODAY' ? filteredTodayLeads : filteredHotLeads).map((lead, idx) => (
+                    <div
+                      key={lead.leadId}
+                      onClick={() => setSelectedLead(lead)}
+                      className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-emerald-500/50 transition-all flex items-center justify-between gap-3 cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-mono font-bold text-xs text-slate-300 group-hover:bg-emerald-500/20 group-hover:text-emerald-400">
+                          #{idx + 1}
+                        </div>
+                        <div>
+                          <div className="font-bold text-white text-sm flex items-center gap-1.5">
+                            <span className="group-hover:text-emerald-400 transition-colors">{lead.leadName}</span>
+                            <span className={`px-2 py-0.2 text-[10px] font-extrabold rounded-full border ${getHeatBadgeColor(lead.heatScore)}`}>
+                              {lead.heatScore}★
+                            </span>
+                          </div>
+                          <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
+                            <span>{lead.category}</span>
+                            {lead.area && <span>• {lead.area}</span>}
+                            {lead.phone && <span className="text-slate-500 font-mono">({lead.phone})</span>}
+                          </div>
+                          {/* Micro-interaction icons */}
+                          <div className="flex items-center gap-3 text-[11px] text-slate-500 mt-1.5">
+                            <span className="flex items-center gap-1"><Eye className="w-3 h-3 text-cyan-400" /> {lead.metrics?.pageViews || 0}</span>
+                            <span className="flex items-center gap-1"><Calculator className="w-3 h-3 text-indigo-400" /> {lead.metrics?.calculatorInteractions || 0}</span>
+                            <span className="flex items-center gap-1"><Video className="w-3 h-3 text-purple-400" /> {lead.metrics?.videoWatchSec || 0}s</span>
+                            {lead.metrics?.checkoutAttempts > 0 && (
+                              <span className="flex items-center gap-1 text-rose-400 font-bold"><ShoppingCart className="w-3 h-3" /> Checkout</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        {lead.phone && (
+                          <a
+                            href={`https://wa.me/${lead.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Good day ${lead.leadName}, checking in regarding your interactive solar quote portal preview!`)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="px-3 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1 transition-all"
+                          >
+                            <MessageSquare className="w-3 h-3" /> Chat
+                          </a>
+                        )}
+                        <span className="text-[11px] text-slate-500 group-hover:text-slate-300 flex items-center gap-0.5">
+                          Details <ChevronRight className="w-3 h-3" />
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             )}
           </div>
@@ -737,7 +842,7 @@ export default function CustomerJourneyAnalyticsPage() {
               <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
               Real-Time Customer Journey Live Stream Feed
             </h2>
-            <p className="text-xs text-slate-400">Live incoming stream of prospect page views, calculator sizing, and video progression.</p>
+            <p className="text-xs text-slate-400">Click any prospect event card below to open their complete journey timeline and contact card.</p>
           </div>
           <span className="text-xs text-slate-500 font-mono">Stream: Last 40 Events</span>
         </div>
@@ -749,16 +854,22 @@ export default function CustomerJourneyAnalyticsPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-h-[380px] overflow-y-auto pr-1">
             {liveFeed.map(evt => (
-              <div key={evt.id} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/90 text-xs space-y-2 hover:border-slate-700 transition-all">
+              <div
+                key={evt.id}
+                onClick={() => handleSelectLeadFromEvent(evt)}
+                className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/90 text-xs space-y-2 hover:border-emerald-500/60 hover:bg-slate-900/60 transition-all cursor-pointer group shadow-sm"
+              >
                 <div className="flex items-center justify-between text-slate-400">
-                  <span className="font-bold text-white truncate max-w-[130px]">{evt.leadName}</span>
+                  <span className="font-bold text-white truncate max-w-[130px] group-hover:text-emerald-400 transition-colors">{evt.leadName}</span>
                   <span className="text-[10px] text-slate-500 font-mono">{evt.timestampWat.split('WAT')[0]}</span>
                 </div>
                 <div className="text-slate-200 font-semibold">{evt.title}</div>
                 <div className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">{evt.description}</div>
                 <div className="flex items-center justify-between pt-1.5 border-t border-slate-900 text-[10px] text-slate-400">
                   <span className="truncate max-w-[120px]">{evt.category}</span>
-                  <span className="text-emerald-400 font-mono font-semibold">{evt.channelUsed}</span>
+                  <span className="text-emerald-400 font-mono font-semibold flex items-center gap-0.5">
+                    {evt.channelUsed} <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
                 </div>
               </div>
             ))}
