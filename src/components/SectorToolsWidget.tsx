@@ -58,6 +58,7 @@ export function detectCategoryTab(category: string = ''): SectorToolTab {
   if (/law|legal|attorney|solicitor|advocate|barrister|cac|chamber/.test(c)) return 'legal';
   if (/recruit|talent|hr|staff|hiring/.test(c)) return 'recruitment';
   if (/social|ad|marketing|agency/.test(c)) return 'social_ads';
+  if (/security|cctv|surveillance|guard|alarm|access control|spy|tracking/.test(c)) return 'dva';
   return 'solar';
 }
 

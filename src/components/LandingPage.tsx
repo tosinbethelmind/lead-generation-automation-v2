@@ -1590,9 +1590,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
   );
 
   const getDynamicClaimFee = () => {
-    if (selectedStrategy === 'starter_35k') return 35000; // ₦35,000 Milestone Deposit (₦65,000 October Promo Total, down from ₦130k)
-    if (selectedStrategy === 'standard_full_65k') return 65000; // ₦65,000 Full October Promo One-Time
-    if (selectedStrategy === 'corporate_60k' || selectedStrategy === 'basic_presence' || selectedStrategy === 'plugin') return 60000; // ₦60,000 50% Deposit (₦120,000 Corporate .COM Promo Total, down from ₦240k)
+    if (selectedStrategy === 'starter_35k') return 35000; // Option 1: Starter Go-Live (₦35,000 Milestone Deposit)
+    if (selectedStrategy === 'standard_full_65k') return 65000; // ₦65,000 Full Starter Go-Live One-Time
+    if (selectedStrategy === 'turnkey_75k' || selectedStrategy === 'corporate_60k' || selectedStrategy === 'basic_presence' || selectedStrategy === 'plugin') return 75000; // Option 2: Turnkey Suite (₦75,000 Milestone Deposit)
     if (selectedStrategy === 'script_embed') return 35000;
     if (selectedStrategy === 'zero_risk_staging') return 0;
     if (selectedStrategy === 'full_rebuild') return 125000;
@@ -3781,8 +3781,8 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
         </div>
       )}
 
-      {/* 3-Tier Pricing & Investment Strategy Section — OCTOBER 50% SME DIGITAL GROWTH PROMO */}
-      {isPreview && (
+      {/* Duplicate pricing section hidden — Section 3 in page.tsx provides authoritative 2-Tier Pricing */}
+      {false && isPreview && (
         <section id="pricing" style={{ background: '#f8fafc', padding: '72px 20px', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
           <div style={{ maxWidth: '1120px', margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '44px' }}>
@@ -3798,13 +3798,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 border: '1.5px solid #22c55e',
                 display: 'inline-block'
               }}>
-                🇳🇬 OCTOBER INDEPENDENCE &amp; EMBER-MONTH SME PROMO — 50% PRE-BUILT SETUP SUBSIDY (ENDS OCT 31)
+                🇳🇬 OFFICIAL NIGERIAN SME COMMERCIAL PACKAGES — 50% PRE-BUILT SETUP SUBSIDY (ENDS OCT 31)
               </span>
               <h2 className="font-heading" style={{ fontSize: 'clamp(1.65rem, 3vw, 2.25rem)', fontWeight: 900, color: '#0f172a', marginTop: '16px', marginBottom: '10px' }}>
                 Why Pay ₦130,000–₦240,000 From Scratch? Your Sample Website Is Already 80% Built!
               </h2>
               <p style={{ color: '#475569', maxWidth: '720px', margin: '0 auto', fontSize: '0.96rem', lineHeight: 1.6, fontWeight: 500 }}>
-                Normally, building a corporate website + 24/7 WhatsApp Assistant from scratch takes 3 weeks and costs <strong>₦130,000 to ₦240,000</strong>. Because we already built the live prototype for <strong>{lead.name}</strong> under our <strong>October SME Growth Promo</strong>, you get <strong>50% off</strong> — and you only pay a milestone deposit today while paying the balance <strong>after your website is live on Google!</strong>
+                Normally, building a corporate website + 24/7 WhatsApp Assistant from scratch takes 3 weeks and costs <strong>₦130,000 to ₦240,000</strong>. Because we already built the live prototype for <strong>{lead.name}</strong> under our <strong>Official SME Growth Package</strong>, you get <strong>50% off</strong> — and you only pay a milestone deposit today while paying the balance <strong>after your website is live on Google!</strong>
               </p>
             </div>
 
@@ -3830,7 +3830,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     <p style={{ fontSize: '0.85rem', color: '#0369a1', marginBottom: '20px' }}>Keep your site at {websiteUrl}. Attach our interactive lead calculator in 10 mins.</p>
                     <div style={{ marginBottom: '24px' }}>
                       <span style={{ fontSize: '2.35rem', fontWeight: 900, color: '#0284c7' }}>₦35,000</span>
-                      <span style={{ fontSize: '0.85rem', color: '#64748b', marginLeft: '6px' }}>October Promo Setup</span>
+                      <span style={{ fontSize: '0.85rem', color: '#64748b', marginLeft: '6px' }}>Official SME Package Setup</span>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.88rem', color: '#334155' }}>
                       <li>✓ 1-Line Script Tag / WordPress Plugin Embed</li>
@@ -3868,7 +3868,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 justifyContent: 'space-between'
               }}>
                 <span style={{ position: 'absolute', top: '-14px', left: '24px', background: '#10b981', color: '#fff', fontSize: '0.7rem', fontWeight: 900, padding: '4px 12px', borderRadius: '99px', textTransform: 'uppercase' }}>
-                  🇳🇬 OCTOBER 50% PROMO · MOST POPULAR
+                  🇳🇬 OFFICIAL SME PACKAGE · MOST POPULAR
                 </span>
                 <div>
                   <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0f172a', marginBottom: '6px' }}>1. Official `.COM.NG` Business Website</h3>
@@ -3879,7 +3879,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                       <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>SAVE ₦65,000 (50% OFF)</span>
                     </div>
                     <span style={{ fontSize: '2.1rem', fontWeight: 900, color: '#0f172a' }}>₦65,000</span>
-                    <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 700, marginLeft: '6px' }}>October Promo Total</span>
+                    <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 700, marginLeft: '6px' }}>Official SME Package Total</span>
                     <div style={{ fontSize: '0.82rem', color: '#047857', fontWeight: 800, marginTop: '6px', borderTop: '1px dashed #86efac', paddingTop: '6px' }}>
                       👉 Start Today With ₦35,000 Deposit (Pay ₦30k Balance After Going Live!)
                     </div>
@@ -3904,11 +3904,11 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   textDecoration: 'none',
                   boxShadow: '0 4px 14px rgba(16,185,129,0.3)'
                 }}>
-                  Lock October Promo (₦35,000 Deposit) →
+                  Lock Official SME Package (₦35,000 Deposit) →
                 </a>
               </div>
 
-              {/* Option 2: Corporate .COM Domain + Official Emails + 24/7 AI Suite (October Promo: ₦120,000 Total · Start with ₦60,000 Deposit) */}
+              {/* Option 2: Corporate .COM Domain + Official Emails + 24/7 AI Suite (Official SME Package: ₦120,000 Total · Start with ₦60,000 Deposit) */}
               <div style={{
                 background: '#ffffff',
                 borderRadius: '16px',
@@ -3932,7 +3932,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                       <span style={{ background: '#e0f2fe', color: '#0369a1', fontSize: '0.7rem', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>SAVE ₦120,000 (50% OFF)</span>
                     </div>
                     <span style={{ fontSize: '2.1rem', fontWeight: 900, color: '#0f172a' }}>₦120,000</span>
-                    <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 700, marginLeft: '6px' }}>October Promo Total</span>
+                    <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 700, marginLeft: '6px' }}>Official SME Package Total</span>
                     <div style={{ fontSize: '0.82rem', color: '#0369a1', fontWeight: 800, marginTop: '6px', borderTop: '1px dashed #7dd3fc', paddingTop: '6px' }}>
                       👉 Start Today With ₦60,000 Deposit (Pay ₦60k Balance on Handover!)
                     </div>
@@ -3992,7 +3992,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                     <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Send Your Shop Photos &amp; Logo via WhatsApp</li>
                     <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ We Put Your Exact Phone Number &amp; Price List</li>
                     <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Inspect Your Updated Website on Your Phone</li>
-                    <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Locks In Your 50% October Promo Slot Automatically</li>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Locks In Your 50% Official SME Package Slot Automatically</li>
                   </ul>
                 </div>
                 <a
@@ -4041,7 +4041,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
               { name: `${lead.name} Official Website & WhatsApp Assistant (6-Month Independence Bundle)`, price: getDynamicClaimFee() || 35000, qty: 1 },
               { name: '1-Year Domain Registration, Cloud Hosting & Google Map Pin', price: 0, qty: 1 }
             ]}
-            paymentRef={`BMA-OCT-${leadId.slice(0, 6).toUpperCase()}`}
+            paymentRef={`BMA-SME-${leadId.slice(0, 6).toUpperCase()}`}
           />
 
           <div style={{ maxWidth: '800px', width: '100%', marginBottom: '28px' }}>
@@ -4065,13 +4065,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             {!claimed ? (
               <>
                 <div style={{ display: 'inline-block', background: '#dcfce7', color: '#166534', fontSize: '0.72rem', fontWeight: 900, padding: '4px 12px', borderRadius: '99px', marginBottom: '10px', border: '1px solid #86efac' }}>
-                  🇳🇬 OCTOBER 50% SME DIGITAL GROWTH PROMO ACTIVE
+                  🇳🇬 OFFICIAL NIGERIAN SME COMMERCIAL SUBSIDY — ZERO RISK
                 </div>
                 <h2 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a', marginBottom: '8px' }}>
                   Claim &amp; Customize This Website for {lead.name}
                 </h2>
                 <p style={{ fontSize: '0.9rem', color: '#475569', marginBottom: '18px', lineHeight: 1.5 }}>
-                  Because 80% of your website is already built above, you save 50% this October — chat with our engineer on WhatsApp to send your real shop photos first, or lock in your promo slot below:
+                  Because your website & 24/7 WhatsApp quoting engine is already pre-built above, you save over 50% on agency costs — chat with our Lagos engineer on WhatsApp or activate your package below:
                 </p>
 
                 {/* ⚡ OPTION A: 1-TAP WHATSAPP CLAIM & PHOTO CUSTOMIZATION (FASTEST FOR NIGERIAN SME OWNERS) */}
@@ -4101,7 +4101,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                         boxShadow: '0 4px 14px rgba(22, 163, 74, 0.3)'
                       }}
                     >
-                      💬 Claim October Promo on WhatsApp →
+                      💬 Activate Website on WhatsApp →
                     </a>
                     <a
                       href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I viewed the sample website for *${lead.name}*:\nhttps://www.bethelmindanalytics.com/preview/${leadId}\n\nPlease help me change the photos, phone number, and prices to my real business details first (₦0 Free Preview).`)}`}
@@ -4145,7 +4145,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                       gap: '6px'
                     }}
                   >
-                    <FileText size={16} /> View Official CAC October Promo Invoice
+                    <FileText size={16} /> View Official CAC Commercial Invoice
                   </button>
                 </div>
 
@@ -4230,9 +4230,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                         outline: 'none'
                       }}
                     >
-                      <option value="starter_35k">⭐ Option 1: Official .COM.NG Website (₦65k October Promo · Pay ₦35,000 Deposit Now, ₦30k After Live)</option>
+                      <option value="starter_35k">⭐ Option 1: Starter Go-Live (₦35,000 Milestone Deposit · or ₦25,000/mo Pay-Small-Small)</option>
                       <option value="standard_full_65k">✅ Option 1B: Official .COM.NG Website — Pay Full ₦65,000 Once (Save ₦65,000 off ₦130k)</option>
-                      <option value="corporate_60k">🏆 Option 2: Corporate .COM + Staff Emails (₦120k October Promo · Pay ₦60,000 Deposit Now)</option>
+                      <option value="corporate_60k">🏆 Option 2: Turnkey Custom Domain Suite (₦75,000 Milestone Deposit · ₦150k Total)</option>
                       <option value="zero_risk_staging">✏️ Option 3: Update My Real Shop Photos &amp; Prices First — ₦0 Upfront</option>
                     </select>
                   </div>
@@ -4378,7 +4378,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                       textAlign: 'center',
                       fontSize: '0.9rem'
                     }}>
-                      <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>October Promo Setup Fee</span>
+                      <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Milestone Activation Deposit</span>
                       <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#10b981', marginTop: '2px' }}>
                         ₦{getDynamicClaimFee().toLocaleString()}
                       </div>

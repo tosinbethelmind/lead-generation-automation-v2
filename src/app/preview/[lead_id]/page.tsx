@@ -117,6 +117,8 @@ export default function PreviewPage() {
       category = 'Event Centers & Banquet Halls';
     } else if (/solar|inverter|energy|battery|power|lifepo4|clean energy/.test(lowerId)) {
       category = 'Solar & Renewable Energy';
+    } else if (/security|cctv|surveillance|guard|alarm|access control|spy|tracking/.test(lowerId)) {
+      category = 'Security & CCTV Surveillance Systems';
     }
 
     const fallbackName = sanitizeDisplayName(leadId, category);
@@ -517,7 +519,7 @@ export default function PreviewPage() {
                 ● Live Sample Website for {data.lead.name}
               </span>
               <a
-                href="#claim"
+                href="#pricing-packages"
                 style={{
                   fontSize: '0.74rem',
                   fontWeight: 800,
@@ -562,8 +564,9 @@ export default function PreviewPage() {
         />
       </section>
 
-      {/* ── SECTION 3: OCTOBER 50% SME DIGITAL GROWTH PROMO MATRIX ── */}
+      {/* ── SECTION 3: STRICT 2-TIER VERIFIED SME PRICING & FAST ACTIVATION ── */}
       <section 
+        id="pricing-packages"
         style={{ 
           maxWidth: '1080px', 
           margin: '24px auto', 
@@ -582,17 +585,17 @@ export default function PreviewPage() {
           }}
         >
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.45)', borderRadius: '9999px', color: '#34d399', fontSize: '0.78rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '14px' }}>
-            <span>🇳🇬 OCTOBER INDEPENDENCE &amp; EMBER-MONTH SME PROMO — 50% OFF PRE-BUILT SETUP (ENDS OCT 31)</span>
+            <span>🇳🇬 OFFICIAL NIGERIAN SME COMMERCIAL PACKAGES — ZERO UPFRONT RISK</span>
           </div>
           <h2 style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 900, color: '#ffffff', margin: '0 0 10px 0', letterSpacing: '-0.02em' }}>
             Stop Losing Google Customers Searching for <span style={{ color: '#38bdf8' }}>{data.lead.name}</span>
           </h2>
           <p style={{ color: '#cbd5e1', fontSize: '0.94rem', maxWidth: '720px', margin: '0 auto 32px auto', lineHeight: 1.6 }}>
-            Normally, building a corporate website + 24/7 WhatsApp Assistant from scratch costs <strong>₦130,000–₦240,000</strong>. Because 80% of the sample website for <strong>{data.lead.name}</strong> is already built above, you enjoy a <strong>50% October Promo Subsidy</strong> — and you only pay a milestone deposit today while paying the balance <strong>after your website is live on Google!</strong>
+            Normally, building a corporate website + 24/7 WhatsApp Assistant from scratch costs <strong>₦130,000–₦240,000</strong>. Because the official website &amp; WhatsApp quoting engine for <strong>{data.lead.name}</strong> is already pre-built above, you do not need to wait weeks or pay heavy agency fees. Choose your preferred go-live package and test it free on your phone today.
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', textAlign: 'left' }}>
-            {/* OPTION 1: OCTOBER 50% PROMO — OFFICIAL .COM.NG WEBSITE (₦65K TOTAL · ₦35K DEPOSIT TODAY) */}
+            {/* OPTION 1: STARTER GO-LIVE (₦35,000 ONE-TIME OR ₦25,000/MONTH) */}
             <div 
               style={{
                 background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%)',
@@ -607,12 +610,12 @@ export default function PreviewPage() {
               }}
             >
               <div style={{ position: 'absolute', top: '-12px', right: '20px', background: '#10b981', color: '#022c22', fontSize: '0.72rem', fontWeight: 900, padding: '4px 12px', borderRadius: '9999px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                🇳🇬 50% October Promo
+                ⚡ Most Popular for SMEs
               </div>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#34d399', background: 'rgba(16, 185, 129, 0.2)', padding: '4px 10px', borderRadius: '8px', textTransform: 'uppercase' }}>
-                    Option 1 · Official .COM.NG
+                    Option 1 · Starter Go-Live
                   </span>
                   <span style={{ fontSize: '0.75rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 700 }}>₦130,000</span>
                 </div>
@@ -620,7 +623,7 @@ export default function PreviewPage() {
                   Official `.COM.NG` Website + WhatsApp Closer
                 </h3>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', margin: '10px 0 4px 0' }}>
-                  ₦65,000 <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>October Promo Total</span>
+                  ₦65,000 <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>Official Package Total</span>
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#fde047', fontWeight: 800, marginBottom: '6px' }}>
                   👉 Start Today: ₦35,000 Deposit (Pay ₦30k Balance After Going Live!)
@@ -710,7 +713,7 @@ export default function PreviewPage() {
               </div>
             </div>
 
-            {/* OPTION 2: OCTOBER 50% PROMO — CORPORATE .COM + STAFF EMAILS SUITE (₦120K TOTAL · ₦60K DEPOSIT) */}
+            {/* OPTION 2: FULL TURNKEY CUSTOM DOMAIN SUITE (₦150,000 TOTAL · ₦75,000 MILESTONE DEPOSIT) */}
             <div 
               style={{
                 background: 'rgba(15, 23, 42, 0.7)',
@@ -726,7 +729,7 @@ export default function PreviewPage() {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#38bdf8', background: 'rgba(56, 189, 248, 0.12)', padding: '4px 10px', borderRadius: '8px', textTransform: 'uppercase' }}>
-                    Option 2 · Corporate .COM Suite
+                    Option 2 · Full Turnkey Custom Domain Suite
                   </span>
                   <span style={{ fontSize: '0.75rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 700 }}>₦240,000</span>
                 </div>
@@ -734,7 +737,7 @@ export default function PreviewPage() {
                   International `.COM` + Staff Emails &amp; AI Suite
                 </h3>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', margin: '10px 0 4px 0' }}>
-                  ₦120,000 <span style={{ fontSize: '0.82rem', color: '#38bdf8', fontWeight: 700 }}>October Promo Total</span>
+                  ₦120,000 <span style={{ fontSize: '0.82rem', color: '#38bdf8', fontWeight: 700 }}>Official Package Total</span>
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#7dd3fc', fontWeight: 800, marginBottom: '14px' }}>
                   👉 Start Today With ₦60,000 Deposit (Pay ₦60k Balance on Handover!)
@@ -803,7 +806,7 @@ export default function PreviewPage() {
                   <li>✓ Send us 3–5 photos of your work/shop on WhatsApp</li>
                   <li>✓ Send your real phone number, address &amp; price list</li>
                   <li>✓ Our engineer updates your sample website free</li>
-                  <li>✓ Automatically reserves your 50% October Promo rate</li>
+                  <li>✓ Automatically locks in your pre-built prototype setup rate</li>
                 </ul>
               </div>
               <a

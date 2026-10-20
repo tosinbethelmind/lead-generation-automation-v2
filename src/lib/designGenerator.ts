@@ -81,6 +81,12 @@ const HERO_IMAGE_BANKS: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=1400&q=80',
     'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=1400&q=80',
   ],
+  security: [
+    'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1400&q=80',
+    'https://images.unsplash.com/photo-1541888946425-d0fbb186156f?w=1400&q=80',
+    'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1400&q=80',
+    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1400&q=80',
+  ],
   events: [
     'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1400&q=80',
     'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1400&q=80',
@@ -183,6 +189,15 @@ const SECTOR_THEME_PROFILES: Record<string, {
     gradient: 'linear-gradient(135deg, hsl(35, 95%, 52%) 0%, hsl(15, 90%, 54%) 50%, hsl(198, 95%, 54%) 100%)',
     imageKey: 'logistics'
   },
+  security: {
+    primary: 'hsl(215, 95%, 52%)',
+    accent: 'hsl(142, 85%, 45%)',
+    bg: 'hsl(220, 45%, 4%)',
+    headingFont: 'Space Grotesk',
+    bodyFont: 'Inter',
+    gradient: 'linear-gradient(135deg, hsl(215, 95%, 52%) 0%, hsl(200, 90%, 45%) 50%, hsl(142, 85%, 45%) 100%)',
+    imageKey: 'security'
+  },
   events: {
     primary: 'hsl(275, 85%, 60%)',
     accent: 'hsl(45, 95%, 55%)',
@@ -283,6 +298,7 @@ export function getDesignTheme(category: string, leadIdSeed?: string): DesignThe
   else if (/logistics|haulage|courier|dispatch|delivery|freight|cargo|truck/.test(cat)) sectorKey = 'logistics';
   else if (/event|hall|banquet|decor|cater|party|wedding/.test(cat)) sectorKey = 'events';
   else if (/solar|inverter|energy|battery|power|lifepo4/.test(cat)) sectorKey = 'solar';
+  else if (/security|cctv|surveillance|guard|alarm|access control|spy|tracking/.test(cat)) sectorKey = 'security';
 
   // Base profile for sector
   const baseProfile = SECTOR_THEME_PROFILES[sectorKey] || SECTOR_THEME_PROFILES.hospitality;
@@ -609,6 +625,25 @@ export function buildFallbackCopy(lead: any): GeneratedCopy {
       testimonials: [
         { name: 'Mrs. Yetunde A.', text: 'Our wedding reception was spectacular! The hall was cool, spacious, and the lighting was breathtaking.', rating: 5 },
         { name: 'Corporate Events Lead', text: 'Prime location, impeccable facilities, uninterrupted generator light, and easy booking system.', rating: 5 }
+      ],
+      ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
+    };
+  }
+
+  // 11. SECURITY, CCTV SURVEILLANCE & ACCESS CONTROL
+  if (/security|cctv|surveillance|guard|alarm|access control|biometric/.test(cat)) {
+    return {
+      heroTitle: `${name} — Smart CCTV Installation & Security Systems in ${area}`,
+      heroSubtitle: `Protect your home, plaza, or corporate facility with HD/IP CCTV cameras, biometric access control, electric fences, and instant automated WhatsApp quotes.`,
+      services: [
+        { title: '📹 24/7 WhatsApp CCTV Price & BOQ Quoter', description: 'Select property type, number of cameras, and storage duration to get an instant equipment and installation estimate in Naira.', icon: '📹' },
+        { title: '🛡️ Electric Fencing, Intercoms & Access Control', description: 'Certified installations for biometric fingerprint locks, automatic gate motors, and smart security alarms.', icon: '🛡️' },
+        { title: '⚡ Fake-Alert Proof Bank Reconciliation', description: 'Lock mobilization deposits via instant Moniepoint or OPay verification before dispatching field technicians.', icon: '⚡' }
+      ],
+      aboutText: `${name} is a premier security integration and surveillance company in ${area}. We specialize in high-definition CCTV systems, perimeter security, and corporate surveillance infrastructure with guaranteed equipment warranties.`,
+      testimonials: [
+        { name: 'Engr. Deji Adeleke', text: 'The WhatsApp quote gave us accurate camera and DVR pricing before the site inspection. Excellent installation at our Lekki estate!', rating: 5 },
+        { name: 'Chief Mrs. Danjuma', text: 'Quick response, crisp night-vision camera resolution, and reliable mobile phone remote viewing setup.', rating: 5 }
       ],
       ctaText: hasWebsite ? 'Get 1-Line WhatsApp Embed (₦35,000)' : 'Claim Official Website (₦35k Deposit)'
     };

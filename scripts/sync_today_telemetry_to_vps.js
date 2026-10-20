@@ -32,6 +32,10 @@ const files = [
   { 
     local: path.join(rootDir, 'local_db', 'activities.json'), 
     remote: '/root/lead-generation-automation-v2/local_db/activities.json' 
+  },
+  { 
+    local: path.join(rootDir, 'local_db', 'leads_db.json'), 
+    remote: '/root/lead-generation-automation-v2/local_db/leads_db.json' 
   }
 ];
 
