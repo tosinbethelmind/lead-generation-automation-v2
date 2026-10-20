@@ -10,7 +10,7 @@ local_db
 data/dossiers
 scratch
 test-results
-tools
+/tools/
 public/audio
 public/assets/*.webm
 public/assets/*.mp4
