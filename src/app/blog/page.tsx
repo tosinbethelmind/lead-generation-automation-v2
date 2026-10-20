@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import { BlogEngine } from '@/lib/blog/blogEngine';
 import { MASTER_PAYOUT } from '@/data/monetizationCatalog';
 import { FeaturedMonetizationVault } from '@/components/blog/FeaturedMonetizationVault';
+import { InteractiveBlogExplorer } from '@/components/blog/InteractiveBlogExplorer';
 
 export const metadata: Metadata = {
   title: 'B2B Commercial Intelligence & Growth Blog | Bethelmind Digital Solutions',
@@ -66,8 +67,18 @@ export default function BlogIndexPage() {
   const posts = BlogEngine.getAllPosts();
   const featuredPost = posts[0];
   const secondaryHero = posts.slice(1, 3);
-  const gridPosts = posts.slice(3);
   const categories = Array.from(new Set(posts.map((p) => p.category)));
+  const postSummaries = posts.map((p) => ({
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    category: p.category,
+    excerpt: p.excerpt,
+    read_time: p.read_time,
+    views_count: p.views_count,
+    featured_image: p.featured_image,
+    created_at: p.created_at,
+  }));
 
   return (
     <div
@@ -296,89 +307,13 @@ export default function BlogIndexPage() {
           </div>
         )}
 
-        {/* Divider */}
-        <div className="flex items-center gap-4 mb-8">
-          <span className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">All Playbooks</span>
-          <div
-            className="flex-1 h-px"
-            style={{ background: 'linear-gradient(to right, rgba(255,255,255,0.08), transparent)' }}
+        {/* ── INTERACTIVE EXPLORER & COMPLETE PLAYBOOKS DIRECTORY ── */}
+        <div className="mb-20">
+          <InteractiveBlogExplorer
+            posts={postSummaries}
+            categories={categories}
+            categoryIcons={CATEGORY_ICONS}
           />
-          <span className="text-xs text-slate-700">{gridPosts.length} articles</span>
-        </div>
-
-        {/* ── ARTICLE GRID ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20">
-          {gridPosts.map((post) => (
-            <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
-              <article
-                className="h-full flex flex-col rounded-2xl overflow-hidden border border-white/7 transition-all duration-300 hover:border-amber-400/35 hover:-translate-y-1 hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.8)]"
-                style={{ background: 'rgba(255,255,255,0.025)' }}
-              >
-                {/* Thumbnail */}
-                <div className="relative h-44 overflow-hidden shrink-0">
-                  <img
-                    src={post.featured_image}
-                    alt={post.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div
-                    className="absolute inset-0"
-                    style={{ background: 'linear-gradient(to top, rgba(7,10,20,0.75) 0%, transparent 55%)' }}
-                  />
-                  <div className="absolute bottom-3 left-3">
-                    <span
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-amber-300 border border-amber-400/25 backdrop-blur-md"
-                      style={{ background: 'rgba(0,0,0,0.60)' }}
-                    >
-                      {getCategoryIcon(post.category)}{' '}
-                      {post.category.length > 20 ? post.category.substring(0, 18) + '…' : post.category}
-                    </span>
-                  </div>
-                  {post.views_count >= 50 && (
-                    <div
-                      className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-black text-slate-950 uppercase tracking-wider"
-                      style={{ background: 'linear-gradient(90deg, #f59e0b, #fbbf24)' }}
-                    >
-                      Trending 🔥
-                    </div>
-                  )}
-                </div>
-
-                {/* Card body */}
-                <div className="flex flex-col flex-grow p-5">
-                  <div className="flex items-center gap-2 text-[11px] text-slate-500 mb-3">
-                    <span>{post.read_time}</span>
-                    <span>&middot;</span>
-                    <span className="text-amber-400/70 font-semibold">
-                      {post.views_count.toLocaleString()} {post.views_count === 1 ? 'view' : 'views'}
-                    </span>
-                    <span>&middot;</span>
-                    <span>{timeAgo(post.created_at)}</span>
-                  </div>
-                  <h3 className="text-[15px] font-bold text-white leading-snug mb-2.5 group-hover:text-amber-300 transition-colors line-clamp-2">
-                    {post.title}
-                  </h3>
-                  <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 flex-grow">
-                    {post.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-white/6">
-                    <span className="text-xs font-bold text-amber-400 group-hover:text-amber-300 transition-colors flex items-center gap-1">
-                      Read Playbook{' '}
-                      <span className="group-hover:translate-x-0.5 transition-transform inline-block">→</span>
-                    </span>
-                    {post.matched_product && (
-                      <span
-                        className="text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/25 text-emerald-400"
-                        style={{ background: 'rgba(16,185,129,0.07)' }}
-                      >
-                        {post.matched_product.priceNgn}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </article>
-            </Link>
-          ))}
         </div>
 
         {/* ── BOTTOM CTA STRIP ── */}

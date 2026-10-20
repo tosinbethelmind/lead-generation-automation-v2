@@ -59,7 +59,24 @@ export class GoogleIndexingPinger {
       bingSuccess = true;
     }
 
-    // 3. WebSub / PubSubHubbub RSS Hub Ping
+    // 3. Modern IndexNow Protocol Ping (Bing, Copilot, Yandex, Seznam)
+    try {
+      const indexNowPayload = {
+        host: 'www.bethelmindanalytics.com',
+        key: 'bethelmindindexkey2026',
+        keyLocation: 'https://www.bethelmindanalytics.com/bethelmindindexkey2026.txt',
+        urlList: [newPostUrl || `${MASTER_PAYOUT.website}/blog`],
+      };
+      await axios.post('https://api.indexnow.org/IndexNow', indexNowPayload, {
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        timeout: 6000,
+      });
+      bingSuccess = true;
+    } catch (err: any) {
+      console.warn('[IndexingPinger] IndexNow ping notice:', err.message);
+    }
+
+    // 4. WebSub / PubSubHubbub RSS Hub Ping
     try {
       const hubUrl = 'https://pubsubhubbub.appspot.com/';
       await axios.post(

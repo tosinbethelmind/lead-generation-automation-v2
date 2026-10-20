@@ -14,6 +14,7 @@ import { AnswerThePublicEngine } from '@/lib/blog/answerThePublicEngine';
 import { StickyMonetizationBar } from '@/components/blog/StickyMonetizationBar';
 import { ExitIntentOfferModal } from '@/components/blog/ExitIntentOfferModal';
 import { MidArticleCallout } from '@/components/blog/MidArticleCallout';
+import { CommercialBenchmarkTable } from '@/components/blog/CommercialBenchmarkTable';
 
 export const dynamicParams = true;
 
@@ -90,6 +91,32 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
 
   const intentCluster = AnswerThePublicEngine.getIntentCluster(post.category);
   const faqSchema = post.faq_schema || AnswerThePublicEngine.generateFaqSchema(intentCluster);
+    const enhancedSchemaLd = {
+    ...post.schema_ld,
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['.ai-overview-card', 'h1', 'p']
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Bethelmind Digital Solutions',
+      legalName: 'Bethelmind Digital Solutions',
+      url: 'https://www.bethelmindanalytics.com',
+      taxID: 'CAC Certified Nigerian Enterprise',
+      telephone: '+2348022791227',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Lagos',
+        addressRegion: 'Lagos State',
+        addressCountry: 'NG'
+      },
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://www.bethelmindanalytics.com/favicon.ico'
+      }
+    }
+  };
+
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -106,7 +133,7 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
       style={{ background: 'linear-gradient(160deg, #030712 0%, #070a14 50%, #0a0f1e 100%)' }}
     >
       {/* Schema.org JSON-LD (SEO & Generative Engine Optimization) */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(post.schema_ld) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(enhancedSchemaLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
@@ -251,6 +278,9 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
           </div>
         </div>
       </section>
+
+      {/* ─── 2026 COMMERCIAL BENCHMARK & ROI MATRIX (GEO CITATION MAGNET) ─── */}
+      <CommercialBenchmarkTable category={post.category} postTitle={post.title} />
 
       {/* ─── ARTICLE BODY ─── */}
       <article className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6">
