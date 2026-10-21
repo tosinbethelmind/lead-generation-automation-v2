@@ -2059,8 +2059,6 @@ export function SectorToolsWidget({
               >
                 {loading ? 'Calculating Booking...' : '🏨 Calculate Direct Booking & Lock Reservation'}
               </button>
-                {loading ? 'Calculating Booking...' : '🏨 Calculate Direct Booking & Lock Reservation'}
-              </button>
 
               {result && (
                 <div className="bg-slate-950 border border-amber-500/30 rounded-2xl p-5 space-y-3">
