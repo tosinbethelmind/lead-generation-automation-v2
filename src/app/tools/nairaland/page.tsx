@@ -223,7 +223,11 @@ export default function NairalandDistributionHub() {
   const [isBumping, setIsBumping] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [showSessionModal, setShowSessionModal] = useState(false);
+  const [sessionModalTab, setSessionModalTab] = useState<'browser' | 'credentials' | 'cookie'>('browser');
   const [sessionInput, setSessionInput] = useState('');
+  const [loginUser, setLoginUser] = useState('');
+  const [loginPass, setLoginPass] = useState('');
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   // Fetch bot status on mount
   const fetchStatus = async () => {
@@ -246,6 +250,98 @@ export default function NairalandDistributionHub() {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2500);
+  };
+
+  // 1-Click Launch Browser on PC
+  const handleLaunchBrowser = async () => {
+    setIsAuthenticating(true);
+    setFeedbackMessage({ text: 'Opening visible browser on your PC desktop... Please check your screen!', type: 'info' });
+    try {
+      const res = await fetch('/api/admin/nairaland', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'launch_browser' }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFeedbackMessage({ text: data.message || 'Browser opened! Enter credentials and log in.', type: 'success' });
+        // Poll status every 4 seconds for up to 2 minutes
+        const interval = setInterval(async () => {
+          const sRes = await fetch('/api/admin/nairaland');
+          const sData = await sRes.json();
+          if (sData.authenticated) {
+            setBotStatus(sData);
+            setFeedbackMessage({ text: `✓ Successfully authenticated as ${sData.username}!`, type: 'success' });
+            setShowSessionModal(false);
+            clearInterval(interval);
+          }
+        }, 4000);
+        setTimeout(() => clearInterval(interval), 120000);
+      } else {
+        setFeedbackMessage({ text: data.error || 'Failed to launch browser.', type: 'error' });
+      }
+    } catch (err: any) {
+      setFeedbackMessage({ text: err.message, type: 'error' });
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
+  // Direct Credential Login
+  const handleCredentialLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginUser.trim() || !loginPass.trim()) return;
+    setIsAuthenticating(true);
+    setFeedbackMessage({ text: `Authenticating ${loginUser} with stealth Playwright engine...`, type: 'info' });
+    try {
+      const res = await fetch('/api/admin/nairaland', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login_with_credentials', username: loginUser.trim(), password: loginPass }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFeedbackMessage({ text: data.message || 'Authentication in progress...', type: 'info' });
+        // Poll for completion
+        let tries = 0;
+        const interval = setInterval(async () => {
+          tries++;
+          const sRes = await fetch('/api/admin/nairaland');
+          const sData = await sRes.json();
+          if (sData.authenticated) {
+            setBotStatus(sData);
+            setFeedbackMessage({ text: `✓ Authenticated as ${sData.username}! Bot is ready.`, type: 'success' });
+            setShowSessionModal(false);
+            setLoginPass('');
+            clearInterval(interval);
+          } else if (tries > 12) {
+            clearInterval(interval);
+            setFeedbackMessage({ text: 'Authentication is taking longer than expected. Please verify your password.', type: 'error' });
+          }
+        }, 3000);
+      } else {
+        setFeedbackMessage({ text: data.error || 'Login attempt failed.', type: 'error' });
+      }
+    } catch (err: any) {
+      setFeedbackMessage({ text: err.message, type: 'error' });
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
+  // Disconnect / Logout
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/nairaland', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' }),
+      });
+      setFeedbackMessage({ text: 'Nairaland session disconnected.', type: 'info' });
+      fetchStatus();
+    } catch (err: any) {
+      setFeedbackMessage({ text: err.message, type: 'error' });
+    }
   };
 
   // 1-Click Autonomous Post Handler
@@ -391,25 +487,45 @@ export default function NairalandDistributionHub() {
               <div className="flex items-center gap-2 mb-1.5">
                 <span className={`w-2.5 h-2.5 rounded-full ${botStatus?.authenticated ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
                 <h2 className="text-lg font-black text-white">
-                  Bot Engine Status: {botStatus?.authenticated ? 'Active & Authenticated' : 'Session Configuration Required'}
+                  Bot Engine Status: {botStatus?.authenticated ? `Active (${botStatus?.username || 'Member'})` : 'Authentication Required'}
                 </h2>
               </div>
               <p className="text-xs text-slate-400">
                 {botStatus?.authenticated 
-                  ? 'Stealth Playwright browser session active. Ready to post and bump automatically.' 
-                  : 'Connect your Nairaland account or session cookies to enable 1-click autonomous publishing.'}
+                  ? `Authenticated session active. Ready to post and bump automatically on Nairaland.` 
+                  : 'Connect your Nairaland account once to enable 1-click autonomous publishing.'}
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-              <button
-                type="button"
-                onClick={() => setShowSessionModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/15 text-xs font-bold text-slate-200 transition-all active:scale-95"
-              >
-                <Key className="w-3.5 h-3.5 text-amber-400" />
-                <span>{botStatus?.authenticated ? 'Update Session' : 'Connect Account'}</span>
-              </button>
+              {botStatus?.authenticated ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-xs font-bold text-rose-300 transition-all active:scale-95"
+                  >
+                    <span>Disconnect</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowSessionModal(true)}
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/15 text-xs font-bold text-slate-200 transition-all active:scale-95"
+                  >
+                    <Key className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Change Account</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowSessionModal(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs transition-all shadow-md active:scale-95"
+                >
+                  <Key className="w-3.5 h-3.5" />
+                  <span>Connect Nairaland Account</span>
+                </button>
+              )}
 
               <button
                 type="button"
@@ -447,51 +563,145 @@ export default function NairalandDistributionHub() {
         {/* Modal for Connecting Nairaland Session */}
         {showSessionModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-slate-900 border border-emerald-500/40 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative text-slate-100">
+            <div className="bg-slate-900 border border-emerald-500/40 rounded-3xl max-w-xl w-full p-6 space-y-5 shadow-2xl relative text-slate-100">
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
                   <Key className="w-4 h-4 text-emerald-400" />
-                  <h3 className="text-sm font-black text-white">Nairaland Session Setup</h3>
+                  <h3 className="text-sm font-black text-white">Connect Nairaland Account</h3>
                 </div>
                 <button onClick={() => setShowSessionModal(false)} className="text-slate-400 hover:text-white">✕</button>
               </div>
 
-              <p className="text-xs text-slate-300 leading-relaxed">
-                You can authenticate your Nairaland bot in two simple ways:
-              </p>
+              {/* Tab Selector */}
+              <div className="grid grid-cols-3 gap-1 p-1 bg-slate-950 rounded-xl border border-white/10 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setSessionModalTab('browser')}
+                  className={`py-2 px-2 rounded-lg font-bold transition-all text-center ${
+                    sessionModalTab === 'browser'
+                      ? 'bg-emerald-500 text-slate-950 shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🖥️ PC Browser
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSessionModalTab('credentials')}
+                  className={`py-2 px-2 rounded-lg font-bold transition-all text-center ${
+                    sessionModalTab === 'credentials'
+                      ? 'bg-emerald-500 text-slate-950 shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🔐 Direct Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSessionModalTab('cookie')}
+                  className={`py-2 px-2 rounded-lg font-bold transition-all text-center ${
+                    sessionModalTab === 'cookie'
+                      ? 'bg-emerald-500 text-slate-950 shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  📋 Cookie String
+                </button>
+              </div>
 
-              <div className="space-y-3 text-xs">
-                <div className="p-3 bg-white/[0.03] border border-white/10 rounded-xl space-y-1.5">
-                  <strong className="text-emerald-400 block">Option 1: Interactive Browser Terminal</strong>
-                  <p className="text-slate-400 text-[11px]">
-                    Open your command terminal on the laptop and run:
-                  </p>
-                  <code className="block p-2 bg-slate-950 rounded-lg text-amber-300 font-mono text-[11px] select-all">
-                    node scripts/nairaland_autonomous_engine.js --interactive-login
-                  </code>
-                  <p className="text-slate-400 text-[11px]">
-                    A browser window will open. Simply log into Nairaland once and your session will be saved permanently.
-                  </p>
+              {/* Tab 1: Interactive Browser */}
+              {sessionModalTab === 'browser' && (
+                <div className="space-y-4 text-xs">
+                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-emerald-400" />
+                      <strong className="text-white font-bold">1-Click Visible Desktop Login</strong>
+                    </div>
+                    <p className="text-slate-300 text-[12px] leading-relaxed">
+                      Launches a visible Chromium window on your PC screen. Log in normally — the bot detects your member session and saves it permanently!
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleLaunchBrowser}
+                      disabled={isAuthenticating}
+                      className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-50 text-slate-950 font-black rounded-xl text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <span>{isAuthenticating ? 'Launching Browser Window...' : 'Open Nairaland Browser on PC Screen'}</span>
+                    </button>
+                  </div>
+
+                  <div className="p-3 bg-white/[0.03] border border-white/10 rounded-xl space-y-1.5">
+                    <span className="text-slate-400 text-[11px] block font-bold">Or run directly from your terminal:</span>
+                    <code className="block p-2.5 bg-slate-950 rounded-lg text-amber-300 font-mono text-[11px] select-all border border-white/5">
+                      node scripts/nairaland_autonomous_engine.js --interactive-login
+                    </code>
+                  </div>
                 </div>
+              )}
 
-                <div className="p-3 bg-white/[0.03] border border-white/10 rounded-xl space-y-2">
-                  <strong className="text-cyan-400 block">Option 2: Paste Cookie / Session JSON</strong>
+              {/* Tab 2: Direct Credentials */}
+              {sessionModalTab === 'credentials' && (
+                <form onSubmit={handleCredentialLogin} className="space-y-3 text-xs">
+                  <p className="text-slate-400 text-[11px]">
+                    Enter your Nairaland username & password. Stealth Playwright signs in in the background and saves session cookies directly.
+                  </p>
+                  <div>
+                    <label className="text-slate-300 block mb-1 font-semibold">Nairaland Username</label>
+                    <input
+                      type="text"
+                      required
+                      value={loginUser}
+                      onChange={(e) => setLoginUser(e.target.value)}
+                      placeholder="e.g. bethelmindtech"
+                      className="w-full p-2.5 bg-slate-950 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 block mb-1 font-semibold">Nairaland Password</label>
+                    <input
+                      type="password"
+                      required
+                      value={loginPass}
+                      onChange={(e) => setLoginPass(e.target.value)}
+                      placeholder="••••••••••••"
+                      className="w-full p-2.5 bg-slate-950 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isAuthenticating || !loginUser || !loginPass}
+                    className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-black rounded-xl text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+                  >
+                    <Key className="w-3.5 h-3.5" />
+                    <span>{isAuthenticating ? 'Authenticating...' : 'Sign In & Save Session'}</span>
+                  </button>
+                </form>
+              )}
+
+              {/* Tab 3: Session Cookie String */}
+              {sessionModalTab === 'cookie' && (
+                <div className="space-y-3 text-xs">
+                  <p className="text-slate-400 text-[11px]">
+                    If you have your Nairaland `session` cookie or full JSON from browser developer tools, paste it here:
+                  </p>
                   <textarea
                     rows={4}
                     value={sessionInput}
                     onChange={(e) => setSessionInput(e.target.value)}
-                    placeholder='Paste cookies JSON or PHPSESSID string here...'
-                    className="w-full p-2.5 bg-slate-950 border border-white/10 rounded-lg text-xs text-white font-mono focus:outline-none focus:border-cyan-500"
+                    placeholder='session=abc12345... or full JSON array'
+                    className="w-full p-2.5 bg-slate-950 border border-white/10 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500"
                   />
                   <button
                     type="button"
                     onClick={handleSaveSession}
-                    className="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-lg text-xs transition-all shadow-md"
+                    disabled={!sessionInput.trim()}
+                    className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-black rounded-xl text-xs transition-all shadow-md active:scale-95"
                   >
-                    Save Session Cookie →
+                    Save Session Token →
                   </button>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}

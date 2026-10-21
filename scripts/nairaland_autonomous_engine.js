@@ -215,7 +215,7 @@ function saveLedger(ledger) {
 }
 
 // Browser Launch Helper with Cloudflare Stealth
-async function createStealthBrowser(headless = true) {
+async function createStealthBrowser(headless = true, ignoreSavedSession = false) {
   const browser = await chromium.launch({
     headless,
     args: [
@@ -232,10 +232,16 @@ async function createStealthBrowser(headless = true) {
     locale: 'en-US',
   };
 
-  if (fs.existsSync(SESSION_FILE)) {
+  if (!ignoreSavedSession && fs.existsSync(SESSION_FILE)) {
     try {
-      contextOptions.storageState = SESSION_FILE;
-      console.log('✓ Loaded existing session from:', SESSION_FILE);
+      const raw = JSON.parse(fs.readFileSync(SESSION_FILE, 'utf8'));
+      const sessionCookie = raw.cookies?.find(c => c.name === 'session');
+      if (sessionCookie && sessionCookie.value && sessionCookie.value !== '""' && sessionCookie.value.length > 5) {
+        contextOptions.storageState = SESSION_FILE;
+        console.log('✓ Loaded valid existing session from:', SESSION_FILE);
+      } else {
+        console.log('Skipping unauthenticated / empty session in:', SESSION_FILE);
+      }
     } catch (e) {
       console.warn('Could not parse session file:', e.message);
     }
@@ -251,17 +257,85 @@ async function createStealthBrowser(headless = true) {
   return { browser, context };
 }
 
-// 1. Interactive Session Setup (User logs in once, session saved forever)
+// Dedicated Direct Login with Credentials
+async function loginWithCredentials(username, password, headless = false) {
+  if (!username || !password) {
+    throw new Error('Both username and password are required for direct login.');
+  }
+
+  console.log(`\n[NAIRALAND DIRECT LOGIN] Attempting login for user: ${username}...`);
+  const { browser, context } = await createStealthBrowser(headless, true);
+  const page = await context.newPage();
+
+  try {
+    await page.goto('https://www.nairaland.com/login', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    
+    // Fill credentials
+    await page.fill('input[name="login"]', username);
+    await page.fill('input[name="password"]', password);
+    await page.click('input[value="Login"]');
+
+    // Wait for page to navigate / process
+    await page.waitForTimeout(3000);
+
+    const bodyText = await page.innerText('body').catch(() => '');
+    const isGuest = bodyText.includes('Welcome, Guest') || bodyText.includes('Login With Password:');
+    const hasLogout = bodyText.includes('Logout');
+    const welcomeMatch = bodyText.match(/Welcome,\s+([A-Za-z0-9_-]+)/i);
+    const memberName = (welcomeMatch && welcomeMatch[1].toLowerCase() !== 'guest') ? welcomeMatch[1] : null;
+
+    const cookies = await context.cookies();
+    const sessionCookie = cookies.find(c => c.name === 'session');
+    const hasValidCookie = sessionCookie && sessionCookie.value && sessionCookie.value !== '""' && sessionCookie.value.length > 5;
+
+    if (!isGuest && (hasLogout || memberName) && hasValidCookie) {
+      const activeUser = memberName || username;
+      console.log(`✓ Authentication SUCCESSFUL! Logged in as: ${activeUser}`);
+      
+      const sessionObj = {
+        username: activeUser,
+        savedAt: new Date().toISOString(),
+        cookies: cookies,
+        origins: []
+      };
+
+      const dir1 = path.dirname(SESSION_FILE);
+      if (!fs.existsSync(dir1)) fs.mkdirSync(dir1, { recursive: true });
+      fs.writeFileSync(SESSION_FILE, JSON.stringify(sessionObj, null, 2), 'utf8');
+
+      const altFile = path.join(__dirname, '..', 'data', 'nairaland_session.json');
+      const dir2 = path.dirname(altFile);
+      if (!fs.existsSync(dir2)) fs.mkdirSync(dir2, { recursive: true });
+      fs.writeFileSync(altFile, JSON.stringify(sessionObj, null, 2), 'utf8');
+
+      console.log('✓ Session cookies saved permanently to:', SESSION_FILE);
+      await browser.close();
+      return { success: true, username: activeUser };
+    } else {
+      console.error('✗ Login failed: Credentials may be incorrect or Nairaland returned an error.');
+      await browser.close();
+      return { success: false, reason: 'INVALID_CREDENTIALS', message: 'Could not log into Nairaland with provided credentials.' };
+    }
+  } catch (err) {
+    console.error('✗ Login error:', err.message);
+    await browser.close();
+    return { success: false, error: err.message };
+  }
+}
+
+// 1. Interactive Session Setup (User logs in once, browser stays open until confirmed)
 async function setupInteractiveSession() {
   console.log('\n============================================================');
   console.log('NAIRALAND INTERACTIVE SESSION SETUP (1-TIME INITIALIZATION)');
   console.log('============================================================');
-  console.log('Opening visible browser. Please log into your Nairaland account.');
-  console.log('Once logged in, the script will automatically save your session cookies.\n');
+  console.log('Opening visible browser window on your screen...');
+  console.log('The browser window will STAY OPEN until you log into your account.\n');
 
-  const { browser, context } = await createStealthBrowser(false);
+  // Launch visible browser, strictly ignoring any existing/corrupted session
+  const { browser, context } = await createStealthBrowser(false, true);
   const page = await context.newPage();
 
+  console.log('Navigating to Nairaland login page...');
   await page.goto('https://www.nairaland.com/login', { waitUntil: 'domcontentloaded' });
 
   // If credentials exist in .env.local, auto-fill them
@@ -279,30 +353,71 @@ async function setupInteractiveSession() {
     }
   }
 
-  console.log('Waiting for authentication detection...');
+  console.log('\n👉 BROWSER IS READY:');
+  console.log('Please enter your Nairaland username & password in the browser window and click Login.');
+  console.log('Waiting for your login (monitoring up to 5 minutes)...\n');
 
-  // Poll until logged in (check for logout link or "Welcome, [Member]")
   let loggedIn = false;
-  for (let i = 0; i < 120; i++) {
+  let detectedUsername = '';
+
+  for (let i = 0; i < 200; i++) {
     await page.waitForTimeout(1500);
-    const bodyText = await page.innerText('body').catch(() => '');
-    if (bodyText.includes('Logout') || /Welcome,\s+[A-Za-z0-9_-]+/i.test(bodyText)) {
-      loggedIn = true;
+
+    // If user closed the window manually
+    if (page.isClosed()) {
+      console.log('Browser window was closed by user.');
       break;
+    }
+
+    try {
+      const bodyText = await page.innerText('body').catch(() => '');
+      const isGuest = bodyText.includes('Welcome, Guest') || bodyText.includes('Login With Password:');
+      const hasLogout = bodyText.includes('Logout');
+      const welcomeMatch = bodyText.match(/Welcome,\s+([A-Za-z0-9_-]+)/i);
+      const memberName = (welcomeMatch && welcomeMatch[1].toLowerCase() !== 'guest') ? welcomeMatch[1] : null;
+
+      const cookies = await context.cookies();
+      const sessionCookie = cookies.find(c => c.name === 'session');
+      const hasValidCookie = sessionCookie && sessionCookie.value && sessionCookie.value !== '""' && sessionCookie.value.length > 5;
+
+      // STRICT VALIDATION: Must NOT be guest, must have Logout or member name, and must have session cookie
+      if (!isGuest && (hasLogout || memberName) && hasValidCookie) {
+        loggedIn = true;
+        detectedUsername = memberName || username || 'Active Member';
+        break;
+      }
+    } catch (e) {
+      // Catch navigation transient errors
     }
   }
 
   if (loggedIn) {
-    console.log('✓ Successfully authenticated on Nairaland!');
+    console.log(`\n✓ SUCCESS! Authenticated as: ${detectedUsername}`);
+    const cookies = await context.cookies();
+    const sessionObj = {
+      username: detectedUsername,
+      savedAt: new Date().toISOString(),
+      cookies: cookies,
+      origins: []
+    };
+
     const dir = path.dirname(SESSION_FILE);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    await context.storageState({ path: SESSION_FILE });
-    console.log('✓ Session cookies saved to:', SESSION_FILE);
+    fs.writeFileSync(SESSION_FILE, JSON.stringify(sessionObj, null, 2), 'utf8');
+
+    const altFile = path.join(__dirname, '..', 'data', 'nairaland_session.json');
+    const altDir = path.dirname(altFile);
+    if (!fs.existsSync(altDir)) fs.mkdirSync(altDir, { recursive: true });
+    fs.writeFileSync(altFile, JSON.stringify(sessionObj, null, 2), 'utf8');
+
+    console.log('✓ Session cookies saved permanently to:', SESSION_FILE);
   } else {
-    console.error('✗ Authentication timeout. Login was not detected within 3 minutes.');
+    console.error('\n✗ Authentication not completed or timed out.');
   }
 
-  await browser.close();
+  try {
+    await browser.close();
+  } catch {}
   return loggedIn;
 }
 
@@ -446,10 +561,27 @@ async function bumpAndReplyToThreads() {
 
 // 4. Status Check
 function getStatus() {
-  const hasSession = fs.existsSync(SESSION_FILE);
+  let authenticated = false;
+  let username = null;
+  let lastActive = null;
+
+  if (fs.existsSync(SESSION_FILE)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(SESSION_FILE, 'utf8'));
+      const sessionCookie = data.cookies?.find(c => c.name === 'session');
+      if (sessionCookie && sessionCookie.value && sessionCookie.value !== '""' && sessionCookie.value.length > 5) {
+        authenticated = true;
+        username = data.username || 'Active Member';
+        lastActive = data.savedAt || null;
+      }
+    } catch {}
+  }
+
   const ledger = loadLedger();
   return {
-    authenticated: hasSession,
+    authenticated,
+    username,
+    lastActive,
     sessionPath: SESSION_FILE,
     totalCampaignsAvailable: Object.keys(CAMPAIGN_CATALOG).length,
     catalog: Object.keys(CAMPAIGN_CATALOG),
@@ -464,8 +596,18 @@ async function main() {
   const args = process.argv.slice(2);
   const command = args[0] || '--status';
 
-  if (command === '--interactive-login' || command === '--login') {
+  if (command === '--interactive-login') {
     await setupInteractiveSession();
+  } else if (command === '--login') {
+    const userArg = args.find(a => a.startsWith('--user=') || a.startsWith('--username='));
+    const passArg = args.find(a => a.startsWith('--pass=') || a.startsWith('--password='));
+    const username = userArg ? userArg.split('=')[1] : process.env.NAIRALAND_USERNAME;
+    const password = passArg ? passArg.split('=')[1] : process.env.NAIRALAND_PASSWORD;
+    if (username && password) {
+      await loginWithCredentials(username, password, false);
+    } else {
+      await setupInteractiveSession();
+    }
   } else if (command === '--post') {
     const campaignArg = args.find(a => a.startsWith('--campaign='));
     const campaignKey = campaignArg ? campaignArg.split('=')[1] : 'solar-boq';
@@ -477,7 +619,7 @@ async function main() {
     console.log('\n============================================================');
     console.log('BETHELMIND NAIRALAND AUTONOMOUS ENGINE STATUS');
     console.log('============================================================');
-    console.log('Authenticated Session:', status.authenticated ? '🟢 Active & Ready' : '🔴 Missing (Run --interactive-login)');
+    console.log('Authenticated Session:', status.authenticated ? `🟢 Active (${status.username})` : '🔴 Not Connected (Run --interactive-login)');
     console.log('Total Published Threads:', status.ledgerStats.totalPosted || 0);
     console.log('Total Thread Bumps Dispatched:', status.ledgerStats.totalBumps || 0);
     console.log('Available Campaigns:', status.catalog.join(', '));
@@ -493,6 +635,7 @@ async function main() {
 Usage:
   node scripts/nairaland_autonomous_engine.js --status
   node scripts/nairaland_autonomous_engine.js --interactive-login
+  node scripts/nairaland_autonomous_engine.js --login --user=USERNAME --pass=PASSWORD
   node scripts/nairaland_autonomous_engine.js --post --campaign=solar-boq
   node scripts/nairaland_autonomous_engine.js --post --campaign=tokunbo-duty
   node scripts/nairaland_autonomous_engine.js --bump
@@ -510,6 +653,7 @@ if (require.main === module) {
 module.exports = {
   createStealthBrowser,
   setupInteractiveSession,
+  loginWithCredentials,
   postCampaign,
   bumpAndReplyToThreads,
   getStatus,
