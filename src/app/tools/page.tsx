@@ -258,7 +258,6 @@ const TOOLS: ToolItem[] = [
   },
   {
     id: 'typing-speed',
-    id: 'typing-speed',
     title: 'TypeMaster AI™ 60-Second WPM Typing Speed & Accuracy Test',
     badge: '⌨️ Global Speed Benchmark',
     category: 'b2b',
@@ -267,6 +266,7 @@ const TOOLS: ToolItem[] = [
     color: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-400',
     href: '/tools/typing-speed',
     upsell: '💎 ₦15k Freelance Pack'
+  },
   {
     id: 'focus-timer',
     title: 'FocusFlow AI™ 25/5 Pomodoro Deep Work Timer & Soundscapes',
@@ -289,9 +289,7 @@ const TOOLS: ToolItem[] = [
     href: '/tools/runway-radar',
     upsell: '💎 ₦15k Cashflow Pack'
   },
-  },
   {
-    id: 'salary-calc',
     id: 'salary-calc',
     title: 'SalaryTakeHome AI™ 2026 Net Pay & PAYE Tax Sizer',
     badge: '💰 Statutory Payroll Engine',
