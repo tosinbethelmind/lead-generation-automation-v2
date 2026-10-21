@@ -40,6 +40,7 @@ interface SectorToolsWidgetProps {
   businessName?: string;
   merchantPhone?: string;
   hasWebsite?: boolean;
+  hideHeader?: boolean;
 }
 
 export function detectCategoryTab(category: string = ''): SectorToolTab {
@@ -175,6 +176,7 @@ export function SectorToolsWidget({
   businessName = 'Bethelmind Demo',
   merchantPhone = '2348022791227',
   hasWebsite = false,
+  hideHeader = false,
 }: SectorToolsWidgetProps) {
   const initialTab = detectCategoryTab(businessCategory);
   const [activeTab, setActiveTab] = useState<SectorToolTab>(initialTab);
@@ -402,82 +404,114 @@ export function SectorToolsWidget({
 
   return (
     <div className="w-full">
-      <div className="w-full max-w-4xl mx-auto my-4 bg-[#080d1a]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_25px_80px_rgba(0,0,0,0.85)] ring-1 ring-white/5 overflow-hidden text-slate-100 font-sans">
+      <div className="w-full max-w-5xl mx-auto my-2 bg-[#080d1a]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_25px_80px_rgba(0,0,0,0.85)] ring-1 ring-white/5 overflow-hidden text-slate-100 font-sans">
         
-        {/* Luxury Obsidian Header Banner */}
-        <div className="bg-gradient-to-r from-[#0f1933] via-[#0b1328] to-[#060a16] border-b border-white/10 p-5 sm:p-7 relative overflow-hidden">
-          {/* Subtle Ambient Radial Glow */}
-          <div className="absolute top-0 right-0 w-80 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2.5">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 backdrop-blur-md rounded-full text-[11px] font-black uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                  2026 Quoting & Sizing Suite
-                </span>
-                <span className="px-2.5 py-0.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 rounded-full text-[11px] font-black">
-                  ₦0 Upfront Demo
-                </span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-black text-white font-['Outfit'] tracking-tight">
-                Interactive {businessCategory} Quoting & Booking Suite
-              </h2>
-              <p className="text-slate-300 text-xs sm:text-sm mt-1.5 leading-relaxed">
-                Custom built for <strong className="text-white font-bold underline decoration-cyan-500/50 underline-offset-4">{businessName}</strong>. Test real-time calculation, instant BOQ, and automated WhatsApp dispatch.
-              </p>
-            </div>
+        {/* Luxury Obsidian Header Banner (Shown only when standalone page header is not active) */}
+        {!hideHeader && (
+          <div className="bg-gradient-to-r from-[#0f1933] via-[#0b1328] to-[#060a16] border-b border-white/10 p-5 sm:p-7 relative overflow-hidden">
+            {/* Subtle Ambient Radial Glow */}
+            <div className="absolute top-0 right-0 w-80 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
             
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-2.5">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 backdrop-blur-md rounded-full text-[11px] font-black uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                    2026 Quoting & Sizing Suite
+                  </span>
+                  <span className="px-2.5 py-0.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 rounded-full text-[11px] font-black">
+                    ₦0 Upfront Demo
+                  </span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black text-white font-['Outfit'] tracking-tight">
+                  Interactive {businessCategory} Quoting & Booking Suite
+                </h2>
+                <p className="text-slate-300 text-xs sm:text-sm mt-1.5 leading-relaxed">
+                  Custom built for <strong className="text-white font-bold underline decoration-cyan-500/50 underline-offset-4">{businessName}</strong>. Test real-time calculation, instant BOQ, and automated WhatsApp dispatch.
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowEmbedModal(true)}
+                  style={{
+                    padding: '9px 16px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#ffffff',
+                    borderRadius: 12,
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 7,
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                    transition: 'all 0.15s ease',
+                  }}
+                  title="Embed on existing WordPress/Wix website"
+                >
+                  <Code style={{ width: 14, height: 14, color: '#38bdf8' }} />
+                  <span>1-Line Embed Code</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Luxury Glass Navigation Tabs Track */}
+        <div className="flex items-center justify-between border-b border-white/10 bg-[#060a17]/95 px-3 py-2.5 gap-3">
+          <div className="flex items-center overflow-x-auto gap-2 scrollbar-none py-1 flex-1">
+            {SECTOR_TABS.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => { setActiveTab(tab.id); setResult(null); }}
+                  style={{
+                    background: isActive ? `${tab.color}20` : 'rgba(255, 255, 255, 0.03)',
+                    border: `1px solid ${isActive ? tab.color : 'rgba(255, 255, 255, 0.08)'}`,
+                    color: isActive ? '#ffffff' : '#94a3b8',
+                    boxShadow: isActive ? `0 4px 18px ${tab.color}35` : 'none',
+                  }}
+                  className="px-3.5 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-all flex items-center gap-2 hover:text-white hover:bg-white/[0.08] active:scale-95"
+                >
+                  <span>{tab.icon}</span>
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {hideHeader && (
+            <div className="hidden md:flex items-center shrink-0 pl-2 border-l border-white/10">
               <button
                 type="button"
                 onClick={() => setShowEmbedModal(true)}
                 style={{
-                  padding: '9px 16px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: '#ffffff',
-                  borderRadius: 12,
-                  fontSize: '0.78rem',
+                  padding: '7px 14px',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  color: '#94a3b8',
+                  borderRadius: 10,
+                  fontSize: '0.74rem',
                   fontWeight: 800,
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 7,
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                  transition: 'all 0.15s ease',
+                  gap: 6,
+                  whiteSpace: 'nowrap',
                 }}
+                className="hover:text-white hover:bg-white/[0.08] transition-all"
                 title="Embed on existing WordPress/Wix website"
               >
-                <Code style={{ width: 14, height: 14, color: '#38bdf8' }} />
-                <span>1-Line Embed Code</span>
+                <Code style={{ width: 13, height: 13, color: '#38bdf8' }} />
+                <span>1-Line Embed</span>
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Luxury Glass Navigation Tabs Track */}
-        <div className="flex overflow-x-auto border-b border-white/10 bg-[#060a17]/95 p-2.5 gap-2 scrollbar-none">
-          {SECTOR_TABS.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => { setActiveTab(tab.id); setResult(null); }}
-                style={{
-                  background: isActive ? `${tab.color}20` : 'rgba(255, 255, 255, 0.03)',
-                  border: `1px solid ${isActive ? tab.color : 'rgba(255, 255, 255, 0.08)'}`,
-                  color: isActive ? '#ffffff' : '#94a3b8',
-                  boxShadow: isActive ? `0 4px 18px ${tab.color}35` : 'none',
-                }}
-                className="px-3.5 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-all flex items-center gap-2 hover:text-white hover:bg-white/[0.08] active:scale-95"
-              >
-                <span>{tab.icon}</span>
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
+          )}
         </div>
 
         {/* Tab Panels */}
@@ -485,69 +519,114 @@ export function SectorToolsWidget({
 
           {/* SOLAR TAB */}
           {activeTab === 'solar' && (
-            <div className="space-y-4">
-              <FeatureShareBar toolTitle="Solar BOQ & DISCO ROI Calculator" toolSlug="solar-boq" description="BOQ Sizing & Diesel vs Solar Savings Estimator" />
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Appliance Load (kVA)</label>
-                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#fbbf24' }}>💡 1-Tap Presets:</span>
+            <div className="space-y-6">
+              
+              {/* Sizing & Presets Section (Spacious 3-Card Grid) */}
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-black text-white font-['Outfit']">1. Select Standard Load Profile</h3>
+                    <p className="text-xs text-slate-400">Choose a typical Nigerian property profile or enter your exact custom kVA below.</p>
                   </div>
-                  <div className="luxury-preset-grid-3">
-                    <button
-                      type="button"
-                      onClick={() => setKva(2.5)}
-                      className={`luxury-preset-btn ${kva === 2.5 ? 'active-amber' : ''}`}
-                    >
-                      Flat / 2.5kVA
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setKva(5)}
-                      className={`luxury-preset-btn ${kva === 5 ? 'active-amber' : ''}`}
-                    >
-                      Duplex / 5kVA
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setKva(10)}
-                      className={`luxury-preset-btn ${kva === 10 ? 'active-amber' : ''}`}
-                    >
-                      Commercial / 10kVA
-                    </button>
-                  </div>
-                  <input
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={kva}
-                    onChange={e => setKva(Number(e.target.value))}
-                    className="luxury-tool-input"
-                  />
+                  <span className="text-[11px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1 rounded-full inline-flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                    Tier-1 51.2V LiFePO4 Sizing
+                  </span>
                 </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>NERC DISCO Band</label>
-                  <select
-                    value={discoBand}
-                    onChange={e => setDiscoBand(e.target.value as any)}
-                    className="luxury-tool-select"
-                  >
-                    <option value="Band A">Band A (20+ hrs @ ₦209.50/kWh)</option>
-                    <option value="Band B">Band B (16 hrs @ ₦160/kWh)</option>
-                    <option value="Band C">Band C (12 hrs @ ₦120/kWh)</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Monthly Diesel (Liters)</label>
-                  <input
-                    type="number"
-                    value={dieselLiters}
-                    onChange={e => setDieselLiters(Number(e.target.value))}
-                    className="luxury-tool-input"
-                  />
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {[
+                    { kvaVal: 2.5, title: 'Flat / Small Office', desc: 'Lights, TV, Fans, Refrigerator', icon: '🏢' },
+                    { kvaVal: 5, title: 'Duplex / Medium SME', desc: '1-2 Inverter ACs, Water Pump, Freezers', icon: '🏡' },
+                    { kvaVal: 10, title: 'Commercial Facility', desc: 'Multiple ACs, Cold Room, Machinery', icon: '🏭' },
+                  ].map((p) => {
+                    const isSelected = kva === p.kvaVal;
+                    return (
+                      <button
+                        key={p.kvaVal}
+                        type="button"
+                        onClick={() => setKva(p.kvaVal)}
+                        style={{
+                          background: isSelected ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.18) 0%, rgba(234, 88, 12, 0.12) 100%)' : 'rgba(255, 255, 255, 0.02)',
+                          border: isSelected ? '1.5px solid #f59e0b' : '1px solid rgba(255, 255, 255, 0.08)',
+                          boxShadow: isSelected ? '0 8px 24px rgba(245, 158, 11, 0.25)' : 'none',
+                        }}
+                        className="p-4 rounded-2xl text-left transition-all hover:border-white/20 active:scale-[0.98] cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xl p-2 rounded-xl bg-white/[0.04] border border-white/5">{p.icon}</span>
+                          <span
+                            style={{
+                              background: isSelected ? '#f59e0b' : 'rgba(255, 255, 255, 0.06)',
+                              color: isSelected ? '#050811' : '#94a3b8',
+                            }}
+                            className="text-xs font-black px-2.5 py-1 rounded-lg transition-colors"
+                          >
+                            {p.kvaVal} kVA
+                          </span>
+                        </div>
+                        <div className="font-bold text-white text-sm">{p.title}</div>
+                        <div className="text-[11px] text-slate-400 mt-1 leading-snug">{p.desc}</div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
+              {/* Custom Load & Grid/Fuel Parameters (Spacious 3-Column Grid) */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-300">Continuous Peak Load (kVA)</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="1"
+                      max="100"
+                      value={kva}
+                      onChange={(e) => setKva(Number(e.target.value))}
+                      className="luxury-tool-input pr-14"
+                    />
+                    <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-amber-400 pointer-events-none">
+                      kVA
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-400">Total running appliance capacity</span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-300">NERC DISCO Grid Band</label>
+                  <select
+                    value={discoBand}
+                    onChange={(e) => setDiscoBand(e.target.value as any)}
+                    className="luxury-tool-select"
+                  >
+                    <option value="Band A">Band A (20+ hrs daily @ ₦209.50/kWh)</option>
+                    <option value="Band B">Band B (16 hrs daily @ ₦160.00/kWh)</option>
+                    <option value="Band C">Band C (12 hrs daily @ ₦120.00/kWh)</option>
+                  </select>
+                  <span className="text-[11px] text-slate-400">Prevailing Disco billing tariff</span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-300">Monthly Generator Diesel (Liters)</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={dieselLiters}
+                      onChange={(e) => setDieselLiters(Number(e.target.value))}
+                      className="luxury-tool-input pr-16"
+                    />
+                    <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">
+                      L/mo
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-emerald-400 font-semibold">
+                    ≈ ₦{(dieselLiters * 1250).toLocaleString()}/mo @ ₦1,250/L
+                  </span>
+                </div>
+              </div>
+
+              {/* Calculate Action */}
               <button
                 onClick={() =>
                   handleRunCalculation('solar_hybrid_economics', {
@@ -561,10 +640,12 @@ export function SectorToolsWidget({
                 style={{
                   background: 'linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)',
                   color: '#050811',
-                  boxShadow: '0 8px 24px rgba(245, 158, 11, 0.35)',
+                  boxShadow: '0 10px 30px rgba(245, 158, 11, 0.35)',
+                  padding: '16px 24px',
+                  fontSize: '0.96rem',
                 }}
               >
-                {loading ? 'Calculating Solar Economics...' : '⚡ Generate Live Solar BOQ & ROI Quote'}
+                {loading ? 'Calculating Solar Economics...' : '⚡ Generate Live Solar BOQ & ROI Payback Matrix'}
               </button>
 
               {result && (
@@ -673,7 +754,6 @@ export function SectorToolsWidget({
           {/* AUTOMOTIVE TAB */}
           {activeTab === 'auto' && (
             <div className="space-y-4">
-              <FeatureShareBar toolTitle="Tokunbo Duty & Port Clearance Calculator" toolSlug="tokunbo-duty" description="NCS 2026 Valuation, VIN Decoder & Clearing Fee Calculator" />
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Popular Tokunbo Clearing Tiers</span>
@@ -806,7 +886,6 @@ export function SectorToolsWidget({
           {/* BEAUTY, SALON & SPA TAB */}
           {activeTab === 'beauty' && (
             <div className="space-y-4">
-              <FeatureShareBar toolTitle="24/7 Salon Booking & Deposit Lock Engine" toolSlug="salon-booking" description="Stylist Slot Allocation, Hair Extensions Estimator & No-Show Deposit Lock" />
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Popular Nigerian Services</span>
@@ -981,8 +1060,6 @@ export function SectorToolsWidget({
           {/* RESTAURANT, LOUNGE & CAFE TAB */}
           {activeTab === 'restaurant' && (
             <div className="space-y-4">
-              <FeatureShareBar toolTitle="0% Commission Direct Digital Food Menu & Kitchen Dispatch" toolSlug="restaurant-menu" description="Stop Chowdeck 25% Commission, Direct Kitchen Order Printing & Automated WhatsApp Delivery Receipts" />
-              
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Popular Nigerian Menu Favorites</span>
@@ -1158,8 +1235,6 @@ export function SectorToolsWidget({
           {/* RETAIL & BOUTIQUE CATALOG CLOSER TAB */}
           {activeTab === 'retail' && (
             <div className="space-y-4">
-              <FeatureShareBar toolTitle="Sub-3s WhatsApp Catalog Closer & Stock Reservation" toolSlug="retail-catalog" description="Stop Instagram DM Drop-Offs, Moniepoint Anti-Fake Alert Virtual Accounts & Hyperlocal Waybill Estimator" />
-              
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Fast-Selling Nigerian Retail Items</span>
@@ -1320,7 +1395,6 @@ export function SectorToolsWidget({
           {/* REAL ESTATE MORTGAGE TAB */}
           {activeTab === 'mortgage' && (
             <div className="space-y-4">
-              <FeatureShareBar toolTitle="Real Estate Mortgage & Diaspora Escrow Sizer" toolSlug="mortgage-calc" description="Calculate Down Payments, Monthly Installments & Diaspora Off-Plan Milestone Schedules" />
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Nigerian Property Categories</span>
@@ -1526,7 +1600,6 @@ export function SectorToolsWidget({
           {/* HEALTHCARE & CLINICS TAB */}
           {activeTab === 'healthcare' && (
             <div className="space-y-4">
-              <FeatureShareBar toolTitle="Clinic Patient Booking & HMO Co-Pay Estimator" toolSlug="clinic-booking" description="Instant Consultation Scheduling, HMO Co-Pay Calculation & WhatsApp Telehealth Triaging" />
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Clinical Consultation Categories</span>
@@ -1654,7 +1727,6 @@ export function SectorToolsWidget({
           {/* EDUCATION & SCHOOLS TAB */}
           {activeTab === 'education' && (
             <div className="space-y-4">
-              <FeatureShareBar toolTitle="Termly School Tuition & Result PIN Portal Sizer" toolSlug="school-tuition" description="Automated Termly Fee Ledger, Online Admission Portal & Instant Scratch PIN Generator" />
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">School Level & Enrollment Tier</span>
@@ -1777,7 +1849,6 @@ export function SectorToolsWidget({
           {/* LOGISTICS & FREIGHT TAB */}
           {activeTab === 'logistics' && (
             <div className="space-y-4">
-              <FeatureShareBar toolTitle="Inter-State Logistics & Haulage Waybill Estimator" toolSlug="logistics-waybill" description="Dynamic Waybill Sizing, Interstate Fuel Calculation & Dispatch Tracking" />
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Popular Interstate Freight Routes</span>
@@ -1903,7 +1974,6 @@ export function SectorToolsWidget({
           {/* LEGAL & CAC TAB */}
           {activeTab === 'legal' && (
             <div className="space-y-4">
-              <FeatureShareBar toolTitle="CAC Business Registration & Stamp Duty Calculator" toolSlug="cac-filing" description="Official Corporate Affairs Commission Statutory Fees & FIRS Stamp Duty" />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-400 mb-1">Business Entity Type</label>
@@ -1995,7 +2065,6 @@ export function SectorToolsWidget({
           {/* HOSPITALITY & SHORTLET TAB */}
           {activeTab === 'hospitality' && (
             <div className="space-y-4">
-              <FeatureShareBar toolTitle="Shortlet Direct Booking & Caution Fee Reconciler" toolSlug="shortlet-booking" description="Zero-OTA Direct Booking, Caution Deposit Escrow & Automatic WhatsApp Check-In" />
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Nigerian Shortlet & Hotel Categories</span>

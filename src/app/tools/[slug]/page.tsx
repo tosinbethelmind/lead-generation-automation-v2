@@ -552,7 +552,7 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
   const profile = getSectorProfile(cleanSlug);
 
   return (
-    <main className="min-h-screen bg-[#040711] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <main className="min-h-screen bg-[#040711] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 pb-36">
       {/* Top Hairline Metallic Accent Glow */}
       <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 opacity-90 shadow-[0_0_20px_rgba(6,182,212,0.6)]" />
 
@@ -645,7 +645,7 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
           {cleanSlug === 'recruitment' ? (
             <RecruitmentEngineWidget />
           ) : (
-            <SectorToolsWidget businessCategory={profile.category} />
+            <SectorToolsWidget businessCategory={profile.category} hideHeader={true} />
           )}
         </section>
 
