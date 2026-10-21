@@ -18,6 +18,7 @@ import {
   calculateBeautySalonStylistBooking
 } from '@/lib/sectorModules';
 import { Code, Copy, Check, MessageCircle, Sparkles, ExternalLink, Zap, ShieldCheck } from 'lucide-react';
+import { ViralToolShareBar } from './ViralToolShareBar';
 
 export type SectorToolTab = 
   | 'solar' 
@@ -746,6 +747,21 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Solar & Inverter BOQ Load Sizer"
+                    toolSlug="solar-boq"
+                    summaryText={`${kva}kVA Hybrid Solar BOQ: ₦${(result.solarSetupCost || result.grandTotal || 4500000).toLocaleString()} (Saves ₦${(result.netMonthlySavings || 185000).toLocaleString()}/mo vs generator diesel)`}
+                    highlights={[
+                      { label: 'System Capacity', value: `${kva} kVA Hybrid Inverter` },
+                      { label: 'DisCo Grid Tariff', value: discoBand },
+                      { label: 'Est. Total BOQ', value: `₦${(result.solarSetupCost || result.grandTotal || 4500000).toLocaleString()}` },
+                      { label: 'Diesel Replaced', value: `${dieselLiters} Liters/mo (≈ ₦${(dieselLiters * 1250).toLocaleString()})` },
+                      { label: 'Payback Runway', value: `${result.paybackPeriodMonths || 14} Months` },
+                    ]}
+                    category="Solar & Renewable Energy"
+                  />
                 </div>
               )}
             </div>
@@ -878,6 +894,21 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Tokunbo Customs Duty & Port Landing Sizer"
+                    toolSlug="tokunbo-duty"
+                    summaryText={`CIF ₦${cifValue.toLocaleString()} | Total Port Clearance: ₦${(result.selectedPort?.totalClearingCostNgn || result.estimatedPortClearingTotalNgn || 2600000).toLocaleString()}`}
+                    highlights={[
+                      { label: 'CIF Vehicle Valuation', value: `₦${cifValue.toLocaleString()}` },
+                      { label: '17-Digit VIN', value: vin || '1HGCR2F83JA102938' },
+                      { label: 'Import Duty (20%)', value: `₦${(result.dutyNgn || Math.round(cifValue * 0.2)).toLocaleString()}` },
+                      { label: 'NAC Levy (15%)', value: `₦${(result.nacNgn || Math.round(cifValue * 0.15)).toLocaleString()}` },
+                      { label: 'Total Port Clearance', value: `₦${(result.selectedPort?.totalClearingCostNgn || result.estimatedPortClearingTotalNgn || 2600000).toLocaleString()}` },
+                    ]}
+                    category="Automobile & Customs"
+                  />
                 </div>
               )}
             </div>
@@ -1052,6 +1083,21 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Salon & Spa 24/7 Booking & Deposit Lock"
+                    toolSlug="salon-booking"
+                    summaryText={`Booking Value: ₦${(result.totalBookingCostNgn || 85000).toLocaleString()} | 25% Anti-No-Show Seat Deposit: ₦${(result.mandatoryDeposit25PercentNgn || 21250).toLocaleString()}`}
+                    highlights={[
+                      { label: 'Service Category', value: beautyCategory.replace('_', ' ') },
+                      { label: 'Stylist Tier', value: stylistTier === 'master_director' ? 'Master Director' : 'Senior Stylist' },
+                      { label: 'Total Booking Value', value: `₦${(result.totalBookingCostNgn || 85000).toLocaleString()}` },
+                      { label: '25% Anti-No-Show Lock', value: `₦${(result.mandatoryDeposit25PercentNgn || 21250).toLocaleString()}` },
+                      { label: 'Balance Payable at Salon', value: `₦${(result.balancePayableAtSalonNgn || 63750).toLocaleString()}` },
+                    ]}
+                    category="Beauty & Salon"
+                  />
                 </div>
               )}
             </div>
@@ -1227,6 +1273,21 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Restaurant Direct Food Order & Chowdeck Commission Saver"
+                    toolSlug="restaurant-order"
+                    summaryText={`Order: ${result.dishName || 'Food Order'} (x${foodQty}) | Total: ₦${(result.totalOrderNgn || 16500).toLocaleString()} (0% Commission)`}
+                    highlights={[
+                      { label: 'Menu Selection', value: `${result.dishName || 'Food Order'} (Qty: ${foodQty})` },
+                      { label: 'Order Mode', value: orderMode.toUpperCase() },
+                      { label: 'Food Subtotal', value: `₦${(result.foodSubtotalNgn || 13000).toLocaleString()}` },
+                      { label: 'Chowdeck 25% Fee Saved', value: `+₦${(result.chowdeckCommissionSavedNgn || 4125).toLocaleString()}` },
+                      { label: 'Direct Total Paid', value: `₦${(result.totalOrderNgn || 16500).toLocaleString()}` },
+                    ]}
+                    category="Restaurants & Lounges"
+                  />
                 </div>
               )}
             </div>
@@ -1387,6 +1448,21 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Retail WhatsApp Catalog Closer & Stock Reservation"
+                    toolSlug="retail-catalog"
+                    summaryText={`Item: ${retailProduct} (${retailSize}) | Total: ₦${((result.priceNgn || retailPrice) + (result.deliveryFeeNgn || 2500)).toLocaleString()}`}
+                    highlights={[
+                      { label: 'Product Item', value: retailProduct },
+                      { label: 'Size / Variant', value: retailSize },
+                      { label: 'Product Price', value: `₦${(result.priceNgn || retailPrice).toLocaleString()}` },
+                      { label: 'Interstate Dispatch', value: `₦${(result.deliveryFeeNgn || 2500).toLocaleString()}` },
+                      { label: 'Total Payable', value: `₦${((result.priceNgn || retailPrice) + (result.deliveryFeeNgn || 2500)).toLocaleString()}` },
+                    ]}
+                    category="Retail Boutiques & Supermarkets"
+                  />
                 </div>
               )}
             </div>
@@ -1592,6 +1668,21 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Real Estate Plot Layout & Mortgage Amortization"
+                    toolSlug="mortgage-calculator"
+                    summaryText={`Property: ₦${propertyPrice.toLocaleString()} | Monthly Repayment: ₦${(result.monthlyPaymentNgn || 540000).toLocaleString()}/mo`}
+                    highlights={[
+                      { label: 'Property Price', value: `₦${propertyPrice.toLocaleString()}` },
+                      { label: `Down Payment (${downPaymentPercent}%)`, value: `₦${(result.downPaymentNgn || (propertyPrice * downPaymentPercent / 100)).toLocaleString()}` },
+                      { label: 'Monthly Amortization', value: `₦${(result.monthlyPaymentNgn || 540000).toLocaleString()}/mo` },
+                      { label: 'Foundation Milestone (30%)', value: `₦${(propertyPrice * 0.3).toLocaleString()}` },
+                      { label: 'Key Handover (20%)', value: `₦${(propertyPrice * 0.2).toLocaleString()}` },
+                    ]}
+                    category="Real Estate & Property"
+                  />
                 </div>
               )}
             </div>
@@ -1719,6 +1810,20 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Clinic HMO Claims & Patient Co-Pay Reconciler"
+                    toolSlug="clinic-hmo"
+                    summaryText={`Consultation: ${consultType.toUpperCase()} | Patient Co-Pay: ₦${(result.patientPayableNgn || 2500).toLocaleString()}`}
+                    highlights={[
+                      { label: 'Consultation Type', value: consultType.toUpperCase() },
+                      { label: 'Total Procedure Tariff', value: `₦${(result.totalEstimatedBillNgn || 25000).toLocaleString()}` },
+                      { label: 'Patient Co-Pay Due', value: `₦${(result.patientPayableNgn || 2500).toLocaleString()}` },
+                      { label: 'Reservation Code', value: result.appointmentCode || 'MED-4821' },
+                    ]}
+                    category="Healthcare Clinics & Medical"
+                  />
                 </div>
               )}
             </div>
@@ -1841,6 +1946,21 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Private School Term Tuition & Result PIN Portal"
+                    toolSlug="school-portal"
+                    summaryText={`Expected Term Tuition: ₦${(result.grossTermRevenueNgn || 27000000).toLocaleString()} (Students: ${studentCount})`}
+                    highlights={[
+                      { label: 'Total Enrolled Students', value: `${studentCount} Students` },
+                      { label: 'Term Fee Per Student', value: `₦${termlyTuition.toLocaleString()}` },
+                      { label: 'Gross Expected Tuition', value: `₦${(result.grossTermRevenueNgn || 27000000).toLocaleString()}` },
+                      { label: 'Result PIN Revenue', value: `₦${(result.scratchPinRevenueNgn || 1080000).toLocaleString()}` },
+                      { label: 'Digital Report Cards', value: 'Auto-Gated Until Fee Clearance' },
+                    ]}
+                    category="Schools & Education"
+                  />
                 </div>
               )}
             </div>
@@ -1966,6 +2086,21 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Hyperlocal Dispatch & Long-Haul Trip Freight Sizer"
+                    toolSlug="logistics-quote"
+                    summaryText={`Route: ${originCity} ➔ ${destCity} (${weightKg}kg) | Total Waybill: ₦${(result.interStateWaybillFeeNgn || 18500).toLocaleString()}`}
+                    highlights={[
+                      { label: 'Origin City', value: originCity },
+                      { label: 'Destination City', value: destCity },
+                      { label: 'Consignment Weight', value: `${weightKg} kg` },
+                      { label: 'Interstate Freight Fee', value: `₦${(result.interStateWaybillFeeNgn || 18500).toLocaleString()}` },
+                      { label: 'Automated SMS Waybill', value: 'Active (Direct to Customer)' },
+                    ]}
+                    category="Logistics & Haulage"
+                  />
                 </div>
               )}
             </div>
@@ -2057,6 +2192,20 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="CAC Corporate Filing Fees & Legal Retainer Suite"
+                    toolSlug="cac-filing"
+                    summaryText={`CAC Filing: ₦${(result.totalStatutoryCostNgn || 22500).toLocaleString()} | Legal Retainer: ₦${(result.recommendedMonthlyRetainerNgn || 75000).toLocaleString()}/mo`}
+                    highlights={[
+                      { label: 'Official CAC Filing Fee', value: `₦${(result.officialCacFilingFeeNgn || 15000).toLocaleString()}` },
+                      { label: 'FIRS Stamp Duty', value: `₦${(result.stampDutyNgn || 7500).toLocaleString()}` },
+                      { label: 'Total Statutory Fees', value: `₦${(result.totalStatutoryCostNgn || 22500).toLocaleString()}` },
+                      { label: 'Legal Retainer Runway', value: `₦${(result.recommendedMonthlyRetainerNgn || 75000).toLocaleString()}/mo` },
+                    ]}
+                    category="Law Firms & CAC Services"
+                  />
                 </div>
               )}
             </div>
@@ -2180,6 +2329,21 @@ export function SectorToolsWidget({
                       adminPhone={merchantPhone}
                     />
                   </div>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Shortlet Electricity Token & Caution Deposit Reconciler"
+                    toolSlug="shortlet-reconciler"
+                    summaryText={`Stay: ${nightsCount} Nights (₦${(nightlyRate * nightsCount).toLocaleString()}) | Caution Deposit: ₦${(result.cautionDepositNgn || 30000).toLocaleString()}`}
+                    highlights={[
+                      { label: 'Nightly Rate', value: `₦${nightlyRate.toLocaleString()}` },
+                      { label: 'Length of Stay', value: `${nightsCount} Nights` },
+                      { label: 'Accommodation Fee', value: `₦${(nightlyRate * nightsCount).toLocaleString()}` },
+                      { label: 'Refundable Caution Lock', value: `₦${(result.cautionDepositNgn || 30000).toLocaleString()}` },
+                      { label: 'Total Due', value: `₦${(result.grandTotalNgn || (nightlyRate * nightsCount + 30000)).toLocaleString()}` },
+                    ]}
+                    category="Hotels & Shortlet Apartments"
+                  />
                 </div>
               )}
             </div>
@@ -2253,6 +2417,21 @@ export function SectorToolsWidget({
                   <p className="text-xs text-slate-400 bg-slate-900/60 p-3 rounded-lg border border-slate-800 text-center">
                     💡 All customer payments clear in real time with 0% risk of fake credit alerts.
                   </p>
+
+                  {/* Viral Traffic & Forum Distribution Suite */}
+                  <ViralToolShareBar
+                    toolTitle="Fake-Alert Proof Virtual Account Transfer Shield"
+                    toolSlug="fake-alert-shield"
+                    summaryText={`Virtual Account: 6805375225 (Moniepoint MFB) | Amount: ₦${amountNgn.toLocaleString()} | 0% Fake Alert Risk`}
+                    highlights={[
+                      { label: 'Settlement Account', value: '6805375225' },
+                      { label: 'Bank Name', value: 'Moniepoint Microfinance Bank' },
+                      { label: 'Beneficiary', value: 'Bethelmind Digital Solutions' },
+                      { label: 'Security Level', value: 'NIBSS Instant Webhook Reconciled' },
+                      { label: 'Fake Alert Risk', value: '0.00% (Guaranteed)' },
+                    ]}
+                    category="Fintech & Merchant Shield"
+                  />
                 </div>
               )}
             </div>

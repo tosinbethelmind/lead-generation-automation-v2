@@ -7,6 +7,7 @@ import { MASTER_PAYOUT } from '@/data/monetizationCatalog';
 
 import { InternalLinkOptimizer } from '@/lib/blog/internalLinkOptimizer';
 import { InteractiveCalculators } from '@/components/blog/InteractiveCalculators';
+import { SectorToolsWidget } from '@/components/SectorToolsWidget';
 import { SocialShareHub } from '@/components/blog/SocialShareHub';
 import { BlogViewTracker } from '@/components/blog/BlogViewTracker';
 import { AnswerThePublicEngine } from '@/lib/blog/answerThePublicEngine';
@@ -389,12 +390,10 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: optimizedContent }}
         />
 
-        {/* ─── CONDITIONAL SECTOR CALCULATOR (ONLY FOR SOLAR & REAL ESTATE) ─── */}
-        {isSolarOrRealEstate && (
-          <div className="my-10">
-            <InteractiveCalculators category={post.category} />
-          </div>
-        )}
+        {/* ─── LIVE INTERACTIVE SECTOR TOOL & VIRAL ROI CALCULATOR ─── */}
+        <div className="my-12">
+          <SectorToolsWidget businessCategory={post.category} hideHeader={false} />
+        </div>
 
         {/* ─── SME GOOGLE REVENUE-LEAK & WEBSITE GRADER (VIRAL CONVERSION MAGNET) ─── */}
         <SmeWebsiteGraderWidget initialCategory={post.category} />
