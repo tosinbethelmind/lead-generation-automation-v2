@@ -3,6 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 const SESSION_FILE = path.join(process.cwd(), 'local_db', 'nairaland_session.json');
 const CAMPAIGNS_LEDGER = path.join(process.cwd(), 'local_db', 'nairaland_campaigns.json');
 
