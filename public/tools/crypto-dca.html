@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WhaleDCA™ Pro - Institutional Crypto DCA & Profit Target Simulator</title>
+  <meta name="description" content="Calculate your Bitcoin, Ethereum, and Solana dollar-cost average growth, drawdowns, and tiered whale take-profit exit ladder. Free instant analysis.">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(18, 26, 43, 0.85);
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #f59e0b;
+      --accent-glow: rgba(245, 158, 11, 0.25);
+      --cyan: #06b6d4;
+      --green: #10b981;
+      --purple: #8b5cf6;
+      --text: #f3f4f6;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 1.5rem 1rem; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 9999px; font-size: 0.78rem; font-weight: 600; color: var(--accent); margin-bottom: 1rem; }
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem; background: linear-gradient(135deg, #f59e0b, #fbbf24, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p.subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 2rem; line-height: 1.5; }
+    
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+    @media (min-width: 768px) { .grid { grid-template-columns: 1fr 1fr; } }
+    
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+    .form-group { margin-bottom: 1.25rem; }
+    label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+    label span.val { color: var(--accent); font-family: monospace; font-size: 0.95rem; }
+    input[type="range"] { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; outline: none; -webkit-appearance: none; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); }
+    
+    select, input[type="text"], input[type="email"] { width: 100%; padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 0.6rem; color: #fff; font-size: 0.95rem; outline: none; }
+    select:focus, input:focus { border-color: var(--accent); }
+
+    .stat-banner { background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(16, 185, 129, 0.1)); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 0.75rem; padding: 1.25rem; text-align: center; margin-bottom: 1.5rem; }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.25rem; }
+    .stat-val-large { font-size: 2.2rem; font-weight: 800; color: #10b981; font-family: monospace; }
+    .stat-sub { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+
+    .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+    .scenario-box { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.75rem; text-align: center; }
+    .scenario-box.highlight { border-color: var(--green); background: rgba(16, 185, 129, 0.08); }
+    .sc-title { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
+    .sc-val { font-size: 1.05rem; font-weight: 700; margin-top: 0.2rem; font-family: monospace; }
+
+    .ladder-card { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.8rem 1rem; margin-bottom: 0.6rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; }
+    .ladder-step { font-weight: 700; color: var(--accent); }
+    .ladder-price { font-family: monospace; font-weight: 600; color: #fff; }
+    .ladder-payout { color: var(--green); font-family: monospace; font-weight: 700; }
+
+    .btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.9rem; border-radius: 0.6rem; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+    .btn-primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; box-shadow: 0 4px 15px var(--accent-glow); margin-bottom: 0.75rem; }
+    .btn-share { background: #25d366; color: #fff; }
+    .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.active { display: flex; }
+    .modal-box { background: #121929; border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 1rem; max-width: 480px; width: 100%; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+    .close-btn { float: right; background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">
+      ⚡ OFFICIAL TOOL: CRYPTO ALPHA DAILY FLEET
+    </div>
+    <h1>WhaleDCA™ Pro Simulator</h1>
+    <p class="subtitle">Simulate your periodic Bitcoin, Ethereum, and Altcoin accumulation, estimate cycle peak valuation, and get an institutional 4-tier take-profit exit ladder.</p>
+
+    <div class="grid">
+      <!-- Input Controls -->
+      <div class="card">
+        <h3 style="margin-bottom: 1.25rem; font-size: 1.1rem; color: #fff;">1. Accumulation Parameters</h3>
+        
+        <div class="form-group">
+          <label>Target Crypto Asset</label>
+          <select id="assetSelect" onchange="recalculate()">
+            <option value="BTC" selected>Bitcoin (BTC) - $68,000</option>
+            <option value="ETH">Ethereum (ETH) - $3,500</option>
+            <option value="SOL">Solana (SOL) - $175</option>
+            <option value="CUSTOM">Custom Moonshot Altcoin</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Investment Frequency</label>
+          <select id="freqSelect" onchange="recalculate()">
+            <option value="weekly">Every Week</option>
+            <option value="biweekly">Every 2 Weeks</option>
+            <option value="monthly" selected>Monthly Deposit</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Amount Per Deposit <span class="val" id="amtVal">$200</span></label>
+          <input type="range" id="amtInput" min="25" max="2500" step="25" value="200" oninput="recalculate()">
+        </div>
+
+        <div class="form-group">
+          <label>DCA Duration (Months) <span class="val" id="monthsVal">24 Months (2 Yrs)</span></label>
+          <input type="range" id="monthsInput" min="3" max="48" step="3" value="24" oninput="recalculate()">
+        </div>
+
+        <div class="stat-banner" style="margin-top: 1.5rem; margin-bottom: 0;">
+          <div class="stat-label">Total Out-of-Pocket Capital Invested</div>
+          <div class="stat-val-large" id="totalInvestedDisp" style="color: #fff;">$4,800</div>
+          <div class="stat-sub">Disciplined wealth accumulation without market timing</div>
+        </div>
+      </div>
+
+      <!-- Projection & Profit Ladder -->
+      <div class="card">
+        <h3 style="margin-bottom: 1.25rem; font-size: 1.1rem; color: #fff;">2. Cycle Valuation & Whale Ladder</h3>
+
+        <div class="stat-banner">
+          <div class="stat-label">Projected Cycle Value (Realistic)</div>
+          <div class="stat-val-large" id="realisticValueDisp">$16,800</div>
+          <div class="stat-sub"><span id="netProfitDisp" style="color: #10b981; font-weight: 700;">+$12,000</span> Net Profit (<span id="roiDisp">250%</span> ROI)</div>
+        </div>
+
+        <div class="scenario-grid">
+          <div class="scenario-box">
+            <div class="sc-title">Bear Defense</div>
+            <div class="sc-val" id="bearVal">$10,560</div>
+          </div>
+          <div class="scenario-box highlight">
+            <div class="sc-title">Realistic (3.5x)</div>
+            <div class="sc-val" id="realVal">$16,800</div>
+          </div>
+          <div class="scenario-box">
+            <div class="sc-title">Supercycle</div>
+            <div class="sc-val" id="bullVal" style="color: #f59e0b;">$27,840</div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 0.85rem; color: var(--muted); text-transform: uppercase; margin-bottom: 0.75rem; letter-spacing: 0.05em;">Whale Tiered Take-Profit Exit Ladder:</h4>
+        <div id="ladderContainer"></div>
+
+        <div style="margin-top: 1.5rem;">
+          <button class="btn btn-primary" onclick="openLeadModal()">
+            📥 Unlock Institutional Whale Strategy & Signals ($47)
+          </button>
+          <button class="btn btn-share" onclick="shareOnWhatsApp()">
+            💬 Share DCA Simulation on WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lead Capture Modal -->
+  <div class="modal-overlay" id="leadModal">
+    <div class="modal-box">
+      <button class="close-btn" onclick="closeLeadModal()">&times;</button>
+      <div class="badge">🔥 EXCLUSIVE DISCORD & SIGNAL SHEET ACCESS</div>
+      <h3 style="font-size: 1.4rem; margin-bottom: 0.5rem; color: #fff;">Crypto Alpha Whale Blueprint</h3>
+      <p style="color: var(--muted); font-size: 0.88rem; margin-bottom: 1.25rem; line-height: 1.4;">
+        Get the exact on-chain whale accumulation alerts, Fibonacci exit levels, and automated risk management blueprint used by institutional desks.
+      </p>
+
+      <form id="leadForm" onsubmit="submitLead(event)">
+        <div class="form-group">
+          <label>Your Full Name</label>
+          <input type="text" id="leadName" placeholder="Alex Morgan" required>
+        </div>
+        <div class="form-group">
+          <label>Your Primary Email Address</label>
+          <input type="email" id="leadEmail" placeholder="alex@gmail.com" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="submitBtn">
+          🚀 Get Instant Access via Selar ($47)
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const ASSETS = {
+      BTC: { name: 'Bitcoin', price: 68000, cons: 2.2, real: 3.5, bull: 5.8 },
+      ETH: { name: 'Ethereum', price: 3500, cons: 2.5, real: 4.2, bull: 7.0 },
+      SOL: { name: 'Solana', price: 175, cons: 3.0, real: 5.5, bull: 10.0 },
+      CUSTOM: { name: 'Custom Token', price: 10, cons: 2.0, real: 4.0, bull: 8.0 }
+    };
+
+    function recalculate() {
+      const assetKey = document.getElementById('assetSelect').value;
+      const asset = ASSETS[assetKey] || ASSETS.BTC;
+      const freq = document.getElementById('freqSelect').value;
+      const amt = parseInt(document.getElementById('amtInput').value);
+      const months = parseInt(document.getElementById('monthsInput').value);
+
+      document.getElementById('amtVal').textContent = '$' + amt.toLocaleString();
+      document.getElementById('monthsVal').textContent = months + ' Months (' + (months/12).toFixed(1) + ' Yrs)';
+
+      let periodsPerMonth = 4.33;
+      if (freq === 'biweekly') periodsPerMonth = 2.165;
+      if (freq === 'monthly') periodsPerMonth = 1;
+
+      const totalPeriods = Math.round(months * periodsPerMonth);
+      const totalInvested = Math.round(totalPeriods * amt);
+      const consVal = Math.round(totalInvested * asset.cons);
+      const realVal = Math.round(totalInvested * asset.real);
+      const bullVal = Math.round(totalInvested * asset.bull);
+      const profit = realVal - totalInvested;
+      const roi = Math.round((profit / totalInvested) * 100);
+
+      document.getElementById('totalInvestedDisp').textContent = '$' + totalInvested.toLocaleString();
+      document.getElementById('realisticValueDisp').textContent = '$' + realVal.toLocaleString();
+      document.getElementById('netProfitDisp').textContent = '+$' + profit.toLocaleString();
+      document.getElementById('roiDisp').textContent = roi + '%';
+
+      document.getElementById('bearVal').textContent = '$' + consVal.toLocaleString();
+      document.getElementById('realVal').textContent = '$' + realVal.toLocaleString();
+      document.getElementById('bullVal').textContent = '$' + bullVal.toLocaleString();
+
+      // Render Whale Ladder
+      const ladder = [
+        { tier: 'Tranche 1 (1.75x)', price: Math.round(asset.price * 1.75), sell: '20% Sell', cash: Math.round(realVal * 0.20) },
+        { tier: 'Tranche 2 (2.50x)', price: Math.round(asset.price * 2.50), sell: '30% Sell', cash: Math.round(realVal * 0.30) },
+        { tier: 'Tranche 3 (3.80x)', price: Math.round(asset.price * 3.80), sell: '30% Sell', cash: Math.round(realVal * 0.30) },
+        { tier: 'Moonbag (5.00x+)', price: Math.round(asset.price * 5.00), sell: '20% Runner', cash: Math.round(realVal * 0.20) }
+      ];
+
+      const container = document.getElementById('ladderContainer');
+      container.innerHTML = '';
+      ladder.forEach(l => {
+        const row = document.createElement('div');
+        row.className = 'ladder-card';
+        row.innerHTML = `
+          <div>
+            <div class="ladder-step">${l.tier}</div>
+            <div class="ladder-price">$${l.price.toLocaleString()} Target</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.75rem; color: var(--muted);">${l.sell}</div>
+            <div class="ladder-payout">+$${l.cash.toLocaleString()}</div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function shareOnWhatsApp() {
+      const realVal = document.getElementById('realisticValueDisp').textContent;
+      const invested = document.getElementById('totalInvestedDisp').textContent;
+      const text = `🔥 My Crypto DCA plan turns ${invested} into ${realVal} with a disciplined whale take-profit ladder! Calculate your free exit strategy here: ` + window.location.origin + `/tools/crypto-dca`;
+      window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    function openLeadModal() {
+      document.getElementById('leadModal').classList.add('active');
+    }
+
+    function closeLeadModal() {
+      document.getElementById('leadModal').classList.remove('active');
+    }
+
+    async function submitLead(e) {
+      e.preventDefault();
+      const name = document.getElementById('leadName').value;
+      const email = document.getElementById('leadEmail').value;
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = 'Securing Access...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/tools/crypto/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            asset: document.getElementById('assetSelect').value,
+            periodicDeposit: parseInt(document.getElementById('amtInput').value),
+            projectedValue: parseInt(document.getElementById('realisticValueDisp').textContent.replace(/[$,]/g, '')),
+            selectedTier: 'whale_blueprint',
+            sourceChannel: 'Crypto Alpha Daily'
+          })
+        });
+        const data = await res.json();
+        if (data.success && data.selarCheckoutUrl) {
+          window.location.href = data.selarCheckoutUrl;
+        } else {
+          window.location.href = 'https://selar.com/showlove/bethelmind?product=da-crypto&email=' + encodeURIComponent(email);
+        }
+      } catch (err) {
+        window.location.href = 'https://selar.com/showlove/bethelmind?product=da-crypto&email=' + encodeURIComponent(email);
+      }
+    }
+
+    // Initial run
+    recalculate();
+  </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sports Bet Edge Matrix & Kelly Criterion Bankroll Engine</title>
+  <meta name="description" content="Calculate true implied probability, expected value (+EV), and Kelly Criterion bankroll stake sizes in seconds.">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #111827;
+      --card-border: #1f2937;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --primary: #f43f5e;
+      --accent: #f59e0b;
+      --emerald: #10b981;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 680px; display: flex; flex-direction: column; gap: 20px; }
+    .header { text-align: center; padding: 20px 12px 10px; }
+    .badge { display: inline-block; padding: 4px 12px; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 999px; font-size: 11px; font-weight: 700; color: #fda4af; text-transform: uppercase; margin-bottom: 10px; }
+    h1 { font-size: 24px; font-weight: 900; line-height: 1.2; margin-bottom: 8px; color: #fff; }
+    p.sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #e5e7eb; }
+    input { width: 100%; padding: 12px 14px; background: #0b1120; border: 1px solid #374151; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+    input:focus { border-color: var(--primary); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, #f43f5e, #be123c); border: none; border-radius: 12px; color: #fff; font-size: 15px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3); }
+    .btn-primary:active { transform: scale(0.98); }
+    .result-card { background: #070b14; border: 1px solid #1f2937; border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 14px; }
+    .result-val { font-size: 36px; font-weight: 900; color: #fff; }
+    .result-label { font-size: 11px; text-transform: uppercase; font-weight: 800; color: #f43f5e; margin-bottom: 4px; }
+    .share-btn { width: 100%; padding: 12px; background: #059669; border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .modal-card { background: #111827; border: 1px solid #374151; border-radius: 20px; max-width: 440px; width: 100%; padding: 24px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">⚽ Sports Bet Edge & Stat Matrix</div>
+      <h1>Expected Value & Kelly Stake Engine</h1>
+      <p class="sub">Find mathematical edges over bookmakers using probability modeling and disciplined bankroll sizing.</p>
+    </div>
+
+    <div class="card">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Decimal Odds (e.g. 2.10)</label>
+          <input type="number" id="oddsInput" step="0.05" value="2.10">
+        </div>
+        <div class="form-group">
+          <label>Estimated Win Prob (%)</label>
+          <input type="number" id="probInput" value="55">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Total Bankroll ($)</label>
+        <input type="number" id="bankrollInput" value="2000">
+      </div>
+
+      <button class="btn-primary" onclick="calculateEdge()">⚡ Calculate Edge & Kelly Stake</button>
+
+      <div id="resultsArea" style="display:none; margin-top: 20px;">
+        <div class="result-card">
+          <div class="result-label">Expected Value (+EV)</div>
+          <div class="result-val" id="evVal">+15.5%</div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:14px; font-size:12px;">
+          <div style="background:#0b1120; padding:10px; border-radius:8px; border:1px solid #1f2937;">
+            <div style="color:#9ca3af;">Recommended Stake:</div>
+            <div style="font-weight:800; font-size:14px; color:#10b981;" id="stakeVal">$100 (5.0%)</div>
+          </div>
+          <div style="background:#0b1120; padding:10px; border-radius:8px; border:1px solid #1f2937;">
+            <div style="color:#9ca3af;">Bookmaker Implied Prob:</div>
+            <div style="font-weight:800; font-size:14px; color:#fff;" id="impliedVal">47.6%</div>
+          </div>
+        </div>
+
+        <button class="share-btn" onclick="shareWhatsApp()">
+          <span>📱 Share on WhatsApp (Unlock VIP Odds Matrix)</span>
+        </button>
+
+        <button onclick="openModal()" style="width:100%; padding:12px; background:linear-gradient(135deg, #f59e0b, #d97706); border:none; border-radius:10px; color:#000; font-size:13px; font-weight:900; margin-top:10px; cursor:pointer;">
+          👑 Unlock VIP Sports Edge Formula ($39)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="leadModal" class="modal-backdrop">
+    <div class="modal-card">
+      <h2 style="color:#fff; font-size:18px; font-weight:900; margin-bottom:6px;">VIP Sports Analytics Suite</h2>
+      <p style="font-size:12px; color:#9ca3af; margin-bottom:16px;">Get proprietary EV spreadsheets, line-shopping tools, and arbitrage tracking formulas.</p>
+      
+      <input type="text" id="leadName" placeholder="Your Name" style="margin-bottom:10px;">
+      <input type="email" id="leadEmail" placeholder="Your Email" style="margin-bottom:14px;">
+
+      <button onclick="submitLead()" style="width:100%; padding:14px; background:linear-gradient(135deg, #f59e0b, #d97706); color:#000; font-weight:900; border:none; border-radius:10px; cursor:pointer;">
+        Proceed to Sovereign Checkout &rarr;
+      </button>
+      <button onclick="closeModal()" style="margin-top:10px; background:transparent; border:none; color:#64748b; font-size:12px; cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    function calculateEdge() {
+      const odds = Number(document.getElementById('oddsInput').value) || 2.10;
+      const winProb = (Number(document.getElementById('probInput').value) || 55) / 100;
+      const bankroll = Number(document.getElementById('bankrollInput').value) || 2000;
+
+      const implied = 1 / odds;
+      const ev = (winProb * (odds - 1)) - (1 - winProb);
+      const evPct = Math.round(ev * 1000) / 10;
+
+      const b = odds - 1;
+      const p = winProb;
+      const q = 1 - p;
+      let kelly = ((b * p) - q) / b;
+      kelly = Math.max(0, Math.min(0.05, kelly * 0.5)); // Half Kelly capped at 5%
+      const stake = Math.round(bankroll * kelly);
+
+      document.getElementById('evVal').innerText = (evPct >= 0 ? '+' : '') + evPct + '%';
+      document.getElementById('impliedVal').innerText = Math.round(implied * 1000) / 10 + '%';
+      document.getElementById('stakeVal').innerText = '$' + stake.toLocaleString() + ' (' + (Math.round(kelly * 1000) / 10) + '%)';
+      document.getElementById('resultsArea').style.display = 'block';
+    }
+
+    function shareWhatsApp() {
+      const text = encodeURIComponent('⚽ Check out this Sports Bet +EV Edge Calculator: http://169.58.182.92:3000/tools/sports-edge');
+      window.open('https://api.whatsapp.com/send?text=' + text, '_blank');
+      alert('🎉 VIP Matrix Unlocked!');
+    }
+
+    function openModal() { document.getElementById('leadModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('leadModal').style.display = 'none'; }
+
+    async function submitLead() {
+      const name = document.getElementById('leadName').value.trim();
+      const email = document.getElementById('leadEmail').value.trim();
+      if (!email) return alert('Please enter your email');
+
+      try {
+        await fetch('/api/tools/sports/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, favoriteSport: 'Soccer', bankroll: Number(document.getElementById('bankrollInput').value) || 2000 })
+        });
+      } catch(_) {}
+
+      window.open('https://selar.com/showlove/bethelmind?product=da-sports&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email), '_blank');
+      closeModal();
+    }
+  </script>
+</body>
+</html>

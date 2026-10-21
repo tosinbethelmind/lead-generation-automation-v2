@@ -125,6 +125,24 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+    async rewrites() {
+    return [
+      { source: '/tools', destination: '/tools/index.html' },
+      { source: '/tools/solar-savings', destination: '/tools/solar-savings.html' },
+      { source: '/tools/crypto-dca', destination: '/tools/crypto-dca.html' },
+      { source: '/tools/kids-learning', destination: '/tools/kids-learning.html' },
+      { source: '/tools/biohack-longevity', destination: '/tools/biohack-longevity.html' },
+      { source: '/tools/wealth-calculator', destination: '/tools/wealth-calculator.html' },
+      { source: '/tools/deal-calculator', destination: '/tools/cashflow-calculator.html' },
+      { source: '/tools/cashflow', destination: '/tools/cashflow-calculator.html' },
+      { source: '/tools/sports-edge', destination: '/tools/sports-edge.html' },
+      { source: '/tools/ai-stack-finder', destination: '/tools/ai-stack-finder.html' },
+      { source: '/tools/script-generator', destination: '/tools/script-generator.html' },
+      { source: '/tools/site-audit', destination: '/tools/site-audit.html' },
+      { source: '/tools/wholesaling-loi', destination: '/tools/wholesaling-loi.html' },
+      { source: '/tools/prayer-journal', destination: '/tools/prayer-journal.html' },
+    ];
+  },
   async redirects() {
     return [
       {
