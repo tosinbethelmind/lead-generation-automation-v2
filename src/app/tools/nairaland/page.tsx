@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Flame, 
@@ -13,7 +13,13 @@ import {
   MessageCircle,
   ArrowLeft,
   ShieldCheck,
-  Zap
+  Zap,
+  Bot,
+  Play,
+  RotateCw,
+  Key,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
@@ -212,11 +218,111 @@ Proprietors and administrators can test the interactive school tuition & PIN led
 
 export default function NairalandDistributionHub() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [botStatus, setBotStatus] = useState<any>(null);
+  const [isPosting, setIsPosting] = useState<string | null>(null);
+  const [isBumping, setIsBumping] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [showSessionModal, setShowSessionModal] = useState(false);
+  const [sessionInput, setSessionInput] = useState('');
+
+  // Fetch bot status on mount
+  const fetchStatus = async () => {
+    try {
+      const res = await fetch('/api/admin/nairaland');
+      const data = await res.json();
+      if (data.success) {
+        setBotStatus(data);
+      }
+    } catch (err) {
+      console.warn('Could not load Nairaland status:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchStatus();
+  }, []);
 
   const copyBBCode = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2500);
+  };
+
+  // 1-Click Autonomous Post Handler
+  const handleAutonomousPost = async (campaignId: string) => {
+    setIsPosting(campaignId);
+    setFeedbackMessage({ text: `Autonomous Playwright worker dispatched for ${campaignId}...`, type: 'info' });
+
+    try {
+      const res = await fetch('/api/admin/nairaland', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'post', campaignId }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setFeedbackMessage({ text: data.message || 'Topic posted successfully!', type: 'success' });
+        setTimeout(fetchStatus, 3000);
+      } else {
+        setFeedbackMessage({ text: data.error || 'Failed to dispatch post.', type: 'error' });
+      }
+    } catch (err: any) {
+      setFeedbackMessage({ text: err.message || 'Network error.', type: 'error' });
+    } finally {
+      setIsPosting(null);
+      setTimeout(() => setFeedbackMessage(null), 6000);
+    }
+  };
+
+  // Autonomous Bump Handler
+  const handleAutonomousBump = async () => {
+    setIsBumping(true);
+    setFeedbackMessage({ text: 'Autonomous Bumper triggered. Checking all active threads...', type: 'info' });
+
+    try {
+      const res = await fetch('/api/admin/nairaland', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'bump' }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setFeedbackMessage({ text: data.message || 'Threads bumped successfully!', type: 'success' });
+        setTimeout(fetchStatus, 3000);
+      } else {
+        setFeedbackMessage({ text: data.error || 'Failed to bump threads.', type: 'error' });
+      }
+    } catch (err: any) {
+      setFeedbackMessage({ text: err.message || 'Network error.', type: 'error' });
+    } finally {
+      setIsBumping(false);
+      setTimeout(() => setFeedbackMessage(null), 6000);
+    }
+  };
+
+  // Save Session Cookies
+  const handleSaveSession = async () => {
+    if (!sessionInput.trim()) return;
+    try {
+      const res = await fetch('/api/admin/nairaland', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_session', sessionData: sessionInput }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFeedbackMessage({ text: 'Nairaland session cookies saved!', type: 'success' });
+        setShowSessionModal(false);
+        setSessionInput('');
+        fetchStatus();
+      } else {
+        setFeedbackMessage({ text: data.error || 'Failed to save session.', type: 'error' });
+      }
+    } catch (err: any) {
+      setFeedbackMessage({ text: err.message, type: 'error' });
+    }
   };
 
   return (
@@ -227,6 +333,7 @@ export default function NairalandDistributionHub() {
       <div className="h-1 w-full bg-gradient-to-r from-emerald-500 via-amber-400 to-cyan-400 opacity-90 shadow-[0_0_20px_rgba(16,185,129,0.6)]" />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+        
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between text-xs border-b border-white/10 pb-4">
           <Link
@@ -238,7 +345,7 @@ export default function NairalandDistributionHub() {
           </Link>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 rounded-full font-bold">
-              🇳🇬 Nairaland Viral Traffic Engine
+              🇳🇬 Nairaland Fully Automated
             </span>
             <span className="text-slate-400">CAC Certified RC 7034297</span>
           </div>
@@ -247,58 +354,160 @@ export default function NairalandDistributionHub() {
         {/* Hero Header */}
         <div className="space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black uppercase tracking-wider">
-            <Flame className="w-4 h-4 text-emerald-400 animate-pulse" />
-            <span>High-Yield Organic Traffic Distribution Station</span>
+            <Bot className="w-4 h-4 text-emerald-400 animate-pulse" />
+            <span>Autonomous Forum Growth & Front-Page Bumper Suite</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            Nairaland & Forum Traffic Launchpad
+            Nairaland Autonomous Traffic Engine
           </h1>
           <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-3xl">
-            Pre-formatted, high-engagement forum threads designed for Nairaland Auto, Properties, Investment, and Business sections. Each post contains audited figures, burning Nigerian problem hooks, and 1-tap links directly to your interactive tools.
+            Fully automated Playwright bot that bypasses Cloudflare, posts campaigns to target Nairaland boards, tracks incoming comments, and automatically posts expert calculation bumps to push threads to the Nairaland front page.
           </p>
         </div>
 
-        {/* How It Works Instruction Card */}
-        <div className="bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-emerald-950/20 border border-emerald-500/30 rounded-3xl p-6 sm:p-8 space-y-4">
-          <h2 className="text-lg font-black text-white flex items-center gap-2">
-            <Zap className="w-5 h-5 text-amber-400" />
-            <span>3-Step Nairaland Distribution Playbook (Guaranteed Organic Traffic)</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 text-xs">
-            <div className="bg-white/[0.03] border border-white/10 p-4 rounded-2xl space-y-2">
-              <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-black inline-flex items-center justify-center">1</span>
-              <h3 className="font-bold text-white text-sm">Copy 1-Click BBCode</h3>
-              <p className="text-slate-400 leading-relaxed">
-                Click the "Copy Nairaland BBCode" button on the campaign below. It copies fully formatted text with working links, bolding, and quotes.
+        {/* Feedback Alert Toast */}
+        {feedbackMessage && (
+          <div className={`p-4 rounded-2xl border flex items-center justify-between gap-3 text-xs font-bold transition-all shadow-xl ${
+            feedbackMessage.type === 'success' 
+              ? 'bg-emerald-950/90 border-emerald-500/50 text-emerald-300' 
+              : feedbackMessage.type === 'error'
+              ? 'bg-rose-950/90 border-rose-500/50 text-rose-300'
+              : 'bg-cyan-950/90 border-cyan-500/50 text-cyan-300'
+          }`}>
+            <div className="flex items-center gap-2.5">
+              {feedbackMessage.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+              <span>{feedbackMessage.text}</span>
+            </div>
+            <button onClick={() => setFeedbackMessage(null)} className="text-slate-400 hover:text-white">✕</button>
+          </div>
+        )}
+
+        {/* Autonomous Bot Control Deck */}
+        <div className="bg-slate-900/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-72 h-32 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className={`w-2.5 h-2.5 rounded-full ${botStatus?.authenticated ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
+                <h2 className="text-lg font-black text-white">
+                  Bot Engine Status: {botStatus?.authenticated ? 'Active & Authenticated' : 'Session Configuration Required'}
+                </h2>
+              </div>
+              <p className="text-xs text-slate-400">
+                {botStatus?.authenticated 
+                  ? 'Stealth Playwright browser session active. Ready to post and bump automatically.' 
+                  : 'Connect your Nairaland account or session cookies to enable 1-click autonomous publishing.'}
               </p>
             </div>
-            <div className="bg-white/[0.03] border border-white/10 p-4 rounded-2xl space-y-2">
-              <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-black inline-flex items-center justify-center">2</span>
-              <h3 className="font-bold text-white text-sm">Post in Target Section</h3>
-              <p className="text-slate-400 leading-relaxed">
-                Open Nairaland.com, go to the listed target section (e.g. Auto or Properties), paste the thread title and BBCode body, and submit.
-              </p>
+
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowSessionModal(true)}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/15 text-xs font-bold text-slate-200 transition-all active:scale-95"
+              >
+                <Key className="w-3.5 h-3.5 text-amber-400" />
+                <span>{botStatus?.authenticated ? 'Update Session' : 'Connect Account'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleAutonomousBump}
+                disabled={isBumping || !botStatus?.authenticated}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 text-slate-950 font-black text-xs transition-all shadow-md active:scale-95"
+              >
+                <RotateCw className={`w-3.5 h-3.5 ${isBumping ? 'animate-spin' : ''}`} />
+                <span>{isBumping ? 'Bumping Threads...' : '🔄 Run Auto-Bumper Now'}</span>
+              </button>
             </div>
-            <div className="bg-white/[0.03] border border-white/10 p-4 rounded-2xl space-y-2">
-              <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-black inline-flex items-center justify-center">3</span>
-              <h3 className="font-bold text-white text-sm">Engage & Bump to Front Page</h3>
-              <p className="text-slate-400 leading-relaxed">
-                When readers reply with their car VIN or diesel spend, run their numbers on the tool and reply with their exact results. This bumps your thread to the Nairaland front page!
-              </p>
+          </div>
+
+          {/* Bot Metrics Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+              <span className="text-xs text-slate-400 block mb-1">Active Threads</span>
+              <span className="text-2xl font-black text-white">{botStatus?.threadsCount || 0}</span>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+              <span className="text-xs text-slate-400 block mb-1">Total Auto-Bumps</span>
+              <span className="text-2xl font-black text-emerald-400">{botStatus?.stats?.totalBumps || 0}</span>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+              <span className="text-xs text-slate-400 block mb-1">Target Boards</span>
+              <span className="text-2xl font-black text-amber-400">5 Boards</span>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+              <span className="text-xs text-slate-400 block mb-1">Cloudflare Guard</span>
+              <span className="text-2xl font-black text-cyan-400">Stealth v2</span>
             </div>
           </div>
         </div>
+
+        {/* Modal for Connecting Nairaland Session */}
+        {showSessionModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-slate-900 border border-emerald-500/40 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative text-slate-100">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2">
+                  <Key className="w-4 h-4 text-emerald-400" />
+                  <h3 className="text-sm font-black text-white">Nairaland Session Setup</h3>
+                </div>
+                <button onClick={() => setShowSessionModal(false)} className="text-slate-400 hover:text-white">✕</button>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed">
+                You can authenticate your Nairaland bot in two simple ways:
+              </p>
+
+              <div className="space-y-3 text-xs">
+                <div className="p-3 bg-white/[0.03] border border-white/10 rounded-xl space-y-1.5">
+                  <strong className="text-emerald-400 block">Option 1: Interactive Browser Terminal</strong>
+                  <p className="text-slate-400 text-[11px]">
+                    Open your command terminal on the laptop and run:
+                  </p>
+                  <code className="block p-2 bg-slate-950 rounded-lg text-amber-300 font-mono text-[11px] select-all">
+                    node scripts/nairaland_autonomous_engine.js --interactive-login
+                  </code>
+                  <p className="text-slate-400 text-[11px]">
+                    A browser window will open. Simply log into Nairaland once and your session will be saved permanently.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-white/[0.03] border border-white/10 rounded-xl space-y-2">
+                  <strong className="text-cyan-400 block">Option 2: Paste Cookie / Session JSON</strong>
+                  <textarea
+                    rows={4}
+                    value={sessionInput}
+                    onChange={(e) => setSessionInput(e.target.value)}
+                    placeholder='Paste cookies JSON or PHPSESSID string here...'
+                    className="w-full p-2.5 bg-slate-950 border border-white/10 rounded-lg text-xs text-white font-mono focus:outline-none focus:border-cyan-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveSession}
+                    className="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-lg text-xs transition-all shadow-md"
+                  >
+                    Save Session Cookie →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Campaigns Grid */}
         <div className="space-y-6">
           <h2 className="text-xl font-black text-white flex items-center gap-2">
             <Share2 className="w-5 h-5 text-emerald-400" />
-            <span>Available Sector Tool Campaigns ({CAMPAIGNS.length})</span>
+            <span>Autonomous Campaigns Catalog ({CAMPAIGNS.length})</span>
           </h2>
 
           <div className="space-y-6">
             {CAMPAIGNS.map((c) => {
               const isCopied = copiedId === c.id;
+              const isCurrentlyPosting = isPosting === c.id;
+
               return (
                 <div
                   key={c.id}
@@ -311,7 +520,7 @@ export default function NairalandDistributionHub() {
                         📍 Section: {c.nairalandSection}
                       </span>
                       <span className="text-xs text-amber-400 font-semibold">
-                        ⏰ Best Time: {c.bestPostingTime}
+                        ⏰ Peak Time: {c.bestPostingTime}
                       </span>
                     </div>
                     <Link
@@ -335,24 +544,34 @@ export default function NairalandDistributionHub() {
                   </div>
 
                   {/* BBCode Preview Box */}
-                  <div className="bg-slate-950/80 border border-white/5 rounded-2xl p-4 font-mono text-xs text-slate-300 max-h-48 overflow-y-auto whitespace-pre-wrap select-all">
+                  <div className="bg-slate-950/80 border border-white/5 rounded-2xl p-4 font-mono text-xs text-slate-300 max-h-40 overflow-y-auto whitespace-pre-wrap select-all">
                     {c.contentBBCode}
                   </div>
 
                   {/* Action Buttons */}
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => copyBBCode(c.id, c.contentBBCode)}
-                      className={`inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition-all shadow-lg active:scale-95 ${
-                        isCopied
-                          ? 'bg-emerald-400 text-slate-950 shadow-emerald-400/25'
-                          : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 shadow-emerald-500/20'
-                      }`}
-                    >
-                      {isCopied ? <Check className="w-4 h-4 stroke-[3]" /> : <Copy className="w-4 h-4" />}
-                      <span>{isCopied ? 'BBCode Copied to Clipboard! ✓' : '📋 Copy Complete Nairaland Post'}</span>
-                    </button>
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      {/* 1. 1-Click Autonomous Post Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleAutonomousPost(c.id)}
+                        disabled={isCurrentlyPosting}
+                        className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 disabled:opacity-50 text-slate-950 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+                      >
+                        <Play className={`w-3.5 h-3.5 fill-current ${isCurrentlyPosting ? 'animate-pulse' : ''}`} />
+                        <span>{isCurrentlyPosting ? 'Posting via Playwright...' : '🚀 1-Click Auto Post'}</span>
+                      </button>
+
+                      {/* 2. Manual BBCode Copy */}
+                      <button
+                        type="button"
+                        onClick={() => copyBBCode(c.id, c.contentBBCode)}
+                        className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-xs font-bold text-slate-200 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition-all active:scale-95"
+                      >
+                        {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{isCopied ? 'Copied! ✓' : 'Copy BBCode'}</span>
+                      </button>
+                    </div>
 
                     <a
                       href={`https://wa.me/?text=${encodeURIComponent(
@@ -363,7 +582,7 @@ export default function NairalandDistributionHub() {
                       className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-bold text-slate-200 transition-all active:scale-95"
                     >
                       <MessageCircle className="w-4 h-4 text-emerald-400" />
-                      <span>Share Thread Teaser to WhatsApp</span>
+                      <span>WhatsApp Teaser</span>
                     </a>
                   </div>
                 </div>
