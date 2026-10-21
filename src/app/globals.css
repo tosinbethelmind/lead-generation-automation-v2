@@ -100,6 +100,54 @@
   margin-bottom: 12px !important;
 }
 
+@media (max-width: 640px) {
+  .luxury-preset-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Responsive 3-Card Sizing Presets */
+.luxury-preset-cards {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  width: 100% !important;
+}
+
+@media (max-width: 860px) {
+  .luxury-preset-cards {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Responsive 3-Column Parameters */
+.luxury-tri-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+
+@media (max-width: 860px) {
+  .luxury-tri-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Responsive 2-Column Grid */
+.luxury-bi-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+
+@media (max-width: 768px) {
+  .luxury-bi-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 .luxury-preset-btn {
   padding: 8px 12px !important;
   font-size: 0.74rem !important;

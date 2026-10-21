@@ -534,7 +534,7 @@ export function SectorToolsWidget({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="luxury-preset-cards">
                   {[
                     { kvaVal: 2.5, title: 'Flat / Small Office', desc: 'Lights, TV, Fans, Refrigerator', icon: '🏢' },
                     { kvaVal: 5, title: 'Duplex / Medium SME', desc: '1-2 Inverter ACs, Water Pump, Freezers', icon: '🏡' },
@@ -574,7 +574,7 @@ export function SectorToolsWidget({
               </div>
 
               {/* Custom Load & Grid/Fuel Parameters (Spacious 3-Column Grid) */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+              <div className="luxury-tri-grid pt-1">
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-slate-300">Continuous Peak Load (kVA)</label>
                   <div className="relative">
