@@ -350,34 +350,38 @@ export function SectorToolsWidget({
   };
 
   return (
-    <div className="w-full space-y-4">
-      <WebappToolActionBar currentTool={activeTab} />
-      <div className="w-full max-w-4xl mx-auto my-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden text-slate-100 font-sans">
+    <div className="w-full">
+      <div className="w-full max-w-4xl mx-auto my-4 bg-[#080d1a]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_25px_80px_rgba(0,0,0,0.85)] ring-1 ring-white/5 overflow-hidden text-slate-100 font-sans">
         
-        {/* Header Banner */}
-        <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 p-5 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Luxury Obsidian Header Banner */}
+        <div className="bg-gradient-to-r from-[#0f1933] via-[#0b1328] to-[#060a16] border-b border-white/10 p-5 sm:p-7 relative overflow-hidden">
+          {/* Subtle Ambient Radial Glow */}
+          <div className="absolute top-0 right-0 w-80 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-black uppercase tracking-wider text-white">
-                  ⚡ 24/7 Quoting Engine 2026
+              <div className="flex items-center gap-2 mb-2.5">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 backdrop-blur-md rounded-full text-[11px] font-black uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                  2026 Quoting & Sizing Suite
                 </span>
-                <span className="px-2.5 py-0.5 bg-amber-400 text-slate-950 rounded-full text-[11px] font-black">
+                <span className="px-2.5 py-0.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 rounded-full text-[11px] font-black">
                   ₦0 Upfront Demo
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-white">
+              <h2 className="text-xl sm:text-2xl font-black text-white font-['Outfit'] tracking-tight">
                 Interactive {businessCategory} Quoting & Booking Suite
               </h2>
-              <p className="text-blue-100 text-xs sm:text-sm mt-1">
-                Custom built for <strong className="text-white underline">{businessName}</strong>. Test live instant pricing, customer BOQs, and WhatsApp dispatch.
+              <p className="text-slate-300 text-xs sm:text-sm mt-1.5 leading-relaxed">
+                Custom built for <strong className="text-white font-bold underline decoration-cyan-500/50 underline-offset-4">{businessName}</strong>. Test real-time calculation, instant BOQ, and automated WhatsApp dispatch.
               </p>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <button
+                type="button"
                 onClick={() => setShowEmbedModal(true)}
-                className="px-3.5 py-2 bg-slate-950/70 hover:bg-slate-950 text-white rounded-xl text-xs font-bold border border-slate-700/80 flex items-center gap-1.5 transition-all"
+                className="px-4 py-2.5 bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 hover:text-white rounded-xl text-xs font-bold border border-white/10 flex items-center gap-2 transition-all shadow-md active:scale-95"
                 title="Embed on existing WordPress/Wix website"
               >
                 <Code className="w-3.5 h-3.5 text-cyan-400" />
