@@ -23,6 +23,8 @@ const NAV_LINKS = [
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'Solutions Suite', href: '/solutions' },
   { label: 'Sector Tools', href: '#sector-tools' },
+  { label: 'Tokunbo VIN Checker', href: '/vin' },
+  { label: 'P2P FX Arbitrage Desk', href: '/arbitrage' },
   { label: 'Digital Assets Store', href: '/store' },
   { label: 'Pricing', href: '#pricing' },
   { label: 'FAQ', href: '#faq' },

@@ -10,7 +10,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { MessageSquare, Menu, X, ChevronDown, Sparkles, Sun, ShieldCheck, Database, ShoppingBag, Layers, ArrowRight } from 'lucide-react';
+import { MessageSquare, Menu, X, ChevronDown, Sparkles, Sun, ShieldCheck, Database, ShoppingBag, Layers, ArrowRight, Car, TrendingUp } from 'lucide-react';
 import { paymentConfig, buildWhatsAppLink } from '@/config/payment';
 import ShaderGradientLiquidLogo from '@/components/three/ShaderGradientLiquidLogo';
 
