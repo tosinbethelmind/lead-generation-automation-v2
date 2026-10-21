@@ -207,6 +207,30 @@ export const VIRAL_TOOLS: Record<string, {
     selarProduct: 'Complete Enterprise AI Blueprint 2026',
     selarPrice: '₦35,000 / $45',
   },
+  'drama-radar': {
+    id: 'drama-radar',
+    file: 'drama-radar.html',
+    title: 'DramaRadar AI™ | Fake vs Real Reddit Detective & Anonymous Story Vault',
+    category: 'Social Media & Entertainment',
+    badge: '🔥 Viral Reddit Storytelling & Detective Game',
+    summary: 'Test your intuition with the Fake vs Real Reddit Drama detective game, submit anonymous confessions, and get viral storytelling blueprints.',
+    highlights: ['Interactive AITA Detective Game', 'Anonymous Confession Submissions', 'WhatsApp Streak Brag Loop'],
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-reddit',
+    selarProduct: 'Viral Faceless Storytelling & TikTok Creator Blueprint',
+    selarPrice: '₦15,000 / $19',
+  },
+  'saas-radar': {
+    id: 'saas-radar',
+    file: 'saas-radar.html',
+    title: 'SaaSRadar AI™ | Software Alternatives & Lifetime Deal Finder',
+    category: 'Software & Productivity',
+    badge: '⚡ 2026 SaaS Spend Optimizer & Radar',
+    summary: 'Slash your recurring subscriptions. Compare expensive SaaS tools against battle-tested open-source and lifetime alternatives.',
+    highlights: ['Spend vs Savings Calculator', 'Open-Source & Free Alternatives', 'Turnkey B2B Migration Setup'],
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-saas',
+    selarProduct: 'Autonomous Micro-SaaS & Workflow Automation Playbook',
+    selarPrice: '₦15,000 / $19',
+  },
 };
 
 export async function generateStaticParams() {

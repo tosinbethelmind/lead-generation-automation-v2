@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SaaSRadar AI™ | Software Alternative & Lifetime Deal Finder</title>
+  <meta name="description" content="Calculate your annual software spend and find top-rated open-source, free, or one-time lifetime deal alternatives to expensive SaaS products.">
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --blue: #3b82f6;
+      --cyan: #06b6d4;
+      --blue-glow: rgba(59, 130, 246, 0.25);
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #0c213e 0%, var(--bg-dark) 70%);
+      color: var(--text-main);
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container { width: 100%; max-width: 680px; display: flex; flex-direction: column; gap: 16px; }
+    
+    /* Header */
+    header { text-align: center; margin-bottom: 6px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #93c5fd;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #93c5fd 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p.subtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Card styling */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* Selector */
+    label.sec-title { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cyan); display: block; margin-bottom: 8px; }
+    select.saas-select {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Savings Meter */
+    .savings-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(15, 23, 42, 0.8));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-top: 14px;
+      text-align: center;
+    }
+    .savings-val { font-size: 1.35rem; font-weight: 900; color: #10b981; }
+    .savings-lbl { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
+
+    /* Alternatives Grid */
+    .alt-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+    .alt-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+    .alt-item:hover { border-color: rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.05); }
+    .alt-info { flex: 1; }
+    .alt-name { font-size: 0.95rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
+    .alt-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 6px; font-weight: 800; background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .alt-desc { font-size: 0.75rem; color: #cbd5e1; margin-top: 4px; }
+    .btn-alt-claim {
+      background: linear-gradient(135deg, var(--blue) 0%, #2563eb 100%);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .btn-alt-claim:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+    /* WhatsApp Share Button */
+    .btn-share-wa {
+      width: 100%;
+      background: #25d366;
+      color: #040711;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 900;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    /* STREAM 1: Selar Blueprint */
+    .selar-banner {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .selar-title { font-size: 0.88rem; font-weight: 900; color: #93c5fd; }
+    .selar-desc { font-size: 0.74rem; color: #94a3b8; margin-top: 2px; }
+    .btn-selar {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.78rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* STREAM 2: Turnkey B2B Deployment CTA */
+    .b2b-cta {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    .b2b-cta a { color: var(--blue); font-weight: 700; text-decoration: underline; }
+
+    footer {
+      font-size: 0.72rem;
+      color: #64748b;
+      text-align: center;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">⚡ 2026 SaaS Spend Optimizer & Radar</div>
+      <h1>SaaSRadar AI™</h1>
+      <p class="subtitle">Slash your recurring subscriptions. Compare expensive SaaS tools against battle-tested open-source and lifetime alternatives.</p>
+    </header>
+
+    <div class="card">
+      <label class="sec-title">Select Expensive Software You Currently Pay For:</label>
+      <select class="saas-select" id="saasSelect" onchange="updateAlternatives()">
+        <option value="zapier">Zapier ($360 - $1,200/yr) — Workflow Automation</option>
+        <option value="canva">Canva Pro ($120/yr) — Graphic & Content Design</option>
+        <option value="shopify">Shopify ($468 - $1,200/yr) — E-Commerce Storefront</option>
+        <option value="mailchimp">Mailchimp ($420/yr) — Email Marketing Automation</option>
+        <option value="jasper">Jasper AI ($588/yr) — AI Copywriting & Marketing</option>
+        <option value="zoom">Zoom One ($160/yr) — Video Conferencing</option>
+        <option value="notion">Notion AI ($120/yr) — Workspace & Docs</option>
+      </select>
+
+      <div class="savings-card">
+        <div>
+          <div class="savings-val" id="currentSpend">$720/yr</div>
+          <div class="savings-lbl">Current Cost</div>
+        </div>
+        <div style="font-size:1.5rem; color:#64748b;">→</div>
+        <div>
+          <div class="savings-val" id="projectedSavings" style="color:#10b981;">$600/yr</div>
+          <div class="savings-lbl">Net Savings (83%)</div>
+        </div>
+      </div>
+
+      <div class="alt-list" id="altList">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <button class="btn-share-wa" onclick="shareToWhatsApp()">
+        <span>📲 Share This Savings Calculation on WhatsApp</span>
+      </button>
+    </div>
+
+    <!-- STREAM 1: Selar Blueprint Upsell -->
+    <div class="selar-banner">
+      <div>
+        <div class="selar-title">💎 2026 Autonomous Micro-SaaS & Workflow Automation Playbook</div>
+        <div class="selar-desc">Build and deploy self-hosted automation workflows, eliminate monthly SaaS bills, and sell turnkey solutions.</div>
+      </div>
+      <a href="https://selar.com/showlove/bethelmind?product=da-saas" target="_blank" rel="noopener noreferrer" class="btn-selar">
+        <span>Get Playbook (₦15,000 / $19) →</span>
+      </a>
+    </div>
+
+    <!-- STREAM 2: Turnkey B2B Deployment CTA -->
+    <div class="b2b-cta">
+      🏢 Want a custom self-hosted automation stack to save your company millions in recurring SaaS fees? <a href="https://wa.me/2348022791227?text=Hello%20Bethelmind!%20I%20want%20to%20deploy%20a%20custom%20SaaS%20replacement%20stack%20for%20my%20business." target="_blank" rel="noopener noreferrer">Book Enterprise Migration Setup (₦150k Setup) →</a>
+    </div>
+
+    <footer>
+      <p>SaaSRadar AI™ · Powered by App Radar Reviews · Real-Time Market Intelligence</p>
+    </footer>
+  </div>
+
+  <script>
+    const SAAS_DATA = {
+      zapier: {
+        spend: "$720/yr",
+        savings: "$600/yr (83% off)",
+        alts: [
+          { name: "n8n (Self-Hosted)", badge: "100% FREE", desc: "Fair-code node-based workflow automation. Zero execution caps.", link: "https://n8n.io" },
+          { name: "Make.com", badge: "70% CHEAPER", desc: "Visual automation with multi-step router, webhooks, and 1,500+ apps.", link: "https://www.make.com/en/register" },
+          { name: "Activepieces", badge: "OPEN SOURCE", desc: "Lightweight open-source automation engine designed for business teams.", link: "https://www.activepieces.com" }
+        ]
+      },
+      canva: {
+        spend: "$120/yr",
+        savings: "$120/yr (100% off)",
+        alts: [
+          { name: "Photopea", badge: "100% FREE", desc: "Browser-based Photoshop & Canva killer with PSD and vector support.", link: "https://www.photopea.com" },
+          { name: "Polotno Studio", badge: "OPEN SOURCE", desc: "No signup required, instant high-res graphic creation.", link: "https://studio.polotno.com" },
+          { name: "Penpot", badge: "FREE / OPEN", desc: "Web-based design and prototyping tool for teams.", link: "https://penpot.app" }
+        ]
+      },
+      shopify: {
+        spend: "$468/yr",
+        savings: "$468/yr (100% off)",
+        alts: [
+          { name: "MedusaJS", badge: "OPEN SOURCE", desc: "Modular, headless digital commerce engine built with Node.js.", link: "https://medusajs.com" },
+          { name: "WooCommerce", badge: "FREE", desc: "Open-source e-commerce platform powering 25% of global top stores.", link: "https://woocommerce.com" },
+          { name: "Selar Store", badge: "FREE TIER", desc: "Optimized digital product checkout with instant bank and MoMo payouts.", link: "https://selar.com" }
+        ]
+      },
+      mailchimp: {
+        spend: "$420/yr",
+        savings: "$360/yr (86% off)",
+        alts: [
+          { name: "Brevo (Sendinblue)", badge: "FREE 300/DAY", desc: "Full CRM, transactional emails, and automated SMS marketing.", link: "https://www.brevo.com" },
+          { name: "Listmonk", badge: "OPEN SOURCE", desc: "Blazing fast self-hosted newsletter manager with PostgreSQL backend.", link: "https://listmonk.app" },
+          { name: "Mailcoach", badge: "SELF-HOSTED", desc: "Send millions of marketing emails using Amazon SES at $1 per 10k emails.", link: "https://mailcoach.app" }
+        ]
+      },
+      jasper: {
+        spend: "$588/yr",
+        savings: "$568/yr (97% off)",
+        alts: [
+          { name: "Bethelmind AI Prompts Vault", badge: "ONE-TIME", desc: "Pre-engineered Master Prompts to run inside free Claude & Gemini.", link: "https://selar.com/showlove/bethelmind?product=da-aitools" },
+          { name: "LibreChat", badge: "OPEN SOURCE", desc: "Connect free OpenRouter & local LLMs with a ChatGPT UI.", link: "https://librechat.ai" },
+          { name: "Groq Console", badge: "FREE SPEED", desc: "Instant 500 token/sec LLM inference via Llama 3 & Mixtral.", link: "https://console.groq.com" }
+        ]
+      },
+      zoom: {
+        spend: "$160/yr",
+        savings: "$160/yr (100% off)",
+        alts: [
+          { name: "Jitsi Meet", badge: "100% FREE", desc: "Fully encrypted 100% free video conferencing with zero call time limits.", link: "https://meet.jit.si" },
+          { name: "Google Meet", badge: "FREE", desc: "Integrated browser video calls up to 60 minutes with screen sharing.", link: "https://meet.google.com" },
+          { name: "LiveKit", badge: "OPEN SOURCE", desc: "Real-time audio and video infrastructure for custom webapps.", link: "https://livekit.io" }
+        ]
+      },
+      notion: {
+        spend: "$120/yr",
+        savings: "$120/yr (100% off)",
+        alts: [
+          { name: "AppFlowy", badge: "OPEN SOURCE", desc: "Open-source Notion alternative giving you 100% data control.", link: "https://appflowy.io" },
+          { name: "Obsidian", badge: "100% FREE", desc: "Markdown-based local knowledge graph with zero cloud subscription fees.", link: "https://obsidian.md" },
+          { name: "Affine", badge: "FREE & OPEN", desc: "Next-gen workspace merging docs, whiteboards, and database tables.", link: "https://affine.pro" }
+        ]
+      }
+    };
+
+    function updateAlternatives() {
+      const selected = document.getElementById('saasSelect').value;
+      const data = SAAS_DATA[selected];
+      document.getElementById('currentSpend').textContent = data.spend;
+      document.getElementById('projectedSavings').textContent = data.savings;
+
+      const altContainer = document.getElementById('altList');
+      altContainer.innerHTML = '';
+
+      data.alts.forEach(alt => {
+        const item = document.createElement('div');
+        item.className = 'alt-item';
+        item.innerHTML = `
+          <div class="alt-info">
+            <div class="alt-name">${alt.name} <span class="alt-badge">${alt.badge}</span></div>
+            <div class="alt-desc">${alt.desc}</div>
+          </div>
+          <a href="${alt.link}" target="_blank" rel="noopener noreferrer" class="btn-alt-claim">Visit →</a>
+        `;
+        altContainer.appendChild(item);
+      });
+    }
+
+    function shareToWhatsApp() {
+      const sel = document.getElementById('saasSelect');
+      const text = encodeURIComponent(`💡 Stop overpaying for ${sel.options[sel.selectedIndex].text.split('(')[0]}!\n\nI just found open-source & free lifetime alternatives saving over ${document.getElementById('projectedSavings').textContent}.\n\nCheck alternatives for your software here:\nhttps://www.bethelmindanalytics.com/tools/saas-radar`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    // Initialize
+    updateAlternatives();
+  </script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DramaRadar AI™ | Fake vs Real Reddit Detective & Anonymous Story Vault</title>
+  <meta name="description" content="Test your human intuition with the Fake vs Real Reddit Story Detective micro-game, submit your anonymous confessions, and claim viral storytelling blueprints.">
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --purple: #a855f7;
+      --pink: #ec4899;
+      --purple-glow: rgba(168, 85, 247, 0.25);
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #1e1135 0%, var(--bg-dark) 70%);
+      color: var(--text-main);
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container { width: 100%; max-width: 680px; display: flex; flex-direction: column; gap: 16px; }
+    
+    /* Header */
+    header { text-align: center; margin-bottom: 6px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #d8b4fe;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #d8b4fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p.subtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Card styling */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* Game Header & Scoreboard */
+    .game-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }
+    .stat-pill { font-size: 0.75rem; font-weight: 800; color: #d8b4fe; }
+    .stat-pill span { color: #fff; font-size: 0.95rem; }
+
+    /* Story Card */
+    .story-box {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      border-radius: 14px;
+      padding: 16px;
+      min-height: 140px;
+      position: relative;
+    }
+    .story-tag { font-size: 0.68rem; font-weight: 800; color: var(--pink); text-transform: uppercase; margin-bottom: 6px; }
+    .story-title { font-size: 0.98rem; font-weight: 800; line-height: 1.35; margin-bottom: 8px; color: #fff; }
+    .story-body { font-size: 0.82rem; color: #cbd5e1; line-height: 1.45; }
+
+    /* Game Choices */
+    .game-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .btn-choice {
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      font-size: 0.88rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      color: #fff;
+    }
+    .btn-real {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(15, 23, 42, 0.9));
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    .btn-real:hover { background: rgba(16, 185, 129, 0.35); transform: translateY(-1px); }
+    .btn-fake {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(15, 23, 42, 0.9));
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+    .btn-fake:hover { background: rgba(239, 68, 68, 0.35); transform: translateY(-1px); }
+
+    /* Feedback Banner */
+    .feedback-banner {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      line-height: 1.4;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .feedback-correct { background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #a7f3d0; }
+    .feedback-wrong { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fecaca; }
+
+    /* Action Buttons (Next, Share) */
+    .post-game-btns {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .btn-next {
+      background: linear-gradient(135deg, var(--purple) 0%, #7c3aed 100%);
+      color: #fff;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .btn-share-wa {
+      background: #25d366;
+      color: #040711;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 900;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    /* Confession Submission Box */
+    .confession-card h2 { font-size: 1.05rem; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .confession-card p { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px; }
+    textarea.confess-input {
+      width: 100%;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px;
+      color: #fff;
+      font-size: 0.8rem;
+      resize: none;
+      outline: none;
+    }
+    textarea.confess-input:focus { border-color: var(--purple); }
+    .btn-confess {
+      width: 100%;
+      margin-top: 8px;
+      padding: 11px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);
+      border: none;
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.82rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px var(--purple-glow);
+    }
+
+    /* STREAM 1: Selar Digital Blueprint */
+    .selar-banner {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .selar-title { font-size: 0.88rem; font-weight: 900; color: #d8b4fe; }
+    .selar-desc { font-size: 0.74rem; color: #94a3b8; margin-top: 2px; }
+    .btn-selar {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.78rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* STREAM 2: Turnkey B2B Deployment CTA */
+    .b2b-cta {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    .b2b-cta a { color: var(--purple); font-weight: 700; text-decoration: underline; }
+
+    footer {
+      font-size: 0.72rem;
+      color: #64748b;
+      text-align: center;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">🔥 2026 Viral Reddit Drama Radar</div>
+      <h1>DramaRadar AI™</h1>
+      <p class="subtitle">Can you tell real internet drama apart from AI-generated chaos? Test your intuition below.</p>
+    </header>
+
+    <!-- MICRO-GAME: Fake vs Real Detective -->
+    <div class="card">
+      <div class="game-stats">
+        <div class="stat-pill">Case: <span id="caseNumber">1 / 5</span></div>
+        <div class="stat-pill">Streak: <span id="currentStreak">0 🔥</span></div>
+        <div class="stat-pill">Accuracy: <span id="accuracyRate">0%</span></div>
+      </div>
+
+      <div class="story-box">
+        <div class="story-tag" id="storySubreddit">r/AmITheAsshole</div>
+        <div class="story-title" id="storyTitle">"AITA for locking my sister-in-law out of my apartment after she secretly dyed my cat green?"</div>
+        <div class="story-body" id="storySnippet">"She claimed she saw it on TikTok for St. Patrick's Day and thought it would be cute. When I got home from work, the cat was hiding under the sofa shivering, and my rug was ruined..."</div>
+      </div>
+
+      <div class="game-actions" id="gameActions">
+        <button class="btn-choice btn-real" onclick="submitGuess(true)">
+          <span>✅ 100% REAL STORY</span>
+        </button>
+        <button class="btn-choice btn-fake" onclick="submitGuess(false)">
+          <span>🤖 FAKE / AI GENERATED</span>
+        </button>
+      </div>
+
+      <div class="feedback-banner" id="feedbackBanner"></div>
+
+      <div class="post-game-btns" id="postGameBtns">
+        <button class="btn-next" onclick="nextStory()">Next Case →</button>
+        <button class="btn-share-wa" onclick="shareScoreToWhatsApp()">
+          <span>Share on WhatsApp 📲</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ANONYMOUS CONFESSION DROPPER -->
+    <div class="card confession-card">
+      <h2>🤫 Submit an Anonymous Confession or Drama</h2>
+      <p>Have an unbelievable true story, relationship scandal, or workplace chaos? Drop it anonymously below to be animated in our next viral YouTube/TikTok Short.</p>
+      <textarea class="confess-input" id="confessText" placeholder="Type your anonymous true story here... (No names required)"></textarea>
+      <button class="btn-confess" onclick="submitConfession()">🚀 Drop Confession to Producers</button>
+      <div id="confessStatus" style="display:none; font-size:0.75rem; color:#10b981; margin-top:8px; text-align:center; font-weight:700;">✅ Anonymous confession queued! Check upcoming shorts to see your story animated.</div>
+    </div>
+
+    <!-- STREAM 1: Selar Blueprint Upsell -->
+    <div class="selar-banner">
+      <div>
+        <div class="selar-title">💎 Viral Faceless Storytelling & TikTok Automation Blueprint</div>
+        <div class="selar-desc">Unlock our complete Reddit-to-video prompt engineering matrix, voice synthesis templates, and viral hooks pack.</div>
+      </div>
+      <a href="https://selar.com/showlove/bethelmind?product=da-reddit" target="_blank" rel="noopener noreferrer" class="btn-selar">
+        <span>Get Blueprint (₦15,000 / $19) →</span>
+      </a>
+    </div>
+
+    <!-- STREAM 2: Turnkey B2B Deployment CTA -->
+    <div class="b2b-cta">
+      🏢 Want your own interactive community storytelling / anonymous confession portal? <a href="https://wa.me/2348022791227?text=Hello%20Bethelmind!%20I%20want%20to%20deploy%20a%20turnkey%20DramaRadar%20confession%20portal%20for%20my%20community." target="_blank" rel="noopener noreferrer">Request Turnkey B2B Setup (₦75k Setup) →</a>
+    </div>
+
+    <footer>
+      <p>DramaRadar AI™ · Powered by The Crazy Reddit Saga · 256-Bit Encrypted Anonymous Telemetry</p>
+    </footer>
+  </div>
+
+  <script>
+    const STORIES = [
+      {
+        sub: "r/AmITheAsshole",
+        title: "AITA for charging my wedding guests $25 each to eat at our reception buffet?",
+        body: "We hired a high-end caterer. On the invitations, we included a note: 'To help offset inflation, dinner access wristbands are $25 per adult.' My mother-in-law cried and said I turned her daughter's wedding into a food festival.",
+        isReal: true,
+        explanation: "REAL! This viral post received over 28,000 upvotes. The bride defended her stance by arguing that wedding gifts are optional so food should be paid for."
+      },
+      {
+        sub: "r/TrueOffMyChest",
+        title: "My coworker has been using ChatGPT to generate all his condolence cards and funeral tributes.",
+        body: "I noticed every card he signed had phrases like 'In this poignant juncture of earthly departure, delve into serenity.' I checked his work monitor and found 'Prompt: Write a deeply emotional condolence for Brenda in Accounting.'",
+        isReal: false,
+        explanation: "AI GENERATED! This was synthesized by Claude to test your intuition, though surprisingly plausible in 2026 corporate offices!"
+      },
+      {
+        sub: "r/LegalAdvice",
+        title: "My landlord installed a coin-operated lock on our shared apartment bathroom door.",
+        body: "He said utilities are too high. To open the bathroom, you have to insert a 50-cent token that he sells in packets of 10. My roommate got stuck outside during food poisoning.",
+        isReal: true,
+        explanation: "REAL! A notorious Melbourne tenancy dispute from Reddit that ended up in Australian consumer tribunal courts and went viral worldwide."
+      },
+      {
+        sub: "r/Relationship_Advice",
+        title: "My fiancé replaced my diamond engagement ring with a high-density titanium alloy replica to pay off his crypto loan.",
+        body: "I took it to get resized and the jeweler laughed. My fiancé confessed he pawned the original to prevent getting liquidated on a 50x Solana perpetual trade.",
+        isReal: true,
+        explanation: "REAL! One of Reddit's most infamous crypto bull-run confessions from 2021, generating over 15,000 comments."
+      },
+      {
+        sub: "r/WorkplaceStories",
+        title: "My boss fired me for refusing to attend a 6:00 AM mandatory corporate manifestation yoga session in the parking lot.",
+        body: "He said our quarterly KPI was blocked by 'negative vibrational energy' and that doing sun salutations in the rain was a core competency.",
+        isReal: false,
+        explanation: "AI GENERATED! Synthetic satire generated to test extreme corporate culture tropes."
+      }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let answered = 0;
+    let streak = 0;
+
+    function renderStory() {
+      const s = STORIES[currentIdx];
+      document.getElementById('caseNumber').textContent = `${currentIdx + 1} / ${STORIES.length}`;
+      document.getElementById('storySubreddit').textContent = s.sub;
+      document.getElementById('storyTitle').textContent = `"${s.title}"`;
+      document.getElementById('storySnippet').textContent = `"${s.body}"`;
+
+      document.getElementById('gameActions').style.display = 'grid';
+      document.getElementById('feedbackBanner').style.display = 'none';
+      document.getElementById('postGameBtns').style.display = 'none';
+    }
+
+    function submitGuess(userGuessReal) {
+      const s = STORIES[currentIdx];
+      const isCorrect = (userGuessReal === s.isReal);
+      answered++;
+
+      if (isCorrect) {
+        score++;
+        streak++;
+      } else {
+        streak = 0;
+      }
+
+      document.getElementById('currentStreak').textContent = `${streak} 🔥`;
+      const acc = Math.round((score / answered) * 100);
+      document.getElementById('accuracyRate').textContent = `${acc}%`;
+
+      const banner = document.getElementById('feedbackBanner');
+      banner.style.display = 'block';
+      if (isCorrect) {
+        banner.className = 'feedback-banner feedback-correct';
+        banner.innerHTML = `<strong>🎯 SPOT ON!</strong> ${s.explanation}`;
+      } else {
+        banner.className = 'feedback-banner feedback-wrong';
+        banner.innerHTML = `<strong>❌ FOOLED!</strong> ${s.explanation}`;
+      }
+
+      document.getElementById('gameActions').style.display = 'none';
+      document.getElementById('postGameBtns').style.display = 'grid';
+    }
+
+    function nextStory() {
+      currentIdx = (currentIdx + 1) % STORIES.length;
+      renderStory();
+    }
+
+    function shareScoreToWhatsApp() {
+      const acc = Math.round((score / answered) * 100);
+      const text = encodeURIComponent(`🕵️ I just scored ${score}/${answered} (${acc}%) on DramaRadar AI: The Reddit Detective Game!\n\nCan you tell real internet drama apart from AI? Try beating my streak here:\nhttps://www.bethelmindanalytics.com/tools/drama-radar`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    function submitConfession() {
+      const text = document.getElementById('confessText').value.trim();
+      if (!text) {
+        alert('Please enter your story before submitting!');
+        return;
+      }
+      document.getElementById('confessText').value = '';
+      document.getElementById('confessStatus').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('confessStatus').style.display = 'none';
+      }, 5000);
+    }
+
+    // Initialize
+    renderStory();
+  </script>
+</body>
+</html>

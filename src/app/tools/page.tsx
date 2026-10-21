@@ -211,7 +211,40 @@ const TOOLS: ToolItem[] = [
     color: 'from-purple-500/20 to-pink-500/10 border-purple-500/30 text-purple-400',
     href: '/tools/prayer-journal',
     upsell: '💎 ₦5,000 Devotional'
-  }
+  },
+  {
+    id: 'sure-score',
+    title: 'SureScore AI™ Football Match Predictor & Acca Slip Builder',
+    badge: '⚽ 2026 Poisson xG Engine',
+    category: 'lifestyle',
+    description: 'Simulate 1X2 win probabilities, projected scorelines, BTTS, and 1-click load accumulator tickets on SportyBet and Bet9ja.',
+    icon: Flame,
+    color: 'from-amber-500/20 to-orange-500/10 border-amber-500/30 text-amber-400',
+    href: '/tools/sure-score',
+    upsell: '🏆 VIP Club & ₦15k Model'
+  },
+  {
+    id: 'drama-radar',
+    title: 'DramaRadar AI™ Fake vs Real Reddit Detective & Confession Vault',
+    badge: '🔥 Reddit Story Detective',
+    category: 'lifestyle',
+    description: 'Interactive Fake vs Real drama detective micro-game, anonymous true confession submissions, and viral storytelling blueprints.',
+    icon: Sparkles,
+    color: 'from-purple-500/20 to-pink-500/10 border-purple-500/30 text-purple-400',
+    href: '/tools/drama-radar',
+    upsell: '💎 ₦15k Story Blueprint'
+  },
+  {
+    id: 'saas-radar',
+    title: 'SaaSRadar AI™ Software Alternatives & Lifetime Deal Finder',
+    badge: '⚡ SaaS Spend Optimizer',
+    category: 'b2b',
+    description: 'Slash recurring subscription costs. Compare expensive SaaS tools against open-source, free, and lifetime deal alternatives.',
+    icon: Zap,
+    color: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-400',
+    href: '/tools/saas-radar',
+    upsell: '🚀 ₦150k B2B Migration'
+  },
 ];
 
 export default function ToolsHubPage() {

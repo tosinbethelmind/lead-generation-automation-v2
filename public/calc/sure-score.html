@@ -435,6 +435,70 @@
     }
     .b2b-cta a { color: var(--accent); font-weight: 700; text-decoration: underline; }
 
+    /* Beat The AI Challenge Micro-Game */
+    .challenge-box {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+    .challenge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .challenge-title { font-size: 0.92rem; font-weight: 900; color: #38bdf8; display: flex; align-items: center; gap: 6px; }
+    .challenge-badge { font-size: 0.65rem; font-weight: 800; background: rgba(56, 189, 248, 0.2); color: #7dd3fc; padding: 2px 8px; border-radius: 6px; }
+    .challenge-matches { display: flex; flex-direction: column; gap: 8px; }
+    .cm-row {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .cm-teams { font-size: 0.78rem; font-weight: 800; color: #f8fafc; }
+    .cm-btns { display: flex; gap: 4px; }
+    .btn-cm {
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-cm.active {
+      background: var(--accent);
+      color: #040711;
+      border-color: var(--accent);
+      font-weight: 900;
+    }
+    .btn-lock-challenge {
+      width: 100%;
+      margin-top: 10px;
+      padding: 11px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 900;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-lock-challenge:hover { filter: brightness(1.15); }
+
     footer {
       font-size: 0.72rem;
       color: #64748b;
@@ -450,6 +514,44 @@
       <h1>SureScore AI™ Football Match Predictor</h1>
       <p class="subtitle">Simulate real-time 1X2 win probabilities, projected exact scorelines, Both Teams to Score (BTTS), and build viral multi-match accumulator slips.</p>
     </header>
+
+    <!-- MICRO-GAME: Beat The AI Challenge -->
+    <div class="challenge-box">
+      <div class="challenge-header">
+        <div class="challenge-title">🎮 Beat The AI: Weekend Lock Challenge</div>
+        <div class="challenge-badge">3-MATCH STREAK</div>
+      </div>
+      <div class="challenge-matches">
+        <div class="cm-row" id="cm1">
+          <span class="cm-teams">Arsenal vs Chelsea</span>
+          <div class="cm-btns">
+            <button class="btn-cm active" onclick="pickChallenge(1, '1', this)">1</button>
+            <button class="btn-cm" onclick="pickChallenge(1, 'X', this)">X</button>
+            <button class="btn-cm" onclick="pickChallenge(1, '2', this)">2</button>
+          </div>
+        </div>
+        <div class="cm-row" id="cm2">
+          <span class="cm-teams">Real Madrid vs Barcelona</span>
+          <div class="cm-btns">
+            <button class="btn-cm active" onclick="pickChallenge(2, '1', this)">1</button>
+            <button class="btn-cm" onclick="pickChallenge(2, 'X', this)">X</button>
+            <button class="btn-cm" onclick="pickChallenge(2, '2', this)">2</button>
+          </div>
+        </div>
+        <div class="cm-row" id="cm3">
+          <span class="cm-teams">Liverpool vs Man City</span>
+          <div class="cm-btns">
+            <button class="btn-cm" onclick="pickChallenge(3, '1', this)">1</button>
+            <button class="btn-cm active" onclick="pickChallenge(3, 'X', this)">X</button>
+            <button class="btn-cm" onclick="pickChallenge(3, '2', this)">2</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn-lock-challenge" onclick="submitChallengeToSlip()">
+        <span>⚡ Compare With AI & Load into Acca Ticket →</span>
+      </button>
+      <div id="challengeResult" style="display:none; margin-top:10px; font-size:0.75rem; color:#38bdf8; text-align:center; font-weight:700;"></div>
+    </div>
 
     <!-- Quick Preset Matches Bar -->
     <div class="quick-fixtures" id="presetBar">
@@ -843,6 +945,45 @@
       oddsEl.innerText = `${mult.toFixed(2)}x`;
       const stakeNgn = 1000;
       payoutEl.innerText = `₦${Math.round(stakeNgn * mult).toLocaleString()}`;
+    }
+
+    const challengePicks = { 1: '1', 2: '1', 3: 'X' };
+    const CHALLENGE_MATCHES = {
+      1: { home: "Arsenal", away: "Chelsea", defaultPick: "Arsenal Win", odd: 1.88, score: "2-1" },
+      2: { home: "Real Madrid", away: "Barcelona", defaultPick: "Real Madrid Win", odd: 2.10, score: "2-1" },
+      3: { home: "Liverpool", away: "Man City", defaultPick: "Draw (X)", odd: 3.40, score: "1-1" }
+    };
+
+    function pickChallenge(matchNum, val, btnEl) {
+      challengePicks[matchNum] = val;
+      const row = document.getElementById(`cm${matchNum}`);
+      row.querySelectorAll('.btn-cm').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+    }
+
+    function submitChallengeToSlip() {
+      // Clear current slip and insert the 3 challenge picks
+      activeSlip = [];
+      for (let i = 1; i <= 3; i++) {
+        const m = CHALLENGE_MATCHES[i];
+        let pickLabel = challengePicks[i] === '1' ? `${m.home} Win` : (challengePicks[i] === '2' ? `${m.away} Win` : `Draw (X)`);
+        activeSlip.push({
+          fixture: `${m.home} vs ${m.away}`,
+          pick: pickLabel,
+          score: m.score,
+          odd: m.odd
+        });
+      }
+      renderSlip();
+
+      const resultEl = document.getElementById('challengeResult');
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = `✅ 3 Weekend Challenge Picks Loaded into Acca Ticket! Load slip on SportyBet or Bet9ja below.`;
+
+      // Prompt WhatsApp share
+      const totalOdd = (1.88 * 2.10 * 3.40).toFixed(2);
+      const text = encodeURIComponent(`🎮 I just locked my 3-Match Weekend Picks against SureScore AI (Total Acca: ${totalOdd}x)!\n\n1. Arsenal vs Chelsea: Pick ${challengePicks[1]}\n2. Real Madrid vs Barcelona: Pick ${challengePicks[2]}\n3. Liverpool vs Man City: Pick ${challengePicks[3]}\n\nCan you beat my football IQ streak? Test it free here:\nhttps://www.bethelmindanalytics.com/tools/sure-score`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
     }
 
     function shareOnWhatsApp() {
