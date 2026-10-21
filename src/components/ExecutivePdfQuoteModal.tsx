@@ -205,12 +205,12 @@ export function ExecutivePdfQuoteModal({
 
   <div class="pricing">
     <div class="price-box primary">
-      <div style="font-size:10px; font-weight:bold; color:#0369a1;">🇳🇬 OCTOBER 50% PROMO — DEPOSIT TO START</div>
+      <div style="font-size:10px; font-weight:bold; color:#0369a1;">🇳🇬 DIRECT SME INITIATIVE — DEPOSIT TO START</div>
       <div style="font-size:22px; font-weight:900; color:#0284c7; font-family:monospace;">₦${depositFeeNgn.toLocaleString()}</div>
       <div style="font-size:10px; color:#475569;">Starts your .com.ng domain registration, custom photo upload & 48-hour live delivery</div>
     </div>
     <div class="price-box">
-      <div style="font-size:10px; font-weight:bold; color:#64748b;">OCTOBER 50% PROMO TOTAL (NORMAL: <span style="text-decoration:line-through; color:#ef4444;">₦${normalAgencyPrice.toLocaleString()}</span>)</div>
+      <div style="font-size:10px; font-weight:bold; color:#64748b;">DIRECT SME TOTAL (NORMAL: <span style="text-decoration:line-through; color:#ef4444;">₦${normalAgencyPrice.toLocaleString()}</span>)</div>
       <div style="font-size:22px; font-weight:900; color:#0f172a; font-family:monospace;">₦${claimFeeNgn.toLocaleString()} <span style="font-size:11px; color:#10b981;">(Save 50%)</span></div>
       <div style="font-size:10px; color:#475569;">Remaining balance (₦${balanceFeeNgn.toLocaleString()}) payable ONLY after you inspect & approve live on Google</div>
     </div>

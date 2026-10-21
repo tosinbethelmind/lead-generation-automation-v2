@@ -297,7 +297,7 @@ export default function SolutionsPage() {
               }}
             >
               <Zap style={{ width: 16, height: 16 }} />
-              <span>🇳🇬 Option A: Full .COM.NG Website + Tool (₦35k Deposit / ₦65k October Promo)</span>
+              <span>🇳🇬 Option A: Full .COM.NG Website + Tool (₦35k Deposit / ₦65k Total)</span>
             </button>
             <button
               onClick={() => setDeliveryMode('embed')}
@@ -317,7 +317,7 @@ export default function SolutionsPage() {
               }}
             >
               <Code2 style={{ width: 16, height: 16 }} />
-              <span>Option B: 1-Line Embed on Existing Site (₦35k October Promo)</span>
+              <span>Option B: 1-Line Embed on Existing Site (₦35k One-Time)</span>
             </button>
           </div>
         </section>
@@ -327,7 +327,7 @@ export default function SolutionsPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 24 }}>
             {CUSTOMER_ACQUISITION_ENGINES.map(engine => {
               const IconComponent = engine.icon;
-              const waText = encodeURIComponent(`Hello Bethelmind Lagos Desk,\n\nI want to claim the 6-Month Independence Bundle for Engine #${engine.number}: *${engine.title}* (${engine.targetNiche}).\n\nDelivery preference: ${deliveryMode === 'turnkey' ? 'Full .COM.NG Website + Tool (₦35k Deposit / ₦75k Total)' : '1-Line Embed Upgrade (₦35k Promo Setup)'}`);
+              const waText = encodeURIComponent(`Hello Bethelmind Lagos Desk,\n\nI want to claim the 6-Month Independence Bundle for Engine #${engine.number}: *${engine.title}* (${engine.targetNiche}).\n\nDelivery preference: ${deliveryMode === 'turnkey' ? 'Full .COM.NG Website + Tool (₦35k Deposit / ₦75k Total)' : '1-Line Embed Upgrade (₦35k Direct Setup)'}`);
               const waUrl = `https://wa.me/2348022791227?text=${waText}`;
 
               return (

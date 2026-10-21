@@ -119,7 +119,7 @@ export function handlePostContactInquiry(
         `🤝 Wonderful decision, Boss / Management at *${name}*! Let's lock in your *6-Month Independence Bundle* and get your website live on Google.\n\n` +
         `📋 *OFFICIAL 6-MONTH INDEPENDENCE BUNDLE INVOICE & AGREEMENT:*\n` +
         `• Package: *${selectedPackage}*\n` +
-        `• October Promo Total: *${totalCost}*\n` +
+        `• Direct SME Total: *${totalCost}*\n` +
         `• *Milestone Deposit to Start Today: ${depositAmount}*\n` +
         `• Balance Terms: Strictly payable ONLY AFTER your website is live on Google with your real shop photos & 100% approved by you.\n` +
         `• Delivery Time: Live & ready within 24–48 Hours.\n\n` +
@@ -199,7 +199,7 @@ export function handlePostContactInquiry(
         `We already built a *ready-made sample website + 24/7 WhatsApp assistant* for *${name}*.\n\n` +
         `👉 *Tap here to check your sample website FREE on your phone (₦0 to view):*\n` +
         `${previewUrl}\n\n` +
-        `🇳🇬 *OCTOBER 50% SME PROMO (Because Your Sample Is Already 80% Built):*\n` +
+        `🇳🇬 *OFFICIAL SME INITIATIVE (Because Your Sample Is Already 80% Built):*\n` +
         `1️⃣ *Option 1 (Official .COM.NG Website + WhatsApp Closer):* *₦65,000 Total* _(Normal price ~₦130,000~)_ — *Start today with ₦35,000 Deposit* and pay the ₦30k balance ONLY after it is live with your photos!\n` +
         `2️⃣ *Option 2 (Corporate .COM + Staff Emails Suite):* *₦120,000 Total* _(Normal price ~₦240,000~)_ — *Start today with ₦60,000 Deposit*.\n` +
         `3️⃣ *Want to see your real shop photos on it first?* Send 3–5 photos of your work here on WhatsApp and we will update your sample page FREE before you pay!\n\n` +
@@ -220,7 +220,7 @@ export function handlePostContactInquiry(
         `🛡️ *Why You Are 100% Safe With Us:* \n` +
         `1. *Check Your Website Free First:* Open ${previewUrl} on your phone at ₦0 cost.\n` +
         `2. *Send Your Photos First (Free):* You can send us your shop photos on WhatsApp and see them on your page before paying.\n` +
-        `3. *50% October Promo Milestone:* Standard *.com.ng* website is *₦65,000* (down from ₦130k) — you only pay *₦35,000 deposit* to start, and pay the ₦30,000 balance AFTER your website is live on Google!\n` +
+        `3. *Low-Friction SME Milestone:* Standard *.com.ng* website is *₦65,000* (down from agency ₦130k) — you only pay *₦35,000 deposit* to start, and pay the ₦30,000 balance AFTER your website is live on Google!\n` +
         `4. *CAC Registered Corporate Bank Account:* You never pay into any personal account — our official bank account is *Moniepoint Microfinance Bank · 6805375225 · Bethelmind Digital Solutions*.\n\n` +
         `Check your sample website link above and message me whenever you are ready!`,
       suggestedAction: 'REASSURE_AND_CLOSE',
@@ -235,7 +235,7 @@ export function handlePostContactInquiry(
       `Good day Boss / Management at *${name}*! 👋 Welcome to *Bethelmind Digital Solutions* (CAC Certified).\n\n` +
       `We noticed *${name}* in ${leadData.area || 'Nigeria'} doesn't have an official website on Google yet, so we built a *free sample website + 24/7 WhatsApp assistant* for you to check on your phone:\n\n` +
       `👉 *Tap here to see ${name}'s sample website (100% Free):*\n${previewUrl}\n\n` +
-      `🇳🇬 *OCTOBER 50% SME PROMO (Ends Oct 31):*\n` +
+      `🇳🇬 *OFFICIAL SME INITIATIVE (Direct Turnkey Handover):*\n` +
       `• *Option 1 (Official .COM.NG Website):* *₦65,000 Total* _(down from ~₦130,000~)_ — *Start today with ₦35,000 Deposit*, pay ₦30k balance after going live!\n` +
       `• *Option 2 (Corporate .COM + Staff Emails):* *₦120,000 Total* _(down from ~₦240,000~)_ — *Start with ₦60,000 Deposit*.\n` +
       `• *Option 3 (Free Photo Update First):* Send us 3–5 shop photos here on WhatsApp and we will put them on your sample page FREE first!\n\n` +

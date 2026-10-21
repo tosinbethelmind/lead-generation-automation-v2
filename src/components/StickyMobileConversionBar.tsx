@@ -103,10 +103,10 @@ export default function StickyMobileConversionBar({
             <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 6px #ffffff', flexShrink: 0 }}></span>
             <div style={{ textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.95, display: 'block', fontWeight: 800, color: '#fef08a' }}>
-                🇳🇬 Oct 50% Promo (₦65k) · Start With ₦35k Deposit
+                🇳🇬 Direct SME Rate (₦65k) · Start With ₦35k Deposit
               </span>
               <span style={{ fontSize: '0.85rem', fontWeight: 800, display: 'block', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                🟢 Claim October Promo on WhatsApp →
+                🟢 Claim Starter Package on WhatsApp →
               </span>
             </div>
           </div>

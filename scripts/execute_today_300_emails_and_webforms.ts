@@ -229,7 +229,7 @@ What Your New Website Does for ${cleanName}:
 • Replies customers on WhatsApp 24/7 with your price list & booking details
 • Confirms customer bank transfers cleanly (OPay, Moniepoint & Paystack)
 
-🇳🇬 October 50% SME Digital Growth Promo (Because Your Sample Is Already 80% Built):
+🇳🇬 Official SME Digital Growth Initiative (Because Your Sample Is Already 80% Built):
 1. Option 1 (Official .COM.NG Website + WhatsApp Assistant): ₦65,000 Total (Normal Price ₦130,000) — Start today with ₦35,000 Deposit, and pay the ₦30,000 balance ONLY after your website is live on Google with your real photos!
 2. Option 2 (Corporate .COM Website + 3 Official Staff Emails): ₦120,000 Total (Normal Price ₦240,000) — Start today with ₦60,000 Deposit.
 3. Want to see your real shop photos on it first? Send 2–3 photos of your work on WhatsApp (+234 802 279 1227) and we will update your sample page FREE before you pay shishi!
@@ -238,7 +238,7 @@ What Your New Website Does for ${cleanName}:
 (Listen to the short 15-second voice note attached for a quick greeting).
 
 Want us to change any picture, phone number, or price on your sample page? Chat with us on WhatsApp:
-WhatsApp Desk: +234 802 279 1227 (https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just checked the sample website for ${cleanName} and want to claim the October 50% Promo.`)})
+WhatsApp Desk: +234 802 279 1227 (https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just checked the sample website for ${cleanName} and want to activate our official business website.`)})
 Email: tosin@bethelmindanalytics.com
 
 Warm regards,
@@ -252,7 +252,7 @@ Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)`;
 <body style="margin:0; padding:20px; background-color:#0b1329; font-family:'Segoe UI', Arial, sans-serif; color:#f8fafc;">
   <div style="max-width:580px; margin:0 auto; background:#0f172a; border:1px solid #1e293b; border-radius:12px; overflow:hidden;">
     <div style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); padding:20px 24px; text-align:center;">
-      <div style="color:#fef08a; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">🇳🇬 OCTOBER 50% SME PROMO · 🏛️ Bethelmind Digital Solutions (CAC Certified)</div>
+      <div style="color:#fef08a; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">🇳🇬 OFFICIAL SME INITIATIVE · 🏛️ Bethelmind Digital Solutions (CAC Certified)</div>
       <h1 style="color:#ffffff; margin:0; font-size:19px; font-weight:800;">Ready-Made Business Website + WhatsApp Assistant</h1>
       <p style="color:#bae6fd; margin:4px 0 0 0; font-size:13px;">Built for <strong>${cleanName}</strong> (Check Free on Your Phone)</p>
     </div>
@@ -272,7 +272,7 @@ Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)`;
       </div>
 
       <div style="background:#111c35; border:1px solid #10b981; border-radius:8px; padding:14px 16px; margin:18px 0; text-align:left;">
-        <div style="color:#34d399; font-size:12px; font-weight:800; text-transform:uppercase; margin-bottom:8px;">🇳🇬 October 50% SME Promo (Because Your Sample Is Already 80% Built)</div>
+        <div style="color:#34d399; font-size:12px; font-weight:800; text-transform:uppercase; margin-bottom:8px;">🇳🇬 Official SME Growth Initiative (Because Your Sample Is Already 80% Built)</div>
         <div style="color:#e2e8f0; font-size:13px; line-height:1.6; margin-bottom:6px;">• <strong>Option 1 (Official .COM.NG Website): ₦65,000 Total</strong> <span style="text-decoration:line-through; color:#94a3b8;">(₦130k)</span> — <strong>Start today with ₦35,000 Deposit</strong>, and pay the ₦30,000 balance ONLY after your website is live with your real photos!</div>
         <div style="color:#e2e8f0; font-size:13px; line-height:1.6; margin-bottom:6px;">• <strong>Option 2 (Corporate .COM + Staff Emails): ₦120,000 Total</strong> <span style="text-decoration:line-through; color:#94a3b8;">(₦240k)</span> — <strong>Start today with ₦60,000 Deposit</strong> (Includes <code>.com</code> domain &amp; official company emails).</div>
         <div style="color:#fde68a; font-size:12.5px; line-height:1.5; margin-bottom:6px;">• <strong>✏️ Want to see your real shop photos first?</strong> Send 2–3 photos on WhatsApp and we will update your sample page <strong>FREE (₦0) before you pay shishi</strong>!</div>

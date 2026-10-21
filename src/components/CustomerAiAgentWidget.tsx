@@ -243,7 +243,7 @@ export default function CustomerAiAgentWidget({
       ? `🏥 Clinic Appointment Booking AI for ${leadData.name}`
       : `🎯 How ${leadData.name} Gets 4x More Leads`,
     `👑 Lock 6-Month Bundle (₦75,000 Total)`,
-    `💳 View October Promo Pricing`,
+    `💳 View Official SME Pricing`,
     `📞 How to Send Payment Receipt`,
   ] : [
     '🎯 Explore Business Services',

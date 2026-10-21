@@ -27,7 +27,7 @@ export interface Plan {
    * One-time setup / onboarding fee in Naira.
    */
   setupFeeNGN: number;
-  /** Normal standard agency price before October 50% Promo */
+  /** Normal standard agency price before direct SME subsidy */
   originalTotalNGN?: number;
   /** Total project investment */
   totalAmountNGN: number;
@@ -59,8 +59,8 @@ export const PLANS_NEED_WEBSITE: Plan[] = [
     balanceAmountNGN: 30_000,
     slaHours: 48,
     color: '#10b981',
-    badge: '🇳🇬 OCTOBER 50% SME PROMO • MOST POPULAR',
-    tagline: 'Normal Price ₦130,000 → October Promo Total: ₦65,000 (1 Full Year Domain & Hosting Included — Zero Monthly Rent).',
+    badge: '🇳🇬 OFFICIAL SME INITIATIVE • MOST POPULAR',
+    tagline: 'Standard Agency Price ₦130,000 → Direct SME Price: ₦65,000 (1 Full Year Domain & Hosting Included — Zero Monthly Rent).',
     features: [
       { text: '🌐 Official www.yourbusiness.com.ng Domain & Cloud Hosting (1 Full Year Included)' },
       { text: '📸 Custom Branding with Your Real Shop/Office Photos, Logo & Price List' },
@@ -81,8 +81,8 @@ export const PLANS_NEED_WEBSITE: Plan[] = [
     balanceAmountNGN: 60_000,
     slaHours: 48,
     color: '#8b5cf6',
-    badge: '🏢 CORPORATE VIP • 50% OCTOBER SUBSIDY',
-    tagline: 'Normal Price ₦240,000 → October Promo Total: ₦120,000. For firms bidding for high-value contracts.',
+    badge: '🏢 CORPORATE VIP • DIRECT SUITE',
+    tagline: 'Standard Agency Price ₦240,000 → Direct SME Price: ₦120,000. For firms bidding for high-value contracts.',
     features: [
       { text: '🌐 International .COM Domain + 3 Official Corporate Staff Emails (info@yourcompany.com)' },
       { text: '🎙️ 24/7 WhatsApp AI Sales Closer with Natural Nigerian Accent Voice Notes' },
@@ -103,8 +103,8 @@ export const PLANS_NEED_WEBSITE: Plan[] = [
     balanceAmountNGN: 90_000,
     slaHours: 48,
     color: '#f59e0b',
-    badge: '👑 WEB + ANDROID APK • 50% OCTOBER PROMO',
-    tagline: 'Normal Price ₦350,000 → October Promo Total: ₦175,000. Complete Web Portal + Native Android App.',
+    badge: '👑 WEB + ANDROID APK • ENTERPRISE SUITE',
+    tagline: 'Standard Agency Price ₦350,000 → Direct SME Price: ₦175,000. Complete Web Portal + Native Android App.',
     features: [
       { text: '🌐 Complete Multi-Page Custom Web Portal + Customer Client Dashboard' },
       { text: '📱 Branded Native Android Mobile App (.apk) with Customer Push Notifications' },
@@ -127,14 +127,14 @@ export const PLANS_HAVE_WEBSITE: Plan[] = [
     balanceAmountNGN: 0,
     slaHours: 24,
     color: '#0ea5e9',
-    badge: '🇳🇬 OCTOBER 50% PROMO • 10-MINUTE SETUP',
-    tagline: 'Normal Price ₦70,000 → October Promo: ₦35,000 One-Time. Keep your current website 100% untouched.',
+    badge: '🇳🇬 DIRECT SME RATE • 10-MINUTE SETUP',
+    tagline: 'Standard Agency Price ₦70,000 → Direct SME Price: ₦35,000 One-Time. Keep your current website 100% untouched.',
     features: [
       { text: '🔌 1-Line Script Embed: Works on WordPress, Wix, Shopify, or Custom HTML' },
       { text: '🤖 24/7 WhatsApp & Web AI Sales Chatbot & Instant Quoter' },
       { text: '🧮 Tailored Sector Lead Tool embedded on your existing website' },
       { text: '🔒 100% Zero-Touch Guarantee: Your current domain, hosting, and SEO remain untouched' },
-      { text: '⚡ One-Time ₦35,000 October Promo Setup — Zero monthly charges' },
+      { text: '⚡ One-Time ₦35,000 Direct SME Setup — Zero monthly charges' },
     ],
   },
   {
@@ -148,8 +148,8 @@ export const PLANS_HAVE_WEBSITE: Plan[] = [
     balanceAmountNGN: 30_000,
     slaHours: 24,
     color: '#8b5cf6',
-    badge: '🔥 50% OCTOBER PROMO • FULL SUITE EMBED',
-    tagline: 'Normal Price ₦130,000 → October Promo Total: ₦65,000 (Start with ₦35,000 Deposit).',
+    badge: '🔥 PRO MULTI-TOOL • FULL SUITE EMBED',
+    tagline: 'Standard Agency Price ₦130,000 → Direct SME Price: ₦65,000 (Start with ₦35,000 Deposit).',
     features: [
       { text: '🔌 1-Line Script Embed for AI Concierge + All Specialized Sector Calculators' },
       { text: '🎙️ WhatsApp AI Closer with Nigerian Accent Voice Notes' },
@@ -169,8 +169,8 @@ export const PLANS_HAVE_WEBSITE: Plan[] = [
     balanceAmountNGN: 60_000,
     slaHours: 48,
     color: '#f59e0b',
-    badge: 'Full API & CRM Sync • 50% Promo',
-    tagline: 'Normal Price ₦240,000 → October Promo Total: ₦120,000. Deep API & CRM integration.',
+    badge: 'Full API & CRM Sync • Enterprise',
+    tagline: 'Standard Agency Price ₦240,000 → Direct SME Price: ₦120,000. Deep API & CRM integration.',
     features: [
       { text: '🔌 Full Custom API & Webhook Integration with your current database' },
       { text: '👥 Multi-Agent WhatsApp Shared Team Inbox' },

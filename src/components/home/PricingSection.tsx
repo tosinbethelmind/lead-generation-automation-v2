@@ -426,7 +426,7 @@ export default function PricingSection({
                         ₦{plan.originalTotalNGN.toLocaleString()}
                       </span>
                       <span style={{ fontSize: '0.7rem', background: 'rgba(245,158,11,0.15)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.35)', padding: '1px 7px', borderRadius: 6, fontWeight: 800 }}>
-                        🇳🇬 50% OCTOBER PROMO
+                        🇳🇬 DIRECT SME INITIATIVE
                       </span>
                     </div>
                   )}
@@ -435,11 +435,11 @@ export default function PricingSection({
                       ₦{plan.depositAmountNGN.toLocaleString()}
                     </span>
                     <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 800, background: 'rgba(52,211,153,0.12)', padding: '2px 8px', borderRadius: 6 }}>
-                      {plan.balanceAmountNGN > 0 ? 'Deposit to Start Today' : 'Complete 1-Time Promo Setup'}
+                      {plan.balanceAmountNGN > 0 ? 'Deposit to Start Today' : 'Complete 1-Time Setup'}
                     </span>
                   </p>
                   <p style={{ margin: '0 0 4px', fontSize: '0.82rem', color: '#cbd5e1', fontWeight: 600 }}>
-                    October Promo Total: <strong style={{ color: '#fff' }}>₦{plan.totalAmountNGN.toLocaleString()}</strong> <span style={{ color: '#34d399', fontSize: '0.75rem' }}>(1 Full Year Included • ₦0 Monthly)</span>
+                    Direct SME Total: <strong style={{ color: '#fff' }}>₦{plan.totalAmountNGN.toLocaleString()}</strong> <span style={{ color: '#34d399', fontSize: '0.75rem' }}>(1 Full Year Included • ₦0 Monthly)</span>
                   </p>
                   <p style={{ margin: 0, fontSize: '0.76rem', color: '#94a3b8', lineHeight: 1.4 }}>
                     {plan.balanceAmountNGN > 0

@@ -402,7 +402,7 @@ async function handleInboundMessage(inst, msg) {
     const text = extractMessageText(msg);
     if (!text || !text.trim()) return;
 
-    if (isSelfTest && (text.includes('Good day Boss') || text.includes('OFFICIAL OCTOBER 50% PROMO') || text.includes('TEST CONFIRMATION'))) {
+    if (isSelfTest && (text.includes('Good day Boss') || text.includes('OFFICIAL SME INITIATIVE') || text.includes('TEST CONFIRMATION'))) {
       return; // prevent recursive bot reply loops with self
     }
 

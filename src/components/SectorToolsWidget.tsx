@@ -2241,7 +2241,7 @@ export function SectorToolsWidget({
                 className="flex-1 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-center"
               >
                 <MessageCircle className="w-4 h-4 fill-current" />
-                <span>Claim ₦35k October Promo →</span>
+                <span>Claim ₦35k Starter Package →</span>
               </a>
             </div>
 

@@ -824,7 +824,7 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
       >
         <div>
           <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            🇳🇬 OCTOBER 50% SME DIGITAL GROWTH PROMO
+            🇳🇬 SME DIGITAL GROWTH INITIATIVE
           </div>
           <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#f8fafc', marginTop: 2 }}>
             Get This Calculator + Your Official .COM.NG Website:{' '}
