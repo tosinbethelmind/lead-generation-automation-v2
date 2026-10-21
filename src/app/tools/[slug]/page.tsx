@@ -231,6 +231,30 @@ export const VIRAL_TOOLS: Record<string, {
     selarProduct: 'Autonomous Micro-SaaS & Workflow Automation Playbook',
     selarPrice: '₦15,000 / $19',
   },
+  'footy-wordle': {
+    id: 'footy-wordle',
+    file: 'footy-wordle.html',
+    title: 'FootyWordle AI™ | Daily Football Wordle & Mystery Player Game',
+    category: 'Sports Analytics',
+    badge: '⚽ Viral Daily Football Wordle',
+    summary: 'The viral daily football Wordle. Guess today 5-letter football star or club in 6 tries, share your emoji grid on WhatsApp, and unlock high-confidence value slips.',
+    highlights: ['Daily 5-Letter Football Mystery', 'WhatsApp Emoji Grid Sharing', 'Unlocked 4.85x Acca Value Slip'],
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
+    selarProduct: 'Quantitative Sports Analytics Model & Bankroll Matrix',
+    selarPrice: '₦15,000 / $19',
+  },
+  'higher-lower': {
+    id: 'higher-lower',
+    file: 'higher-lower.html',
+    title: 'Higher or Lower AI™ | Viral Football Values & Wealth Game',
+    category: 'Entertainment & Gaming',
+    badge: '🔥 Viral 500M+ Play Comparison Arena',
+    summary: 'The addictive viral Higher or Lower game. Guess which football superstar has a higher market value or which mogul has a higher net worth.',
+    highlights: ['Transfer Values vs Net Worths', 'Streak Bragging on WhatsApp', 'Integrated Cross-Promotion'],
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
+    selarProduct: 'Quantitative Sports Analytics Model',
+    selarPrice: '₦15,000 / $19',
+  },
 };
 
 export async function generateStaticParams() {

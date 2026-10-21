@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Higher or Lower AI™ | Viral Football Values & Wealth Game</title>
+  <meta name="description" content="The addictive viral Higher or Lower game. Guess which football superstar has a higher market value or which mogul has a higher net worth. Beat your streak!">
+  <style>
+    :root {
+      --bg: #07090e;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --green: #10b981;
+      --red: #ef4444;
+      --accent: #38bdf8;
+      --amber: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 70%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+    }
+    .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 12px; }
+
+    /* Header */
+    header { text-align: center; margin-bottom: 2px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    /* Streak Bar */
+    .score-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 8px 14px;
+    }
+    .score-val { font-size: 0.88rem; font-weight: 800; color: #fbbf24; }
+    .score-val span { color: #fff; font-size: 1.1rem; }
+
+    /* Comparison Cards Grid */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 480px) {
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+
+    .item-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      min-height: 220px;
+    }
+    .card-category { font-size: 0.68rem; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+    .card-title { font-size: 1.1rem; font-weight: 900; color: #fff; margin-bottom: 4px; line-height: 1.25; }
+    .card-sub { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; }
+    
+    /* Value Reveal on Card A */
+    .value-box {
+      margin-top: auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px;
+    }
+    .value-num { font-size: 1.35rem; font-weight: 900; color: #10b981; }
+    .value-lbl { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+
+    /* Actions on Card B */
+    .choice-actions {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn-choice {
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 900;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #fff;
+      transition: all 0.15s ease;
+    }
+    .btn-higher {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    .btn-higher:hover { filter: brightness(1.15); transform: translateY(-1px); }
+    .btn-lower {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    .btn-lower:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+    /* Game Over Modal */
+    .gameover-card {
+      display: none;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 18px;
+      padding: 20px;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+    .go-title { font-size: 1.3rem; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .go-desc { font-size: 0.8rem; color: #cbd5e1; margin-bottom: 14px; }
+    
+    .btn-restart {
+      background: linear-gradient(135deg, var(--accent) 0%, #0284c7 100%);
+      color: #040711;
+      padding: 11px 20px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 900;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .btn-share-wa {
+      width: 100%;
+      background: #25d366;
+      color: #040711;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 900;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* Unlocked Cross-Promotion */
+    .cross-promo {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: left;
+      margin-top: 10px;
+    }
+    .cp-title { font-size: 0.82rem; font-weight: 900; color: #38bdf8; }
+    .cp-desc { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+    .btn-cp {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 7px 12px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #040711;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">🔥 Viral Comparison Challenge</div>
+      <h1>Higher or Lower AI™</h1>
+      <p style="font-size:0.78rem; color:#94a3b8;">Guess which has a higher transfer valuation, net worth, or asset price!</p>
+    </header>
+
+    <div class="score-bar">
+      <div class="score-val">Current Streak: <span id="currentScore">0 🔥</span></div>
+      <div class="score-val">High Score: <span id="highScore">0 🏆</span></div>
+    </div>
+
+    <!-- Active Comparison Arena -->
+    <div class="compare-grid" id="compareArena">
+      <!-- Card A (Known Value) -->
+      <div class="item-card" id="cardA">
+        <div>
+          <div class="card-category" id="catA">Football Transfer Value</div>
+          <div class="card-title" id="titleA">Erling Haaland</div>
+          <div class="card-sub" id="subA">Manchester City · Striker</div>
+        </div>
+        <div class="value-box">
+          <div class="value-num" id="valA">€200,000,000</div>
+          <div class="value-lbl">Market Value</div>
+        </div>
+      </div>
+
+      <!-- Card B (Target Choice) -->
+      <div class="item-card" id="cardB">
+        <div>
+          <div class="card-category" id="catB">Football Transfer Value</div>
+          <div class="card-title" id="titleB">Kylian Mbappé</div>
+          <div class="card-sub" id="subB">Real Madrid · Forward</div>
+        </div>
+        <div class="choice-actions">
+          <div style="font-size:0.75rem; font-weight:800; color:#cbd5e1; margin-bottom:4px;">Is Kylian Mbappé's value:</div>
+          <button class="btn-choice btn-higher" onclick="makeGuess('higher')">
+            <span>▲ HIGHER</span>
+          </button>
+          <button class="btn-choice btn-lower" onclick="makeGuess('lower')">
+            <span>▼ LOWER</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div class="gameover-card" id="gameOverCard">
+      <div class="go-title" id="goTitle">WRONG! GAME OVER</div>
+      <div class="go-desc" id="goDesc">Kylian Mbappé's value is €180,000,000 (Lower than Erling Haaland's €200,000,000).</div>
+      <button class="btn-restart" onclick="restartGame()">Play Again 🔄</button>
+      <button class="btn-share-wa" onclick="shareStreakWhatsApp()">
+        <span>📲 Challenge Friends on WhatsApp</span>
+      </button>
+
+      <div class="cross-promo">
+        <div class="cp-title">⚽ Want High-Confidence Football Value Picks?</div>
+        <div class="cp-desc">SureScore AI™ simulates real-time match outcomes, projected exact scorelines, and 1X2 value slips.</div>
+        <a href="/tools/sure-score" class="btn-cp">Open SureScore AI™ Match Predictor →</a>
+      </div>
+    </div>
+
+    <footer style="text-align:center; font-size:0.72rem; color:#64748b; margin-top:8px;">
+      Higher or Lower AI™ · Real-Time Financial & Sports Market Intelligence · Bethelmind Analytics
+    </footer>
+  </div>
+
+  <script>
+    const ITEMS = [
+      { name: "Erling Haaland", sub: "Manchester City · Striker", cat: "Football Transfer Value", value: 200000000, valStr: "€200,000,000" },
+      { name: "Vinicius Jr", sub: "Real Madrid · Winger", cat: "Football Transfer Value", value: 200000000, valStr: "€200,000,000" },
+      { name: "Jude Bellingham", sub: "Real Madrid · Midfielder", cat: "Football Transfer Value", value: 180000000, valStr: "€180,000,000" },
+      { name: "Kylian Mbappé", sub: "Real Madrid · Forward", cat: "Football Transfer Value", value: 180000000, valStr: "€180,000,000" },
+      { name: "Bukayo Saka", sub: "Arsenal · Winger", cat: "Football Transfer Value", value: 140000000, valStr: "€140,000,000" },
+      { name: "Phil Foden", sub: "Manchester City · Midfielder", cat: "Football Transfer Value", value: 150000000, valStr: "€150,000,000" },
+      { name: "Cole Palmer", sub: "Chelsea · Playmaker", cat: "Football Transfer Value", value: 110000000, valStr: "€110,000,000" },
+      { name: "Victor Osimhen", sub: "Galatasaray / Napoli · Striker", cat: "Football Transfer Value", value: 75000000, valStr: "€75,000,000" },
+      { name: "Aliko Dangote", sub: "Dangote Group · Industrialist", cat: "Billionaire Net Worth", value: 13500000000, valStr: "$13.5 Billion" },
+      { name: "Mike Adenuga", sub: "Globacom & Conoil · Mogul", cat: "Billionaire Net Worth", value: 6800000000, valStr: "$6.8 Billion" },
+      { name: "Elon Musk", sub: "Tesla, SpaceX & xAI", cat: "Billionaire Net Worth", value: 245000000000, valStr: "$245 Billion" },
+      { name: "Mark Zuckerberg", sub: "Meta Platforms", cat: "Billionaire Net Worth", value: 205000000000, valStr: "$205 Billion" }
+    ];
+
+    let currentScore = 0;
+    let highScore = 0;
+    let itemA = ITEMS[0];
+    let itemB = ITEMS[4]; // Saka
+
+    function renderRound() {
+      document.getElementById('catA').textContent = itemA.cat;
+      document.getElementById('titleA').textContent = itemA.name;
+      document.getElementById('subA').textContent = itemA.sub;
+      document.getElementById('valA').textContent = itemA.valStr;
+
+      document.getElementById('catB').textContent = itemB.cat;
+      document.getElementById('titleB').textContent = itemB.name;
+      document.getElementById('subB').textContent = itemB.sub;
+
+      document.getElementById('compareArena').style.display = 'grid';
+      document.getElementById('gameOverCard').style.display = 'none';
+      document.getElementById('currentScore').textContent = `${currentScore} 🔥`;
+      document.getElementById('highScore').textContent = `${highScore} 🏆`;
+    }
+
+    function makeGuess(choice) {
+      const isCorrect = (choice === 'higher' && itemB.value >= itemA.value) ||
+                        (choice === 'lower' && itemB.value <= itemA.value);
+
+      if (isCorrect) {
+        currentScore++;
+        if (currentScore > highScore) highScore = currentScore;
+        itemA = itemB;
+        // Pick new random item different from itemA
+        let nextItem;
+        do {
+          nextItem = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+        } while (nextItem.name === itemA.name);
+        itemB = nextItem;
+        renderRound();
+      } else {
+        // Game Over
+        document.getElementById('compareArena').style.display = 'none';
+        const goCard = document.getElementById('gameOverCard');
+        goCard.style.display = 'block';
+        document.getElementById('goTitle').textContent = `WRONG! FINAL STREAK: ${currentScore}`;
+        document.getElementById('goDesc').innerHTML = `<strong>${itemB.name}</strong> (${itemB.valStr}) is <strong>${itemB.value > itemA.value ? 'HIGHER' : 'LOWER'}</strong> than <strong>${itemA.name}</strong> (${itemA.valStr}).`;
+      }
+    }
+
+    function restartGame() {
+      currentScore = 0;
+      itemA = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+      do {
+        itemB = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+      } while (itemB.name === itemA.name);
+      renderRound();
+    }
+
+    function shareStreakWhatsApp() {
+      const text = encodeURIComponent(`🔥 I just reached a streak of ${currentScore} on Higher or Lower: Football & Wealth Edition!\n\nCan you beat my market value intuition? Play free here:\nhttps://www.bethelmindanalytics.com/tools/higher-lower`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    // Initialize
+    renderRound();
+  </script>
+</body>
+</html>
