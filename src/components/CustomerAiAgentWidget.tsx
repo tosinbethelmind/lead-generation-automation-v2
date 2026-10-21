@@ -455,7 +455,7 @@ export default function CustomerAiAgentWidget({
       <style jsx>{`
         .customer-ai-widget-container {
           position: fixed;
-          bottom: 24px;
+          bottom: 85px;
           right: 24px;
           z-index: 99999;
           font-family: var(--font-sans, 'Inter', sans-serif);

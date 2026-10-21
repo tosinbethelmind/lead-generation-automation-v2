@@ -99,7 +99,7 @@ export default function PaymentSection({
     <section
       id="payment"
       aria-labelledby="payment-heading"
-      style={{ padding: '72px clamp(16px, 4vw, 40px)', maxWidth: 860, margin: '0 auto' }}
+      style={{ padding: '72px clamp(16px, 4vw, 40px)', maxWidth: 860, margin: '0 auto', scrollMarginTop: 90 }}
     >
       {/* Invoice Modal */}
       <InvoiceModal

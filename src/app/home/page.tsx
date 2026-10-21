@@ -47,7 +47,7 @@ export default function HomePage() {
         color: '#f8fafc',
         fontFamily: "var(--font-inter), 'Inter', sans-serif",
         overflowX: 'hidden',
-        paddingBottom: 70, // Buffer for mobile sticky bar
+        paddingBottom: 95, // Buffer for mobile sticky bar
       }}
     >
       <ScrollWorld theme="bethelmind" />

@@ -70,7 +70,7 @@ export default function StickyMobileConversionBar({
     >
       <div 
         style={{
-          maxWidth: '480px',
+          maxWidth: '680px',
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',

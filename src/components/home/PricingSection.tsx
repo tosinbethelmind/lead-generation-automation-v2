@@ -102,7 +102,7 @@ export default function PricingSection({
     <section
       id="pricing"
       aria-labelledby="pricing-heading"
-      style={{ padding: '72px clamp(16px, 4vw, 40px)', maxWidth: 1200, margin: '0 auto' }}
+      style={{ padding: '72px clamp(16px, 4vw, 40px)', maxWidth: 1200, margin: '0 auto', scrollMarginTop: 90 }}
     >
       {/* Invoice Modal Trigger */}
       {currentInvoicePlan && (

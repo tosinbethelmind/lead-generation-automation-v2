@@ -854,7 +854,7 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
             boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
           }}
         >
-          🟢 Claim ₦35k Promo →
+          🟢 Activate ₦35k Setup →
         </a>
       </div>
 
@@ -925,7 +925,7 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
     <section
       id="sector-tools"
       aria-labelledby="sector-tools-heading"
-      style={{ padding: '72px clamp(16px, 4vw, 40px)', maxWidth: 1200, margin: '0 auto' }}
+      style={{ padding: '72px clamp(16px, 4vw, 40px)', maxWidth: 1200, margin: '0 auto', scrollMarginTop: 90 }}
     >
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 100, padding: '5px 16px', marginBottom: 14 }}>
