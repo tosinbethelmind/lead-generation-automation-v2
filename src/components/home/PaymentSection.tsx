@@ -12,7 +12,7 @@
  * - Payment reference generated per-plan per-session
  */
 
-import React, { useState, useMemo, useId } from 'react';
+import React, { useState, useEffect, useMemo, useId } from 'react';
 import { Copy, CheckCircle, MessageSquare, AlertTriangle, ShieldCheck, FileText, Lock } from 'lucide-react';
 import { getPlanById } from '@/config/plans';
 import { paymentConfig, buildWhatsAppLink, generatePaymentReference } from '@/config/payment';
