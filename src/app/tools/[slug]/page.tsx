@@ -171,6 +171,18 @@ export const VIRAL_TOOLS: Record<string, {
     selarProduct: '365-Day Guided Devotional & Prayer Journal',
     selarPrice: '₦5,000 / $6',
   },
+  'sure-score': {
+    id: 'sure-score',
+    file: 'sure-score.html',
+    title: 'SureScore AI™ Football Match Predictor & Acca Slip Builder',
+    category: 'Sports Analytics',
+    badge: '⚽ 2026 AI Match Outcome & xG Engine',
+    summary: 'Simulate real-time 1X2 win probabilities, projected exact scorelines, Both Teams to Score (BTTS), and build viral multi-match accumulator slips.',
+    highlights: ['Poisson xG & ELO Model', '1-Click Acca Multiplier Slip', 'Instant WhatsApp Group Share'],
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
+    selarProduct: 'Quantitative Sports Analytics Model & Bankroll Matrix',
+    selarPrice: '₦15,000 / $19',
+  },
   'sports-edge': {
     id: 'sports-edge',
     file: 'sports-edge.html',

@@ -164,6 +164,17 @@ const TOOLS: ToolItem[] = [
     upsell: '💎 $19 365 Devotional'
   },
   {
+    id: 'sure-score',
+    title: 'SureScore AI™ Football Match Predictor & Acca Slip',
+    badge: 'Trending #1 Sports',
+    category: 'lifestyle',
+    description: 'Algorithmic 1X2 win probabilities, projected exact scorelines, BTTS, and 1-click multi-match accumulator slip builder.',
+    icon: Flame,
+    color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
+    href: '/tools/sure-score',
+    upsell: '💎 $19 Model / ₦15,000'
+  },
+  {
     id: 'sports-edge',
     title: 'SportsBet Edge™ Expected Value Matrix',
     badge: 'High Engagement',

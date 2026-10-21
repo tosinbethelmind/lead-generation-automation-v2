@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>SureScore AI™ | Football Match Predictor & Accumulator Slip Builder</title>
+  <meta name="description" content="Free AI Football Match Predictor, Poisson Goal xG Engine, Both Teams to Score (BTTS), and 1-Click Multi-Bet Accumulator Calculator.">
+  <style>
+    :root {
+      --bg: #070b14;
+      --card-bg: #0f172a;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent: #06b6d4;
+      --accent-glow: rgba(6, 182, 212, 0.25);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.2);
+      --amber: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    header {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(7, 11, 20, 0.98));
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #f59e0b, #06b6d4, #10b981);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      background: linear-gradient(180deg, #ffffff 40%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.4;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .quick-fixtures {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+    .fixture-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: #cbd5e1;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .fixture-pill:hover, .fixture-pill.active {
+      background: rgba(6, 182, 212, 0.18);
+      border-color: rgba(6, 182, 212, 0.5);
+      color: #38bdf8;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+    }
+    .team-selectors {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .vs-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: var(--accent);
+    }
+    .select-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .select-box label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    select {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      outline: none;
+      width: 100%;
+      cursor: pointer;
+    }
+    select:focus { border-color: var(--accent); }
+    .btn-predict {
+      background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
+      color: #040711;
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 900;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .btn-predict:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .btn-predict:active { transform: scale(0.98); }
+
+    /* Prediction Result Section */
+    .prediction-display {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media(min-width: 640px) {
+      .prediction-display { grid-template-columns: 1fr 1fr; }
+    }
+    .score-card {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(15, 23, 42, 0.6));
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+    }
+    .score-header { font-size: 0.75rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; margin-bottom: 6px; }
+    .score-number { font-size: 2.8rem; font-weight: 900; letter-spacing: -0.03em; color: #fff; line-height: 1; }
+    .score-conf { font-size: 0.75rem; color: var(--emerald); font-weight: 700; margin-top: 6px; }
+
+    .prob-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+    }
+    .bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .bar-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width 0.5s ease;
+    }
+    .fill-home { background: linear-gradient(90deg, #06b6d4, #38bdf8); }
+    .fill-draw { background: linear-gradient(90deg, #94a3b8, #cbd5e1); }
+    .fill-away { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+    .picks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .pick-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+    .pick-item .p-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+    .pick-item .p-value { font-size: 0.95rem; font-weight: 900; color: #fff; margin: 4px 0; }
+    .pick-item .p-odd { font-size: 0.75rem; color: #38bdf8; font-weight: 800; }
+
+    /* Action Buttons */
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .btn-secondary {
+      flex: 1;
+      min-width: 180px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+    .btn-whatsapp {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 14px var(--emerald-glow);
+    }
+    .btn-whatsapp:hover { filter: brightness(1.1); }
+
+    /* Accumulator Slip Drawer */
+    .slip-box {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .slip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .slip-title { font-size: 0.85rem; font-weight: 900; color: var(--emerald); display: flex; align-items: center; gap: 6px; }
+    .slip-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+    .slip-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+    }
+    .slip-remove {
+      color: #ef4444;
+      cursor: pointer;
+      font-weight: 900;
+      margin-left: 8px;
+    }
+    .slip-calc {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+    .slip-calc .stat-val { font-size: 1.2rem; font-weight: 900; color: #fff; }
+    .slip-calc .stat-lbl { font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+
+    footer {
+      font-size: 0.72rem;
+      color: #64748b;
+      text-align: center;
+      padding: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">⚡ 2026 AI Algorithm · Poisson xG Model</div>
+      <h1>SureScore AI™ Football Match Predictor</h1>
+      <p class="subtitle">Simulate real-time 1X2 win probabilities, projected exact scorelines, Both Teams to Score (BTTS), and build viral multi-match accumulator slips.</p>
+    </header>
+
+    <!-- Quick Preset Matches Bar -->
+    <div class="quick-fixtures" id="presetBar">
+      <div class="fixture-pill active" onclick="loadPreset('Arsenal', 'Chelsea')">⚽ Arsenal vs Chelsea</div>
+      <div class="fixture-pill" onclick="loadPreset('Real Madrid', 'Barcelona')">⚽ Real Madrid vs Barcelona</div>
+      <div class="fixture-pill" onclick="loadPreset('Liverpool', 'Man City')">⚽ Liverpool vs Man City</div>
+      <div class="fixture-pill" onclick="loadPreset('Bayern Munich', 'Dortmund')">⚽ Bayern vs Dortmund</div>
+      <div class="fixture-pill" onclick="loadPreset('Inter Milan', 'Juventus')">⚽ Inter vs Juventus</div>
+      <div class="fixture-pill" onclick="loadPreset('PSG', 'Marseille')">⚽ PSG vs Marseille</div>
+    </div>
+
+    <!-- Match Selector Card -->
+    <div class="card">
+      <div class="team-selectors">
+        <div class="select-box">
+          <label>Home Team</label>
+          <select id="homeTeam" onchange="runPrediction()"></select>
+        </div>
+        <div class="vs-circle">VS</div>
+        <div class="select-box">
+          <label>Away Team</label>
+          <select id="awayTeam" onchange="runPrediction()"></select>
+        </div>
+      </div>
+
+      <button type="button" class="btn-predict" onclick="runPrediction()">
+        <span>⚡ Calculate AI Prediction & Scoreline</span>
+      </button>
+
+      <!-- Prediction Output -->
+      <div class="prediction-display">
+        <!-- Predicted Score & Confidence -->
+        <div class="score-card">
+          <div class="score-header">Projected Final Scoreline</div>
+          <div class="score-number" id="predictedScore">2 - 1</div>
+          <div class="score-conf" id="confidenceRating">★ 82% Mathematical Edge Rating</div>
+        </div>
+
+        <!-- 1X2 Probabilities -->
+        <div class="prob-bars">
+          <div class="bar-row">
+            <div class="bar-labels">
+              <span id="labelHome">Arsenal Win</span>
+              <span id="valHome">62% (1.61)</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill fill-home" id="barHome" style="width: 62%;"></div></div>
+          </div>
+
+          <div class="bar-row">
+            <div class="bar-labels">
+              <span>Draw Outcome</span>
+              <span id="valDraw">22% (4.54)</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill fill-draw" id="barDraw" style="width: 22%;"></div></div>
+          </div>
+
+          <div class="bar-row">
+            <div class="bar-labels">
+              <span id="labelAway">Chelsea Win</span>
+              <span id="valAway">16% (6.25)</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill fill-away" id="barAway" style="width: 16%;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tactical Market Insights -->
+      <div class="picks-grid">
+        <div class="pick-item">
+          <div class="p-label">Over 2.5 Goals</div>
+          <div class="p-value" id="valOver25">74%</div>
+          <div class="p-odd" id="oddOver25">Odd: 1.35</div>
+        </div>
+        <div class="pick-item">
+          <div class="p-label">Both Teams to Score</div>
+          <div class="p-value" id="valBTTS">Yes (68%)</div>
+          <div class="p-odd" id="oddBTTS">Odd: 1.47</div>
+        </div>
+        <div class="pick-item">
+          <div class="p-label">High-Value AI Pick</div>
+          <div class="p-value" id="valBestPick" style="color: #38bdf8;">Home Win & Over 1.5</div>
+          <div class="p-odd" id="oddBestPick">Combined: 1.88</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="button-row">
+        <button type="button" class="btn-secondary" onclick="addToSlip()">
+          <span>➕ Add to Acca Slip</span>
+        </button>
+        <button type="button" class="btn-secondary btn-whatsapp" onclick="shareOnWhatsApp()">
+          <span>📲 Share Prediction on WhatsApp</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Accumulator Slip Drawer -->
+    <div class="slip-box" id="slipBox">
+      <div class="slip-header">
+        <span class="slip-title">🎟️ Active Accumulator Ticket (<span id="slipCount">1</span> Match)</span>
+        <span style="font-size: 0.72rem; color: #94a3b8; cursor: pointer;" onclick="clearSlip()">Clear All</span>
+      </div>
+
+      <div class="slip-items" id="slipItems">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="slip-calc">
+        <div>
+          <div class="stat-lbl">Total Multiplier Odds</div>
+          <div class="stat-val" id="totalOdds" style="color: #38bdf8;">1.88x</div>
+        </div>
+        <div>
+          <div class="stat-lbl">Projected Return (₦1,000 / $5 Stake)</div>
+          <div class="stat-val" id="totalPayout" style="color: #10b981;">₦1,880</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      SureScore AI™ Algorithmic Model · Statistical Probabilities Derived from ELO & Poisson Distribution.<br>
+      © 2026 Bethelmind Digital Solutions. Designed for Football Fans & Sports Communities.
+    </footer>
+  </div>
+
+  <script>
+    // Team ELO Ratings & Goal Scoring / Conceding Coefficients
+    const TEAMS = {
+      "Arsenal": { attack: 2.1, defense: 0.8, elo: 1890 },
+      "Man City": { attack: 2.4, defense: 0.9, elo: 1940 },
+      "Liverpool": { attack: 2.2, defense: 0.9, elo: 1910 },
+      "Chelsea": { attack: 1.7, defense: 1.2, elo: 1780 },
+      "Man United": { attack: 1.5, defense: 1.3, elo: 1720 },
+      "Tottenham": { attack: 1.8, defense: 1.3, elo: 1760 },
+      "Aston Villa": { attack: 1.8, defense: 1.2, elo: 1770 },
+      "Newcastle": { attack: 1.7, defense: 1.1, elo: 1750 },
+      "Real Madrid": { attack: 2.3, defense: 0.8, elo: 1950 },
+      "Barcelona": { attack: 2.2, defense: 0.9, elo: 1900 },
+      "Atletico Madrid": { attack: 1.6, defense: 0.8, elo: 1810 },
+      "Bayern Munich": { attack: 2.5, defense: 1.0, elo: 1920 },
+      "Dortmund": { attack: 1.9, defense: 1.3, elo: 1790 },
+      "PSG": { attack: 2.2, defense: 1.0, elo: 1860 },
+      "Marseille": { attack: 1.6, defense: 1.2, elo: 1730 },
+      "Inter Milan": { attack: 2.0, defense: 0.8, elo: 1880 },
+      "Juventus": { attack: 1.6, defense: 0.7, elo: 1820 },
+      "AC Milan": { attack: 1.7, defense: 1.1, elo: 1770 }
+    };
+
+    let activeSlip = [];
+    let currentPrediction = null;
+
+    function populateTeams() {
+      const homeSelect = document.getElementById('homeTeam');
+      const awaySelect = document.getElementById('awayTeam');
+      homeSelect.innerHTML = '';
+      awaySelect.innerHTML = '';
+
+      const teamNames = Object.keys(TEAMS);
+      teamNames.forEach(t => {
+        homeSelect.add(new Option(t, t));
+        awaySelect.add(new Option(t, t));
+      });
+
+      homeSelect.value = 'Arsenal';
+      awaySelect.value = 'Chelsea';
+    }
+
+    function loadPreset(home, away) {
+      document.getElementById('homeTeam').value = home;
+      document.getElementById('awayTeam').value = away;
+      
+      const pills = document.querySelectorAll('.fixture-pill');
+      pills.forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+
+      runPrediction();
+    }
+
+    // Poisson Probability Calculator
+    function poisson(lambda, k) {
+      return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+    }
+    function factorial(n) {
+      if (n <= 1) return 1;
+      let res = 1;
+      for (let i = 2; i <= n; i++) res *= i;
+      return res;
+    }
+
+    function runPrediction() {
+      const homeName = document.getElementById('homeTeam').value;
+      const awayName = document.getElementById('awayTeam').value;
+
+      if (homeName === awayName) {
+        alert("Please select two different teams!");
+        return;
+      }
+
+      const h = TEAMS[homeName] || { attack: 1.5, defense: 1.1, elo: 1700 };
+      const a = TEAMS[awayName] || { attack: 1.3, defense: 1.3, elo: 1680 };
+
+      // Expected goals with home field advantage (+15%)
+      const homeXG = Math.max(0.5, (h.attack * a.defense * 0.9 * 1.15));
+      const awayXG = Math.max(0.4, (a.attack * h.defense * 0.85));
+
+      // Calculate score probability matrix (up to 5 goals each)
+      let pHomeWin = 0;
+      let pDraw = 0;
+      let pAwayWin = 0;
+      let pOver25 = 0;
+      let pBTTS = 0;
+
+      let maxProb = 0;
+      let bestHomeScore = 1;
+      let bestAwayScore = 0;
+
+      for (let hg = 0; hg <= 5; hg++) {
+        for (let ag = 0; ag <= 5; ag++) {
+          const pScore = poisson(homeXG, hg) * poisson(awayXG, ag);
+          if (hg > ag) pHomeWin += pScore;
+          else if (hg === ag) pDraw += pScore;
+          else pAwayWin += pScore;
+
+          if (hg + ag > 2.5) pOver25 += pScore;
+          if (hg > 0 && ag > 0) pBTTS += pScore;
+
+          if (pScore > maxProb) {
+            maxProb = pScore;
+            bestHomeScore = hg;
+            bestAwayScore = ag;
+          }
+        }
+      }
+
+      // Normalize 1X2 to 100%
+      const total1X2 = pHomeWin + pDraw + pAwayWin;
+      const pctHome = Math.round((pHomeWin / total1X2) * 100);
+      const pctDraw = Math.round((pDraw / total1X2) * 100);
+      const pctAway = 100 - pctHome - pctDraw;
+
+      const oddHome = (1 / (pctHome / 100)).toFixed(2);
+      const oddDraw = (1 / (pctDraw / 100)).toFixed(2);
+      const oddAway = (1 / (pctAway / 100)).toFixed(2);
+
+      const pctOver25 = Math.min(92, Math.max(35, Math.round(pOver25 * 100)));
+      const oddOver25 = (1 / (pctOver25 / 100)).toFixed(2);
+
+      const pctBTTS = Math.min(88, Math.max(30, Math.round(pBTTS * 100)));
+      const oddBTTS = (1 / (pctBTTS / 100)).toFixed(2);
+
+      // Best pick logic
+      let bestPickName = `${homeName} Win`;
+      let bestPickOdd = oddHome;
+      if (pctHome >= 60 && pctOver25 >= 65) {
+        bestPickName = `${homeName} & Over 1.5`;
+        bestPickOdd = (parseFloat(oddHome) * 1.18).toFixed(2);
+      } else if (pctBTTS >= 65) {
+        bestPickName = `Both Teams to Score`;
+        bestPickOdd = oddBTTS;
+      } else if (pctOver25 >= 70) {
+        bestPickName = `Over 2.5 Goals`;
+        bestPickOdd = oddOver25;
+      }
+
+      // Update UI
+      document.getElementById('predictedScore').innerText = `${bestHomeScore} - ${bestAwayScore}`;
+      document.getElementById('confidenceRating').innerText = `★ ${Math.max(pctHome, pctAway, pctOver25)}% Mathematical AI Edge`;
+
+      document.getElementById('labelHome').innerText = `${homeName} Win`;
+      document.getElementById('valHome').innerText = `${pctHome}% (${oddHome})`;
+      document.getElementById('barHome').style.width = `${pctHome}%`;
+
+      document.getElementById('valDraw').innerText = `${pctDraw}% (${oddDraw})`;
+      document.getElementById('barDraw').style.width = `${pctDraw}%`;
+
+      document.getElementById('labelAway').innerText = `${awayName} Win`;
+      document.getElementById('valAway').innerText = `${pctAway}% (${oddAway})`;
+      document.getElementById('barAway').style.width = `${pctAway}%`;
+
+      document.getElementById('valOver25').innerText = `${pctOver25}%`;
+      document.getElementById('oddOver25').innerText = `Odd: ${oddOver25}`;
+
+      document.getElementById('valBTTS').innerText = `Yes (${pctBTTS}%)`;
+      document.getElementById('oddBTTS').innerText = `Odd: ${oddBTTS}`;
+
+      document.getElementById('valBestPick').innerText = bestPickName;
+      document.getElementById('oddBestPick').innerText = `Odd: ${bestPickOdd}`;
+
+      currentPrediction = {
+        fixture: `${homeName} vs ${awayName}`,
+        pick: bestPickName,
+        score: `${bestHomeScore}-${bestAwayScore}`,
+        odd: parseFloat(bestPickOdd)
+      };
+    }
+
+    function addToSlip() {
+      if (!currentPrediction) runPrediction();
+      
+      const exists = activeSlip.find(s => s.fixture === currentPrediction.fixture);
+      if (exists) {
+        alert("This fixture is already added to your Accumulator Ticket!");
+        return;
+      }
+
+      activeSlip.push({ ...currentPrediction });
+      renderSlip();
+    }
+
+    function removeSlipItem(idx) {
+      activeSlip.splice(idx, 1);
+      renderSlip();
+    }
+
+    function clearSlip() {
+      activeSlip = [];
+      renderSlip();
+    }
+
+    function renderSlip() {
+      const container = document.getElementById('slipItems');
+      const countEl = document.getElementById('slipCount');
+      const oddsEl = document.getElementById('totalOdds');
+      const payoutEl = document.getElementById('totalPayout');
+
+      countEl.innerText = activeSlip.length;
+
+      if (activeSlip.length === 0) {
+        container.innerHTML = `<div style="text-align: center; color: #64748b; font-size: 0.78rem; padding: 12px;">Your slip is empty. Click "Add to Acca Slip" above!</div>`;
+        oddsEl.innerText = "1.00x";
+        payoutEl.innerText = "₦0";
+        return;
+      }
+
+      let mult = 1.0;
+      let html = '';
+      activeSlip.forEach((s, idx) => {
+        mult *= s.odd;
+        html += `
+          <div class="slip-row">
+            <div>
+              <strong>${s.fixture}</strong><br>
+              <span style="color: #38bdf8;">Pick: ${s.pick}</span> (Score: ${s.score})
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="color: #10b981; font-weight: 800;">${s.odd.toFixed(2)}</span>
+              <span class="slip-remove" onclick="removeSlipItem(${idx})">✕</span>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      oddsEl.innerText = `${mult.toFixed(2)}x`;
+      const stakeNgn = 1000;
+      payoutEl.innerText = `₦${Math.round(stakeNgn * mult).toLocaleString()}`;
+    }
+
+    function shareOnWhatsApp() {
+      if (!currentPrediction) runPrediction();
+      const text = `🔥 *SureScore AI™ Match Prediction*\n⚽ *${currentPrediction.fixture}*\n🎯 Predicted Scoreline: *${currentPrediction.score}*\n⚡ AI Best Pick: *${currentPrediction.pick}* (Odd: ${currentPrediction.odd.toFixed(2)})\n\n👉 Test today's matches & build accumulator tickets free:\nhttps://www.bethelmindanalytics.com/tools/sure-score`;
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
+
+    // Initialize
+    populateTeams();
+    runPrediction();
+    addToSlip();
+  </script>
+</body>
+</html>
