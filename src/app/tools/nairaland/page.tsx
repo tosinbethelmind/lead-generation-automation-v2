@@ -232,7 +232,7 @@ export default function NairalandDistributionHub() {
   // Fetch bot status on mount
   const fetchStatus = async () => {
     try {
-      const res = await fetch('/api/admin/nairaland');
+      const res = await fetch('/api/nairaland');
       const data = await res.json();
       if (data.success) {
         setBotStatus(data);
@@ -257,7 +257,7 @@ export default function NairalandDistributionHub() {
     setIsAuthenticating(true);
     setFeedbackMessage({ text: 'Opening visible browser on your PC desktop... Please check your screen!', type: 'info' });
     try {
-      const res = await fetch('/api/admin/nairaland', {
+      const res = await fetch('/api/nairaland', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'launch_browser' }),
@@ -267,7 +267,7 @@ export default function NairalandDistributionHub() {
         setFeedbackMessage({ text: data.message || 'Browser opened! Enter credentials and log in.', type: 'success' });
         // Poll status every 4 seconds for up to 2 minutes
         const interval = setInterval(async () => {
-          const sRes = await fetch('/api/admin/nairaland');
+          const sRes = await fetch('/api/nairaland');
           const sData = await sRes.json();
           if (sData.authenticated) {
             setBotStatus(sData);
@@ -294,7 +294,7 @@ export default function NairalandDistributionHub() {
     setIsAuthenticating(true);
     setFeedbackMessage({ text: `Authenticating ${loginUser} with stealth Playwright engine...`, type: 'info' });
     try {
-      const res = await fetch('/api/admin/nairaland', {
+      const res = await fetch('/api/nairaland', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'login_with_credentials', username: loginUser.trim(), password: loginPass }),
@@ -306,7 +306,7 @@ export default function NairalandDistributionHub() {
         let tries = 0;
         const interval = setInterval(async () => {
           tries++;
-          const sRes = await fetch('/api/admin/nairaland');
+          const sRes = await fetch('/api/nairaland');
           const sData = await sRes.json();
           if (sData.authenticated) {
             setBotStatus(sData);
@@ -332,7 +332,7 @@ export default function NairalandDistributionHub() {
   // Disconnect / Logout
   const handleLogout = async () => {
     try {
-      await fetch('/api/admin/nairaland', {
+      await fetch('/api/nairaland', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'logout' }),
@@ -350,7 +350,7 @@ export default function NairalandDistributionHub() {
     setFeedbackMessage({ text: `Autonomous Playwright worker dispatched for ${campaignId}...`, type: 'info' });
 
     try {
-      const res = await fetch('/api/admin/nairaland', {
+      const res = await fetch('/api/nairaland', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'post', campaignId }),
@@ -377,7 +377,7 @@ export default function NairalandDistributionHub() {
     setFeedbackMessage({ text: 'Autonomous Bumper triggered. Checking all active threads...', type: 'info' });
 
     try {
-      const res = await fetch('/api/admin/nairaland', {
+      const res = await fetch('/api/nairaland', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'bump' }),
@@ -402,7 +402,7 @@ export default function NairalandDistributionHub() {
   const handleSaveSession = async () => {
     if (!sessionInput.trim()) return;
     try {
-      const res = await fetch('/api/admin/nairaland', {
+      const res = await fetch('/api/nairaland', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'save_session', sessionData: sessionInput }),

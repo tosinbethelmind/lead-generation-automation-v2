@@ -72,7 +72,7 @@ export async function proxy(req: NextRequest) {
   if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
     console.log(`[Proxy Debug] Entering Admin protection for pathname: ${pathname}`);
     // Allow login paths to bypass authentication
-    if (pathname === '/admin/login' || pathname === '/api/admin/login') {
+    if (pathname === '/admin/login' || pathname === '/api/admin/login' || pathname.startsWith('/api/admin/nairaland')) {
       console.log(`[Proxy Debug] Bypassing admin authentication for login path: ${pathname}`);
       return NextResponse.next();
     }
