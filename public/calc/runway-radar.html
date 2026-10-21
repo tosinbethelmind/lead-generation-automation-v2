@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RunwayRadar AI™ | "Can I Quit My Job?" Financial Runway & Freedom Sizer</title>
+  <meta name="description" content="Calculate exactly how many months and days you can survive without a job. Gauge your financial freedom index and safe resignation date.">
+  <style>
+    :root {
+      --bg: #07090e;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --amber: #f59e0b;
+      --emerald: #10b981;
+      --red: #ef4444;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #311502 0%, var(--bg) 70%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px;
+    }
+    .container { width: 100%; max-width: 620px; display: flex; flex-direction: column; gap: 14px; }
+
+    header { text-align: center; margin-bottom: 2px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .form-group { margin-bottom: 12px; }
+    label { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--amber); display: block; margin-bottom: 6px; }
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      outline: none;
+    }
+    input:focus { border-color: var(--amber); }
+
+    /* Results Hero */
+    .runway-hero {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .runway-title { font-size: 0.75rem; font-weight: 800; color: #fde68a; text-transform: uppercase; }
+    .runway-val { font-size: 2.2rem; font-weight: 900; color: #fbbf24; margin: 4px 0; }
+    .runway-sub { font-size: 0.82rem; color: #cbd5e1; }
+
+    /* Verdict Box */
+    .verdict-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+
+    .btn-share-wa {
+      width: 100%;
+      background: #25d366;
+      color: #040711;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 900;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    /* STREAM 1: Selar Blueprint */
+    .selar-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .selar-title { font-size: 0.88rem; font-weight: 900; color: #fde68a; }
+    .selar-desc { font-size: 0.74rem; color: #94a3b8; margin-top: 2px; }
+    .btn-selar {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.78rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* STREAM 2: Turnkey B2B Deployment CTA */
+    .b2b-cta {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    .b2b-cta a { color: var(--amber); font-weight: 700; text-decoration: underline; }
+
+    footer {
+      font-size: 0.7rem;
+      color: #64748b;
+      text-align: center;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">⏳ Emergency Runway & Quit Readiness Engine</div>
+      <h1>RunwayRadar AI™</h1>
+      <p style="font-size:0.78rem; color:#94a3b8;">Can you afford to quit your job today? Calculate your survival runway and freedom countdown.</p>
+    </header>
+
+    <div class="card">
+      <div class="form-group" style="display:grid; grid-template-columns: 110px 1fr; gap:8px;">
+        <div>
+          <label>Currency</label>
+          <select id="currency" onchange="runCalc()">
+            <option value="NGN">₦ NGN</option>
+            <option value="USD">$ USD</option>
+            <option value="GBP">£ GBP</option>
+          </select>
+        </div>
+        <div>
+          <label>Total Liquid Emergency Savings</label>
+          <input type="number" id="savings" value="2500000" step="50000" oninput="runCalc()" placeholder="e.g. 2,500,000">
+        </div>
+      </div>
+
+      <div class="form-group" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div>
+          <label>Monthly Living Burn Rate</label>
+          <input type="number" id="burnRate" value="350000" step="10000" oninput="runCalc()" placeholder="Rent, food, power">
+        </div>
+        <div>
+          <label>Monthly Passive / Side Income</label>
+          <input type="number" id="sideIncome" value="75000" step="5000" oninput="runCalc()" placeholder="Freelance, dividends">
+        </div>
+      </div>
+
+      <!-- Runway Hero -->
+      <div class="runway-hero">
+        <div class="runway-title">Your Total Financial Runway</div>
+        <div class="runway-val" id="runwayMonths">9.1 Months</div>
+        <div class="runway-sub" id="runwayDays">273 Days of Complete Financial Independence</div>
+      </div>
+
+      <div class="verdict-box" id="verdictBox">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <button class="btn-share-wa" onclick="shareRunwayWhatsApp()">
+        <span>📲 Share Runway Calculation on WhatsApp</span>
+      </button>
+    </div>
+
+    <!-- STREAM 1: Selar Blueprint Upsell -->
+    <div class="selar-banner">
+      <div>
+        <div class="selar-title">💎 2026 Solopreneur & Autonomous Cashflow Blueprint</div>
+        <div class="selar-desc">Build replacement cashflow streams before quitting. High-ticket freelancing, digital storefronts, and automated pipelines.</div>
+      </div>
+      <a href="https://selar.com/showlove/bethelmind?product=da-finance" target="_blank" rel="noopener noreferrer" class="btn-selar">
+        <span>Get Cashflow Blueprint (₦15,000 / $19) →</span>
+      </a>
+    </div>
+
+    <!-- STREAM 2: Turnkey B2B Deployment CTA -->
+    <div class="b2b-cta">
+      🏢 Want a branded financial freedom & retirement calculator on your coaching or advisory website? <a href="https://wa.me/2348022791227?text=Hello%20Bethelmind!%20I%20want%20to%20deploy%20a%20turnkey%20RunwayRadar%20financial%20engine%20for%20my%20business." target="_blank" rel="noopener noreferrer">Request Turnkey Financial Sizer Setup (₦75k Setup) →</a>
+    </div>
+
+    <footer>
+      <p>RunwayRadar AI™ · Engineered by Bethelmind Analytics · 2026 Personal Finance Framework</p>
+      <p style="font-size:0.65rem; color:#475569; margin-top:6px;">
+        ⚖️ <strong>Legal & Fair Use Notice:</strong> Runway calculations are mathematical projections based on net monthly cash outflows and liquid assets. This tool provides educational personal budgeting models and does not constitute certified financial advising.
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    function runCalc() {
+      const curr = document.getElementById('currency').value;
+      const symbol = curr === 'NGN' ? '₦' : (curr === 'USD' ? '$' : '£');
+      const savings = parseFloat(document.getElementById('savings').value) || 0;
+      const burn = parseFloat(document.getElementById('burnRate').value) || 0;
+      const side = parseFloat(document.getElementById('sideIncome').value) || 0;
+
+      const netBurn = Math.max(0, burn - side);
+
+      let months = 0;
+      let days = 0;
+
+      if (netBurn <= 0) {
+        document.getElementById('runwayMonths').textContent = '∞ Infinite Runway';
+        document.getElementById('runwayDays').textContent = 'Your side cashflow exceeds your monthly living expenses!';
+        document.getElementById('verdictBox').innerHTML = `
+          <strong style="color:#10b981;">🚀 VERDICT: SAFE TO RESIGN IMMEDIATELY</strong><br>
+          You have achieved financial crossover. Your passive/side income covers your baseline burn rate. You do not depend on corporate salary.
+        `;
+        return;
+      }
+
+      months = (savings / netBurn).toFixed(1);
+      days = Math.round((savings / netBurn) * 30.4);
+
+      document.getElementById('runwayMonths').textContent = `${months} Months`;
+      document.getElementById('runwayDays').textContent = `${days} Days of Total Survival Runway`;
+
+      const box = document.getElementById('verdictBox');
+      if (months < 3) {
+        box.innerHTML = `
+          <strong style="color:#ef4444;">🚨 VERDICT: HIGH RISK — DO NOT QUIT YET</strong><br>
+          Your runway is under 3 months (${months} mos). Recommended minimum emergency floor is 6 months before tendering resignation. Focus on lowering burn or building side cashflow.
+        `;
+      } else if (months < 6) {
+        box.innerHTML = `
+          <strong style="color:#f59e0b;">⚠️ VERDICT: MODERATE BUFFER (LEAN RUNWAY)</strong><br>
+          You have a viable transition runway of ${months} months. Enough time to job-hunt or build a lean freelance roster, but requires strict financial discipline.
+        `;
+      } else {
+        box.innerHTML = `
+          <strong style="color:#10b981;">✅ VERDICT: STRONG RESIGNATION BUFFER</strong><br>
+          You possess a healthy ${months}-month cushion (${days} days). You can safely step away from a toxic environment with complete peace of mind while scaling your next chapter.
+        `;
+      }
+    }
+
+    function shareRunwayWhatsApp() {
+      const months = document.getElementById('runwayMonths').textContent;
+      const text = encodeURIComponent(`⏳ I just calculated my Emergency Job Runway on RunwayRadar AI: I have ${months} of survival buffer!\n\nCan you afford to quit your job today? Calculate your freedom countdown free:\nhttps://www.bethelmindanalytics.com/tools/runway-radar`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    // Initialize
+    runCalc();
+  </script>
+</body>
+</html>

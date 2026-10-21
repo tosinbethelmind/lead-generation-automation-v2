@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FocusFlow AI™ | 25/5 Pomodoro Deep Work Timer & Ambient Soundscape</title>
+  <meta name="description" content="Master deep work and eliminate procrastination with the 25/5 Pomodoro timer, ambient soundscapes, and task checklist. Built for high achievers.">
+  <style>
+    :root {
+      --bg: #07090e;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --indigo: #6366f1;
+      --purple: #a855f7;
+      --emerald: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 70%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px;
+    }
+    .container { width: 100%; max-width: 620px; display: flex; flex-direction: column; gap: 14px; }
+
+    header { text-align: center; margin-bottom: 2px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* Mode Switcher */
+    .mode-pills {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .pill {
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pill.active {
+      background: var(--indigo);
+      color: #fff;
+      border-color: var(--indigo);
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Big Countdown Display */
+    .timer-hero {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .timer-digits {
+      font-size: 4.5rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+    }
+    .timer-state {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #a5b4fc;
+      margin-top: 4px;
+    }
+
+    /* Timer Controls */
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .btn-ctrl {
+      padding: 12px 28px;
+      border-radius: 14px;
+      font-size: 0.92rem;
+      font-weight: 900;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+    .btn-start {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+    .btn-start:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-pause {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #040711;
+    }
+    .btn-reset {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: #cbd5e1;
+    }
+
+    /* Ambient Soundscapes (Zero Data Web Audio Generator) */
+    .soundscape-bar {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .sound-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--indigo); margin-bottom: 8px; display: block; }
+    .sound-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .sound-btn {
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+    .sound-btn.playing {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--indigo);
+      color: #a5b4fc;
+      font-weight: 800;
+    }
+
+    /* Task Tracker */
+    .task-box {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .task-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .task-input {
+      flex: 1;
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .btn-add-task {
+      padding: 10px 16px;
+      border-radius: 10px;
+      background: var(--indigo);
+      color: #fff;
+      font-weight: 800;
+      border: none;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+    }
+    .task-item.done { text-decoration: line-through; opacity: 0.5; }
+
+    /* STREAM 1: Selar Blueprint */
+    .selar-banner {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .selar-title { font-size: 0.88rem; font-weight: 900; color: #a5b4fc; }
+    .selar-desc { font-size: 0.74rem; color: #94a3b8; margin-top: 2px; }
+    .btn-selar {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.78rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* STREAM 2: Turnkey B2B Deployment CTA */
+    .b2b-cta {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    .b2b-cta a { color: var(--indigo); font-weight: 700; text-decoration: underline; }
+
+    footer {
+      font-size: 0.7rem;
+      color: #64748b;
+      text-align: center;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">🧠 Deep Work & Cognitive Performance Suite</div>
+      <h1>FocusFlow AI™</h1>
+      <p style="font-size:0.78rem; color:#94a3b8;">Eliminate distractions. Scientific 25-minute Pomodoro cycles with zero-bandwidth ambient soundscapes.</p>
+    </header>
+
+    <div class="card">
+      <div class="mode-pills">
+        <button class="pill active" onclick="setMode(25, 'Focus Session', this)">Focus (25m)</button>
+        <button class="pill" onclick="setMode(5, 'Short Break', this)">Short Break (5m)</button>
+        <button class="pill" onclick="setMode(15, 'Long Break', this)">Long Break (15m)</button>
+      </div>
+
+      <div class="timer-hero">
+        <div class="timer-digits" id="timerDigits">25:00</div>
+        <div class="timer-state" id="timerState">Ready to Focus</div>
+      </div>
+
+      <div class="timer-controls">
+        <button class="btn-ctrl btn-start" id="startBtn" onclick="toggleTimer()">Start Focus</button>
+        <button class="btn-ctrl btn-reset" onclick="resetTimer()">Reset</button>
+      </div>
+
+      <!-- Ambient Soundscapes (Web Audio Synthesis) -->
+      <div class="soundscape-bar">
+        <label class="sound-label">🎧 Ambient Audio Generators (100% Offline & Free):</label>
+        <div class="sound-grid">
+          <button class="sound-btn" id="s-white" onclick="toggleSound('white')">⚪ White Noise</button>
+          <button class="sound-btn" id="s-pink" onclick="toggleSound('pink')">🌧️ Soft Rain</button>
+          <button class="sound-btn" id="s-binaural" onclick="toggleSound('binaural')">🧘 Alpha Waves</button>
+          <button class="sound-btn" id="s-off" onclick="stopAllSounds()">🔇 Mute All</button>
+        </div>
+      </div>
+
+      <!-- Task Checklist -->
+      <div class="task-box">
+        <div class="task-input-row">
+          <input type="text" class="task-input" id="taskInput" placeholder="Add a high-priority task for this sprint..." onkeydown="if(event.key==='Enter')addTask()">
+          <button class="btn-add-task" onclick="addTask()">+ Add</button>
+        </div>
+        <div id="taskList"></div>
+      </div>
+    </div>
+
+    <!-- STREAM 1: Selar Blueprint Upsell -->
+    <div class="selar-banner">
+      <div>
+        <div class="selar-title">💎 2026 Executive Deep-Work & Notion Operating System</div>
+        <div class="selar-desc">Unlock our proven second-brain templates, energy management audits, and goal architectures.</div>
+      </div>
+      <a href="https://selar.com/showlove/bethelmind?product=da-aitools" target="_blank" rel="noopener noreferrer" class="btn-selar">
+        <span>Get Notion OS (₦15,000 / $19) →</span>
+      </a>
+    </div>
+
+    <!-- STREAM 2: Turnkey B2B Deployment CTA -->
+    <div class="b2b-cta">
+      🏢 Want a branded workplace productivity & focus portal for your remote team or agency? <a href="https://wa.me/2348022791227?text=Hello%20Bethelmind!%20I%20want%20to%20deploy%20a%20turnkey%20FocusFlow%20productivity%20suite%20for%20my%20company." target="_blank" rel="noopener noreferrer">Request White-Label Productivity Suite (₦75k Setup) →</a>
+    </div>
+
+    <footer>
+      <p>FocusFlow AI™ · Developed by Bethelmind Analytics · Zero-Bandwidth Audio Synthesizer</p>
+      <p style="font-size:0.65rem; color:#475569; margin-top:6px;">
+        ⚖️ <strong>Legal & Fair Use Notice:</strong> Ambient soundscapes are mathematically synthesized directly in your browser using the HTML5 Web Audio API. FocusFlow is an independent tool and is not affiliated with Pomofocus or the Pomodoro Technique®.
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    let durationMins = 25;
+    let totalSeconds = 25 * 60;
+    let timerRunning = false;
+    let interval = null;
+
+    function updateDisplay() {
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      const str = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      document.getElementById('timerDigits').textContent = str;
+      document.title = timerRunning ? `(${str}) FocusFlow AI™` : 'FocusFlow AI™';
+    }
+
+    function setMode(mins, stateText, btnEl) {
+      if (timerRunning) toggleTimer();
+      durationMins = mins;
+      totalSeconds = mins * 60;
+      document.getElementById('timerState').textContent = stateText;
+      document.querySelectorAll('.mode-pills .pill').forEach(p => p.classList.remove('active'));
+      btnEl.classList.add('active');
+      updateDisplay();
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('startBtn');
+      if (!timerRunning) {
+        timerRunning = true;
+        btn.textContent = 'Pause';
+        btn.className = 'btn-ctrl btn-pause';
+        document.getElementById('timerState').textContent = 'In Deep Work Zone 🔥';
+        interval = setInterval(() => {
+          if (totalSeconds > 0) {
+            totalSeconds--;
+            updateDisplay();
+          } else {
+            clearInterval(interval);
+            timerRunning = false;
+            btn.textContent = 'Start Focus';
+            btn.className = 'btn-ctrl btn-start';
+            alert('Sprint complete! Time for a well-earned break.');
+          }
+        }, 1000);
+      } else {
+        clearInterval(interval);
+        timerRunning = false;
+        btn.textContent = 'Resume Focus';
+        btn.className = 'btn-ctrl btn-start';
+        document.getElementById('timerState').textContent = 'Session Paused';
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(interval);
+      timerRunning = false;
+      totalSeconds = durationMins * 60;
+      const btn = document.getElementById('startBtn');
+      btn.textContent = 'Start Focus';
+      btn.className = 'btn-ctrl btn-start';
+      document.getElementById('timerState').textContent = 'Ready to Focus';
+      updateDisplay();
+    }
+
+    // Web Audio Synthesizer (Zero Remote Audio Downloads)
+    let audioCtx = null;
+    let activeNoiseNode = null;
+    let currentSound = null;
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function toggleSound(type) {
+      initAudio();
+      stopAllSounds();
+
+      const bufferSize = audioCtx.sampleRate * 2;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+
+      if (type === 'white') {
+        for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+      } else if (type === 'pink') {
+        let b0 = 0, b1 = 0, b2 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          let white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          output[i] = (b0 + b1 + b2) * 0.11;
+        }
+      } else if (type === 'binaural') {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(216, audioCtx.currentTime); // 216Hz Alpha
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.08;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        activeNoiseNode = osc;
+        document.getElementById(`s-${type}`).classList.add('playing');
+        currentSound = type;
+        return;
+      }
+
+      const whiteNoise = audioCtx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
+
+      const gainNode = audioCtx.createGain();
+      gainNode.gain.value = 0.06;
+
+      whiteNoise.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      whiteNoise.start(0);
+
+      activeNoiseNode = whiteNoise;
+      currentSound = type;
+      document.getElementById(`s-${type}`).classList.add('playing');
+    }
+
+    function stopAllSounds() {
+      if (activeNoiseNode) {
+        try { activeNoiseNode.stop(); } catch(e) {}
+        activeNoiseNode = null;
+      }
+      document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('playing'));
+      currentSound = null;
+    }
+
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      const val = input.value.trim();
+      if (!val) return;
+      const list = document.getElementById('taskList');
+      const item = document.createElement('div');
+      item.className = 'task-item';
+      item.innerHTML = `<input type="checkbox" onchange="this.parentElement.classList.toggle('done')"> <span>${val}</span>`;
+      list.appendChild(item);
+      input.value = '';
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>

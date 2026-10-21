@@ -257,6 +257,40 @@ const TOOLS: ToolItem[] = [
     upsell: '🏆 VIP Club & ₦15k Model'
   },
   {
+    id: 'typing-speed',
+    id: 'typing-speed',
+    title: 'TypeMaster AI™ 60-Second WPM Typing Speed & Accuracy Test',
+    badge: '⌨️ Global Speed Benchmark',
+    category: 'b2b',
+    description: 'Benchmark your typing speed (WPM) and accuracy in 60 seconds with verified certificate sharing.',
+    icon: Zap,
+    color: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-400',
+    href: '/tools/typing-speed',
+    upsell: '💎 ₦15k Freelance Pack'
+  {
+    id: 'focus-timer',
+    title: 'FocusFlow AI™ 25/5 Pomodoro Deep Work Timer & Soundscapes',
+    badge: '🧠 Deep Work Suite',
+    category: 'lifestyle',
+    description: 'Scientific Pomodoro cycles with zero-bandwidth synthesized ambient soundscapes and sprint checklist.',
+    icon: Sparkles,
+    color: 'from-indigo-500/20 to-purple-500/10 border-indigo-500/30 text-indigo-400',
+    href: '/tools/focus-timer',
+    upsell: '💎 ₦15k Notion OS'
+  },
+  {
+    id: 'runway-radar',
+    title: 'RunwayRadar AI™ "Can I Quit My Job?" Financial Runway Sizer',
+    badge: '⏳ Freedom Countdown',
+    category: 'wealth',
+    description: 'Calculate your exact emergency runway in months and days to determine your safe resignation date.',
+    icon: Calculator,
+    color: 'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-400',
+    href: '/tools/runway-radar',
+    upsell: '💎 ₦15k Cashflow Pack'
+  },
+  },
+  {
     id: 'salary-calc',
     id: 'salary-calc',
     title: 'SalaryTakeHome AI™ 2026 Net Pay & PAYE Tax Sizer',
