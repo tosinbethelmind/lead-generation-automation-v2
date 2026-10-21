@@ -14,12 +14,19 @@ import {
   Search, 
   Calculator, 
   Sun,
-  Coins,
   Smile,
   Activity,
   Car,
   Layers,
-  ShoppingBag
+  ShoppingBag,
+  Share2,
+  ShieldCheck,
+  Scissors,
+  UtensilsCrossed,
+  Truck,
+  GraduationCap,
+  Scale,
+  Hotel
 } from 'lucide-react';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
@@ -28,7 +35,7 @@ interface ToolItem {
   id: string;
   title: string;
   badge: string;
-  category: 'wealth' | 'realestate' | 'creator' | 'lifestyle' | 'b2b';
+  category: 'b2b' | 'wealth' | 'realestate' | 'lifestyle';
   description: string;
   icon: any;
   color: string;
@@ -37,99 +44,141 @@ interface ToolItem {
 }
 
 const TOOLS: ToolItem[] = [
-  // --- Wealth & Real Estate ---
+  // --- High-Conversion Nigerian B2B Monetization Tools ---
   {
-    id: 'solar-savings',
-    title: 'Solar & Clean Energy Savings Calculator',
-    badge: 'High Solar ROI',
-    category: 'wealth',
-    description: 'Calculate 25-year rooftop solar savings, panel count, battery bank requirements, and 30% clean energy rebates.',
+    id: 'solar-boq',
+    title: 'Solar & Renewable Energy BOQ Load Sizer',
+    badge: 'NERC Band A Avoidance',
+    category: 'b2b',
+    description: 'Precision load calculation, DisCo Band A/B/C tariff avoidance vs generator diesel fuel economics, and automated customer WhatsApp BOQ proposal generator.',
     icon: Sun,
-    color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
-    href: '/tools/solar-savings',
-    upsell: '💎 $97 Sizing Blueprint'
+    color: 'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-400',
+    href: '/tools/solar-boq',
+    upsell: '🚀 ₦35,000 Starter Setup'
   },
   {
-    id: 'wealth-calculator',
-    title: 'WealthPulse Pro™ Compound Growth Model',
-    badge: 'Finance Magnet',
-    category: 'wealth',
-    description: 'Interactive compound interest, financial freedom timeline, and annual savings projection visualizer.',
-    icon: TrendingUp,
-    color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
-    href: '/tools/wealth-calculator',
-    upsell: '💎 $47 Wealth Blueprint'
+    id: 'tokunbo-duty',
+    title: 'Tokunbo VIN Customs Duty & Port Landing Sizer',
+    badge: 'NCS 2026 Tariff',
+    category: 'b2b',
+    description: 'Calculates statutory 20% import duty, 15% NAC levy, 7.5% VAT, and PTML/Tin Can terminal charges for Lagos car dealers and auto auction importers.',
+    icon: Car,
+    color: 'from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-400',
+    href: '/tools/tokunbo-duty',
+    upsell: '🚀 ₦35,000 Auto Suite'
   },
   {
-    id: 'deal-calculator',
-    title: 'DealCheck™ Rental Property Cashflow & Cap Rate',
+    id: 'salon-booking',
+    title: 'Salon & Spa 24/7 Booking & Deposit Lock Engine',
+    badge: 'Anti-No-Show Lock',
+    category: 'b2b',
+    description: '24/7 appointment scheduler that locks client stylist slots with instant Paystack/Moniepoint bank transfer deposits, eliminating empty salon chairs and fake alerts.',
+    icon: Scissors,
+    color: 'from-pink-500/20 to-rose-500/10 border-pink-500/30 text-pink-400',
+    href: '/tools/salon-booking',
+    upsell: '🚀 ₦35,000 Salon Setup'
+  },
+  {
+    id: 'restaurant-order',
+    title: 'Restaurant Direct Food Order & 0% Commission Menu',
+    badge: 'Chowdeck Saver',
+    category: 'b2b',
+    description: 'Direct digital food ordering engine and automated kitchen ticket printer that saves restaurants 25% delivery aggregator commissions with instant Moniepoint settlement.',
+    icon: UtensilsCrossed,
+    color: 'from-orange-500/20 to-amber-500/10 border-orange-500/30 text-orange-400',
+    href: '/tools/restaurant-order',
+    upsell: '🚀 ₦35,000 Food Suite'
+  },
+  {
+    id: 'retail-catalog',
+    title: 'Retail WhatsApp Catalog Closer & Stock Reservation',
+    badge: 'Sub-3s Closer',
+    category: 'b2b',
+    description: 'Fast WhatsApp catalog assistant that presents variants, validates inventory, calculates interstate waybill, and locks customer orders in under 3 seconds.',
+    icon: ShoppingBag,
+    color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
+    href: '/tools/retail-catalog',
+    upsell: '🚀 ₦35,000 Retail Suite'
+  },
+  {
+    id: 'mortgage-calculator',
+    title: 'Plot Layout, Survey Levies & Mortgage Amortization',
     badge: 'Real Estate Pro',
     category: 'realestate',
-    description: 'Calculate net cash-on-cash return, cap rate, and mortgage DSCR for long-term rental and Airbnb properties.',
-    icon: Calculator,
-    color: 'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-400',
-    href: '/tools/deal-calculator',
-    upsell: '💎 $37 Rental Analyzer'
-  },
-  {
-    id: 'wholesaling-loi',
-    title: 'Real Estate Wholesaling & Auto-LOI Contract',
-    badge: 'Deal Closer',
-    category: 'realestate',
-    description: 'Calculate 70% Rule Maximum Allowable Offer (MAO), rehab repair tiers, and auto-generate 1-page cash offer LOI contracts.',
+    description: 'Calculates 300 sqm Half Plot vs 500/600 sqm Full Plot outright packages, registered survey (Red Copy) fees, deed of assignment levies, and developer installment spreads.',
     icon: Building2,
-    color: 'from-amber-500/20 to-orange-500/10 border-amber-500/30 text-amber-400',
-    href: '/tools/wholesaling-loi',
-    upsell: '💎 $29 Closer / $97 Legal'
-  },
-  {
-    id: 'crypto-dca',
-    title: 'WhaleDCA™ Crypto & Profit Target Exit Ladder',
-    badge: 'Crypto Alpha',
-    category: 'wealth',
-    description: 'Simulate Bitcoin, ETH & Solana dollar-cost averaging and auto-generate institutional 4-tier take-profit exit targets.',
-    icon: Coins,
     color: 'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-400',
-    href: '/tools/crypto-dca',
-    upsell: '💎 $47 Whale Strategy'
+    href: '/tools/mortgage-calculator',
+    upsell: '🚀 ₦35,000 Property Suite'
+  },
+  {
+    id: 'clinic-hmo',
+    title: 'Clinic HMO Claims & Procedure Co-Pay Reconciler',
+    badge: 'Healthcare Risk Guard',
+    category: 'b2b',
+    description: 'Reconciles HMO procedure tariffs, patient co-pay deductions, and secondary AuthCodes to prevent claim rejections, with upfront surgical admission deposits.',
+    icon: Activity,
+    color: 'from-rose-500/20 to-red-500/10 border-rose-500/30 text-rose-400',
+    href: '/tools/clinic-hmo',
+    upsell: '🚀 ₦35,000 Clinic Setup'
+  },
+  {
+    id: 'school-portal',
+    title: 'Private School Term Tuition & Result PIN Portal',
+    badge: 'Fee Recovery Gate',
+    category: 'b2b',
+    description: 'Student term fee payment gateway that automatically gates digital term report cards and broadsheets until school fees clear, with scratch-PIN batch accounting.',
+    icon: GraduationCap,
+    color: 'from-purple-500/20 to-indigo-500/10 border-purple-500/30 text-purple-400',
+    href: '/tools/school-portal',
+    upsell: '🚀 ₦35,000 School Suite'
+  },
+  {
+    id: 'logistics-quote',
+    title: 'Hyperlocal Dispatch & Long-Haul Trip Freight Sizer',
+    badge: 'Waybill & Diesel Audit',
+    category: 'b2b',
+    description: 'Aggregates multi-carrier dispatch pricing, generates automated WhatsApp waybill tracking links for customers, and audits driver interstate diesel consumption.',
+    icon: Truck,
+    color: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-400',
+    href: '/tools/logistics-quote',
+    upsell: '🚀 ₦35,000 Haulage Suite'
+  },
+  {
+    id: 'cac-filing',
+    title: 'CAC Corporate Filing Fees & Legal Retainer Suite',
+    badge: 'Compliance Matrix',
+    category: 'b2b',
+    description: 'Calculates statutory CAC registration and annual return arrears, FIRS stamp duty, SCUML anti-money laundering certification fees, and itemized debit notes.',
+    icon: Scale,
+    color: 'from-indigo-500/20 to-purple-500/10 border-indigo-500/30 text-indigo-400',
+    href: '/tools/cac-filing',
+    upsell: '🚀 ₦35,000 Legal Retainer'
+  },
+  {
+    id: 'shortlet-reconciler',
+    title: 'Shortlet Electricity Token & Caution Deposit Reconciler',
+    badge: 'DisCo kWh Ledger',
+    category: 'realestate',
+    description: 'Reconciles guest nightly rates, 250kVA generator overtime surcharges, and actual DisCo prepaid meter consumption against refundable caution deposits.',
+    icon: Hotel,
+    color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
+    href: '/tools/shortlet-reconciler',
+    upsell: '🚀 ₦35,000 Hospitality Suite'
+  },
+  {
+    id: 'fake-alert-shield',
+    title: 'Fake-Alert Proof Virtual Account Transfer Shield',
+    badge: 'NIBSS Reconciled',
+    category: 'b2b',
+    description: 'Provisions instant dynamic Moniepoint bank accounts that verify incoming NIP bank credits via real-time webhooks, eliminating fake alert scam losses entirely.',
+    icon: ShieldCheck,
+    color: 'from-emerald-500/20 to-cyan-500/10 border-emerald-500/30 text-emerald-400',
+    href: '/tools/fake-alert-shield',
+    upsell: '🚀 ₦35,000 Fintech Shield'
   },
 
-  // --- Creator & AI Diagnostics ---
-  {
-    id: 'script-generator',
-    title: 'Viral Shorts Hook & Script Studio',
-    badge: 'Trending #1',
-    category: 'creator',
-    description: 'Generate 0–3s high-contrast hooks, scene-by-scene B-roll prompts, and APV > 100% loop bridges in 10 seconds.',
-    icon: Sparkles,
-    color: 'from-violet-500/20 to-purple-500/10 border-violet-500/30 text-violet-400',
-    href: '/tools/script-generator',
-    upsell: '💎 $29 Pro / $97 Agency'
-  },
-  {
-    id: 'site-audit',
-    title: 'Website Health & SEO Audit Scorecard',
-    badge: 'Client Closer',
-    category: 'creator',
-    description: 'Instant 360° audit grading Google Core Web Vitals, On-Page SEO, security headers, and revenue leakage with auto client pitch.',
-    icon: Globe,
-    color: 'from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-400',
-    href: '/tools/site-audit',
-    upsell: '💎 $29 Pro / $97 Closing'
-  },
-  {
-    id: 'ai-stack-finder',
-    title: 'AI & Micro-SaaS Stack ROI Finder',
-    badge: 'Automation',
-    category: 'creator',
-    description: 'Discover the top AI software stack for your business and calculate exact monthly hours and dollars saved.',
-    icon: Zap,
-    color: 'from-blue-500/20 to-indigo-500/10 border-blue-500/30 text-blue-400',
-    href: '/tools/ai-stack-finder',
-    upsell: '💎 $47 Full-Stack Vault'
-  },
-
-  // --- Lifestyle, Health, Faith & Kids ---
+  // --- Lifestyle & Family Free Utilities ---
   {
     id: 'kids-learning',
     title: 'Tiny Learners™ 3D Kids Phonics & Activity Generator',
@@ -139,7 +188,7 @@ const TOOLS: ToolItem[] = [
     icon: Smile,
     color: 'from-pink-500/20 to-rose-500/10 border-pink-500/30 text-pink-400',
     href: '/tools/kids-learning',
-    upsell: '💎 $19 100+ PDF Bundle'
+    upsell: '💎 ₦7,500 PDF Pack'
   },
   {
     id: 'biohack-longevity',
@@ -148,9 +197,9 @@ const TOOLS: ToolItem[] = [
     category: 'lifestyle',
     description: 'Calculate personalized BMR/TDEE, cellular autophagy hours, optimal protein floor, and intermittent fasting windows.',
     icon: Activity,
-    color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
+    color: 'from-teal-500/20 to-emerald-500/10 border-teal-500/30 text-teal-400',
     href: '/tools/biohack-longevity',
-    upsell: '💎 $47 Longevity Blueprint'
+    upsell: '💎 ₦15,000 Protocol'
   },
   {
     id: 'prayer-journal',
@@ -161,75 +210,7 @@ const TOOLS: ToolItem[] = [
     icon: Heart,
     color: 'from-purple-500/20 to-pink-500/10 border-purple-500/30 text-purple-400',
     href: '/tools/prayer-journal',
-    upsell: '💎 $19 365 Devotional'
-  },
-  {
-    id: 'sure-score',
-    title: 'SureScore AI™ Football Match Predictor & Acca Slip',
-    badge: 'Trending #1 Sports',
-    category: 'lifestyle',
-    description: 'Algorithmic 1X2 win probabilities, projected exact scorelines, BTTS, and 1-click multi-match accumulator slip builder.',
-    icon: Flame,
-    color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
-    href: '/tools/sure-score',
-    upsell: '💎 $19 Model / ₦15,000'
-  },
-  {
-    id: 'sports-edge',
-    title: 'SportsBet Edge™ Expected Value Matrix',
-    badge: 'High Engagement',
-    category: 'lifestyle',
-    description: 'Calculate positive expected value (+EV), fractional Kelly Criterion staking, and eliminate emotional wagering tilt.',
-    icon: Flame,
-    color: 'from-rose-500/20 to-orange-500/10 border-rose-500/30 text-rose-400',
-    href: '/tools/sports-edge',
-    upsell: '💎 $37 VIP Formula'
-  },
-
-  // --- Bethelmind B2B Engines ---
-  {
-    id: 'solar-boq',
-    title: 'SolarQuote Pro (Nigerian Inverter & BOQ Engine)',
-    badge: 'Commercial Grade',
-    category: 'b2b',
-    description: 'Professional load sizing, battery requirement calculation, and instant PDF quote generator for Nigerian installers.',
-    icon: Sun,
-    color: 'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-400',
-    href: '/solar',
-    upsell: '🚀 Turnkey Solar Engine'
-  },
-  {
-    id: 'tokunbo-duty',
-    title: 'Tokunbo VIN & Nigerian Customs Duty Checker',
-    badge: 'Auto Dealers',
-    category: 'b2b',
-    description: 'Instant accident history verification, auction report lookup, and official Nigerian Customs VIN clearing duty calculation.',
-    icon: Car,
-    color: 'from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-400',
-    href: '/vin',
-    upsell: '🚀 Car Dealer Suite'
-  },
-  {
-    id: 'p2p-arbitrage',
-    title: 'Real-Time P2P Arbitrage & FX Spread Tracker',
-    badge: 'Live Spreads',
-    category: 'b2b',
-    description: 'Real-time monitoring of Binance P2P, Bybit, and Nigerian parallel market FX arbitrage margins and trade spreads.',
-    icon: Coins,
-    color: 'from-purple-500/20 to-indigo-500/10 border-purple-500/30 text-purple-400',
-    href: '/arbitrage',
-    upsell: '🚀 VIP Arbitrage Bot'
-  },
-  {
-    id: 'marketplace',
-    title: 'Bethelmind B2B Lead Marketplace & Store',
-    badge: 'Verified Leads',
-    category: 'b2b',
-    description: 'Verified decision-maker business contacts, WhatsApp outreach automation, and enterprise B2B sales pipelines.',
-    icon: ShoppingBag,
-    color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
-    href: '/marketplace',
-    upsell: '🚀 Verified Lead Lists'
+    upsell: '💎 ₦5,000 Devotional'
   }
 ];
 
@@ -245,104 +226,151 @@ export default function ToolsHubPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#040711] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+      {/* Top Metallic Accent Glow */}
+      <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 opacity-90 shadow-[0_0_20px_rgba(6,182,212,0.6)]" />
+
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs font-bold text-blue-400 uppercase tracking-wider mb-4">
-            🚀 BETHELMIND FREE TOOLS & CALCULATORS DIRECTORY
+        <div className="text-center max-w-3xl mx-auto mb-8 space-y-3">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-full text-xs font-bold text-cyan-400 uppercase tracking-wider">
+            ⚡ 2026 BETHELMIND FREE TOOLS & SECTOR SIZERS DIRECTORY
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
-            Interactive Calculators, Generators & Audits
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            Commercial Calculators, Sizers & Surcharges
           </h1>
           <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-            Free, high-performance tools engineered to solve immediate problems in seconds. No login required. Calculate savings, audit deals, generate scripts, and unlock expert blueprints.
+            Instant, high-performance Nigerian commercial calculation tools. No login required. Calculate Band A tariffs, Tokunbo customs duty, salon deposit locks, and school fee broadsheet gating in seconds.
           </p>
         </div>
 
+        {/* Nairaland & Forum Traffic Launchpad Banner */}
+        <div className="mb-10 p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-emerald-950/70 via-slate-900/90 to-slate-950 border border-emerald-500/40 flex flex-col md:flex-row items-center justify-between gap-5 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-80 h-32 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-2xl shrink-0">
+              🇳🇬
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                  High-Yield Organic Traffic
+                </span>
+                <span className="text-xs text-amber-300 font-bold flex items-center gap-1">
+                  <Flame className="w-3.5 h-3.5" /> Over 2M+ Forum Impressions
+                </span>
+              </div>
+              <h2 className="text-base sm:text-lg font-black text-white">
+                Nairaland & Forum Traffic Distribution Launchpad
+              </h2>
+              <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">
+                1-Click copy ready-to-post BBCode campaigns for Nairaland Auto, Properties, and Investment sections to drive thousands of targeted Nigerian visitors.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/tools/nairaland"
+            className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-emerald-500/25 active:scale-95 whitespace-nowrap shrink-0 relative z-10"
+          >
+            <Share2 className="w-4 h-4" />
+            <span>Open Nairaland Hub →</span>
+          </Link>
+        </div>
+
         {/* Filter & Search Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-slate-900/60 border border-slate-800 p-3 rounded-2xl">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-slate-900/80 backdrop-blur-md border border-white/10 p-3 rounded-2xl shadow-lg">
           {/* Categories */}
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
             {[
               { id: 'all', label: 'All Tools' },
-              { id: 'wealth', label: 'Wealth & Solar' },
-              { id: 'realestate', label: 'Real Estate' },
-              { id: 'creator', label: 'Creator & AI' },
-              { id: 'lifestyle', label: 'Health & Family' },
-              { id: 'b2b', label: 'B2B Software' }
-            ].map(cat => (
+              { id: 'b2b', label: '🇳🇬 High-Yield B2B' },
+              { id: 'realestate', label: '🏡 Property & Land' },
+              { id: 'lifestyle', label: '🌿 Family & Lifestyle' },
+            ].map(tab => (
               <button
-                key={cat.id}
-                onClick={() => setFilter(cat.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  filter === cat.id 
-                    ? 'bg-blue-600 text-white shadow-md' 
-                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
+                key={tab.id}
+                onClick={() => setFilter(tab.id)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  filter === tab.id 
+                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20' 
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                {cat.label}
+                {tab.label}
               </button>
             ))}
           </div>
 
           {/* Search Box */}
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
+              placeholder="Search calculators..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tools..."
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full pl-9 pr-4 py-2 bg-slate-950/80 border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
             />
           </div>
         </div>
 
-        {/* Grid of Tools */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTools.map(tool => {
+        {/* Tools Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredTools.map((tool) => {
             const Icon = tool.icon;
             return (
               <div 
                 key={tool.id}
-                className="bg-slate-900/80 border border-slate-800/80 hover:border-blue-500/50 rounded-2xl p-6 transition-all duration-200 hover:-translate-y-1 shadow-xl flex flex-col justify-between group"
+                className="bg-slate-900/60 backdrop-blur-md border border-white/10 hover:border-cyan-500/40 rounded-3xl p-5 flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 shadow-xl group"
               >
                 <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <div className={`p-3 rounded-xl bg-gradient-to-br ${tool.color} border`}>
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="p-2.5 rounded-2xl bg-white/[0.04] border border-white/10 group-hover:scale-105 transition-transform text-cyan-400">
+                      <Icon className="w-5 h-5" />
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 bg-white/[0.03] border border-white/10 text-slate-300 rounded-full">
                       {tool.badge}
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                  <h3 className="text-base font-black text-white group-hover:text-cyan-300 transition-colors mb-2 font-['Outfit']">
                     {tool.title}
                   </h3>
-                  <p className="text-slate-400 text-xs leading-relaxed mb-6">
+                  
+                  <p className="text-xs text-slate-400 leading-relaxed mb-4">
                     {tool.description}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between mt-auto">
-                  <span className="text-amber-400 text-[11px] font-bold">
+                <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-black text-emerald-400">
                     {tool.upsell}
                   </span>
+                  
                   <Link
                     href={tool.href}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-cyan-400 hover:text-cyan-300 group-hover:translate-x-1 transition-all"
                   >
-                    Launch Tool <ArrowRight className="w-3.5 h-3.5" />
+                    <span>Launch Free</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </div>
             );
           })}
         </div>
+
+        {/* Security & Verification Footer Seal */}
+        <footer className="text-center py-10 text-xs text-slate-500 border-t border-white/5 space-y-2 mt-12">
+          <p className="flex items-center justify-center gap-2 font-medium">
+            <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+            <span>Bank-Grade 256-bit Encrypted Telemetry · Settlement via Moniepoint Microfinance Bank (6805375225)</span>
+          </p>
+          <p>© 2026 Bethelmind Digital Solutions · Plot 12, Commercial Corridor, Lagos, Nigeria.</p>
+        </footer>
       </main>
 
       <Footer />
