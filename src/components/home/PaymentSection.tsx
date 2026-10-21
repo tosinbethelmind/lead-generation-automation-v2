@@ -36,12 +36,17 @@ export default function PaymentSection({
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const plan = useMemo(() => getPlanById(selectedPlanId), [selectedPlanId]);
 
-  // Stable reference per selected plan (re-generated when plan changes)
-  const paymentRef = useMemo(
-    () => generatePaymentReference(plan.id),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [plan.id],
-  );
+  // Stable reference per selected plan (deterministic on SSR to prevent Error #418)
+  const [paymentRef, setPaymentRef] = useState(() => generatePaymentReference(plan.id, 'PAY'));
+
+  useEffect(() => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let rand = '';
+    for (let i = 0; i < 4; i++) {
+      rand += chars[Math.floor(Math.random() * chars.length)];
+    }
+    setPaymentRef(generatePaymentReference(plan.id, rand));
+  }, [plan.id]);
 
   const [copied, setCopied] = useState<CopiedState>(null);
   const [whatsappOpened, setWhatsappOpened] = useState(false);

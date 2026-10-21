@@ -87,18 +87,13 @@ export const paymentConfig: PaymentConfig = {
  * Format: BMA-{PLAN}-{YYYYMMDD}-{4-char random alphanumeric}
  * Example: BMA-STARTER-20260809-A8F2
  */
-export function generatePaymentReference(planKey: string): string {
+export function generatePaymentReference(planKey: string, randSuffix = 'PAY'): string {
   const today = new Date();
   const dateStr =
     today.getFullYear().toString() +
     String(today.getMonth() + 1).padStart(2, '0') +
     String(today.getDate()).padStart(2, '0');
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let rand = '';
-  for (let i = 0; i < 4; i++) {
-    rand += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return `BMA-${planKey.toUpperCase()}-${dateStr}-${rand}`;
+  return `BMA-${planKey.toUpperCase()}-${dateStr}-${randSuffix}`;
 }
 
 /**

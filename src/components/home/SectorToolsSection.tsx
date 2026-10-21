@@ -954,6 +954,7 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
         {ORDERED_SECTORS.map((s) => (
           <button
             key={s.id}
+            type="button"
             role="tab"
             aria-selected={selectedIndustry === s.id}
             aria-controls={`sector-panel-${s.id}`}
@@ -1068,6 +1069,7 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
             {tool.actionKey ? (
               <button
                 id={`tool-demo-${tool.id}`}
+                type="button"
                 onClick={() => openModal(tool)}
                 style={{
                   width: '100%',

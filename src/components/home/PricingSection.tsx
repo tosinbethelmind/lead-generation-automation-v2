@@ -113,7 +113,7 @@ export default function PricingSection({
           clientIndustry={selectedIndustry}
           clientDistrict={targetDistrict}
           items={invoiceItems}
-          paymentRef={generatePaymentReference(currentInvoicePlan.id)}
+          paymentRef={generatePaymentReference(currentInvoicePlan.id, 'INV')}
         />
       )}
 

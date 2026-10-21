@@ -11,7 +11,7 @@
  * - Zero hydration lag & edge-optimized
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/home/Navbar';
 import HeroSection from '@/components/home/HeroSection';
@@ -50,7 +50,7 @@ export default function HomePage() {
         paddingBottom: 95, // Buffer for mobile sticky bar
       }}
     >
-      <ScrollWorld theme="bethelmind" />
+      {mounted && <ScrollWorld theme="bethelmind" />}
       <Navbar />
 
       <main id="main-content">
