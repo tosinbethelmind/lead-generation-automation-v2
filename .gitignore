@@ -86,3 +86,6 @@ sessions/
 *.pid
 *.tmp*
 local_runner_heartbeat.json*
+
+# Nairaland Bot Session
+*nairaland_session.json

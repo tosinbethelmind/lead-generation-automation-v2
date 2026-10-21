@@ -519,6 +519,14 @@ async function bumpAndReplyToThreads() {
   for (const thread of ledger.threads) {
     if (!thread.url || thread.url.includes('/newtopic')) continue;
 
+    // Safety Throttle: Minimum 60 minutes between bumps per thread to prevent spambot detection
+    const lastBumpTime = new Date(thread.lastBumpedAt || thread.postedAt || 0).getTime();
+    const elapsedMinutes = (Date.now() - lastBumpTime) / (1000 * 60);
+    if (elapsedMinutes < 60 && !process.env.FORCE_BUMP) {
+      console.log(`⏳ Thread "${thread.title}" was bumped ${Math.round(elapsedMinutes)}m ago. Nairaland anti-spam guard requires $\\ge$60m cadence. Skipping.`);
+      continue;
+    }
+
     console.log(`Checking thread: ${thread.title} (${thread.url})...`);
     try {
       await page.goto(thread.url, { waitUntil: 'domcontentloaded', timeout: 25000 });

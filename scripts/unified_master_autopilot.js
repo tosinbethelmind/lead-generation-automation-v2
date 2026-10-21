@@ -486,6 +486,36 @@ function startScoutHarvester() {
 
 // ── STAGGERED WORKER LAUNCH (MINIMAL CPU & ZERO FAN SPIKES) ─────────────────
 log('Initializing staggered worker startup (3-second intervals between workers)...');
+// ── WORKER 16: Nairaland Autonomous Traffic & Auto-Bumper Engine ────────────
+let nairalandProcess = null;
+function startNairalandWorker() {
+  const sessionPath = path.join(rootDir, 'local_db/nairaland_session.json');
+  if (!fs.existsSync(sessionPath)) {
+    log('ℹ️ [Worker 16: Nairaland Engine] No active session found. Skipping cycle until account is connected.');
+    setTimeout(startNairalandWorker, 60 * 60 * 1000);
+    return;
+  }
+
+  log('🇳🇬 [Worker 16: Nairaland Engine] Running autonomous thread bumper & engagement check...');
+  nairalandProcess = spawn('node', ['--max-old-space-size=256', 'scripts/nairaland_autonomous_engine.js', '--bump'], {
+    cwd: rootDir,
+    shell: false,
+    stdio: 'inherit',
+    windowsHide: true,
+    env: safeEnv
+  });
+
+  nairalandProcess.on('exit', (code) => {
+    log(`ℹ️ [Worker 16: Nairaland Engine] Bumper cycle completed (Code: ${code}). Next cycle in 3 hours...`);
+    setTimeout(startNairalandWorker, 3 * 60 * 60 * 1000);
+  });
+
+  nairalandProcess.on('error', (err) => {
+    log(`❌ [Worker 16: Nairaland Engine] Error: ${err.message}. Retrying in 30 minutes...`);
+    setTimeout(startNairalandWorker, 30 * 60 * 1000);
+  });
+}
+
 const workerManifest = [
   { name: 'Worker 1: Traffic Engine', start: startTrafficDaemon, delay: 0 },
   { name: 'Worker 2: Pipeline Runner', start: startQueueRunner, delay: 3000 },
@@ -500,7 +530,8 @@ const workerManifest = [
   { name: 'Worker 12: Vibe Prospector', start: startVibeDaemon, delay: 30000 },
   { name: 'Worker 13: Smart Webform Submitter', start: startSmartWebformDaemon, delay: 33000 },
   { name: 'Worker 14: Crawlee + Katana Harvester', start: startCrawleeKatanaHarvester, delay: 36000 },
-  { name: 'Worker 15: Scout Harvester', start: startScoutHarvester, delay: 39000 }
+  { name: 'Worker 15: Scout Harvester', start: startScoutHarvester, delay: 39000 },
+  { name: 'Worker 16: Nairaland Traffic Engine', start: startNairalandWorker, delay: 42000 }
 ];
 
 workerManifest.forEach((w) => {
