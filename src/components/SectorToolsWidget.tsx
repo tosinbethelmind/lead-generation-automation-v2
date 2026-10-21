@@ -74,28 +74,79 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
   };
 
   return (
-    <div className="bg-white/[0.02] border border-white/[0.08] p-3 sm:p-3.5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs mb-5 shadow-sm">
-      <div className="flex items-center space-x-2.5">
-        <span className="p-1.5 bg-cyan-500/15 text-cyan-400 border border-cyan-500/25 rounded-lg text-sm">🔗</span>
+    <div
+      style={{
+        background: 'rgba(255, 255, 255, 0.03)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        borderRadius: 16,
+        padding: '12px 18px',
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+        marginBottom: 20,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span
+          style={{
+            padding: '6px 10px',
+            background: 'rgba(6, 182, 212, 0.15)',
+            border: '1px solid rgba(6, 182, 212, 0.35)',
+            borderRadius: 10,
+            color: '#38bdf8',
+            fontSize: '0.85rem',
+            fontWeight: 800,
+          }}
+        >
+          🔗
+        </span>
         <div>
-          <span className="font-bold text-slate-200">Shareable Demo Link: </span>
-          <span className="text-cyan-400/90 font-mono text-[11px] select-all">{shareUrl}</span>
+          <span style={{ fontWeight: 800, color: '#e2e8f0', fontSize: '0.82rem' }}>Shareable Demo Link: </span>
+          <span style={{ color: '#38bdf8', fontFamily: 'monospace', fontSize: '0.78rem', userSelect: 'all' }}>{shareUrl}</span>
         </div>
       </div>
 
-      <div className="flex items-center space-x-2 w-full sm:w-auto">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <a
           href={whatsappUrl}
           target="_blank"
           rel="noreferrer"
-          className="flex-1 sm:flex-none px-3.5 py-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 active:scale-95"
+          style={{
+            padding: '8px 16px',
+            background: 'rgba(16, 185, 129, 0.15)',
+            border: '1px solid rgba(16, 185, 129, 0.35)',
+            color: '#34d399',
+            borderRadius: 12,
+            fontSize: '0.78rem',
+            fontWeight: 800,
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'all 0.15s ease',
+          }}
         >
           <span>📲 Share on WhatsApp</span>
         </a>
         <button
           type="button"
           onClick={handleCopy}
-          className="flex-1 sm:flex-none px-3.5 py-1.5 bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 active:scale-95"
+          style={{
+            padding: '8px 16px',
+            background: 'rgba(255, 255, 255, 0.06)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            color: '#f8fafc',
+            borderRadius: 12,
+            fontSize: '0.78rem',
+            fontWeight: 800,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'all 0.15s ease',
+          }}
         >
           <span>{copied ? 'Copied Link! ✓' : 'Copy Direct Link'}</span>
         </button>
@@ -381,10 +432,24 @@ export function SectorToolsWidget({
               <button
                 type="button"
                 onClick={() => setShowEmbedModal(true)}
-                className="px-4 py-2.5 bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 hover:text-white rounded-xl text-xs font-bold border border-white/10 flex items-center gap-2 transition-all shadow-md active:scale-95"
+                style={{
+                  padding: '9px 16px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: '#ffffff',
+                  borderRadius: 12,
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 7,
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                  transition: 'all 0.15s ease',
+                }}
                 title="Embed on existing WordPress/Wix website"
               >
-                <Code className="w-3.5 h-3.5 text-cyan-400" />
+                <Code style={{ width: 14, height: 14, color: '#38bdf8' }} />
                 <span>1-Line Embed Code</span>
               </button>
             </div>
@@ -422,37 +487,31 @@ export function SectorToolsWidget({
           {activeTab === 'solar' && (
             <div className="space-y-4">
               <FeatureShareBar toolTitle="Solar BOQ & DISCO ROI Calculator" toolSlug="solar-boq" description="BOQ Sizing & Diesel vs Solar Savings Estimator" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-medium text-slate-400">Appliance Load (kVA)</label>
-                    <span className="text-[11px] text-amber-400 font-bold">💡 1-Tap Presets:</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Appliance Load (kVA)</label>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#fbbf24' }}>💡 1-Tap Presets:</span>
                   </div>
-                  <div className="grid grid-cols-3 gap-1.5 mb-2">
+                  <div className="luxury-preset-grid-3">
                     <button
                       type="button"
                       onClick={() => setKva(2.5)}
-                      className={`px-2 py-1 text-[11px] font-bold rounded-lg border transition-all ${
-                        kva === 2.5 ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                      }`}
+                      className={`luxury-preset-btn ${kva === 2.5 ? 'active-amber' : ''}`}
                     >
                       Flat / 2.5kVA
                     </button>
                     <button
                       type="button"
                       onClick={() => setKva(5)}
-                      className={`px-2 py-1 text-[11px] font-bold rounded-lg border transition-all ${
-                        kva === 5 ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                      }`}
+                      className={`luxury-preset-btn ${kva === 5 ? 'active-amber' : ''}`}
                     >
                       Duplex / 5kVA
                     </button>
                     <button
                       type="button"
                       onClick={() => setKva(10)}
-                      className={`px-2 py-1 text-[11px] font-bold rounded-lg border transition-all ${
-                        kva === 10 ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                      }`}
+                      className={`luxury-preset-btn ${kva === 10 ? 'active-amber' : ''}`}
                     >
                       Commercial / 10kVA
                     </button>
@@ -463,15 +522,15 @@ export function SectorToolsWidget({
                     max="50"
                     value={kva}
                     onChange={e => setKva(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">NERC DISCO Band</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>NERC DISCO Band</label>
                   <select
                     value={discoBand}
                     onChange={e => setDiscoBand(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    className="luxury-tool-select"
                   >
                     <option value="Band A">Band A (20+ hrs @ ₦209.50/kWh)</option>
                     <option value="Band B">Band B (16 hrs @ ₦160/kWh)</option>
@@ -479,12 +538,12 @@ export function SectorToolsWidget({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Monthly Diesel (Liters)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Monthly Diesel (Liters)</label>
                   <input
                     type="number"
                     value={dieselLiters}
                     onChange={e => setDieselLiters(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    className="luxury-tool-input"
                   />
                 </div>
               </div>
@@ -498,7 +557,12 @@ export function SectorToolsWidget({
                   })
                 }
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black rounded-xl shadow-lg transition-all"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)',
+                  color: '#050811',
+                  boxShadow: '0 8px 24px rgba(245, 158, 11, 0.35)',
+                }}
               >
                 {loading ? 'Calculating Solar Economics...' : '⚡ Generate Live Solar BOQ & ROI Quote'}
               </button>
@@ -615,54 +679,48 @@ export function SectorToolsWidget({
                   <span className="text-xs font-medium text-slate-400">Popular Tokunbo Clearing Tiers</span>
                   <span className="text-[11px] text-blue-400 font-bold">🚗 1-Tap Presets:</span>
                 </div>
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="luxury-preset-grid-3">
                   <button
                     type="button"
                     onClick={() => { setCifValue(8500000); setVin('1HGCR2F83JA102938'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      cifValue === 8500000 ? 'bg-blue-600 text-white border-blue-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${cifValue === 8500000 ? 'active-blue' : ''}`}
                   >
                     Sedan / Corolla (₦8.5m)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setCifValue(18500000); setVin('2T2HZMCA4KC918273'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      cifValue === 18500000 ? 'bg-blue-600 text-white border-blue-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${cifValue === 18500000 ? 'active-blue' : ''}`}
                   >
                     SUV / RX350 (₦18.5m)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setCifValue(32000000); setVin('WDDWF4KB7GA654321'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      cifValue === 32000000 ? 'bg-blue-600 text-white border-blue-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${cifValue === 32000000 ? 'active-blue' : ''}`}
                   >
                     Luxury / Benz (₦32m)
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">CIF Vehicle Value (NGN)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>CIF Vehicle Value (NGN)</label>
                   <input
                     type="number"
                     value={cifValue}
                     onChange={e => setCifValue(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">17-Digit Vehicle VIN</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>17-Digit Vehicle VIN</label>
                   <input
                     type="text"
                     value={vin}
                     onChange={e => setVin(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                    className="luxury-tool-input"
                   />
                 </div>
               </div>
@@ -677,7 +735,12 @@ export function SectorToolsWidget({
                   })
                 }
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-xl shadow-lg transition-all"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)',
+                  color: '#ffffff',
+                  boxShadow: '0 8px 24px rgba(37, 99, 235, 0.35)',
+                }}
               >
                 {loading ? 'Calculating Port Duties...' : '🚗 Calculate Customs Duty & Terminal Clearing'}
               </button>
@@ -749,53 +812,45 @@ export function SectorToolsWidget({
                   <span className="text-xs font-medium text-slate-400">Popular Nigerian Services</span>
                   <span className="text-[11px] text-pink-400 font-bold">💅 1-Tap Presets:</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                <div className="luxury-preset-grid">
                   <button
                     type="button"
                     onClick={() => { setBeautyCategory('bridal_styling'); setHairLength(26); setStylistTier('master_director'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      beautyCategory === 'bridal_styling' ? 'bg-pink-600 text-white border-pink-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${beautyCategory === 'bridal_styling' ? 'active-pink' : ''}`}
                   >
                     Bridal Glam (₦120k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setBeautyCategory('hair_extensions'); setHairLength(22); setStylistTier('senior'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      beautyCategory === 'hair_extensions' ? 'bg-pink-600 text-white border-pink-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${beautyCategory === 'hair_extensions' ? 'active-pink' : ''}`}
                   >
                     Bone Straight (₦85k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setBeautyCategory('spa_facial'); setHairLength(12); setStylistTier('senior'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      beautyCategory === 'spa_facial' ? 'bg-pink-600 text-white border-pink-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${beautyCategory === 'spa_facial' ? 'active-pink' : ''}`}
                   >
                     Luxury Facial (₦45k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setBeautyCategory('nail_bar'); setHairLength(10); setStylistTier('senior'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      beautyCategory === 'nail_bar' ? 'bg-pink-600 text-white border-pink-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${beautyCategory === 'nail_bar' ? 'active-pink' : ''}`}
                   >
                     Nail Bar & Pedi (₦25k)
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Service Required</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Service Required</label>
                   <select
                     value={beautyCategory}
                     onChange={e => setBeautyCategory(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-pink-500"
+                    className="luxury-tool-select"
                   >
                     <option value="hair_extensions">Raw Hair Extensions & Weaving</option>
                     <option value="bridal_styling">Bridal Hair & Makeup Package</option>
@@ -804,22 +859,22 @@ export function SectorToolsWidget({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Hair Length (Inches)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Hair Length (Inches)</label>
                   <input
                     type="number"
                     value={hairLength}
                     onChange={e => setHairLength(Number(e.target.value))}
                     min={10}
                     max={36}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-pink-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Stylist Experience Tier</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Stylist Experience Tier</label>
                   <select
                     value={stylistTier}
                     onChange={e => setStylistTier(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-pink-500"
+                    className="luxury-tool-select"
                   >
                     <option value="senior">Senior Stylist (Standard)</option>
                     <option value="master_director">Master Creative Director (+40%)</option>
@@ -836,7 +891,12 @@ export function SectorToolsWidget({
                   })
                 }
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg flex items-center justify-center gap-2"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
+                  color: '#ffffff',
+                  boxShadow: '0 8px 24px rgba(236, 72, 153, 0.35)',
+                }}
               >
                 {loading ? 'Calculating Booking Slot...' : '💅 Calculate Total Booking Cost & Lock Appointment Deposit'}
               </button>
@@ -928,53 +988,45 @@ export function SectorToolsWidget({
                   <span className="text-xs font-medium text-slate-400">Popular Nigerian Menu Favorites</span>
                   <span className="text-[11px] text-orange-400 font-bold">🍔 1-Tap Presets:</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                <div className="luxury-preset-grid">
                   <button
                     type="button"
                     onClick={() => { setFoodItem('jollof_turkey'); setFoodQty(2); setOrderMode('delivery'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      foodItem === 'jollof_turkey' ? 'bg-orange-500 text-slate-950 border-orange-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${foodItem === 'jollof_turkey' ? 'active-orange' : ''}`}
                   >
                     Jollof & Turkey (₦6.5k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setFoodItem('catfish_peppersoup'); setFoodQty(1); setOrderMode('dine_in'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      foodItem === 'catfish_peppersoup' ? 'bg-orange-500 text-slate-950 border-orange-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${foodItem === 'catfish_peppersoup' ? 'active-orange' : ''}`}
                   >
                     Catfish Pepper Soup (₦8.5k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setFoodItem('seafood_platter'); setFoodQty(1); setOrderMode('delivery'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      foodItem === 'seafood_platter' ? 'bg-orange-500 text-slate-950 border-orange-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${foodItem === 'seafood_platter' ? 'active-orange' : ''}`}
                   >
                     Seafood Platter (₦28k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setFoodItem('shawarma_combo'); setFoodQty(2); setOrderMode('takeaway'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      foodItem === 'shawarma_combo' ? 'bg-orange-500 text-slate-950 border-orange-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${foodItem === 'shawarma_combo' ? 'active-orange' : ''}`}
                   >
                     Shawarma Combo (₦4.5k)
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Select Menu Item</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Select Menu Item</label>
                   <select
                     value={foodItem}
                     onChange={e => setFoodItem(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-orange-500"
+                    className="luxury-tool-select"
                   >
                     <option value="jollof_turkey">Party Jollof Rice & Jumbo Turkey (₦6,500)</option>
                     <option value="catfish_peppersoup">Point & Kill Catfish Pepper Soup + Yam (₦8,500)</option>
@@ -983,11 +1035,11 @@ export function SectorToolsWidget({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Order Mode</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Order Mode</label>
                   <select
                     value={orderMode}
                     onChange={e => setOrderMode(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-orange-500"
+                    className="luxury-tool-select"
                   >
                     <option value="delivery">Home / Office Delivery</option>
                     <option value="dine_in">Dine-In Table Order</option>
@@ -995,14 +1047,14 @@ export function SectorToolsWidget({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Portions / Plates</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Portions / Plates</label>
                   <input
                     type="number"
                     value={foodQty}
                     onChange={e => setFoodQty(Number(e.target.value))}
                     min={1}
                     max={20}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-orange-500"
+                    className="luxury-tool-input"
                   />
                 </div>
               </div>
@@ -1010,7 +1062,12 @@ export function SectorToolsWidget({
               <button
                 onClick={() => handleRunCalculation('restaurant_order', { foodItem, foodQty, orderMode, tableOrAddress })}
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-black rounded-xl shadow-lg transition-all"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                  color: '#050811',
+                  boxShadow: '0 8px 24px rgba(249, 115, 22, 0.35)',
+                }}
               >
                 {loading ? 'Dispatching to Kitchen...' : '🍔 Calculate Order & Dispatch to Kitchen WhatsApp (0% Commission)'}
               </button>
@@ -1108,72 +1165,64 @@ export function SectorToolsWidget({
                   <span className="text-xs font-medium text-slate-400">Fast-Selling Nigerian Retail Items</span>
                   <span className="text-[11px] text-fuchsia-400 font-bold">🛍️ 1-Tap Presets:</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                <div className="luxury-preset-grid">
                   <button
                     type="button"
                     onClick={() => { setRetailProduct('Italian Leather Sneakers'); setRetailPrice(45000); setRetailSize('Size 42 (EU)'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      retailProduct === 'Italian Leather Sneakers' ? 'bg-fuchsia-600 text-white border-fuchsia-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${retailProduct === 'Italian Leather Sneakers' ? 'active-fuchsia' : ''}`}
                   >
                     Italian Sneakers (₦45k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setRetailProduct('Tailored Corporate Suit'); setRetailPrice(85000); setRetailSize('Size 44 Regular'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      retailProduct === 'Tailored Corporate Suit' ? 'bg-fuchsia-600 text-white border-fuchsia-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${retailProduct === 'Tailored Corporate Suit' ? 'active-fuchsia' : ''}`}
                   >
                     Corporate Suit (₦85k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setRetailProduct('Luxury Chrono Smartwatch'); setRetailPrice(65000); setRetailSize('Rose Gold 44mm'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      retailProduct === 'Luxury Chrono Smartwatch' ? 'bg-fuchsia-600 text-white border-fuchsia-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${retailProduct === 'Luxury Chrono Smartwatch' ? 'active-fuchsia' : ''}`}
                   >
                     Smartwatch (₦65k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setRetailProduct('Silk Evening Dinner Gown'); setRetailPrice(38000); setRetailSize('Size 12 UK'); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      retailProduct === 'Silk Evening Dinner Gown' ? 'bg-fuchsia-600 text-white border-fuchsia-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${retailProduct === 'Silk Evening Dinner Gown' ? 'active-fuchsia' : ''}`}
                   >
                     Dinner Gown (₦38k)
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Product Description</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Product Description</label>
                   <input
                     type="text"
                     value={retailProduct}
                     onChange={e => setRetailProduct(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-fuchsia-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Item Price (NGN)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Item Price (NGN)</label>
                   <input
                     type="number"
                     value={retailPrice}
                     onChange={e => setRetailPrice(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-fuchsia-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Size / Color Variant</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Size / Color Variant</label>
                   <input
                     type="text"
                     value={retailSize}
                     onChange={e => setRetailSize(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-fuchsia-500"
+                    className="luxury-tool-input"
                   />
                 </div>
               </div>
@@ -1181,7 +1230,12 @@ export function SectorToolsWidget({
               <button
                 onClick={() => handleRunCalculation('retail_catalog_order', { retailProduct, retailPrice, retailSize })}
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-500 hover:to-pink-500 text-white font-black rounded-xl shadow-lg transition-all"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #d946ef 0%, #a21caf 100%)',
+                  color: '#ffffff',
+                  boxShadow: '0 8px 24px rgba(217, 70, 239, 0.35)',
+                }}
               >
                 {loading ? 'Reserving Stock...' : '🛍️ Generate Sub-3s WhatsApp Checkout & Anti-Fake Alert Account'}
               </button>
@@ -1272,63 +1326,57 @@ export function SectorToolsWidget({
                   <span className="text-xs font-medium text-slate-400">Nigerian Property Categories</span>
                   <span className="text-[11px] text-teal-400 font-bold">🏡 1-Tap Presets:</span>
                 </div>
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="luxury-preset-grid-3">
                   <button
                     type="button"
                     onClick={() => { setPropertyPrice(45000000); setDownPaymentPercent(20); setTenureYears(10); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      propertyPrice === 45000000 ? 'bg-teal-600 text-white border-teal-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${propertyPrice === 45000000 ? 'active-teal' : ''}`}
                   >
                     Lekki 2-Bed (₦45m)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setPropertyPrice(95000000); setDownPaymentPercent(25); setTenureYears(15); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      propertyPrice === 95000000 ? 'bg-teal-600 text-white border-teal-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${propertyPrice === 95000000 ? 'active-teal' : ''}`}
                   >
                     Terrace Duplex (₦95m)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setPropertyPrice(250000000); setDownPaymentPercent(30); setTenureYears(10); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      propertyPrice === 250000000 ? 'bg-teal-600 text-white border-teal-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${propertyPrice === 250000000 ? 'active-teal' : ''}`}
                   >
                     Commercial Plaza (₦250m)
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Property Value (NGN)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Property Value (NGN)</label>
                   <input
                     type="number"
                     value={propertyPrice}
                     onChange={e => setPropertyPrice(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Down Payment (%)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Down Payment (%)</label>
                   <input
                     type="number"
                     value={downPaymentPercent}
                     onChange={e => setDownPaymentPercent(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Tenure (Years)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Tenure (Years)</label>
                   <input
                     type="number"
                     value={tenureYears}
                     onChange={e => setTenureYears(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="luxury-tool-input"
                   />
                 </div>
               </div>
@@ -1343,7 +1391,12 @@ export function SectorToolsWidget({
                   })
                 }
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-black rounded-xl shadow-lg transition-all"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #14b8a6 0%, #059669 100%)',
+                  color: '#050811',
+                  boxShadow: '0 8px 24px rgba(20, 184, 166, 0.35)',
+                }}
               >
                 {loading ? 'Calculating Mortgage...' : '🏡 Calculate Down Payment & Monthly Repayments'}
               </button>
@@ -1479,44 +1532,38 @@ export function SectorToolsWidget({
                   <span className="text-xs font-medium text-slate-400">Clinical Consultation Categories</span>
                   <span className="text-[11px] text-rose-400 font-bold">🏥 1-Tap Presets:</span>
                 </div>
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="luxury-preset-grid-3">
                   <button
                     type="button"
                     onClick={() => { setConsultType('general'); setHasHmo(false); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      consultType === 'general' ? 'bg-rose-600 text-white border-rose-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${consultType === 'general' ? 'active-rose' : ''}`}
                   >
                     GOPD Outpatient (₦15k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setConsultType('specialist'); setHasHmo(true); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      consultType === 'specialist' ? 'bg-rose-600 text-white border-rose-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${consultType === 'specialist' ? 'active-rose' : ''}`}
                   >
                     HMO Specialist (₦3.5k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setConsultType('emergency'); setHasHmo(false); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      consultType === 'emergency' ? 'bg-rose-600 text-white border-rose-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${consultType === 'emergency' ? 'active-rose' : ''}`}
                   >
                     Emergency (₦50k)
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Consultation Type</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Consultation Type</label>
                   <select
                     value={consultType}
                     onChange={e => setConsultType(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-rose-500"
+                    className="luxury-tool-select"
                   >
                     <option value="general">General Outpatient (GOPD)</option>
                     <option value="specialist">Specialist / Consultant</option>
@@ -1524,11 +1571,11 @@ export function SectorToolsWidget({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">HMO Insurance Coverage</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>HMO Insurance Coverage</label>
                   <select
                     value={hasHmo ? 'yes' : 'no'}
                     onChange={e => setHasHmo(e.target.value === 'yes')}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-rose-500"
+                    className="luxury-tool-select"
                   >
                     <option value="yes">Covered under HMO (10% Co-Pay)</option>
                     <option value="no">Private Out-of-Pocket Payment</option>
@@ -1539,7 +1586,12 @@ export function SectorToolsWidget({
               <button
                 onClick={() => handleRunCalculation('hmo_telehealth', { consultationType: consultType, hasHmo, labTestsCount: 1 })}
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-black rounded-xl shadow-lg transition-all"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #f43f5e 0%, #be123c 100%)',
+                  color: '#ffffff',
+                  boxShadow: '0 8px 24px rgba(244, 63, 94, 0.35)',
+                }}
               >
                 {loading ? 'Estimating Clinic Fee...' : '🏥 Calculate Clinic Consultation & Book Slot'}
               </button>
@@ -1608,54 +1660,48 @@ export function SectorToolsWidget({
                   <span className="text-xs font-medium text-slate-400">School Level & Enrollment Tier</span>
                   <span className="text-[11px] text-purple-400 font-bold">🎓 1-Tap Presets:</span>
                 </div>
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="luxury-preset-grid-3">
                   <button
                     type="button"
                     onClick={() => { setTermlyTuition(95000); setStudentCount(80); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      termlyTuition === 95000 ? 'bg-purple-600 text-white border-purple-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${termlyTuition === 95000 ? 'active-purple' : ''}`}
                   >
                     Creche/Nursery (₦95k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setTermlyTuition(150000); setStudentCount(150); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      termlyTuition === 150000 ? 'bg-purple-600 text-white border-purple-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${termlyTuition === 150000 ? 'active-purple' : ''}`}
                   >
                     Primary (₦150k)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setTermlyTuition(250000); setStudentCount(220); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      termlyTuition === 250000 ? 'bg-purple-600 text-white border-purple-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${termlyTuition === 250000 ? 'active-purple' : ''}`}
                   >
                     College / SSS (₦250k)
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Average Termly Tuition (NGN)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Average Termly Tuition (NGN)</label>
                   <input
                     type="number"
                     value={termlyTuition}
                     onChange={e => setTermlyTuition(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Enrolled Students Count</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Enrolled Students Count</label>
                   <input
                     type="number"
                     value={studentCount}
                     onChange={e => setStudentCount(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500"
+                    className="luxury-tool-input"
                   />
                 </div>
               </div>
@@ -1663,7 +1709,12 @@ export function SectorToolsWidget({
               <button
                 onClick={() => handleRunCalculation('school_tuition', { termlyTuitionNgn: termlyTuition, studentsCount: studentCount })}
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black rounded-xl shadow-lg transition-all"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)',
+                  color: '#ffffff',
+                  boxShadow: '0 8px 24px rgba(168, 85, 247, 0.35)',
+                }}
               >
                 {loading ? 'Calculating Tuition Ledger...' : '🎓 Calculate School Fee Collection & PIN Portal'}
               </button>
@@ -1732,63 +1783,57 @@ export function SectorToolsWidget({
                   <span className="text-xs font-medium text-slate-400">Popular Interstate Freight Routes</span>
                   <span className="text-[11px] text-indigo-400 font-bold">📦 1-Tap Presets:</span>
                 </div>
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="luxury-preset-grid-3">
                   <button
                     type="button"
                     onClick={() => { setOriginCity('Lagos'); setDestCity('Abuja'); setWeightKg(15); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      originCity === 'Lagos' && destCity === 'Abuja' ? 'bg-indigo-600 text-white border-indigo-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${originCity === 'Lagos' && destCity === 'Abuja' ? 'active-indigo' : ''}`}
                   >
                     Lagos → Abuja (15kg)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setOriginCity('Lagos'); setDestCity('Port Harcourt'); setWeightKg(25); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      originCity === 'Lagos' && destCity === 'Port Harcourt' ? 'bg-indigo-600 text-white border-indigo-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${originCity === 'Lagos' && destCity === 'Port Harcourt' ? 'active-indigo' : ''}`}
                   >
                     Lagos → PH (25kg)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setOriginCity('Lagos'); setDestCity('Kano'); setWeightKg(50); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      originCity === 'Lagos' && destCity === 'Kano' ? 'bg-indigo-600 text-white border-indigo-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${originCity === 'Lagos' && destCity === 'Kano' ? 'active-indigo' : ''}`}
                   >
                     Lagos → Kano (50kg)
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Origin Hub</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Origin Hub</label>
                   <input
                     type="text"
                     value={originCity}
                     onChange={e => setOriginCity(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Destination Hub</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Destination Hub</label>
                   <input
                     type="text"
                     value={destCity}
                     onChange={e => setDestCity(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Cargo Weight (kg)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Cargo Weight (kg)</label>
                   <input
                     type="number"
                     value={weightKg}
                     onChange={e => setWeightKg(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500"
+                    className="luxury-tool-input"
                   />
                 </div>
               </div>
@@ -1796,7 +1841,12 @@ export function SectorToolsWidget({
               <button
                 onClick={() => handleRunCalculation('logistics_delivery', { originCity, destinationCity: destCity, weightKg })}
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-black rounded-xl shadow-lg transition-all"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
+                  color: '#ffffff',
+                  boxShadow: '0 8px 24px rgba(99, 102, 241, 0.35)',
+                }}
               >
                 {loading ? 'Estimating Waybill...' : '📦 Calculate Inter-State Waybill & Delivery Fee'}
               </button>
@@ -1951,54 +2001,48 @@ export function SectorToolsWidget({
                   <span className="text-xs font-medium text-slate-400">Nigerian Shortlet & Hotel Categories</span>
                   <span className="text-[11px] text-amber-400 font-bold">🏨 1-Tap Presets:</span>
                 </div>
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="luxury-preset-grid-3">
                   <button
                     type="button"
                     onClick={() => { setNightlyRate(45000); setNightsCount(2); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      nightlyRate === 45000 ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${nightlyRate === 45000 ? 'active-amber' : ''}`}
                   >
                     Studio (₦45k/nt)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setNightlyRate(85000); setNightsCount(3); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      nightlyRate === 85000 ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${nightlyRate === 85000 ? 'active-amber' : ''}`}
                   >
                     2-Bed Lekki (₦85k/nt)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setNightlyRate(180000); setNightsCount(4); }}
-                    className={`px-2 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
-                      nightlyRate === 180000 ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
+                    className={`luxury-preset-btn ${nightlyRate === 180000 ? 'active-amber' : ''}`}
                   >
                     Penthouse (₦180k/nt)
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Nightly Rate (NGN)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Nightly Rate (NGN)</label>
                   <input
                     type="number"
                     value={nightlyRate}
                     onChange={e => setNightlyRate(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Duration of Stay (Nights)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Duration of Stay (Nights)</label>
                   <input
                     type="number"
                     value={nightsCount}
                     onChange={e => setNightsCount(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    className="luxury-tool-input"
                   />
                 </div>
               </div>
@@ -2006,8 +2050,15 @@ export function SectorToolsWidget({
               <button
                 onClick={() => handleRunCalculation('shortlet_booking', { nightlyRateNgn: nightlyRate, nightsCount, cautionDepositNgn: 30000 })}
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-slate-950 font-black rounded-xl shadow-lg transition-all"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+                  color: '#ffffff',
+                  boxShadow: '0 8px 24px rgba(217, 119, 6, 0.35)',
+                }}
               >
+                {loading ? 'Calculating Booking...' : '🏨 Calculate Direct Booking & Lock Reservation'}
+              </button>
                 {loading ? 'Calculating Booking...' : '🏨 Calculate Direct Booking & Lock Reservation'}
               </button>
 
@@ -2070,23 +2121,23 @@ export function SectorToolsWidget({
           {/* DVA VIRTUAL ACCOUNT TAB */}
           {activeTab === 'dva' && (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Customer / Lead Name</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Customer / Lead Name</label>
                   <input
                     type="text"
                     value={customerName}
                     onChange={e => setCustomerName(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                    className="luxury-tool-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Amount to Transfer (NGN)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Amount to Transfer (NGN)</label>
                   <input
                     type="number"
                     value={amountNgn}
                     onChange={e => setAmountNgn(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                    className="luxury-tool-input"
                   />
                 </div>
               </div>
@@ -2100,7 +2151,12 @@ export function SectorToolsWidget({
                   })
                 }
                 disabled={loading}
-                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-xl shadow-lg transition-all"
+                className="luxury-calc-btn"
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: '#050811',
+                  boxShadow: '0 8px 24px rgba(16, 185, 129, 0.35)',
+                }}
               >
                 {loading ? 'Generating DVA Account...' : '🏦 Generate Moniepoint Virtual Account (Instant Transfer)'}
               </button>
