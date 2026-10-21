@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Daily Grace Scripture & Prayer Journal PWA</title>
+  <meta name="description" content="Personalized audio prayer companion, Scripture promise finder, and daily faith affirmations.">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #111827;
+      --card-border: #1f2937;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --primary: #a855f7;
+      --accent: #f59e0b;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 680px; display: flex; flex-direction: column; gap: 20px; }
+    .header { text-align: center; padding: 20px 12px 10px; }
+    .badge { display: inline-block; padding: 4px 12px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 999px; font-size: 11px; font-weight: 700; color: #d8b4fe; text-transform: uppercase; margin-bottom: 10px; }
+    h1 { font-size: 24px; font-weight: 900; line-height: 1.2; margin-bottom: 8px; color: #fff; }
+    p.sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #e5e7eb; }
+    input, select { width: 100%; padding: 12px 14px; background: #0b1120; border: 1px solid #374151; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+    input:focus, select:focus { border-color: var(--primary); }
+    .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, #a855f7, #7e22ce); border: none; border-radius: 12px; color: #fff; font-size: 15px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3); }
+    .btn-primary:active { transform: scale(0.98); }
+    .verse-box { background: #1e1035; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px; margin-bottom: 14px; font-size: 13px; line-height: 1.6; color: #f3e8ff; font-style: italic; }
+    .prayer-box { background: #070b14; border: 1px solid #1f2937; border-radius: 10px; padding: 14px; font-size: 13px; line-height: 1.6; color: #cbd5e1; white-space: pre-wrap; }
+    .share-btn { width: 100%; padding: 12px; background: #059669; border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .modal-card { background: #111827; border: 1px solid #374151; border-radius: 20px; max-width: 440px; width: 100%; padding: 24px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">🙏 Daily Grace & Soul Restoration</div>
+      <h1>Scripture & Prayer Journal</h1>
+      <p class="sub">Find divine peace, claim God's promises, and generate Scripture-grounded prayers tailored to your day.</p>
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label>Prayer Focus / Intention</label>
+        <select id="categorySelect">
+          <option value="peace">Supernatural Peace & Rest</option>
+          <option value="anxiety">Freedom From Worry & Overwhelm</option>
+          <option value="healing">Divine Healing & Restoration</option>
+          <option value="provision">Financial Provision & Open Doors</option>
+          <option value="family">Family Protection & Harmony</option>
+          <option value="wisdom">Clarity & Sound Decision-Making</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Name or Loved One to Pray For</label>
+        <input type="text" id="subjectInput" placeholder="e.g. My daughter Sarah, or My finances">
+      </div>
+
+      <button class="btn-primary" onclick="generatePrayer()">📖 Receive Scripture & Generate Prayer</button>
+
+      <div id="resultsArea" style="display:none; margin-top: 20px;">
+        <div class="verse-box" id="verseBox"></div>
+        <div class="prayer-box" id="prayerBox"></div>
+
+        <button class="share-btn" onclick="shareWhatsApp()">
+          <span>📱 Share on WhatsApp (Bless a Friend)</span>
+        </button>
+
+        <button onclick="openModal()" style="width:100%; padding:12px; background:linear-gradient(135deg, #f59e0b, #d97706); border:none; border-radius:10px; color:#000; font-size:13px; font-weight:900; margin-top:10px; cursor:pointer;">
+          👑 Support Ministry & Get 365-Day Audio Devotional ($19)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="leadModal" class="modal-backdrop">
+    <div class="modal-card">
+      <h2 style="color:#fff; font-size:18px; font-weight:900; margin-bottom:6px;">Daily Grace 365 Devotional Vault</h2>
+      <p style="font-size:12px; color:#9ca3af; margin-bottom:16px;">Download our printable prayer journals, high-res scripture wall art, and guided audio prayers.</p>
+      
+      <input type="text" id="leadName" placeholder="Your Name" style="margin-bottom:10px;">
+      <input type="email" id="leadEmail" placeholder="Your Email" style="margin-bottom:14px;">
+
+      <button onclick="submitLead()" style="width:100%; padding:14px; background:linear-gradient(135deg, #f59e0b, #d97706); color:#000; font-weight:900; border:none; border-radius:10px; cursor:pointer;">
+        Proceed to Sovereign Store &rarr;
+      </button>
+      <button onclick="closeModal()" style="margin-top:10px; background:transparent; border:none; color:#64748b; font-size:12px; cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const scriptures = {
+      peace: { ref: 'Philippians 4:6-7', text: 'Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.' },
+      anxiety: { ref: '1 Peter 5:7', text: 'Cast all your anxiety on Him because He cares for you.' },
+      healing: { ref: 'Jeremiah 17:14', text: 'Heal me, Lord, and I will be healed; save me and I will be saved, for you are the one I praise.' },
+      provision: { ref: 'Philippians 4:19', text: 'And my God will meet all your needs according to the riches of his glory in Christ Jesus.' },
+      family: { ref: 'Joshua 24:15', text: 'As for me and my household, we will serve the Lord.' },
+      wisdom: { ref: 'James 1:5', text: 'If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault.' }
+    };
+
+    function generatePrayer() {
+      const cat = document.getElementById('categorySelect').value;
+      const subj = document.getElementById('subjectInput').value.trim() || 'my life and loved ones';
+      const sc = scriptures[cat] || scriptures.peace;
+
+      document.getElementById('verseBox').innerHTML = `<b>${sc.ref}:</b> "${sc.text}"`;
+      document.getElementById('prayerBox').innerText = 
+`Heavenly Father,
+
+I lift ${subj} into Your loving hands today. In a world full of noise, hurry, and unrest, I receive Your quiet stillness. 
+
+Surround ${subj} with Your divine protection, grant wisdom for every decision, and breathe peace into every fearful thought. Let Your unconditional grace guide every step today.
+
+In Jesus' name, Amen.`;
+
+      document.getElementById('resultsArea').style.display = 'block';
+    }
+
+    function shareWhatsApp() {
+      const text = encodeURIComponent('🙏 May this daily prayer bless your morning: http://169.58.182.92:3000/tools/prayer-journal');
+      window.open('https://api.whatsapp.com/send?text=' + text, '_blank');
+      alert('🎉 Thank you for sharing God\'s peace!');
+    }
+
+    function openModal() { document.getElementById('leadModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('leadModal').style.display = 'none'; }
+
+    async function submitLead() {
+      const name = document.getElementById('leadName').value.trim();
+      const email = document.getElementById('leadEmail').value.trim();
+      if (!email) return alert('Please enter your email');
+
+      try {
+        await fetch('/api/tools/prayer/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, interestCategory: document.getElementById('categorySelect').value })
+        });
+      } catch(_) {}
+
+      window.open('https://selar.com/showlove/bethelmind?product=da-faith&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email), '_blank');
+      closeModal();
+    }
+  </script>
+</body>
+</html>

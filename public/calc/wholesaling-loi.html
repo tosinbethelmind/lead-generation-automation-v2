@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Real Estate Wholesaling Analyzer & Auto-LOI Generator | 70% Rule Engine</title>
+  <meta name="description" content="Calculate Maximum Allowable Offer (MAO), estimate rehab repair costs, and generate 1-page cash offer LOI purchase contracts in seconds.">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #111827;
+      --card-border: #1f2937;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --primary: #f59e0b;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 680px; display: flex; flex-direction: column; gap: 20px; }
+    .header { text-align: center; padding: 20px 12px 10px; }
+    .badge { display: inline-block; padding: 4px 12px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 999px; font-size: 11px; font-weight: 700; color: #fde68a; text-transform: uppercase; margin-bottom: 10px; }
+    h1 { font-size: 24px; font-weight: 900; line-height: 1.2; margin-bottom: 8px; color: #fff; }
+    p.sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #e5e7eb; }
+    input, select { width: 100%; padding: 12px 14px; background: #0b1120; border: 1px solid #374151; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+    input:focus, select:focus { border-color: var(--primary); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 12px; color: #041019; font-size: 15px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
+    .btn-primary:active { transform: scale(0.98); }
+    .mao-card { background: #070b14; border: 1px solid #1f2937; border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 14px; }
+    .mao-val { font-size: 36px; font-weight: 900; color: #fff; }
+    .mao-label { font-size: 11px; text-transform: uppercase; font-weight: 800; color: #f59e0b; margin-bottom: 4px; }
+    .spread-badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 6px; }
+    .badge-deal { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+    .badge-tight { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: #fde68a; }
+    .badge-pass { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: #fda4af; }
+    .contract-box { background: #070b14; border: 1px solid #1f2937; border-radius: 10px; padding: 14px; font-family: monospace; font-size: 11px; line-height: 1.6; color: #cbd5e1; white-space: pre-wrap; max-height: 260px; overflow-y: auto; }
+    .share-btn { width: 100%; padding: 12px; background: #059669; border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .modal-card { background: #111827; border: 1px solid #374151; border-radius: 20px; max-width: 440px; width: 100%; padding: 24px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">🏠 Real Estate 70% Rule & Contract Engine</div>
+      <h1>Wholesaling Analyzer & Auto-LOI</h1>
+      <p class="sub">Calculate your Maximum Allowable Offer (MAO) and generate an official cash offer Letter of Intent in 30 seconds.</p>
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label>Property Address</label>
+        <input type="text" id="addressInput" placeholder="e.g. 742 Evergreen Terrace, Springfield">
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Square Footage (SqFt)</label>
+          <input type="number" id="sqftInput" value="2000">
+        </div>
+        <div class="form-group">
+          <label>Seller Asking Price ($)</label>
+          <input type="number" id="askingInput" value="145000">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>After Repair Value (ARV) ($)</label>
+          <input type="number" id="arvInput" value="350000">
+        </div>
+        <div class="form-group">
+          <label>Rehab Condition Tier</label>
+          <select id="repairTier">
+            <option value="15">Light Cosmetic ($15/sqft)</option>
+            <option value="35" selected>Moderate Rehab ($35/sqft)</option>
+            <option value="65">Heavy Gut Rehab ($65/sqft)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Your Target Assignment Fee ($)</label>
+        <input type="number" id="feeInput" value="10000">
+      </div>
+
+      <button class="btn-primary" onclick="calculateMAO()">📊 Calculate Cash Offer & Generate LOI</button>
+
+      <div id="resultsArea" style="display:none; margin-top: 20px;">
+        <div class="mao-card">
+          <div class="mao-label">Maximum Allowable Offer (MAO)</div>
+          <div class="mao-val" id="maoVal">$165,000</div>
+          <div id="badgeArea"></div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:14px; font-size:12px;">
+          <div style="background:#0b1120; padding:10px; border-radius:8px; border:1px solid #1f2937;">
+            <div style="color:#9ca3af;">Rehab Repairs:</div>
+            <div style="font-weight:800; font-size:14px; color:#fff;" id="repairVal">$70,000</div>
+          </div>
+          <div style="background:#0b1120; padding:10px; border-radius:8px; border:1px solid #1f2937;">
+            <div style="color:#9ca3af;">Your Assignment Fee:</div>
+            <div style="font-weight:800; font-size:14px; color:#10b981;" id="spreadVal">$10,000</div>
+          </div>
+        </div>
+
+        <div style="font-size:12px; font-weight:800; color:#e2e8f0; margin-bottom:6px;">📄 Generated Letter of Intent (LOI)</div>
+        <div class="contract-box" id="loiBox"></div>
+
+        <button class="share-btn" onclick="shareWhatsApp()">
+          <span>📱 Share on WhatsApp (Unlock PDF & DOCX Contracts)</span>
+        </button>
+
+        <button onclick="openModal()" style="width:100%; padding:12px; background:linear-gradient(135deg, #f59e0b, #d97706); border:none; border-radius:10px; color:#000; font-size:13px; font-weight:900; margin-top:10px; cursor:pointer;">
+          👑 Unlock Master Legal Wholesaling Vault ($97)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="leadModal" class="modal-backdrop">
+    <div class="modal-card">
+      <h2 style="color:#fff; font-size:18px; font-weight:900; margin-bottom:6px;">Master Wholesaling Legal Vault</h2>
+      <p style="font-size:12px; color:#9ca3af; margin-bottom:16px;">Vetted purchase contracts, assignment addendums, novation agreements, and cold-call scripts.</p>
+      
+      <input type="text" id="leadName" placeholder="Your Name" style="margin-bottom:10px;">
+      <input type="email" id="leadEmail" placeholder="Your Email" style="margin-bottom:14px;">
+
+      <button onclick="submitLead()" style="width:100%; padding:14px; background:linear-gradient(135deg, #f59e0b, #d97706); color:#000; font-weight:900; border:none; border-radius:10px; cursor:pointer;">
+        Proceed to Sovereign Checkout &rarr;
+      </button>
+      <button onclick="closeModal()" style="margin-top:10px; background:transparent; border:none; color:#64748b; font-size:12px; cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    let currentAddress = '';
+    let currentMAO = 0;
+    let currentSpread = 0;
+
+    function calculateMAO() {
+      currentAddress = document.getElementById('addressInput').value.trim() || '742 Evergreen Terrace, Springfield';
+      const sqft = Number(document.getElementById('sqftInput').value) || 2000;
+      const arv = Number(document.getElementById('arvInput').value) || 350000;
+      const rate = Number(document.getElementById('repairTier').value) || 35;
+      const fee = Number(document.getElementById('feeInput').value) || 10000;
+      const asking = Number(document.getElementById('askingInput').value) || 145000;
+
+      const repairs = sqft * rate;
+      const investorCap = (arv * 0.70) - repairs;
+      currentMAO = Math.round(Math.max(0, investorCap - fee));
+      currentSpread = currentMAO - asking;
+
+      document.getElementById('maoVal').innerText = '$' + currentMAO.toLocaleString();
+      document.getElementById('repairVal').innerText = '$' + repairs.toLocaleString();
+      document.getElementById('spreadVal').innerText = '$' + fee.toLocaleString();
+
+      let badgeHtml = '';
+      if (asking <= currentMAO) {
+        badgeHtml = '<div class="spread-badge badge-deal">🟢 STRONG DEAL (+$' + currentSpread.toLocaleString() + ' Spread)</div>';
+      } else if (asking <= currentMAO + fee) {
+        badgeHtml = '<div class="spread-badge badge-tight">🟡 TIGHT SPREAD (Negotiate Seller Down)</div>';
+      } else {
+        badgeHtml = '<div class="spread-badge badge-pass">🔴 OVERPRICED PASS (Flipper Loses Money)</div>';
+      }
+      document.getElementById('badgeArea').innerHTML = badgeHtml;
+
+      const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      document.getElementById('loiBox').innerText = 
+`LETTER OF INTENT TO PURCHASE REAL PROPERTY
+
+DATE: ${dateStr}
+TO: Property Owner / Seller of Record
+FROM: Apex Capital Holdings LLC (and/or assigns)
+RE: Purchase Offer for ${currentAddress}
+
+Dear Seller,
+
+Buyer proposes to purchase the subject property under the following terms:
+
+1. PURCHASE PRICE: $${currentMAO.toLocaleString()} USD (Cash / Sovereign Funds)
+2. EARNEST MONEY DEPOSIT: $1,000 held at Title Company within 3 days of execution.
+3. INSPECTION PERIOD: 10 calendar days for contractor walkthrough and feasibility.
+4. AS-IS CONDITION: Seller makes zero repair credits or warranties.
+5. CLOSING DATE: 21 calendar days following completion of inspection period.
+6. ASSIGNABILITY: Buyer reserves the standard right to assign equitable interest.
+
+Buyer: ____________________________    Seller: ____________________________`;
+
+      document.getElementById('resultsArea').style.display = 'block';
+    }
+
+    function shareWhatsApp() {
+      const text = encodeURIComponent(`🏠 Check out this Real Estate Wholesale MAO Analysis for ${currentAddress}! MAO Cash Offer: $${currentMAO.toLocaleString()}. Calculate your cash offer: http://169.58.182.92:3000/tools/wholesaling-loi`);
+      window.open('https://api.whatsapp.com/send?text=' + text, '_blank');
+      alert('🎉 Printable Contract Templates Unlocked!');
+    }
+
+    function openModal() { document.getElementById('leadModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('leadModal').style.display = 'none'; }
+
+    async function submitLead() {
+      const name = document.getElementById('leadName').value.trim();
+      const email = document.getElementById('leadEmail').value.trim();
+      if (!email) return alert('Please enter your email');
+
+      try {
+        await fetch('/api/tools/wholesaling/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, propertyAddress: currentAddress, mao: currentMAO, spread: currentSpread, selectedTier: 'vault' })
+        });
+      } catch(_) {}
+
+      window.open('https://selar.com/showlove/bethelmind?product=da-realestate&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email), '_blank');
+      closeModal();
+    }
+  </script>
+</body>
+</html>

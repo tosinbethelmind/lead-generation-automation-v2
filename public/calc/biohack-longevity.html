@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Biohack Longevity™ - Macro, Autophagy & Fasting Calculator</title>
+  <meta name="description" content="Calculate your personalized intermittent fasting window, cellular autophagy hours, optimal protein floor, and hydration targets. Free biohack longevity analysis.">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --bg: #070e14;
+      --card-bg: rgba(13, 26, 36, 0.85);
+      --border: rgba(16, 185, 129, 0.2);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.25);
+      --cyan: #06b6d4;
+      --yellow: #f59e0b;
+      --text: #f3f4f6;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 1.5rem 1rem; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 9999px; font-size: 0.78rem; font-weight: 600; color: var(--emerald); margin-bottom: 1rem; }
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem; background: linear-gradient(135deg, #10b981, #06b6d4, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p.subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 2rem; line-height: 1.5; }
+    
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+    @media (min-width: 768px) { .grid { grid-template-columns: 1fr 1fr; } }
+    
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+    .form-group { margin-bottom: 1.25rem; }
+    label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 0.45rem; }
+    label span.val { color: var(--emerald); font-family: monospace; font-size: 0.95rem; }
+    input[type="range"] { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; outline: none; -webkit-appearance: none; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--emerald); cursor: pointer; box-shadow: 0 0 10px var(--emerald-glow); }
+    
+    select, input[type="text"], input[type="email"] { width: 100%; padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 0.6rem; color: #fff; font-size: 0.95rem; outline: none; }
+    select:focus, input:focus { border-color: var(--emerald); }
+
+    .stat-banner { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 0.75rem; padding: 1.25rem; text-align: center; margin-bottom: 1.25rem; }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.25rem; }
+    .stat-val-large { font-size: 2.2rem; font-weight: 800; color: var(--emerald); font-family: monospace; }
+    .stat-sub { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+
+    .macro-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.25rem; }
+    .macro-box { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.75rem; text-align: center; }
+    .m-title { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
+    .m-val { font-size: 1.15rem; font-weight: 800; margin-top: 0.2rem; font-family: monospace; }
+
+    .schedule-box { background: rgba(0, 0, 0, 0.4); border-left: 4px solid var(--cyan); padding: 0.85rem 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.88rem; line-height: 1.45; }
+    .schedule-box b { color: #fff; }
+
+    .btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.9rem; border-radius: 0.6rem; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+    .btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 4px 15px var(--emerald-glow); margin-bottom: 0.75rem; }
+    .btn-share { background: #25d366; color: #fff; }
+    .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.active { display: flex; }
+    .modal-box { background: #0c1a24; border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 1rem; max-width: 480px; width: 100%; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+    .close-btn { float: right; background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">
+      🧬 OFFICIAL TOOL: BIOHACK DAILY FLEET
+    </div>
+    <h1>Biohack Longevity™ Fasting & Macro Engine</h1>
+    <p class="subtitle">Calculate your metabolic baseline, optimal mTOR-balanced protein floor, cellular autophagy window, and personalized intermittent fasting schedule.</p>
+
+    <div class="grid">
+      <!-- Input Controls -->
+      <div class="card">
+        <h3 style="margin-bottom: 1.25rem; font-size: 1.1rem; color: #fff;">1. Biomarker Parameters</h3>
+
+        <div class="form-group">
+          <label>Gender & Biological Sex</label>
+          <select id="genderSelect" onchange="recalculate()">
+            <option value="male" selected>Male (Mifflin-St Jeor +5)</option>
+            <option value="female">Female (Mifflin-St Jeor -161)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Your Age <span class="val" id="ageVal">32 yrs</span></label>
+          <input type="range" id="ageInput" min="18" max="80" step="1" value="32" oninput="recalculate()">
+        </div>
+
+        <div class="form-group">
+          <label>Body Weight (kg) <span class="val" id="weightVal">75 kg (165 lbs)</span></label>
+          <input type="range" id="weightInput" min="45" max="150" step="1" value="75" oninput="recalculate()">
+        </div>
+
+        <div class="form-group">
+          <label>Height (cm) <span class="val" id="heightVal">180 cm (5'11")</span></label>
+          <input type="range" id="heightInput" min="140" max="215" step="1" value="180" oninput="recalculate()">
+        </div>
+
+        <div class="form-group">
+          <label>Activity & Training Frequency</label>
+          <select id="activitySelect" onchange="recalculate()">
+            <option value="sedentary">Desk Bound / Light Walking (1.2x)</option>
+            <option value="moderate" selected>Active / 3-4 Workouts/Wk (1.45x)</option>
+            <option value="athletic">High Performance Athlete / 5+ Wk (1.65x)</option>
+            <option value="elite">Elite Biohacker / Endurance (1.85x)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Primary Optimization Goal</label>
+          <select id="goalSelect" onchange="recalculate()">
+            <option value="longevity" selected>Cellular Longevity & Autophagy (Sirtuins)</option>
+            <option value="recomp">Lean Recomposition & Muscle Retention</option>
+            <option value="cognitive">Peak Cognitive Clarity & Neurogenesis</option>
+            <option value="fat_burn">Rapid Visceral Fat Depletion</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Results & Fasting Plan -->
+      <div class="card">
+        <h3 style="margin-bottom: 1.25rem; font-size: 1.1rem; color: #fff;">2. Protocol & Cellular Autophagy</h3>
+
+        <div class="stat-banner">
+          <div class="stat-label">Daily Calorie Target & Metabolic Energy</div>
+          <div class="stat-val-large" id="caloriesDisp">2,490 kcal</div>
+          <div class="stat-sub">BMR: <span id="bmrDisp">1,720</span> kcal • TDEE: <span id="tdeeDisp">2,494</span> kcal</div>
+        </div>
+
+        <div class="macro-grid">
+          <div class="macro-box">
+            <div class="m-title">Protein Floor</div>
+            <div class="m-val" id="proteinDisp" style="color: var(--cyan);">120g</div>
+          </div>
+          <div class="macro-box">
+            <div class="m-title">Healthy Fats</div>
+            <div class="m-val" id="fatsDisp" style="color: var(--yellow);">83g</div>
+          </div>
+          <div class="macro-box">
+            <div class="m-title">Complex Carbs</div>
+            <div class="m-val" id="carbsDisp" style="color: #fff;">280g</div>
+          </div>
+        </div>
+
+        <div class="schedule-box">
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--cyan); margin-bottom: 0.2rem;">
+            🧬 Fasting Protocol: <span id="fastingTitle">18:6 Fasting</span>
+          </div>
+          <div><b>Autophagy Window:</b> <span id="autophagyDisp">~6 hours deep cellular cleanup daily</span></div>
+          <div style="margin-top: 0.35rem; color: var(--muted); font-size: 0.82rem;">
+            <b>Eating Window:</b> <span id="eatingWindowDisp">1:00 PM – 7:00 PM</span>
+          </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.75rem; font-size: 0.82rem; margin-bottom: 1.25rem;">
+          <div style="color: var(--emerald); font-weight: 700; margin-bottom: 0.25rem;">💧 Hydration & Electrolyte Formula:</div>
+          <div>Water: <b id="waterDisp">3.1 Liters/day</b> | Sodium: <b>3.5g</b> | Potassium: <b>2.2g</b> | Mag: <b>450mg</b></div>
+        </div>
+
+        <div>
+          <button class="btn btn-primary" onclick="openLeadModal()">
+            📥 Unlock Full Longevity Blueprint & Bloodwork List ($47)
+          </button>
+          <button class="btn btn-share" onclick="shareOnWhatsApp()">
+            💬 Share Protocol on WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lead Capture Modal -->
+  <div class="modal-overlay" id="leadModal">
+    <div class="modal-box">
+      <button class="close-btn" onclick="closeLeadModal()">&times;</button>
+      <div class="badge">🧬 CLINICALLY BACKED LONGEVITY SUITE</div>
+      <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; color: #fff;">Biohack Daily Longevity Blueprint</h3>
+      <p style="color: var(--muted); font-size: 0.88rem; margin-bottom: 1.25rem; line-height: 1.4;">
+        Get the exact supplement stacking guide (NMN, Resveratrol, Spermidine), biomarkers bloodwork checklist, and sleep architecture protocol.
+      </p>
+
+      <form id="leadForm" onsubmit="submitLead(event)">
+        <div class="form-group">
+          <label>Your Full Name</label>
+          <input type="text" id="leadName" placeholder="Dr. Marcus Vance" required>
+        </div>
+        <div class="form-group">
+          <label>Your Email Address</label>
+          <input type="email" id="leadEmail" placeholder="marcus@gmail.com" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="submitBtn">
+          🧬 Get Instant Access via Selar ($47)
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function recalculate() {
+      const gender = document.getElementById('genderSelect').value;
+      const age = parseInt(document.getElementById('ageInput').value);
+      const weight = parseInt(document.getElementById('weightInput').value);
+      const height = parseInt(document.getElementById('heightInput').value);
+      const act = document.getElementById('activitySelect').value;
+      const goal = document.getElementById('goalSelect').value;
+
+      document.getElementById('ageVal').textContent = age + ' yrs';
+      document.getElementById('weightVal').textContent = weight + ' kg (' + Math.round(weight * 2.204) + ' lbs)';
+      document.getElementById('heightVal').textContent = height + ' cm (' + Math.floor(height/30.48) + "'" + Math.round((height%30.48)/2.54) + '")';
+
+      // Mifflin-St Jeor
+      let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+      if (gender === 'male') bmr += 5; else bmr -= 161;
+      bmr = Math.round(bmr);
+
+      const mults = { sedentary: 1.2, moderate: 1.45, athletic: 1.65, elite: 1.85 };
+      const tdee = Math.round(bmr * (mults[act] || 1.45));
+
+      let targetCals = tdee;
+      let pRatio = 1.6;
+      let fasting = '18:6 Autophagy Protocol';
+      let eating = '1:00 PM – 7:00 PM';
+      let autophagy = 6;
+
+      if (goal === 'longevity') {
+        targetCals = Math.round(tdee * 0.92);
+        pRatio = 1.6;
+        fasting = '18:6 Deep Autophagy';
+        eating = '1:00 PM – 7:00 PM';
+        autophagy = 6;
+      } else if (goal === 'recomp') {
+        targetCals = tdee;
+        pRatio = 2.2;
+        fasting = '16:8 Lean Muscle Window';
+        eating = '12:00 PM – 8:00 PM';
+        autophagy = 4;
+      } else if (goal === 'cognitive') {
+        targetCals = Math.round(tdee * 0.95);
+        pRatio = 1.8;
+        fasting = 'Circadian Fasting (14:10)';
+        eating = '8:30 AM – 6:30 PM';
+        autophagy = 3;
+      } else {
+        targetCals = Math.round(tdee * 0.80);
+        pRatio = 2.0;
+        fasting = '20:4 Warrior Fasting';
+        eating = '2:00 PM – 6:00 PM';
+        autophagy = 8;
+      }
+
+      const protein = Math.round(weight * pRatio);
+      const fat = Math.round((targetCals * 0.30) / 9);
+      const carbs = Math.max(0, Math.round((targetCals - (protein * 4) - (fat * 9)) / 4));
+      const water = ((weight * 0.035) + 0.5).toFixed(1);
+
+      document.getElementById('caloriesDisp').textContent = targetCals.toLocaleString() + ' kcal';
+      document.getElementById('bmrDisp').textContent = bmr.toLocaleString();
+      document.getElementById('tdeeDisp').textContent = tdee.toLocaleString();
+
+      document.getElementById('proteinDisp').textContent = protein + 'g';
+      document.getElementById('fatsDisp').textContent = fat + 'g';
+      document.getElementById('carbsDisp').textContent = carbs + 'g';
+
+      document.getElementById('fastingTitle').textContent = fasting;
+      document.getElementById('autophagyDisp').textContent = '~' + autophagy + ' hours deep cellular cleanup daily';
+      document.getElementById('eatingWindowDisp').textContent = eating;
+      document.getElementById('waterDisp').textContent = water + ' Liters/day';
+    }
+
+    function shareOnWhatsApp() {
+      const cals = document.getElementById('caloriesDisp').textContent;
+      const fasting = document.getElementById('fastingTitle').textContent;
+      const text = `🧬 My Biohack Longevity report generated my personalized ${fasting} protocol (${cals}) and optimal protein floor! Check yours free: ` + window.location.origin + `/tools/biohack-longevity`;
+      window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    function openLeadModal() {
+      document.getElementById('leadModal').classList.add('active');
+    }
+
+    function closeLeadModal() {
+      document.getElementById('leadModal').classList.remove('active');
+    }
+
+    async function submitLead(e) {
+      e.preventDefault();
+      const name = document.getElementById('leadName').value;
+      const email = document.getElementById('leadEmail').value;
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = 'Securing Access...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/tools/biohack/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            gender: document.getElementById('genderSelect').value,
+            goal: document.getElementById('goalSelect').value,
+            targetCalories: parseInt(document.getElementById('caloriesDisp').textContent.replace(/[^\d]/g, '')),
+            selectedTier: 'longevity_blueprint',
+            sourceChannel: 'Biohack Daily'
+          })
+        });
+        const data = await res.json();
+        if (data.success && data.selarCheckoutUrl) {
+          window.location.href = data.selarCheckoutUrl;
+        } else {
+          window.location.href = 'https://selar.com/showlove/bethelmind?product=da-biohack&email=' + encodeURIComponent(email);
+        }
+      } catch (err) {
+        window.location.href = 'https://selar.com/showlove/bethelmind?product=da-biohack&email=' + encodeURIComponent(email);
+      }
+    }
+
+    // Initial calculation
+    recalculate();
+  </script>
+</body>
+</html>

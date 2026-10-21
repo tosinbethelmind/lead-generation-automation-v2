@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WealthPulse Pro Compound Matrix & Financial Freedom Timeline</title>
+  <meta name="description" content="Calculate compound interest growth, annual savings milestones, and financial freedom timeline in seconds.">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #111827;
+      --card-border: #1f2937;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --primary: #10b981;
+      --accent: #f59e0b;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 680px; display: flex; flex-direction: column; gap: 20px; }
+    .header { text-align: center; padding: 20px 12px 10px; }
+    .badge { display: inline-block; padding: 4px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 999px; font-size: 11px; font-weight: 700; color: #6ee7b7; text-transform: uppercase; margin-bottom: 10px; }
+    h1 { font-size: 24px; font-weight: 900; line-height: 1.2; margin-bottom: 8px; color: #fff; }
+    p.sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #e5e7eb; }
+    input { width: 100%; padding: 12px 14px; background: #0b1120; border: 1px solid #374151; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+    input:focus { border-color: var(--primary); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 12px; color: #041019; font-size: 15px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+    .btn-primary:active { transform: scale(0.98); }
+    .result-card { background: #070b14; border: 1px solid #1f2937; border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 14px; }
+    .result-val { font-size: 36px; font-weight: 900; color: #fff; }
+    .result-label { font-size: 11px; text-transform: uppercase; font-weight: 800; color: #10b981; margin-bottom: 4px; }
+    .share-btn { width: 100%; padding: 12px; background: #059669; border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .modal-card { background: #111827; border: 1px solid #374151; border-radius: 20px; max-width: 440px; width: 100%; padding: 24px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">💰 WealthPulse Pro Compound Matrix</div>
+      <h1>Compound Interest & Freedom Calculator</h1>
+      <p class="sub">Discover how small disciplined monthly deposits compound into multi-million dollar portfolios.</p>
+    </div>
+
+    <div class="card">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Starting Principal ($)</label>
+          <input type="number" id="startInput" value="1000">
+        </div>
+        <div class="form-group">
+          <label>Monthly Deposit ($)</label>
+          <input type="number" id="monthlyInput" value="500">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Annual Return Rate (%)</label>
+          <input type="number" id="rateInput" value="10">
+        </div>
+        <div class="form-group">
+          <label>Investment Horizon (Years)</label>
+          <input type="number" id="yearsInput" value="25">
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="calculateGrowth()">📈 Calculate Wealth Projection</button>
+
+      <div id="resultsArea" style="display:none; margin-top: 20px;">
+        <div class="result-card">
+          <div class="result-label">Projected Future Net Worth</div>
+          <div class="result-val" id="netWorthVal">$663,417</div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:14px; font-size:12px;">
+          <div style="background:#0b1120; padding:10px; border-radius:8px; border:1px solid #1f2937;">
+            <div style="color:#9ca3af;">Total Cash Deposited:</div>
+            <div style="font-weight:800; font-size:14px; color:#fff;" id="depositedVal">$151,000</div>
+          </div>
+          <div style="background:#0b1120; padding:10px; border-radius:8px; border:1px solid #1f2937;">
+            <div style="color:#9ca3af;">Compound Interest Earned:</div>
+            <div style="font-weight:800; font-size:14px; color:#10b981;" id="interestVal">$512,417</div>
+          </div>
+        </div>
+
+        <button class="share-btn" onclick="shareWhatsApp()">
+          <span>📱 Share on WhatsApp (Unlock 30-Year Wealth Planner)</span>
+        </button>
+
+        <button onclick="openModal()" style="width:100%; padding:12px; background:linear-gradient(135deg, #f59e0b, #d97706); border:none; border-radius:10px; color:#000; font-size:13px; font-weight:900; margin-top:10px; cursor:pointer;">
+          👑 Unlock Master Wealth & Finance Suite ($97)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="leadModal" class="modal-backdrop">
+    <div class="modal-card">
+      <h2 style="color:#fff; font-size:18px; font-weight:900; margin-bottom:6px;">Master Finance & Wealth Vault</h2>
+      <p style="font-size:12px; color:#9ca3af; margin-bottom:16px;">Get personalized spreadsheet templates, ETF portfolio models, and high-yield wealth strategies.</p>
+      
+      <input type="text" id="leadName" placeholder="Your Name" style="margin-bottom:10px;">
+      <input type="email" id="leadEmail" placeholder="Your Email" style="margin-bottom:14px;">
+
+      <button onclick="submitLead()" style="width:100%; padding:14px; background:linear-gradient(135deg, #f59e0b, #d97706); color:#000; font-weight:900; border:none; border-radius:10px; cursor:pointer;">
+        Proceed to Sovereign Checkout &rarr;
+      </button>
+      <button onclick="closeModal()" style="margin-top:10px; background:transparent; border:none; color:#64748b; font-size:12px; cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    let currentNetWorth = 0;
+
+    function calculateGrowth() {
+      const p = Number(document.getElementById('startInput').value) || 0;
+      const pmt = Number(document.getElementById('monthlyInput').value) || 0;
+      const r = (Number(document.getElementById('rateInput').value) || 10) / 100 / 12;
+      const n = (Number(document.getElementById('yearsInput').value) || 20) * 12;
+
+      let fv = p * Math.pow(1 + r, n);
+      if (r > 0) {
+        fv += pmt * ((Math.pow(1 + r, n) - 1) / r);
+      } else {
+        fv += pmt * n;
+      }
+      currentNetWorth = Math.round(fv);
+      const totalDeposited = p + (pmt * n);
+      const interestEarned = Math.round(currentNetWorth - totalDeposited);
+
+      document.getElementById('netWorthVal').innerText = '$' + currentNetWorth.toLocaleString();
+      document.getElementById('depositedVal').innerText = '$' + totalDeposited.toLocaleString();
+      document.getElementById('interestVal').innerText = '$' + interestEarned.toLocaleString();
+      document.getElementById('resultsArea').style.display = 'block';
+    }
+
+    function shareWhatsApp() {
+      const text = encodeURIComponent(`💰 Check out this Compound Wealth Projection! Projected Net Worth: $${currentNetWorth.toLocaleString()}. Calculate your timeline: http://169.58.182.92:3000/tools/wealth-calculator`);
+      window.open('https://api.whatsapp.com/send?text=' + text, '_blank');
+      alert('🎉 30-Year Wealth Planner Unlocked!');
+    }
+
+    function openModal() { document.getElementById('leadModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('leadModal').style.display = 'none'; }
+
+    async function submitLead() {
+      const name = document.getElementById('leadName').value.trim();
+      const email = document.getElementById('leadEmail').value.trim();
+      if (!email) return alert('Please enter your email');
+
+      try {
+        await fetch('/api/tools/wealth/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, netWorth: currentNetWorth, sourceChannel: 'Daily Wealth Pulse' })
+        });
+      } catch(_) {}
+
+      window.open('https://selar.com/showlove/bethelmind?product=da-finance&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email), '_blank');
+      closeModal();
+    }
+  </script>
+</body>
+</html>

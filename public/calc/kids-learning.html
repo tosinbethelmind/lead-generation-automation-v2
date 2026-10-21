@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tiny Learners™ 3D - Fun Phonics, Math & Adventure Activity Generator</title>
+  <meta name="description" content="Generate instant, joyful screen-free learning games, rhymes, and printable activities for toddlers and preschoolers. Free instant activity generator.">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --bg: #0c1427;
+      --card-bg: rgba(23, 34, 59, 0.85);
+      --border: rgba(255, 255, 255, 0.1);
+      --pink: #ec4899;
+      --cyan: #06b6d4;
+      --yellow: #facc15;
+      --green: #10b981;
+      --purple: #a855f7;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Comic Sans MS", "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 1.5rem 1rem; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.85rem; background: rgba(236, 72, 153, 0.18); border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 9999px; font-size: 0.8rem; font-weight: 700; color: #f472b6; margin-bottom: 1rem; }
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem; background: linear-gradient(135deg, #f472b6, #facc15, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p.subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 2rem; line-height: 1.5; }
+    
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+    @media (min-width: 768px) { .grid { grid-template-columns: 1fr 1fr; } }
+    
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+    .form-group { margin-bottom: 1.25rem; }
+    label { display: block; font-size: 0.85rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.45rem; }
+    
+    select, input[type="text"], input[type="email"] { width: 100%; padding: 0.8rem 1rem; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 0.75rem; color: #fff; font-size: 0.95rem; outline: none; }
+    select:focus, input:focus { border-color: var(--pink); }
+
+    .character-banner { background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(6, 182, 212, 0.15)); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 1rem; padding: 1.25rem; text-align: center; margin-bottom: 1.25rem; }
+    .char-badge { font-size: 1.8rem; margin-bottom: 0.25rem; }
+    .char-name { font-size: 1.15rem; font-weight: 800; color: #facc15; }
+    .char-sub { font-size: 0.85rem; color: var(--muted); }
+
+    .rhyme-box { background: rgba(0, 0, 0, 0.35); border-left: 4px solid var(--yellow); padding: 0.85rem 1rem; border-radius: 0.5rem; margin-bottom: 1.25rem; font-style: italic; color: #fef08a; font-size: 0.95rem; line-height: 1.4; }
+
+    .step-item { background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.85rem 1rem; margin-bottom: 0.6rem; font-size: 0.88rem; line-height: 1.45; }
+    .step-item b { color: var(--cyan); }
+
+    .btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.95rem; border-radius: 0.75rem; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+    .btn-primary { background: linear-gradient(135deg, #ec4899, #db2777); color: #fff; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.35); margin-bottom: 0.75rem; }
+    .btn-share { background: #25d366; color: #fff; }
+    .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.active { display: flex; }
+    .modal-box { background: #162035; border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 1.25rem; max-width: 480px; width: 100%; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+    .close-btn { float: right; background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">
+      🎈 OFFICIAL TOOL: TINY LEARNERS 3D CARTOONS
+    </div>
+    <h1>Tiny Learners™ 3D Phonics & Fun Activity Generator</h1>
+    <p class="subtitle">Turn screen-time lessons into joyful physical games! Create custom phonics adventures, counting quests, and printable activities for toddlers and preschoolers in seconds.</p>
+
+    <div class="grid">
+      <!-- Input Controls -->
+      <div class="card">
+        <h3 style="margin-bottom: 1.25rem; font-size: 1.1rem; color: #fff;">1. Customize the Adventure</h3>
+
+        <div class="form-group">
+          <label>Child's First Name (Optional)</label>
+          <input type="text" id="childName" placeholder="e.g. Leo, Maya, Daniel" oninput="generateActivity()">
+        </div>
+
+        <div class="form-group">
+          <label>Age Group</label>
+          <select id="ageSelect" onchange="generateActivity()">
+            <option value="toddler" selected>Toddler (Ages 2 - 3)</option>
+            <option value="preschool">Preschooler (Ages 4 - 5)</option>
+            <option value="early_reader">Kindergarten & Early Reader (Ages 6 - 7)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Learning Subject Focus</label>
+          <select id="subjectSelect" onchange="generateActivity()">
+            <option value="phonics" selected>Alphabet Sounds & Phonics 🔤</option>
+            <option value="counting">1-2-3 Counting & Numbers 🔢</option>
+            <option value="colors_shapes">Colors & Magical Shapes 🎨</option>
+            <option value="animals">Wild Animal Safari & Sounds 🦁</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Adventure Theme</label>
+          <select id="themeSelect" onchange="generateActivity()">
+            <option value="space" selected>Cosmic Space Rockets 🚀</option>
+            <option value="dinosaurs">Friendly Dinosaur Safari 🦕</option>
+            <option value="underwater">Magical Ocean Dolphin 🐬</option>
+            <option value="farm">Sunny Farmyard Bear 🐻</option>
+          </select>
+        </div>
+
+        <button class="btn" style="background: rgba(255,255,255,0.08); color: #fff; margin-top: 1rem;" onclick="generateActivity()">
+          🎲 Roll a New Adventure Quest!
+        </button>
+      </div>
+
+      <!-- Generated Activity Card -->
+      <div class="card">
+        <div class="character-banner">
+          <div class="char-badge" id="charIcon">🚀🐰</div>
+          <div class="char-name" id="charName">Cosmo the Star Bunny</div>
+          <div class="char-sub" id="ageBadge">Ages 2-3 (Toddler) • Space Theme</div>
+        </div>
+
+        <h3 id="actTitle" style="font-size: 1.2rem; color: #fff; margin-bottom: 0.75rem;">🎈 Little Explorer's Space Sound Quest!</h3>
+        
+        <div class="rhyme-box" id="rhymeDisp">
+          "A is for Apple, crunchy and sweet! B is for Bouncing on happy little feet!"
+        </div>
+
+        <h4 style="font-size: 0.8rem; color: var(--muted); text-transform: uppercase; margin-bottom: 0.6rem; letter-spacing: 0.05em;">Interactive Game Routine:</h4>
+        <div id="stepsContainer"></div>
+
+        <div style="background: rgba(6, 182, 212, 0.1); border: 1px dashed rgba(6, 182, 212, 0.3); border-radius: 0.6rem; padding: 0.75rem; font-size: 0.82rem; margin: 1rem 0; color: #a5f3fc;">
+          <b>🖍️ Printable Prompt:</b> <span id="printablePrompt"></span>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <button class="btn btn-primary" onclick="openLeadModal()">
+            📥 Download 100+ Printable 3D Activity Bundle ($19)
+          </button>
+          <button class="btn btn-share" onclick="shareOnWhatsApp()">
+            💬 Share Fun Quest on WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lead Capture Modal -->
+  <div class="modal-overlay" id="leadModal">
+    <div class="modal-box">
+      <button class="close-btn" onclick="closeLeadModal()">&times;</button>
+      <div class="badge">🎁 100+ INSTANT PRINTABLE PDFS & FLASHCARDS</div>
+      <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; color: #fff;">Tiny Learners 100+ Activity Vault</h3>
+      <p style="color: var(--muted); font-size: 0.88rem; margin-bottom: 1.25rem; line-height: 1.4;">
+        Get instant digital access to 100+ high-resolution coloring pages, alphabet tracing sheets, number flashcards, and positive bedtime audio stories.
+      </p>
+
+      <form id="leadForm" onsubmit="submitLead(event)">
+        <div class="form-group">
+          <label>Parent / Teacher Name</label>
+          <input type="text" id="leadName" placeholder="Sarah Jenkins" required>
+        </div>
+        <div class="form-group">
+          <label>Your Email Address</label>
+          <input type="email" id="leadEmail" placeholder="sarah@gmail.com" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="submitBtn">
+          🎉 Get Instant Access via Selar ($19)
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const CHARACTERS = {
+      space: { name: 'Cosmo the Star Bunny', icon: '🚀🐰' },
+      dinosaurs: { name: 'Rexy the Friendly Dino', icon: '🦕🎈' },
+      underwater: { name: 'Pip the Little Dolphin', icon: '🐬✨' },
+      farm: { name: 'Barnaby the Dancing Bear', icon: '🐻🍯' }
+    };
+
+    const RHYMES = {
+      phonics: [
+        'A is for Apple, crunchy and sweet! B is for Bouncing on happy little feet!',
+        'Letters make sounds and words make a song, sing with our friendly friends all day long!',
+        'Listen real close to the sound in the breeze, can you say the letter with a cheerful please?'
+      ],
+      counting: [
+        'One little star shining in the blue, here comes another now we have two!',
+        'Count on your fingers, count on your toes, how many giggles before the day goes?',
+        'Three buzzing bees and four jumping frogs, counting is fun across lilypad bogs!'
+      ],
+      colors_shapes: [
+        'Red is a strawberry, Yellow is the sun, spotting bright shapes is so much fun!',
+        'A circle is round like a ball in the air, a square has four sides smiling right there!',
+        'Blue like the ocean and green like the trees, rainbow colors floating in the breeze!'
+      ],
+      animals: [
+        'The lion says roar, the puppy says woof, who is that tapping on top of the roof?',
+        'Elephants stomp with a giant big thud, little pink piglets splashing in the mud!',
+        'Hop like a bunny and swim like a shark, animal adventures until it gets dark!'
+      ]
+    };
+
+    function generateActivity() {
+      const name = document.getElementById('childName').value.trim() || 'Little Explorer';
+      const ageGroup = document.getElementById('ageSelect').value;
+      const subject = document.getElementById('subjectSelect').value;
+      const theme = document.getElementById('themeSelect').value;
+
+      const char = CHARACTERS[theme] || CHARACTERS.space;
+      document.getElementById('charIcon').textContent = char.icon;
+      document.getElementById('charName').textContent = char.name;
+
+      let ageText = 'Ages 2-3 (Toddler)';
+      if (ageGroup === 'preschool') ageText = 'Ages 4-5 (Preschool)';
+      if (ageGroup === 'early_reader') ageText = 'Ages 6-7 (Early Reader)';
+      document.getElementById('ageBadge').textContent = ageText + ' • ' + theme.toUpperCase() + ' Theme';
+
+      const rhymes = RHYMES[subject] || RHYMES.phonics;
+      const rhyme = rhymes[Math.floor(Math.random() * rhymes.length)];
+      document.getElementById('rhymeDisp').textContent = '"' + rhyme + '"';
+
+      let title = '';
+      let steps = [];
+      let printable = '';
+
+      if (subject === 'phonics') {
+        title = '🎈 ' + name + '\'s ' + theme.toUpperCase() + ' Sound Quest!';
+        steps = [
+          '1. Introduce ' + char.name + ': Make the cheerful "Sss" (space starship) or "B-B-B" (bunny bounce) sound together!',
+          '2. Treasure Hunt: Find 3 things in the room starting with that sound and tap them with a high-five!',
+          '3. Rhythm Chant: Clap your hands and sing the rhyme together twice with big smiles!'
+        ];
+        printable = 'Draw a giant bubble letter decorated with ' + theme + ' stars and stickers for ' + name + ' to color!';
+      } else if (subject === 'counting') {
+        title = '🔢 ' + name + '\'s ' + theme.toUpperCase() + ' Counting Quest!';
+        steps = [
+          '1. Star Jumps: Have ' + name + ' do 1 big jump, 2 claps, and 3 soft spins with ' + char.name + '!',
+          '2. Object Touch: Place 5 toy blocks or spoons on the rug and count out loud together: 1, 2, 3, 4, 5!',
+          '3. Victory Hug: Give each other a giant cuddle and say: "We did it, great job!"'
+        ];
+        printable = 'Connect-the-dots from numbers 1 to 10 revealing a smiling ' + theme + ' friend to color in!';
+      } else if (subject === 'colors_shapes') {
+        title = '🎨 ' + name + '\'s Rainbow & Shape Carnival!';
+        steps = [
+          '1. Shape Hands: Form a circle with your fingers and peer through it like binoculars!',
+          '2. Color Spy: Spot 2 bright red or blue things and whisper their secret names to ' + char.name + '.',
+          '3. Freeze Dance: Dance like an astronaut and freeze into a square when the song pauses!'
+        ];
+        printable = 'Color-by-number with extra-thick outline shapes perfect for crayons and little fingers!';
+      } else {
+        title = '🦁 ' + name + '\'s Safari Adventure!';
+        steps = [
+          '1. Animal Voice: Ask ' + name + ' what sound ' + char.name + ' makes, then roar or chirp together!',
+          '2. Animal Gallop: Stomp like an elephant or hop like a kangaroo across the rug.',
+          '3. Story Hug: Whisper a bedtime adventure where ' + name + ' saves a friendly animal.'
+        ];
+        printable = 'Trace animal footprints across the maze to lead ' + char.name + ' home!';
+      }
+
+      document.getElementById('actTitle').textContent = title;
+      document.getElementById('printablePrompt').textContent = printable;
+
+      const container = document.getElementById('stepsContainer');
+      container.innerHTML = '';
+      steps.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'step-item';
+        div.textContent = s;
+        container.appendChild(div);
+      });
+    }
+
+    function shareOnWhatsApp() {
+      const title = document.getElementById('actTitle').textContent;
+      const text = `🎈 Look at the fun learning game I just generated for my toddler: "${title}"! Try this free 3D learning activity tool: ` + window.location.origin + `/tools/kids-learning`;
+      window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    function openLeadModal() {
+      document.getElementById('leadModal').classList.add('active');
+    }
+
+    function closeLeadModal() {
+      document.getElementById('leadModal').classList.remove('active');
+    }
+
+    async function submitLead(e) {
+      e.preventDefault();
+      const name = document.getElementById('leadName').value;
+      const email = document.getElementById('leadEmail').value;
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = 'Securing Access...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/tools/kids/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            childName: document.getElementById('childName').value,
+            subject: document.getElementById('subjectSelect').value,
+            ageGroup: document.getElementById('ageSelect').value,
+            selectedTier: 'activity_bundle',
+            sourceChannel: 'Tiny Learners 3D Cartoons'
+          })
+        });
+        const data = await res.json();
+        if (data.success && data.selarCheckoutUrl) {
+          window.location.href = data.selarCheckoutUrl;
+        } else {
+          window.location.href = 'https://selar.com/showlove/bethelmind?product=da-kids&email=' + encodeURIComponent(email);
+        }
+      } catch (err) {
+        window.location.href = 'https://selar.com/showlove/bethelmind?product=da-kids&email=' + encodeURIComponent(email);
+      }
+    }
+
+    // Initial generation
+    generateActivity();
+  </script>
+</body>
+</html>

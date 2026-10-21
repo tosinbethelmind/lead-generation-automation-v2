@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AI & SaaS Tech Stack Finder | Micro-SaaS Matcher</title>
+  <meta name="description" content="Match modern AI APIs, vector databases, and frontend frameworks tailored to your startup concept.">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #111827;
+      --card-border: #1f2937;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --primary: #3b82f6;
+      --accent: #f59e0b;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 680px; display: flex; flex-direction: column; gap: 20px; }
+    .header { text-align: center; padding: 20px 12px 10px; }
+    .badge { display: inline-block; padding: 4px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 999px; font-size: 11px; font-weight: 700; color: #93c5fd; text-transform: uppercase; margin-bottom: 10px; }
+    h1 { font-size: 24px; font-weight: 900; line-height: 1.2; margin-bottom: 8px; color: #fff; }
+    p.sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: #e5e7eb; }
+    select { width: 100%; padding: 12px 14px; background: #0b1120; border: 1px solid #374151; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+    select:focus { border-color: var(--primary); }
+    .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: none; border-radius: 12px; color: #fff; font-size: 15px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+    .btn-primary:active { transform: scale(0.98); }
+    .stack-card { background: #070b14; border: 1px solid #1f2937; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+    .stack-title { font-weight: 800; font-size: 14px; color: #93c5fd; margin-bottom: 4px; }
+    .stack-desc { font-size: 12px; color: #cbd5e1; line-height: 1.5; }
+    .share-btn { width: 100%; padding: 12px; background: #059669; border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .modal-card { background: #111827; border: 1px solid #374151; border-radius: 20px; max-width: 440px; width: 100%; padding: 24px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">⚡ Full-Stack Micro-SaaS Matcher</div>
+      <h1>AI & SaaS Tech Stack Finder</h1>
+      <p class="sub">Find the optimal open-source tools, API backends, and deployment architectures for your project.</p>
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label>Primary Project Category</label>
+        <select id="catSelect">
+          <option value="video">Automated Video Creation (Remotion / FFmpeg)</option>
+          <option value="voice">AI Voiceover & Speech (Edge-TTS / ElevenLabs)</option>
+          <option value="leadgen">Lead Scraping & Enrichment (Puppeteer / Playwright)</option>
+          <option value="automation">Workflow Orchestration (Node.js / SQLite / PM2)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Budget Level</label>
+        <select id="budgetSelect">
+          <option value="free">100% Free / Open-Source ($0/month)</option>
+          <option value="freemium" selected>Freemium & API Pay-As-You-Go ($10-$50/month)</option>
+          <option value="pro">Pro Scale ($100+/month)</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" onclick="matchStack()">🚀 Match Optimal Architecture</button>
+
+      <div id="resultsArea" style="display:none; margin-top: 20px;">
+        <div style="font-weight:800; font-size:14px; color:#fff; margin-bottom:10px;">Recommended Architecture Stack:</div>
+        <div id="stacksContainer"></div>
+
+        <button class="share-btn" onclick="shareWhatsApp()">
+          <span>📱 Share on WhatsApp (Unlock Boilerplate Repos)</span>
+        </button>
+
+        <button onclick="openModal()" style="width:100%; padding:12px; background:linear-gradient(135deg, #f59e0b, #d97706); border:none; border-radius:10px; color:#000; font-size:13px; font-weight:900; margin-top:10px; cursor:pointer;">
+          👑 Unlock Full-Stack AI Boilerplate Vault ($47)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="leadModal" class="modal-backdrop">
+    <div class="modal-card">
+      <h2 style="color:#fff; font-size:18px; font-weight:900; margin-bottom:6px;">Full-Stack AI Boilerplate</h2>
+      <p style="font-size:12px; color:#9ca3af; margin-bottom:16px;">Production-ready GitHub repos with pre-configured authentication, payment webhooks, and AI pipelines.</p>
+      
+      <input type="text" id="leadName" placeholder="Your Name" style="margin-bottom:10px;">
+      <input type="email" id="leadEmail" placeholder="Your Email" style="margin-bottom:14px;">
+
+      <button onclick="submitLead()" style="width:100%; padding:14px; background:linear-gradient(135deg, #f59e0b, #d97706); color:#000; font-weight:900; border:none; border-radius:10px; cursor:pointer;">
+        Proceed to Sovereign Checkout &rarr;
+      </button>
+      <button onclick="closeModal()" style="margin-top:10px; background:transparent; border:none; color:#64748b; font-size:12px; cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const stacks = {
+      video: [
+        { title: 'Remotion React Video Engine', desc: 'Programmatic MP4 rendering using standard React components, CSS animations, and FFmpeg.' },
+        { title: 'Local Stock Asset Vaulting', desc: 'Pre-rendered high-retention 4K B-roll clips for zero-cost instant background composition.' }
+      ],
+      voice: [
+        { title: 'Microsoft Edge-TTS Neural SAPI', desc: '100% free, natural neural speech synthesis with zero API tokens or rate limits.' },
+        { title: 'ElevenLabs Voice Cloner', desc: 'Ultra-realistic human voice cloning for commercial authority channels.' }
+      ],
+      leadgen: [
+        { title: 'Playwright & Patchright Headless CDP', desc: 'Route-level resource blocking (aborting images & media) saving 85% bandwidth.' },
+        { title: 'SQLite node:sqlite ACID Store', desc: 'Ultra-fast, zero-network embedded database with concurrent write protection.' }
+      ],
+      automation: [
+        { title: 'PM2 Sovereign God Daemon', desc: 'Self-healing 24/7 background process management with zero-downtime reloads.' },
+        { title: 'IPv4-First DNS & Exponential Backoff', desc: 'Resilient networking prevents IPv6 unreachable errors and API rate storms.' }
+      ]
+    };
+
+    function matchStack() {
+      const cat = document.getElementById('catSelect').value;
+      const matched = stacks[cat] || stacks.video;
+
+      const html = matched.map(m => `
+        <div class="stack-card">
+          <div class="stack-title">✅ ${m.title}</div>
+          <div class="stack-desc">${m.desc}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('stacksContainer').innerHTML = html;
+      document.getElementById('resultsArea').style.display = 'block';
+    }
+
+    function shareWhatsApp() {
+      const text = encodeURIComponent('⚡ Check out this AI & SaaS Stack Matcher: http://169.58.182.92:3000/tools/ai-stack-finder');
+      window.open('https://api.whatsapp.com/send?text=' + text, '_blank');
+      alert('🎉 Boilerplate Vault Unlocked!');
+    }
+
+    function openModal() { document.getElementById('leadModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('leadModal').style.display = 'none'; }
+
+    async function submitLead() {
+      const name = document.getElementById('leadName').value.trim();
+      const email = document.getElementById('leadEmail').value.trim();
+      if (!email) return alert('Please enter your email');
+
+      try {
+        await fetch('/api/tools/tech/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, interestCategory: document.getElementById('catSelect').value, projectedAnnualSavings: 15000 })
+        });
+      } catch(_) {}
+
+      window.open('https://selar.com/showlove/bethelmind?product=da-aitools&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email), '_blank');
+      closeModal();
+    }
+  </script>
+</body>
+</html>
