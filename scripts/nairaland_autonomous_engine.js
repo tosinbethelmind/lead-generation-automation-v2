@@ -599,12 +599,56 @@ function getStatus() {
   };
 }
 
+// 5. Autonomous 24/7 Full Cycle (Posts next tool if >=12h, and bumps active threads)
+async function runAutonomousCycle() {
+  console.log('\n============================================================');
+  console.log('NAIRALAND AUTONOMOUS 24/7 CYCLE INITIATED');
+  console.log('============================================================');
+
+  const ledger = loadLedger();
+
+  // 1. Check if we should post a new topic
+  const lastPostTime = ledger.threads && ledger.threads.length > 0 
+    ? new Date(ledger.threads[0].postedAt).getTime() 
+    : 0;
+  const hoursSinceLastPost = (Date.now() - lastPostTime) / (1000 * 60 * 60);
+
+  console.log(`Hours since last published topic: ${hoursSinceLastPost.toFixed(1)}h`);
+
+  if (hoursSinceLastPost >= 12 || !ledger.threads || ledger.threads.length === 0) {
+    const postedKeys = (ledger.threads || []).map(t => t.campaignKey);
+    const catalogKeys = Object.keys(CAMPAIGN_CATALOG);
+    
+    // Pick the first unposted campaign
+    let nextCampaignKey = catalogKeys.find(k => !postedKeys.includes(k));
+    if (!nextCampaignKey) {
+      nextCampaignKey = catalogKeys[Math.floor(Math.random() * catalogKeys.length)];
+    }
+
+    console.log(`🚀 Scheduling new topic publication: [${nextCampaignKey}]...`);
+    try {
+      await postCampaign(nextCampaignKey);
+    } catch (err) {
+      console.warn(`Could not post campaign ${nextCampaignKey}:`, err.message);
+    }
+  } else {
+    console.log(`⏳ Topic publication paused: Last post was ${hoursSinceLastPost.toFixed(1)}h ago (Required cadence: >=12h to protect account).`);
+  }
+
+  // 2. Run Bumper on all active threads
+  console.log('\nChecking active threads for autonomous bumps...');
+  await bumpAndReplyToThreads();
+  console.log('============================================================\n');
+}
+
 // CLI Command Dispatcher
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0] || '--status';
 
-  if (command === '--interactive-login') {
+  if (command === '--auto-cycle' || command === '--cycle') {
+    await runAutonomousCycle();
+  } else if (command === '--interactive-login') {
     await setupInteractiveSession();
   } else if (command === '--login') {
     const userArg = args.find(a => a.startsWith('--user=') || a.startsWith('--username='));
@@ -659,6 +703,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  runAutonomousCycle,
   createStealthBrowser,
   setupInteractiveSession,
   loginWithCredentials,

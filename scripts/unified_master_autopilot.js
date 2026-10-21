@@ -496,8 +496,8 @@ function startNairalandWorker() {
     return;
   }
 
-  log('🇳🇬 [Worker 16: Nairaland Engine] Running autonomous thread bumper & engagement check...');
-  nairalandProcess = spawn('node', ['--max-old-space-size=256', 'scripts/nairaland_autonomous_engine.js', '--bump'], {
+  log('🇳🇬 [Worker 16: Nairaland Engine] Running autonomous 24/7 campaign rotation & thread bumper...');
+  nairalandProcess = spawn('node', ['--max-old-space-size=256', 'scripts/nairaland_autonomous_engine.js', '--auto-cycle'], {
     cwd: rootDir,
     shell: false,
     stdio: 'inherit',
@@ -506,7 +506,7 @@ function startNairalandWorker() {
   });
 
   nairalandProcess.on('exit', (code) => {
-    log(`ℹ️ [Worker 16: Nairaland Engine] Bumper cycle completed (Code: ${code}). Next cycle in 3 hours...`);
+    log(`ℹ️ [Worker 16: Nairaland Engine] Autonomous cycle completed (Code: ${code}). Next cycle in 3 hours...`);
     setTimeout(startNairalandWorker, 3 * 60 * 60 * 1000);
   });
 
