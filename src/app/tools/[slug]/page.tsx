@@ -19,6 +19,7 @@ import { SectorToolsWidget } from '@/components/SectorToolsWidget';
 import { RecruitmentEngineWidget } from '@/components/RecruitmentEngineWidget';
 import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 import IntegrationBlueprintDashboard from '@/components/IntegrationBlueprintDashboard';
+import TurnkeyAdBanner from '@/components/TurnkeyAdBanner';
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -590,6 +591,17 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
                 </a>
 
                 <a
+                  href={`https://wa.me/?text=${encodeURIComponent(`Check out this free tool: *${viralTool.title}* on Bethelmind Analytics!\nhttps://www.bethelmindanalytics.com/tools/${cleanSlug}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/10 text-xs font-bold transition-all shadow-sm"
+                  title="Share Tool on WhatsApp"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className="hidden sm:inline">Share</span>
+                </a>
+
+                <a
                   href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am using the *${viralTool.title}* on your website. I want to deploy this custom engine for my business.`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -601,6 +613,9 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
               </div>
             </div>
           </header>
+
+          {/* Top Turnkey Monetization Banner */}
+          <TurnkeyAdBanner position="top" category={viralTool.category} />
 
           {/* Interactive Calculator Embed Frame */}
           <section 
@@ -616,6 +631,9 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
               allow="clipboard-write; clipboard-read"
             />
           </section>
+
+          {/* Bottom Turnkey Monetization Banner */}
+          <TurnkeyAdBanner position="bottom" category={viralTool.category} />
 
           {/* Digital Upsell & Monetization Offer Card */}
           <section className="bg-gradient-to-br from-indigo-950/60 via-slate-900/80 to-slate-950 border border-indigo-500/30 rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
