@@ -1,12 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Share2, ShieldCheck, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Sparkles, ShieldCheck, Zap, MessageCircle, CheckCircle2, ChevronRight, Lock } from 'lucide-react';
 import { SectorToolsWidget } from '@/components/SectorToolsWidget';
 import { RecruitmentEngineWidget } from '@/components/RecruitmentEngineWidget';
-import { WebappToolActionBar } from '@/components/WebappToolActionBar';
 import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 import IntegrationBlueprintDashboard from '@/components/IntegrationBlueprintDashboard';
-import { SmeWebsiteGraderWidget } from '@/components/blog/SmeWebsiteGraderWidget';
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -14,89 +12,8 @@ interface ToolPageProps {
 
 export const dynamicParams = true;
 
-const VIRAL_TOOLS: Record<string, { title: string; file: string; badge: string; description: string }> = {
-  'solar-savings': { 
-    title: 'Solar & Clean Energy Savings Calculator', 
-    file: 'solar-savings.html', 
-    badge: 'High Solar ROI', 
-    description: 'Calculate 25-year rooftop solar savings, panel count, and 30% clean energy rebates in seconds.' 
-  },
-  'crypto-dca': { 
-    title: 'WhaleDCA™ Crypto & Profit Target Exit Ladder', 
-    file: 'crypto-dca.html', 
-    badge: 'Crypto Alpha', 
-    description: 'Simulate Bitcoin, ETH & Solana dollar-cost averaging and auto-generate institutional 4-tier take-profit exit targets.' 
-  },
-  'kids-learning': { 
-    title: 'Tiny Learners™ 3D Kids Phonics & Activity Generator', 
-    file: 'kids-learning.html', 
-    badge: 'Family & Toddlers', 
-    description: 'Generate instant, screen-free phonics games, counting quests, and printable coloring activities for toddlers and preschoolers.' 
-  },
-  'biohack-longevity': { 
-    title: 'Biohack Longevity™ Macro & Autophagy Engine', 
-    file: 'biohack-longevity.html', 
-    badge: 'Biotech Health', 
-    description: 'Calculate personalized BMR/TDEE, cellular autophagy hours, optimal protein floor, and intermittent fasting windows.' 
-  },
-  'wealth-calculator': { 
-    title: 'WealthPulse Pro™ Compound Growth Model', 
-    file: 'wealth-calculator.html', 
-    badge: 'Finance Magnet', 
-    description: 'Interactive compound interest, financial freedom timeline, and annual savings projection visualizer.' 
-  },
-  'deal-calculator': { 
-    title: 'DealCheck™ Rental Property Cashflow & Cap Rate', 
-    file: 'cashflow-calculator.html', 
-    badge: 'Real Estate Pro', 
-    description: 'Calculate net cash-on-cash return, cap rate, and mortgage DSCR for long-term rental and Airbnb properties.' 
-  },
-  'cashflow': { 
-    title: 'DealCheck™ Rental Property Cashflow & Cap Rate', 
-    file: 'cashflow-calculator.html', 
-    badge: 'Real Estate Pro', 
-    description: 'Calculate net cash-on-cash return, cap rate, and mortgage DSCR for long-term rental and Airbnb properties.' 
-  },
-  'script-generator': { 
-    title: 'Viral Shorts Hook & Script Studio', 
-    file: 'script-generator.html', 
-    badge: 'Trending #1', 
-    description: 'Generate 0–3s high-contrast hooks, scene-by-scene B-roll prompts, and APV > 100% loop bridges in 10 seconds.' 
-  },
-  'site-audit': { 
-    title: 'Website Health & SEO Audit Scorecard', 
-    file: 'site-audit.html', 
-    badge: 'Client Closer', 
-    description: 'Instant 360° audit grading Google Core Web Vitals, On-Page SEO, security headers, and revenue leakage with auto client pitch.' 
-  },
-  'wholesaling-loi': { 
-    title: 'Real Estate Wholesaling & Auto-LOI Contract', 
-    file: 'wholesaling-loi.html', 
-    badge: 'Deal Closer', 
-    description: 'Calculate 70% Rule Maximum Allowable Offer (MAO), rehab repair tiers, and auto-generate 1-page cash offer LOI contracts.' 
-  },
-  'prayer-journal': { 
-    title: 'Daily Grace™ Scripture & Prayer Journal', 
-    file: 'prayer-journal.html', 
-    badge: 'Faith & Soul', 
-    description: 'Scripture promise finder, prayer journal with audio devotionals, and daily faith affirmations.' 
-  },
-  'sports-edge': { 
-    title: 'SportsBet Edge™ Expected Value Matrix', 
-    file: 'sports-edge.html', 
-    badge: 'High Engagement', 
-    description: 'Calculate positive expected value (+EV), fractional Kelly Criterion staking, and eliminate emotional wagering tilt.' 
-  },
-  'ai-stack-finder': { 
-    title: 'AI & Micro-SaaS Stack ROI Finder', 
-    file: 'ai-stack-finder.html', 
-    badge: 'Automation', 
-    description: 'Discover the top AI software stack for your business and calculate exact monthly hours and dollars saved.' 
-  },
-};
-
 export async function generateStaticParams() {
-  const defaultSlugs = [
+  return [
     { slug: 'website-grader' },
     { slug: 'google-visibility' },
     { slug: 'solar-boq' },
@@ -114,204 +31,257 @@ export async function generateStaticParams() {
     { slug: 'integrations' },
     { slug: 'social-ads' },
   ];
-
-  const viralSlugs = Object.keys(VIRAL_TOOLS).map(s => ({ slug: s }));
-  return [...defaultSlugs, ...viralSlugs];
 }
 
-function slugToCategory(slug: string): string {
-  switch (slug) {
-    case 'salon-booking':
-    case 'beauty':
-    case 'spa':
-      return 'Beauty & Hair Salon';
-    case 'solar-boq':
-    case 'solar-quote':
-    case 'solar-quote-pro':
-    case 'solar':
-      return 'Solar & Renewable Energy';
-    case 'tokunbo-duty':
-    case 'auto':
-    case 'car-clearing':
-      return 'Automobile & Tokunbo Dealership';
-    case 'mortgage-calc':
-    case 'mortgage':
-    case 'real-estate':
-      return 'Real Estate & Property Development';
-    case 'clinic-booking':
-    case 'healthcare':
-    case 'clinic':
-      return 'Clinic & Healthcare HMO';
-    case 'school-tuition':
-    case 'education':
-    case 'school':
-      return 'Private Education & Schools';
-    case 'logistics-waybill':
-    case 'logistics':
-      return 'Logistics & Freight Haulage';
-    case 'cac-filing':
-    case 'legal':
-      return 'Legal & CAC Corporate Services';
-    case 'shortlet-booking':
-    case 'hospitality':
-    case 'shortlet':
-      return 'Shortlet & Hospitality Apartments';
-    case 'social-ads':
-      return 'Social Ad Automation & Growth';
-    default:
-      return 'Solar & Renewable Energy';
+interface ToolProfile {
+  title: string;
+  category: string;
+  tag: string;
+  summary: string;
+  highlightPills: string[];
+}
+
+function getToolProfile(rawSlug: string): ToolProfile {
+  const slug = (rawSlug || 'solar').toLowerCase().replace(/\.html$/i, '');
+
+  if (/solar|boq|inverter|energy/.test(slug)) {
+    return {
+      title: 'Solar & Renewable Energy BOQ Load Sizer',
+      category: 'Solar & Renewable Energy',
+      tag: '⚡ NERC Band A Tariff Avoidance Suite',
+      summary: 'Precision load calculation, DisCo Band A/B/C tariff avoidance vs generator diesel fuel economics, and automated customer WhatsApp BOQ proposal generator for Nigerian solar installers.',
+      highlightPills: ['Sub-2s WhatsApp BOQ', '51.2V LiFePO4 Sizing', 'Diesel vs Solar Payback Matrix'],
+    };
   }
+
+  if (/tokunbo|duty|auto|car|clearing/.test(slug)) {
+    return {
+      title: 'Tokunbo VIN Customs Duty & Port Landing Sizer',
+      category: 'Automobile & Tokunbo Dealership',
+      tag: '🚗 NCS 2026 Single-Sheet Tariff',
+      summary: 'Calculates statutory 20% import duty, 15% NAC levy, 7.5% VAT, and PTML/Tin Can terminal charges for Lagos car dealers and auto auction importers.',
+      highlightPills: ['17-Digit VIN Decode', 'NCS 2026 Valuation Matrix', 'Terminal Demurrage Estimator'],
+    };
+  }
+
+  if (/salon|beauty|spa|hair|stylist/.test(slug)) {
+    return {
+      title: 'Salon & Spa 24/7 Booking & Deposit Lock Engine',
+      category: 'Beauty & Hair Salon',
+      tag: '💅 25% Anti-No-Show Deposit Lock',
+      summary: '24/7 appointment scheduler that locks client stylist slots with instant Paystack/Moniepoint bank transfer deposits, eliminating empty salon chairs and fake alerts.',
+      highlightPills: ['Zero Fake Alerts', '24/7 WhatsApp Appointment Desk', 'Stylist Commission Split Ledger'],
+    };
+  }
+
+  if (/mortgage|real-estate|estate|property|land/.test(slug)) {
+    return {
+      title: 'Plot Layout, Survey Levies & Mortgage Amortization Suite',
+      category: 'Real Estate & Property Development',
+      tag: '🏡 Title & Infrastructure Allocation',
+      summary: 'Calculates 300 sqm Half Plot vs 500/600 sqm Full Plot outright packages, registered survey (Red Copy) fees, deed of assignment levies, and developer installment spreads.',
+      highlightPills: ['Survey & Deed Sizer', 'Multi-Tier Realtor 5% WHT Ledger', 'Diaspora Forex Milestone Tracker'],
+    };
+  }
+
+  if (/clinic|healthcare|medical|doctor|hmo/.test(slug)) {
+    return {
+      title: 'Clinic HMO Claims & Procedure Co-Pay Reconciler',
+      category: 'Clinic & Healthcare HMO',
+      tag: '🏥 60% Upfront Admission Deposit',
+      summary: 'Reconciles HMO procedure tariffs, patient co-pay deductions, and secondary AuthCodes to prevent 60-day claim rejections, with upfront surgical admission deposits.',
+      highlightPills: ['Reliance / Hygeia AuthCode Risk Guard', '60% Admission Deposit Lock', 'Diagnostic Lab Panel Sizer'],
+    };
+  }
+
+  if (/school|tuition|education|pin/.test(slug)) {
+    return {
+      title: 'Private School Term Tuition & Result PIN Portal',
+      category: 'Private Education & Schools',
+      tag: '🎓 Result Broadsheet Gating',
+      summary: 'Student term fee payment gateway that automatically gates digital term report cards and WAEC broadsheets until school fees clear, with scratch-PIN batch accounting.',
+      highlightPills: ['Auto-Gated Report Cards', 'PIN Batch Profit Accounting', 'Direct Bank Transfer Remittance'],
+    };
+  }
+
+  if (/logistics|waybill|dispatch|freight|haulage/.test(slug)) {
+    return {
+      title: 'Hyperlocal Dispatch & Long-Haul Trip Freight Sizer',
+      category: 'Logistics & Freight Haulage',
+      tag: '📦 Interstate Diesel & Waybill Tracker',
+      summary: 'Aggregates multi-carrier dispatch pricing, generates automated WhatsApp waybill tracking links for customers, and audits driver interstate diesel consumption.',
+      highlightPills: ['Auto-SMS Waybill Tracking', 'Diesel Pilferage Audit', 'NURTW Interstate Levy Estimator'],
+    };
+  }
+
+  if (/cac|legal|filing|compliance/.test(slug)) {
+    return {
+      title: 'CAC Corporate Filing Fees & Legal Retainer Suite',
+      category: 'Legal & CAC Corporate Services',
+      tag: '⚖️ CAC & SCUML Compliance Matrix',
+      summary: 'Calculates statutory CAC registration and annual return arrears, FIRS stamp duty, SCUML anti-money laundering certification fees, and itemized counsel debit notes.',
+      highlightPills: ['Official CAC Fee Matrix', 'SCUML & TCC Cost Sizer', 'FIRS 7.5% VAT & 5% WHT Credit Note'],
+    };
+  }
+
+  if (/shortlet|hospitality|hotel|apartment/.test(slug)) {
+    return {
+      title: 'Shortlet Electricity Token & Caution Deposit Reconciler',
+      category: 'Shortlet & Hospitality Apartments',
+      tag: '🏨 DisCo kWh & Damage Deposit Ledger',
+      summary: 'Reconciles guest nightly rates, 250kVA generator overtime surcharges, and actual DisCo prepaid meter consumption against refundable caution deposits.',
+      highlightPills: ['Prepaid Meter Token Deduction', 'Refundable Caution Splitter', 'Instant WhatsApp Check-In Receipt'],
+    };
+  }
+
+  return {
+    title: `${rawSlug.replace(/\.html$/i, '').replace(/[-_]+/g, ' ').toUpperCase()} Commercial Tool`,
+    category: 'Commercial Enterprise',
+    tag: '⚡ 2026 Enterprise Engine',
+    summary: 'Automated 24/7 business calculation, quotation, and client qualification engine pre-configured for Nigerian commercial operators.',
+    highlightPills: ['Instant WhatsApp Dispatch', '₦0 Upfront Preview', 'Bankable PDF Quote Generator'],
+  };
 }
 
 export async function generateMetadata({ params }: ToolPageProps) {
   const { slug } = await params;
-  const cleanSlug = (slug || '').replace(/\.html$/i, '');
+  const profile = getToolProfile(slug);
 
-  if (VIRAL_TOOLS[cleanSlug]) {
-    const vTool = VIRAL_TOOLS[cleanSlug];
-    return {
-      title: `${vTool.title} | Free Online Calculator Bethelmind`,
-      description: vTool.description,
-      openGraph: {
-        title: `${vTool.title} | Free Bethelmind Tool`,
-        description: vTool.description,
-      }
-    };
-  }
-  
-  if (cleanSlug === 'website-grader' || cleanSlug === 'google-visibility' || cleanSlug === 'sme-grader') {
-    return {
-      title: 'Nigerian SME Google Visibility & Revenue-Leak Grader — Free Digital Audit',
-      description: 'Audit your Google search presence, competitor ad poaching risk, and WhatsApp reply latency in 10 seconds. Free instant mobile website prototype for Nigerian SMEs.',
-      openGraph: {
-        title: 'Nigerian SME Google Visibility & Revenue-Leak Grader | Bethelmind',
-        description: 'Discover how much revenue your business loses without an official mobile website and 24/7 WhatsApp AI closer.',
-      },
-    };
-  }
-
-  if (cleanSlug === 'solar-quote-pro' || cleanSlug === 'solar-quote' || cleanSlug === 'solar-boq') {
-    return {
-      title: 'Solar Quote Pro Calculator Nigeria — Free Inverter & Battery Sizing Tool Lagos',
-      description: 'Calculate exact solar inverter, load requirement, and battery backup pricing in 2 minutes. Free interactive solar sizing & PDF quote generator for Nigerian installers and property owners.',
-      openGraph: {
-        title: 'Solar Quote Pro Calculator Nigeria — Free Solar Sizing & PDF Quote Generator',
-        description: 'Instant load sizing, battery requirement calculation, and installer quote matching across Lagos, Abuja, & Port Harcourt.',
-      },
-    };
-  }
-
-  const formattedTitle = (cleanSlug || 'tool').replace(/-/g, ' ').toUpperCase();
   return {
-    title: `Free ${formattedTitle} Business Tool | Bethelmind Digital Solutions Nigeria`,
-    description: `Free standalone business automation calculator, instant PDF quote generator, and interactive lead tool for ${formattedTitle} in Nigeria. Share on WhatsApp or bookmark for instant use.`,
+    title: `${profile.title} Nigeria | Bethelmind Digital Solutions`,
+    description: profile.summary,
+    openGraph: {
+      title: `${profile.title} | Bethelmind Digital Solutions Nigeria`,
+      description: profile.summary,
+      url: `https://www.bethelmindanalytics.com/tools/${slug}`,
+      siteName: 'Bethelmind Digital Solutions',
+      locale: 'en_NG',
+      type: 'website',
+    },
   };
 }
 
 export default async function StandaloneToolPage({ params }: ToolPageProps) {
   const { slug } = await params;
-  const cleanSlug = (slug || '').replace(/\.html$/i, '');
 
-  if (cleanSlug === 'integrations') {
+  if (slug === 'integrations') {
     return <IntegrationBlueprintDashboard />;
   }
 
-  // 🚀 Check if this matches one of our 12 Viral Interactive Tools
-  if (VIRAL_TOOLS[cleanSlug]) {
-    const tool = VIRAL_TOOLS[cleanSlug];
-    return (
-      <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-        <div className="bg-slate-900 border-b border-slate-800 px-4 py-3">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
+  const profile = getToolProfile(slug);
+
+  return (
+    <main className="min-h-screen bg-[#040711] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+      {/* Top Hairline Metallic Accent Glow */}
+      <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 opacity-90 shadow-[0_0_20px_rgba(6,182,212,0.6)]" />
+
+      {/* Atmospheric Ambient Glow */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-cyan-500/10 via-indigo-500/5 to-transparent blur-[120px] rounded-full" />
+      </div>
+
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
+        
+        {/* Executive Luxury Header Bar */}
+        <header className="bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 sm:p-7 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-white/5 space-y-5">
+          
+          {/* Top Metadata Row */}
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-white/10 pb-4">
             <Link
-              href="/tools"
-              className="inline-flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl transition-all"
+              href="/home"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/10 transition-all font-semibold"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to All Tools
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Bethelmind Ecosystem</span>
             </Link>
 
-            <div className="flex items-center space-x-2">
-              <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30">
-                {tool.badge}
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-[11px]">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                CAC Certified Enterprise · RC 7034297
               </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-bold text-[11px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                2026 Production Release
+              </span>
+            </div>
+          </div>
+
+          {/* Headline & Value Proposition */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pt-1">
+            <div className="space-y-2 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/25 text-[11px] font-black uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>{profile.tag}</span>
+              </div>
+              
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-['Outfit'] tracking-tight leading-tight">
+                {profile.title}
+              </h1>
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pt-1">
+                {profile.summary}
+              </p>
+
+              {/* Value Highlight Pills */}
+              <div className="flex flex-wrap items-center gap-2 pt-2">
+                {profile.highlightPills.map((pill, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-300 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg"
+                  >
+                    <CheckCircle2 className="w-3 h-3 text-cyan-400" />
+                    <span>{pill}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Direct Commercial Activation CTA Card */}
+            <div className="lg:w-72 shrink-0 bg-gradient-to-br from-slate-900/90 to-slate-950 p-4 rounded-2xl border border-cyan-500/30 shadow-xl space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400 font-semibold">Custom SME Setup</span>
+                <span className="text-emerald-400 font-black">₦35,000 Starter</span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-snug">
+                Want this exact tool + 24/7 AI WhatsApp closer deployed on your dedicated custom domain?
+              </p>
               <a
-                href={`/calc/${tool.file}`}
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I am testing the live *${profile.title}* on your website. I would like to activate our dedicated business setup with 24/7 AI WhatsApp closer (₦35k Starter Package).`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-slate-400 hover:text-white bg-slate-800/80 px-2.5 py-1 rounded-full border border-slate-700"
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-cyan-500/20 active:scale-95"
               >
-                <span>Full-Screen View</span>
-                <ExternalLink className="w-3 h-3" />
+                <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                <span>Claim Setup on WhatsApp →</span>
               </a>
             </div>
           </div>
-        </div>
+        </header>
 
-        <div className="flex-1 max-w-5xl w-full mx-auto p-2 sm:p-6 flex flex-col">
-          <div className="flex-1 w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative" style={{ minHeight: '880px' }}>
-            <iframe 
-              src={`/calc/${tool.file}`} 
-              title={tool.title}
-              className="w-full h-full border-0 absolute inset-0"
-              style={{ width: '100%', height: '100%', minHeight: '880px' }}
-            />
-          </div>
-        </div>
-      </main>
-    );
-  }
+        {/* Feature Interactive Suite */}
+        <section aria-label="Interactive Tool Engine">
+          {slug === 'recruitment' ? (
+            <RecruitmentEngineWidget />
+          ) : (
+            <SectorToolsWidget businessCategory={profile.category} />
+          )}
+        </section>
 
-  const detectedCategory = slugToCategory(cleanSlug);
-
-  return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 sm:p-8">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <WebappToolActionBar currentTool={(cleanSlug || 'tool').replace('-', ' ')} />
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/80 border border-slate-800 p-4 rounded-2xl shadow-xl backdrop-blur-md">
-          <div className="flex items-center space-x-3">
-            <Link
-              href="/tools"
-              className="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 hover:text-white transition-all"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="px-2.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[10px] font-semibold uppercase tracking-wider">
-                  Free Standalone Business Tool
-                </span>
-                <span className="flex items-center space-x-1 text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>100% Free & Shareable</span>
-                </span>
-              </div>
-              <h1 className="text-xl font-extrabold text-white mt-1 capitalize flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-blue-400" />
-                <span>{(cleanSlug || 'tool').replace('-', ' ')} Tool</span>
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <Link
-              href="/tools"
-              className="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition-all shadow-lg"
-            >
-              Explore All Tools &rarr;
-            </Link>
-          </div>
-        </div>
-
-        {cleanSlug === 'recruitment' ? (
-          <RecruitmentEngineWidget />
-        ) : (
-          <SectorToolsWidget businessCategory={detectedCategory} />
-        )}
+        {/* Security & Verification Footer Seal */}
+        <footer className="text-center py-6 text-xs text-slate-500 border-t border-white/5 space-y-2">
+          <p className="flex items-center justify-center gap-2 font-medium">
+            <Lock className="w-3.5 h-3.5 text-slate-400" />
+            <span>Bank-Grade 256-bit Encrypted Telemetry · Settlement via Moniepoint Microfinance Bank (6805375225)</span>
+          </p>
+          <p>© 2026 Bethelmind Digital Solutions · Plot 12, Commercial Corridor, Lagos, Nigeria.</p>
+        </footer>
       </div>
 
+      {/* 24/7 Bethel AI Concierge */}
       <CustomerAiAgentWidget
-        sector={(cleanSlug || 'tool').replace(/-/g, ' ')}
-        agentTitle={`Bethel — Your ${(cleanSlug || 'tool').replace(/-/g, ' ').toUpperCase()} AI Guide`}
+        sector={profile.category}
+        agentTitle={`Bethel — ${profile.category} AI Specialist`}
       />
     </main>
   );

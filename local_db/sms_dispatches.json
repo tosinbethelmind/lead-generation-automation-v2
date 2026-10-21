@@ -18568,5 +18568,145 @@
     "length": 148,
     "delivered_at": "2026-10-19T09:49:27.868Z",
     "gateway": "airtel_vps_tailscale"
+  },
+  {
+    "id": "sms_hot_1792482119642_0",
+    "phone": "+2348151766817",
+    "leadName": "Tikado.ng (CCTV/Solar Inverter/Dstv office)",
+    "leadId": "solar_det_6712412bd1115f89",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for Tikado.ng: bethelmindanalytics.com/preview/solar_det_6712412bd1115f89 -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:41:59.642Z"
+  },
+  {
+    "id": "sms_hot_1792482122120_1",
+    "phone": "+2347036234843",
+    "leadName": "Vertical Solar",
+    "leadId": "solar_det_b3cf0ee6c90db0d0",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for Vertical Solar: bethelmindanalytics.com/preview/solar_det_b3cf0ee6c90db0d0 -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:02.121Z"
+  },
+  {
+    "id": "sms_hot_1792482124758_2",
+    "phone": "+2348092305719",
+    "leadName": "Sosai Renewable Energies Company",
+    "leadId": "solar_det_d520f9dc0d0d7de8",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for Sosai Renewable En: bethelmindanalytics.com/preview/solar_det_d520f9dc0d0d7de8 -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:04.758Z"
+  },
+  {
+    "id": "sms_hot_1792482129152_3",
+    "phone": "+2348147725270",
+    "leadName": "Top Ice Solar Technology Ltd",
+    "leadId": "solar_det_1025002eb0292901",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for Top Ice Solar Tech: bethelmindanalytics.com/preview/solar_det_1025002eb0292901 -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:09.152Z"
+  },
+  {
+    "id": "sms_hot_1792482132332_4",
+    "phone": "+2349010331551",
+    "leadName": "The Destination by Gidanka",
+    "leadId": "lead_ng_6b4ff51cb2f30d",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for The Destination by: bethelmindanalytics.com/preview/lead_ng_6b4ff51cb2f30d -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:12.332Z"
+  },
+  {
+    "id": "sms_hot_1792482134994_5",
+    "phone": "+2349098899323",
+    "leadName": "STAAP",
+    "leadId": "lead_ng_f3eb21c2c00bd1",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for STAAP: bethelmindanalytics.com/preview/lead_ng_f3eb21c2c00bd1 -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:14.994Z"
+  },
+  {
+    "id": "sms_hot_1792482138188_6",
+    "phone": "+2348080720141",
+    "leadName": "Tecil Solar Uyo",
+    "leadId": "fa442b77-fa2d-472d-8eb7-0ff70036cd1a",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for Tecil Solar Uyo: bethelmindanalytics.com/preview/fa442b77-fa2d-472d-8eb7-0ff70036cd1a -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:18.188Z"
+  },
+  {
+    "id": "sms_hot_1792482141310_7",
+    "phone": "+2348082840164",
+    "leadName": "Calebson Energy Integrated Services Ltd",
+    "leadId": "calebson-energy-inte",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for Calebson Energy In: bethelmindanalytics.com/preview/calebson-energy-inte -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:21.310Z"
+  },
+  {
+    "id": "sms_hot_1792482148831_8",
+    "phone": "+2348165545058",
+    "leadName": "CoolWorld",
+    "leadId": "lead_ng_95d31a4132e287",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for CoolWorld: bethelmindanalytics.com/preview/lead_ng_95d31a4132e287 -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:28.832Z"
+  },
+  {
+    "id": "sms_hot_1792482152711_9",
+    "phone": "+2348137308683",
+    "leadName": "Visions Innovations Applications",
+    "leadId": "visions-innovations-",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for Visions Innovation: bethelmindanalytics.com/preview/visions-innovations- -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:32.711Z"
+  },
+  {
+    "id": "sms_hot_1792482155679_10",
+    "phone": "+2347014449810",
+    "leadName": "Cisols Engineering Ltd",
+    "leadId": "lead_ng_dceda28ee1c064",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for Cisols Engineering: bethelmindanalytics.com/preview/lead_ng_dceda28ee1c064 -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:35.679Z"
+  },
+  {
+    "id": "sms_hot_1792482159677_11",
+    "phone": "+2348099527771",
+    "leadName": "Tact Systems And Security Services",
+    "leadId": "lead_ng_ca8ba57f6b585d",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for Tact Systems And S: bethelmindanalytics.com/preview/lead_ng_ca8ba57f6b585d -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:39.677Z"
+  },
+  {
+    "id": "sms_hot_1792482165928_12",
+    "phone": "+2348033588041",
+    "leadName": "SunCraft Energy Center Ltd",
+    "leadId": "lead_ng_749d7f202caac4",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for SunCraft Energy Ce: bethelmindanalytics.com/preview/lead_ng_749d7f202caac4 -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:45.928Z"
+  },
+  {
+    "id": "sms_hot_1792482168993_13",
+    "phone": "+2347068802555",
+    "leadName": "Manamuz Electric Ltd",
+    "leadId": "lead_ng_403759c57ce1ef",
+    "text": "Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for Manamuz Electric L: bethelmindanalytics.com/preview/lead_ng_403759c57ce1ef -Bethelmind",
+    "status": "DELIVERED",
+    "provider": "airtel_vps_gateway",
+    "sent_at": "2026-10-20T07:42:48.993Z"
   }
 ]
