@@ -131,7 +131,7 @@ export default function BlogIndexPage() {
                 </span>{' '}
                 for Nigeria&rsquo;s Growth Economy
               </h1>
-              <p className="text-lg text-slate-400 max-w-xl leading-relaxed">
+              <p className="text-lg text-[#CBD5E1] max-w-xl leading-relaxed">
                 Verified commercial intel on solar ROI, real estate yields, customs duties, and autonomous AI sales systems &mdash; published autonomously, 30+ times daily.
               </p>
             </div>
@@ -155,7 +155,7 @@ export default function BlogIndexPage() {
                   />
                   <div className="text-xl mb-1">{m.icon}</div>
                   <div className="text-2xl font-black text-amber-400 leading-none">{m.value}</div>
-                  <div className="text-[11px] text-slate-500 mt-1 font-medium">{m.label}</div>
+                  <div className="text-[11px] text-[#CBD5E1] mt-1 font-semibold">{m.label}</div>
                 </div>
               ))}
             </div>
@@ -215,7 +215,7 @@ export default function BlogIndexPage() {
                       <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight tracking-tight mb-4 group-hover:text-amber-300 transition-colors duration-300">
                         {featuredPost.title}
                       </h2>
-                      <p className="text-slate-400 leading-relaxed text-base mb-8 max-w-lg">
+                      <p className="text-[#CBD5E1] leading-relaxed text-base mb-8 max-w-lg">
                         {featuredPost.excerpt}
                       </p>
                     </div>
@@ -229,7 +229,7 @@ export default function BlogIndexPage() {
                         </div>
                         <div>
                           <div className="text-sm font-bold text-white">Oyelakin Tosin</div>
-                          <div className="text-xs text-slate-500">
+                          <div className="text-xs text-[#94A3B8]">
                             {featuredPost.read_time} &middot; {timeAgo(featuredPost.created_at)}
                           </div>
                         </div>
@@ -285,9 +285,9 @@ export default function BlogIndexPage() {
                         <h3 className="text-[16px] font-black text-white leading-snug mb-3 group-hover:text-amber-300 transition-colors line-clamp-3">
                           {post.title}
                         </h3>
-                        <p className="text-slate-500 text-xs leading-relaxed line-clamp-2">{post.excerpt}</p>
+                        <p className="text-[#CBD5E1] text-xs leading-relaxed line-clamp-2">{post.excerpt}</p>
                       </div>
-                      <div className="mt-5 flex items-center gap-2 text-xs text-slate-500">
+                      <div className="mt-5 flex items-center gap-2 text-xs text-[#94A3B8]">
                         <span>{post.read_time}</span>
                         <span>&middot;</span>
                         <span className="text-amber-400/70 font-semibold">{timeAgo(post.created_at)}</span>
@@ -344,7 +344,7 @@ export default function BlogIndexPage() {
             <h3 className="text-2xl sm:text-3xl font-black text-white mb-4 leading-tight">
               Need a 24/7 AI Sales Bot or Done-For-You Business Website?
             </h3>
-            <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-8">
+            <p className="text-[#CBD5E1] text-sm sm:text-base leading-relaxed mb-8">
               We deploy 100% turnkey commercial operations portals in 48 hours and 1-line script quote widgets in 10 minutes. Connect directly to our Lagos desk.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">

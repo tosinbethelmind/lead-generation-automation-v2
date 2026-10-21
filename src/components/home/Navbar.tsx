@@ -70,6 +70,22 @@ export default function Navbar() {
       badge: 'LIVE',
     },
     {
+      title: 'Tokunbo VIN & Customs Checker',
+      desc: 'Copart salvage, US flood check & Nigeria Customs duties',
+      href: '/vin',
+      icon: Car,
+      color: '#f43f5e',
+      badge: 'NEW',
+    },
+    {
+      title: 'P2P FX Arbitrage Terminal',
+      desc: 'Binance vs Bybit live spreads, profit calculator & Telegram signals',
+      href: '/arbitrage',
+      icon: TrendingUp,
+      color: '#10b981',
+      badge: 'NEW',
+    },
+    {
       title: 'Growth Solutions Suite',
       desc: 'The 10 High-Conversion Sector Monetization Tools',
       href: '/solutions',
