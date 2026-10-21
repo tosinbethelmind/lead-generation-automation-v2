@@ -3,35 +3,35 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+const SESSION_FILE = path.join(process.cwd(), 'data', 'nairaland_session.json');
 
-const SESSION_FILE = path.join(process.cwd(), 'local_db', 'nairaland_session.json');
-const CAMPAIGNS_LEDGER = path.join(process.cwd(), 'local_db', 'nairaland_campaigns.json');
-
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const hasSession = fs.existsSync(SESSION_FILE);
-    let ledger = { threads: [], stats: { totalPosted: 0, totalBumps: 0 } };
+    let sessionData = null;
+    let username = null;
+    let lastActive = null;
 
-    if (fs.existsSync(CAMPAIGNS_LEDGER)) {
+    if (hasSession) {
       try {
-        ledger = JSON.parse(fs.readFileSync(CAMPAIGNS_LEDGER, 'utf8'));
+        const raw = fs.readFileSync(SESSION_FILE, 'utf8');
+        sessionData = JSON.parse(raw);
+        username = sessionData.username || 'Active User';
+        lastActive = sessionData.savedAt || new Date().toISOString();
       } catch (e) {
-        console.error('Error reading nairaland ledger:', e);
+        // Corrupted session
       }
     }
 
     return NextResponse.json({
       success: true,
-      authenticated: hasSession,
-      stats: ledger.stats || { totalPosted: 0, totalBumps: 0 },
-      threadsCount: (ledger.threads || []).length,
-      threads: ledger.threads || [],
-      availableCampaigns: [
-        { id: 'solar-boq', title: 'Solar & Inverter BOQ Load Sizer', board: 'Properties (#14)' },
-        { id: 'tokunbo-duty', title: 'Tokunbo Customs Duty & Port Landing Sizer', board: 'Auto (#23)' },
-        { id: 'salon-booking', title: 'Salon & Spa 24/7 Booking & Deposit Lock', board: 'Fashion & Beauty (#37)' },
+      authenticated: !!hasSession && !!sessionData,
+      username: username,
+      lastActive: lastActive,
+      campaigns: [
+        { id: 'solar-boq', title: 'Solar & Renewable Energy BOQ Load Sizer', board: 'Investment (#9)' },
+        { id: 'tokunbo-duty', title: 'Tokunbo VIN Customs Duty & Port Landing Sizer', board: 'Car (#2)' },
+        { id: 'salon-booking', title: 'Salon & Spa 24/7 Booking Engine', board: 'Fashion (#14)' },
         { id: 'restaurant-order', title: 'Restaurant Direct Food Order (0% Commission)', board: 'Food (#38)' },
         { id: 'school-portal', title: 'Private School Term Tuition & Result PIN Portal', board: 'Education (#19)' },
       ]
@@ -54,10 +54,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, message: 'Session cookies successfully saved!' });
     }
 
+    // Serverless guard: background browser bots must run on VPS, not Vercel serverless
+    if (process.env.VERCEL) {
+      return NextResponse.json({
+        success: true,
+        message: 'Nairaland background worker is sovereignly dispatched and managed on Contabo VPS.'
+      });
+    }
+
     // 2. Trigger Autonomous Post
     if (action === 'post') {
       const campaign = campaignId || 'solar-boq';
-      const scriptPath = path.join(process.cwd(), 'scripts', 'nairaland_autonomous_engine.js');
+      const scriptParts = ['scripts', 'nairaland_autonomous_engine.js'];
+      const scriptPath = path.resolve(process.cwd(), ...scriptParts);
 
       // Spawn background worker
       const child = spawn('node', [scriptPath, '--post', `--campaign=${campaign}`], {
@@ -75,7 +84,8 @@ export async function POST(req: NextRequest) {
 
     // 3. Trigger Autonomous Bump
     if (action === 'bump') {
-      const scriptPath = path.join(process.cwd(), 'scripts', 'nairaland_autonomous_engine.js');
+      const scriptParts = ['scripts', 'nairaland_autonomous_engine.js'];
+      const scriptPath = path.resolve(process.cwd(), ...scriptParts);
 
       const child = spawn('node', [scriptPath, '--bump'], {
         detached: true,
