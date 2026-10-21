@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SocialAdAutomationWidget } from './SocialAdAutomationWidget';
 import { RecruitmentEngineWidget } from './RecruitmentEngineWidget';
-import { WebappToolActionBar } from './WebappToolActionBar';
 import { KineticNumber } from './interactive/KineticNumber';
 import { ExecutivePdfQuoteModal } from './ExecutivePdfQuoteModal';
 import { 
@@ -75,12 +74,12 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
   };
 
   return (
-    <div className="bg-slate-950/80 border border-slate-800 p-3 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs mb-4">
-      <div className="flex items-center space-x-2">
-        <span className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg font-bold">🔗</span>
+    <div className="bg-white/[0.02] border border-white/[0.08] p-3 sm:p-3.5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs mb-5 shadow-sm">
+      <div className="flex items-center space-x-2.5">
+        <span className="p-1.5 bg-cyan-500/15 text-cyan-400 border border-cyan-500/25 rounded-lg text-sm">🔗</span>
         <div>
-          <span className="font-bold text-white">Direct Tool & Bookmark Link: </span>
-          <span className="text-slate-400 font-mono text-[11px]">{shareUrl}</span>
+          <span className="font-bold text-slate-200">Shareable Demo Link: </span>
+          <span className="text-cyan-400/90 font-mono text-[11px] select-all">{shareUrl}</span>
         </div>
       </div>
 
@@ -89,20 +88,36 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
           href={whatsappUrl}
           target="_blank"
           rel="noreferrer"
-          className="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-600/50 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1"
+          className="flex-1 sm:flex-none px-3.5 py-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 active:scale-95"
         >
           <span>📲 Share on WhatsApp</span>
         </a>
         <button
+          type="button"
           onClick={handleCopy}
-          className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-600/30 border border-blue-500/40 text-blue-300 hover:bg-blue-600/50 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1"
+          className="flex-1 sm:flex-none px-3.5 py-1.5 bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 active:scale-95"
         >
-          <span>{copied ? 'Copied Link! 🔗' : 'Copy Shareable Link'}</span>
+          <span>{copied ? 'Copied Link! ✓' : 'Copy Direct Link'}</span>
         </button>
       </div>
     </div>
   );
 }
+
+const SECTOR_TABS: Array<{ id: SectorToolTab; label: string; icon: string; color: string }> = [
+  { id: 'solar', label: 'Solar & Inverter BOQ', icon: '☀️', color: '#f59e0b' },
+  { id: 'auto', label: 'Tokunbo Duty & VIN', icon: '🚗', color: '#06b6d4' },
+  { id: 'beauty', label: 'Salon Deposit Lock', icon: '💅', color: '#ec4899' },
+  { id: 'restaurant', label: 'Restaurant 0% Commission', icon: '🍔', color: '#f97316' },
+  { id: 'retail', label: 'Retail Catalog Closer', icon: '🛍️', color: '#d946ef' },
+  { id: 'mortgage', label: 'Plot Layout & Mortgage', icon: '🏡', color: '#14b8a6' },
+  { id: 'healthcare', label: 'Clinic HMO Reconciler', icon: '🏥', color: '#f43f5e' },
+  { id: 'education', label: 'School Tuition & PIN', icon: '🎓', color: '#a855f7' },
+  { id: 'logistics', label: 'Logistics & Freight', icon: '📦', color: '#6366f1' },
+  { id: 'legal', label: 'Legal CAC & Stamp Duty', icon: '⚖️', color: '#10b981' },
+  { id: 'hospitality', label: 'Shortlet Power & Caution', icon: '🏨', color: '#eab308' },
+  { id: 'dva', label: 'DVA Transfer Shield', icon: '🏦', color: '#10b981' },
+];
 
 export function SectorToolsWidget({
   businessCategory = 'Solar & Renewable Energy',
@@ -372,104 +387,28 @@ export function SectorToolsWidget({
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex overflow-x-auto border-b border-slate-800 bg-slate-950 p-2 gap-1.5 scrollbar-none">
-          <button
-            onClick={() => { setActiveTab('solar'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'solar' ? 'bg-amber-500/20 border border-amber-500/50 text-amber-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            ☀️ Solar BOQ & ROI
-          </button>
-          <button
-            onClick={() => { setActiveTab('auto'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'auto' ? 'bg-blue-500/20 border border-blue-500/50 text-blue-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            🚗 Tokunbo Duty & VIN
-          </button>
-          <button
-            onClick={() => { setActiveTab('beauty'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'beauty' ? 'bg-pink-500/20 border border-pink-500/50 text-pink-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            💅 Salon & Spa Deposit Lock
-          </button>
-          <button
-            onClick={() => { setActiveTab('restaurant'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'restaurant' ? 'bg-orange-500/20 border border-orange-500/50 text-orange-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            🍔 Restaurant & Food (0% Commission)
-          </button>
-          <button
-            onClick={() => { setActiveTab('retail'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'retail' ? 'bg-fuchsia-500/20 border border-fuchsia-500/50 text-fuchsia-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            🛍️ Boutique & Retail Catalog Closer
-          </button>
-          <button
-            onClick={() => { setActiveTab('mortgage'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'mortgage' ? 'bg-teal-500/20 border border-teal-400/50 text-teal-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            🏡 Real Estate Mortgage
-          </button>
-          <button
-            onClick={() => { setActiveTab('healthcare'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'healthcare' ? 'bg-rose-500/20 border border-rose-400/50 text-rose-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            🏥 Clinic & HMO Booking
-          </button>
-          <button
-            onClick={() => { setActiveTab('education'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'education' ? 'bg-purple-500/20 border border-purple-400/50 text-purple-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            🎓 School Tuition & Result PIN
-          </button>
-          <button
-            onClick={() => { setActiveTab('logistics'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'logistics' ? 'bg-indigo-500/20 border border-indigo-400/50 text-indigo-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            📦 Logistics & Freight
-          </button>
-          <button
-            onClick={() => { setActiveTab('legal'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'legal' ? 'bg-emerald-500/20 border border-emerald-400/50 text-emerald-400 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            ⚖️ Legal & CAC Fees
-          </button>
-          <button
-            onClick={() => { setActiveTab('hospitality'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'hospitality' ? 'bg-amber-600/20 border border-amber-500/50 text-amber-300 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            🏨 Shortlet & Apartments
-          </button>
-          <button
-            onClick={() => { setActiveTab('dva'); setResult(null); }}
-            className={`px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-              activeTab === 'dva' ? 'bg-emerald-600/20 border border-emerald-500/50 text-emerald-300 shadow-md' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            🏦 DVA Instant Bank Transfer
-          </button>
+        {/* Luxury Glass Navigation Tabs Track */}
+        <div className="flex overflow-x-auto border-b border-white/10 bg-[#060a17]/95 p-2.5 gap-2 scrollbar-none">
+          {SECTOR_TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => { setActiveTab(tab.id); setResult(null); }}
+                style={{
+                  background: isActive ? `${tab.color}20` : 'rgba(255, 255, 255, 0.03)',
+                  border: `1px solid ${isActive ? tab.color : 'rgba(255, 255, 255, 0.08)'}`,
+                  color: isActive ? '#ffffff' : '#94a3b8',
+                  boxShadow: isActive ? `0 4px 18px ${tab.color}35` : 'none',
+                }}
+                className="px-3.5 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-all flex items-center gap-2 hover:text-white hover:bg-white/[0.08] active:scale-95"
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Tab Panels */}
