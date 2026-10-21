@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SalaryTakeHome AI™ | 2026 Net Pay, PAYE & Remote Income Calculator</title>
+  <meta name="description" content="Calculate your true monthly take-home pay after statutory PAYE tax, 8% pension, NHF, and relief allowances for Nigerian and remote earners.">
+  <style>
+    :root {
+      --bg: #07090e;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --emerald: #10b981;
+      --blue: #38bdf8;
+      --amber: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #0d2818 0%, var(--bg) 70%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px;
+    }
+    .container { width: 100%; max-width: 620px; display: flex; flex-direction: column; gap: 14px; }
+
+    header { text-align: center; margin-bottom: 2px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .form-group { margin-bottom: 14px; }
+    label { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--emerald); display: block; margin-bottom: 6px; }
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--emerald); }
+
+    /* Results Grid */
+    .net-hero {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .net-title { font-size: 0.75rem; font-weight: 800; color: #a7f3d0; text-transform: uppercase; }
+    .net-amount { font-size: 2rem; font-weight: 900; color: #10b981; margin: 4px 0; }
+    .net-sub { font-size: 0.78rem; color: #cbd5e1; }
+
+    .breakdown-table {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .bd-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      font-size: 0.8rem;
+    }
+    .bd-lbl { color: var(--text-muted); font-weight: 600; }
+    .bd-val { font-weight: 800; color: #fff; }
+    .bd-val.deduct { color: #f87171; }
+
+    .btn-share-wa {
+      width: 100%;
+      background: #25d366;
+      color: #040711;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 900;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    /* STREAM 1: Selar Blueprint */
+    .selar-banner {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .selar-title { font-size: 0.88rem; font-weight: 900; color: #a7f3d0; }
+    .selar-desc { font-size: 0.74rem; color: #94a3b8; margin-top: 2px; }
+    .btn-selar {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.78rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* STREAM 2: Turnkey B2B Deployment CTA */
+    .b2b-cta {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    .b2b-cta a { color: var(--emerald); font-weight: 700; text-decoration: underline; }
+
+    footer {
+      font-size: 0.7rem;
+      color: #64748b;
+      text-align: center;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">💰 2026 Statutory Payroll & Net Pay Engine</div>
+      <h1>SalaryTakeHome AI™</h1>
+      <p style="font-size:0.78rem; color:#94a3b8;">Calculate true monthly take-home income after statutory PAYE, pension, and relief allowances.</p>
+    </header>
+
+    <div class="card">
+      <div class="form-group">
+        <label>Monthly Gross Salary</label>
+        <div style="display:flex; gap:8px;">
+          <select id="currency" style="width:110px;" onchange="calculateSalary()">
+            <option value="NGN">₦ NGN</option>
+            <option value="USD">$ USD</option>
+            <option value="GBP">£ GBP</option>
+          </select>
+          <input type="number" id="grossSalary" value="450000" step="5000" oninput="calculateSalary()" placeholder="e.g. 450,000">
+        </div>
+      </div>
+
+      <div class="form-group" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div>
+          <label>Pension Scheme</label>
+          <select id="pensionDeduct" onchange="calculateSalary()">
+            <option value="0.08">Statutory (8%)</option>
+            <option value="0">Exempt (0%)</option>
+          </select>
+        </div>
+        <div>
+          <label>NHF (Housing Fund)</label>
+          <select id="nhfDeduct" onchange="calculateSalary()">
+            <option value="0.025">Standard (2.5%)</option>
+            <option value="0">Exempt (0%)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Net Result Hero -->
+      <div class="net-hero">
+        <div class="net-title">Estimated Monthly Take-Home Pay</div>
+        <div class="net-amount" id="netPay">₦384,750</div>
+        <div class="net-sub" id="annualNet">Annual Net: ₦4,617,000 · Effective Rate: 14.5%</div>
+      </div>
+
+      <!-- Itemized Breakdown -->
+      <div class="breakdown-table">
+        <div class="bd-row">
+          <span class="bd-lbl">Gross Monthly Income:</span>
+          <span class="bd-val" id="bdGross">₦450,000</span>
+        </div>
+        <div class="bd-row">
+          <span class="bd-lbl">Statutory Pension Contribution (8%):</span>
+          <span class="bd-val deduct" id="bdPension">-₦36,000</span>
+        </div>
+        <div class="bd-row">
+          <span class="bd-lbl">National Housing Fund (NHF 2.5%):</span>
+          <span class="bd-val deduct" id="bdNhf">-₦11,250</span>
+        </div>
+        <div class="bd-row">
+          <span class="bd-lbl">Estimated PAYE Personal Income Tax:</span>
+          <span class="bd-val deduct" id="bdPaye">-₦18,000</span>
+        </div>
+      </div>
+
+      <button class="btn-share-wa" onclick="shareSalaryToWhatsApp()">
+        <span>📲 Share This Take-Home Calculation on WhatsApp</span>
+      </button>
+    </div>
+
+    <!-- STREAM 1: Selar Blueprint Upsell -->
+    <div class="selar-banner">
+      <div>
+        <div class="selar-title">💎 2026 Passive Wealth Compounding & Cashflow Model</div>
+        <div class="selar-desc">Turn your monthly take-home salary into generational wealth using our automated compounding sheets.</div>
+      </div>
+      <a href="https://selar.com/showlove/bethelmind?product=da-finance" target="_blank" rel="noopener noreferrer" class="btn-selar">
+        <span>Get Wealth Model (₦15,000 / $19) →</span>
+      </a>
+    </div>
+
+    <!-- STREAM 2: Turnkey B2B Deployment CTA -->
+    <div class="b2b-cta">
+      🏢 Want a branded, automated payroll and employee salary slip calculator for your company website? <a href="https://wa.me/2348022791227?text=Hello%20Bethelmind!%20I%20want%20to%20deploy%20a%20turnkey%20Salary%20Calculator%20for%20my%20business." target="_blank" rel="noopener noreferrer">Request Turnkey B2B Payroll Setup (₦75k Setup) →</a>
+    </div>
+
+    <footer>
+      <p>SalaryTakeHome AI™ · Built by Bethelmind Analytics · 2026 Statutory Tax Framework</p>
+      <p style="font-size:0.65rem; color:#475569; margin-top:6px;">
+        ⚖️ <strong>Legal & Tax Notice:</strong> Computations are approximations based on statutory PITA 2020/2026 Consolidated Relief Allowances (CRA) and graduated PAYE tax brackets. This tool provides informational financial estimates and does not constitute formal accounting or legal tax advice.
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    function calculateSalary() {
+      const curr = document.getElementById('currency').value;
+      const symbol = curr === 'NGN' ? '₦' : (curr === 'USD' ? '$' : '£');
+      const gross = parseFloat(document.getElementById('grossSalary').value) || 0;
+      const pensionRate = parseFloat(document.getElementById('pensionDeduct').value);
+      const nhfRate = parseFloat(document.getElementById('nhfDeduct').value);
+
+      const pension = gross * pensionRate;
+      const nhf = gross * nhfRate;
+
+      // PITA Consolidated Relief Allowance (CRA): Higher of ₦200k/yr or 1% of gross + 20% of earned income
+      const annualGross = gross * 12;
+      const cra = (Math.max(200000, 0.01 * annualGross) + 0.20 * annualGross) / 12;
+
+      // Taxable Income
+      const taxable = Math.max(0, gross - pension - nhf - cra);
+
+      // Graduated Monthly Tax Brackets approximation
+      let paye = 0;
+      if (taxable > 0) {
+        if (taxable <= 25000) paye = taxable * 0.07;
+        else if (taxable <= 50000) paye = 1750 + (taxable - 25000) * 0.11;
+        else if (taxable <= 100000) paye = 4500 + (taxable - 50000) * 0.15;
+        else if (taxable <= 250000) paye = 12000 + (taxable - 100000) * 0.19;
+        else paye = 40500 + (taxable - 250000) * 0.21;
+      }
+
+      const totalDeductions = pension + nhf + paye;
+      const net = Math.max(0, gross - totalDeductions);
+      const effectiveRate = gross > 0 ? ((totalDeductions / gross) * 100).toFixed(1) : '0';
+
+      document.getElementById('netPay').textContent = `${symbol}${Math.round(net).toLocaleString()}`;
+      document.getElementById('annualNet').textContent = `Annual Net: ${symbol}${Math.round(net * 12).toLocaleString()} · Effective Rate: ${effectiveRate}%`;
+      
+      document.getElementById('bdGross').textContent = `${symbol}${Math.round(gross).toLocaleString()}`;
+      document.getElementById('bdPension').textContent = `-${symbol}${Math.round(pension).toLocaleString()}`;
+      document.getElementById('bdNhf').textContent = `-${symbol}${Math.round(nhf).toLocaleString()}`;
+      document.getElementById('bdPaye').textContent = `-${symbol}${Math.round(paye).toLocaleString()}`;
+    }
+
+    function shareSalaryToWhatsApp() {
+      const curr = document.getElementById('currency').value;
+      const symbol = curr === 'NGN' ? '₦' : (curr === 'USD' ? '$' : '£');
+      const gross = document.getElementById('bdGross').textContent;
+      const net = document.getElementById('netPay').textContent;
+
+      const text = encodeURIComponent(`💼 2026 Salary Take-Home Breakdown:\nGross Salary: ${gross}\n👉 True Monthly Net Pay: ${net} (after PAYE, Pension & NHF)\n\nCalculate your exact take-home pay free here:\nhttps://www.bethelmindanalytics.com/tools/salary-calc`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    // Initialize
+    calculateSalary();
+  </script>
+</body>
+</html>

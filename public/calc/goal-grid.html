@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GoalGrid AI™ | Daily 5-Letter Football Mystery Star & Club Game</title>
+  <meta name="description" content="The viral daily football trivia grid. Guess today's 5-letter football star, club, or legend in 6 tries. Share your emoji grid on WhatsApp!">
+  <style>
+    :root {
+      --bg: #07090e;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --gray: #334155;
+      --dark-tile: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #0f2744 0%, var(--bg) 75%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+    }
+    .container { width: 100%; max-width: 520px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+
+    /* Header */
+    header { text-align: center; margin-bottom: 4px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #7dd3fc;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #38bdf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p.hint { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* Grid */
+    .grid-container {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      gap: 6px;
+      width: 280px;
+      height: 336px;
+      margin: 8px 0;
+    }
+    .grid-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .tile {
+      width: 100%;
+      height: 100%;
+      border: 2px solid var(--gray);
+      background: var(--dark-tile);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #fff;
+      user-select: none;
+      transition: transform 0.2s, background-color 0.4s, border-color 0.4s;
+    }
+    .tile.pop { transform: scale(1.1); }
+    .tile.correct { background: var(--green) !important; border-color: var(--green) !important; }
+    .tile.present { background: var(--yellow) !important; border-color: var(--yellow) !important; }
+    .tile.absent { background: #1e293b !important; border-color: #0f172a !important; color: #64748b; }
+
+    /* Keyboard */
+    .keyboard {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      touch-action: manipulation;
+    }
+    .key {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #f8fafc;
+      font-size: 0.82rem;
+      font-weight: 800;
+      border-radius: 6px;
+      min-width: 30px;
+      height: 44px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .key.wide { flex: 1.5; font-size: 0.72rem; }
+    .key:hover { background: #334155; }
+    .key.correct { background: var(--green); color: #fff; }
+    .key.present { background: var(--yellow); color: #fff; }
+    .key.absent { background: #0f172a; color: #475569; }
+
+    /* Result Card */
+    .result-card {
+      display: none;
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      animation: popIn 0.3s ease;
+    }
+    @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .result-title { font-size: 1.2rem; font-weight: 900; color: #fff; margin-bottom: 6px; }
+    .result-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
+
+    /* Viral Share Button */
+    .btn-share-wa {
+      width: 100%;
+      background: #25d366;
+      color: #040711;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 900;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+    }
+    .btn-share-wa:hover { filter: brightness(1.1); }
+
+    /* Unlocked Slip */
+    .unlocked-slip {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 10px;
+      text-align: left;
+    }
+    .us-title { font-size: 0.82rem; font-weight: 900; color: #34d399; }
+    .us-desc { font-size: 0.72rem; color: #cbd5e1; margin-top: 2px; }
+    .us-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .btn-us {
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      color: #fff;
+    }
+    .btn-us-sporty { background: #dc2626; }
+    .btn-us-bet9ja { background: #059669; }
+
+    .footer-links {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .foot-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-decoration: none;
+    }
+    .foot-btn span { color: var(--accent); font-weight: 700; }
+
+    .legal-notice {
+      font-size: 0.65rem;
+      color: #64748b;
+      line-height: 1.4;
+      text-align: center;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">⚽ Daily Football Grid #<span id="puzzleNum">142</span></div>
+      <h1>GoalGrid AI™</h1>
+      <p class="hint">Guess today's 5-letter football star or club in 6 tries.</p>
+    </header>
+
+    <!-- 6x5 Grid -->
+    <div class="grid-container" id="grid"></div>
+
+    <!-- Virtual Keyboard -->
+    <div class="keyboard" id="keyboard">
+      <div class="kb-row">
+        <button class="key" onclick="handleKey('Q')">Q</button>
+        <button class="key" onclick="handleKey('W')">W</button>
+        <button class="key" onclick="handleKey('E')">E</button>
+        <button class="key" onclick="handleKey('R')">R</button>
+        <button class="key" onclick="handleKey('T')">T</button>
+        <button class="key" onclick="handleKey('Y')">Y</button>
+        <button class="key" onclick="handleKey('U')">U</button>
+        <button class="key" onclick="handleKey('I')">I</button>
+        <button class="key" onclick="handleKey('O')">O</button>
+        <button class="key" onclick="handleKey('P')">P</button>
+      </div>
+      <div class="kb-row">
+        <button class="key" onclick="handleKey('A')">A</button>
+        <button class="key" onclick="handleKey('S')">S</button>
+        <button class="key" onclick="handleKey('D')">D</button>
+        <button class="key" onclick="handleKey('F')">F</button>
+        <button class="key" onclick="handleKey('G')">G</button>
+        <button class="key" onclick="handleKey('H')">H</button>
+        <button class="key" onclick="handleKey('J')">J</button>
+        <button class="key" onclick="handleKey('K')">K</button>
+        <button class="key" onclick="handleKey('L')">L</button>
+      </div>
+      <div class="kb-row">
+        <button class="key wide" onclick="handleKey('ENTER')">ENTER</button>
+        <button class="key" onclick="handleKey('Z')">Z</button>
+        <button class="key" onclick="handleKey('X')">X</button>
+        <button class="key" onclick="handleKey('C')">C</button>
+        <button class="key" onclick="handleKey('V')">V</button>
+        <button class="key" onclick="handleKey('B')">B</button>
+        <button class="key" onclick="handleKey('N')">N</button>
+        <button class="key" onclick="handleKey('M')">M</button>
+        <button class="key wide" onclick="handleKey('DEL')">⌫</button>
+      </div>
+    </div>
+
+    <!-- Result Card -->
+    <div class="result-card" id="resultCard">
+      <div class="result-title" id="resultTitle">🏆 BRILLIANT! 4/6</div>
+      <div class="result-subtitle" id="resultSubtitle">The mystery football word was <strong>MESSI</strong>!</div>
+      
+      <!-- Viral WhatsApp Share -->
+      <button class="btn-share-wa" onclick="shareScoreToWhatsApp()">
+        <span>📲 Share GoalGrid on WhatsApp</span>
+      </button>
+
+      <!-- Monetization Unlocked Slip -->
+      <div class="unlocked-slip">
+        <div class="us-title">🎁 Unlocked Reward: Today's 3-Match AI Value Slip (4.85x)</div>
+        <div class="us-desc">Arsenal Win (1.88) · Real Madrid vs Barca BTTS (1.55) · Inter Win (1.65)</div>
+        <div class="us-actions">
+          <a href="https://www.sportybet.com/ng/" target="_blank" rel="noopener noreferrer" class="btn-us btn-us-sporty">🔴 Load SportyBet →</a>
+          <a href="https://sports.bet9ja.com/" target="_blank" rel="noopener noreferrer" class="btn-us btn-us-bet9ja">🟢 Load Bet9ja →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cross Promotion Footer -->
+    <div class="footer-links">
+      <a href="/tools/sure-score" class="foot-btn">
+        ⚡ Want full xG & match predictions? <span>Open SureScore AI™ Predictor →</span>
+      </a>
+      <a href="https://wa.me/2348022791227?text=Hello%20Bethelmind!%20I%20want%20to%20deploy%20a%20turnkey%20GoalGrid%20trivia%20engine%20for%20my%20sports%20page." target="_blank" rel="noopener noreferrer" class="foot-btn">
+        🏢 License GoalGrid AI for your sports website (₦75k Setup) →
+      </a>
+    </div>
+
+    <div class="legal-notice">
+      ⚖️ <strong>Legal & Fair Use Notice:</strong> GoalGrid AI™ is an independent original sports trivia game developed by Bethelmind Analytics. All athlete names, clubs, and sports statistics are referenced solely for nominative commentary, educational, and trivia purposes under Fair Use. Not affiliated with, sponsored by, or endorsed by The New York Times, FIFA, UEFA, or the Premier League. 18+ Gamble Responsibly.
+    </div>
+  </div>
+
+  <script>
+    const FOOTBALL_WORDS = [
+      "MESSI", "SALAH", "POGBA", "KANE", "MODRI", 
+      "MILAN", "INTER", "LEEDS", "LAZIO", "PORTO",
+      "PEDRI", "GAVII", "DIAS", "VINAL", "GOATS"
+    ];
+
+    const now = new Date();
+    const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+    const TARGET_WORD = FOOTBALL_WORDS[dayOfYear % FOOTBALL_WORDS.length] || "MESSI";
+    document.getElementById('puzzleNum').textContent = dayOfYear;
+
+    let currentRow = 0;
+    let currentCol = 0;
+    let isGameOver = false;
+    let shareGrid = [];
+
+    const grid = document.getElementById('grid');
+    for (let r = 0; r < 6; r++) {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'grid-row';
+      rowDiv.id = `row-${r}`;
+      for (let c = 0; c < 5; c++) {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.id = `tile-${r}-${c}`;
+        rowDiv.appendChild(tile);
+      }
+      grid.appendChild(rowDiv);
+    }
+
+    function handleKey(key) {
+      if (isGameOver) return;
+
+      if (key === 'DEL' || key === 'BACKSPACE') {
+        if (currentCol > 0) {
+          currentCol--;
+          const tile = document.getElementById(`tile-${currentRow}-${currentCol}`);
+          tile.textContent = '';
+          tile.classList.remove('pop');
+        }
+      } else if (key === 'ENTER') {
+        if (currentCol === 5) {
+          checkGuess();
+        } else {
+          alert('Word must be 5 letters!');
+        }
+      } else if (/^[A-Z]$/.test(key)) {
+        if (currentCol < 5) {
+          const tile = document.getElementById(`tile-${currentRow}-${currentCol}`);
+          tile.textContent = key;
+          tile.classList.add('pop');
+          currentCol++;
+        }
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const key = e.key.toUpperCase();
+      if (key === 'ENTER' || key === 'BACKSPACE' || /^[A-Z]$/.test(key)) {
+        handleKey(key);
+      }
+    });
+
+    function checkGuess() {
+      let guess = '';
+      for (let c = 0; c < 5; c++) {
+        guess += document.getElementById(`tile-${currentRow}-${c}`).textContent;
+      }
+
+      let rowEmojis = '';
+      const targetLetters = TARGET_WORD.split('');
+      const guessLetters = guess.split('');
+      const matched = Array(5).fill(false);
+
+      for (let i = 0; i < 5; i++) {
+        if (guessLetters[i] === targetLetters[i]) {
+          matched[i] = true;
+          targetLetters[i] = null;
+        }
+      }
+
+      for (let i = 0; i < 5; i++) {
+        const tile = document.getElementById(`tile-${currentRow}-${i}`);
+        const keyEl = Array.from(document.querySelectorAll('.key')).find(k => k.textContent === guessLetters[i]);
+
+        if (matched[i]) {
+          tile.classList.add('correct');
+          if (keyEl) { keyEl.className = 'key correct'; }
+          rowEmojis += '🟩';
+        } else if (targetLetters.includes(guessLetters[i])) {
+          tile.classList.add('present');
+          if (keyEl && !keyEl.classList.contains('correct')) { keyEl.className = 'key present'; }
+          const idx = targetLetters.indexOf(guessLetters[i]);
+          targetLetters[idx] = null;
+          rowEmojis += '🟨';
+        } else {
+          tile.classList.add('absent');
+          if (keyEl && !keyEl.classList.contains('correct') && !keyEl.classList.contains('present')) {
+            keyEl.className = 'key absent';
+          }
+          rowEmojis += '⬛';
+        }
+      }
+
+      shareGrid.push(rowEmojis);
+
+      if (guess === TARGET_WORD) {
+        isGameOver = true;
+        showResult(true);
+      } else if (currentRow === 5) {
+        isGameOver = true;
+        showResult(false);
+      } else {
+        currentRow++;
+        currentCol = 0;
+      }
+    }
+
+    function showResult(won) {
+      document.getElementById('keyboard').style.display = 'none';
+      const card = document.getElementById('resultCard');
+      card.style.display = 'block';
+
+      if (won) {
+        document.getElementById('resultTitle').textContent = `🏆 BRILLIANT! ${currentRow + 1}/6`;
+        document.getElementById('resultSubtitle').innerHTML = `You solved today's football mystery: <strong>${TARGET_WORD}</strong>!`;
+      } else {
+        document.getElementById('resultTitle').textContent = `😅 GAME OVER (X/6)`;
+        document.getElementById('resultSubtitle').innerHTML = `Today's mystery football star was: <strong>${TARGET_WORD}</strong>! Try again tomorrow!`;
+      }
+    }
+
+    function shareScoreToWhatsApp() {
+      const scoreStr = isGameOver && shareGrid[shareGrid.length - 1].includes('🟩🟩🟩🟩🟩') ? `${currentRow + 1}/6` : 'X/6';
+      const emojis = shareGrid.join('\n');
+      const text = encodeURIComponent(`⚽ GoalGrid AI #${dayOfYear}: ${scoreStr}\n\n${emojis}\n\n🔥 Can you guess today's mystery football player? Play free:\nhttps://www.bethelmindanalytics.com/tools/goal-grid`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+  </script>
+</body>
+</html>

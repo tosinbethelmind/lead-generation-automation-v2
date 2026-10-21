@@ -246,15 +246,27 @@ const TOOLS: ToolItem[] = [
     upsell: '🚀 ₦150k B2B Migration'
   },
   {
-    id: 'footy-wordle',
-    title: 'FootyWordle AI™ Daily Football Wordle & Mystery Player Game',
+    id: 'goal-grid',
+    title: 'GoalGrid AI™ Daily Football Mystery Star & Club Game',
     badge: '⚽ Viral Wordle Mechanic',
     category: 'lifestyle',
     description: 'Guess today 5-letter football star in 6 tries, share your emoji grid on WhatsApp, and unlock 4.85x acca slips.',
     icon: Flame,
     color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
-    href: '/tools/footy-wordle',
+    href: '/tools/goal-grid',
     upsell: '🏆 VIP Club & ₦15k Model'
+  },
+  {
+    id: 'salary-calc',
+    id: 'salary-calc',
+    title: 'SalaryTakeHome AI™ 2026 Net Pay & PAYE Tax Sizer',
+    badge: '💰 Statutory Payroll Engine',
+    category: 'wealth',
+    description: 'Calculate your true monthly net salary after PAYE tax, 8% pension, NHF, and Consolidated Relief Allowances.',
+    icon: Calculator,
+    color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
+    href: '/tools/salary-calc',
+    upsell: '💎 ₦15k Wealth Model'
   },
   {
     id: 'higher-lower',

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FootyWordle AI™ | Daily Football Wordle & Mystery Player Game</title>
-  <meta name="description" content="The viral daily football Wordle. Guess today's 5-letter football star, team, or legend in 6 tries. Share your emoji grid on WhatsApp!">
+  <title>GoalGrid AI™ | Daily 5-Letter Football Mystery Star & Club Game</title>
+  <meta name="description" content="The viral daily football trivia grid. Guess today's 5-letter football star, club, or legend in 6 tries. Share your emoji grid on WhatsApp!">
   <style>
     :root {
       --bg: #07090e;
@@ -49,7 +49,7 @@
     h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #38bdf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     p.hint { font-size: 0.78rem; color: var(--text-muted); }
 
-    /* Wordle Grid */
+    /* Grid */
     .grid-container {
       display: grid;
       grid-template-rows: repeat(6, 1fr);
@@ -122,7 +122,7 @@
     .key.present { background: var(--yellow); color: #fff; }
     .key.absent { background: #0f172a; color: #475569; }
 
-    /* Result Modal / Overlay */
+    /* Result Card */
     .result-card {
       display: none;
       width: 100%;
@@ -159,7 +159,7 @@
     }
     .btn-share-wa:hover { filter: brightness(1.1); }
 
-    /* Unlocked Slip Offer */
+    /* Unlocked Slip */
     .unlocked-slip {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(15, 23, 42, 0.9));
       border: 1px solid rgba(16, 185, 129, 0.4);
@@ -183,7 +183,6 @@
     .btn-us-sporty { background: #dc2626; }
     .btn-us-bet9ja { background: #059669; }
 
-    /* Footer CTAs */
     .footer-links {
       width: 100%;
       display: flex;
@@ -202,20 +201,28 @@
       text-decoration: none;
     }
     .foot-btn span { color: var(--accent); font-weight: 700; }
+
+    .legal-notice {
+      font-size: 0.65rem;
+      color: #64748b;
+      line-height: 1.4;
+      text-align: center;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <div class="badge">⚽ Daily Football Wordle #<span id="puzzleNum">142</span></div>
-      <h1>FootyWordle AI™</h1>
+      <div class="badge">⚽ Daily Football Grid #<span id="puzzleNum">142</span></div>
+      <h1>GoalGrid AI™</h1>
       <p class="hint">Guess today's 5-letter football star or club in 6 tries.</p>
     </header>
 
-    <!-- 6x5 Wordle Grid -->
-    <div class="grid-container" id="grid">
-      <!-- 30 tiles generated dynamically -->
-    </div>
+    <!-- 6x5 Grid -->
+    <div class="grid-container" id="grid"></div>
 
     <!-- Virtual Keyboard -->
     <div class="keyboard" id="keyboard">
@@ -255,17 +262,17 @@
       </div>
     </div>
 
-    <!-- Result & Monetization Unlock Card -->
+    <!-- Result Card -->
     <div class="result-card" id="resultCard">
       <div class="result-title" id="resultTitle">🏆 BRILLIANT! 4/6</div>
-      <div class="result-subtitle" id="resultSubtitle">The mystery star was <strong>MESSI</strong>!</div>
+      <div class="result-subtitle" id="resultSubtitle">The mystery football word was <strong>MESSI</strong>!</div>
       
       <!-- Viral WhatsApp Share -->
       <button class="btn-share-wa" onclick="shareScoreToWhatsApp()">
-        <span>📲 Share Wordle Grid on WhatsApp</span>
+        <span>📲 Share GoalGrid on WhatsApp</span>
       </button>
 
-      <!-- Monetization Stream 3: Unlocked Slip -->
+      <!-- Monetization Unlocked Slip -->
       <div class="unlocked-slip">
         <div class="us-title">🎁 Unlocked Reward: Today's 3-Match AI Value Slip (4.85x)</div>
         <div class="us-desc">Arsenal Win (1.88) · Real Madrid vs Barca BTTS (1.55) · Inter Win (1.65)</div>
@@ -281,21 +288,23 @@
       <a href="/tools/sure-score" class="foot-btn">
         ⚡ Want full xG & match predictions? <span>Open SureScore AI™ Predictor →</span>
       </a>
-      <a href="https://wa.me/2348022791227?text=Hello%20Bethelmind!%20I%20want%20to%20deploy%20a%20turnkey%20FootyWordle%20game%20for%20my%20sports%20page." target="_blank" rel="noopener noreferrer" class="foot-btn">
-        🏢 License FootyWordle AI for your sports website (₦75k Setup) →
+      <a href="https://wa.me/2348022791227?text=Hello%20Bethelmind!%20I%20want%20to%20deploy%20a%20turnkey%20GoalGrid%20trivia%20engine%20for%20my%20sports%20page." target="_blank" rel="noopener noreferrer" class="foot-btn">
+        🏢 License GoalGrid AI for your sports website (₦75k Setup) →
       </a>
+    </div>
+
+    <div class="legal-notice">
+      ⚖️ <strong>Legal & Fair Use Notice:</strong> GoalGrid AI™ is an independent original sports trivia game developed by Bethelmind Analytics. All athlete names, clubs, and sports statistics are referenced solely for nominative commentary, educational, and trivia purposes under Fair Use. Not affiliated with, sponsored by, or endorsed by The New York Times, FIFA, UEFA, or the Premier League. 18+ Gamble Responsibly.
     </div>
   </div>
 
   <script>
-    // 5-Letter Football Words (Stars, Clubs, Terms)
     const FOOTBALL_WORDS = [
       "MESSI", "SALAH", "POGBA", "KANE", "MODRI", 
       "MILAN", "INTER", "LEEDS", "LAZIO", "PORTO",
       "PEDRI", "GAVII", "DIAS", "VINAL", "GOATS"
     ];
 
-    // Pick word of the day deterministically based on day of year
     const now = new Date();
     const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
     const TARGET_WORD = FOOTBALL_WORDS[dayOfYear % FOOTBALL_WORDS.length] || "MESSI";
@@ -307,7 +316,6 @@
     let shareGrid = [];
 
     const grid = document.getElementById('grid');
-    // Initialize 6 rows of 5 tiles
     for (let r = 0; r < 6; r++) {
       const rowDiv = document.createElement('div');
       rowDiv.className = 'grid-row';
@@ -365,7 +373,6 @@
       const guessLetters = guess.split('');
       const matched = Array(5).fill(false);
 
-      // Pass 1: Check exact matches (green)
       for (let i = 0; i < 5; i++) {
         if (guessLetters[i] === targetLetters[i]) {
           matched[i] = true;
@@ -373,7 +380,6 @@
         }
       }
 
-      // Pass 2: Color tiles
       for (let i = 0; i < 5; i++) {
         const tile = document.getElementById(`tile-${currentRow}-${i}`);
         const keyEl = Array.from(document.querySelectorAll('.key')).find(k => k.textContent === guessLetters[i]);
@@ -385,7 +391,6 @@
         } else if (targetLetters.includes(guessLetters[i])) {
           tile.classList.add('present');
           if (keyEl && !keyEl.classList.contains('correct')) { keyEl.className = 'key present'; }
-          // consume one instance
           const idx = targetLetters.indexOf(guessLetters[i]);
           targetLetters[idx] = null;
           rowEmojis += '🟨';
@@ -419,7 +424,7 @@
 
       if (won) {
         document.getElementById('resultTitle').textContent = `🏆 BRILLIANT! ${currentRow + 1}/6`;
-        document.getElementById('resultSubtitle').innerHTML = `You solved today's football word: <strong>${TARGET_WORD}</strong>!`;
+        document.getElementById('resultSubtitle').innerHTML = `You solved today's football mystery: <strong>${TARGET_WORD}</strong>!`;
       } else {
         document.getElementById('resultTitle').textContent = `😅 GAME OVER (X/6)`;
         document.getElementById('resultSubtitle').innerHTML = `Today's mystery football star was: <strong>${TARGET_WORD}</strong>! Try again tomorrow!`;
@@ -429,7 +434,7 @@
     function shareScoreToWhatsApp() {
       const scoreStr = isGameOver && shareGrid[shareGrid.length - 1].includes('🟩🟩🟩🟩🟩') ? `${currentRow + 1}/6` : 'X/6';
       const emojis = shareGrid.join('\n');
-      const text = encodeURIComponent(`⚽ FootyWordle AI #${dayOfYear}: ${scoreStr}\n\n${emojis}\n\n🔥 Can you guess today's mystery football player? Play free:\nhttps://www.bethelmindanalytics.com/tools/footy-wordle`);
+      const text = encodeURIComponent(`⚽ GoalGrid AI #${dayOfYear}: ${scoreStr}\n\n${emojis}\n\n🔥 Can you guess today's mystery football player? Play free:\nhttps://www.bethelmindanalytics.com/tools/goal-grid`);
       window.open(`https://wa.me/?text=${text}`, '_blank');
     }
   </script>
