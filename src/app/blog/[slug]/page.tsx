@@ -11,6 +11,7 @@ import { SocialShareHub } from '@/components/blog/SocialShareHub';
 import { BlogViewTracker } from '@/components/blog/BlogViewTracker';
 import { AnswerThePublicEngine } from '@/lib/blog/answerThePublicEngine';
 import { CommercialBenchmarkTable } from '@/components/blog/CommercialBenchmarkTable';
+import { SmeWebsiteGraderWidget } from '@/components/blog/SmeWebsiteGraderWidget';
 
 export const dynamicParams = true;
 
@@ -394,6 +395,9 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
             <InteractiveCalculators category={post.category} />
           </div>
         )}
+
+        {/* ─── SME GOOGLE REVENUE-LEAK & WEBSITE GRADER (VIRAL CONVERSION MAGNET) ─── */}
+        <SmeWebsiteGraderWidget initialCategory={post.category} />
 
         {/* ─── SINGLE HIGH-CONVERSION PRIMARY CTA (1 AUDIENCE, 1 PROBLEM, 1 ACTION) ─── */}
         <section className="my-14 p-8 sm:p-10 rounded-3xl border border-amber-400/30 bg-gradient-to-br from-slate-900 via-slate-950 to-amber-950/20 relative overflow-hidden shadow-2xl">

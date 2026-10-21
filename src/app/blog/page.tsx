@@ -5,6 +5,7 @@ import { BlogEngine } from '@/lib/blog/blogEngine';
 import { MASTER_PAYOUT } from '@/data/monetizationCatalog';
 import { FeaturedMonetizationVault } from '@/components/blog/FeaturedMonetizationVault';
 import { InteractiveBlogExplorer } from '@/components/blog/InteractiveBlogExplorer';
+import { SmeWebsiteGraderWidget } from '@/components/blog/SmeWebsiteGraderWidget';
 
 export const metadata: Metadata = {
   title: 'B2B Commercial Intelligence & Growth Blog | Bethelmind Digital Solutions',
@@ -180,6 +181,11 @@ export default function BlogIndexPage() {
 
       {/* ─── MAIN CONTENT ─── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+
+        {/* ─── SME GOOGLE REVENUE-LEAK & WEBSITE GRADER (VIRAL LEAD MAGNET) ─── */}
+        <div className="mb-14">
+          <SmeWebsiteGraderWidget />
+        </div>
 
         {/* ─── HIGH-YIELD REVENUE ASSETS & DFY PROTOTYPE VAULT ─── */}
         <FeaturedMonetizationVault />

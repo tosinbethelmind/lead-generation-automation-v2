@@ -6,6 +6,7 @@ import { RecruitmentEngineWidget } from '@/components/RecruitmentEngineWidget';
 import { WebappToolActionBar } from '@/components/WebappToolActionBar';
 import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 import IntegrationBlueprintDashboard from '@/components/IntegrationBlueprintDashboard';
+import { SmeWebsiteGraderWidget } from '@/components/blog/SmeWebsiteGraderWidget';
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -15,6 +16,8 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   return [
+    { slug: 'website-grader' },
+    { slug: 'google-visibility' },
     { slug: 'solar-boq' },
     { slug: 'solar-quote-pro' },
     { slug: 'solar-quote' },
@@ -79,6 +82,17 @@ function slugToCategory(slug: string): string {
 export async function generateMetadata({ params }: ToolPageProps) {
   const { slug } = await params;
   
+  if (slug === 'website-grader' || slug === 'google-visibility' || slug === 'sme-grader') {
+    return {
+      title: 'Nigerian SME Google Visibility & Revenue-Leak Grader — Free Digital Audit',
+      description: 'Audit your Google search presence, competitor ad poaching risk, and WhatsApp reply latency in 10 seconds. Free instant mobile website prototype for Nigerian SMEs.',
+      openGraph: {
+        title: 'Nigerian SME Google Visibility & Revenue-Leak Grader | Bethelmind',
+        description: 'Discover how much revenue your business loses without an official mobile website and 24/7 WhatsApp AI closer.',
+      },
+    };
+  }
+
   if (slug === 'solar-quote-pro' || slug === 'solar-quote' || slug === 'solar-boq') {
     return {
       title: 'Solar Quote Pro Calculator Nigeria — Free Inverter & Battery Sizing Tool Lagos',
