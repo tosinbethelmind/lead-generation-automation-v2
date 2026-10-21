@@ -290,6 +290,78 @@ export class AnswerThePublicEngine {
         'Automated Order Aggregation vs Manual Cooperative Registers'
       ]
     },
+    beauty: {
+      sector: 'Beauty, Spas & Wellness',
+      primaryKeyword: 'WhatsApp Booking Reminders for Nigerian Salons',
+      questions: [
+        {
+          question: 'How do automated WhatsApp booking reminders reduce salon no-shows in Lagos?',
+          directAnswer: 'In a typical salon workflow, sending automated 24-hour reminder messages and an appointment confirmation request allows clients to confirm or reschedule early. Salons using automated reminders recover avoidable empty slots and maintain predictable stylist schedules.',
+          searchVolumeScore: 92,
+          intentType: 'commercial'
+        },
+        {
+          question: 'Should Nigerian salons charge a booking deposit on WhatsApp?',
+          directAnswer: 'For high-duration appointments (braids, bridal styling, spa packages), requesting a modest commitment deposit (₦3,000 to ₦5,000) locked via instant transfer significantly reduces last-minute cancellations without deterring serious clients.',
+          searchVolumeScore: 89,
+          intentType: 'commercial'
+        },
+        {
+          question: 'How do salons automate client birthday discounts and loyalty offers?',
+          directAnswer: 'By logging client visit dates and birthdays into an automated WhatsApp CRM flow, personalized birthday treats and off-peak weekday offers are dispatched automatically 3 days prior, driving repeat bookings without manual staff follow-up.',
+          searchVolumeScore: 86,
+          intentType: 'informational'
+        }
+      ],
+      relatedComparisons: [
+        'Automated WhatsApp Reminders vs Manual Phone Call Confirmations',
+        'Deposit-Locked Bookings vs Walk-In Only Salon Operations'
+      ]
+    },
+    healthcare: {
+      sector: 'Healthcare & Clinic Management',
+      primaryKeyword: 'Automated Patient Consultation Booking Nigeria',
+      questions: [
+        {
+          question: 'How can private clinics prevent patient consultation no-shows in Nigeria?',
+          directAnswer: 'Private clinics implement automated 24/7 WhatsApp consultation intake where appointment slots are secured with an advance consultation deposit. This confirms patient commitment and smooths doctor schedules.',
+          searchVolumeScore: 91,
+          intentType: 'commercial'
+        },
+        {
+          question: 'Can clinics capture emergency and after-hours patient inquiries automatically?',
+          directAnswer: 'Yes. An automated clinical triage workflow guides after-hours inquiries through basic qualification, presents doctor availability, and secures the earliest morning consultation slot automatically.',
+          searchVolumeScore: 87,
+          intentType: 'informational'
+        }
+      ],
+      relatedComparisons: [
+        'Automated WhatsApp Intake vs Front-Desk Phone Calls for Clinics',
+        'Pre-Paid Consultation Deposits vs Unconfirmed Clinic Walk-Ins'
+      ]
+    },
+    general_b2b: {
+      sector: 'B2B Enterprise Automation',
+      primaryKeyword: 'SME Workflow Automation Nigeria 2026',
+      questions: [
+        {
+          question: 'What operational workflows should Nigerian SMEs automate first?',
+          directAnswer: 'SMEs gain the highest immediate ROI by automating customer inquiry speed-to-lead on WhatsApp, replacing manual bank teller reconciliation with instant payment webhooks, and deploying digital appointment or quotation portals.',
+          searchVolumeScore: 94,
+          intentType: 'commercial'
+        },
+        {
+          question: 'How fast can an SME deploy a turnkey business portal in Nigeria?',
+          directAnswer: 'A turnkey operational business website with a custom domain, Google Maps SEO, and 24/7 WhatsApp quote engine can be deployed in under 48 hours with zero technical complexity for the business owner.',
+          searchVolumeScore: 90,
+          intentType: 'transactional'
+        }
+      ],
+      relatedComparisons: [
+        'Turnkey 48-Hour Business Portal vs Custom Developer Agency Build',
+        'Instant Bank Transfer Webhooks vs Manual POS Receipt Checking'
+      ]
+    },
     inventory: {
       sector: 'Multi-Location Inventory & Stock Theft Prevention',
       primaryKeyword: 'Multi-Location Retail Stock Theft Prevention Cloud Ledger',
@@ -311,14 +383,50 @@ export class AnswerThePublicEngine {
   /**
    * Retrieves high-intent question cluster for a given sector
    */
-  public static getIntentCluster(sectorKey: string): SearchIntentCluster {
-    const key = sectorKey.toLowerCase();
-    for (const [k, cluster] of Object.entries(this.SECTOR_INTENT_MAP)) {
-      if (key.includes(k) || cluster.sector.toLowerCase().includes(key)) {
-        return cluster;
-      }
+    public static getIntentCluster(sectorKey: string): SearchIntentCluster {
+    const key = (sectorKey || '').toLowerCase();
+    
+    if (key.includes('beauty') || key.includes('salon') || key.includes('spa') || key.includes('wellness') || key.includes('hair')) {
+      return this.SECTOR_INTENT_MAP.beauty;
     }
-    return this.SECTOR_INTENT_MAP.solar; // Default fallback
+    if (key.includes('clinic') || key.includes('health') || key.includes('medical') || key.includes('telemedicine') || key.includes('doctor')) {
+      return this.SECTOR_INTENT_MAP.healthcare;
+    }
+    if (key.includes('school') || key.includes('education') || key.includes('tuition') || key.includes('student')) {
+      return this.SECTOR_INTENT_MAP.education;
+    }
+    if (key.includes('solar') || key.includes('clean energy') || key.includes('inverter') || key.includes('cleantech') || key.includes('battery')) {
+      return this.SECTOR_INTENT_MAP.solar;
+    }
+    if (key.includes('real') || key.includes('property') || key.includes('estate') || key.includes('shortlet') || key.includes('rent') || key.includes('tenant')) {
+      return this.SECTOR_INTENT_MAP.realestate;
+    }
+    if (key.includes('logistics') || key.includes('haulage') || key.includes('delivery') || key.includes('freight') || key.includes('dispatch') || key.includes('waybill')) {
+      return this.SECTOR_INTENT_MAP.logistics;
+    }
+    if (key.includes('retail') || key.includes('e-commerce') || key.includes('fraud') || key.includes('fake alert') || key.includes('reconciliation')) {
+      return this.SECTOR_INTENT_MAP.retail;
+    }
+    if (key.includes('auto') || key.includes('customs') || key.includes('clearing') || key.includes('car') || key.includes('vin') || key.includes('tokunbo')) {
+      return this.SECTOR_INTENT_MAP.auto;
+    }
+    if (key.includes('construction') || key.includes('building') || key.includes('contractor') || key.includes('pop') || key.includes('cement') || key.includes('tile')) {
+      return this.SECTOR_INTENT_MAP.construction;
+    }
+    if (key.includes('agribusiness') || key.includes('farm') || key.includes('feed') || key.includes('poultry') || key.includes('catfish')) {
+      return this.SECTOR_INTENT_MAP.agribusiness;
+    }
+    if (key.includes('inventory') || key.includes('stock') || key.includes('warehouse') || key.includes('theft')) {
+      return this.SECTOR_INTENT_MAP.inventory;
+    }
+    if (key.includes('hotel') || key.includes('hospitality')) {
+      return this.SECTOR_INTENT_MAP.hospitality;
+    }
+    if (key.includes('ai') || key.includes('bot') || key.includes('automation') || key.includes('agent')) {
+      return this.SECTOR_INTENT_MAP.aitools;
+    }
+
+    return this.SECTOR_INTENT_MAP.general_b2b;
   }
 
   /**

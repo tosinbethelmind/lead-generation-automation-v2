@@ -7,13 +7,9 @@ import { MASTER_PAYOUT } from '@/data/monetizationCatalog';
 
 import { InternalLinkOptimizer } from '@/lib/blog/internalLinkOptimizer';
 import { InteractiveCalculators } from '@/components/blog/InteractiveCalculators';
-import { ArticleProductCard } from '@/components/blog/ArticleProductCard';
 import { SocialShareHub } from '@/components/blog/SocialShareHub';
 import { BlogViewTracker } from '@/components/blog/BlogViewTracker';
 import { AnswerThePublicEngine } from '@/lib/blog/answerThePublicEngine';
-import { StickyMonetizationBar } from '@/components/blog/StickyMonetizationBar';
-import { ExitIntentOfferModal } from '@/components/blog/ExitIntentOfferModal';
-import { MidArticleCallout } from '@/components/blog/MidArticleCallout';
 import { CommercialBenchmarkTable } from '@/components/blog/CommercialBenchmarkTable';
 
 export const dynamicParams = true;
@@ -74,6 +70,97 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+
+interface SingleCtaConfig {
+  badge: string;
+  headline: string;
+  summary: string;
+  buttonText: string;
+  whatsappMessage: string;
+}
+
+function getSingleSectorCta(category: string, title: string): SingleCtaConfig {
+  const cat = (category || '').toLowerCase();
+
+  if (cat.includes('beauty') || cat.includes('salon') || cat.includes('spa') || cat.includes('wellness')) {
+    return {
+      badge: 'BEAUTY & SALON AUTOMATION',
+      headline: 'Request a WhatsApp Booking-Automation Demo for Your Salon',
+      summary: 'See how automated 24-hour appointment confirmations, stylist scheduling, and optional deposit locks recover vacant chairs on your phone.',
+      buttonText: '💬 Request Salon WhatsApp Demo',
+      whatsappMessage: 'Hi Bethelmind, I run a salon/spa and want a demo of the WhatsApp booking and deposit-lock automation.',
+    };
+  }
+
+  if (cat.includes('solar') || cat.includes('clean energy') || cat.includes('inverter') || cat.includes('battery')) {
+    return {
+      badge: 'COMMERCIAL SOLAR LOAD SIZING',
+      headline: 'Request a Commercial Solar BOQ Load Sizing for Your Facility',
+      summary: 'Get an audited kilowatt-hour battery and inverter blueprint comparing diesel generator displacement against 2026 Band A tariffs.',
+      buttonText: '💬 Request Solar BOQ Sizing',
+      whatsappMessage: 'Hi Bethelmind, I would like a custom Solar BOQ sizing for my facility.',
+    };
+  }
+
+  if (cat.includes('school') || cat.includes('education') || cat.includes('tuition')) {
+    return {
+      badge: 'PRIVATE SCHOOL OPERATIONS',
+      headline: 'Request School Fee Virtual Account & Result Gating Walkthrough',
+      summary: 'Eliminate manual teller auditing and automate term fee collections with dedicated virtual student accounts and digital report card gating.',
+      buttonText: '💬 Request School Portal Demo',
+      whatsappMessage: 'Hi Bethelmind, I want a walkthrough of the school fee virtual account and result gating system.',
+    };
+  }
+
+  if (cat.includes('logistics') || cat.includes('haulage') || cat.includes('delivery') || cat.includes('freight')) {
+    return {
+      badge: 'HAULAGE & DISPATCH AUTOMATION',
+      headline: 'Deploy 24/7 Automated Freight Quoting on WhatsApp',
+      summary: 'Give shippers instant distance-based freight quotes, automated waybill references, and live dispatch milestone updates on WhatsApp.',
+      buttonText: '💬 Deploy Freight Quoting Bot',
+      whatsappMessage: 'Hi Bethelmind, I want automated freight quoting and waybill tracking on WhatsApp.',
+    };
+  }
+
+  if (cat.includes('retail') || cat.includes('e-commerce') || cat.includes('fraud') || cat.includes('fake alert') || cat.includes('reconciliation')) {
+    return {
+      badge: 'RETAIL FRAUD SHIELD',
+      headline: 'Connect Fake-Alert-Proof Bank Transfer Webhooks to Your Store',
+      summary: 'Verify bank transfers via instant Moniepoint/Paystack/OPay ledger webhooks in under 3 seconds—eliminating fake alert losses entirely.',
+      buttonText: '💬 Connect Bank Webhook Desk',
+      whatsappMessage: 'Hi Bethelmind, I want real-time bank transfer webhook reconciliation for my store.',
+    };
+  }
+
+  if (cat.includes('real') || cat.includes('property') || cat.includes('estate') || cat.includes('shortlet')) {
+    return {
+      badge: 'REAL ESTATE AUTOMATION',
+      headline: 'Automate Guest Booking & Caution Fee Escrow on WhatsApp',
+      summary: 'Allow shortlet guests to book directly with instant availability checks, digital ID verification, and automated caution deposit returns.',
+      buttonText: '💬 Request Shortlet Engine Demo',
+      whatsappMessage: 'Hi Bethelmind, I manage properties/shortlets and want a demo of the direct booking and caution escrow engine.',
+    };
+  }
+
+  if (cat.includes('auto') || cat.includes('customs') || cat.includes('clearing') || cat.includes('car')) {
+    return {
+      badge: 'AUTO IMPORT AUTOMATION',
+      headline: 'Deploy a 24/7 Tokunbo VIN Duty Quoting Engine',
+      summary: 'Give vehicle buyers transparent out-the-door customs duty and clearing estimates on WhatsApp within 3 seconds.',
+      buttonText: '💬 Deploy VIN Duty Assistant',
+      whatsappMessage: 'Hi Bethelmind, I want to deploy the automated VIN customs duty quoter for my dealership.',
+    };
+  }
+
+  return {
+    badge: 'NIGERIAN SME AUTOMATION',
+    headline: 'Speak with a Lagos Systems Automation Specialist',
+    summary: 'Discover how automated WhatsApp speed-to-lead qualification and 24/7 client booking engines can eliminate manual bottlenecks in your business.',
+    buttonText: '💬 Chat with Lagos Systems Desk',
+    whatsappMessage: `Hi Bethelmind, I read your article on ${title} and want to explore automation for my business.`,
+  };
+}
+
 export default async function SingleBlogPostPage({ params }: PageProps) {
   const { slug } = await params;
   const post = BlogEngine.getPostBySlug(slug);
@@ -83,6 +170,8 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
   // Strip legacy duplicate in-body AI overview card if present (hero section already renders it)
   const sanitizedHtml = (post.content_html || '').replace(/<div class="ai-overview-card[\s\S]*?<\/div>\s*<\/div>/i, '');
   const optimizedContent = InternalLinkOptimizer.optimizeLinks(sanitizedHtml);
+  const singleCta = getSingleSectorCta(post.category, post.title);
+  const isSolarOrRealEstate = post.category.toLowerCase().includes('solar') || post.category.toLowerCase().includes('clean energy') || post.category.toLowerCase().includes('real estate') || post.category.toLowerCase().includes('shortlet');
   const relatedPosts = BlogEngine.getAllPosts().filter((p) => p.slug !== post.slug).slice(0, 3);
 
   const publishDate = new Date(post.created_at).toLocaleDateString('en-NG', {
@@ -299,53 +388,42 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: optimizedContent }}
         />
 
-        {/* Mid-Article Sector High-Ticket Prototype Callout */}
-        <MidArticleCallout category={post.category} postTitle={post.title} />
+        {/* ─── CONDITIONAL SECTOR CALCULATOR (ONLY FOR SOLAR & REAL ESTATE) ─── */}
+        {isSolarOrRealEstate && (
+          <div className="my-10">
+            <InteractiveCalculators category={post.category} />
+          </div>
+        )}
 
-        {/* Matched Product Card */}
-        {post.matched_product && <ArticleProductCard product={post.matched_product} />}
-
-        {/* Interactive Calculators */}
-        <InteractiveCalculators category={post.category} />
-
-        {/* Bottom CTA */}
-        <div
-          className="my-14 p-8 sm:p-10 rounded-2xl border relative overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, rgba(15,23,42,0.95), rgba(26,16,64,0.9))',
-            borderColor: 'rgba(245,158,11,0.25)',
-          }}
-        >
+        {/* ─── SINGLE HIGH-CONVERSION PRIMARY CTA (1 AUDIENCE, 1 PROBLEM, 1 ACTION) ─── */}
+        <section className="my-14 p-8 sm:p-10 rounded-3xl border border-amber-400/30 bg-gradient-to-br from-slate-900 via-slate-950 to-amber-950/20 relative overflow-hidden shadow-2xl">
           <div
-            className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.10) 0%, transparent 70%)' }}
+            className="pointer-events-none absolute -top-20 -right-20 w-80 h-80 rounded-full opacity-20 blur-3xl"
+            style={{ background: 'radial-gradient(circle, #f59e0b 0%, transparent 70%)' }}
           />
-          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-            <div className="flex-1">
-              <div className="text-xs font-black uppercase tracking-widest text-amber-400 mb-2">100% Done-For-You</div>
-              <h4 className="text-xl font-black text-white mb-1">Turnkey Commercial Portal (&#8358;75k Deposit / &#8358;150k)</h4>
-              <p className="text-slate-400 text-sm">
-                Custom domain, Google Maps SEO, 24/7 AI WhatsApp bot, and Vercel staging &mdash; live in 48 hours.
-              </p>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/25 text-xs font-black uppercase tracking-wider mb-4">
+              <span>⚡ {singleCta.badge}</span>
             </div>
-            <div className="flex flex-col sm:items-end gap-2.5 shrink-0">
+            <h3 className="text-2xl sm:text-3xl font-black text-white mb-3 leading-snug">
+              {singleCta.headline}
+            </h3>
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-8 max-w-2xl">
+              {singleCta.summary}
+            </p>
+            <div>
               <a
-                href={`${MASTER_PAYOUT.whatsappCloser}?text=Hi+Bethelmind,+I+want+to+claim+the+Turnkey+Business+Portal+after+reading+${encodeURIComponent(post.title)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm text-slate-950 transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(245,158,11,0.4)]"
+                href={`${MASTER_PAYOUT.whatsappCloser}?text=${encodeURIComponent(singleCta.whatsappMessage)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl font-black text-sm text-slate-950 transition-all hover:scale-105 shadow-[0_0_35px_rgba(245,158,11,0.35)]"
                 style={{ background: 'linear-gradient(90deg, #f59e0b, #fbbf24)' }}
               >
-                💬 Claim via WhatsApp
-              </a>
-              <a
-                href="/preview/claim"
-                className="text-xs text-amber-400 hover:text-amber-300 transition-colors font-semibold"
-              >
-                Or view free prototype demo →
+                {singleCta.buttonText} →
               </a>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* ─── VISIBLE FREQUENTLY ASKED QUESTIONS (GEO & SGE RICH SNIPPETS) ─── */}
         <section className="my-14 pt-10 border-t border-white/10">
@@ -389,7 +467,7 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
             <div>
               <div className="text-sm font-bold text-white">Editorial Review: Oyelakin Tosin</div>
               <div className="text-xs text-slate-400 mt-0.5">
-                Lead Systems Engineer &middot; Bethelmind Digital Solutions (Verified NIP Settlement Desk)
+                Lead Systems Engineer &middot; Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)
               </div>
             </div>
           </div>
@@ -447,11 +525,6 @@ export default async function SingleBlogPostPage({ params }: PageProps) {
         </section>
       )}
 
-      {/* ─── STICKY BOTTOM CONVERSION BAR (MOBILE & DESKTOP) ─── */}
-      <StickyMonetizationBar product={post.matched_product} postTitle={post.title} />
-
-      {/* ─── EXIT INTENT HIGH-CONVERSION MODAL ─── */}
-      <ExitIntentOfferModal />
-    </div>
+      </div>
   );
 }

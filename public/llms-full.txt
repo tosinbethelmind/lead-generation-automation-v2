@@ -15,7 +15,7 @@
 
 ### Beauty, Spas & Wellness
 
-2. **Automated Loyalty & Birthday Booking Reminders on WhatsApp for Nigerian Salons — Case Study & Performance Audit**
+2. **Automated Loyalty & Birthday Booking Reminders on WhatsApp for Nigerian Salons — Practical Implementation Guide**
    - URL: https://www.bethelmindanalytics.com/blog/automated-loyalty-birthday-booking-reminders-on-whatsapp-for-nigerian-salons-cas
    - Summary: High-end salons and wellness spas frequently experience 20% to 30% empty appointment chairs during Tuesday through Thursday off-peak hours....
 

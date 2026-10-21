@@ -8,15 +8,116 @@ interface Props {
   postTitle: string;
 }
 
+interface BenchmarkRow {
+  factor: string;
+  legacy: string;
+  automated: string;
+}
+
 export const CommercialBenchmarkTable: React.FC<Props> = ({ category, postTitle }) => {
+  const cat = (category || '').toLowerCase();
+
+  const getRows = (): BenchmarkRow[] => {
+    if (cat.includes('beauty') || cat.includes('salon') || cat.includes('spa') || cat.includes('wellness')) {
+      return [
+        {
+          factor: 'Appointment Confirmation',
+          legacy: 'Manual phone calls (often unanswered during busy hours)',
+          automated: 'Automated 24h WhatsApp confirmation with 1-tap reschedule',
+        },
+        {
+          factor: 'Peak & Weekend Slot Protection',
+          legacy: 'Zero commitment; late cancellations leave empty chairs',
+          automated: 'Optional commitment deposit locked via instant transfer',
+        },
+        {
+          factor: 'Client Birthday & Loyalty Outreach',
+          legacy: 'Manual paper records (rarely followed up)',
+          automated: 'Automated VIP birthday perks dispatched 3 days prior',
+        },
+        {
+          factor: 'After-Hours Booking Intake',
+          legacy: 'Lost to competitors if client books after 7:00 PM',
+          automated: '24/7 calendar availability and appointment intake on WhatsApp',
+        },
+      ];
+    }
+
+    if (cat.includes('clinic') || cat.includes('health') || cat.includes('medical') || cat.includes('hospital')) {
+      return [
+        {
+          factor: 'Patient Consultation Scheduling',
+          legacy: 'Manual reception desk triage causing wait-line friction',
+          automated: 'Structured pre-consultation intake via WhatsApp in under 3 minutes',
+        },
+        {
+          factor: 'Specialist Consultation No-Shows',
+          legacy: 'Unconfirmed appointments causing vacant doctor consultation hours',
+          automated: 'Pre-paid consultation deposits confirming attendance',
+        },
+        {
+          factor: 'After-Hours Emergency Triage',
+          legacy: 'Unattended calls outside outpatient operating hours',
+          automated: 'Automated urgent care triage & priority morning scheduling',
+        },
+      ];
+    }
+
+    if (cat.includes('solar') || cat.includes('clean energy') || cat.includes('inverter')) {
+      return [
+        {
+          factor: 'System Sizing & Quotation',
+          legacy: '2 to 4 days delay waiting for an engineer to draft manual BOQ',
+          automated: 'Instant automated BOQ load calculation with battery capacity breakdown',
+        },
+        {
+          factor: 'Diesel vs. Solar Financial Model',
+          legacy: 'Vague estimates without verifiable tariff payback figures',
+          automated: '5-year audited cashflow model benchmarked against Band A tariffs',
+        },
+        {
+          factor: 'Customer Speed-to-Lead',
+          legacy: 'Slow inquiry response leading to lost commercial contracts',
+          automated: 'Sub-3-second WhatsApp reply with instant equipment specifications',
+        },
+      ];
+    }
+
+    // Default Nigerian SME Operational Model
+    return [
+      {
+        factor: 'First Response Velocity (Speed-to-Lead)',
+        legacy: '30 to 90 minutes delay (high prospect abandonment)',
+        automated: 'Sub-3-second automated response on WhatsApp 24/7',
+      },
+      {
+        factor: 'Payment & Bank Transfer Verification',
+        legacy: 'Manual paper teller slips (vulnerable to fake alert scams)',
+        automated: 'Instant Moniepoint/Paystack API webhook verification',
+      },
+      {
+        factor: 'After-Hours Customer Capture',
+        legacy: 'Zero sales capacity after office closes at 6:00 PM',
+        automated: '100% automated quotation and appointment scheduling overnight',
+      },
+      {
+        factor: 'Administrative Overhead',
+        legacy: 'Staff spend 2+ hours daily answering repetitive FAQs',
+        automated: 'AI assistant handles 80%+ of initial inquiries automatically',
+      },
+    ];
+  };
+
+  const rows = getRows();
+
   return (
     <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mb-12">
       <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
         <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs font-black uppercase tracking-widest text-emerald-400">
-              2026 Nigerian Operational Benchmark Matrix
+            <span className="w-2 h-2 rounded-full bg-amber-400" />
+            <span className="text-xs font-black uppercase tracking-widest text-amber-400">
+              Illustrative Operational Model
             </span>
           </div>
           <span className="text-xs text-slate-500 font-medium">
@@ -25,10 +126,10 @@ export const CommercialBenchmarkTable: React.FC<Props> = ({ category, postTitle 
         </div>
 
         <h4 className="text-lg sm:text-xl font-bold text-white mb-2 leading-snug">
-          Traditional Manual Workflow vs. Bethelmind Automated System
+          Manual Workflow vs. Automated System Comparison
         </h4>
         <p className="text-xs text-slate-400 mb-6">
-          Quantified operational performance metrics based on audited Lagos &amp; Nigeria commercial deployments:
+          Illustrative operational framework comparing conventional manual administration with automated workflows:
         </p>
 
         {/* Responsive Comparison Table */}
@@ -37,54 +138,25 @@ export const CommercialBenchmarkTable: React.FC<Props> = ({ category, postTitle 
             <thead>
               <tr className="border-b border-white/10 text-slate-400 font-bold uppercase tracking-wider">
                 <th className="py-3 px-4">Operational Factor</th>
-                <th className="py-3 px-4 text-red-400 bg-red-950/20 rounded-t-lg">Manual / Legacy Method</th>
-                <th className="py-3 px-4 text-amber-300 bg-amber-950/30 rounded-t-lg">Bethelmind AI System</th>
+                <th className="py-3 px-4 text-rose-400 bg-rose-950/20 rounded-t-lg">Manual Administration</th>
+                <th className="py-3 px-4 text-amber-300 bg-amber-950/30 rounded-t-lg">Automated Workflow</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5 text-slate-300 font-medium">
-              <tr>
-                <td className="py-3 px-4 font-semibold text-white">First Response Time (Speed-to-Lead)</td>
-                <td className="py-3 px-4 text-slate-400 bg-red-950/10">35 – 90 mins (Customer already left)</td>
-                <td className="py-3 px-4 text-emerald-400 bg-amber-950/20 font-bold">&lt; 3 seconds (24/7 WhatsApp AI)</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-4 font-semibold text-white">Payment &amp; Transfer Verification</td>
-                <td className="py-3 px-4 text-slate-400 bg-red-950/10">Paper teller slips (Fake Alert Risk)</td>
-                <td className="py-3 px-4 text-emerald-400 bg-amber-950/20 font-bold">Real-Time Moniepoint NIP Webhook</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-4 font-semibold text-white">After-Hours Sales Conversion</td>
-                <td className="py-3 px-4 text-slate-400 bg-red-950/10">0% (Office shut after 6:00 PM)</td>
-                <td className="py-3 px-4 text-emerald-400 bg-amber-950/20 font-bold">100% Automated Quotes &amp; Orders</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-4 font-semibold text-white">Estimated Monthly Revenue Leak</td>
-                <td className="py-3 px-4 text-red-400 bg-red-950/10 font-bold">₦120,000 – ₦450,000+</td>
-                <td className="py-3 px-4 text-emerald-400 bg-amber-950/20 font-bold">₦0 (100% captured &amp; logged)</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-4 font-semibold text-white">Implementation Cost &amp; Timeline</td>
-                <td className="py-3 px-4 text-slate-400 bg-red-950/10">₦400k+ &amp; 3 to 6 weeks delay</td>
-                <td className="py-3 px-4 text-amber-300 bg-amber-950/20 font-bold">₦35,000 Starter / Live in 48h</td>
-              </tr>
+              {rows.map((r, i) => (
+                <tr key={i}>
+                  <td className="py-3 px-4 font-semibold text-white">{r.factor}</td>
+                  <td className="py-3 px-4 text-slate-400 bg-rose-950/10">{r.legacy}</td>
+                  <td className="py-3 px-4 text-emerald-400 bg-amber-950/20 font-semibold">{r.automated}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
 
-        {/* Quick Action Footer */}
-        <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-          <span className="text-slate-400">
-            Want this automated workflow deployed on your business domain this week?
-          </span>
-          <a
-            href={`${MASTER_PAYOUT.whatsappCloser}?text=Hi+Bethelmind,+I+saw+the+Benchmark+Matrix+for+${encodeURIComponent(category)}+in+${encodeURIComponent(postTitle)}+and+want+to+automate+my+operations.`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold bg-amber-400 text-slate-950 hover:bg-amber-300 transition-all shrink-0"
-          >
-            💬 Talk to Lagos Systems Desk →
-          </a>
-        </div>
+        <p className="mt-4 text-[11px] text-slate-500 italic">
+          *Note: Operational improvements depend on appointment volume, deposit policies, and customer demographics. Request a pilot setup to evaluate results for your specific facility.
+        </p>
       </div>
     </div>
   );

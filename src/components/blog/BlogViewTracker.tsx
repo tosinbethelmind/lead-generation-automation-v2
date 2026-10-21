@@ -125,13 +125,18 @@ export function BlogViewTracker({ slug, initialViews }: BlogViewTrackerProps) {
     };
   }, [slug]);
 
+  // Do not display embarrassing "0 real views" or low counts that damage credibility
+  if (views < 5) {
+    return null;
+  }
+
   return (
     <span
       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold text-amber-400"
       style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }}
-      title="Verified Real Reader Views"
+      title="Verified Reader Engagement"
     >
-      👁 {views.toLocaleString()} {views === 1 ? 'real view' : 'real views'}
+      👁 {views.toLocaleString()} views
     </span>
   );
 }
