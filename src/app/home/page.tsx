@@ -36,6 +36,11 @@ export default function HomePage() {
   const [selectedIndustry, setSelectedIndustry] = useState('solar');
   const [targetDistrict, setTargetDistrict] = useState('Ikeja');
   const [selectedPlanId, setSelectedPlanId] = useState('starter');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const sectorProfile = getSectorById(selectedIndustry);
 
