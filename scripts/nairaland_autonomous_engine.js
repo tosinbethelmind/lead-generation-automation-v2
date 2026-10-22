@@ -23,7 +23,7 @@ const CAMPAIGNS_LEDGER = path.join(__dirname, '..', 'local_db', 'nairaland_campa
 // Nairaland Board Mapping
 const BOARDS = {
   solar: { id: 14, name: 'Properties', slug: 'solar-boq' },
-  auto: { id: 23, name: 'Auto', slug: 'tokunbo-duty' },
+  auto: { id: 78, name: 'Car Talk', slug: 'tokunbo-duty' },
   properties: { id: 14, name: 'Properties', slug: 'mortgage-calculator' },
   business: { id: 24, name: 'Business', slug: 'fake-alert-shield' },
   education: { id: 19, name: 'Education', slug: 'school-portal' },
@@ -72,8 +72,8 @@ You can select Flat, Duplex, or Commercial Facility, enter your current monthly 
   },
 
   'tokunbo-duty': {
-    boardId: 23,
-    boardName: 'Auto',
+    boardId: 78,
+    boardName: 'Car Talk',
     toolSlug: 'tokunbo-duty',
     titles: [
       'OFFICIAL 2026 Tin Can & PTML Customs Duty Calculation on Tokunbo Vehicles (20% Duty + 15% NAC Matrix)',
@@ -462,9 +462,17 @@ async function postCampaign(campaignKey = 'solar-boq') {
     console.log('Submitting topic to Nairaland...');
     await page.click('input[value="Submit"]');
 
-    // Wait for redirect to thread
-    await page.waitForTimeout(4000);
-    const postResultUrl = page.url();
+    // Wait for Cloudflare verification challenge to complete & redirect to thread (up to 25s)
+    console.log('Waiting for Cloudflare security verification and thread redirect...');
+    let postResultUrl = page.url();
+    for (let w = 0; w < 12; w++) {
+      await page.waitForTimeout(2000);
+      postResultUrl = page.url();
+      if (!postResultUrl.includes('/do_newtopic') && postResultUrl.match(/\/(\d+)\//)) {
+        console.log('✓ Redirect confirmed to live thread!');
+        break;
+      }
+    }
     console.log('Post Result URL:', postResultUrl);
 
     let threadId = null;
