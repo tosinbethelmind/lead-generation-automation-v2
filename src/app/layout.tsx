@@ -3,10 +3,11 @@ import "../styles/tokens.css";
 import "../styles/glass.css";
 import "./globals.css";
 import DbHealthCheck from "@/components/DbHealthCheck";
+import MicrosoftClarity from "@/components/MicrosoftClarity";
 import { ThemeProvider } from "./ThemeContext";
 
 export const viewport: Viewport = {
-  themeColor: "#0284c7",
+  themeColor: "#0b121e",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -220,6 +221,7 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
+        <MicrosoftClarity />
         <ThemeProvider>
           <DbHealthCheck />
           {children}

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
-const { runTestSuite } = require('./deep_landing_page_and_tool_tester');
+const { runFullTestSuite } = require('./advanced_confirmatory_test_suite');
 
 let token = '';
 if (fs.existsSync('.env.local')) {
@@ -18,15 +18,16 @@ if (!token) {
   process.exit(1);
 }
 
-console.log('Deploying to Vercel production...');
+console.log('🚀 Deploying verified build to Vercel production (www.bethelmindanalytics.com)...');
 try {
   execSync(`npx vercel --prod --yes --token ${token}`, { encoding: 'utf8', stdio: 'inherit' });
-  console.log('✅ Vercel production build deployed successfully!');
-  console.log('\n🔍 Executing Automated Post-Deployment QA Suite on Live Production...');
+  console.log('\n✅ Vercel production build deployed successfully!');
+  console.log('🔍 Executing Automated 360° Post-Deployment QA Suite on Live Production (https://www.bethelmindanalytics.com)...');
   
-  runTestSuite('https://www.bethelmindanalytics.com').then(qaResult => {
+  runFullTestSuite().then(qaResult => {
     if (qaResult.ok) {
       console.log('🎉 100% PRODUCTION VERIFICATION PASSED! Site is healthy, responsive, and ready for client outreach.');
+      process.exit(0);
     } else {
       console.error(`🚨 POST-DEPLOYMENT QA ALERT: ${qaResult.failed} checks failed! Review issues before sending traffic.`);
       process.exit(1);

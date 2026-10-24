@@ -292,7 +292,7 @@ const TOOLS: ToolItem[] = [
   {
     id: 'salary-calc',
     title: 'SalaryTakeHome AI™ 2026 Net Pay & PAYE Tax Sizer',
-    badge: '💰 Statutory Payroll Engine',
+    badge: ' Statutory Payroll Engine',
     category: 'wealth',
     description: 'Calculate your true monthly net salary after PAYE tax, 8% pension, NHF, and Consolidated Relief Allowances.',
     icon: Calculator,
@@ -384,7 +384,7 @@ export default function ToolsHubPage() {
           <div className="space-y-1.5 max-w-2xl">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                🏢 B2B Whitelabel & Commercial Licensing
+                 B2B Whitelabel & Commercial Licensing
               </span>
               <span className="text-[10px] font-bold text-amber-400">
                 Turnkey from ₦35,000 / $45
@@ -427,10 +427,10 @@ export default function ToolsHubPage() {
           <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
             {[
               { id: 'all', label: 'All Tools' },
-              { id: 'wealth', label: '⚡ Viral Games & Wealth' },
+              { id: 'wealth', label: ' Viral Games & Wealth' },
               { id: 'b2b', label: '🇳🇬 High-Yield B2B' },
-              { id: 'realestate', label: '🏡 Property & Land' },
-              { id: 'lifestyle', label: '🌿 Family & Lifestyle' },
+              { id: 'realestate', label: ' Property & Land' },
+              { id: 'lifestyle', label: ' Family & Lifestyle' },
             ].map(tab => (
               <button
                 key={tab.id}
