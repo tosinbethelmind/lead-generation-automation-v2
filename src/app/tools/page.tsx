@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
+import { TurnkeySmeSetupBanner } from '@/components/TurnkeySmeSetupBanner';
 
 interface ToolItem {
   id: string;
@@ -503,6 +504,14 @@ export default function ToolsHubPage() {
               </div>
             );
           })}
+        </div>
+
+        {/* Turnkey B2B SME Setup Banner */}
+        <div className="mt-14 mb-8">
+          <TurnkeySmeSetupBanner
+            toolName="Commercial Sizer & Quoting Engine"
+            category="Enterprise"
+          />
         </div>
 
         {/* Security & Verification Footer Seal */}
