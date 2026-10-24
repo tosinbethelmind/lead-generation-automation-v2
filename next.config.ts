@@ -56,6 +56,8 @@ const nextConfig: NextConfig = {
     ],
   },
   serverExternalPackages: [
+    'googleapis',
+    'google-auth-library',
     '@sparticuz/chromium',
     'puppeteer-core',
     'puppeteer-extra',
@@ -136,6 +138,11 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      {
+        source: '/tools',
+        destination: '/home#sector-tools',
+        permanent: false,
+      },
       {
         source: '/demo',
         destination: '/walkthrough',
