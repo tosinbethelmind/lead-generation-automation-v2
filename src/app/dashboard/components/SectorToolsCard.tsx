@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { SolarBoqResult, CustomsDutyResult, CacRegistrationResult } from '@/lib/sectorModules';
 import { RecruitmentEngineWidget } from '@/components/RecruitmentEngineWidget';
 import { WebappToolActionBar } from '@/components/WebappToolActionBar';
+import { Briefcase, Sun, Car, Scale, Calculator } from 'lucide-react';
 
 export default function SectorToolsCard() {
   const [activeTool, setActiveTool] = useState<'solar' | 'auto' | 'legal' | 'retail' | 'recruitment'>('recruitment');
@@ -92,36 +93,40 @@ export default function SectorToolsCard() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2">
-            <span>⚙️</span> Sector Specialized Revenue Calculators
+            <Calculator className="w-5 h-5 text-[#d4af37]" /> Sector Specialized Revenue Calculators
           </h2>
           <p className="text-sm text-slate-400">Generate BOQs, Tokunbo Customs Duties, CAC Filing Fees & ROI Statements</p>
         </div>
 
         {/* Sector Switcher Tabs */}
-        <div className="flex gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs flex-wrap">
+        <div className="flex gap-1 bg-[#0b121e] p-1 rounded-xl border border-white/10 text-xs flex-wrap">
           <button
             onClick={() => setActiveTool('recruitment')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition ${activeTool === 'recruitment' ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition ${activeTool === 'recruitment' ? 'bg-[#d4af37]/15 text-[#d4af37] border border-[#d4af37]/40 shadow-sm' : 'text-slate-400 hover:text-white'}`}
           >
-            💼 AI Recruitment & Talent Engine
+            <Briefcase className="w-3.5 h-3.5" />
+            <span>AI Recruitment</span>
           </button>
           <button
             onClick={() => setActiveTool('solar')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition ${activeTool === 'solar' ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition ${activeTool === 'solar' ? 'bg-[#d4af37]/15 text-[#d4af37] border border-[#d4af37]/40 shadow-sm' : 'text-slate-400 hover:text-white'}`}
           >
-            ☀️ Solar BOQ & ROI
+            <Sun className="w-3.5 h-3.5" />
+            <span>Solar BOQ & ROI</span>
           </button>
           <button
             onClick={() => setActiveTool('auto')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition ${activeTool === 'auto' ? 'bg-red-500 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition ${activeTool === 'auto' ? 'bg-[#d4af37]/15 text-[#d4af37] border border-[#d4af37]/40 shadow-sm' : 'text-slate-400 hover:text-white'}`}
           >
-            🚗 Tokunbo Duty
+            <Car className="w-3.5 h-3.5" />
+            <span>Tokunbo Duty</span>
           </button>
           <button
             onClick={() => setActiveTool('legal')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition ${activeTool === 'legal' ? 'bg-indigo-500 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition ${activeTool === 'legal' ? 'bg-[#d4af37]/15 text-[#d4af37] border border-[#d4af37]/40 shadow-sm' : 'text-slate-400 hover:text-white'}`}
           >
-            ⚖️ CAC Filing
+            <Scale className="w-3.5 h-3.5" />
+            <span>CAC Filing</span>
           </button>
         </div>
       </div>

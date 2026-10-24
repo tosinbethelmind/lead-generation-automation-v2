@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Zap, ShieldCheck, Code, Sparkles, X, Calendar } from 'lucide-react';
+import { MessageCircle, Zap, ShieldCheck, Code, Sparkles, X, Calendar, Phone } from 'lucide-react';
 import OneTapDemoSchedulerModal from '@/components/OneTapDemoSchedulerModal';
 
 interface StickyMobileConversionBarProps {
@@ -134,7 +134,7 @@ export default function StickyMobileConversionBar({
           }}
           title="Call Lagos Desk directly: 0802 279 1227"
         >
-          <span style={{ fontSize: '0.8rem', fontWeight: 800 }}>📞 Call</span>
+          <span style={{ fontSize: '0.8rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Phone className="w-3.5 h-3.5" /> Call</span>
         </a>
 
         {/* Quick 10-Min Demo Book Button */}
@@ -182,7 +182,7 @@ export default function StickyMobileConversionBar({
       <div className="flex items-center justify-center gap-3 mt-1.5 text-[10px] text-slate-400 font-medium">
         <span className="flex items-center gap-1 text-emerald-400">
           <Zap className="w-3 h-3 text-emerald-400 fill-current" />
-          🏛️ CAC Certified: Bethelmind Digital Solutions
+          CAC Certified Enterprise: Bethelmind Digital Solutions
         </span>
         <span>•</span>
         <span className="flex items-center gap-1 text-slate-300">

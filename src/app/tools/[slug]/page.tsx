@@ -45,10 +45,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'solar-savings.html',
     title: 'Solar & Clean Energy Savings Calculator',
     category: 'Solar & Renewable Energy',
-    badge: '⚡ Clean Energy ROI Sizer',
+    badge: 'Clean Energy ROI Sizer',
     summary: 'Calculate 25-year rooftop solar savings, panel count, battery bank requirements, and 30% clean energy rebates.',
     highlights: ['25-Year Cumulative Savings', 'Battery Bank & Inverter Sizer', 'Direct WhatsApp BOQ Proposal'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?currency=NGN&item=solar-buster&amount=10000',
     selarProduct: 'Solar Master Procurement Blueprint',
     selarPrice: '₦15,000 / $19',
   },
@@ -57,10 +57,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'crypto-dca.html',
     title: 'Crypto DCA Wealth Engine & Profit Simulator',
     category: 'Crypto & Digital Assets',
-    badge: '📈 DCA Wealth Simulator',
+    badge: 'DCA Wealth Simulator',
     summary: 'Model Dollar-Cost Averaging across BTC, ETH, and SOL with historical market cycles, compounding yield, and risk metrics.',
     highlights: ['Multi-Cycle DCA Modeling', 'Compounding Wealth Projection', 'Drawdown Risk Guard Matrix'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-finance',
     selarProduct: 'Algorithmic Crypto DCA Playbook',
     selarPrice: '₦12,500 / $15',
   },
@@ -69,10 +69,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'kids-learning.html',
     title: 'Kids Interactive 3D Learning & Phonics Studio',
     category: 'Education & Kids Learning',
-    badge: '🎈 Phonics & Math Studio',
+    badge: 'Phonics & Math Studio',
     summary: 'Engaging interactive spelling, animal phonics, arithmetic drills, and printable milestone reward certificates.',
     highlights: ['Interactive Phonics Engine', 'Printable Milestone Certificates', 'Zero Screen Distractions'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-kids',
     selarProduct: 'Early Childhood STEM Curriculum Pack',
     selarPrice: '₦7,500 / $9',
   },
@@ -81,10 +81,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'biohack-longevity.html',
     title: 'Biohack Longevity Protocol & Biological Age Sizer',
     category: 'Health & Biohacking',
-    badge: '🧬 Biological Age Sizer',
+    badge: 'Biological Age Sizer',
     summary: 'Score cardiovascular fitness, deep sleep architecture, fasting protocols, and personalized supplement stacks.',
     highlights: ['Biological Age Offset Score', 'Sleep & HRV Optimization', 'Evidence-Based Protocol Stack'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-health',
     selarProduct: 'Peak Biomarker Longevity Protocol',
     selarPrice: '₦15,000 / $19',
   },
@@ -93,10 +93,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'wealth-calculator.html',
     title: 'Passive Income & Wealth Freedom Calculator',
     category: 'Personal Finance & Wealth',
-    badge: '💰 FIRE Number Calculator',
+    badge: 'FIRE Number Calculator',
     summary: 'Compute your exact Financial Independence number, monthly passive income runway, and safe withdrawal timeline.',
     highlights: ['FIRE Target Milestone Matrix', 'Compounding Portfolio Engine', 'Inflation-Adjusted Projections'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-finance',
     selarProduct: 'Passive Income Architecture Guide',
     selarPrice: '₦12,500 / $15',
   },
@@ -105,10 +105,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'cashflow-calculator.html',
     title: 'Real Estate Cashflow & Deal Sizer',
     category: 'Real Estate & Property',
-    badge: '🏡 Deal Underwriting Sizer',
+    badge: 'Deal Underwriting Sizer',
     summary: 'Underwrite residential & commercial rental properties with Cap Rate, Cash-on-Cash ROI, DSCR, and 10-year IRR.',
     highlights: ['Cap Rate & Cash-on-Cash Matrix', 'DSCR Lender Safety Check', 'Automated Deal Summary PDF'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?currency=NGN&item=land-dossier&amount=25000',
     selarProduct: 'Institutional Real Estate Underwriter Bundle',
     selarPrice: '₦25,000 / $30',
   },
@@ -117,10 +117,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'cashflow-calculator.html',
     title: 'Real Estate Cashflow & Deal Sizer',
     category: 'Real Estate & Property',
-    badge: '🏡 Deal Underwriting Sizer',
+    badge: 'Deal Underwriting Sizer',
     summary: 'Underwrite residential & commercial rental properties with Cap Rate, Cash-on-Cash ROI, DSCR, and 10-year IRR.',
     highlights: ['Cap Rate & Cash-on-Cash Matrix', 'DSCR Lender Safety Check', 'Automated Deal Summary PDF'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?currency=NGN&item=land-dossier&amount=25000',
     selarProduct: 'Institutional Real Estate Underwriter Bundle',
     selarPrice: '₦25,000 / $30',
   },
@@ -129,10 +129,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'wholesaling-loi.html',
     title: 'Wholesaling LOI & Property Offer Generator',
     category: 'Real Estate Wholesaling',
-    badge: '📜 Binding LOI Generator',
+    badge: 'Binding LOI Generator',
     summary: 'Generate institutional Letters of Intent, maximum allowable offers (MAO), repair margins, and seller contracts.',
     highlights: ['Instant 1-Click Formal LOI PDF', '70% Rule MAO Formula', 'Inspection Contingency Clauses'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?currency=NGN&item=land-dossier&amount=25000',
     selarProduct: 'Wholesale Assignment Contract Vault',
     selarPrice: '₦20,000 / $25',
   },
@@ -141,10 +141,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'script-generator.html',
     title: 'Viral Social Script & Hook Generator',
     category: 'Creator & Social Media',
-    badge: '🎬 Viral Script Generator',
+    badge: 'Viral Script Generator',
     summary: 'High-retention 60-second video scripts, pattern interrupts, psychological hooks, and high-converting CTAs.',
     highlights: ['3-Second Visual Hook Matrix', 'Dynamic Retention Pacing', 'Niche-Specific Viral Templates'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-faceless',
     selarProduct: '100+ Viral Hook & Script Vault',
     selarPrice: '₦10,000 / $12',
   },
@@ -153,10 +153,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'site-audit.html',
     title: 'SEO & High-Performance Site Audit Engine',
     category: 'B2B Software & SEO',
-    badge: '🔍 Instant Technical SEO Audit',
+    badge: 'Instant Technical SEO Audit',
     summary: 'Audit core web vitals, mobile responsiveness, SSL security headers, schema markup, and conversion leaks.',
     highlights: ['Core Web Vitals Diagnosis', 'Mobile Viewport Health Check', 'Lead-Leak Action Checklist'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-b2bleadgen',
     selarProduct: 'Local SEO Domination Agency Playbook',
     selarPrice: '₦20,000 / $25',
   },
@@ -165,10 +165,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'prayer-journal.html',
     title: 'Scripture & Daily Prayer Journal Suite',
     category: 'Faith & Devotional',
-    badge: '🙏 Guided Faith Journal',
+    badge: 'Guided Faith Journal',
     summary: 'Daily devotional reflection, topical scripture finder, answered prayer tracking, and printable spiritual journals.',
     highlights: ['Topical Scripture Matcher', 'Testimony & Prayer Tracker', 'Printable Devotional Layouts'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-prayer',
     selarProduct: '365-Day Guided Devotional & Prayer Journal',
     selarPrice: '₦5,000 / $6',
   },
@@ -177,7 +177,7 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'sure-score.html',
     title: 'SureScore AI™ Football Match Predictor & Acca Slip Builder',
     category: 'Sports Analytics',
-    badge: '⚽ 2026 AI Match Outcome & xG Engine',
+    badge: '2026 AI Match Outcome & xG Engine',
     summary: 'Simulate real-time 1X2 win probabilities, projected exact scorelines, Both Teams to Score (BTTS), and build viral multi-match accumulator slips.',
     highlights: ['Poisson xG & ELO Model', '1-Click Acca Multiplier Slip', 'Instant WhatsApp Group Share'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
@@ -189,10 +189,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'sports-edge.html',
     title: 'Sports Edge Odds & Bankroll Calculator',
     category: 'Sports Analytics',
-    badge: '🎯 Kelly Criterion Bankroll Guard',
+    badge: 'Kelly Criterion Bankroll Guard',
     summary: 'Arbitrage detection, expected value (+EV) calculations, Kelly criterion stake sizing, and bankroll preservation.',
     highlights: ['Kelly Criterion Stake Sizer', '+EV Margin Calculator', 'No-Vig Probability Converter'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
     selarProduct: 'Quantitative Sports Analytics Model',
     selarPrice: '₦15,000 / $19',
   },
@@ -201,10 +201,10 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'ai-stack-finder.html',
     title: 'Enterprise AI Tech Stack Finder',
     category: 'AI & Enterprise Software',
-    badge: '🤖 Enterprise AI Architecture',
+    badge: 'Enterprise AI Architecture',
     summary: 'Match your business workflow to the ideal LLMs, automation pipelines, vector databases, and enterprise agents.',
     highlights: ['Vendor Lock-in Evaluation', 'TCO & API Token Sizer', 'Production Integration Map'],
-    selarUrl: 'https://selar.com/showlove/bethelmind',
+    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-aitools',
     selarProduct: 'Complete Enterprise AI Blueprint 2026',
     selarPrice: '₦35,000 / $45',
   },
@@ -213,7 +213,7 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'drama-radar.html',
     title: 'DramaRadar AI™ | Fake vs Real Reddit Detective & Anonymous Story Vault',
     category: 'Social Media & Entertainment',
-    badge: '🔥 Viral Reddit Storytelling & Detective Game',
+    badge: 'Viral Reddit Storytelling & Detective Game',
     summary: 'Test your intuition with the Fake vs Real Reddit Drama detective game, submit anonymous confessions, and get viral storytelling blueprints.',
     highlights: ['Interactive AITA Detective Game', 'Anonymous Confession Submissions', 'WhatsApp Streak Brag Loop'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-reddit',
@@ -225,7 +225,7 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'saas-radar.html',
     title: 'SaaSRadar AI™ | Software Alternatives & Lifetime Deal Finder',
     category: 'Software & Productivity',
-    badge: '⚡ 2026 SaaS Spend Optimizer & Radar',
+    badge: '2026 SaaS Spend Optimizer & Radar',
     summary: 'Slash your recurring subscriptions. Compare expensive SaaS tools against battle-tested open-source and lifetime alternatives.',
     highlights: ['Spend vs Savings Calculator', 'Open-Source & Free Alternatives', 'Turnkey B2B Migration Setup'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-saas',
@@ -237,7 +237,7 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'goal-grid.html',
     title: 'GoalGrid AI™ | Daily Football Mystery Star & Club Game',
     category: 'Sports Analytics',
-    badge: '⚽ Viral Daily Football Trivia Grid',
+    badge: 'Viral Daily Football Trivia Grid',
     summary: 'The viral daily football trivia grid. Guess today 5-letter football star or club in 6 tries, share your emoji grid on WhatsApp, and unlock high-confidence value slips.',
     highlights: ['Daily 5-Letter Football Mystery', 'WhatsApp Emoji Grid Sharing', 'Unlocked 4.85x Acca Value Slip'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
@@ -249,7 +249,7 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'footy-wordle.html',
     title: 'FootyWordle AI™ | Daily Football Wordle & Mystery Player Game',
     category: 'Sports Analytics',
-    badge: '⚽ Viral Daily Football Wordle',
+    badge: 'Viral Daily Football Wordle',
     summary: 'The viral daily football Wordle. Guess today 5-letter football star or club in 6 tries, share your emoji grid on WhatsApp, and unlock high-confidence value slips.',
     highlights: ['Daily 5-Letter Football Mystery', 'WhatsApp Emoji Grid Sharing', 'Unlocked 4.85x Acca Value Slip'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
@@ -261,7 +261,7 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'typing-speed.html',
     title: 'TypeMaster AI™ | 60-Second WPM Typing Speed & Accuracy Test',
     category: 'Software & Productivity',
-    badge: '⌨️ 40M+ Monthly Play Benchmark',
+    badge: '⌨ 40M+ Monthly Play Benchmark',
     summary: 'Benchmark your typing speed, accuracy, and keystrokes in 60 seconds. Claim your verified typing certificate and share your score.',
     highlights: ['Real-Time WPM & Accuracy Telemetry', 'Shareable Verified Scorecard', 'Remote Job Blueprint Upsell'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-aitools',
@@ -273,7 +273,7 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'focus-timer.html',
     title: 'FocusFlow AI™ | 25/5 Pomodoro Deep Work Timer & Ambient Soundscape',
     category: 'Software & Productivity',
-    badge: '🧠 25/5 Deep Work & Productivity Suite',
+    badge: '25/5 Deep Work & Productivity Suite',
     summary: 'Eliminate distractions with scientific 25-minute Pomodoro cycles and zero-bandwidth mathematically synthesized ambient soundscapes.',
     highlights: ['Client-Side Web Audio Soundscapes', 'Sprint Task Checklist', 'High Dwell-Time Engine'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-aitools',
@@ -297,7 +297,7 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'salary-calc.html',
     title: 'SalaryTakeHome AI™ | 2026 Net Pay, PAYE & Remote Income Sizer',
     category: 'Finance & Investing',
-    badge: '💰 2026 Statutory Payroll Engine',
+    badge: '2026 Statutory Payroll Engine',
     summary: 'Calculate your true monthly take-home income after statutory PAYE personal income tax, 8% pension, NHF, and Consolidated Relief Allowances.',
     highlights: ['PITA 2026 Statutory Calculation', 'Itemized PAYE & Pension Deductions', 'Instant WhatsApp Salary Slip Share'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-finance',
@@ -309,7 +309,7 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'higher-lower.html',
     title: 'Higher or Lower AI™ | Viral Football Values & Wealth Game',
     category: 'Entertainment & Gaming',
-    badge: '🔥 Viral 500M+ Play Comparison Arena',
+    badge: 'Viral 500M+ Play Comparison Arena',
     summary: 'The addictive viral Higher or Lower game. Guess which football superstar has a higher market value or which mogul has a higher net worth.',
     highlights: ['Transfer Values vs Net Worths', 'Streak Bragging on WhatsApp', 'Integrated Cross-Promotion'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
@@ -356,7 +356,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Solar & Renewable Energy BOQ Load Sizer',
       category: 'Solar & Renewable Energy',
-      tag: '⚡ NERC Band A Tariff Avoidance Suite',
+      tag: 'NERC Band A Tariff Avoidance Suite',
       summary: 'Precision load calculation, DisCo Band A/B/C tariff avoidance vs generator diesel fuel economics, and automated customer WhatsApp BOQ proposal generator for Nigerian solar installers.',
       highlightPills: ['Sub-2s WhatsApp BOQ', '51.2V LiFePO4 Sizing', 'Diesel vs Solar Payback Matrix'],
     };
@@ -366,7 +366,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Tokunbo VIN Customs Duty & Port Landing Sizer',
       category: 'Automobile & Tokunbo Dealership',
-      tag: '🚗 NCS 2026 Single-Sheet Tariff',
+      tag: 'NCS 2026 Single-Sheet Tariff',
       summary: 'Calculates statutory 20% import duty, 15% NAC levy, 7.5% VAT, and PTML/Tin Can terminal charges for Lagos car dealers and auto auction importers.',
       highlightPills: ['17-Digit VIN Decode', 'NCS 2026 Valuation Matrix', 'Terminal Demurrage Estimator'],
     };
@@ -376,7 +376,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Salon & Spa 24/7 Booking & Deposit Lock Engine',
       category: 'Beauty & Hair Salon',
-      tag: '💅 25% Anti-No-Show Deposit Lock',
+      tag: '25% Anti-No-Show Deposit Lock',
       summary: '24/7 appointment scheduler that locks client stylist slots with instant Paystack/Moniepoint bank transfer deposits, eliminating empty salon chairs and fake alerts.',
       highlightPills: ['Zero Fake Alerts', '24/7 WhatsApp Appointment Desk', 'Stylist Commission Split Ledger'],
     };
@@ -386,7 +386,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Plot Layout, Survey Levies & Mortgage Amortization Suite',
       category: 'Real Estate & Property Development',
-      tag: '🏡 Title & Infrastructure Allocation',
+      tag: 'Title & Infrastructure Allocation',
       summary: 'Calculates 300 sqm Half Plot vs 500/600 sqm Full Plot outright packages, registered survey (Red Copy) fees, deed of assignment levies, and developer installment spreads.',
       highlightPills: ['Survey & Deed Sizer', 'Multi-Tier Realtor 5% WHT Ledger', 'Diaspora Forex Milestone Tracker'],
     };
@@ -396,7 +396,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Clinic HMO Claims & Procedure Co-Pay Reconciler',
       category: 'Clinic & Healthcare HMO',
-      tag: '🏥 60% Upfront Admission Deposit',
+      tag: '60% Upfront Admission Deposit',
       summary: 'Reconciles HMO procedure tariffs, patient co-pay deductions, and secondary AuthCodes to prevent 60-day claim rejections, with upfront surgical admission deposits.',
       highlightPills: ['Reliance / Hygeia AuthCode Risk Guard', '60% Admission Deposit Lock', 'Diagnostic Lab Panel Sizer'],
     };
@@ -406,7 +406,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Private School Term Tuition & Result PIN Portal',
       category: 'Private Education & Schools',
-      tag: '🎓 Result Broadsheet Gating',
+      tag: 'Result Broadsheet Gating',
       summary: 'Student term fee payment gateway that automatically gates digital term report cards and WAEC broadsheets until school fees clear, with scratch-PIN batch accounting.',
       highlightPills: ['Auto-Gated Report Cards', 'PIN Batch Profit Accounting', 'Direct Bank Transfer Remittance'],
     };
@@ -416,7 +416,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Hyperlocal Dispatch & Long-Haul Trip Freight Sizer',
       category: 'Logistics & Freight Haulage',
-      tag: '📦 Interstate Diesel & Waybill Tracker',
+      tag: 'Interstate Diesel & Waybill Tracker',
       summary: 'Aggregates multi-carrier dispatch pricing, generates automated WhatsApp waybill tracking links for customers, and audits driver interstate diesel consumption.',
       highlightPills: ['Auto-SMS Waybill Tracking', 'Diesel Pilferage Audit', 'NURTW Interstate Levy Estimator'],
     };
@@ -426,7 +426,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'CAC Corporate Filing Fees & Legal Retainer Suite',
       category: 'Legal & CAC Corporate Services',
-      tag: '⚖️ CAC & SCUML Compliance Matrix',
+      tag: 'CAC & SCUML Compliance Matrix',
       summary: 'Calculates statutory CAC registration and annual return arrears, FIRS stamp duty, SCUML anti-money laundering certification fees, and itemized counsel debit notes.',
       highlightPills: ['Official CAC Fee Matrix', 'SCUML & TCC Cost Sizer', 'FIRS 7.5% VAT & 5% WHT Credit Note'],
     };
@@ -436,7 +436,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Shortlet Electricity Token & Caution Deposit Reconciler',
       category: 'Shortlet & Hospitality Apartments',
-      tag: '🏨 DisCo kWh & Damage Deposit Ledger',
+      tag: 'DisCo kWh & Damage Deposit Ledger',
       summary: 'Reconciles guest nightly rates, 250kVA generator overtime surcharges, and actual DisCo prepaid meter consumption against refundable caution deposits.',
       highlightPills: ['Prepaid Meter Token Deduction', 'Refundable Caution Splitter', 'Instant WhatsApp Check-In Receipt'],
     };
@@ -445,7 +445,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
   return {
     title: `${rawSlug.replace(/\.html$/i, '').replace(/[-_]+/g, ' ').toUpperCase()} Commercial Tool`,
     category: 'Commercial Enterprise',
-    tag: '⚡ 2026 Enterprise Engine',
+    tag: '2026 Enterprise Engine',
     summary: 'Automated 24/7 business calculation, quotation, and client qualification engine pre-configured for Nigerian commercial operators.',
     highlightPills: ['Instant WhatsApp Dispatch', '₦0 Upfront Preview', 'Bankable PDF Quote Generator'],
   };
@@ -501,13 +501,13 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
     const standaloneCalcUrl = `/calc/${viralTool.file}`;
 
     return (
-      <main className="min-h-screen bg-[#040711] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+      <main className="min-h-screen bg-[#070b14] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
         {/* Top Hairline Metallic Accent Glow */}
-        <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 opacity-90 shadow-[0_0_20px_rgba(6,182,212,0.6)]" />
+        <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent" />
 
         {/* Atmospheric Ambient Glow */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-cyan-500/10 via-indigo-500/5 to-transparent blur-[120px] rounded-full" />
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-[#d4af37]/5 via-slate-900/5 to-transparent blur-[120px] rounded-full" />
         </div>
 
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
@@ -539,8 +539,8 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
                   <ShieldCheck className="w-3.5 h-3.5" />
                   Free 100% Client-Side Engine
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-bold text-[11px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20 font-bold text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-pulse" />
                   Live Verified 2026
                 </span>
               </div>
@@ -569,7 +569,7 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
                       key={i}
                       className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-300 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg"
                     >
-                      <CheckCircle2 className="w-3 h-3 text-cyan-400" />
+                      <CheckCircle2 className="w-3 h-3 text-[#d4af37]" />
                       <span>{pill}</span>
                     </span>
                   ))}
@@ -582,7 +582,7 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
                   href={standaloneCalcUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#d4af37]/10 hover:bg-cyan-500/20 text-[#d4af37] border border-[#d4af37]/30 text-xs font-bold transition-all shadow-sm"
                   title="Open standalone zero-distraction view"
                 >
                   <Maximize2 className="w-3.5 h-3.5" />
@@ -597,7 +597,7 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
                   className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/10 text-xs font-bold transition-all shadow-sm"
                   title="Share Tool on WhatsApp"
                 >
-                  <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+                  <Share2 className="w-3.5 h-3.5 text-[#d4af37]" />
                   <span className="hidden sm:inline">Share</span>
                 </a>
 
@@ -690,13 +690,13 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
   const profile = getSectorProfile(cleanSlug);
 
   return (
-    <main className="min-h-screen bg-[#040711] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 pb-36">
+    <main className="min-h-screen bg-[#070b14] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 pb-36">
       {/* Top Hairline Metallic Accent Glow */}
-      <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 opacity-90 shadow-[0_0_20px_rgba(6,182,212,0.6)]" />
+      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent" />
 
       {/* Atmospheric Ambient Glow */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-cyan-500/10 via-indigo-500/5 to-transparent blur-[120px] rounded-full" />
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-[#d4af37]/5 via-slate-900/5 to-transparent blur-[120px] rounded-full" />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
@@ -719,8 +719,8 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
                 <ShieldCheck className="w-3.5 h-3.5" />
                 CAC Certified Enterprise · RC 7034297
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-bold text-[11px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20 font-bold text-[11px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-pulse" />
                 2026 Production Release
               </span>
             </div>
@@ -749,7 +749,7 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
                     key={i}
                     className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-300 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg"
                   >
-                    <CheckCircle2 className="w-3 h-3 text-cyan-400" />
+                    <CheckCircle2 className="w-3 h-3 text-[#d4af37]" />
                     <span>{pill}</span>
                   </span>
                 ))}
@@ -757,7 +757,7 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
             </div>
 
             {/* Direct Commercial Activation CTA Card */}
-            <div className="lg:w-72 shrink-0 bg-gradient-to-br from-slate-900/90 to-slate-950 p-4 rounded-2xl border border-cyan-500/30 shadow-xl space-y-3">
+            <div className="lg:w-72 shrink-0 bg-gradient-to-br from-slate-900/90 to-slate-950 p-4 rounded-2xl border border-[#d4af37]/30 shadow-xl space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400 font-semibold">Custom SME Setup</span>
                 <span className="text-emerald-400 font-black">₦35,000 Starter</span>
@@ -769,7 +769,7 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
                 href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I am testing the live *${profile.title}* on your website. I would like to activate our dedicated business setup with 24/7 AI WhatsApp closer (₦35k Starter Package).`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs transition-all shadow-lg shadow-cyan-500/20 active:scale-95"
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#080d19] font-bold text-xs transition-all shadow-md shadow-[#d4af37]/20 active:scale-95"
               >
                 <MessageCircle className="w-3.5 h-3.5 fill-current" />
                 <span>Claim Setup on WhatsApp →</span>

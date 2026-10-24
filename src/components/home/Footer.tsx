@@ -54,7 +54,7 @@ export default function Footer() {
             <p style={{ color: '#64748b', fontSize: '0.82rem', lineHeight: 1.6, margin: '0 0 12px' }}>
               Business automation and customer-acquisition workflows for Lagos SMEs. Guided onboarding, practical sector tools, and WhatsApp support.
             </p>
-            <p style={{ color: '#475569', fontSize: '0.78rem', margin: 0 }}>📍 Lagos, Nigeria</p>
+            <p style={{ color: '#475569', fontSize: '0.78rem', margin: 0 }}>Lagos, Nigeria</p>
           </div>
 
           {/* Navigation */}
@@ -73,9 +73,7 @@ export default function Footer() {
                   </li>
                 ))}
                 <li>
-                  <Link href="/admin/mobile?token=bethelmind_admin_2026" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 700 }}>
-                    📱 Mobile Command Center
-                  </Link>
+                  <Link href="/tools" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 700 }}>Sector Tools Directory</Link>
                 </li>
               </ul>
             </nav>

@@ -391,7 +391,7 @@ export default function Navbar() {
         }}
       >
         <Link
-          href="/admin/mobile?token=bethelmind_admin_2026"
+          href="/tools"
           className="desktop-only nav-login-link"
           style={{
             color: '#38bdf8',
@@ -404,9 +404,7 @@ export default function Navbar() {
             background: 'rgba(56, 189, 248, 0.08)',
             transition: 'all 0.2s ease',
           }}
-        >
-          📱 Mobile Desk
-        </Link>
+        >Sector Tools</Link>
 
         {/* WhatsApp Button */}
         <a
@@ -526,7 +524,7 @@ export default function Navbar() {
                 fontWeight: 800,
               }}
             >
-              <span>⚡ Interactive Command Demo</span>
+              <span>Interactive Command Demo</span>
               <ArrowRight size={14} />
             </button>
 
@@ -600,7 +598,7 @@ export default function Navbar() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
             <Link
-              href="/admin/mobile?token=bethelmind_admin_2026"
+              href="/tools"
               onClick={() => setMenuOpen(false)}
               style={{
                 gridColumn: '1 / -1',
@@ -618,9 +616,7 @@ export default function Navbar() {
                 justifyContent: 'center',
                 gap: 6,
               }}
-            >
-              📱 Mobile Command Hub (Desk Login)
-            </Link>
+            >Sector Tools Directory</Link>
 
             <a
               href={waLink}

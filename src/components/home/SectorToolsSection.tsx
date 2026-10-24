@@ -615,9 +615,9 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
 
   // Build clean formatted summary text for sharing
   const buildShareableText = () => {
-    let summary = `📊 *${toolName.toUpperCase()} SUMMARY*\n━━━━━━━━━━━━━━━━━━━━\n`;
+    let summary = `*${toolName.toUpperCase()} SUMMARY*\n━━━━━━━━━━━━━━━━━━━━\n`;
     if (heroAmount !== undefined) {
-      summary += `💰 *${heroLabel}:* ${formatNaira(heroAmount)}\n\n`;
+      summary += `*${heroLabel}:* ${formatNaira(heroAmount)}\n\n`;
     }
     Object.entries(result).forEach(([k, v]) => {
       if (k === 'items' || typeof v === 'object' || v === null || v === undefined) return;
@@ -627,7 +627,7 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
         : String(v);
       summary += `• *${label}:* ${valStr}\n`;
     });
-    summary += `\n✨ _Calculated via Bethelmind Sector Automation_`;
+    summary += `\n_Calculated via Bethelmind Sector Automation_`;
     return summary;
   };
 
@@ -824,7 +824,7 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
       >
         <div>
           <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            🇳🇬 SME DIGITAL GROWTH INITIATIVE
+            SME DIGITAL GROWTH INITIATIVE
           </div>
           <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#f8fafc', marginTop: 2 }}>
             Get This Calculator + Your Official .COM.NG Website:{' '}
@@ -854,12 +854,12 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
             boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
           }}
         >
-          🟢 Activate ₦35k Setup →
+          Activate ₦35k Setup →
         </a>
       </div>
 
       <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.72rem', textAlign: 'center' }}>
-        💡 Illustrative estimate. Actual figures depend on exact parameters, custom options, and your team's review.
+        Illustrative estimate. Actual figures depend on exact parameters, custom options, and your team's review.
       </p>
     </div>
   );
@@ -994,8 +994,7 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: 900, fontSize: '1.25rem', flexShrink: 0 }}>
-              ⚡
-            </div>
+              </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#fbbf24' }}>
@@ -1242,7 +1241,7 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
                 <div style={{ background: '#030712', borderRadius: 10, padding: '12px 14px', border: '1px solid rgba(255,255,255,0.1)', position: 'relative' }}>
                   <pre style={{ margin: 0, fontSize: '0.75rem', color: '#38bdf8', overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontFamily: 'monospace' }}>
                     {embedTab === 'iframe' && `<iframe src="https://www.bethelmindanalytics.com/embed/${modal.tool.actionKey || modal.tool.id}" width="100%" height="640" frameborder="0" style="border-radius:16px;border:none;"></iframe>`}
-                    {embedTab === 'script' && `<script src="https://www.bethelmindanalytics.com/api/widget/calculator.js" data-sector="${selectedIndustry}" data-color="${profile.color}" data-button-text="⚡ Open ${modal.tool.name}"></script>`}
+                    {embedTab === 'script' && `<script src="https://www.bethelmindanalytics.com/api/widget/calculator.js" data-sector="${selectedIndustry}" data-color="${profile.color}" data-button-text="Open ${modal.tool.name}"></script>`}
                     {embedTab === 'api' && `curl -X POST https://www.bethelmindanalytics.com/api/sector-tools \\
   -H "Content-Type: application/json" \\
   -d '{"action": "${modal.tool.actionKey || modal.tool.id}"}'`}
@@ -1262,7 +1261,7 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
                         embedTab === 'iframe'
                           ? `<iframe src="https://www.bethelmindanalytics.com/embed/${modal.tool.actionKey || modal.tool.id}" width="100%" height="640" frameborder="0" style="border-radius:16px;border:none;"></iframe>`
                           : embedTab === 'script'
-                          ? `<script src="https://www.bethelmindanalytics.com/api/widget/calculator.js" data-sector="${selectedIndustry}" data-color="${profile.color}" data-button-text="⚡ Open ${modal.tool.name}"></script>`
+                          ? `<script src="https://www.bethelmindanalytics.com/api/widget/calculator.js" data-sector="${selectedIndustry}" data-color="${profile.color}" data-button-text="Open ${modal.tool.name}"></script>`
                           : `curl -X POST https://www.bethelmindanalytics.com/api/sector-tools -H "Content-Type: application/json" -d '{"action": "${modal.tool.actionKey || modal.tool.id}"}'`;
                       navigator.clipboard.writeText(snippet);
                       setEmbedCopied(true);

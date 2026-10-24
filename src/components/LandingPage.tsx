@@ -100,7 +100,7 @@ interface LandingPageProps {
 
 const LUXURY_PRESETS = [
   {
-    name: '👑 Royal Gold',
+    name: 'Royal Gold',
     primary: 'hsl(45, 90%, 55%)',
     accent: 'hsl(198, 95%, 60%)',
     bg: 'hsl(225, 45%, 4%)',
@@ -112,7 +112,7 @@ const LUXURY_PRESETS = [
     gradient: 'linear-gradient(135deg, hsl(45, 90%, 55%) 0%, hsl(38, 95%, 55%) 50%, hsl(265, 85%, 60%) 100%)'
   },
   {
-    name: '🌿 Emerald Solar',
+    name: 'Emerald Solar',
     primary: 'hsl(160, 84%, 45%)',
     accent: 'hsl(38, 92%, 50%)',
     bg: 'hsl(150, 45%, 3%)',
@@ -124,7 +124,7 @@ const LUXURY_PRESETS = [
     gradient: 'linear-gradient(135deg, hsl(160, 84%, 45%) 0%, hsl(190, 90%, 45%) 50%, hsl(38, 92%, 50%) 100%)'
   },
   {
-    name: '⚡ Cyber Crimson',
+    name: 'Cyber Crimson',
     primary: 'hsl(348, 89%, 60%)',
     accent: 'hsl(43, 96%, 56%)',
     bg: 'hsl(240, 20%, 4%)',
@@ -136,7 +136,7 @@ const LUXURY_PRESETS = [
     gradient: 'linear-gradient(135deg, hsl(348, 89%, 60%) 0%, hsl(43, 96%, 56%) 100%)'
   },
   {
-    name: '💎 Diamond Cyan',
+    name: 'Diamond Cyan',
     primary: 'hsl(188, 94%, 43%)',
     accent: 'hsl(158, 64%, 52%)',
     bg: 'hsl(210, 60%, 4%)',
@@ -148,7 +148,7 @@ const LUXURY_PRESETS = [
     gradient: 'linear-gradient(135deg, hsl(188, 94%, 43%) 0%, hsl(217, 91%, 60%) 50%, hsl(158, 64%, 52%) 100%)'
   },
   {
-    name: '🌹 Rose Gold',
+    name: 'Rose Gold',
     primary: 'hsl(330, 81%, 60%)',
     accent: 'hsl(43, 96%, 56%)',
     bg: 'hsl(315, 45%, 4%)',
@@ -1077,11 +1077,11 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', fontWeight: 600, color: '#1e40af' }}>
               <input type="checkbox" checked={estimatorExtras.socialMedia} onChange={(e) => setEstimatorExtras({...estimatorExtras, socialMedia: e.target.checked})} style={{ accentColor: theme.primary }} />
-              📱 AI Social Media Content & Account Auto-Publisher (+₦125,000/mo)
+              AI Social Media Content & Account Auto-Publisher (+₦125,000/mo)
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', fontWeight: 600, color: '#047857' }}>
               <input type="checkbox" checked={estimatorExtras.adAutomation} onChange={(e) => setEstimatorExtras({...estimatorExtras, adAutomation: e.target.checked})} style={{ accentColor: theme.primary }} />
-              🚀 AI Meta Lead Ads & Google Search Ad Campaign Launcher (+₦195,000/mo)
+              AI Meta Lead Ads & Google Search Ad Campaign Launcher (+₦195,000/mo)
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', color: '#4b5563', cursor: 'pointer' }}>
               <input type="checkbox" checked={estimatorExtras.enterprise} onChange={(e) => setEstimatorExtras({...estimatorExtras, enterprise: e.target.checked})} style={{ accentColor: theme.primary }} />
@@ -1157,9 +1157,9 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '6px' }}>Inverter System Capacity</label>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
               {[
-                { val: 3.5, label: '⚡ 3.5KVA Basic' },
+                { val: 3.5, label: '3.5KVA Basic' },
                 { val: 5, label: '🔋 5KVA Standard' },
-                { val: 10, label: '👑 10KVA Premium' }
+                { val: 10, label: '10KVA Premium' }
               ].map(chip => (
                 <button
                   key={chip.val}
@@ -1846,7 +1846,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
           <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span style={{ background: '#10b981', color: '#fff', fontSize: '0.72rem', fontWeight: 800, padding: '3px 10px', borderRadius: '14px', textTransform: 'uppercase' }}>
-                ✅ FREE SAMPLE WEBSITE FOR {lead.name.toUpperCase()}
+                OFFICIAL SAMPLE WEBSITE FOR {lead.name.toUpperCase()}
               </span>
               <span style={{ fontSize: '0.78rem', color: '#cbd5e1', fontWeight: 600 }}>
                 Scroll down to test how your customers will see your business & contact you on WhatsApp
@@ -1868,7 +1868,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                   borderRadius: '8px',
                 }}
               >
-                ✏️ Request Free Photo/Price Edit
+                Request Free Photo/Price Edit
               </a>
             </div>
           </div>
@@ -1916,7 +1916,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             flexWrap: 'wrap',
             justifyContent: 'center'
           }}>
-            <span style={{ color: theme.primary || '#34d399' }}>🔒 PROPOSAL:</span>
+            <span style={{ color: theme.primary || '#34d399' }}>PROPOSAL:</span>
             <strong style={{ color: theme.accent || '#fde047', textTransform: 'uppercase', letterSpacing: '0.02em' }}>{lead.name}</strong>
             <span style={{ color: '#64748b' }}>•</span>
             <span style={{ color: '#cbd5e1' }}>{lead.area || lead.city || 'Lagos'}</span>
@@ -2040,7 +2040,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 letterSpacing: '-0.01em'
               }}
             >
-              💬 Claim on WhatsApp (₦0 Upfront Preview) <ArrowRight size={18} />
+              Claim on WhatsApp (₦0 Upfront Preview) <ArrowRight size={18} />
             </a>
 
             <a
@@ -2063,7 +2063,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 transition: 'all 0.2s'
               }}
             >
-              ⚡ Instant Setup Details &amp; Pricing ↓
+              Instant Setup Details &amp; Pricing ↓
             </a>
           </div>
 
@@ -2078,13 +2078,13 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
             flexWrap: 'wrap',
             opacity: 0.95
           }}>
-            <span>⚡ Live in 24–48 Hours</span>
+            <span>Live in 24–48 Hours</span>
             <span>•</span>
-            <span>🛡️ 100% Done-For-You White-Glove Setup</span>
+            <span>100% Done-For-You White-Glove Setup</span>
             <span>•</span>
-            <span>💳 Moniepoint &amp; OPay Verified</span>
+            <span>Moniepoint &amp; OPay Verified</span>
             <span>•</span>
-            <span>🔒 Zero-Risk Handover Guarantee</span>
+            <span>Zero-Risk Handover Guarantee</span>
           </div>
         </div>
       </section>
@@ -4077,7 +4077,7 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
                 {/* ⚡ OPTION A: 1-TAP WHATSAPP CLAIM & PHOTO CUSTOMIZATION (FASTEST FOR NIGERIAN SME OWNERS) */}
                 <div style={{ background: '#ecfdf5', border: '2px solid #10b981', borderRadius: '16px', padding: '18px', marginBottom: '22px', textAlign: 'center' }}>
                   <span style={{ fontSize: '0.78rem', color: '#047857', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '6px' }}>
-                    ⚡ FASTEST OPTION (NO FORM FILLING NEEDED)
+                    DIRECT ACTIVATION (NO FORM FILLING NEEDED)
                   </span>
                   <p style={{ fontSize: '0.84rem', color: '#065f46', margin: '0 0 12px', fontWeight: 600 }}>
                     Tap below to chat directly with our Lagos setup engineer on WhatsApp (`0802 279 1227`) — send your shop photos, price list, or claim your 6-Month Independence Bundle:

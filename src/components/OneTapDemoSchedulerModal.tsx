@@ -74,7 +74,7 @@ export default function OneTapDemoSchedulerModal({
   };
 
   const waConfirmUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(
-    `Hello Tosin (Bethelmind Lagos Desk)!\n\nI want to lock in a 10-minute live walkthrough for *${businessName}* in ${area}.\n\n📅 Preferred Slot: ${selectedSlot}\n📱 Meeting Mode: ${meetingType === 'whatsapp_call' ? 'WhatsApp Direct Call' : 'Google Meet Screen Share'}\n\nPlease confirm our meeting link!`
+    `Hello Tosin (Bethelmind Lagos Desk)!\n\nI want to lock in a 10-minute live walkthrough for *${businessName}* in ${area}.\n\n• Preferred Slot: ${selectedSlot}\n• Meeting Mode: ${meetingType === 'whatsapp_call' ? 'WhatsApp Direct Call' : 'Google Meet Screen Share'}\n\nPlease confirm our meeting link!`
   )}`;
 
   return (

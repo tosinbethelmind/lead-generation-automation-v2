@@ -11,7 +11,7 @@
  */
 
 import React, { useState } from 'react';
-import { CheckCircle, ArrowRight, FileText } from 'lucide-react';
+import { CheckCircle, ArrowRight, FileText, Globe, Code, ShieldCheck } from 'lucide-react';
 import {
   PLANS_NEED_WEBSITE,
   PLANS_HAVE_WEBSITE,
@@ -161,9 +161,7 @@ export default function PricingSection({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
-                🌐
-              </div>
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(139,92,246,0.2)", border: "1px solid rgba(139,92,246,0.4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Globe style={{ width: 20, height: 20, color: "#a78bfa" }} /></div>
               <div>
                 <div style={{ fontSize: '0.88rem', fontWeight: 800, color: websiteMode === 'need_website' ? '#f8fafc' : '#cbd5e1' }}>
                   Managed Full Website
@@ -207,9 +205,7 @@ export default function PricingSection({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(6,182,212,0.2)', border: '1px solid rgba(6,182,212,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
-                🔌
-              </div>
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(6,182,212,0.2)", border: "1px solid rgba(6,182,212,0.4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Code style={{ width: 20, height: 20, color: "#38bdf8" }} /></div>
               <div>
                 <div style={{ fontSize: '0.88rem', fontWeight: 800, color: websiteMode === 'have_website' ? '#f8fafc' : '#cbd5e1' }}>
                   1-Line Script Embed
@@ -252,9 +248,7 @@ export default function PricingSection({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(16,185,129,0.2)', border: '1px solid rgba(16,185,129,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
-                📦
-              </div>
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(16,185,129,0.2)", border: "1px solid rgba(16,185,129,0.4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><ShieldCheck style={{ width: 20, height: 20, color: "#34d399" }} /></div>
               <div>
                 <div style={{ fontSize: '0.88rem', fontWeight: 800, color: websiteMode === 'outright_buyout' ? '#f8fafc' : '#cbd5e1' }}>
                   1-Time Outright Buyout
@@ -273,13 +267,13 @@ export default function PricingSection({
         </div>
 
         <p style={{ color: '#10b981', fontSize: '0.84rem', fontWeight: 700, margin: 0 }}>
-          ⚡ 50% deposit option available on setup packages • 100% legal Intellectual Property transfer on outright buyout.
+          50% milestone deposit option available on setup packages • 100% legal Intellectual Property transfer on outright buyout.
         </p>
       </div>
 
       {/* RENDER CONDITIONAL PRICING GRIDS */}
       {websiteMode === 'outright_buyout' ? (
-        /* 📦 1-TIME OUTRIGHT CODEBASE HANDOVER CARDS */
+        /* 1-TIME OUTRIGHT CODEBASE HANDOVER CARDS */
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 20, marginBottom: 56 }}>
           {OUTRIGHT_PACKAGES.map((pkg) => {
             const waOutrightLink = buildOutrightWhatsAppLink(pkg, businessName, selectedIndustry);
@@ -443,8 +437,8 @@ export default function PricingSection({
                   </p>
                   <p style={{ margin: 0, fontSize: '0.76rem', color: '#94a3b8', lineHeight: 1.4 }}>
                     {plan.balanceAmountNGN > 0
-                      ? `🛡️ Balance of ₦${plan.balanceAmountNGN.toLocaleString()} strictly due ONLY after you inspect & approve your live website on your phone.`
-                      : '⚡ Zero forced monthly subscriptions. Complete same-day integration.'}
+                      ? `Balance of ₦${plan.balanceAmountNGN.toLocaleString()} strictly due ONLY after you inspect & approve your live website on your phone.`
+                      : 'Zero forced monthly subscriptions. Complete same-day integration.'}
                   </p>
                   <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.76rem', color: '#38bdf8', fontWeight: 700 }}>
                     <span>⏱️ Guaranteed {plan.slaHours}-Hour Live Delivery SLA</span>
@@ -500,7 +494,7 @@ export default function PricingSection({
                     }}
                     aria-label={`Order ${plan.name} via WhatsApp`}
                   >
-                    💬 Order via 1-Tap WhatsApp (0802 279 1227) →
+                    Order via 1-Tap WhatsApp (0802 279 1227) →
                   </a>
 
                   <button
@@ -528,7 +522,7 @@ export default function PricingSection({
         </div>
       )}
 
-      {/* 🛡️ POST-LAUNCH SUPPORT, ANNUAL PASS & PAY-AS-YOU-GO MENU */}
+      {/* POST-LAUNCH SUPPORT, ANNUAL PASS & PAY-AS-YOU-GO MENU */}
       <div
         id="maintenance-support-suite"
         style={{
@@ -629,10 +623,10 @@ export default function PricingSection({
         <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '18px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
             <span style={{ color: '#f8fafc', fontWeight: 800, fontSize: '0.9rem' }}>
-              📋 Pay-As-You-Go Single Request Menu (No Retainer Required):
+              Pay-As-You-Go Single Request Menu (No Retainer Required):
             </span>
             <span style={{ color: '#10b981', fontSize: '0.76rem', fontWeight: 700 }}>
-              ⚡ Included: 30-Day Free Setup Warranty
+              Included: 30-Day Free Setup Warranty
             </span>
           </div>
 

@@ -1,4 +1,5 @@
 {
+  "cleanUrls": false,
   "functions": {
     "src/app/api/scrape/**/*.ts": {
       "maxDuration": 60
@@ -39,4 +40,3 @@
     }
   ]
 }
-

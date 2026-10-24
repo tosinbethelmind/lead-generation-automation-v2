@@ -283,7 +283,7 @@ export default function PaymentSection({
             aria-label="Request Settlement Account & Invoice on WhatsApp"
           >
             <MessageSquare style={{ width: 20, height: 20 }} aria-hidden="true" />
-            👉 Request Verified Settlement Account & Invoice on WhatsApp
+            Request Verified Settlement Account & Invoice on WhatsApp
           </a>
 
           <button
@@ -324,7 +324,7 @@ export default function PaymentSection({
             <ShieldCheck size={12} style={{ color: '#06b6d4' }} /> NDPA Data Compliance Verified
           </span>
           <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}>
-            🏦 Verified Bank Transfer Settlement
+            Verified Bank Transfer Settlement
           </span>
         </div>
 

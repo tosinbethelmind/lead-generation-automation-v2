@@ -17,7 +17,32 @@ import {
   calculateShortletBookingAndCaution,
   calculateBeautySalonStylistBooking
 } from '@/lib/sectorModules';
-import { Code, Copy, Check, MessageCircle, Sparkles, ExternalLink, Zap, ShieldCheck } from 'lucide-react';
+import { 
+  Code, 
+  Copy, 
+  Check, 
+  X,
+  MessageCircle, 
+  Sparkles, 
+  ExternalLink, 
+  Zap, 
+  ShieldCheck,
+  Sun,
+  Car,
+  Scissors,
+  Utensils,
+  ShoppingBag,
+  Building2,
+  Activity,
+  GraduationCap,
+  Truck,
+  Scale,
+  Hotel,
+  Briefcase,
+  Building,
+  Home,
+  Factory
+} from 'lucide-react';
 import { ViralToolShareBar } from './ViralToolShareBar';
 
 export type SectorToolTab = 
@@ -97,12 +122,12 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
             background: 'rgba(6, 182, 212, 0.15)',
             border: '1px solid rgba(6, 182, 212, 0.35)',
             borderRadius: 10,
-            color: '#38bdf8',
+            color: '#d4af37',
             fontSize: '0.85rem',
             fontWeight: 800,
           }}
         >
-          🔗
+          
         </span>
         <div>
           <span style={{ fontWeight: 800, color: '#e2e8f0', fontSize: '0.82rem' }}>Shareable Demo Link: </span>
@@ -130,7 +155,7 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
             transition: 'all 0.15s ease',
           }}
         >
-          <span>📲 Share on WhatsApp</span>
+          <span>Share on WhatsApp</span>
         </a>
         <button
           type="button"
@@ -150,26 +175,44 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
             transition: 'all 0.15s ease',
           }}
         >
-          <span>{copied ? 'Copied Link! ✓' : 'Copy Direct Link'}</span>
+          <span className="inline-flex items-center gap-1.5">{copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}{copied ? "Copied" : "Copy Direct Link"}</span>
         </button>
       </div>
     </div>
   );
 }
 
+function renderTabIcon(id: SectorToolTab) {
+  switch (id) {
+    case 'solar': return <Sun className="w-3.5 h-3.5" />;
+    case 'auto': return <Car className="w-3.5 h-3.5" />;
+    case 'beauty': return <Scissors className="w-3.5 h-3.5" />;
+    case 'restaurant': return <Utensils className="w-3.5 h-3.5" />;
+    case 'retail': return <ShoppingBag className="w-3.5 h-3.5" />;
+    case 'mortgage': return <Building2 className="w-3.5 h-3.5" />;
+    case 'healthcare': return <Activity className="w-3.5 h-3.5" />;
+    case 'education': return <GraduationCap className="w-3.5 h-3.5" />;
+    case 'logistics': return <Truck className="w-3.5 h-3.5" />;
+    case 'legal': return <Scale className="w-3.5 h-3.5" />;
+    case 'hospitality': return <Hotel className="w-3.5 h-3.5" />;
+    case 'dva': return <ShieldCheck className="w-3.5 h-3.5" />;
+    default: return <Sparkles className="w-3.5 h-3.5" />;
+  }
+}
+
 const SECTOR_TABS: Array<{ id: SectorToolTab; label: string; icon: string; color: string }> = [
-  { id: 'solar', label: 'Solar & Inverter BOQ', icon: '☀️', color: '#f59e0b' },
-  { id: 'auto', label: 'Tokunbo Duty & VIN', icon: '🚗', color: '#06b6d4' },
-  { id: 'beauty', label: 'Salon Deposit Lock', icon: '💅', color: '#ec4899' },
-  { id: 'restaurant', label: 'Restaurant 0% Commission', icon: '🍔', color: '#f97316' },
-  { id: 'retail', label: 'Retail Catalog Closer', icon: '🛍️', color: '#d946ef' },
-  { id: 'mortgage', label: 'Plot Layout & Mortgage', icon: '🏡', color: '#14b8a6' },
-  { id: 'healthcare', label: 'Clinic HMO Reconciler', icon: '🏥', color: '#f43f5e' },
-  { id: 'education', label: 'School Tuition & PIN', icon: '🎓', color: '#a855f7' },
-  { id: 'logistics', label: 'Logistics & Freight', icon: '📦', color: '#6366f1' },
-  { id: 'legal', label: 'Legal CAC & Stamp Duty', icon: '⚖️', color: '#10b981' },
-  { id: 'hospitality', label: 'Shortlet Power & Caution', icon: '🏨', color: '#eab308' },
-  { id: 'dva', label: 'DVA Transfer Shield', icon: '🏦', color: '#10b981' },
+  { id: 'solar', label: 'Solar & Inverter BOQ', icon: 'solar', color: '#d4af37' },
+  { id: 'auto', label: 'Tokunbo Duty & VIN', icon: 'auto', color: '#d4af37' },
+  { id: 'beauty', label: 'Salon Deposit Lock', icon: 'beauty', color: '#d4af37' },
+  { id: 'restaurant', label: 'Restaurant 0% Commission', icon: 'restaurant', color: '#d4af37' },
+  { id: 'retail', label: 'Retail Catalog Closer', icon: 'retail', color: '#d4af37' },
+  { id: 'mortgage', label: 'Plot Layout & Mortgage', icon: 'mortgage', color: '#d4af37' },
+  { id: 'healthcare', label: 'Clinic HMO Reconciler', icon: 'healthcare', color: '#d4af37' },
+  { id: 'education', label: 'School Tuition & PIN', icon: 'education', color: '#d4af37' },
+  { id: 'logistics', label: 'Logistics & Freight', icon: 'logistics', color: '#d4af37' },
+  { id: 'legal', label: 'Legal CAC & Stamp Duty', icon: 'legal', color: '#d4af37' },
+  { id: 'hospitality', label: 'Shortlet Power & Caution', icon: 'hospitality', color: '#d4af37' },
+  { id: 'dva', label: 'DVA Transfer Shield', icon: 'dva', color: '#d4af37' },
 ];
 
 export function SectorToolsWidget({
@@ -409,18 +452,18 @@ export function SectorToolsWidget({
         
         {/* Luxury Obsidian Header Banner (Shown only when standalone page header is not active) */}
         {!hideHeader && (
-          <div className="bg-gradient-to-r from-[#0f1933] via-[#0b1328] to-[#060a16] border-b border-white/10 p-5 sm:p-7 relative overflow-hidden">
+          <div className="bg-[#0e1626] border-b border-white/10 p-5 sm:p-7 relative overflow-hidden">
             {/* Subtle Ambient Radial Glow */}
-            <div className="absolute top-0 right-0 w-80 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-80 h-40 bg-[#d4af37]/5 rounded-full blur-3xl pointer-events-none" />
             
             <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-2.5">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 backdrop-blur-md rounded-full text-[11px] font-black uppercase tracking-wider">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] backdrop-blur-md rounded-full text-[11px] font-bold uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-pulse" />
                     2026 Quoting & Sizing Suite
                   </span>
-                  <span className="px-2.5 py-0.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 rounded-full text-[11px] font-black">
+                  <span className="px-2.5 py-0.5 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 rounded-full text-[11px] font-bold">
                     ₦0 Upfront Demo
                   </span>
                 </div>
@@ -428,7 +471,7 @@ export function SectorToolsWidget({
                   Interactive {businessCategory} Quoting & Booking Suite
                 </h2>
                 <p className="text-slate-300 text-xs sm:text-sm mt-1.5 leading-relaxed">
-                  Custom built for <strong className="text-white font-bold underline decoration-cyan-500/50 underline-offset-4">{businessName}</strong>. Test real-time calculation, instant BOQ, and automated WhatsApp dispatch.
+                  Custom built for <strong className="text-white font-bold underline decoration-[#d4af37]/50 underline-offset-4">{businessName}</strong>. Test real-time calculation, instant BOQ, and automated WhatsApp dispatch.
                 </p>
               </div>
               
@@ -462,7 +505,7 @@ export function SectorToolsWidget({
         )}
 
         {/* Luxury Glass Navigation Tabs Track */}
-        <div className="flex items-center justify-between border-b border-white/10 bg-[#060a17]/95 px-3 py-2.5 gap-3">
+        <div className="flex items-center justify-between border-b border-white/10 bg-[#080d19] px-3 py-2.5 gap-3">
           <div className="flex items-center overflow-x-auto gap-2 scrollbar-none py-1 flex-1">
             {SECTOR_TABS.map((tab) => {
               const isActive = activeTab === tab.id;
@@ -472,14 +515,14 @@ export function SectorToolsWidget({
                   type="button"
                   onClick={() => { setActiveTab(tab.id); setResult(null); }}
                   style={{
-                    background: isActive ? `${tab.color}20` : 'rgba(255, 255, 255, 0.03)',
-                    border: `1px solid ${isActive ? tab.color : 'rgba(255, 255, 255, 0.08)'}`,
+                    background: isActive ? 'rgba(212, 175, 55, 0.12)' : 'rgba(255, 255, 255, 0.02)',
+                    border: `1px solid ${isActive ? '#d4af37' : 'rgba(255, 255, 255, 0.08)'}`,
                     color: isActive ? '#ffffff' : '#94a3b8',
-                    boxShadow: isActive ? `0 4px 18px ${tab.color}35` : 'none',
+                    boxShadow: isActive ? '0 4px 16px rgba(212, 175, 55, 0.2)' : 'none',
                   }}
-                  className="px-3.5 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-all flex items-center gap-2 hover:text-white hover:bg-white/[0.08] active:scale-95"
+                  className="px-3.5 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-all flex items-center gap-2 hover:text-white hover:bg-white/[0.06] active:scale-95"
                 >
-                  <span>{tab.icon}</span>
+                  <span className={isActive ? 'text-[#d4af37]' : 'text-slate-400'}>{renderTabIcon(tab.id)}</span>
                   <span>{tab.label}</span>
                 </button>
               );
@@ -537,9 +580,9 @@ export function SectorToolsWidget({
 
                 <div className="luxury-preset-cards">
                   {[
-                    { kvaVal: 2.5, title: 'Flat / Small Office', desc: 'Lights, TV, Fans, Refrigerator', icon: '🏢' },
-                    { kvaVal: 5, title: 'Duplex / Medium SME', desc: '1-2 Inverter ACs, Water Pump, Freezers', icon: '🏡' },
-                    { kvaVal: 10, title: 'Commercial Facility', desc: 'Multiple ACs, Cold Room, Machinery', icon: '🏭' },
+                    { kvaVal: 2.5, title: 'Flat / Small Office', desc: 'Lights, TV, Fans, Refrigerator', icon: 'flat' },
+                    { kvaVal: 5, title: 'Duplex / Medium SME', desc: '1-2 Inverter ACs, Water Pump, Freezers', icon: 'duplex' },
+                    { kvaVal: 10, title: 'Commercial Facility', desc: 'Multiple ACs, Cold Room, Machinery', icon: 'factory' },
                   ].map((p) => {
                     const isSelected = kva === p.kvaVal;
                     return (
@@ -555,7 +598,7 @@ export function SectorToolsWidget({
                         className="p-4 rounded-2xl text-left transition-all hover:border-white/20 active:scale-[0.98] cursor-pointer"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xl p-2 rounded-xl bg-white/[0.04] border border-white/5">{p.icon}</span>
+                          <span className="text-xl p-2 rounded-xl bg-white/[0.04] border border-white/5">{p.icon === 'flat' ? <Building className="w-4 h-4 text-[#d4af37]" /> : p.icon === 'duplex' ? <Home className="w-4 h-4 text-[#d4af37]" /> : <Factory className="w-4 h-4 text-[#d4af37]" />}</span>
                           <span
                             style={{
                               background: isSelected ? '#f59e0b' : 'rgba(255, 255, 255, 0.06)',
@@ -638,15 +681,9 @@ export function SectorToolsWidget({
                 }
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)',
-                  color: '#050811',
-                  boxShadow: '0 10px 30px rgba(245, 158, 11, 0.35)',
-                  padding: '16px 24px',
-                  fontSize: '0.96rem',
-                }}
+                
               >
-                {loading ? 'Calculating Solar Economics...' : '⚡ Generate Live Solar BOQ & ROI Payback Matrix'}
+                {loading ? 'Calculating Solar Economics...' : 'Generate Live Solar BOQ & ROI Payback Matrix'}
               </button>
 
               {result && (
@@ -685,7 +722,7 @@ export function SectorToolsWidget({
                   {/* Specialized Solar Proposal Builder Webapp Upsell Banner */}
                   <div className="p-3.5 bg-gradient-to-r from-amber-950/40 via-amber-900/20 to-slate-900 border border-amber-500/40 rounded-xl text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex items-start gap-2.5">
-                      <span className="p-2 bg-amber-500/20 text-amber-400 rounded-lg text-base">💼</span>
+                      <span className="p-2 bg-[#d4af37]/15 text-[#d4af37] rounded-lg text-base"><Briefcase className="w-4 h-4" /></span>
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-amber-300">Need Bankable Engineering PDF Proposals for Corporate Clients?</span>
@@ -722,19 +759,19 @@ export function SectorToolsWidget({
                         className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                       >
                         <MessageCircle className="w-4 h-4 fill-current" />
-                        <span>🟢 Send Quote to WhatsApp →</span>
+                        <span>Send Quote to WhatsApp →</span>
                       </a>
 
                       <button
                         onClick={() =>
                           copyFormattedQuote(
-                            `☀️ ${businessName} — Solar & Inverter Quoting Breakdown\n• Capacity: ${kva}kVA Hybrid Solar\n• Estimated BOQ: ₦${(result.solarSetupCost || result.grandTotal || 4500000).toLocaleString()}\n• 50% Commitment Deposit: ₦${Math.round((result.solarSetupCost || result.grandTotal || 4500000) * 0.5).toLocaleString()}\n• Estimated Monthly Savings: ₦${(result.netMonthlySavings || 185000).toLocaleString()}/mo\n• Payback Period: ${result.paybackPeriodMonths || 14} Months\n\nVerified by Bethelmind Digital Solutions (CAC Certified)`
+                            `${businessName} — Solar & Inverter Quoting Breakdown\n• Capacity: ${kva}kVA Hybrid Solar\n• Estimated BOQ: ₦${(result.solarSetupCost || result.grandTotal || 4500000).toLocaleString()}\n• 50% Commitment Deposit: ₦${Math.round((result.solarSetupCost || result.grandTotal || 4500000) * 0.5).toLocaleString()}\n• Estimated Monthly Savings: ₦${(result.netMonthlySavings || 185000).toLocaleString()}/mo\n• Payback Period: ${result.paybackPeriodMonths || 14} Months\n\nVerified by Bethelmind Digital Solutions (CAC Certified)`
                           )
                         }
                         className="w-full sm:w-auto px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95"
                       >
                         {copiedQuote ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-400" />}
-                        <span>{copiedQuote ? 'Copied Receipt! ✓' : '📋 Copy Receipt'}</span>
+                        <span className="inline-flex items-center gap-1.5">{copiedQuote ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}{copiedQuote ? "Copied" : "Copy Receipt"}</span>
                       </button>
                     </div>
 
@@ -773,7 +810,7 @@ export function SectorToolsWidget({
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Popular Tokunbo Clearing Tiers</span>
-                  <span className="text-[11px] text-blue-400 font-bold">🚗 1-Tap Presets:</span>
+                  <span className="text-[11px] text-[#d4af37] font-bold">Recommended Presets:</span>
                 </div>
                 <div className="luxury-preset-grid-3">
                   <button
@@ -832,13 +869,9 @@ export function SectorToolsWidget({
                 }
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)',
-                  color: '#ffffff',
-                  boxShadow: '0 8px 24px rgba(37, 99, 235, 0.35)',
-                }}
+                
               >
-                {loading ? 'Calculating Port Duties...' : '🚗 Calculate Customs Duty & Terminal Clearing'}
+                {loading ? 'Calculating Port Duties...' : 'Calculate Customs Duty & Terminal Clearing'}
               </button>
 
               {result && (
@@ -882,7 +915,7 @@ export function SectorToolsWidget({
                       className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                     >
                       <MessageCircle className="w-4 h-4 fill-current" />
-                      <span>🟢 Send Quote to WhatsApp & Claim Prototype →</span>
+                      <span>Send Quote to WhatsApp & Claim Prototype →</span>
                     </a>
 
                     <ExecutivePdfQuoteModal
@@ -920,7 +953,7 @@ export function SectorToolsWidget({
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Popular Nigerian Services</span>
-                  <span className="text-[11px] text-pink-400 font-bold">💅 1-Tap Presets:</span>
+                  <span className="text-[11px] text-[#d4af37] font-bold">Recommended Presets:</span>
                 </div>
                 <div className="luxury-preset-grid">
                   <button
@@ -1002,13 +1035,9 @@ export function SectorToolsWidget({
                 }
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
-                  color: '#ffffff',
-                  boxShadow: '0 8px 24px rgba(236, 72, 153, 0.35)',
-                }}
+                
               >
-                {loading ? 'Calculating Booking Slot...' : '💅 Calculate Total Booking Cost & Lock Appointment Deposit'}
+                {loading ? 'Calculating Booking Slot...' : 'Calculate Booking Cost & Lock Appointment Deposit'}
               </button>
 
               {result && (
@@ -1058,19 +1087,19 @@ export function SectorToolsWidget({
                         className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                       >
                         <MessageCircle className="w-4 h-4 fill-current" />
-                        <span>🟢 Send Booking to WhatsApp →</span>
+                        <span>Send Booking to WhatsApp →</span>
                       </a>
 
                       <button
                         onClick={() =>
                           copyFormattedQuote(
-                            `💅 ${businessName} — Salon Appointment Booking Receipt\n• Service Tier: ${stylistTier === 'master_director' ? 'Master Director' : 'Senior Stylist'}\n• Hair/Service Length: ${hairLength} Inches\n• Total Booking Value: ₦${(result.totalBookingCostNgn || 85000).toLocaleString()}\n• 25% Mandatory Seat Deposit: ₦${(result.mandatoryDeposit25PercentNgn || 21250).toLocaleString()}\n• Balance Payable at Salon: ₦${(result.balancePayableAtSalonNgn || 63750).toLocaleString()}\n• Confirmation Code: ${result.bookingConfirmationCode || 'VIP-SLOT-CONFIRMED'}\n\nVerified by Bethelmind Digital Solutions (CAC Certified)`
+                            `${businessName} — Salon Appointment Booking Receipt\n• Service Tier: ${stylistTier === 'master_director' ? 'Master Director' : 'Senior Stylist'}\n• Hair/Service Length: ${hairLength} Inches\n• Total Booking Value: ₦${(result.totalBookingCostNgn || 85000).toLocaleString()}\n• 25% Mandatory Seat Deposit: ₦${(result.mandatoryDeposit25PercentNgn || 21250).toLocaleString()}\n• Balance Payable at Salon: ₦${(result.balancePayableAtSalonNgn || 63750).toLocaleString()}\n• Confirmation Code: ${result.bookingConfirmationCode || 'VIP-SLOT-CONFIRMED'}\n\nVerified by Bethelmind Digital Solutions (CAC Certified)`
                           )
                         }
                         className="w-full sm:w-auto px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95"
                       >
                         {copiedQuote ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-400" />}
-                        <span>{copiedQuote ? 'Copied Receipt! ✓' : '📋 Copy Receipt'}</span>
+                        <span className="inline-flex items-center gap-1.5">{copiedQuote ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}{copiedQuote ? "Copied" : "Copy Receipt"}</span>
                       </button>
                     </div>
 
@@ -1109,7 +1138,7 @@ export function SectorToolsWidget({
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Popular Nigerian Menu Favorites</span>
-                  <span className="text-[11px] text-orange-400 font-bold">🍔 1-Tap Presets:</span>
+                  <span className="text-[11px] text-[#d4af37] font-bold">Recommended Presets:</span>
                 </div>
                 <div className="luxury-preset-grid">
                   <button
@@ -1186,13 +1215,9 @@ export function SectorToolsWidget({
                 onClick={() => handleRunCalculation('restaurant_order', { foodItem, foodQty, orderMode, tableOrAddress })}
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-                  color: '#050811',
-                  boxShadow: '0 8px 24px rgba(249, 115, 22, 0.35)',
-                }}
+                
               >
-                {loading ? 'Dispatching to Kitchen...' : '🍔 Calculate Order & Dispatch to Kitchen WhatsApp (0% Commission)'}
+                {loading ? 'Dispatching to Kitchen...' : 'Calculate Order & Dispatch to Kitchen WhatsApp'}
               </button>
 
               {result && (
@@ -1248,19 +1273,19 @@ export function SectorToolsWidget({
                         className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                       >
                         <MessageCircle className="w-4 h-4 fill-current" />
-                        <span>🟢 Send Order to WhatsApp →</span>
+                        <span>Send Order to WhatsApp →</span>
                       </a>
 
                       <button
                         onClick={() =>
                           copyFormattedQuote(
-                            `🍔 ${businessName} — Kitchen Food Order Receipt\n• Ticket: ${result.kitchenOrderTicket || 'KITCHEN-8421'}\n• Item: ${result.dishName || 'Food Order'} (Qty: ${foodQty})\n• Order Mode: ${orderMode}\n• Subtotal: ₦${(result.foodSubtotalNgn || 13000).toLocaleString()}\n• Packaging & Delivery: ₦${((result.packagingFeeNgn || 1000) + (result.deliveryFeeNgn || 2500)).toLocaleString()}\n• Chowdeck 25% Fee Saved: +₦${(result.chowdeckCommissionSavedNgn || 4125).toLocaleString()}\n• Total Payable: ₦${(result.totalOrderNgn || 16500).toLocaleString()}\n\n0% Commission Direct Settlement · Bethelmind Digital Solutions`
+                            `${businessName} — Kitchen Food Order Receipt\n• Ticket: ${result.kitchenOrderTicket || 'KITCHEN-8421'}\n• Item: ${result.dishName || 'Food Order'} (Qty: ${foodQty})\n• Order Mode: ${orderMode}\n• Subtotal: ₦${(result.foodSubtotalNgn || 13000).toLocaleString()}\n• Packaging & Delivery: ₦${((result.packagingFeeNgn || 1000) + (result.deliveryFeeNgn || 2500)).toLocaleString()}\n• Chowdeck 25% Fee Saved: +₦${(result.chowdeckCommissionSavedNgn || 4125).toLocaleString()}\n• Total Payable: ₦${(result.totalOrderNgn || 16500).toLocaleString()}\n\n0% Commission Direct Settlement · Bethelmind Digital Solutions`
                           )
                         }
                         className="w-full sm:w-auto px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95"
                       >
                         {copiedQuote ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-400" />}
-                        <span>{copiedQuote ? 'Copied Receipt! ✓' : '📋 Copy Receipt'}</span>
+                        <span className="inline-flex items-center gap-1.5">{copiedQuote ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}{copiedQuote ? "Copied" : "Copy Receipt"}</span>
                       </button>
                     </div>
 
@@ -1299,7 +1324,7 @@ export function SectorToolsWidget({
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Fast-Selling Nigerian Retail Items</span>
-                  <span className="text-[11px] text-fuchsia-400 font-bold">🛍️ 1-Tap Presets:</span>
+                  <span className="text-[11px] text-[#d4af37] font-bold">Recommended Presets:</span>
                 </div>
                 <div className="luxury-preset-grid">
                   <button
@@ -1367,20 +1392,16 @@ export function SectorToolsWidget({
                 onClick={() => handleRunCalculation('retail_catalog_order', { retailProduct, retailPrice, retailSize })}
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #d946ef 0%, #a21caf 100%)',
-                  color: '#ffffff',
-                  boxShadow: '0 8px 24px rgba(217, 70, 239, 0.35)',
-                }}
+                
               >
-                {loading ? 'Reserving Stock...' : '🛍️ Generate Sub-3s WhatsApp Checkout & Anti-Fake Alert Account'}
+                {loading ? 'Reserving Stock...' : 'Generate Sub-3s WhatsApp Checkout & Verification'}
               </button>
 
               {result && (
                 <div ref={resultRef} className="bg-slate-950 border border-fuchsia-500/30 rounded-2xl p-5 space-y-3">
                   <div className="flex justify-between items-center border-b border-slate-800 pb-2">
                     <span className="text-xs text-fuchsia-400 font-bold uppercase">Sub-3s WhatsApp Fast Checkout</span>
-                    <span className="text-xs text-emerald-400 font-bold">🟢 IN STOCK (READY TO DISPATCH)</span>
+                    <span className="text-xs text-emerald-400 font-bold">IN STOCK (READY TO DISPATCH)</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                     <div className="bg-slate-900 p-3 rounded-xl">
@@ -1423,19 +1444,19 @@ export function SectorToolsWidget({
                         className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                       >
                         <MessageCircle className="w-4 h-4 fill-current" />
-                        <span>🟢 Send Order to WhatsApp →</span>
+                        <span>Send Order to WhatsApp →</span>
                       </a>
 
                       <button
                         onClick={() =>
                           copyFormattedQuote(
-                            `🛍️ ${businessName} — Order & Waybill Receipt\n• Item: ${retailProduct}\n• Variant/Size: ${retailSize}\n• Price: ₦${(result.priceNgn || retailPrice).toLocaleString()}\n• Dispatch Waybill: ₦${(result.deliveryFeeNgn || 2500).toLocaleString()}\n• Total Amount: ₦${((result.priceNgn || retailPrice) + (result.deliveryFeeNgn || 2500)).toLocaleString()}\n• Settlement Bank: Moniepoint (CAC Certified)\n\nProcessed via Sub-3s WhatsApp Closer · Bethelmind Digital Solutions`
+                            `${businessName} — Order & Waybill Receipt\n• Item: ${retailProduct}\n• Variant/Size: ${retailSize}\n• Price: ₦${(result.priceNgn || retailPrice).toLocaleString()}\n• Dispatch Waybill: ₦${(result.deliveryFeeNgn || 2500).toLocaleString()}\n• Total Amount: ₦${((result.priceNgn || retailPrice) + (result.deliveryFeeNgn || 2500)).toLocaleString()}\n• Settlement Bank: Moniepoint (CAC Certified)\n\nProcessed via Sub-3s WhatsApp Closer · Bethelmind Digital Solutions`
                           )
                         }
                         className="w-full sm:w-auto px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95"
                       >
                         {copiedQuote ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-400" />}
-                        <span>{copiedQuote ? 'Copied Receipt! ✓' : '📋 Copy Receipt'}</span>
+                        <span className="inline-flex items-center gap-1.5">{copiedQuote ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}{copiedQuote ? "Copied" : "Copy Receipt"}</span>
                       </button>
                     </div>
 
@@ -1474,7 +1495,7 @@ export function SectorToolsWidget({
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Nigerian Property Categories</span>
-                  <span className="text-[11px] text-teal-400 font-bold">🏡 1-Tap Presets:</span>
+                  <span className="text-[11px] text-[#d4af37] font-bold">Recommended Presets:</span>
                 </div>
                 <div className="luxury-preset-grid-3">
                   <button
@@ -1542,13 +1563,9 @@ export function SectorToolsWidget({
                 }
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #14b8a6 0%, #059669 100%)',
-                  color: '#050811',
-                  boxShadow: '0 8px 24px rgba(20, 184, 166, 0.35)',
-                }}
+                
               >
-                {loading ? 'Calculating Mortgage...' : '🏡 Calculate Down Payment & Monthly Repayments'}
+                {loading ? 'Calculating Mortgage...' : 'Calculate Down Payment & Monthly Repayments'}
               </button>
 
               {result && (
@@ -1607,7 +1624,7 @@ export function SectorToolsWidget({
 
                   {/* 4-Phase Off-Plan Milestone Schedule */}
                   <div className="p-3 bg-teal-950/20 border border-teal-500/20 rounded-xl space-y-1.5 text-xs">
-                    <span className="font-bold text-teal-300 block">🏗️ Recommended Nigerian Off-Plan Milestone Schedule:</span>
+                    <span className="font-bold text-teal-300 block">Recommended Nigerian Off-Plan Milestone Schedule:</span>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[11px]">
                       <div className="bg-slate-900/80 p-2 rounded-lg">
                         <span className="text-slate-400 block">1. Foundation (30%)</span>
@@ -1643,19 +1660,19 @@ export function SectorToolsWidget({
                         className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                       >
                         <MessageCircle className="w-4 h-4 fill-current" />
-                        <span>🟢 Send Quote to WhatsApp →</span>
+                        <span>Send Quote to WhatsApp →</span>
                       </a>
 
                       <button
                         onClick={() =>
                           copyFormattedQuote(
-                            `🏡 ${businessName} — Property Mortgage & Off-Plan Milestone Breakdown\n• Property Price: ₦${propertyPrice.toLocaleString()} ($${Math.round(propertyPrice / 1375).toLocaleString()} USD)\n• Down Payment (${downPaymentPercent}%): ₦${(result.downPaymentNgn || (propertyPrice * downPaymentPercent / 100)).toLocaleString()}\n• Monthly Installment: ₦${(result.monthlyPaymentNgn || 540000).toLocaleString()}/mo\n• Foundation (30%): ₦${(propertyPrice * 0.3).toLocaleString()}\n• Carcass/Roof (30%): ₦${(propertyPrice * 0.3).toLocaleString()}\n• Key Handover (20%): ₦${(propertyPrice * 0.2).toLocaleString()}\n\nVerified by Bethelmind Digital Solutions (CAC Certified)`
+                            `${businessName} — Property Mortgage & Off-Plan Milestone Breakdown\n• Property Price: ₦${propertyPrice.toLocaleString()} ($${Math.round(propertyPrice / 1375).toLocaleString()} USD)\n• Down Payment (${downPaymentPercent}%): ₦${(result.downPaymentNgn || (propertyPrice * downPaymentPercent / 100)).toLocaleString()}\n• Monthly Installment: ₦${(result.monthlyPaymentNgn || 540000).toLocaleString()}/mo\n• Foundation (30%): ₦${(propertyPrice * 0.3).toLocaleString()}\n• Carcass/Roof (30%): ₦${(propertyPrice * 0.3).toLocaleString()}\n• Key Handover (20%): ₦${(propertyPrice * 0.2).toLocaleString()}\n\nVerified by Bethelmind Digital Solutions (CAC Certified)`
                           )
                         }
                         className="w-full sm:w-auto px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95"
                       >
                         {copiedQuote ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-400" />}
-                        <span>{copiedQuote ? 'Copied Receipt! ✓' : '📋 Copy Receipt'}</span>
+                        <span className="inline-flex items-center gap-1.5">{copiedQuote ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}{copiedQuote ? "Copied" : "Copy Receipt"}</span>
                       </button>
                     </div>
 
@@ -1694,7 +1711,7 @@ export function SectorToolsWidget({
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Clinical Consultation Categories</span>
-                  <span className="text-[11px] text-rose-400 font-bold">🏥 1-Tap Presets:</span>
+                  <span className="text-[11px] text-[#d4af37] font-bold">Recommended Presets:</span>
                 </div>
                 <div className="luxury-preset-grid-3">
                   <button
@@ -1751,13 +1768,9 @@ export function SectorToolsWidget({
                 onClick={() => handleRunCalculation('hmo_telehealth', { consultationType: consultType, hasHmo, labTestsCount: 1 })}
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #f43f5e 0%, #be123c 100%)',
-                  color: '#ffffff',
-                  boxShadow: '0 8px 24px rgba(244, 63, 94, 0.35)',
-                }}
+                
               >
-                {loading ? 'Estimating Clinic Fee...' : '🏥 Calculate Clinic Consultation & Book Slot'}
+                {loading ? 'Estimating Clinic Fee...' : 'Calculate Clinic Consultation & Book Slot'}
               </button>
 
               {result && (
@@ -1798,7 +1811,7 @@ export function SectorToolsWidget({
                       className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                     >
                       <MessageCircle className="w-4 h-4 fill-current" />
-                      <span>🟢 Send Booking to WhatsApp & Claim Prototype →</span>
+                      <span>Send Booking to WhatsApp & Claim Prototype →</span>
                     </a>
 
                     <ExecutivePdfQuoteModal
@@ -1835,7 +1848,7 @@ export function SectorToolsWidget({
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">School Level & Enrollment Tier</span>
-                  <span className="text-[11px] text-purple-400 font-bold">🎓 1-Tap Presets:</span>
+                  <span className="text-[11px] text-[#d4af37] font-bold">Recommended Presets:</span>
                 </div>
                 <div className="luxury-preset-grid-3">
                   <button
@@ -1887,13 +1900,9 @@ export function SectorToolsWidget({
                 onClick={() => handleRunCalculation('school_tuition', { termlyTuitionNgn: termlyTuition, studentsCount: studentCount })}
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)',
-                  color: '#ffffff',
-                  boxShadow: '0 8px 24px rgba(168, 85, 247, 0.35)',
-                }}
+                
               >
-                {loading ? 'Calculating Tuition Ledger...' : '🎓 Calculate School Fee Collection & PIN Portal'}
+                {loading ? 'Calculating Tuition Ledger...' : 'Calculate School Fee Collection & PIN Portal'}
               </button>
 
               {result && (
@@ -1934,7 +1943,7 @@ export function SectorToolsWidget({
                       className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                     >
                       <MessageCircle className="w-4 h-4 fill-current" />
-                      <span>🟢 Send Quote to WhatsApp & Claim Prototype →</span>
+                      <span>Send Quote to WhatsApp & Claim Prototype →</span>
                     </a>
 
                     <ExecutivePdfQuoteModal
@@ -1972,7 +1981,7 @@ export function SectorToolsWidget({
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Popular Interstate Freight Routes</span>
-                  <span className="text-[11px] text-indigo-400 font-bold">📦 1-Tap Presets:</span>
+                  <span className="text-[11px] text-[#d4af37] font-bold">Recommended Presets:</span>
                 </div>
                 <div className="luxury-preset-grid-3">
                   <button
@@ -2033,13 +2042,9 @@ export function SectorToolsWidget({
                 onClick={() => handleRunCalculation('logistics_delivery', { originCity, destinationCity: destCity, weightKg })}
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
-                  color: '#ffffff',
-                  boxShadow: '0 8px 24px rgba(99, 102, 241, 0.35)',
-                }}
+                
               >
-                {loading ? 'Estimating Waybill...' : '📦 Calculate Inter-State Waybill & Delivery Fee'}
+                {loading ? 'Estimating Waybill...' : 'Calculate Inter-State Waybill & Delivery Fee'}
               </button>
 
               {result && (
@@ -2074,7 +2079,7 @@ export function SectorToolsWidget({
                       className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                     >
                       <MessageCircle className="w-4 h-4 fill-current" />
-                      <span>🟢 Send Quote to WhatsApp & Claim Prototype →</span>
+                      <span>Send Quote to WhatsApp & Claim Prototype →</span>
                     </a>
 
                     <ExecutivePdfQuoteModal
@@ -2091,7 +2096,7 @@ export function SectorToolsWidget({
                   <ViralToolShareBar
                     toolTitle="Hyperlocal Dispatch & Long-Haul Trip Freight Sizer"
                     toolSlug="logistics-quote"
-                    summaryText={`Route: ${originCity} ➔ ${destCity} (${weightKg}kg) | Total Waybill: ₦${(result.interStateWaybillFeeNgn || 18500).toLocaleString()}`}
+                    summaryText={`Route: ${originCity} → ${destCity} (${weightKg}kg) | Total Waybill: ₦${(result.interStateWaybillFeeNgn || 18500).toLocaleString()}`}
                     highlights={[
                       { label: 'Origin City', value: originCity },
                       { label: 'Destination City', value: destCity },
@@ -2138,7 +2143,7 @@ export function SectorToolsWidget({
                 disabled={loading}
                 className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black rounded-xl shadow-lg transition-all"
               >
-                {loading ? 'Calculating CAC Filing Fees...' : '⚖️ Calculate Statutory CAC & Stamp Duty'}
+                {loading ? 'Calculating CAC Filing Fees...' : 'Calculate Statutory CAC & Stamp Duty'}
               </button>
 
               {result && (
@@ -2180,7 +2185,7 @@ export function SectorToolsWidget({
                       className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                     >
                       <MessageCircle className="w-4 h-4 fill-current" />
-                      <span>🟢 Send Quote to WhatsApp & Claim Prototype →</span>
+                      <span>Send Quote to WhatsApp & Claim Prototype →</span>
                     </a>
 
                     <ExecutivePdfQuoteModal
@@ -2217,7 +2222,7 @@ export function SectorToolsWidget({
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-medium text-slate-400">Nigerian Shortlet & Hotel Categories</span>
-                  <span className="text-[11px] text-amber-400 font-bold">🏨 1-Tap Presets:</span>
+                  <span className="text-[11px] text-[#d4af37] font-bold">Recommended Presets:</span>
                 </div>
                 <div className="luxury-preset-grid-3">
                   <button
@@ -2269,13 +2274,9 @@ export function SectorToolsWidget({
                 onClick={() => handleRunCalculation('shortlet_booking', { nightlyRateNgn: nightlyRate, nightsCount, cautionDepositNgn: 30000 })}
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
-                  color: '#ffffff',
-                  boxShadow: '0 8px 24px rgba(217, 119, 6, 0.35)',
-                }}
+                
               >
-                {loading ? 'Calculating Booking...' : '🏨 Calculate Direct Booking & Lock Reservation'}
+                {loading ? 'Calculating Booking...' : 'Calculate Direct Booking & Lock Reservation'}
               </button>
 
               {result && (
@@ -2317,7 +2318,7 @@ export function SectorToolsWidget({
                       className="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md"
                     >
                       <MessageCircle className="w-4 h-4 fill-current" />
-                      <span>🟢 Send Booking to WhatsApp & Claim Prototype →</span>
+                      <span>Send Booking to WhatsApp & Claim Prototype →</span>
                     </a>
 
                     <ExecutivePdfQuoteModal
@@ -2383,13 +2384,9 @@ export function SectorToolsWidget({
                 }
                 disabled={loading}
                 className="luxury-calc-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  color: '#050811',
-                  boxShadow: '0 8px 24px rgba(16, 185, 129, 0.35)',
-                }}
+                
               >
-                {loading ? 'Generating DVA Account...' : '🏦 Generate Moniepoint Virtual Account (Instant Transfer)'}
+                {loading ? 'Generating DVA Account...' : 'Generate Moniepoint Virtual Account (Instant Transfer)'}
               </button>
 
               {result && (
@@ -2415,7 +2412,7 @@ export function SectorToolsWidget({
                   </div>
 
                   <p className="text-xs text-slate-400 bg-slate-900/60 p-3 rounded-lg border border-slate-800 text-center">
-                    💡 All customer payments clear in real time with 0% risk of fake credit alerts.
+                    All customer payments clear in real time with 0% risk of fake credit alerts.
                   </p>
 
                   {/* Viral Traffic & Forum Distribution Suite */}
@@ -2446,19 +2443,20 @@ export function SectorToolsWidget({
           <div className="bg-slate-900 border border-cyan-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative text-slate-100">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <span className="p-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg font-bold">💻</span>
+                <span className="p-1.5 bg-[#d4af37]/15 text-[#d4af37] rounded-lg font-bold"><Code className="w-4 h-4" /></span>
                 <div>
                   <h3 className="text-base font-bold text-white">1-Line Script Embed Upgrade</h3>
                   <span className="text-[11px] font-bold text-emerald-400">
-                    🇳🇬 Sector Tool Upgrade: ₦35,000 One-Time Setup
+                    Sector Tool Upgrade: ₦35,000 One-Time Setup
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setShowEmbedModal(false)}
-                className="text-slate-400 hover:text-white text-lg font-bold p-1"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+                aria-label="Close modal"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 

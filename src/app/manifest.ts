@@ -2,10 +2,10 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Bethelmind Admin Desk',
+    name: 'Bethelmind Digital Solutions',
     short_name: 'Bethelmind',
-    description: 'Autonomous B2B Growth Engine & Admin Command Center',
-    start_url: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+    description: 'Autonomous B2B Growth Engine, Commercial Calculators & Sector Sizers',
+    start_url: '/home',
     display: 'standalone',
     background_color: '#070a12',
     theme_color: '#0284c7',

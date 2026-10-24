@@ -71,7 +71,7 @@ export function ExecutivePdfQuoteModal({
         className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-sky-400 hover:text-sky-300 border border-sky-500/30 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
       >
         <FileText className="w-4 h-4 text-sky-400" />
-        <span>📄 Download Official Bankable Proposal (PDF)</span>
+        <span>Download Official Bankable Proposal (PDF)</span>
       </button>
 
       {/* Modal Backdrop */}

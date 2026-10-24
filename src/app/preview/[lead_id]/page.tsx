@@ -339,7 +339,7 @@ export default function PreviewPage() {
               palette={sectorPalette} 
             />
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f59e0b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              👑 VIP DEMO: <span style={{ color: '#ffffff', fontWeight: 800 }}>{data.lead.name}</span>
+              PREVIEW DEMO: <span style={{ color: '#ffffff', fontWeight: 800 }}>{data.lead.name}</span>
             </span>
           </div>
 
@@ -383,7 +383,7 @@ export default function PreviewPage() {
                 whiteSpace: 'nowrap'
               }}
             >
-              📞 0802 279 1227
+              0802 279 1227
             </a>
           </div>
         </div>
@@ -412,7 +412,7 @@ export default function PreviewPage() {
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
             <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#34d399', background: 'rgba(16, 185, 129, 0.2)', padding: '4px 12px', borderRadius: '9999px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              ⚡ 100% PRE-BUILT DEMO FOR {data.lead.name.toUpperCase()}
+              OFFICIAL BESPOKE DEMO FOR {data.lead.name.toUpperCase()}
             </span>
             <span style={{ fontSize: '0.76rem', color: '#fde047', fontWeight: 800 }}>
               ₦0 Upfront to Test on Your Phone
@@ -469,7 +469,7 @@ export default function PreviewPage() {
                 textAlign: 'center'
               }}
             >
-              <span>📷 Send 2 Photos to Add Free First →</span>
+              <span>Send Photos to Add Free First →</span>
             </a>
           </div>
         </div>
@@ -511,7 +511,7 @@ export default function PreviewPage() {
               <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b' }}></span>
               <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }}></span>
               <span style={{ fontSize: '0.82rem', color: '#e2e8f0', marginLeft: '6px', fontFamily: 'monospace', background: 'rgba(255,255,255,0.06)', padding: '3px 10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                🔒 https://www.{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com.ng
+                https://www.{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com.ng
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -550,7 +550,7 @@ export default function PreviewPage() {
       >
         <div style={{ marginBottom: '16px', textAlign: 'center' }}>
           <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>
-            🛠️ Built-In Customer Price &amp; Booking Calculator
+            Built-In Customer Price &amp; Booking Calculator
           </span>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ffffff', margin: 0 }}>
             Test How Your Customers Get Instant Quotes on WhatsApp
@@ -610,7 +610,7 @@ export default function PreviewPage() {
               }}
             >
               <div style={{ position: 'absolute', top: '-12px', right: '20px', background: '#10b981', color: '#022c22', fontSize: '0.72rem', fontWeight: 900, padding: '4px 12px', borderRadius: '9999px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                ⚡ Most Popular for SMEs
+                Recommended for Commercial Growth
               </div>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
@@ -626,19 +626,19 @@ export default function PreviewPage() {
                   ₦65,000 <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>Official Package Total</span>
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#fde047', fontWeight: 800, marginBottom: '6px' }}>
-                  👉 Start Today: ₦35,000 Deposit (Pay ₦30k Balance After Going Live!)
+                  Starter Activation: ₦35,000 Deposit (Pay ₦30k Balance After Going Live!)
                 </div>
                 <div style={{ fontSize: '0.80rem', color: '#38bdf8', fontWeight: 800, marginBottom: '6px', background: 'rgba(56, 189, 248, 0.12)', padding: '4px 8px', borderRadius: '6px', display: 'inline-block' }}>
-                  💡 Or Choose: ₦25,000/month "Pay-Small-Small" (Zero Lump Sum)
+                  Structured Installments: ₦25,000/month "Pay-Small-Small" (Zero Lump Sum)
                 </div>
                 <div style={{ fontSize: '0.80rem', color: '#34d399', fontWeight: 800, marginBottom: '14px', background: 'rgba(16, 185, 129, 0.15)', padding: '5px 10px', borderRadius: '6px', display: 'block', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                  👑 6-Month Independence Bundle: ₦75,000 Total (Setup Fee Waived + 2 Months Free Hosting + Free .COM.NG Domain)
+                  6-Month Independence Bundle: ₦75,000 Total (Setup Fee Waived + 2 Months Free Hosting + Free .COM.NG Domain)
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.75 }}>
-                  <li>✓ Free 1-Year `.com.ng` domain &amp; hosting (Zero monthly fee)</li>
-                  <li>✓ We put your real shop photos, phone number &amp; price list</li>
-                  <li>✓ Customers message your WhatsApp directly from Google</li>
-                  <li>✓ Google Maps location pin &amp; 24–48hr live handover</li>
+                  <li>• Free 1-Year `.com.ng` domain &amp; hosting (Zero monthly fee)</li>
+                  <li>• We put your real shop photos, phone number &amp; price list</li>
+                  <li>• Customers message your WhatsApp directly from Google</li>
+                  <li>• Google Maps location pin &amp; 24–48hr live handover</li>
                 </ul>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -662,7 +662,7 @@ export default function PreviewPage() {
                     textAlign: 'center'
                   }}
                 >
-                  <span>👑 Lock 6-Month Bundle (₦75,000 Total) →</span>
+                  <span>Activate 6-Month Bundle (₦75,000 Total) →</span>
                 </a>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -740,13 +740,13 @@ export default function PreviewPage() {
                   ₦120,000 <span style={{ fontSize: '0.82rem', color: '#38bdf8', fontWeight: 700 }}>Official Package Total</span>
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#7dd3fc', fontWeight: 800, marginBottom: '14px' }}>
-                  👉 Start Today With ₦60,000 Deposit (Pay ₦60k Balance on Handover!)
+                  Turnkey Corporate Activation: ₦60,000 Deposit (Pay ₦60k Balance on Handover!)
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.75 }}>
-                  <li>✓ International `.com` domain (`www.{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com`)</li>
-                  <li>✓ 3 Official corporate emails (`info@{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com`)</li>
-                  <li>✓ Interactive customer calculator + Google #1 SEO setup</li>
-                  <li>✓ 100% Full Code &amp; Domain Ownership + 60-Day VIP Support</li>
+                  <li>• International `.com` domain (`www.{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com`)</li>
+                  <li>• 3 Official corporate emails (`info@{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com`)</li>
+                  <li>• Interactive customer calculator + Google #1 SEO setup</li>
+                  <li>• 100% Full Code &amp; Domain Ownership + 60-Day VIP Support</li>
                 </ul>
               </div>
               <a
@@ -800,13 +800,13 @@ export default function PreviewPage() {
                   ₦0 <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 500 }}>to customize preview</span>
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#fde68a', fontWeight: 800, marginBottom: '14px' }}>
-                  👉 Pay only after you see your real photos &amp; love it!
+                  Pay only after you see your real photos &amp; love it!
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.75 }}>
-                  <li>✓ Send us 3–5 photos of your work/shop on WhatsApp</li>
-                  <li>✓ Send your real phone number, address &amp; price list</li>
-                  <li>✓ Our engineer updates your sample website free</li>
-                  <li>✓ Automatically locks in your pre-built prototype setup rate</li>
+                  <li>• Send us 3–5 photos of your work/shop on WhatsApp</li>
+                  <li>• Send your real phone number, address &amp; price list</li>
+                  <li>• Our engineer updates your sample website free</li>
+                  <li>• Automatically locks in your pre-built prototype setup rate</li>
                 </ul>
               </div>
               <a
@@ -829,7 +829,7 @@ export default function PreviewPage() {
                   textAlign: 'center'
                 }}
               >
-                <span>✏️ Send My Photos on WhatsApp First (Free) →</span>
+                <span>Send My Photos on WhatsApp First (Free) →</span>
               </a>
             </div>
           </div>
@@ -852,7 +852,7 @@ export default function PreviewPage() {
             }}
           >
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#34d399', fontWeight: 800 }}>
-              🏛️ CAC Certified Nigerian Business (Bethelmind Digital Solutions)
+              CAC Certified Nigerian Enterprise (Bethelmind Digital Solutions)
             </span>
             <span style={{ color: '#475569' }}>•</span>
             <span>

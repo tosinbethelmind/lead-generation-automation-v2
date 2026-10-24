@@ -220,7 +220,7 @@ export default function HeroSection({
             boxShadow: '0 0 20px rgba(6, 182, 212, 0.2), inset 0 1px 0 rgba(255,255,255,0.15)',
             animation: 'floatSlow 6s ease-in-out infinite'
           }}>
-            <ShaderGradientLiquidLogo size={24} initials="⚡" palette="bethelmind" />
+            <ShaderGradientLiquidLogo size={24} initials="BM" palette="bethelmind" />
             <span style={{
               fontSize: '0.8rem',
               fontWeight: 800,
@@ -229,7 +229,7 @@ export default function HeroSection({
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent'
             }}>
-              ⚡ Luxury Business Websites & 24/7 AI WhatsApp Quoters
+              Luxury Business Websites & 24/7 AI WhatsApp Quoters
             </span>
             <span className="hidden sm:inline" style={{ color: '#475569', fontSize: '0.75rem' }}>•</span>
             <div className="hidden sm:flex" style={{ alignItems: 'center', gap: 4, color: '#34d399', fontSize: '0.78rem', fontWeight: 800 }}>
@@ -317,7 +317,7 @@ export default function HeroSection({
               textAlign: 'center'
             }}
           >
-            🟢 Test 2-Sec WhatsApp Demo →
+            Test Live WhatsApp Demo →
           </a>
           <button
             id="hero-setup-cta"
@@ -370,7 +370,7 @@ export default function HeroSection({
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: '0.74rem', color: '#94a3b8', background: 'rgba(255,255,255,0.05)', padding: '4px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)' }}>
-                ⚡ Speed-to-Lead: &lt; 2.4s
+                Speed-to-Lead: &lt; 2.4s
               </span>
               <span style={{ fontSize: '0.74rem', color: '#34d399', background: 'rgba(16,185,129,0.1)', padding: '4px 10px', borderRadius: 8, border: '1px solid rgba(16,185,129,0.3)', fontWeight: 700 }}>
                 ● Lagos Desk Active
@@ -558,10 +558,10 @@ export default function HeroSection({
                   </div>
 
                   <p style={{ margin: 0, fontSize: '0.78rem', color: '#f8fafc', lineHeight: 1.4 }}>
-                    🎙️ <em>&quot;Good day Chief! For your Lekki duplex with 2 Inverter ACs, you need our 5kVA Hybrid + 48V 100Ah Lithium. I&apos;ve prepared your PDF quote...&quot;</em>
+                    <em>&quot;Good day Chief! For your Lekki duplex with 2 Inverter ACs, you need our 5kVA Hybrid + 48V 100Ah Lithium. I&apos;ve prepared your PDF quote...&quot;</em>
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, background: 'rgba(0,0,0,0.3)', padding: '5px 10px', borderRadius: 8 }}>
-                    <span style={{ fontSize: '0.7rem', color: '#34d399', fontWeight: 700 }}>📄 Solar_Quote_Lekki_5kVA.pdf (Ready to send)</span>
+                    <span style={{ fontSize: '0.7rem', color: '#34d399', fontWeight: 700 }}>Solar_Quote_Lekki_5kVA.pdf (Ready to send)</span>
                   </div>
                 </div>
               </div>
@@ -604,7 +604,7 @@ export default function HeroSection({
                         style={{ width: '100%', padding: '10px 12px', borderRadius: 10, background: 'rgba(15,23,42,0.95)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: '0.84rem', outline: 'none' }}
                       >
                         {LAGOS_DISTRICTS.map((d) => (
-                          <option key={d} value={d} style={{ background: '#07090e', color: '#fff' }}>📍 {d}</option>
+                          <option key={d} value={d} style={{ background: '#07090e', color: '#fff' }}>{d}</option>
                         ))}
                       </select>
                     </div>
@@ -726,7 +726,7 @@ export default function HeroSection({
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                     <span style={{ fontSize: '0.78rem', color: '#fbbf24', fontWeight: 800, textTransform: 'uppercase' }}>
-                      ⚡ Instant Engineered BOQ
+                      Instant Engineered BOQ
                     </span>
                     <span style={{ fontSize: '0.72rem', color: '#34d399', background: 'rgba(16,185,129,0.15)', padding: '2px 8px', borderRadius: 6, fontWeight: 700 }}>
                       Continuous Load: {calculatedSolar.loadWatts}W
@@ -773,7 +773,7 @@ export default function HeroSection({
                     boxShadow: '0 4px 14px rgba(234,179,8,0.3)'
                   }}
                 >
-                  🟢 Claim WhatsApp BOQ Spec Sheet →
+                  Claim WhatsApp BOQ Spec Sheet →
                 </a>
               </div>
             </div>
@@ -862,7 +862,7 @@ export default function HeroSection({
                       border: bankStep !== 'idle' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.05)',
                       color: bankStep !== 'idle' ? '#34d399' : '#64748b'
                     }}>
-                      Step 1: Inbound NIP Bank Packet Received ({bankStep !== 'idle' ? '✅ Captured' : 'Waiting...'})
+                      Step 1: Inbound NIP Bank Packet Received ({bankStep !== 'idle' ? 'Captured' : 'Waiting...'})
                     </div>
 
                     <div style={{
@@ -882,7 +882,7 @@ export default function HeroSection({
                       border: bankStep === 'verified' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.05)',
                       color: bankStep === 'verified' ? '#ffffff' : '#64748b'
                     }}>
-                      Step 3: {bankStep === 'verified' ? '🛡️ 100% Confirmed Settlement • Auto-Dispatched WhatsApp Receipt' : 'Step 3: Auto-Receipt Delivery'}
+                      Step 3: {bankStep === 'verified' ? '100% Confirmed Settlement • Auto-Dispatched WhatsApp Receipt' : 'Step 3: Auto-Receipt Delivery'}
                     </div>
                   </div>
                 </div>

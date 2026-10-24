@@ -54,7 +54,7 @@ const TOOLS: ToolItem[] = [
     icon: Sun,
     color: 'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-400',
     href: '/tools/solar-boq',
-    upsell: '🚀 ₦35,000 Starter Setup'
+    upsell: '₦35,000 Starter Setup'
   },
   {
     id: 'tokunbo-duty',
@@ -65,7 +65,7 @@ const TOOLS: ToolItem[] = [
     icon: Car,
     color: 'from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-400',
     href: '/tools/tokunbo-duty',
-    upsell: '🚀 ₦35,000 Auto Suite'
+    upsell: '₦35,000 Auto Suite'
   },
   {
     id: 'salon-booking',
@@ -76,7 +76,7 @@ const TOOLS: ToolItem[] = [
     icon: Scissors,
     color: 'from-pink-500/20 to-rose-500/10 border-pink-500/30 text-pink-400',
     href: '/tools/salon-booking',
-    upsell: '🚀 ₦35,000 Salon Setup'
+    upsell: '₦35,000 Salon Setup'
   },
   {
     id: 'restaurant-order',
@@ -87,7 +87,7 @@ const TOOLS: ToolItem[] = [
     icon: UtensilsCrossed,
     color: 'from-orange-500/20 to-amber-500/10 border-orange-500/30 text-orange-400',
     href: '/tools/restaurant-order',
-    upsell: '🚀 ₦35,000 Food Suite'
+    upsell: '₦35,000 Food Suite'
   },
   {
     id: 'retail-catalog',
@@ -98,7 +98,7 @@ const TOOLS: ToolItem[] = [
     icon: ShoppingBag,
     color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
     href: '/tools/retail-catalog',
-    upsell: '🚀 ₦35,000 Retail Suite'
+    upsell: '₦35,000 Retail Suite'
   },
   {
     id: 'mortgage-calculator',
@@ -109,7 +109,7 @@ const TOOLS: ToolItem[] = [
     icon: Building2,
     color: 'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-400',
     href: '/tools/mortgage-calculator',
-    upsell: '🚀 ₦35,000 Property Suite'
+    upsell: '₦35,000 Property Suite'
   },
   {
     id: 'clinic-hmo',
@@ -120,7 +120,7 @@ const TOOLS: ToolItem[] = [
     icon: Activity,
     color: 'from-rose-500/20 to-red-500/10 border-rose-500/30 text-rose-400',
     href: '/tools/clinic-hmo',
-    upsell: '🚀 ₦35,000 Clinic Setup'
+    upsell: '₦35,000 Clinic Setup'
   },
   {
     id: 'school-portal',
@@ -131,7 +131,7 @@ const TOOLS: ToolItem[] = [
     icon: GraduationCap,
     color: 'from-purple-500/20 to-indigo-500/10 border-purple-500/30 text-purple-400',
     href: '/tools/school-portal',
-    upsell: '🚀 ₦35,000 School Suite'
+    upsell: '₦35,000 School Suite'
   },
   {
     id: 'logistics-quote',
@@ -142,7 +142,7 @@ const TOOLS: ToolItem[] = [
     icon: Truck,
     color: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-400',
     href: '/tools/logistics-quote',
-    upsell: '🚀 ₦35,000 Haulage Suite'
+    upsell: '₦35,000 Haulage Suite'
   },
   {
     id: 'cac-filing',
@@ -153,7 +153,7 @@ const TOOLS: ToolItem[] = [
     icon: Scale,
     color: 'from-indigo-500/20 to-purple-500/10 border-indigo-500/30 text-indigo-400',
     href: '/tools/cac-filing',
-    upsell: '🚀 ₦35,000 Legal Retainer'
+    upsell: '₦35,000 Legal Retainer'
   },
   {
     id: 'shortlet-reconciler',
@@ -164,7 +164,7 @@ const TOOLS: ToolItem[] = [
     icon: Hotel,
     color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
     href: '/tools/shortlet-reconciler',
-    upsell: '🚀 ₦35,000 Hospitality Suite'
+    upsell: '₦35,000 Hospitality Suite'
   },
   {
     id: 'fake-alert-shield',
@@ -175,7 +175,7 @@ const TOOLS: ToolItem[] = [
     icon: ShieldCheck,
     color: 'from-emerald-500/20 to-cyan-500/10 border-emerald-500/30 text-emerald-400',
     href: '/tools/fake-alert-shield',
-    upsell: '🚀 ₦35,000 Fintech Shield'
+    upsell: '₦35,000 Fintech Shield'
   },
 
   // --- Lifestyle & Family Free Utilities ---
@@ -188,7 +188,7 @@ const TOOLS: ToolItem[] = [
     icon: Smile,
     color: 'from-pink-500/20 to-rose-500/10 border-pink-500/30 text-pink-400',
     href: '/tools/kids-learning',
-    upsell: '💎 ₦7,500 PDF Pack'
+    upsell: '₦7,500 PDF Pack'
   },
   {
     id: 'biohack-longevity',
@@ -199,7 +199,7 @@ const TOOLS: ToolItem[] = [
     icon: Activity,
     color: 'from-teal-500/20 to-emerald-500/10 border-teal-500/30 text-teal-400',
     href: '/tools/biohack-longevity',
-    upsell: '💎 ₦15,000 Protocol'
+    upsell: '₦15,000 Protocol'
   },
   {
     id: 'prayer-journal',
@@ -210,73 +210,73 @@ const TOOLS: ToolItem[] = [
     icon: Heart,
     color: 'from-purple-500/20 to-pink-500/10 border-purple-500/30 text-purple-400',
     href: '/tools/prayer-journal',
-    upsell: '💎 ₦5,000 Devotional'
+    upsell: '₦5,000 Devotional'
   },
   {
     id: 'sure-score',
     title: 'SureScore AI™ Football Match Predictor & Acca Slip Builder',
-    badge: '⚽ 2026 Poisson xG Engine',
+    badge: '2026 Poisson xG Engine',
     category: 'lifestyle',
     description: 'Simulate 1X2 win probabilities, projected scorelines, BTTS, and 1-click load accumulator tickets on SportyBet and Bet9ja.',
     icon: Flame,
     color: 'from-amber-500/20 to-orange-500/10 border-amber-500/30 text-amber-400',
     href: '/tools/sure-score',
-    upsell: '🏆 VIP Club & ₦15k Model'
+    upsell: 'VIP Club & ₦15k Model'
   },
   {
     id: 'drama-radar',
     title: 'DramaRadar AI™ Fake vs Real Reddit Detective & Confession Vault',
-    badge: '🔥 Reddit Story Detective',
+    badge: 'Reddit Story Detective',
     category: 'lifestyle',
     description: 'Interactive Fake vs Real drama detective micro-game, anonymous true confession submissions, and viral storytelling blueprints.',
     icon: Sparkles,
     color: 'from-purple-500/20 to-pink-500/10 border-purple-500/30 text-purple-400',
     href: '/tools/drama-radar',
-    upsell: '💎 ₦15k Story Blueprint'
+    upsell: '₦15k Story Blueprint'
   },
   {
     id: 'saas-radar',
     title: 'SaaSRadar AI™ Software Alternatives & Lifetime Deal Finder',
-    badge: '⚡ SaaS Spend Optimizer',
+    badge: 'SaaS Spend Optimizer',
     category: 'b2b',
     description: 'Slash recurring subscription costs. Compare expensive SaaS tools against open-source, free, and lifetime deal alternatives.',
     icon: Zap,
     color: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-400',
     href: '/tools/saas-radar',
-    upsell: '🚀 ₦150k B2B Migration'
+    upsell: '₦150k B2B Migration'
   },
   {
     id: 'goal-grid',
     title: 'GoalGrid AI™ Daily Football Mystery Star & Club Game',
-    badge: '⚽ Viral Wordle Mechanic',
+    badge: 'Viral Wordle Mechanic',
     category: 'lifestyle',
     description: 'Guess today 5-letter football star in 6 tries, share your emoji grid on WhatsApp, and unlock 4.85x acca slips.',
     icon: Flame,
     color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
     href: '/tools/goal-grid',
-    upsell: '🏆 VIP Club & ₦15k Model'
+    upsell: 'VIP Club & ₦15k Model'
   },
   {
     id: 'typing-speed',
     title: 'TypeMaster AI™ 60-Second WPM Typing Speed & Accuracy Test',
-    badge: '⌨️ Global Speed Benchmark',
+    badge: 'Global Speed Benchmark',
     category: 'b2b',
     description: 'Benchmark your typing speed (WPM) and accuracy in 60 seconds with verified certificate sharing.',
     icon: Zap,
     color: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-400',
     href: '/tools/typing-speed',
-    upsell: '💎 ₦15k Freelance Pack'
+    upsell: '₦15k Freelance Pack'
   },
   {
     id: 'focus-timer',
     title: 'FocusFlow AI™ 25/5 Pomodoro Deep Work Timer & Soundscapes',
-    badge: '🧠 Deep Work Suite',
+    badge: 'Deep Work Suite',
     category: 'lifestyle',
     description: 'Scientific Pomodoro cycles with zero-bandwidth synthesized ambient soundscapes and sprint checklist.',
     icon: Sparkles,
     color: 'from-indigo-500/20 to-purple-500/10 border-indigo-500/30 text-indigo-400',
     href: '/tools/focus-timer',
-    upsell: '💎 ₦15k Notion OS'
+    upsell: '₦15k Notion OS'
   },
   {
     id: 'runway-radar',
@@ -287,7 +287,7 @@ const TOOLS: ToolItem[] = [
     icon: Calculator,
     color: 'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-400',
     href: '/tools/runway-radar',
-    upsell: '💎 ₦15k Cashflow Pack'
+    upsell: '₦15k Cashflow Pack'
   },
   {
     id: 'salary-calc',
@@ -298,18 +298,18 @@ const TOOLS: ToolItem[] = [
     icon: Calculator,
     color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400',
     href: '/tools/salary-calc',
-    upsell: '💎 ₦15k Wealth Model'
+    upsell: '₦15k Wealth Model'
   },
   {
     id: 'higher-lower',
     title: 'Higher or Lower AI™ Viral Football Values & Wealth Game',
-    badge: '🔥 500M+ Play Challenge',
+    badge: '500M+ Play Challenge',
     category: 'lifestyle',
     description: 'Addictive comparison game: guess which football star has a higher transfer valuation or billionaire net worth. Beat your streak!',
     icon: Sparkles,
     color: 'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-400',
     href: '/tools/higher-lower',
-    upsell: '💎 ₦15k Sports Model'
+    upsell: '₦15k Sports Model'
   },
 ];
 
@@ -325,18 +325,18 @@ export default function ToolsHubPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#040711] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#070b14] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
       <Navbar />
 
       {/* Top Metallic Accent Glow */}
-      <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 opacity-90 shadow-[0_0_20px_rgba(6,182,212,0.6)]" />
+      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent" />
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-8 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-full text-xs font-bold text-cyan-400 uppercase tracking-wider">
-            ⚡ 2026 BETHELMIND FREE TOOLS & SECTOR SIZERS DIRECTORY
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#d4af37]/10 border border-[#d4af37]/30 rounded-full text-xs font-bold text-[#d4af37] uppercase tracking-wider">
+            2026 PRODUCTION SECTOR TOOLS & SIZERS DIRECTORY
           </div>
           <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
             Commercial Calculators, Sizers & Surcharges

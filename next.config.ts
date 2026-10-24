@@ -136,13 +136,16 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  async redirects() {
+  async rewrites() {
     return [
       {
-        source: '/tools',
-        destination: '/home#sector-tools',
-        permanent: false,
+        source: '/calc/:tool',
+        destination: '/calc/:tool.html',
       },
+    ];
+  },
+  async redirects() {
+    return [
       {
         source: '/demo',
         destination: '/walkthrough',
@@ -165,27 +168,27 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/webapp',
-        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+        destination: '/home',
         permanent: false,
       },
       {
         source: '/web-app',
-        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+        destination: '/home',
         permanent: false,
       },
       {
         source: '/app',
-        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+        destination: '/home',
         permanent: false,
       },
       {
         source: '/mobile',
-        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+        destination: '/home',
         permanent: false,
       },
       {
         source: '/control',
-        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
+        destination: '/admin/login',
         permanent: false,
       },
       {

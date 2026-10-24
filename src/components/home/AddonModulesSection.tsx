@@ -26,7 +26,7 @@ export const ADDON_MODULES: AddonModule[] = [
     monthlyNGN: 10_000,
     badge: 'High Demand',
     desc: 'Generates unique Paystack/Monnify virtual bank accounts per lead to auto-verify transfers and eliminate "Fake Alerts".',
-    icon: '💳',
+    icon: 'CreditCard',
     category: 'Payments',
   },
   {
@@ -35,7 +35,7 @@ export const ADDON_MODULES: AddonModule[] = [
     monthlyNGN: 8_000,
     badge: 'AI Powered',
     desc: 'Uses Speech-to-Text AI to listen to Nigerian voice notes in local accents/Pidgin and generate structured auto-replies.',
-    icon: '🎙️',
+    icon: 'Mic',
     category: 'AI Assistant',
   },
   {
@@ -44,7 +44,7 @@ export const ADDON_MODULES: AddonModule[] = [
     monthlyNGN: 12_000,
     badge: 'Social Sales',
     desc: 'Auto-detects IG comments ("Price?", "Location?") and transfers prospects directly into a WhatsApp sales flow.',
-    icon: '📸',
+    icon: 'Camera',
     category: 'Lead Capture',
   },
   {
@@ -53,7 +53,7 @@ export const ADDON_MODULES: AddonModule[] = [
     monthlyNGN: 15_000,
     badge: 'Enterprise Data',
     desc: 'Search verified decision-maker phone numbers & WhatsApp lines across Lagos, Abuja, Port Harcourt, and major commercial hubs.',
-    icon: '🎯',
+    icon: 'Target',
     category: 'Lead Mining',
   },
   {
@@ -62,7 +62,7 @@ export const ADDON_MODULES: AddonModule[] = [
     monthlyNGN: 10_000,
     badge: 'Compliance',
     desc: 'Throttled campaign broadcast runner with humanized delays, spin-tax message variations, and Cloud API compliance.',
-    icon: '⚡',
+    icon: 'Zap',
     category: 'Marketing',
   },
   {
@@ -71,7 +71,7 @@ export const ADDON_MODULES: AddonModule[] = [
     monthlyNGN: 5_000,
     badge: 'Tax Compliant',
     desc: 'Instantly builds PDF corporate quotes featuring CAC numbers, TIN, 7.5% VAT, and 5% Withholding Tax line items.',
-    icon: '📄',
+    icon: 'FileText',
     category: 'Finance',
   },
 ];
