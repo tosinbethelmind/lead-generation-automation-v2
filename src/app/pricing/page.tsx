@@ -11,11 +11,12 @@ import {
   MessageCircle, 
   Code, 
   Layers, 
-  Zap,
   HelpCircle,
   Clock,
   Building,
-  CheckCircle2
+  CheckCircle2,
+  Lock,
+  Scale
 } from 'lucide-react';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
@@ -48,24 +49,24 @@ export default function PricingPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#070b14] text-slate-100 font-sans selection:bg-[#d4af37]/30 selection:text-amber-200">
       <Navbar />
 
-      <main className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-16">
+      <main className="pt-36 sm:pt-40 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-16">
         
         {/* Header Hero */}
         <div className="text-center max-w-3xl mx-auto space-y-4 pt-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] text-xs font-bold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Transparent Commercial Pricing &bull; CAC Certified Enterprise</span>
+            <span>Transparent Commercial Pricing &bull; CAC Certified Enterprise RC 7034297</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-tight">
-            Invest in a 24/7 Revenue Engine. <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">Zero Risk.</span>
+            Invest in a 24/7 Revenue Engine. <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] to-[#f3e5ab]">Zero Risk.</span>
           </h1>
 
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
-            Pay a 50% commitment deposit to start. Test your live prototype on your phone within 48 hours. Pay the balance <span className="text-white font-bold underline decoration-emerald-500 underline-offset-4">ONLY after you approve the build</span>.
+            Pay a 50% commitment deposit to start. Test your live prototype on your phone within 48 hours. Pay the balance <span className="text-white font-bold underline decoration-[#d4af37] underline-offset-4">ONLY after you approve the build</span>.
           </p>
 
           {/* Trust Highlights */}
@@ -75,19 +76,19 @@ export default function PricingPage() {
               <span>48-Hour Deployment SLA</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-[#d4af37]" />
               <span>100% Code & Domain Ownership</span>
             </span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span>Moniepoint MFB Corporate Escrow</span>
+              <span>Moniepoint MFB Corporate Escrow (6805375225)</span>
             </span>
           </div>
         </div>
 
         {/* Pricing Category Navigation Tabs */}
         <div className="flex items-center justify-center">
-          <div className="inline-flex p-1.5 rounded-2xl bg-slate-900 border border-white/10 shadow-lg gap-1 max-w-full overflow-x-auto">
+          <div className="inline-flex p-1.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-lg gap-1 max-w-full overflow-x-auto">
             {[
               { id: 'turnkey', label: 'Turnkey Websites + AI (Need Website)' },
               { id: 'embed', label: '1-Line Embed (Have Website)' },
@@ -99,7 +100,7 @@ export default function PricingPage() {
                 onClick={() => setTab(t.id as any)}
                 className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                   tab === t.id
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md shadow-cyan-500/20'
+                    ? 'bg-gradient-to-r from-[#d4af37] to-[#aa8620] text-[#080d19] shadow-md shadow-[#d4af37]/20 font-black'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
@@ -120,19 +121,19 @@ export default function PricingPage() {
                     key={plan.id}
                     className={`rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative transition-all duration-300 ${
                       isPopular
-                        ? 'bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border-2 border-cyan-500 shadow-2xl shadow-cyan-500/10 -translate-y-1.5'
-                        : 'bg-slate-900/70 border border-white/10 hover:border-white/20 shadow-xl'
+                        ? 'bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border-2 border-[#d4af37] shadow-2xl shadow-[#d4af37]/10 -translate-y-1.5'
+                        : 'bg-slate-900/70 border border-slate-800 hover:border-slate-700 shadow-xl'
                     }`}
                   >
                     {isPopular && (
-                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black text-[11px] uppercase tracking-wider shadow-md">
+                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-[#d4af37] to-[#aa8620] text-[#080d19] font-black text-[11px] uppercase tracking-wider shadow-md">
                         Corporate Choice &bull; Most Popular
                       </div>
                     )}
 
                     <div className="space-y-4">
                       <div>
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
+                        <span className="text-xs font-bold text-[#d4af37] uppercase tracking-wider block">
                           {plan.id === 'starter' ? 'Starter Activation' : plan.id === 'pro' ? 'Corporate Pro Suite' : 'Enterprise Web + APK'}
                         </span>
                         <h3 className="text-xl sm:text-2xl font-black text-white font-['Outfit'] mt-1">
@@ -163,8 +164,9 @@ export default function PricingPage() {
                             ₦{plan.balanceAmountNGN.toLocaleString()}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-500 pt-1">
-                          ⚡ Guaranteed Delivery in {plan.slaHours} Hours &bull; 1 Full Year Domain & Hosting Included
+                        <p className="text-[11px] text-slate-500 pt-1 flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-[#d4af37]" />
+                          <span>Guaranteed Delivery in {plan.slaHours} Hours &bull; 1 Full Year Domain & Hosting Included</span>
                         </p>
                       </div>
 
@@ -172,7 +174,7 @@ export default function PricingPage() {
                       <ul className="space-y-2.5 pt-2">
                         {plan.features.map((f, i) => (
                           <li key={i} className="flex items-start gap-2.5 text-xs text-slate-300">
-                            <Check className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                            <Check className="w-4 h-4 text-[#d4af37] shrink-0 mt-0.5" />
                             <span>{f.text}</span>
                           </li>
                         ))}
@@ -189,7 +191,7 @@ export default function PricingPage() {
                         rel="noopener noreferrer"
                         className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                           isPopular
-                            ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black shadow-lg shadow-cyan-500/20'
+                            ? 'bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#080d19] font-black shadow-lg shadow-[#d4af37]/20 active:scale-95'
                             : 'bg-white/10 hover:bg-white/20 text-white'
                         }`}
                       >
@@ -202,7 +204,7 @@ export default function PricingPage() {
                         onClick={() => handleOpenInvoice(plan.id)}
                         className="w-full py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
                       >
-                        <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                        <FileText className="w-3.5 h-3.5 text-[#d4af37]" />
                         <span>Generate Bankable Proforma Invoice (PDF)</span>
                       </button>
                     </div>
@@ -253,10 +255,10 @@ export default function PricingPage() {
               {PLANS_HAVE_WEBSITE.map((plan) => (
                 <div
                   key={plan.id}
-                  className="rounded-3xl p-6 bg-slate-900/70 border border-white/10 hover:border-cyan-500/30 transition-all flex flex-col justify-between space-y-6"
+                  className="rounded-3xl p-6 bg-slate-900/70 border border-slate-800 hover:border-[#d4af37]/40 transition-all flex flex-col justify-between space-y-6"
                 >
                   <div className="space-y-4">
-                    <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider block">
+                    <span className="text-xs font-bold text-[#d4af37] uppercase tracking-wider block">
                       {plan.badge || '1-Line Embed Upgrade'}
                     </span>
                     <h3 className="text-xl font-bold text-white font-['Outfit']">
@@ -276,7 +278,7 @@ export default function PricingPage() {
                     <ul className="space-y-2">
                       {plan.features.map((f, i) => (
                         <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                          <Check className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+                          <Check className="w-3.5 h-3.5 text-[#d4af37] shrink-0 mt-0.5" />
                           <span>{f.text}</span>
                         </li>
                       ))}
@@ -289,7 +291,7 @@ export default function PricingPage() {
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
+                    className="w-full py-3 px-4 rounded-xl bg-[#d4af37]/15 hover:bg-[#d4af37]/25 text-[#d4af37] border border-[#d4af37]/40 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
                   >
                     <Code className="w-3.5 h-3.5" />
                     <span>Get 1-Line Embed Script →</span>
@@ -316,10 +318,10 @@ export default function PricingPage() {
               {OUTRIGHT_PACKAGES.map((pkg) => (
                 <div
                   key={pkg.id}
-                  className="rounded-3xl p-6 bg-slate-900/80 border border-amber-500/30 hover:border-amber-500/50 transition-all flex flex-col justify-between space-y-6 relative overflow-hidden"
+                  className="rounded-3xl p-6 bg-slate-900/80 border border-[#d4af37]/35 hover:border-[#d4af37]/60 transition-all flex flex-col justify-between space-y-6 relative overflow-hidden"
                 >
                   <div className="space-y-4">
-                    <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-bold uppercase tracking-wider inline-block">
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] text-[10px] font-bold uppercase tracking-wider inline-block">
                       {pkg.badge}
                     </span>
                     <h3 className="text-xl font-bold text-white font-['Outfit']">
@@ -331,7 +333,7 @@ export default function PricingPage() {
 
                     <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-baseline justify-between">
                       <span className="text-xs text-slate-400">1-Time Outright Price:</span>
-                      <span className="text-xl font-black text-amber-400 font-mono">
+                      <span className="text-xl font-black text-[#d4af37] font-mono">
                         ₦{pkg.priceNGN.toLocaleString()}
                       </span>
                     </div>
@@ -339,7 +341,7 @@ export default function PricingPage() {
                     <ul className="space-y-2">
                       {pkg.features.map((f, i) => (
                         <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                          <Check className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                          <Check className="w-3.5 h-3.5 text-[#d4af37] shrink-0 mt-0.5" />
                           <span>{f}</span>
                         </li>
                       ))}
@@ -352,7 +354,7 @@ export default function PricingPage() {
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-950 text-xs font-black flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-500/20"
+                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#080d19] text-xs font-black flex items-center justify-center gap-2 transition-all shadow-md shadow-[#d4af37]/20 active:scale-95"
                   >
                     <FileText className="w-3.5 h-3.5" />
                     <span>Claim Full Code Ownership →</span>
@@ -380,7 +382,7 @@ export default function PricingPage() {
               {MAINTENANCE_OPTIONS.map((opt) => (
                 <div
                   key={opt.id}
-                  className="rounded-3xl p-6 sm:p-8 bg-slate-900/80 border border-white/10 flex flex-col justify-between space-y-6"
+                  className="rounded-3xl p-6 sm:p-8 bg-slate-900/80 border border-slate-800 flex flex-col justify-between space-y-6"
                 >
                   <div className="space-y-4">
                     <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block">
@@ -430,8 +432,9 @@ export default function PricingPage() {
 
             {/* On-Demand Pay-As-You-Go Menu */}
             <div className="max-w-4xl mx-auto space-y-4">
-              <h3 className="text-lg font-bold text-white font-['Outfit']">
-                📋 On-Demand Pay-As-You-Go Developer Menu (Single Task Requests)
+              <h3 className="text-lg font-bold text-white font-['Outfit'] flex items-center gap-2">
+                <FileText className="w-4 h-4 text-[#d4af37]" />
+                <span>On-Demand Pay-As-You-Go Developer Menu (Single Task Requests)</span>
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {ON_DEMAND_TASK_MENU.map((item) => (
@@ -441,9 +444,12 @@ export default function PricingPage() {
                   >
                     <div className="space-y-1">
                       <p className="text-xs font-semibold text-white">{item.task}</p>
-                      <p className="text-[11px] text-slate-400">⚡ Turnaround: {item.turnaround}</p>
+                      <p className="text-[11px] text-slate-400 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-[#d4af37]" />
+                        <span>Turnaround: {item.turnaround}</span>
+                      </p>
                     </div>
-                    <span className="text-sm font-black text-cyan-400 font-mono shrink-0 ml-3">
+                    <span className="text-sm font-black text-[#d4af37] font-mono shrink-0 ml-3">
                       ₦{item.priceNGN.toLocaleString()}
                     </span>
                   </div>
@@ -456,7 +462,7 @@ export default function PricingPage() {
         {/* Corporate Settlement & Fraud Prevention Notice */}
         <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-slate-800 space-y-4 text-xs text-slate-400 max-w-4xl mx-auto shadow-2xl">
           <div className="flex items-center gap-2 text-white font-bold text-sm">
-            <Building className="w-4 h-4 text-cyan-400" />
+            <Building className="w-4 h-4 text-[#d4af37]" />
             <span>Official Corporate Settlement Account &bull; Moniepoint Microfinance Bank</span>
           </div>
 
@@ -483,9 +489,27 @@ export default function PricingPage() {
             </div>
           </div>
 
-          <p className="text-[11px] text-amber-400/90 leading-normal">
-            🛡️ Fraud Prevention Advisory: We will NEVER ask you to make payment into a personal bank account or crypto wallet. Always verify the corporate account name reads <strong>Bethelmind Digital Solutions</strong> before transferring funds.
-          </p>
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-2.5 text-[11px] text-amber-300 leading-normal">
+            <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <p>
+              <strong>Fraud Prevention Advisory:</strong> We will NEVER ask you to make payment into a personal bank account or crypto wallet. Always verify the corporate account name reads <strong>Bethelmind Digital Solutions</strong> before transferring funds.
+            </p>
+          </div>
+        </div>
+
+        {/* Statutory Policy Strip */}
+        <div className="max-w-4xl mx-auto p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <div className="flex items-center gap-2">
+            <Scale className="w-4 h-4 text-[#d4af37]" />
+            <span>All pricing and milestones governed by statutory Nigerian consumer policies.</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link href="/legal/delivery" className="text-[#d4af37] hover:underline">Delivery SLA</Link>
+            <span>·</span>
+            <Link href="/legal/terms" className="text-[#d4af37] hover:underline">Terms</Link>
+            <span>·</span>
+            <Link href="/legal/refund" className="text-[#d4af37] hover:underline">Refund Policy</Link>
+          </div>
         </div>
 
         {/* Pricing FAQ Section */}
@@ -516,7 +540,7 @@ export default function PricingPage() {
             ].map((item, idx) => (
               <div key={idx} className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-1.5">
                 <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                  <HelpCircle className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <HelpCircle className="w-4 h-4 text-[#d4af37] shrink-0" />
                   <span>{item.q}</span>
                 </h4>
                 <p className="text-xs text-slate-300 leading-relaxed pl-6">{item.a}</p>

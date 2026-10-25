@@ -634,7 +634,7 @@ export default function PricingSection({
             {ON_DEMAND_TASK_MENU.map((item) => (
               <div key={item.id} style={{ background: 'rgba(7,9,14,0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ fontSize: '0.78rem', color: '#cbd5e1', fontWeight: 700 }}>{item.icon} {item.task}</div>
+                  <div style={{ fontSize: '0.78rem', color: '#cbd5e1', fontWeight: 700 }}>{item.task}</div>
                   <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Turnaround: {item.turnaround}</div>
                 </div>
                 <div style={{ fontSize: '0.88rem', fontWeight: 900, color: '#10b981', fontFamily: "'Outfit', sans-serif" }}>

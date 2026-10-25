@@ -269,7 +269,7 @@ export default function HeroSection({
           lineHeight: 1.5,
           fontWeight: 400
         }}>
-          Convert customers on autopilot. We build your custom website + 24/7 WhatsApp assistant that replies in &lt; 2.4s with natural Nigerian voice notes, calculates prices, and takes verified orders while you sleep.
+          A bespoke website and 24/7 WhatsApp AI quotation assistant built for high-value customer conversations. Replies in under 3 seconds with natural Nigerian voice notes, calculates prices, and secures verified client commitments while you sleep.
         </p>
 
         {/* Trust Badges Bar */}
@@ -317,7 +317,7 @@ export default function HeroSection({
               textAlign: 'center'
             }}
           >
-            Test Live WhatsApp Demo →
+            Book a Private Demo →
           </a>
           <button
             id="hero-setup-cta"
@@ -347,7 +347,7 @@ export default function HeroSection({
               textAlign: 'center'
             }}
           >
-            Explore Specialized Sector Tools ↓
+            See Live WhatsApp Demo ↓
           </button>
         </div>
 
@@ -365,7 +365,7 @@ export default function HeroSection({
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981', animation: 'pulse 2s infinite' }} />
               <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.01em' }}>
-                LIVE AI COMMAND CENTER & MULTI-SECTOR CONVERSION ENGINE
+                Built for High-Value Customer Conversations
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

@@ -124,27 +124,27 @@ const CASE_STUDIES: CaseStudy[] = [
 
 export default function ResultsPage() {
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#070b14] text-[#f5f3ef] font-sans selection:bg-[#d4af37]/30 selection:text-amber-200">
       <Navbar />
 
-      <main className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-16">
+      <main className="pt-36 sm:pt-40 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-20">
         
         {/* Header Hero */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 pt-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span>Verified Nigerian SME Case Studies & Outcomes</span>
+        <div className="text-center max-w-3xl mx-auto space-y-4 pt-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 text-[#d4af37] text-xs font-semibold uppercase tracking-widest">
+            <TrendingUp className="w-3.5 h-3.5 text-[#d4af37]" />
+            <span>Verified Nigerian Enterprise Outcomes &bull; Client Studies</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-tight">
-            Real Nigerian Businesses. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-              Measurable Revenue Growth.
+          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
+            Real Nigerian Enterprises. <br />
+            <span className="italic font-light text-[#d4af37]">
+              Measurable Commercial Growth.
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
-            See how solar contractors, luxury salons, haulage operators, and real estate developers across Lagos, Abuja, and Port Harcourt capture clients 24/7 with Bethelmind automation.
+          <p className="text-sm sm:text-base text-[#c9c4bc] font-light leading-relaxed max-w-2xl mx-auto">
+            Review how solar EPC contractors, luxury salons, haulage operators, and property developers across Lagos, Abuja, and Port Harcourt capture clients 24/7 with Bethelmind automation.
           </p>
         </div>
 
@@ -156,33 +156,31 @@ export default function ResultsPage() {
             { label: 'Turnaround Guarantee', value: '48 Hours', desc: 'Working prototype SLA' },
             { label: 'Commitment Safety', value: '50% Balance', desc: 'Pay only on live approval' },
           ].map((stat, i) => (
-            <div key={i} className="p-5 rounded-2xl bg-slate-900/80 border border-white/10 text-center space-y-1">
-              <span className="text-2xl sm:text-3xl font-black text-cyan-400 font-mono block">{stat.value}</span>
-              <p className="text-xs font-bold text-white">{stat.label}</p>
-              <p className="text-[11px] text-slate-400">{stat.desc}</p>
+            <div key={i} className="p-5 sm:p-6 rounded-2xl bg-[#090d16]/80 border border-white/[0.08] text-center space-y-1.5 backdrop-blur-sm">
+              <span className="text-2xl sm:text-3xl font-normal text-[#d4af37] font-mono block">{stat.value}</span>
+              <p className="text-xs font-medium text-[#f5f3ef]">{stat.label}</p>
+              <p className="text-[11px] text-[#c9c4bc]/70 font-light">{stat.desc}</p>
             </div>
           ))}
         </div>
 
         {/* Detailed Case Studies Cards */}
-        <div className="space-y-12">
-          {CASE_STUDIES.map((cs, idx) => (
+        <div className="space-y-12 max-w-6xl mx-auto">
+          {CASE_STUDIES.map((cs) => (
             <div 
               key={cs.id}
-              className="bg-slate-900/70 border border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8 relative overflow-hidden"
+              className="bg-[#090d16]/90 border border-white/[0.08] hover:border-[#d4af37]/30 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-md space-y-8 transition-all"
             >
-              <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-
               {/* Case Study Header */}
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/10 pb-6">
-                <div className="space-y-1.5">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/[0.06] pb-6">
+                <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-bold">
+                    <span className="px-3 py-1 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/20 text-[#d4af37] text-xs font-medium">
                       {cs.industry}
                     </span>
-                    <span className="text-xs text-slate-400">&bull; {cs.location}</span>
+                    <span className="text-xs text-[#c9c4bc]">&bull; {cs.location}</span>
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-black text-white font-['Outfit']">
+                  <h2 className="font-serif text-xl sm:text-2xl font-normal text-[#f5f3ef]">
                     {cs.clientName}
                   </h2>
                 </div>
@@ -190,54 +188,54 @@ export default function ResultsPage() {
                 <div className="flex items-center gap-2">
                   <Link
                     href={cs.toolLink}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/10 text-xs font-bold transition-all"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] text-[#c9c4bc] hover:text-[#f5f3ef] border border-white/[0.08] text-xs font-medium transition-all"
                   >
                     <span>Test {cs.toolUsed}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5 text-[#d4af37]" />
                   </Link>
                 </div>
               </div>
 
               {/* Problem vs Solution Story */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs sm:text-sm leading-relaxed">
-                <div className="space-y-3 p-5 rounded-2xl bg-rose-500/[0.03] border border-rose-500/15">
-                  <div className="flex items-center gap-2 text-rose-400 font-bold uppercase tracking-wider text-xs">
-                    <span className="w-2 h-2 rounded-full bg-rose-400" />
-                    <span>The Challenge & Revenue Leak</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm leading-relaxed">
+                <div className="space-y-3 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+                  <div className="flex items-center gap-2 text-[#c9c4bc] font-medium uppercase tracking-wider text-xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#c9c4bc]" />
+                    <span>The Challenge &amp; Revenue Leak</span>
                   </div>
-                  <p className="text-slate-300 leading-relaxed">{cs.challenge}</p>
+                  <p className="text-[#c9c4bc] font-light leading-relaxed">{cs.challenge}</p>
                 </div>
 
-                <div className="space-y-3 p-5 rounded-2xl bg-emerald-500/[0.03] border border-emerald-500/15">
-                  <div className="flex items-center gap-2 text-emerald-400 font-bold uppercase tracking-wider text-xs">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <div className="space-y-3 p-5 sm:p-6 rounded-2xl bg-[#d4af37]/[0.03] border border-[#d4af37]/20">
+                  <div className="flex items-center gap-2 text-[#d4af37] font-medium uppercase tracking-wider text-xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37]" />
                     <span>The Bethelmind Automated Solution</span>
                   </div>
-                  <p className="text-slate-300 leading-relaxed">{cs.solution}</p>
+                  <p className="text-[#f5f3ef] font-light leading-relaxed">{cs.solution}</p>
                 </div>
               </div>
 
               {/* Metric Impact Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                 {cs.metrics.map((m, i) => (
-                  <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1">
-                    <p className="text-[11px] text-slate-400 font-medium">{m.label}</p>
-                    <p className="text-lg sm:text-xl font-black text-white font-mono">{m.value}</p>
-                    <p className="text-[10px] font-bold text-emerald-400">{m.change}</p>
+                  <div key={i} className="p-4 rounded-xl bg-[#0a0e17] border border-white/[0.06] space-y-1">
+                    <p className="text-[11px] text-[#c9c4bc]/70 font-light">{m.label}</p>
+                    <p className="text-lg sm:text-xl font-normal text-[#f5f3ef] font-mono">{m.value}</p>
+                    <p className="text-[10px] font-medium text-emerald-400">{m.change}</p>
                   </div>
                 ))}
               </div>
 
               {/* Verified Quote Block */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-white/[0.03] border border-white/10 flex items-start gap-4">
-                <Quote className="w-6 h-6 text-cyan-400 shrink-0 mt-1 opacity-70" />
+              <div className="p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-start gap-4">
+                <Quote className="w-6 h-6 text-[#d4af37] shrink-0 mt-1 opacity-70" />
                 <div className="space-y-2">
-                  <p className="text-xs sm:text-sm text-slate-200 italic leading-relaxed">
+                  <p className="font-serif text-sm sm:text-base text-[#f5f3ef] italic font-light leading-relaxed">
                     &ldquo;{cs.quote}&rdquo;
                   </p>
                   <div>
-                    <p className="text-xs font-bold text-white">{cs.author}</p>
-                    <p className="text-[11px] text-slate-400">{cs.authorRole}</p>
+                    <p className="text-xs font-medium text-[#f5f3ef]">{cs.author}</p>
+                    <p className="text-[11px] text-[#c9c4bc]/70 font-light">{cs.authorRole}</p>
                   </div>
                 </div>
               </div>
@@ -247,11 +245,14 @@ export default function ResultsPage() {
         </div>
 
         {/* Final Conversion Call to Action */}
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-cyan-950/70 via-slate-900 to-slate-950 border border-cyan-500/30 text-center space-y-6 max-w-4xl mx-auto shadow-2xl">
-          <h2 className="text-2xl sm:text-4xl font-black text-white font-['Outfit']">
-            Ready to Automate Your Business in 48 Hours?
+        <div className="p-8 sm:p-12 rounded-3xl bg-[#090d16] border border-[#d4af37]/30 text-center space-y-6 max-w-4xl mx-auto shadow-2xl backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 text-[#d4af37] text-xs font-semibold uppercase tracking-widest">
+            <span>Executive Handover &bull; 48-Hour SLA</span>
+          </div>
+          <h2 className="font-serif text-2xl sm:text-4xl text-[#f5f3ef] font-normal">
+            Ready to Automate Your Enterprise in 48 Hours?
           </h2>
-          <p className="text-sm text-slate-300 max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-[#c9c4bc] font-light max-w-xl mx-auto leading-relaxed">
             Join forward-thinking Nigerian businesses turning cold WhatsApp inquiries into confirmed bank transfer deposits on autopilot.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
@@ -261,16 +262,16 @@ export default function ResultsPage() {
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+              className="py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#070b14] font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#d4af37]/20 active:scale-95"
             >
               <MessageCircle className="w-4 h-4 fill-current" />
-              <span>Book Free WhatsApp Consultation →</span>
+              <span>Book Free WhatsApp Consultation &rarr;</span>
             </a>
             <Link
               href="/pricing"
-              className="py-3.5 px-6 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white border border-white/10 text-xs sm:text-sm font-bold transition-all"
+              className="py-3.5 px-6 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] text-[#f5f3ef] border border-white/[0.08] text-xs sm:text-sm font-medium transition-all"
             >
-              View Transparent Pricing Packages
+              View Transparent Engagement Packages
             </Link>
           </div>
         </div>

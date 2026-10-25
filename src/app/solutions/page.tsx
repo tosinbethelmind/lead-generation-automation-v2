@@ -2,11 +2,9 @@
 
 /**
  * @file src/app/solutions/page.tsx
- * 🚀 Bethelmind Digital Solutions CUSTOMER ACQUISITION & REVENUE SUITE
+ * Bethelmind Digital Solutions CUSTOMER ACQUISITION & REVENUE SUITE
  * 
- * Redesigned for Maximum Client Customer Growth:
- * Direct-Response Customer Generation, Speed-to-Lead, and Cash Recovery for Nigerian SMEs.
- * 
+ * Direct-Response Client Acquisition, Speed-to-Lead, and Cash Recovery for Nigerian SMEs.
  * Note: Solar & Inverter Proposal Suite is cleanly separated into its own sovereign engine (/solar).
  */
 
@@ -16,7 +14,7 @@ import {
   MessageSquare, Users, Star, Repeat, Globe, Calendar, 
   GraduationCap, Zap, ArrowRight, CheckCircle2, Code2, 
   Sparkles, ExternalLink, PhoneCall, Copy, Check, 
-  TrendingUp, ShieldCheck, Flame, ChevronRight
+  TrendingUp, ShieldCheck, ChevronRight
 } from 'lucide-react';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
@@ -29,7 +27,6 @@ interface CustomerAcquisitionEngine {
   targetNiche: string;
   customerGrowthMetric: string;
   icon: React.ElementType;
-  accentColor: string;
   setupFeeNGN: string;
   retainerNGN: string;
   turnkeyFeeNGN: string;
@@ -49,11 +46,10 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
     targetNiche: 'Instagram Vendors, Boutiques, Wholesale, Retail & Car Dealerships',
     customerGrowthMetric: '+35% to +60% Higher Sales Conversion from Existing Inquiries',
     icon: MessageSquare,
-    accentColor: '#10b981',
     setupFeeNGN: '₦35,000',
     retainerNGN: '₦15,000 – ₦30,000/mo',
-    turnkeyFeeNGN: '₦65,000 Promo (₦35k Deposit)',
-    embedFeeNGN: '₦35,000 Promo',
+    turnkeyFeeNGN: '₦65,000 Total (₦35k Deposit)',
+    embedFeeNGN: '₦35,000 Setup',
     theCustomerLeak: '70% of Nigerian Instagram and WhatsApp leads buy from the first vendor who replies. If you take 2 hours to answer "How much?", they have already paid your competitor.',
     howItGetsYouCustomers: [
       'Instant sub-2s responses in natural Nigerian accent voice notes that build human rapport',
@@ -61,7 +57,7 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
       'Sends instant checkout buttons and automated Moniepoint/Paystack/OPay payment links',
       'Automatically follows up with abandoned inquiries after 30 minutes with a courtesy nudge'
     ],
-    sampleWhatsAppProof: '“Good day! Yes, our Premium Slim-Fit Suit is available in sizes 42, 44 & 46 at ₦48,500. We can dispatch to Lekki/Ikeja within 2 hours. May I lock in your delivery slot now?”',
+    sampleWhatsAppProof: '“Good day. Yes, our Premium Slim-Fit Suit is available in sizes 42, 44 & 46 at ₦48,500. We can dispatch to Lekki/Ikeja within 2 hours. May I lock in your delivery slot now?”',
     demoUrl: '/home#sector-tools'
   },
   {
@@ -72,7 +68,6 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
     targetNiche: 'Corporate Services, Cleaning, Logistics, B2B Wholesalers & IT Firms',
     customerGrowthMetric: '15 to 40 New Qualified B2B Sales Conversations Every Month',
     icon: Users,
-    accentColor: '#06b6d4',
     setupFeeNGN: '₦50,000',
     retainerNGN: '₦30,000 – ₦60,000/mo',
     turnkeyFeeNGN: '₦175,000 (₦85k Deposit)',
@@ -90,16 +85,15 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
   {
     id: 'google-maps-magnet',
     number: '03',
-    title: 'Google Maps #1 Ranking & 5-Star Review Magnet',
+    title: 'Google Maps Ranking & 5-Star Review Magnet',
     tagline: 'Turn Nearby High-Intent Google Searchers into Daily Inbound Phone Calls',
     targetNiche: 'Clinics, Dental, Salons, Hotels, Auto Mechanics, Restaurants & Spas',
     customerGrowthMetric: 'Top 3 Google Maps Ranking & 5x More Inbound Local Calls',
     icon: Star,
-    accentColor: '#f59e0b',
     setupFeeNGN: '₦40,000',
     retainerNGN: '₦20,000/mo',
-    turnkeyFeeNGN: '₦65,000 Promo (₦35k Deposit)',
-    embedFeeNGN: '₦35,000 Promo',
+    turnkeyFeeNGN: '₦65,000 Total (₦35k Deposit)',
+    embedFeeNGN: '₦35,000 Setup',
     theCustomerLeak: 'When wealthy customers search "Best dentist in Lekki" or "Car AC repair in Ikeja", they only call the businesses with 100+ 5-star Google reviews at the top of the map.',
     howItGetsYouCustomers: [
       'Optimizes your Google Business profile with local high-intent keywords and geotags',
@@ -118,11 +112,10 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
     targetNiche: 'Boutiques, Supermarkets, Restaurants, Gyms & Spas',
     customerGrowthMetric: '₦350,000 to ₦1,200,000 in Direct Sales Within 48 Hours of Launch',
     icon: Repeat,
-    accentColor: '#ef4444',
     setupFeeNGN: '₦45,000',
     retainerNGN: '₦25,000 – ₦45,000/mo',
-    turnkeyFeeNGN: '₦65,000 Promo (₦35k Deposit)',
-    embedFeeNGN: '₦35,000 Promo',
+    turnkeyFeeNGN: '₦65,000 Total (₦35k Deposit)',
+    embedFeeNGN: '₦35,000 Setup',
     theCustomerLeak: 'SMEs sit on 2,000+ past customer contacts and never re-contact them, wasting money constantly running expensive new ads instead of selling to people who already trust them.',
     howItGetsYouCustomers: [
       'Segments past buyers by product interest and purchase recency',
@@ -130,28 +123,27 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
       'Automated birthday and anniversary greeting cards with personalized discount vouchers',
       'Brings in an immediate flood of repeat orders at zero ad spend'
     ],
-    sampleWhatsAppProof: '“🎉 VIP Weekend Drop: Hello Mrs. Adebayo! For our top 50 clients only, our Italian handbag collection has a 48-hour 20% privilege code [VIP20]. View 8 exclusive pieces: store.ng/vip”',
+    sampleWhatsAppProof: '“VIP Weekend Drop: Hello Mrs. Adebayo! For our top 50 clients only, our Italian handbag collection has a 48-hour 20% privilege code [VIP20]. View 8 exclusive pieces: store.ng/vip”',
     demoUrl: '/home#sector-tools'
   },
   {
     id: 'turnkey-authority-site',
     number: '05',
-    title: '24-Hour Turnkey Luxury Sales Website (High-Trust Engine)',
-    tagline: 'A High-Prestige Digital Storefront That Convinces Wealthy Buyers to Pay Top Dollar',
+    title: 'Turnkey Luxury Sales Website (High-Trust Engine)',
+    tagline: 'A High-Prestige Digital Storefront That Convinces High-Value Clients to Commit',
     targetNiche: 'Consultants, Luxury Realtors, Contractors, Importers & Law Firms',
     customerGrowthMetric: 'Close ₦1M–₦10M High-Ticket Contracts That Demand Corporate Proof',
     icon: Globe,
-    accentColor: '#8b5cf6',
     setupFeeNGN: '₦75,000 (50% Deposit)',
     retainerNGN: '₦20,000/mo (Hosting + Updates)',
     turnkeyFeeNGN: '₦150,000 Total (48h Delivery)',
     embedFeeNGN: 'N/A',
-    theCustomerLeak: 'High-net-worth clients and corporate directors will never wire ₦2,000,000+ to a vendor who only has an Instagram handle and a Gmail address. You lose big deals to polished firms.',
+    theCustomerLeak: 'High-net-worth clients and corporate directors will rarely wire ₦2,000,000+ to a vendor who only has an Instagram handle and a personal bank account.',
     howItGetsYouCustomers: [
       'Complete custom luxury website on your branded .com or .ng domain within 24–48 hours',
       'Showcases verified customer testimonials, portfolio galleries, and corporate credentials',
       'Built-in 1-tap WhatsApp consultation popups and automated PDF quote generators',
-      'Establishes instant authority so you can charge 2x higher prices with zero price haggling'
+      'Establishes instant authority so you can charge premium prices with zero price haggling'
     ],
     sampleWhatsAppProof: '“Hello Engr. Funsho, our complete portfolio, CAC credentials, and corporate references are available on our official website at www.firmbrand.com.ng. We look forward to executing your project.”',
     demoUrl: '/preview/sample-lead'
@@ -164,42 +156,40 @@ const CUSTOMER_ACQUISITION_ENGINES: CustomerAcquisitionEngine[] = [
     targetNiche: 'Clinics, Spas, Makeup Studios, Event Photographers & Barbershops',
     customerGrowthMetric: 'Reduces No-Show Rates from 40% Down to Under 4%',
     icon: Calendar,
-    accentColor: '#ec4899',
     setupFeeNGN: '₦35,000',
     retainerNGN: '₦15,000 – ₦35,000/mo',
-    turnkeyFeeNGN: '₦65,000 Promo (₦35k Deposit)',
-    embedFeeNGN: '₦35,000 Promo',
-    theCustomerLeak: 'Service businesses lose 30% to 50% of booked appointments to no-shows who casually cancel last-minute, leaving staff idle and chairs empty while serious paying clients were turned away.',
+    turnkeyFeeNGN: '₦65,000 Total (₦35k Deposit)',
+    embedFeeNGN: '₦35,000 Setup',
+    theCustomerLeak: 'Service businesses lose 30% to 50% of booked appointments to no-shows who cancel last-minute, leaving staff idle while serious paying clients were turned away.',
     howItGetsYouCustomers: [
       '24/7 calendar showing real-time open time slots for your team',
       'Requires a ₦5,000–₦20,000 upfront non-refundable commitment deposit before confirming',
       'Automated WhatsApp reminder 3 hours before appointment with Google Map directions',
-      'Turns flaky time-wasters into guaranteed, punctual, paying clients'
+      'Turns uncommitted leads into guaranteed, punctual, paying clients'
     ],
-    sampleWhatsAppProof: '“📅 Booking Confirmed: Bridal Consultation with Lead Stylist on Saturday 11:00 AM. ₦15,000 commitment deposit verified. Balance of ₦35,000 due at session completion.”',
+    sampleWhatsAppProof: '“Booking Confirmed: Bridal Consultation with Lead Stylist on Saturday 11:00 AM. ₦15,000 commitment deposit verified. Balance of ₦35,000 due at session completion.”',
     demoUrl: '/home#sector-tools'
   },
   {
     id: 'school-fee-admissions',
     number: '07',
-    title: 'Private School Admissions Portal & 100% Fee Collection Gate',
+    title: 'Private School Admissions Portal & Fee Collection Gate',
     tagline: 'Attract New Student Enrollments & Ensure 100% Tuition Is Paid Before Results Unlock',
     targetNiche: 'Private Schools, Academies, Creches & Colleges',
     customerGrowthMetric: '100% Fee Recovery Rate & 30+ New Student Enquiries per Term',
     icon: GraduationCap,
-    accentColor: '#14b8a6',
     setupFeeNGN: '₦65,000',
     retainerNGN: '₦50,000 – ₦100,000/term',
     turnkeyFeeNGN: '₦175,000 (₦85k Deposit)',
     embedFeeNGN: '₦45,000',
-    theCustomerLeak: 'Private school proprietors lose millions each term to defaulting parents who collect physical report cards and flee, while manual admissions inquiry handling loses new prospective students.',
+    theCustomerLeak: 'Private school proprietors lose millions each term to defaulting parents who collect physical report cards and leave, while manual admissions handling loses prospective students.',
     howItGetsYouCustomers: [
       'Online admissions fee estimator and virtual tour that attracts prospective parents',
       'Automated WhatsApp tuition clearance reminders ahead of exam periods',
       'Digital Result Gating: Student terminal report cards only unlock once outstanding fees = ₦0',
-      'Proprietors recover 100% of school fees without embarrassing children in classrooms'
+      'Proprietors recover 100% of school fees without disrupting children in classrooms'
     ],
-    sampleWhatsAppProof: '“🎓 Result Portal: Master Chinedu (JSS 3) examination broadsheet is ready. Term balance: ₦0.00. Result card successfully unlocked: schoolportal.ng/result/CN-2026”',
+    sampleWhatsAppProof: '“Result Portal: Master Chinedu (JSS 3) examination broadsheet is ready. Term balance: ₦0.00. Result card successfully unlocked: schoolportal.ng/result/CN-2026”',
     demoUrl: '/home#sector-tools'
   }
 ];
@@ -216,357 +206,253 @@ export default function SolutionsPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#07090e', color: '#f8fafc', fontFamily: "var(--font-inter), 'Inter', sans-serif" }}>
+    <div className="min-h-screen bg-[#070b14] text-[#f5f3ef] font-sans selection:bg-[#d4af37]/30 selection:text-amber-200">
       <Navbar />
 
-      <main style={{ paddingTop: 110, paddingBottom: 80 }}>
+      <main className="pt-36 sm:pt-40 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-16">
+        
         {/* STANDALONE SOLAR ENGINE PORTAL BANNER */}
-        <section style={{ maxWidth: 1200, margin: '0 auto 28px', padding: '0 20px' }}>
-          <div style={{ background: 'linear-gradient(90deg, rgba(245,158,11,0.12) 0%, rgba(15,23,42,0.8) 100%)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 18, padding: '14px 22px', display: 'flex', flexDirection: 'column', md: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: '#f59e0b20', border: '1px solid #f59e0b40', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Zap style={{ width: 18, height: 18, color: '#f59e0b' }} />
-              </div>
-              <div>
-                <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#f8fafc' }}>
-                  Are you a Solar Installer or EPC Contractor?
-                </span>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'block' }}>
-                  Our dedicated Solar & Inverter Proposal Suite (SolarQuotePro) runs in its own specialized sovereign engineering engine.
-                </span>
-              </div>
+        <div className="max-w-6xl mx-auto rounded-2xl bg-[#090d16]/80 border border-[#d4af37]/25 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-9 h-9 rounded-xl bg-[#d4af37]/10 border border-[#d4af37]/20 flex items-center justify-center shrink-0">
+              <Zap className="w-4 h-4 text-[#d4af37]" />
             </div>
-
-            <Link
-              href="/solar"
-              style={{
-                padding: '8px 18px',
-                borderRadius: 10,
-                background: '#f59e0b',
-                color: '#000',
-                fontWeight: 800,
-                fontSize: '0.82rem',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                flexShrink: 0,
-                boxShadow: '0 4px 12px rgba(245,158,11,0.25)'
-              }}
-            >
-              <span>Launch Solar Engine</span>
-              <ArrowRight style={{ width: 14, height: 14 }} />
-            </Link>
+            <div>
+              <span className="text-xs sm:text-sm font-medium text-[#f5f3ef] block">
+                Are you a Solar Installer or EPC Contractor?
+              </span>
+              <span className="text-xs text-[#c9c4bc]/70 font-light block">
+                Our dedicated Solar &amp; Inverter Proposal Suite (SolarQuotePro) runs in its own sovereign engineering engine.
+              </span>
+            </div>
           </div>
-        </section>
+
+          <Link
+            href="/solar"
+            className="py-2 px-4 rounded-xl bg-[#d4af37] hover:bg-[#dfbc46] text-[#070b14] font-semibold text-xs flex items-center gap-1.5 shrink-0 transition-colors"
+          >
+            <span>Launch Solar Engine</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
 
         {/* HERO SECTION */}
-        <section style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px 40px', textAlign: 'center' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 100, padding: '6px 18px', marginBottom: 18 }}>
-            <Flame style={{ width: 15, height: 15, color: '#10b981' }} />
-            <span style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              Built Exclusively for Customer Acquisition & Cashflow
-            </span>
+        <div className="text-center max-w-3xl mx-auto space-y-4 pt-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 text-[#d4af37] text-xs font-semibold uppercase tracking-widest">
+            <Sparkles className="w-3.5 h-3.5 text-[#d4af37]" />
+            <span>Customer Acquisition &amp; Commercial Cashflow</span>
           </div>
 
-          <h1 style={{ fontSize: 'clamp(2.1rem, 5vw, 3.3rem)', fontWeight: 900, lineHeight: 1.15, margin: '0 auto 18px', maxWidth: 900, fontFamily: "'Outfit', sans-serif", color: '#f8fafc' }}>
-            Solutions That Bring Your Business <span style={{ color: '#10b981' }}>More Paying Customers</span>
+          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
+            Solutions That Bring Your Enterprise <br />
+            <span className="italic font-light text-[#d4af37]">
+              More High-Value Clients.
+            </span>
           </h1>
 
-          <p style={{ color: '#94a3b8', fontSize: '1.05rem', maxWidth: 740, margin: '0 auto 32px', lineHeight: 1.65 }}>
-            Nigerian businesses don&apos;t need complicated dashboards. You need tools that <strong>stop buyers from abandoning your DMs</strong>, <strong>rank you #1 on Google Maps</strong>, and <strong>hand you verified high-intent local clients</strong> ready to pay.
+          <p className="text-sm sm:text-base text-[#c9c4bc] font-light leading-relaxed max-w-2xl mx-auto">
+            Nigerian businesses require practical systems that prevent buyers from abandoning WhatsApp inquiries, establish search authority, and convert prospective clients into verified bank transfer deposits.
           </p>
 
           {/* DUAL DELIVERY MODE TOGGLE */}
-          <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 4, gap: 4, marginBottom: 36, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <div className="inline-flex bg-[#090d16] border border-white/[0.08] rounded-2xl p-1 gap-1 pt-1 mt-4">
             <button
               onClick={() => setDeliveryMode('turnkey')}
-              style={{
-                padding: '10px 22px',
-                borderRadius: 12,
-                border: 'none',
-                background: deliveryMode === 'turnkey' ? '#10b981' : 'transparent',
-                color: deliveryMode === 'turnkey' ? '#000' : '#94a3b8',
-                fontWeight: 700,
-                fontSize: '0.88rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                transition: 'all 0.2s'
-              }}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
+                deliveryMode === 'turnkey'
+                  ? 'bg-gradient-to-r from-[#d4af37] to-[#aa8620] text-[#070b14] shadow-md shadow-[#d4af37]/20 font-bold'
+                  : 'text-[#c9c4bc] hover:text-[#f5f3ef]'
+              }`}
             >
-              <Zap style={{ width: 16, height: 16 }} />
-              <span>🇳🇬 Option A: Full .COM.NG Website + Tool (₦35k Deposit / ₦65k Total)</span>
+              <Zap className="w-4 h-4" />
+              <span>Option A: Full Mobile Website + Tool (₦35k Deposit / ₦65k Total)</span>
             </button>
             <button
               onClick={() => setDeliveryMode('embed')}
-              style={{
-                padding: '10px 22px',
-                borderRadius: 12,
-                border: 'none',
-                background: deliveryMode === 'embed' ? '#3b82f6' : 'transparent',
-                color: deliveryMode === 'embed' ? '#fff' : '#94a3b8',
-                fontWeight: 700,
-                fontSize: '0.88rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                transition: 'all 0.2s'
-              }}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
+                deliveryMode === 'embed'
+                  ? 'bg-gradient-to-r from-[#d4af37] to-[#aa8620] text-[#070b14] shadow-md shadow-[#d4af37]/20 font-bold'
+                  : 'text-[#c9c4bc] hover:text-[#f5f3ef]'
+              }`}
             >
-              <Code2 style={{ width: 16, height: 16 }} />
+              <Code2 className="w-4 h-4" />
               <span>Option B: 1-Line Embed on Existing Site (₦35k One-Time)</span>
             </button>
           </div>
-        </section>
+        </div>
 
         {/* CUSTOMER ENGINES GRID */}
-        <section style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 24 }}>
-            {CUSTOMER_ACQUISITION_ENGINES.map(engine => {
-              const IconComponent = engine.icon;
-              const waText = encodeURIComponent(`Hello Bethelmind Lagos Desk,\n\nI want to claim the 6-Month Independence Bundle for Engine #${engine.number}: *${engine.title}* (${engine.targetNiche}).\n\nDelivery preference: ${deliveryMode === 'turnkey' ? 'Full .COM.NG Website + Tool (₦35k Deposit / ₦75k Total)' : '1-Line Embed Upgrade (₦35k Direct Setup)'}`);
-              const waUrl = `https://wa.me/2348022791227?text=${waText}`;
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          {CUSTOMER_ACQUISITION_ENGINES.map((engine) => {
+            const IconComponent = engine.icon;
+            const waText = encodeURIComponent(
+              `Hello Bethelmind Lagos Desk,\n\nI want to deploy Engine #${engine.number}: *${engine.title}* (${engine.targetNiche}).\n\nDelivery preference: ${
+                deliveryMode === 'turnkey'
+                  ? 'Full Mobile Website + Tool (₦35k Deposit / ₦65k Total)'
+                  : '1-Line Embed Upgrade (₦35k Direct Setup)'
+              }`
+            );
+            const waUrl = `https://wa.me/2348022791227?text=${waText}`;
 
-              return (
-                <div
-                  key={engine.id}
-                  style={{
-                    background: 'rgba(11,15,26,0.75)',
-                    border: `1px solid ${engine.accentColor}25`,
-                    borderRadius: 22,
-                    padding: 26,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    backdropFilter: 'blur(16px)'
-                  }}
-                >
-                  <div style={{ position: 'absolute', top: -40, right: -40, width: 100, height: 100, background: engine.accentColor, filter: 'blur(50px)', opacity: 0.15, pointerEvents: 'none' }} />
-
-                  {/* TOP ROW */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: `${engine.accentColor}18`, border: `1px solid ${engine.accentColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <IconComponent style={{ width: 22, height: 22, color: engine.accentColor }} />
+            return (
+              <div
+                key={engine.id}
+                className="bg-[#090d16]/90 border border-white/[0.08] hover:border-[#d4af37]/30 rounded-3xl p-6 sm:p-7 flex flex-col justify-between space-y-6 transition-all shadow-xl backdrop-blur-md relative overflow-hidden"
+              >
+                <div className="space-y-5">
+                  {/* Top Row */}
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-[#d4af37]/10 border border-[#d4af37]/20 flex items-center justify-center shrink-0">
+                      <IconComponent className="w-5 h-5 text-[#d4af37]" />
                     </div>
                     <div>
-                      <span style={{ fontSize: '0.72rem', fontWeight: 800, color: engine.accentColor, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                        Engine #{engine.number} • {engine.targetNiche}
+                      <span className="text-[10px] font-semibold text-[#c5a880] uppercase tracking-widest block">
+                        Engine #{engine.number} &bull; {engine.targetNiche}
                       </span>
-                      <h3 style={{ margin: '2px 0 0', fontSize: '1.12rem', fontWeight: 800, color: '#f8fafc', fontFamily: "'Outfit', sans-serif" }}>
+                      <h3 className="font-serif text-lg font-normal text-[#f5f3ef] mt-0.5">
                         {engine.title}
                       </h3>
                     </div>
                   </div>
 
-                  {/* CUSTOMER GROWTH METRIC (THE CORE VALUE PROPOSITION) */}
-                  <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 12, padding: '10px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <TrendingUp style={{ width: 18, height: 18, color: '#10b981', flexShrink: 0 }} />
+                  {/* Customer Result Highlight */}
+                  <div className="bg-[#d4af37]/[0.04] border border-[#d4af37]/20 rounded-xl p-3 flex items-center gap-2.5">
+                    <TrendingUp className="w-4 h-4 text-[#d4af37] shrink-0" />
                     <div>
-                      <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block', textTransform: 'uppercase', fontWeight: 700 }}>Direct Customer Result:</span>
-                      <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#10b981' }}>{engine.customerGrowthMetric}</span>
+                      <span className="text-[10px] text-[#c9c4bc]/70 block uppercase tracking-wider font-medium">Outcome:</span>
+                      <span className="text-xs font-semibold text-[#d4af37]">{engine.customerGrowthMetric}</span>
                     </div>
                   </div>
 
-                  {/* THE LEAK */}
-                  <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 12, padding: '10px 14px', marginBottom: 16 }}>
-                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#f87171', textTransform: 'uppercase', display: 'block', marginBottom: 2 }}>The Money Leak:</span>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: '#fca5a5', lineHeight: 1.45 }}>
+                  {/* The Money Leak */}
+                  <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-3 space-y-1">
+                    <span className="text-[10px] font-medium text-[#c9c4bc] uppercase tracking-wider block">Commercial Leak:</span>
+                    <p className="text-xs text-[#c9c4bc]/80 font-light leading-relaxed">
                       {engine.theCustomerLeak}
                     </p>
                   </div>
 
-                  {/* HOW IT GETS YOU CUSTOMERS */}
-                  <div style={{ marginBottom: 20, flex: 1 }}>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', marginBottom: 8 }}>
-                      How It Brings You Paying Customers:
+                  {/* Features */}
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-semibold text-[#c5a880] uppercase tracking-widest block">
+                      Deliverables:
                     </span>
-                    <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <ul className="space-y-2">
                       {engine.howItGetsYouCustomers.map((feat, idx) => (
-                        <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-                          <CheckCircle2 style={{ width: 14, height: 14, color: engine.accentColor, flexShrink: 0, marginTop: 2 }} />
+                        <li key={idx} className="flex items-start gap-2 text-xs text-[#c9c4bc] font-light leading-relaxed">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37] shrink-0 mt-0.5" />
                           <span>{feat}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  {/* SAMPLE WHATSAPP PROOF */}
-                  <div style={{ background: 'rgba(2,6,23,0.7)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '10px 14px', marginBottom: 18 }}>
-                    <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: 4 }}>
-                      Live WhatsApp Customer Experience:
+                  {/* Sample WhatsApp Proof */}
+                  <div className="bg-[#0a0e17] border border-white/[0.06] rounded-xl p-3">
+                    <span className="text-[10px] font-medium text-[#c9c4bc]/70 block mb-1">
+                      Live Customer Interaction:
                     </span>
-                    <p style={{ margin: 0, fontSize: '0.78rem', color: '#94a3b8', fontStyle: 'italic', lineHeight: 1.45 }}>
+                    <p className="text-xs text-[#c9c4bc] italic font-serif font-light leading-relaxed">
                       {engine.sampleWhatsAppProof}
                     </p>
                   </div>
+                </div>
 
-                  {/* PRICING ROW */}
-                  <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: '12px 16px', marginBottom: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {/* Bottom Section */}
+                <div className="space-y-4 pt-4 border-t border-white/[0.06]">
+                  {/* Pricing Display */}
+                  <div className="flex justify-between items-baseline p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
                     <div>
-                      <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block' }}>
-                        {deliveryMode === 'turnkey' ? 'DFY Turnkey Setup:' : '1-Line Embed Setup:'}
+                      <span className="text-[10px] text-[#c9c4bc]/70 block">
+                        {deliveryMode === 'turnkey' ? 'Turnkey Activation:' : '1-Line Embed:'}
                       </span>
-                      <span style={{ fontSize: '1.05rem', fontWeight: 900, color: '#f8fafc' }}>
+                      <span className="text-sm font-semibold text-[#f5f3ef] font-mono">
                         {deliveryMode === 'turnkey' ? engine.turnkeyFeeNGN : engine.embedFeeNGN}
                       </span>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block' }}>Monthly Retainer:</span>
-                      <span style={{ fontSize: '0.88rem', fontWeight: 700, color: engine.accentColor }}>
+                    <div className="text-right">
+                      <span className="text-[10px] text-[#c9c4bc]/70 block">Retainer:</span>
+                      <span className="text-xs font-semibold text-[#c5a880] font-mono">
                         {engine.retainerNGN}
                       </span>
                     </div>
                   </div>
 
-                  {/* BUTTONS */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {/* CTAs */}
+                  <div className="space-y-2">
                     <a
                       href={waUrl}
                       target="_blank"
                       rel="noreferrer"
-                      style={{
-                        padding: '11px 16px',
-                        borderRadius: 12,
-                        background: '#10b981',
-                        color: '#022c22',
-                        fontWeight: 800,
-                        fontSize: '0.85rem',
-                        textAlign: 'center',
-                        textDecoration: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 8,
-                        boxShadow: '0 4px 14px rgba(16,185,129,0.3)'
-                      }}
+                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#070b14] font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
                     >
-                      <PhoneCall style={{ width: 15, height: 15 }} />
-                      <span>Deploy to Get More Customers</span>
+                      <PhoneCall className="w-3.5 h-3.5" />
+                      <span>Deploy Engine for Your Business</span>
                     </a>
 
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div className="flex gap-2">
                       <Link
                         href={engine.demoUrl}
-                        style={{
-                          flex: 1,
-                          padding: '8px 12px',
-                          borderRadius: 10,
-                          background: 'rgba(255,255,255,0.04)',
-                          border: '1px solid rgba(255,255,255,0.08)',
-                          color: '#cbd5e1',
-                          fontWeight: 600,
-                          fontSize: '0.78rem',
-                          textAlign: 'center',
-                          textDecoration: 'none',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 6
-                        }}
+                        className="flex-1 py-2 px-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] text-[#c9c4bc] hover:text-[#f5f3ef] border border-white/[0.08] text-xs font-medium text-center flex items-center justify-center gap-1.5 transition-all"
                       >
-                        <ExternalLink style={{ width: 13, height: 13 }} />
-                        <span>View Interactive Demo</span>
+                        <ExternalLink className="w-3 h-3 text-[#d4af37]" />
+                        <span>View Demo</span>
                       </Link>
 
                       <button
                         onClick={() => copyEmbedSnippet(engine.id)}
-                        style={{
-                          flex: 1,
-                          padding: '8px 12px',
-                          borderRadius: 10,
-                          background: 'rgba(59,130,246,0.08)',
-                          border: '1px solid rgba(59,130,246,0.25)',
-                          color: '#60a5fa',
-                          fontWeight: 600,
-                          fontSize: '0.78rem',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 6
-                        }}
+                        className="flex-1 py-2 px-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] text-[#c9c4bc] hover:text-[#f5f3ef] border border-white/[0.08] text-xs font-medium text-center flex items-center justify-center gap-1.5 transition-all"
                       >
-                        {copiedId === engine.id ? <Check style={{ width: 13, height: 13 }} /> : <Code2 style={{ width: 13, height: 13 }} />}
-                        <span>{copiedId === engine.id ? 'Copied!' : '1-Line Embed'}</span>
+                        {copiedId === engine.id ? (
+                          <Check className="w-3 h-3 text-emerald-400" />
+                        ) : (
+                          <Code2 className="w-3 h-3 text-[#d4af37]" />
+                        )}
+                        <span>{copiedId === engine.id ? 'Copied' : '1-Line Embed'}</span>
                       </button>
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </section>
+              </div>
+            );
+          })}
+        </div>
 
         {/* SETTLEMENT ASSURANCE */}
-        <section style={{ maxWidth: 1200, margin: '64px auto 0', padding: '0 20px' }}>
-          <div style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(59,130,246,0.08) 100%)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 24, padding: '36px 32px', display: 'flex', flexDirection: 'column', md: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-            <div style={{ maxWidth: 680 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(16,185,129,0.15)', borderRadius: 100, padding: '4px 12px', marginBottom: 12 }}>
-                <ShieldCheck style={{ width: 14, height: 14, color: '#10b981' }} />
-                <span style={{ fontSize: '0.76rem', color: '#10b981', fontWeight: 700 }}>50% Milestone Deposit • 48h Delivery Guarantee</span>
-              </div>
-              <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#f8fafc', margin: '0 0 10px', fontFamily: "'Outfit', sans-serif" }}>
-                Zero Risk Commercial Onboarding for Nigerian Business Owners
-              </h3>
-              <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
-                You test your custom customer-acquisition system on your own phone and laptop before paying the remaining balance. Direct Nigerian bank settlement processed straight via <strong>Moniepoint Microfinance Bank</strong> (Acc: <code>6805375225</code> — Bethelmind Digital Solutions).
-              </p>
+        <div className="max-w-4xl mx-auto rounded-3xl bg-[#090d16]/90 border border-white/[0.08] p-6 sm:p-10 shadow-xl backdrop-blur-md flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="space-y-2 max-w-xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/20 text-[#d4af37] text-xs font-semibold uppercase tracking-widest">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#d4af37]" />
+              <span>50% Milestone Deposit &bull; 48-Hour SLA</span>
             </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', sm: 'row', gap: 10, flexShrink: 0 }}>
-              <a
-                href="https://wa.me/2348022791227?text=Hello%20Bethelmind%20Digital%20Solutions%2C%20I%20want%20to%20deploy%20a%20customer%20acquisition%20system%20for%20my%20business."
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  padding: '14px 24px',
-                  borderRadius: 14,
-                  background: '#10b981',
-                  color: '#022c22',
-                  fontWeight: 900,
-                  fontSize: '0.95rem',
-                  textAlign: 'center',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  boxShadow: '0 6px 20px rgba(16,185,129,0.35)',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                <span>💬 WhatsApp Closer Desk</span>
-              </a>
-
-              <a
-                href="tel:+2348022791227"
-                style={{
-                  padding: '14px 20px',
-                  borderRadius: 14,
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.18)',
-                  color: '#f8fafc',
-                  fontWeight: 800,
-                  fontSize: '0.95rem',
-                  textAlign: 'center',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                <PhoneCall style={{ width: 16, height: 16, color: '#34d399' }} />
-                <span>Call (0802 279 1227)</span>
-              </a>
-            </div>
+            <h3 className="font-serif text-xl sm:text-2xl font-normal text-[#f5f3ef]">
+              Commercial Settlement &amp; Verification Guarantee
+            </h3>
+            <p className="text-xs text-[#c9c4bc] font-light leading-relaxed">
+              Test your bespoke system on your own phone and laptop before settling the remaining milestone balance. Direct Nigerian bank settlement routed to Moniepoint Microfinance Bank (Account: <code className="text-[#d4af37] font-mono">6805375225</code> &ndash; Bethelmind Digital Solutions, CAC RC 7034297).
+            </p>
           </div>
-        </section>
+
+          <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full md:w-auto">
+            <a
+              href="https://wa.me/2348022791227?text=Hello%20Bethelmind%20Digital%20Solutions%2C%20I%20want%20to%20deploy%20a%20customer%20acquisition%20system%20for%20my%20business."
+              target="_blank"
+              rel="noreferrer"
+              className="py-3 px-6 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#070b14] font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 whitespace-nowrap"
+            >
+              <span>WhatsApp Advisory Desk</span>
+            </a>
+
+            <a
+              href="tel:+2348022791227"
+              className="py-3 px-6 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] text-[#f5f3ef] border border-white/[0.08] text-xs font-medium flex items-center justify-center gap-2 transition-all whitespace-nowrap"
+            >
+              <PhoneCall className="w-3.5 h-3.5 text-[#d4af37]" />
+              <span>Call (0802 279 1227)</span>
+            </a>
+          </div>
+        </div>
+
       </main>
 
       <Footer />

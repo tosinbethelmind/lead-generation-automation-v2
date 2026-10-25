@@ -2,20 +2,20 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Users, Briefcase, Sparkles, ShieldCheck } from 'lucide-react';
+import { Users, Briefcase, Sparkles, Sliders, ShieldCheck } from 'lucide-react';
 
 export function WebappToolActionBar({ currentTool }: { currentTool?: string }) {
   return (
     <div
       style={{
         width: '100%',
-        background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(9, 13, 26, 0.95) 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 13, 25, 0.98) 100%)',
+        border: '1px solid rgba(212, 175, 55, 0.25)',
         borderRadius: 20,
         padding: '16px 22px',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        boxShadow: '0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         marginBottom: 24,
         display: 'flex',
         flexWrap: 'wrap',
@@ -31,18 +31,16 @@ export function WebappToolActionBar({ currentTool }: { currentTool?: string }) {
             width: 40,
             height: 40,
             borderRadius: 12,
-            background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
-            border: '1px solid rgba(6, 182, 212, 0.4)',
+            background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%)',
+            border: '1px solid rgba(212, 175, 55, 0.35)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#38bdf8',
-            fontWeight: 900,
-            fontSize: '1.1rem',
-            boxShadow: '0 4px 14px rgba(6, 182, 212, 0.25)',
+            color: '#d4af37',
+            boxShadow: '0 4px 14px rgba(212, 175, 55, 0.15)',
           }}
         >
-          ⚡
+          <Sliders style={{ width: 18, height: 18, color: '#d4af37' }} />
         </div>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -53,9 +51,9 @@ export function WebappToolActionBar({ currentTool }: { currentTool?: string }) {
               <span
                 style={{
                   padding: '3px 12px',
-                  background: 'rgba(6, 182, 212, 0.15)',
-                  color: '#38bdf8',
-                  border: '1px solid rgba(6, 182, 212, 0.35)',
+                  background: 'rgba(212, 175, 55, 0.12)',
+                  color: '#d4af37',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
                   borderRadius: 100,
                   fontSize: '0.72rem',
                   fontWeight: 800,
@@ -120,8 +118,8 @@ export function WebappToolActionBar({ currentTool }: { currentTool?: string }) {
           href="/recruitment"
           style={{
             padding: '9px 16px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            color: '#38bdf8',
+            background: 'rgba(212, 175, 55, 0.08)',
+            color: '#d4af37',
             fontWeight: 800,
             borderRadius: 12,
             fontSize: '0.8rem',
@@ -129,10 +127,10 @@ export function WebappToolActionBar({ currentTool }: { currentTool?: string }) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 7,
-            border: '1px solid rgba(56, 189, 248, 0.3)',
+            border: '1px solid rgba(212, 175, 55, 0.3)',
           }}
         >
-          <Sparkles style={{ width: 14, height: 14, color: '#38bdf8' }} />
+          <Sparkles style={{ width: 14, height: 14, color: '#d4af37' }} />
           <span>Recruitment Engine</span>
         </Link>
       </div>

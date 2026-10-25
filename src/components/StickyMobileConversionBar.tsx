@@ -43,10 +43,8 @@ export default function StickyMobileConversionBar({
     ? window.location.href 
     : `https://www.bethelmindanalytics.com/preview/${businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
-  const offerText = isExistingWeb ? '1-Line WhatsApp Embed Upgrade' : 'Turnkey Business Website + 24/7 AI Assistant';
-
   const prefilledMessage = encodeURIComponent(
-    `Hello Bethelmind Digital Solutions! I just viewed the live website prototype for *${businessName}* (${category}) in ${area}.\n\nDemo Link: ${previewLink}\n\nPlease help me lock in our 6-Month Independence Bundle (₦75k Total · ₦35k Deposit today, balance after live approval).`
+    `Hello Bethelmind Digital Solutions! I just viewed the live website prototype for *${businessName}* (${category}) in ${area}.\n\nDemo Link: ${previewLink}\n\nPlease help me lock in our Turnkey Business Suite (₦35,000 Starter Deposit today, balance after live approval).`
   );
   const waUrl = `https://wa.me/${adminPhone}?text=${prefilledMessage}`;
 
@@ -63,7 +61,7 @@ export default function StickyMobileConversionBar({
         background: 'rgba(7, 11, 20, 0.96)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderTop: '1px solid rgba(16, 185, 129, 0.35)',
+        borderTop: '1px solid rgba(212, 175, 55, 0.3)',
         boxShadow: '0 -10px 30px rgba(0, 0, 0, 0.7)',
         boxSizing: 'border-box'
       }}
@@ -103,10 +101,10 @@ export default function StickyMobileConversionBar({
             <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 6px #ffffff', flexShrink: 0 }}></span>
             <div style={{ textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.95, display: 'block', fontWeight: 800, color: '#fef08a' }}>
-                🇳🇬 Direct SME Rate (₦65k) · Start With ₦35k Deposit
+                Starter Activation (₦35k Deposit) &bull; Live in 48 Hours
               </span>
               <span style={{ fontSize: '0.85rem', fontWeight: 800, display: 'block', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                🟢 Claim Starter Package on WhatsApp →
+                Chat on WhatsApp →
               </span>
             </div>
           </div>
@@ -124,8 +122,8 @@ export default function StickyMobileConversionBar({
             padding: '10px 12px',
             borderRadius: '12px',
             background: '#0f172a',
-            border: '1px solid rgba(16, 185, 129, 0.35)',
-            color: '#34d399',
+            border: '1px solid rgba(212, 175, 55, 0.3)',
+            color: '#d4af37',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -144,8 +142,8 @@ export default function StickyMobileConversionBar({
             padding: '10px',
             borderRadius: '12px',
             background: '#0f172a',
-            border: '1px solid rgba(16, 185, 129, 0.35)',
-            color: '#34d399',
+            border: '1px solid rgba(212, 175, 55, 0.3)',
+            color: '#d4af37',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -203,4 +201,3 @@ export default function StickyMobileConversionBar({
     </aside>
   );
 }
-

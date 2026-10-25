@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MessageCircle, Copy, Check, Share2, Globe, Flame } from 'lucide-react';
+import Link from 'next/link';
+import { MessageCircle, Copy, Check, Share2, Globe, Flame, ShieldCheck, Scale, FileText } from 'lucide-react';
 
 export interface ViralShareProps {
   toolTitle: string;
@@ -9,6 +10,7 @@ export interface ViralShareProps {
   summaryText: string;
   highlights?: { label: string; value: string }[];
   category?: string;
+  hideDisclaimer?: boolean;
 }
 
 export const ViralToolShareBar: React.FC<ViralShareProps> = ({
@@ -17,6 +19,7 @@ export const ViralToolShareBar: React.FC<ViralShareProps> = ({
   summaryText,
   highlights = [],
   category = 'Commercial Tools',
+  hideDisclaimer = false,
 }) => {
   const [copiedNairaland, setCopiedNairaland] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
@@ -31,9 +34,9 @@ export const ViralToolShareBar: React.FC<ViralShareProps> = ({
     : `• ${summaryText}`;
 
   const whatsAppShareUrl = `https://wa.me/?text=${encodeURIComponent(
-    `⚡ *${toolTitle} — 2026 Nigerian Cost & ROI Breakdown*\n\n` +
+    `*${toolTitle} — 2026 Nigerian Cost & ROI Breakdown*\n\n` +
     `${waHighlights}\n\n` +
-    `👉 Run your own exact property or business calculation free on your phone:\n` +
+    `Test your own exact property or business calculation free on your phone:\n` +
     `${toolUrl}\n\n` +
     `_Verified by Bethelmind Digital Solutions (CAC Certified RC 7034297)_`
   )}`;
@@ -43,15 +46,15 @@ export const ViralToolShareBar: React.FC<ViralShareProps> = ({
     ? highlights.map(h => `[b]• ${h.label}:[/b] ${h.value}`).join('\n')
     : `[b]• Result:[/b] ${summaryText}`;
 
-  const nairalandBBCode = `[b]⚡ ${toolTitle} — 2026 Cost & Tariff Breakdown (Nigeria)[/b]
+  const nairalandBBCode = `[b]${toolTitle} — 2026 Cost & Tariff Breakdown (Nigeria)[/b]
 
 [quote]
 ${nairalandBullets}
 [/quote]
 
-Fellow Nairalanders, instead of guessing or arguing with contractors/agents, you can run your exact property numbers or vehicle VIN on this live calculator in 30 seconds:
+Instead of guessing or arguing with contractors/agents, you can run your exact property numbers or vehicle VIN on this live calculator in 30 seconds:
 
-[url=${toolUrl}][b]👉 Click Here to Test the Free ${toolTitle} (No Login Required)[/b][/url]
+[url=${toolUrl}][b]Click Here to Test the Free ${toolTitle} (No Login Required)[/b][/url]
 
 [i]Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
 
@@ -77,11 +80,11 @@ Fellow Nairalanders, instead of guessing or arguing with contractors/agents, you
   return (
     <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-        <div className="flex items-center gap-1.5 text-amber-400 font-bold">
-          <Flame className="w-3.5 h-3.5 animate-pulse" />
-          <span>Viral Traffic & Forum Distribution Engine:</span>
+        <div className="flex items-center gap-1.5 text-[#d4af37] font-bold">
+          <Flame className="w-3.5 h-3.5" />
+          <span>Distribution & Verification Suite:</span>
         </div>
-        <span className="text-[11px] text-slate-400">1-Tap distribution to WhatsApp groups & Nairaland</span>
+        <span className="text-[11px] text-slate-400">1-Tap export to WhatsApp groups, client proposals & forums</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
@@ -90,7 +93,7 @@ Fellow Nairalanders, instead of guessing or arguing with contractors/agents, you
           href={whatsAppShareUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-black text-slate-950 bg-emerald-500 hover:bg-emerald-400 transition-all shadow-md shadow-emerald-500/20 active:scale-95"
+          className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-emerald-500 hover:bg-emerald-400 transition-all shadow-md shadow-emerald-500/20 active:scale-95"
         >
           <MessageCircle className="w-4 h-4 fill-current" />
           <span>Share to WhatsApp →</span>
@@ -104,7 +107,7 @@ Fellow Nairalanders, instead of guessing or arguing with contractors/agents, you
           title="Copies BBCode formatted for Nairaland Auto, Properties, or Investment sections"
         >
           {copiedNairaland ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4 text-emerald-400" />}
-          <span>{copiedNairaland ? 'Nairaland BBCode Copied! ✓' : '🇳🇬 Copy Nairaland Post'}</span>
+          <span>{copiedNairaland ? 'Nairaland BBCode Copied' : 'Copy Nairaland Post'}</span>
         </button>
 
         {/* 3. Copy Summary Receipt */}
@@ -113,20 +116,56 @@ Fellow Nairalanders, instead of guessing or arguing with contractors/agents, you
           onClick={copyCleanSummary}
           className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-white/10 transition-all active:scale-95"
         >
-          {copiedText ? <Check className="w-4 h-4 text-cyan-400" /> : <Copy className="w-4 h-4 text-slate-400" />}
-          <span>{copiedText ? 'Receipt Copied! ✓' : '📋 Copy Summary'}</span>
+          {copiedText ? <Check className="w-4 h-4 text-[#d4af37]" /> : <Copy className="w-4 h-4 text-slate-400" />}
+          <span>{copiedText ? 'Summary Copied' : 'Copy Summary'}</span>
         </button>
 
         {/* 4. Copy Direct Tool Link */}
         <button
           type="button"
           onClick={copyDirectLink}
-          className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-cyan-300 bg-cyan-950/50 hover:bg-cyan-900/70 border border-cyan-500/30 transition-all active:scale-95"
+          className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#d4af37] bg-slate-900 hover:bg-slate-800 border border-[#d4af37]/30 transition-all active:scale-95"
         >
-          {copiedLink ? <Check className="w-4 h-4 text-cyan-400" /> : <Globe className="w-4 h-4 text-cyan-400" />}
-          <span>{copiedLink ? 'Link Copied! ✓' : '🔗 Copy Tool URL'}</span>
+          {copiedLink ? <Check className="w-4 h-4 text-[#d4af37]" /> : <Globe className="w-4 h-4 text-[#d4af37]" />}
+          <span>{copiedLink ? 'Link Copied' : 'Copy Direct URL'}</span>
         </button>
       </div>
+
+      {/* Statutory Disclaimer & Legal Liability Notice */}
+      {!hideDisclaimer && (
+        <aside aria-label="Statutory Disclaimer" className="mt-3.5 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] leading-relaxed text-slate-400 space-y-1.5">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-1.5 text-slate-300 font-semibold">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#d4af37]" />
+              <span className="uppercase tracking-wider text-[10px] text-[#d4af37] font-bold">
+                Statutory Notice & Algorithmic Approximation Disclaimer
+              </span>
+            </div>
+            <span className="text-[10px] text-slate-500 font-mono">RC 7034297</span>
+          </div>
+          <p>
+            Calculations generated by this tool are automated algorithmic approximations for preliminary budgeting and operational planning only. Bethelmind Digital Solutions provides enterprise software, quotation engines, and customer communication automation; we do not provide certified COREN engineering blueprints, statutory customs clearance assessments, licensed legal title opinions, medical diagnosis, or chartered tax advice. Final binding contracts, tariff settlements, and structural blueprints require verified on-site professional consultation.
+          </p>
+          <div className="flex items-center gap-3 pt-1 text-[10px] text-slate-400 flex-wrap border-t border-slate-800/80">
+            <span className="font-semibold text-slate-300">Governed by:</span>
+            <Link href="/legal/disclaimer" className="text-[#d4af37] hover:underline" target="_blank">
+              Sector Tools Disclaimer
+            </Link>
+            <span>·</span>
+            <Link href="/legal/terms" className="text-[#d4af37] hover:underline" target="_blank">
+              Terms of Service
+            </Link>
+            <span>·</span>
+            <Link href="/legal/privacy" className="text-[#d4af37] hover:underline" target="_blank">
+              Privacy Policy
+            </Link>
+            <span>·</span>
+            <Link href="/legal/delivery" className="text-[#d4af37] hover:underline" target="_blank">
+              Delivery & Handover SLA
+            </Link>
+          </div>
+        </aside>
+      )}
     </div>
   );
 };

@@ -192,6 +192,56 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: '/privacy',
+        destination: '/legal/privacy',
+        permanent: true,
+      },
+      {
+        source: '/terms',
+        destination: '/legal/terms',
+        permanent: true,
+      },
+      {
+        source: '/tos',
+        destination: '/legal/terms',
+        permanent: true,
+      },
+      {
+        source: '/refund',
+        destination: '/legal/refund',
+        permanent: true,
+      },
+      {
+        source: '/refund-policy',
+        destination: '/legal/refund',
+        permanent: true,
+      },
+      {
+        source: '/disclaimer',
+        destination: '/legal/disclaimer',
+        permanent: true,
+      },
+      {
+        source: '/delivery',
+        destination: '/legal/delivery',
+        permanent: true,
+      },
+      {
+        source: '/sla',
+        destination: '/legal/delivery',
+        permanent: true,
+      },
+      {
+        source: '/cookies',
+        destination: '/legal/cookies',
+        permanent: true,
+      },
+      {
+        source: '/legal',
+        destination: '/legal/terms',
+        permanent: true,
+      },
+      {
         source: '/assets/apexreach-demo.webm',
         destination: '/walkthrough',
         permanent: false,

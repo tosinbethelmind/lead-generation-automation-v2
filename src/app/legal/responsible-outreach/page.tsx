@@ -1,91 +1,79 @@
 /**
  * @file src/app/legal/responsible-outreach/page.tsx
+ * Responsible Outreach & Data Policy
+ * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, RC 7034297)
  */
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { ShieldCheck, Send, CheckCircle2 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Responsible Outreach & Data Policy | Bethelmind Digital Solutions',
-  description: 'Bethelmind Digital Solutions policy on responsible outreach, consent, data use, and AI agent conduct.',
+  title: 'Responsible Outreach & Consent Policy | Bethelmind Digital Solutions',
+  description: 'Standards for lawful B2B communication, opt-out protocols, NCC anti-spam rules, and NDPA compliance.',
 };
 
 export default function ResponsibleOutreachPage() {
   return (
     <div className="legal-content">
-      <p style={{ color: '#f59e0b', fontSize: '0.78rem', fontWeight: 700, background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 10, padding: '10px 14px', marginBottom: 28 }}>
-        ⚠ Template — review with a qualified Nigerian legal professional before production use.
-      </p>
+      {/* Header Badge */}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 999, background: 'rgba(6, 182, 212, 0.1)', border: '1px solid rgba(6, 182, 212, 0.25)', color: '#38bdf8', fontSize: '0.75rem', fontWeight: 700, marginBottom: 20 }}>
+        <Send style={{ width: 14, height: 14 }} />
+        <span>Ethical B2B Outreach &amp; Consumer Consent Framework</span>
+      </div>
 
-      <h1 style={{ fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', fontWeight: 900, fontFamily: "'Outfit', sans-serif", color: '#f8fafc', margin: '0 0 6px' }}>
-        Responsible Outreach & Data Policy
+      <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.4rem)', fontWeight: 900, fontFamily: "'Outfit', sans-serif", color: '#ffffff', margin: '0 0 10px', lineHeight: 1.2 }}>
+        Responsible Outreach &amp; Consent Policy
       </h1>
-      <p style={{ color: '#64748b', fontSize: '0.82rem', marginBottom: 32 }}>Last updated: August 2026</p>
-
-      <h2>1. Our Commitment</h2>
-      <p>
-        Bethelmind Digital Solutions & Strategy is committed to responsible, respectful, and lawful business communication. This policy sets out our expectations for how clients use our services for outreach, and how we handle business data.
+      <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: 28, lineHeight: 1.6 }}>
+        <strong>Entity:</strong> Bethelmind Digital Solutions (CAC Certified Enterprise · RC 7034297 · Lagos, Nigeria)<br />
+        <strong>Effective Date:</strong> Q4 2026
       </p>
 
-      <h2>2. Your Responsibility for Outreach Lawfulness</h2>
+      <h2>1. Commitment to Ethical Business Communication</h2>
       <p>
-        You, as the business owner or operator, are solely responsible for ensuring that any outreach you conduct using our workflow tools has a lawful basis. This includes:
+        Bethelmind Digital Solutions adheres to strict ethical standards governing commercial communications. We believe automated technology should foster genuine commercial value, transparency, and trust—not nuisance messaging.
       </p>
-      <ul>
-        <li>Ensuring you have obtained valid consent where required by law or platform policy before sending marketing messages.</li>
-        <li>Maintaining and honouring opt-out or unsubscribe requests promptly.</li>
-        <li>Complying with the Nigeria Data Protection Regulation (NDPR) and any other applicable data protection obligations.</li>
-        <li>Complying with WhatsApp&apos;s Business Policy and Meta&apos;s platform rules at all times.</li>
-        <li>Complying with all other applicable Nigerian consumer protection and communications laws.</li>
-      </ul>
-
-      <h2>3. Prohibited Outreach Conduct</h2>
-      <p>You must not use our tools to conduct outreach that involves:</p>
-      <ul>
-        <li>Spam — unsolicited bulk messaging to individuals who have not consented.</li>
-        <li>Deception or misrepresentation — false or misleading claims about your products, prices, identity, or business.</li>
-        <li>Impersonation of another person, company, or authority.</li>
-        <li>Harassment or persistent contact with individuals who have asked not to be contacted.</li>
-        <li>Collection or use of personal data without a valid legal basis.</li>
-        <li>Any outreach that is abusive, threatening, discriminatory, or unlawful.</li>
-      </ul>
-
-      <h2>4. Lead Data Sources and Validation</h2>
       <p>
-        Where you use contact lists or lead data with our workflows, you are responsible for:
+        This Policy establishes the standards of conduct required for all outbound communications, lead engagement, and customer messaging utilizing our software tools.
+      </p>
+
+      <h2>2. Statutory Compliance (NCC &amp; NDPA 2023)</h2>
+      <p>
+        All communications conducted via Bethelmind workflows must comply with:
       </p>
       <ul>
-        <li>Knowing the source and provenance of your contact data.</li>
-        <li>Understanding the freshness and accuracy of your data.</li>
-        <li>Ensuring the contacts on your list have a reasonable expectation of being contacted by your type of business.</li>
-        <li>Removing or updating contacts who have opted out, been unreachable, or whose data is outdated.</li>
+        <li>The <strong>Nigerian Communications Commission (NCC) Regulations</strong> on Value Added Services (VAS) and commercial messaging;</li>
+        <li>The <strong>Nigeria Data Protection Act 2023 (NDPA)</strong> governing lawful processing of commercial contacts;</li>
+        <li>The <strong>Federal Competition and Consumer Protection Act (FCCPA 2018)</strong> prohibiting false or misleading advertising; and</li>
+        <li><strong>Meta&apos;s WhatsApp Business Messaging Policies</strong> and Commerce Policies.</li>
       </ul>
-      <p>
-        We do not independently verify the legality or quality of contact lists you use. Using inaccurate, stale, or unlawfully obtained data is your responsibility and risk.
-      </p>
 
-      <h2>5. AI Agent Conduct and Human Handoff</h2>
+      <h2>3. Core Outreach Rules</h2>
+      <p>Every commercial message dispatched using our systems must satisfy the following criteria:</p>
+      <ul>
+        <li><strong>Clear Commercial Identity:</strong> Messages must transparently identify the sending business name and registered entity. Deceptive headers or disguised identities are strictly prohibited.</li>
+        <li><strong>Genuine Value Proposition:</strong> Outreach must pertain directly to the recipient&apos;s legitimate commercial sector or business operations.</li>
+        <li><strong>Instant Opt-Out Mechanism:</strong> Every message must include an explicit, frictionless path for the recipient to opt out (e.g., &ldquo;Reply STOP to opt out&rdquo; or single-tap unsubscribe).</li>
+        <li><strong>Immediate Opt-Out Processing:</strong> Opt-out requests must be honored immediately. The recipient&apos;s phone number or email must be permanently excluded from future marketing dispatches.</li>
+        <li><strong>Bandwidth &amp; Time Sensitivity:</strong> Cold messaging must occur strictly during reasonable Nigerian business hours (08:30 AM to 06:00 PM West Africa Time, Monday through Friday). Late-night or weekend broadcasting is strictly prohibited.</li>
+      </ul>
+
+      <h2>4. Zero-Spam Guarantee &amp; Lead Integrity</h2>
       <p>
-        Our AI-assisted workflow tools are designed to support your team — not to replace human judgment in sensitive situations. We require that:
+        Bethelmind strictly prohibits:
       </p>
       <ul>
-        <li>Your workflow includes a clear and accessible path for contacts to reach a human team member.</li>
-        <li>AI-generated responses do not make false promises, guarantee outcomes, or misrepresent your business.</li>
-        <li>Sensitive, complex, high-value, or emotionally significant conversations are handled by a human member of your team.</li>
-        <li>Contacts can be informed, upon request, that they are interacting with an automated workflow.</li>
+        <li>Purchased third-party bulk phone number lists;</li>
+        <li>Sequential phone number generators or broadcast storms; and</li>
+        <li>Misleading hooks, fake delivery alerts, or fabricated invoices.</li>
       </ul>
 
-      <h2>6. Data Access, Correction, and Deletion Requests</h2>
+      <h2>5. Opt-Out &amp; Contact Inquiries</h2>
       <p>
-        Individuals whose data you process through our tools may have rights under the NDPR or other applicable law to request access to, correction of, or deletion of their data. You are responsible for honouring these requests. You may also contact us via WhatsApp or email if you wish to review, correct, or delete data you have shared with us during onboarding.
+        If you received a communication from a Bethelmind workflow and wish to be permanently removed from all future contact lists:
       </p>
-
-      <h2>7. Reporting Concerns</h2>
       <p>
-        If you believe our tools are being misused, or if you have a concern about outreach you have received that you believe originated from a Bethelmind Digital Solutions workflow, please contact us via WhatsApp or email and we will investigate.
-      </p>
-
-      <h2>8. Changes to This Policy</h2>
-      <p>
-        We may update this policy from time to time. Continued use of our services after changes are published constitutes acceptance of the updated policy.
+        Simply reply &ldquo;STOP&rdquo; on WhatsApp, or send your phone number/email to our Compliance Desk at <code>compliance@bethelmindanalytics.com</code> or WhatsApp <code>+234 802 279 1227</code>. You will be permanently added to our master global suppression register within 2 hours.
       </p>
     </div>
   );

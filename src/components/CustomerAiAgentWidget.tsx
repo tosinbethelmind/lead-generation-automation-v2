@@ -91,8 +91,8 @@ export default function CustomerAiAgentWidget({
     const welcomeGreeting = leadData
       ? `👋 Hello, **${leadData.name}**! 🌟 Your profile is verified in **${leadData.area || leadData.city || 'Lagos'}**. I have already pre-configured this 24/7 AI Lead & Quoting portal specifically for **${leadData.name}**! 🚀 How can I assist you with your instant quote or system setup today?`
       : businessName
-      ? `👋 Welcome to ${businessName}! I am your 24/7 AI Business Guide & Virtual Assistant. How can I assist you with our services, instant quotes, or custom domain setup today?`
-      : `👋 Hello! Welcome to Bethelmind Digital Solutions & Strategy. I am your 24/7 AI Guide & Sales Assistant. How can I help you explore our services, test our sector tools (Solar, Real Estate, Auto, Legal), or view pricing packages today?`;
+      ? `Welcome to ${businessName}. I am your 24/7 Client Advisory Assistant. How may I assist you with your quotation, service bookings, or inquiries today?`
+      : `Welcome to Bethelmind Digital Solutions. I am your 24/7 Private Client Concierge. How may I assist you with your instant sector quote, custom domain setup, or enterprise onboarding today?`;
 
     // Restore conversation memory from localStorage ONLY if it matches the current lead
     const savedChat = typeof window !== 'undefined' ? localStorage.getItem(historyKey) : null;
@@ -258,31 +258,7 @@ export default function CustomerAiAgentWidget({
       {/* Floating Trigger Button & Non-Intrusive Nudge */}
       {!isOpen && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-          {hasExitNudge && (
-            <div
-              onClick={() => setIsOpen(true)}
-              style={{
-                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-                border: '1px solid #10b981',
-                borderRadius: '14px',
-                padding: '8px 14px',
-                color: '#fff',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                cursor: 'pointer',
-                pointerEvents: 'auto',
-                animation: 'slideUp 0.3s ease-out',
-                maxWidth: '280px'
-              }}
-            >
-              <span style={{ fontSize: '1rem' }}>⚡</span>
-              <span style={{ color: '#6ee7b7' }}>Special 50% deposit option available for {businessName || 'you'}!</span>
-            </div>
-          )}
+          {/* Exit nudge suppressed for refined luxury UX */}
           <button
             onClick={() => setIsOpen(true)}
             className="ai-widget-trigger"
@@ -293,8 +269,8 @@ export default function CustomerAiAgentWidget({
               <span className="trigger-pulse"></span>
             </div>
             <div className="trigger-text">
-              <span className="trigger-title">{businessName ? `Chat with ${businessName}` : 'Chat with AI Concierge'}</span>
-              <span className="trigger-sub">24/7 Intelligent Assistant</span>
+              <span className="trigger-title font-serif">{businessName ? `Desk • ${businessName}` : 'Private Client Concierge'}</span>
+              <span className="trigger-sub text-[11px] text-[#c5a880]">Lagos Advisory Desk • 24/7</span>
             </div>
           </button>
         </div>
@@ -472,20 +448,21 @@ export default function CustomerAiAgentWidget({
         .ai-widget-trigger {
           display: flex;
           align-items: center;
-          gap: 12px;
-          background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-          color: #ffffff;
-          padding: 12px 20px;
+          gap: 10px;
+          background: #0a0e17;
+          color: #f5f3ef;
+          padding: 10px 16px;
           border-radius: 50px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          box-shadow: 0 10px 30px rgba(6, 182, 212, 0.4);
+          border: 1px solid rgba(212, 175, 55, 0.4);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.1);
           cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .ai-widget-trigger:hover {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 14px 40px rgba(6, 182, 212, 0.6);
+          transform: translateY(-2px);
+          border-color: rgba(212, 175, 55, 0.7);
+          box-shadow: 0 14px 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(212, 175, 55, 0.2);
         }
 
         .trigger-icon-wrap {
@@ -493,8 +470,10 @@ export default function CustomerAiAgentWidget({
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(255, 255, 255, 0.2);
-          padding: 8px;
+          background: rgba(212, 175, 55, 0.12);
+          border: 1px solid rgba(212, 175, 55, 0.25);
+          color: #d4af37;
+          padding: 7px;
           border-radius: 50%;
         }
 
@@ -561,11 +540,11 @@ export default function CustomerAiAgentWidget({
           max-width: calc(100vw - 32px);
           height: 540px;
           max-height: calc(100vh - 100px);
-          background: rgba(11, 17, 32, 0.95);
-          backdrop-filter: blur(16px);
-          border: 1px solid rgba(6, 182, 212, 0.3);
-          border-radius: 16px;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+          background: #080c16;
+          backdrop-filter: blur(24px);
+          border: 1px solid rgba(212, 175, 55, 0.35);
+          border-radius: 20px;
+          box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 25px rgba(212, 175, 55, 0.08);
           display: flex;
           flex-direction: column;
           overflow: hidden;
@@ -582,7 +561,7 @@ export default function CustomerAiAgentWidget({
           align-items: center;
           justify-content: space-between;
           padding: 14px 16px;
-          background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
+          background: #0a0e17; border-bottom: 1px solid rgba(212, 175, 55, 0.2);
           border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
@@ -709,9 +688,9 @@ export default function CustomerAiAgentWidget({
         }
 
         .user-msg .bubble-content {
-          background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
-          border: none;
-          color: #ffffff;
+          background: #141c2c;
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          color: #f5f3ef;
         }
 
         .typing-bubble {

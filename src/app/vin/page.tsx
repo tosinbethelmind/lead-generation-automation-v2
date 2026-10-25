@@ -29,9 +29,9 @@ export const metadata: Metadata = {
 
 export default function VinPage() {
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between">
+    <main className="min-h-screen bg-[#070b14] text-[#f5f3ef] flex flex-col justify-between selection:bg-[#d4af37]/30 selection:text-amber-200">
       <Navbar />
-      <div className="pt-24 pb-16 flex-grow">
+      <div className="pt-36 sm:pt-40 pb-20 flex-grow">
         <VinCheckerClient />
       </div>
       <Footer />

@@ -2,15 +2,20 @@
 
 /**
  * @file src/components/home/Navbar.tsx
- * Ultra-Premium, Responsive Glassmorphism Navigation Bar for Bethelmind Digital Solutions.
+ * Ultra-Luxury, Responsive Glassmorphism Navigation Bar for Bethelmind Digital Solutions.
  *
- * Designed to prevent horizontal overflow, eliminate visual clutter, and ensure 
- * 100% functional navigation across desktop, tablet, and mobile viewports.
+ * Visual Standard:
+ * - Restrained Obsidian (#070b14) & Champagne Gold (#d4af37)
+ * - Zero visual crowding, zero duplicate buttons, zero crypto references
+ * - Smooth mobile drawer and desktop dropdown with pristine typography
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { MessageSquare, Menu, X, ChevronDown, Sparkles, Sun, ShieldCheck, Database, ShoppingBag, Layers, ArrowRight, Car, TrendingUp } from 'lucide-react';
+import { 
+  MessageSquare, Menu, X, ChevronDown, Sparkles, Sun, 
+  ShieldCheck, ArrowRight, Car, Building2, ShoppingBag
+} from 'lucide-react';
 import { paymentConfig, buildWhatsAppLink } from '@/config/payment';
 import ShaderGradientLiquidLogo from '@/components/three/ShaderGradientLiquidLogo';
 
@@ -42,168 +47,82 @@ export default function Navbar() {
     setMenuOpen(false);
     setDropdownOpen(false);
 
-    if (window.location.pathname !== '/home' && window.location.pathname !== '/') {
-      window.location.href = `/home#${id}`;
-      return;
-    }
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname !== '/home' && window.location.pathname !== '/') {
+        window.location.href = `/home#${id}`;
+        return;
+      }
 
-    const target = document.getElementById(id);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      window.location.hash = id;
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.location.hash = id;
+      }
     }
   };
 
   const waLink = buildWhatsAppLink(
     paymentConfig.whatsappNumber,
-    'Hi Bethelmind Digital Solutions Lagos Desk, I would like to learn more about the 24/7 AI WhatsApp Quoter & Business Website.',
+    'Hello Bethelmind Lagos Advisory Desk! I would like to schedule a private consultation regarding your bespoke mobile website & 24/7 AI sales assistant.',
   );
 
-  const ecosystemTools = [
+  const flagshipSolutions = [
     {
-      title: 'Solar Engine WebApp',
-      desc: '3-tier proposals, load calculator & instant WhatsApp BOQ',
+      title: 'Solar & Inverter BOQ Engine',
+      desc: 'Interactive load sizer, DisCo Band A vs diesel savings & WhatsApp proposals',
       href: '/solar',
       icon: Sun,
-      color: '#f59e0b',
-      badge: 'LIVE',
     },
     {
-      title: 'Tokunbo VIN & Customs Checker',
-      desc: 'Copart salvage, US flood check & Nigeria Customs duties',
+      title: 'Tokunbo VIN & Customs Sizer',
+      desc: 'NHTSA foreign history, Copart salvage checks & Nigeria Customs import duty',
       href: '/vin',
       icon: Car,
-      color: '#f43f5e',
-      badge: 'NEW',
     },
     {
-      title: 'P2P FX Arbitrage Terminal',
-      desc: 'Binance vs Bybit live spreads, profit calculator & Telegram signals',
-      href: '/arbitrage',
-      icon: TrendingUp,
-      color: '#10b981',
-      badge: 'NEW',
-    },
-    {
-      title: 'Growth Solutions Suite',
-      desc: 'The 10 High-Conversion Sector Monetization Tools',
+      title: '10 High-Conversion Sector Engines',
+      desc: 'Specialized automation suites for salons, schools, logistics & retail',
       href: '/solutions',
       icon: Sparkles,
-      color: '#06b6d4',
-      badge: 'B2B',
     },
     {
-      title: 'GMB Local Ranking Shield',
-      desc: 'Local Google Maps ranking & instant reputation audit',
+      title: 'Real Estate & Mortgage Portal',
+      desc: 'Plot survey levies, deed fees, and developer mortgage amortization schedules',
+      href: '/tools/real-estate-manager',
+      icon: Building2,
+    },
+    {
+      title: 'GMB Local Search Ranking Shield',
+      desc: 'Google Maps #1 ranking optimization and automated 5-star review collector',
       href: '/gmb/sample-audit',
       icon: ShieldCheck,
-      color: '#10b981',
-      badge: 'AUDIT',
-    },
-    {
-      title: 'Lead Marketplace',
-      desc: 'Direct-dial verified Nigerian commercial business directory',
-      href: '/marketplace',
-      icon: ShoppingBag,
-      color: '#8b5cf6',
-      badge: 'STORE',
-    },
-    {
-      title: 'Data Packs Store',
-      desc: 'Instant nationwide verified phone & corporate email packs',
-      href: '/store',
-      icon: Database,
-      color: '#ec4899',
-      badge: 'VERIFIED',
-    },
-    {
-      title: '5 Engines Hub',
-      desc: 'Architecture overview of the autonomous commercial growth engine',
-      href: '/monetization',
-      icon: Layers,
-      color: '#3b82f6',
-      badge: 'CORE',
     },
   ];
 
   return (
     <header
       role="banner"
-      style={{
-        position: 'fixed',
-        top: scrolled ? 10 : 16,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 100,
-        width: 'calc(100% - 28px)',
-        maxWidth: 1220,
-        height: 64,
-        padding: '0 16px 0 14px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        background: scrolled ? 'rgba(7, 10, 20, 0.92)' : 'rgba(10, 15, 29, 0.82)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        borderRadius: 18,
-        border: '1px solid rgba(255, 255, 255, 0.12)',
-        boxShadow: scrolled
-          ? '0 20px 40px -10px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.18)'
-          : '0 12px 30px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      }}
+      className={`fixed top-3 sm:top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-24px)] max-w-6xl h-16 px-4 sm:px-6 flex items-center justify-between rounded-2xl border transition-all duration-300 ${
+        scrolled
+          ? 'bg-[#070b14]/95 border-white/[0.12] shadow-2xl shadow-black/80 backdrop-blur-xl'
+          : 'bg-[#090d16]/85 border-white/[0.08] shadow-xl backdrop-blur-lg'
+      }`}
     >
       {/* Brand Logo */}
       <Link
         href="/home"
         aria-label="Bethelmind Digital Solutions Home"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          textDecoration: 'none',
-          flexShrink: 0,
-        }}
+        className="flex items-center gap-3 text-decoration-none shrink-0"
       >
-        <ShaderGradientLiquidLogo size={38} initials="BM" palette="bethelmind" />
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span
-            style={{
-              fontWeight: 900,
-              fontSize: '1.02rem',
-              background: 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 40%, #06b6d4 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              fontFamily: "'Outfit', sans-serif",
-              letterSpacing: '-0.02em',
-              lineHeight: 1.15,
-            }}
-          >
+        <ShaderGradientLiquidLogo size={36} initials="BM" palette="bethelmind" />
+        <div className="flex flex-col">
+          <span className="font-serif text-sm sm:text-base font-normal text-[#f5f3ef] tracking-tight leading-tight">
             Bethelmind Digital Solutions
           </span>
-          <span
-            style={{
-              fontSize: '0.64rem',
-              color: '#94a3b8',
-              fontWeight: 600,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 5,
-              marginTop: 2,
-            }}
-          >
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: '#10b981',
-                display: 'inline-block',
-                boxShadow: '0 0 6px #10b981',
-              }}
-            />
-            Lagos, Nigeria • AI Engine
+          <span className="text-[10px] text-[#c9c4bc]/70 font-light flex items-center gap-1.5 mt-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37]" />
+            Lagos Advisory Desk &bull; CAC RC 7034297
           </span>
         </div>
       </Link>
@@ -211,165 +130,86 @@ export default function Navbar() {
       {/* Desktop Main Navigation */}
       <nav
         aria-label="Primary navigation"
-        className="nav-desktop-container"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
-        }}
+        className="hidden lg:flex items-center gap-1 text-xs font-light text-[#c9c4bc]"
       >
-        <button
-          onClick={(e) => handleScrollTo(e, 'sector-tools')}
-          className="nav-link-btn"
+        <Link
+          href="/tools"
+          className="px-3.5 py-2 rounded-xl hover:text-[#f5f3ef] hover:bg-white/[0.04] transition-colors"
         >
           Sector Tools
-        </button>
+        </Link>
 
-        <button
-          onClick={(e) => handleScrollTo(e, 'how-it-works')}
-          className="nav-link-btn"
+        <Link
+          href="/how-it-works"
+          className="px-3.5 py-2 rounded-xl hover:text-[#f5f3ef] hover:bg-white/[0.04] transition-colors"
         >
           How It Works
-        </button>
+        </Link>
 
-        <button
-          onClick={(e) => handleScrollTo(e, 'pricing')}
-          className="nav-link-btn"
+        <Link
+          href="/pricing"
+          className="px-3.5 py-2 rounded-xl hover:text-[#f5f3ef] hover:bg-white/[0.04] transition-colors"
         >
           Pricing
-        </button>
+        </Link>
+
+        <Link
+          href="/results"
+          className="px-3.5 py-2 rounded-xl hover:text-[#f5f3ef] hover:bg-white/[0.04] transition-colors"
+        >
+          Results
+        </Link>
 
         <button
           onClick={(e) => handleScrollTo(e, 'faq')}
-          className="nav-link-btn"
+          className="px-3.5 py-2 rounded-xl hover:text-[#f5f3ef] hover:bg-white/[0.04] transition-colors font-sans cursor-pointer bg-transparent border-0"
         >
           FAQ
         </button>
 
-        {/* Ecosystem Dropdown */}
+        {/* Solutions Dropdown */}
         <div
           ref={dropdownRef}
-          style={{ position: 'relative' }}
+          className="relative"
           onMouseEnter={() => setDropdownOpen(true)}
           onMouseLeave={() => setDropdownOpen(false)}
         >
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="nav-link-btn"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              color: dropdownOpen ? '#38bdf8' : '#cbd5e1',
-            }}
+            className="px-3.5 py-2 rounded-xl hover:text-[#f5f3ef] hover:bg-white/[0.04] transition-colors inline-flex items-center gap-1.5 font-sans cursor-pointer bg-transparent border-0"
             aria-expanded={dropdownOpen}
             aria-haspopup="true"
           >
             <span>Solutions</span>
             <ChevronDown
-              size={13}
-              style={{
-                transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0)',
-                transition: 'transform 0.2s ease',
-              }}
+              className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                dropdownOpen ? 'rotate-180 text-[#d4af37]' : 'text-[#c9c4bc]'
+              }`}
             />
           </button>
 
           {dropdownOpen && (
-            <div
-              className="nav-dropdown-menu"
-              style={{
-                position: 'absolute',
-                top: '100%',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                marginTop: 8,
-                width: 320,
-                background: 'rgba(7, 11, 22, 0.96)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: 16,
-                padding: '10px 8px',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 0 1px rgba(6,182,212,0.15)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 4,
-              }}
-            >
-              {ecosystemTools.map((tool) => {
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[390px] bg-[#090d16]/98 border border-[#d4af37]/25 rounded-2xl p-3 shadow-2xl backdrop-blur-2xl flex flex-col gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-3 py-1 text-[10px] uppercase tracking-widest text-[#d4af37] font-semibold border-b border-white/[0.06] mb-1">
+                Specialized Enterprise Architectures
+              </div>
+              {flagshipSolutions.map((tool) => {
                 const IconComponent = tool.icon;
                 return (
                   <Link
                     key={tool.href}
                     href={tool.href}
                     onClick={() => setDropdownOpen(false)}
-                    className="dropdown-item"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 10,
-                      padding: '8px 10px',
-                      borderRadius: 10,
-                      textDecoration: 'none',
-                      transition: 'all 0.18s ease',
-                    }}
+                    className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors group"
                   >
-                    <div
-                      style={{
-                        width: 30,
-                        height: 30,
-                        borderRadius: 8,
-                        background: `${tool.color}18`,
-                        border: `1px solid ${tool.color}35`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        marginTop: 2,
-                      }}
-                    >
-                      <IconComponent size={15} style={{ color: tool.color }} />
+                    <div className="w-8 h-8 rounded-lg bg-[#d4af37]/10 border border-[#d4af37]/20 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-[#d4af37]/50 transition-colors">
+                      <IconComponent className="w-4 h-4 text-[#d4af37]" />
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontSize: '0.84rem',
-                            fontWeight: 700,
-                            color: '#f8fafc',
-                          }}
-                        >
-                          {tool.title}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: '0.58rem',
-                            fontWeight: 800,
-                            padding: '1px 5px',
-                            borderRadius: 4,
-                            background: `${tool.color}20`,
-                            color: tool.color,
-                            border: `1px solid ${tool.color}40`,
-                          }}
-                        >
-                          {tool.badge}
-                        </span>
-                      </div>
-                      <p
-                        style={{
-                          margin: '2px 0 0',
-                          fontSize: '0.72rem',
-                          color: '#94a3b8',
-                          lineHeight: 1.3,
-                        }}
-                      >
+                    <div className="space-y-0.5 flex-1 min-w-0">
+                      <span className="text-xs font-medium text-[#f5f3ef] block group-hover:text-[#d4af37] transition-colors">
+                        {tool.title}
+                      </span>
+                      <p className="text-[11px] text-[#c9c4bc]/70 font-light leading-relaxed">
                         {tool.desc}
                       </p>
                     </div>
@@ -381,84 +221,28 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Right Action CTAs */}
-      <div
-        className="nav-actions-container"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-        }}
-      >
-        <Link
-          href="/tools"
-          className="desktop-only nav-login-link"
-          style={{
-            color: '#38bdf8',
-            textDecoration: 'none',
-            fontSize: '0.82rem',
-            fontWeight: 700,
-            padding: '6px 12px',
-            borderRadius: 8,
-            border: '1px solid rgba(56, 189, 248, 0.3)',
-            background: 'rgba(56, 189, 248, 0.08)',
-            transition: 'all 0.2s ease',
-          }}
-        >Sector Tools</Link>
-
-        {/* WhatsApp Button */}
+      {/* Right Action CTAs (Uncluttered, Single Primary & Single Secondary) */}
+      <div className="flex items-center gap-3">
         <a
           id="nav-whatsapp-cta"
           href={waLink}
           target="_blank"
           rel="noreferrer noopener"
-          className="desktop-only"
-          style={{
-            color: '#34d399',
-            textDecoration: 'none',
-            fontSize: '0.82rem',
-            fontWeight: 700,
-            padding: '7px 12px',
-            borderRadius: 10,
-            background: 'rgba(16, 185, 129, 0.08)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            whiteSpace: 'nowrap',
-            transition: 'all 0.2s ease',
-          }}
+          className="hidden sm:inline-flex items-center gap-2 py-2 px-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-[#d4af37]/30 text-xs font-medium text-[#c9c4bc] hover:text-[#f5f3ef] transition-all"
           aria-label="Contact Bethelmind Lagos Desk on WhatsApp"
         >
-          <MessageSquare style={{ width: 14, height: 14 }} aria-hidden="true" />
-          <span>WhatsApp Us</span>
+          <MessageSquare className="w-3.5 h-3.5 text-[#d4af37]" aria-hidden="true" />
+          <span>WhatsApp Concierge</span>
         </a>
 
-        {/* Primary CTA: See a Live Demo */}
-        <button
+        <Link
           id="nav-demo-cta"
-          onClick={(e) => handleScrollTo(e, 'live-demo')}
-          className="desktop-only"
-          style={{
-            color: '#ffffff',
-            background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
-            borderRadius: 10,
-            padding: '8px 16px',
-            fontWeight: 800,
-            fontSize: '0.84rem',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            whiteSpace: 'nowrap',
-            cursor: 'pointer',
-            boxShadow: '0 4px 18px rgba(6, 182, 212, 0.35)',
-            transition: 'all 0.2s ease',
-          }}
+          href="/contact"
+          className="py-2 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#070b14] font-semibold text-xs inline-flex items-center gap-1.5 shadow-md shadow-[#d4af37]/20 transition-all active:scale-95 whitespace-nowrap"
         >
-          <span>See a Live Demo</span>
-          <ArrowRight size={13} />
-        </button>
+          <span>Book Private Demo</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
 
         {/* Mobile Hamburger Toggle */}
         <button
@@ -467,20 +251,9 @@ export default function Navbar() {
           aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
-          className="mobile-only"
-          style={{
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            borderRadius: 10,
-            padding: '7px 9px',
-            color: '#f8fafc',
-            cursor: 'pointer',
-            display: 'none',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className="lg:hidden p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[#f5f3ef] hover:bg-white/[0.08] transition-colors cursor-pointer"
         >
-          {menuOpen ? <X style={{ width: 20, height: 20 }} /> : <Menu style={{ width: 20, height: 20 }} />}
+          {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
@@ -490,277 +263,96 @@ export default function Navbar() {
           id="mobile-menu"
           role="navigation"
           aria-label="Mobile navigation menu"
-          style={{
-            position: 'absolute',
-            top: 72,
-            left: 0,
-            right: 0,
-            background: 'rgba(7, 10, 20, 0.98)',
-            backdropFilter: 'blur(28px)',
-            WebkitBackdropFilter: 'blur(28px)',
-            border: '1px solid rgba(255, 255, 255, 0.14)',
-            borderRadius: 18,
-            padding: '16px 18px 22px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 6,
-            boxShadow: '0 25px 60px rgba(0,0,0,0.95)',
-            maxHeight: '80vh',
-            overflowY: 'auto',
-          }}
+          className="absolute top-20 left-0 right-0 bg-[#090d16]/98 border border-white/[0.1] rounded-2xl p-5 shadow-2xl backdrop-blur-2xl flex flex-col gap-4 text-xs text-[#c9c4bc] max-h-[80vh] overflow-y-auto animate-in fade-in slide-in-from-top-4 duration-200"
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>
-            <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', padding: '0 6px 4px' }}>
-              Quick Navigation
+          <div className="space-y-1">
+            <span className="text-[10px] uppercase tracking-widest text-[#d4af37] font-semibold block px-2 mb-2">
+              Navigation
             </span>
-
-            <button
-              onClick={(e) => handleScrollTo(e, 'live-demo')}
-              className="mobile-nav-link"
-              style={{
-                background: 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(59,130,246,0.15))',
-                border: '1px solid rgba(6,182,212,0.3)',
-                color: '#38bdf8',
-                fontWeight: 800,
-              }}
-            >
-              <span>Interactive Command Demo</span>
-              <ArrowRight size={14} />
-            </button>
-
-            <button
-              onClick={(e) => handleScrollTo(e, 'sector-tools')}
-              className="mobile-nav-link"
-            >
-              <span>Sector Tools & BOQ Calculators</span>
-            </button>
-
-            <button
-              onClick={(e) => handleScrollTo(e, 'how-it-works')}
-              className="mobile-nav-link"
-            >
-              <span>How It Works (6 Steps)</span>
-            </button>
-
-            <button
-              onClick={(e) => handleScrollTo(e, 'pricing')}
-              className="mobile-nav-link"
-            >
-              <span>Pricing & 50% Milestone Deposit</span>
-            </button>
-
-            <button
-              onClick={(e) => handleScrollTo(e, 'faq')}
-              className="mobile-nav-link"
-            >
-              <span>Frequently Asked Questions</span>
-            </button>
-          </div>
-
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', padding: '0 6px 4px' }}>
-              Specialized WebApps & Tools
-            </span>
-
-            {ecosystemTools.map((tool) => (
-              <Link
-                key={tool.href}
-                href={tool.href}
-                onClick={() => setMenuOpen(false)}
-                className="mobile-nav-link"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 12px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <tool.icon size={15} style={{ color: tool.color }} />
-                  <span style={{ color: '#f8fafc', fontSize: '0.86rem', fontWeight: 600 }}>{tool.title}</span>
-                </div>
-                <span
-                  style={{
-                    fontSize: '0.6rem',
-                    fontWeight: 800,
-                    padding: '2px 6px',
-                    borderRadius: 4,
-                    background: `${tool.color}15`,
-                    color: tool.color,
-                    border: `1px solid ${tool.color}35`,
-                  }}
-                >
-                  {tool.badge}
-                </span>
-              </Link>
-            ))}
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
             <Link
               href="/tools"
               onClick={() => setMenuOpen(false)}
-              style={{
-                gridColumn: '1 / -1',
-                textAlign: 'center',
-                padding: '11px 0',
-                borderRadius: 10,
-                border: '1px solid #38bdf8',
-                background: 'rgba(56, 189, 248, 0.12)',
-                color: '#38bdf8',
-                textDecoration: 'none',
-                fontWeight: 800,
-                fontSize: '0.86rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-              }}
-            >Sector Tools Directory</Link>
+              className="p-3 rounded-xl hover:bg-white/[0.04] text-[#f5f3ef] font-medium flex items-center justify-between"
+            >
+              <span>Sector Tools &amp; Calculators</span>
+              <ArrowRight className="w-4 h-4 text-[#d4af37]" />
+            </Link>
+            <Link
+              href="/how-it-works"
+              onClick={() => setMenuOpen(false)}
+              className="p-3 rounded-xl hover:bg-white/[0.04] text-[#f5f3ef] font-medium flex items-center justify-between"
+            >
+              <span>How It Works (48h SLA)</span>
+              <ArrowRight className="w-4 h-4 text-[#d4af37]" />
+            </Link>
+            <Link
+              href="/pricing"
+              onClick={() => setMenuOpen(false)}
+              className="p-3 rounded-xl hover:bg-white/[0.04] text-[#f5f3ef] font-medium flex items-center justify-between"
+            >
+              <span>Pricing &amp; 50% Milestone Deposit</span>
+              <ArrowRight className="w-4 h-4 text-[#d4af37]" />
+            </Link>
+            <Link
+              href="/results"
+              onClick={() => setMenuOpen(false)}
+              className="p-3 rounded-xl hover:bg-white/[0.04] text-[#f5f3ef] font-medium flex items-center justify-between"
+            >
+              <span>Results &amp; Case Studies</span>
+              <ArrowRight className="w-4 h-4 text-[#d4af37]" />
+            </Link>
+            <Link
+              href="/solutions"
+              onClick={() => setMenuOpen(false)}
+              className="p-3 rounded-xl hover:bg-white/[0.04] text-[#f5f3ef] font-medium flex items-center justify-between"
+            >
+              <span>10 Sector Acquisition Engines</span>
+              <ArrowRight className="w-4 h-4 text-[#d4af37]" />
+            </Link>
+          </div>
 
+          <div className="pt-3 border-t border-white/[0.08] space-y-2">
+            <span className="text-[10px] uppercase tracking-widest text-[#d4af37] font-semibold block px-2">
+              Specialized Portals
+            </span>
+            <Link
+              href="/solar"
+              onClick={() => setMenuOpen(false)}
+              className="p-2.5 rounded-xl hover:bg-white/[0.04] flex items-center gap-3 text-[#f5f3ef]"
+            >
+              <Sun className="w-4 h-4 text-[#d4af37]" />
+              <span>SolarQuotePro Sizing Suite</span>
+            </Link>
+            <Link
+              href="/vin"
+              onClick={() => setMenuOpen(false)}
+              className="p-2.5 rounded-xl hover:bg-white/[0.04] flex items-center gap-3 text-[#f5f3ef]"
+            >
+              <Car className="w-4 h-4 text-[#d4af37]" />
+              <span>Tokunbo VIN Customs Duty Checker</span>
+            </Link>
+          </div>
+
+          <div className="pt-3 border-t border-white/[0.08] flex flex-col gap-2">
             <a
               href={waLink}
               target="_blank"
               rel="noreferrer noopener"
-              style={{
-                textAlign: 'center',
-                padding: '11px 0',
-                borderRadius: 10,
-                border: '1px solid rgba(16,185,129,0.4)',
-                background: 'rgba(16,185,129,0.14)',
-                color: '#34d399',
-                textDecoration: 'none',
-                fontWeight: 800,
-                fontSize: '0.86rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-              }}
+              className="w-full py-3 px-4 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[#f5f3ef] font-semibold text-center flex items-center justify-center gap-2"
             >
-              <MessageSquare size={14} /> WhatsApp Us
+              <MessageSquare className="w-4 h-4 text-[#d4af37]" />
+              <span>WhatsApp Concierge Desk</span>
             </a>
-
-            <button
-              onClick={(e) => handleScrollTo(e, 'pricing')}
-              style={{
-                textAlign: 'center',
-                padding: '11px 0',
-                borderRadius: 10,
-                background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)',
-                color: '#ffffff',
-                border: 'none',
-                fontWeight: 900,
-                fontSize: '0.86rem',
-                cursor: 'pointer',
-              }}
+            <Link
+              href="/contact"
+              onClick={() => setMenuOpen(false)}
+              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] text-[#070b14] font-bold text-center block"
             >
-              See Pricing
-            </button>
+              Book Private Demo &rarr;
+            </Link>
           </div>
-
-          <Link
-            href="/admin"
-            onClick={() => setMenuOpen(false)}
-            style={{
-              textAlign: 'center',
-              color: '#64748b',
-              textDecoration: 'none',
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              padding: '6px 0',
-              marginTop: 4,
-            }}
-          >
-            Client / Admin Portal Login
-          </Link>
         </div>
       )}
-
-      {/* Responsive Styles & Micro-Animations */}
-      <style>{`
-        .nav-link-btn {
-          color: #cbd5e1;
-          background: transparent;
-          border: none;
-          font-size: 0.85rem;
-          font-weight: 600;
-          padding: 8px 12px;
-          border-radius: 8px;
-          cursor: pointer;
-          font-family: inherit;
-          transition: all 0.2s ease;
-          white-space: nowrap;
-        }
-
-        .nav-link-btn:hover {
-          color: #ffffff;
-          background: rgba(255, 255, 255, 0.06);
-        }
-
-        .dropdown-item:hover {
-          background: rgba(255, 255, 255, 0.05);
-        }
-
-        .nav-login-link:hover {
-          color: #f8fafc !important;
-        }
-
-        #nav-whatsapp-cta:hover {
-          background: rgba(16, 185, 129, 0.18) !important;
-          border-color: rgba(16, 185, 129, 0.6) !important;
-          box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
-          transform: translateY(-1px);
-        }
-
-        #nav-demo-cta:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 24px rgba(6, 182, 212, 0.5);
-          border-color: rgba(255, 255, 255, 0.4);
-        }
-
-        .mobile-nav-link {
-          width: 100%;
-          text-align: left;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 10px;
-          padding: 10px 14px;
-          color: #e2e8f0;
-          font-size: 0.88rem;
-          font-weight: 600;
-          cursor: pointer;
-          font-family: inherit;
-          display: flex;
-          align-items: center;
-          justifyContent: space-between;
-          text-decoration: none;
-          transition: all 0.15s ease;
-        }
-
-        .mobile-nav-link:hover, .mobile-nav-link:active {
-          background: rgba(255, 255, 255, 0.08);
-          color: #ffffff;
-        }
-
-        @media (max-width: 1024px) {
-          .nav-desktop-container {
-            display: none !important;
-          }
-          .desktop-only {
-            display: none !important;
-          }
-          .mobile-only {
-            display: flex !important;
-          }
-        }
-
-        @media (min-width: 1025px) {
-          .mobile-only {
-            display: none !important;
-          }
-        }
-      `}</style>
     </header>
   );
 }

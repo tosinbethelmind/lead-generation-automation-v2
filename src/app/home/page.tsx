@@ -4,9 +4,8 @@
  * @file src/app/home/page.tsx
  * High-Converting Nigerian B2B Homepage — Bethelmind Digital Solutions
  *
- * Performance Optimized:
+ * Performance Optimized & Luxury Editorial Theme:
  * - Streamlined 6-step conversion journey: Hero -> How It Works -> Sector Tools -> Solutions -> Trust -> Pricing -> Settlement -> FAQ
- * - 0% distraction: Removed low-converting developer tools (Relume, Source code buyout clutter)
  * - Pinned Sticky Mobile Conversion Bar for 1-tap WhatsApp closing
  * - Zero hydration lag & edge-optimized
  */
@@ -48,8 +47,8 @@ export default function HomePage() {
     <div
       style={{
         minHeight: '100vh',
-        background: '#07090e',
-        color: '#f8fafc',
+        background: '#070b14',
+        color: '#f5f3ef',
         fontFamily: "var(--font-inter), 'Inter', sans-serif",
         overflowX: 'hidden',
         paddingBottom: 95, // Buffer for mobile sticky bar
@@ -126,7 +125,7 @@ export default function HomePage() {
           scroll-margin-top: 85px;
         }
         :focus-visible {
-          outline: 2px solid #06b6d4;
+          outline: 2px solid #d4af37;
           outline-offset: 2px;
           border-radius: 4px;
         }

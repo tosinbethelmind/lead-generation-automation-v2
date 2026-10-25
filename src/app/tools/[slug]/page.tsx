@@ -1,4 +1,14 @@
-import React from 'react';
+'use client';
+
+/**
+ * @file src/app/tools/[slug]/page.tsx
+ * Ultra-Luxurious, Editorial Private Client Specification Portal for Nigerian SMEs.
+ *
+ * Designed with restrained obsidian base (#070b14), warm ivory/slate typography,
+ * champagne gold metallic accents (#d4af37), and zero visual clutter.
+ */
+
+import React, { use } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { 
@@ -13,22 +23,30 @@ import {
   MessageCircle,
   Zap,
   ShoppingBag,
-  Download
+  Download,
+  Building,
+  Home,
+  Sun,
+  Car,
+  Scissors,
+  Utensils,
+  GraduationCap,
+  Activity,
+  Truck,
+  Scale,
+  Hotel
 } from 'lucide-react';
-import { SectorToolsWidget } from '@/components/SectorToolsWidget';
+import { SectorToolsWidget, SectorToolTab } from '@/components/SectorToolsWidget';
 import { RecruitmentEngineWidget } from '@/components/RecruitmentEngineWidget';
 import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 import IntegrationBlueprintDashboard from '@/components/IntegrationBlueprintDashboard';
-import TurnkeyAdBanner from '@/components/TurnkeyAdBanner';
 import { ViralToolShareBar } from '@/components/ViralToolShareBar';
-import { DualCheckoutTrustCard } from '@/components/DualCheckoutTrustCard';
-import { TurnkeySmeSetupBanner } from '@/components/TurnkeySmeSetupBanner';
+import Navbar from '@/components/home/Navbar';
+import Footer from '@/components/home/Footer';
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
 }
-
-export const dynamicParams = true;
 
 // Complete Registry of the 12 Viral Interactive Tools
 export const VIRAL_TOOLS: Record<string, {
@@ -148,104 +166,8 @@ export const VIRAL_TOOLS: Record<string, {
     summary: 'High-retention 60-second video scripts, pattern interrupts, psychological hooks, and high-converting CTAs.',
     highlights: ['3-Second Visual Hook Matrix', 'Dynamic Retention Pacing', 'Niche-Specific Viral Templates'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-faceless',
-    selarProduct: '100+ Viral Hook & Script Vault',
+    selarProduct: 'Faceless Short-Form Content Empire',
     selarPrice: '₦10,000 / $12',
-  },
-  'site-audit': {
-    id: 'site-audit',
-    file: 'site-audit.html',
-    title: 'SEO & High-Performance Site Audit Engine',
-    category: 'B2B Software & SEO',
-    badge: 'Instant Technical SEO Audit',
-    summary: 'Audit core web vitals, mobile responsiveness, SSL security headers, schema markup, and conversion leaks.',
-    highlights: ['Core Web Vitals Diagnosis', 'Mobile Viewport Health Check', 'Lead-Leak Action Checklist'],
-    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-b2bleadgen',
-    selarProduct: 'Local SEO Domination Agency Playbook',
-    selarPrice: '₦20,000 / $25',
-  },
-  'prayer-journal': {
-    id: 'prayer-journal',
-    file: 'prayer-journal.html',
-    title: 'Scripture & Daily Prayer Journal Suite',
-    category: 'Faith & Devotional',
-    badge: 'Guided Faith Journal',
-    summary: 'Daily devotional reflection, topical scripture finder, answered prayer tracking, and printable spiritual journals.',
-    highlights: ['Topical Scripture Matcher', 'Testimony & Prayer Tracker', 'Printable Devotional Layouts'],
-    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-prayer',
-    selarProduct: '365-Day Guided Devotional & Prayer Journal',
-    selarPrice: '₦5,000 / $6',
-  },
-  'sure-score': {
-    id: 'sure-score',
-    file: 'sure-score.html',
-    title: 'SureScore AI™ Football Match Predictor & Acca Slip Builder',
-    category: 'Sports Analytics',
-    badge: '2026 AI Match Outcome & xG Engine',
-    summary: 'Simulate real-time 1X2 win probabilities, projected exact scorelines, Both Teams to Score (BTTS), and build viral multi-match accumulator slips.',
-    highlights: ['Poisson xG & ELO Model', '1-Click Acca Multiplier Slip', 'Instant WhatsApp Group Share'],
-    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
-    selarProduct: 'Quantitative Sports Analytics Model & Bankroll Matrix',
-    selarPrice: '₦15,000 / $19',
-  },
-  'sports-edge': {
-    id: 'sports-edge',
-    file: 'sports-edge.html',
-    title: 'Sports Edge Odds & Bankroll Calculator',
-    category: 'Sports Analytics',
-    badge: 'Kelly Criterion Bankroll Guard',
-    summary: 'Arbitrage detection, expected value (+EV) calculations, Kelly criterion stake sizing, and bankroll preservation.',
-    highlights: ['Kelly Criterion Stake Sizer', '+EV Margin Calculator', 'No-Vig Probability Converter'],
-    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
-    selarProduct: 'Quantitative Sports Analytics Model',
-    selarPrice: '₦15,000 / $19',
-  },
-  'ai-stack-finder': {
-    id: 'ai-stack-finder',
-    file: 'ai-stack-finder.html',
-    title: 'Enterprise AI Tech Stack Finder',
-    category: 'AI & Enterprise Software',
-    badge: 'Enterprise AI Architecture',
-    summary: 'Match your business workflow to the ideal LLMs, automation pipelines, vector databases, and enterprise agents.',
-    highlights: ['Vendor Lock-in Evaluation', 'TCO & API Token Sizer', 'Production Integration Map'],
-    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-aitools',
-    selarProduct: 'Complete Enterprise AI Blueprint 2026',
-    selarPrice: '₦35,000 / $45',
-  },
-  'drama-radar': {
-    id: 'drama-radar',
-    file: 'drama-radar.html',
-    title: 'DramaRadar AI™ | Fake vs Real Reddit Detective & Anonymous Story Vault',
-    category: 'Social Media & Entertainment',
-    badge: 'Viral Reddit Storytelling & Detective Game',
-    summary: 'Test your intuition with the Fake vs Real Reddit Drama detective game, submit anonymous confessions, and get viral storytelling blueprints.',
-    highlights: ['Interactive AITA Detective Game', 'Anonymous Confession Submissions', 'WhatsApp Streak Brag Loop'],
-    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-reddit',
-    selarProduct: 'Viral Faceless Storytelling & TikTok Creator Blueprint',
-    selarPrice: '₦15,000 / $19',
-  },
-  'saas-radar': {
-    id: 'saas-radar',
-    file: 'saas-radar.html',
-    title: 'SaaSRadar AI™ | Software Alternatives & Lifetime Deal Finder',
-    category: 'Software & Productivity',
-    badge: '2026 SaaS Spend Optimizer & Radar',
-    summary: 'Slash your recurring subscriptions. Compare expensive SaaS tools against battle-tested open-source and lifetime alternatives.',
-    highlights: ['Spend vs Savings Calculator', 'Open-Source & Free Alternatives', 'Turnkey B2B Migration Setup'],
-    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-saas',
-    selarProduct: 'Autonomous Micro-SaaS & Workflow Automation Playbook',
-    selarPrice: '₦15,000 / $19',
-  },
-    'goal-grid': {
-    id: 'goal-grid',
-    file: 'goal-grid.html',
-    title: 'GoalGrid AI™ | Daily Football Mystery Star & Club Game',
-    category: 'Sports Analytics',
-    badge: 'Viral Daily Football Trivia Grid',
-    summary: 'The viral daily football trivia grid. Guess today 5-letter football star or club in 6 tries, share your emoji grid on WhatsApp, and unlock high-confidence value slips.',
-    highlights: ['Daily 5-Letter Football Mystery', 'WhatsApp Emoji Grid Sharing', 'Unlocked 4.85x Acca Value Slip'],
-    selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
-    selarProduct: 'Quantitative Sports Analytics Model & Bankroll Matrix',
-    selarPrice: '₦15,000 / $19',
   },
   'footy-wordle': {
     id: 'footy-wordle',
@@ -259,12 +181,12 @@ export const VIRAL_TOOLS: Record<string, {
     selarProduct: 'Quantitative Sports Analytics Model & Bankroll Matrix',
     selarPrice: '₦15,000 / $19',
   },
-      'typing-speed': {
+  'typing-speed': {
     id: 'typing-speed',
     file: 'typing-speed.html',
     title: 'TypeMaster AI™ | 60-Second WPM Typing Speed & Accuracy Test',
     category: 'Software & Productivity',
-    badge: '⌨ 40M+ Monthly Play Benchmark',
+    badge: 'Productivity Benchmark Suite',
     summary: 'Benchmark your typing speed, accuracy, and keystrokes in 60 seconds. Claim your verified typing certificate and share your score.',
     highlights: ['Real-Time WPM & Accuracy Telemetry', 'Shareable Verified Scorecard', 'Remote Job Blueprint Upsell'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-aitools',
@@ -276,7 +198,7 @@ export const VIRAL_TOOLS: Record<string, {
     file: 'focus-timer.html',
     title: 'FocusFlow AI™ | 25/5 Pomodoro Deep Work Timer & Ambient Soundscape',
     category: 'Software & Productivity',
-    badge: '25/5 Deep Work & Productivity Suite',
+    badge: 'Deep Work & Productivity Suite',
     summary: 'Eliminate distractions with scientific 25-minute Pomodoro cycles and zero-bandwidth mathematically synthesized ambient soundscapes.',
     highlights: ['Client-Side Web Audio Soundscapes', 'Sprint Task Checklist', 'High Dwell-Time Engine'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-aitools',
@@ -286,11 +208,11 @@ export const VIRAL_TOOLS: Record<string, {
   'runway-radar': {
     id: 'runway-radar',
     file: 'runway-radar.html',
-    title: 'RunwayRadar AI™ | "Can I Quit My Job?" Financial Runway Sizer',
+    title: 'RunwayRadar AI™ | Financial Runway & Freedom Sizer',
     category: 'Finance & Investing',
-    badge: '⏳ Viral Financial Runway & Freedom Engine',
+    badge: 'Financial Freedom Sizer',
     summary: 'Calculate exactly how many months and days you can survive without a job. Gauge your financial freedom index and safe resignation date.',
-    highlights: ['Net Burn & Liquid Runway Sizer', 'Quit Readiness Index Score', 'Instant WhatsApp Brag Loop'],
+    highlights: ['Net Burn & Liquid Runway Sizer', 'Quit Readiness Index Score', 'Instant WhatsApp Share'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-finance',
     selarProduct: '2026 Solopreneur & Autonomous Cashflow Blueprint',
     selarPrice: '₦15,000 / $19',
@@ -298,51 +220,28 @@ export const VIRAL_TOOLS: Record<string, {
   'salary-calc': {
     id: 'salary-calc',
     file: 'salary-calc.html',
-    title: 'SalaryTakeHome AI™ | 2026 Net Pay, PAYE & Remote Income Sizer',
+    title: 'SalaryTakeHome AI™ | Net Pay, PAYE & Remote Income Sizer',
     category: 'Finance & Investing',
-    badge: '2026 Statutory Payroll Engine',
+    badge: 'Statutory Payroll Engine',
     summary: 'Calculate your true monthly take-home income after statutory PAYE personal income tax, 8% pension, NHF, and Consolidated Relief Allowances.',
-    highlights: ['PITA 2026 Statutory Calculation', 'Itemized PAYE & Pension Deductions', 'Instant WhatsApp Salary Slip Share'],
+    highlights: ['PITA Statutory Calculation', 'Itemized PAYE & Pension Deductions', 'Instant WhatsApp Salary Slip Share'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-finance',
-    selarProduct: '2026 Passive Wealth Compounding & Cashflow Model',
+    selarProduct: 'Passive Wealth Compounding & Cashflow Model',
     selarPrice: '₦15,000 / $19',
   },
   'higher-lower': {
     id: 'higher-lower',
     file: 'higher-lower.html',
-    title: 'Higher or Lower AI™ | Viral Football Values & Wealth Game',
+    title: 'Higher or Lower AI™ | Viral Comparison Game',
     category: 'Entertainment & Gaming',
-    badge: 'Viral 500M+ Play Comparison Arena',
-    summary: 'The addictive viral Higher or Lower game. Guess which football superstar has a higher market value or which mogul has a higher net worth.',
-    highlights: ['Transfer Values vs Net Worths', 'Streak Bragging on WhatsApp', 'Integrated Cross-Promotion'],
+    badge: 'Market Value Comparison Arena',
+    summary: 'The viral Higher or Lower game. Compare football player market values and celebrity net worths with real-time feedback.',
+    highlights: ['Transfer Values vs Net Worths', 'Streak Sharing on WhatsApp', 'Integrated Market Intelligence'],
     selarUrl: 'https://selar.com/showlove/bethelmind?product=da-sports',
     selarProduct: 'Quantitative Sports Analytics Model',
     selarPrice: '₦15,000 / $19',
   },
 };
-
-export async function generateStaticParams() {
-  const viralSlugs = Object.keys(VIRAL_TOOLS).map(slug => ({ slug }));
-  const sectorSlugs = [
-    { slug: 'website-grader' },
-    { slug: 'google-visibility' },
-    { slug: 'solar-boq' },
-    { slug: 'solar-quote-pro' },
-    { slug: 'solar-quote' },
-    { slug: 'salon-booking' },
-    { slug: 'tokunbo-duty' },
-    { slug: 'mortgage-calc' },
-    { slug: 'clinic-booking' },
-    { slug: 'school-tuition' },
-    { slug: 'logistics-waybill' },
-    { slug: 'cac-filing' },
-    { slug: 'shortlet-booking' },
-    { slug: 'recruitment' },
-    { slug: 'integrations' },
-    { slug: 'social-ads' },
-  ];
-  return [...viralSlugs, ...sectorSlugs];
-}
 
 interface SectorProfile {
   title: string;
@@ -350,6 +249,7 @@ interface SectorProfile {
   tag: string;
   summary: string;
   highlightPills: string[];
+  sectorTab: SectorToolTab;
 }
 
 function getSectorProfile(rawSlug: string): SectorProfile {
@@ -359,19 +259,21 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Solar & Renewable Energy BOQ Load Sizer',
       category: 'Solar & Renewable Energy',
-      tag: 'NERC Band A Tariff Avoidance Suite',
-      summary: 'Precision load calculation, DisCo Band A/B/C tariff avoidance vs generator diesel fuel economics, and automated customer WhatsApp BOQ proposal generator for Nigerian solar installers.',
+      tag: 'NERC Band A Avoidance Suite',
+      summary: 'Precision load calculation, DisCo Band A/B/C tariff avoidance vs generator diesel economics, and automated customer WhatsApp BOQ proposals for Nigerian solar installers.',
       highlightPills: ['Sub-2s WhatsApp BOQ', '51.2V LiFePO4 Sizing', 'Diesel vs Solar Payback Matrix'],
+      sectorTab: 'solar',
     };
   }
 
-  if (/tokunbo|duty|auto|car|clearing/.test(slug)) {
+  if (/tokunbo|duty|auto|car|clearing|vin/.test(slug)) {
     return {
       title: 'Tokunbo VIN Customs Duty & Port Landing Sizer',
       category: 'Automobile & Tokunbo Dealership',
       tag: 'NCS 2026 Single-Sheet Tariff',
       summary: 'Calculates statutory 20% import duty, 15% NAC levy, 7.5% VAT, and PTML/Tin Can terminal charges for Lagos car dealers and auto auction importers.',
-      highlightPills: ['17-Digit VIN Decode', 'NCS 2026 Valuation Matrix', 'Terminal Demurrage Estimator'],
+      highlightPills: ['17-Digit VIN Decode', 'NCS Valuation Matrix', 'Terminal Demurrage Estimator'],
+      sectorTab: 'auto',
     };
   }
 
@@ -379,9 +281,32 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Salon & Spa 24/7 Booking & Deposit Lock Engine',
       category: 'Beauty & Hair Salon',
-      tag: '25% Anti-No-Show Deposit Lock',
+      tag: 'Anti-No-Show Reservation Lock',
       summary: '24/7 appointment scheduler that locks client stylist slots with instant Paystack/Moniepoint bank transfer deposits, eliminating empty salon chairs and fake alerts.',
       highlightPills: ['Zero Fake Alerts', '24/7 WhatsApp Appointment Desk', 'Stylist Commission Split Ledger'],
+      sectorTab: 'beauty',
+    };
+  }
+
+  if (/retail|catalog|closer|boutique|store|ecommerce|shop/.test(slug)) {
+    return {
+      title: 'Retail & E-Commerce WhatsApp Catalog Closer',
+      category: 'Retail & Boutiques',
+      tag: 'Sub-3s WhatsApp Catalog Closer',
+      summary: 'Automated 24/7 product catalog assistant that answers customer queries, checks real-time sizing and stock, and closes orders directly on WhatsApp.',
+      highlightPills: ['Sub-3s WhatsApp Closer', 'Live Inventory & Sizing Check', 'OPay/Moniepoint Transfer Verification'],
+      sectorTab: 'retail',
+    };
+  }
+
+  if (/restaurant|food|kitchen|eatery|dining|lounge/.test(slug)) {
+    return {
+      title: 'Restaurant & Lounge 0% Commission Direct Menu Engine',
+      category: 'Restaurant & Hospitality',
+      tag: '0% Third-Party Commission',
+      summary: 'Digital QR food menu and table-side ordering engine that routes customer orders and table reservations straight to your WhatsApp with zero commissions.',
+      highlightPills: ['Direct WhatsApp Food Orders', 'Zero Aggregator Commissions', 'Instant Table Reservation Lock'],
+      sectorTab: 'restaurant',
     };
   }
 
@@ -392,6 +317,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
       tag: 'Title & Infrastructure Allocation',
       summary: 'Calculates 300 sqm Half Plot vs 500/600 sqm Full Plot outright packages, registered survey (Red Copy) fees, deed of assignment levies, and developer installment spreads.',
       highlightPills: ['Survey & Deed Sizer', 'Multi-Tier Realtor 5% WHT Ledger', 'Diaspora Forex Milestone Tracker'],
+      sectorTab: 'mortgage',
     };
   }
 
@@ -399,9 +325,10 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Clinic HMO Claims & Procedure Co-Pay Reconciler',
       category: 'Clinic & Healthcare HMO',
-      tag: '60% Upfront Admission Deposit',
+      tag: 'Admission Deposit Lock',
       summary: 'Reconciles HMO procedure tariffs, patient co-pay deductions, and secondary AuthCodes to prevent 60-day claim rejections, with upfront surgical admission deposits.',
       highlightPills: ['Reliance / Hygeia AuthCode Risk Guard', '60% Admission Deposit Lock', 'Diagnostic Lab Panel Sizer'],
+      sectorTab: 'healthcare',
     };
   }
 
@@ -412,6 +339,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
       tag: 'Result Broadsheet Gating',
       summary: 'Student term fee payment gateway that automatically gates digital term report cards and WAEC broadsheets until school fees clear, with scratch-PIN batch accounting.',
       highlightPills: ['Auto-Gated Report Cards', 'PIN Batch Profit Accounting', 'Direct Bank Transfer Remittance'],
+      sectorTab: 'education',
     };
   }
 
@@ -422,6 +350,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
       tag: 'Interstate Diesel & Waybill Tracker',
       summary: 'Aggregates multi-carrier dispatch pricing, generates automated WhatsApp waybill tracking links for customers, and audits driver interstate diesel consumption.',
       highlightPills: ['Auto-SMS Waybill Tracking', 'Diesel Pilferage Audit', 'NURTW Interstate Levy Estimator'],
+      sectorTab: 'logistics',
     };
   }
 
@@ -432,6 +361,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
       tag: 'CAC & SCUML Compliance Matrix',
       summary: 'Calculates statutory CAC registration and annual return arrears, FIRS stamp duty, SCUML anti-money laundering certification fees, and itemized counsel debit notes.',
       highlightPills: ['Official CAC Fee Matrix', 'SCUML & TCC Cost Sizer', 'FIRS 7.5% VAT & 5% WHT Credit Note'],
+      sectorTab: 'legal',
     };
   }
 
@@ -439,58 +369,36 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     return {
       title: 'Shortlet Electricity Token & Caution Deposit Reconciler',
       category: 'Shortlet & Hospitality Apartments',
-      tag: 'DisCo kWh & Damage Deposit Ledger',
-      summary: 'Reconciles guest nightly rates, 250kVA generator overtime surcharges, and actual DisCo prepaid meter consumption against refundable caution deposits.',
+      tag: 'DisCo kWh & Caution Deposit Ledger',
+      summary: 'Reconciles guest nightly rates, generator overtime surcharges, and actual DisCo prepaid meter consumption against refundable caution deposits.',
       highlightPills: ['Prepaid Meter Token Deduction', 'Refundable Caution Splitter', 'Instant WhatsApp Check-In Receipt'],
+      sectorTab: 'hospitality',
+    };
+  }
+
+  if (/dva|transfer|bank|reconciliation|alert|fraud/.test(slug)) {
+    return {
+      title: '"Fake Alert Proof" Automated Bank Transfer Reconciliation',
+      category: 'Fintech & Merchant Settlements',
+      tag: 'Cryptographic Moniepoint Settlement',
+      summary: 'Reconciles incoming bank transfers via real-time Moniepoint NIP webhooks, generating instant confirmation passes and 100% eliminating fake payment screenshots.',
+      highlightPills: ['Moniepoint NIP Webhook Lock', 'Zero Fake Transfer Alert Risk', 'Instant Digital Payment Receipt'],
+      sectorTab: 'dva',
     };
   }
 
   return {
     title: `${rawSlug.replace(/\.html$/i, '').replace(/[-_]+/g, ' ').toUpperCase()} Commercial Tool`,
     category: 'Commercial Enterprise',
-    tag: '2026 Enterprise Engine',
+    tag: 'Bespoke Advisory Engine',
     summary: 'Automated 24/7 business calculation, quotation, and client qualification engine pre-configured for Nigerian commercial operators.',
     highlightPills: ['Instant WhatsApp Dispatch', '₦0 Upfront Preview', 'Bankable PDF Quote Generator'],
+    sectorTab: 'solar',
   };
 }
 
-export async function generateMetadata({ params }: ToolPageProps) {
-  const { slug } = await params;
-  const cleanSlug = slug.toLowerCase().replace(/\.html$/i, '');
-  const viralTool = VIRAL_TOOLS[cleanSlug];
-
-  if (viralTool) {
-    return {
-      title: `${viralTool.title} | Free Interactive Tool | Bethelmind Analytics`,
-      description: viralTool.summary,
-      openGraph: {
-        title: `${viralTool.title} | Bethelmind Digital Solutions Nigeria`,
-        description: viralTool.summary,
-        url: `https://www.bethelmindanalytics.com/tools/${cleanSlug}`,
-        siteName: 'Bethelmind Digital Solutions',
-        locale: 'en_NG',
-        type: 'website',
-      },
-    };
-  }
-
-  const profile = getSectorProfile(cleanSlug);
-  return {
-    title: `${profile.title} Nigeria | Bethelmind Digital Solutions`,
-    description: profile.summary,
-    openGraph: {
-      title: `${profile.title} | Bethelmind Digital Solutions Nigeria`,
-      description: profile.summary,
-      url: `https://www.bethelmindanalytics.com/tools/${cleanSlug}`,
-      siteName: 'Bethelmind Digital Solutions',
-      locale: 'en_NG',
-      type: 'website',
-    },
-  };
-}
-
-export default async function StandaloneToolPage({ params }: ToolPageProps) {
-  const { slug } = await params;
+export default function StandaloneToolPage({ params }: ToolPageProps) {
+  const { slug } = use(params);
   const cleanSlug = slug.toLowerCase().replace(/\.html$/i, '');
 
   if (cleanSlug === 'integrations') {
@@ -504,181 +412,196 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
     const standaloneCalcUrl = `/calc/${viralTool.file}`;
 
     return (
-      <main className="min-h-screen bg-[#070b14] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
-        {/* Top Hairline Metallic Accent Glow */}
-        <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent" />
+      <div className="min-h-screen bg-[#070b14] text-[#c9c4bc] font-sans selection:bg-[#d4af37]/30 selection:text-amber-200">
+        <Navbar />
 
-        {/* Atmospheric Ambient Glow */}
-        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-[#d4af37]/5 via-slate-900/5 to-transparent blur-[120px] rounded-full" />
-        </div>
-
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+        <main className="pt-36 sm:pt-40 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10">
           
-          {/* Executive Header & Navigation */}
-          <header className="bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 sm:p-7 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-white/5 space-y-4">
-            
-            {/* Top Navigation Row */}
-            <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-white/10 pb-4">
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/tools"
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/10 transition-all font-semibold"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>All Tools Directory</span>
-                </Link>
-
-                <Link
-                  href="/home"
-                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 text-xs transition-colors"
-                >
-                  <span>Bethelmind Ecosystem</span>
-                </Link>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-[11px]">
+          {/* Executive Editorial Header */}
+          <header className="space-y-4 pt-4 border-b border-white/[0.06] pb-8">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <Link
+                href="/tools"
+                className="inline-flex items-center gap-2 text-xs font-medium text-[#8e887e] hover:text-[#d4af37] transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Return to Sector Tools Directory</span>
+              </Link>
+              
+              <div className="flex items-center gap-3 text-xs text-[#8e887e] font-light">
+                <span className="inline-flex items-center gap-1.5 text-[#d4af37]">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  Free 100% Client-Side Engine
+                  CAC RC: 7034297
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20 font-bold text-[11px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-pulse" />
-                  Live Verified 2026
-                </span>
+                <span>&bull;</span>
+                <span>Lagos Engineering Desk</span>
               </div>
             </div>
 
-            {/* Headline, Category, & Description */}
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pt-1">
-              <div className="space-y-2 max-w-3xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/25 text-[11px] font-black uppercase tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{viralTool.badge}</span>
-                </div>
-                
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-['Outfit'] tracking-tight leading-tight">
-                  {viralTool.title}
-                </h1>
+            <div className="space-y-2">
+              <span className="text-[11px] font-medium text-[#c5a880] uppercase tracking-widest block">
+                {viralTool.category} &bull; Client Specification
+              </span>
+              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
+                {viralTool.title}
+              </h1>
+              <p className="text-xs sm:text-sm md:text-base text-[#c9c4bc] font-light leading-relaxed max-w-3xl">
+                {viralTool.summary}
+              </p>
+            </div>
 
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pt-1">
-                  {viralTool.summary}
-                </p>
-
-                {/* Highlights Pills */}
-                <div className="flex flex-wrap items-center gap-2 pt-2">
-                  {viralTool.highlights.map((pill, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-300 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg"
-                    >
-                      <CheckCircle2 className="w-3 h-3 text-[#d4af37]" />
-                      <span>{pill}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons: Full Screen & Direct Link */}
-              <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0">
-                <a
-                  href={standaloneCalcUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#d4af37]/10 hover:bg-cyan-500/20 text-[#d4af37] border border-[#d4af37]/30 text-xs font-bold transition-all shadow-sm"
-                  title="Open standalone zero-distraction view"
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              {viralTool.highlights.map((pill, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 text-xs text-[#c9c4bc] bg-white/[0.03] border border-white/[0.06] px-3 py-1 rounded-full font-light"
                 >
-                  <Maximize2 className="w-3.5 h-3.5" />
-                  <span>Full Screen View</span>
-                  <ExternalLink className="w-3 h-3 opacity-60" />
-                </a>
-
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(`Check out this free tool: *${viralTool.title}* on Bethelmind Analytics!\nhttps://www.bethelmindanalytics.com/tools/${cleanSlug}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/10 text-xs font-bold transition-all shadow-sm"
-                  title="Share Tool on WhatsApp"
-                >
-                  <Share2 className="w-3.5 h-3.5 text-[#d4af37]" />
-                  <span className="hidden sm:inline">Share</span>
-                </a>
-
-                <a
-                  href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am using the *${viralTool.title}* on your website. I want to deploy this custom engine for my business.`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-lg shadow-emerald-600/20"
-                >
-                  <MessageCircle className="w-3.5 h-3.5 fill-current" />
-                  <span>WhatsApp Setup</span>
-                </a>
-              </div>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" />
+                  <span>{pill}</span>
+                </span>
+              ))}
             </div>
           </header>
-
-          {/* Top Turnkey Monetization Banner */}
-          <TurnkeyAdBanner position="top" category={viralTool.category} />
 
           {/* Interactive Calculator Embed Frame */}
           <section 
             aria-label="Interactive Tool View"
-            className="w-full bg-slate-900/60 rounded-3xl border border-white/10 overflow-hidden shadow-2xl relative min-h-[780px]"
+            className="w-full bg-[#0a0e17] rounded-3xl border border-[#d4af37]/25 overflow-hidden shadow-2xl shadow-black/80 relative min-h-[780px]"
           >
-            {/* Embedded Standalone Calculator Frame */}
             <iframe
               src={standaloneCalcUrl}
               title={viralTool.title}
-              className="w-full h-[780px] sm:h-[860px] border-0 rounded-3xl bg-[#090d16]"
+              className="w-full h-[780px] sm:h-[860px] border-0 rounded-3xl bg-[#070b14]"
               loading="lazy"
               allow="clipboard-write; clipboard-read"
             />
           </section>
 
-          {/* Bottom Turnkey Monetization Banner */}
-          <TurnkeyAdBanner position="bottom" category={viralTool.category} />
+          {/* Executive Commercial Activation Suite */}
+          <section className="rounded-3xl bg-[#0c101a] border border-[#d4af37]/30 p-6 sm:p-10 space-y-6 shadow-2xl">
+            <div className="text-center max-w-2xl mx-auto space-y-2">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-[#d4af37]">
+                Commercial Deployment & Turnkey Activation
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl font-normal text-[#f5f3ef]">
+                Deploy This Exact Engine for {viralTool.category}
+              </h2>
+              <p className="text-xs sm:text-sm text-[#c9c4bc] font-light leading-relaxed">
+                Eliminate quote fatigue, stop unverified payment slips, and close prospects 24/7 with your branded website and automated WhatsApp quotation assistant.
+              </p>
+            </div>
 
-          {/* 1-Tap WhatsApp & Nairaland Viral Loop */}
-          <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-5 shadow-xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              {/* Option 1: Starter Go-Live */}
+              <div className="p-6 rounded-2xl bg-[#070b14] border border-white/[0.08] hover:border-[#d4af37]/40 transition-colors space-y-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] uppercase tracking-wider text-[#8e887e] font-semibold">Tier 1 &bull; Fast Activation</span>
+                  <h3 className="font-serif text-lg font-normal text-[#f5f3ef]">Starter Go-Live Setup</h3>
+                  <div className="pt-1 flex items-baseline gap-2">
+                    <span className="text-2xl font-serif text-[#d4af37]">₦35,000</span>
+                    <span className="text-xs text-[#8e887e]">one-time setup (or ₦25,000/mo)</span>
+                  </div>
+                </div>
+                <ul className="space-y-2.5 text-xs text-[#c9c4bc] font-light">
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> Pre-built official mobile website</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> 24/7 AI WhatsApp closer configured with your pricing</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> OPay & Moniepoint transfer verification</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> 48-Hour delivery guarantee</li>
+                </ul>
+                <a
+                  href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Lagos Desk! I want to activate the Starter Setup (₦35,000) for our ${viralTool.category} business. Please connect with our team.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-[#f5f3ef] border border-white/[0.12] text-xs font-semibold transition-all"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 text-[#d4af37]" />
+                  <span>Request Starter Activation (₦35k)</span>
+                </a>
+              </div>
+
+              {/* Option 2: Full Turnkey Suite */}
+              <div className="p-6 rounded-2xl bg-[#090d16] border border-[#d4af37]/40 space-y-4 shadow-xl shadow-black/50 relative overflow-hidden">
+                <div className="space-y-1">
+                  <span className="text-[10px] uppercase tracking-wider text-[#d4af37] font-semibold">Tier 2 &bull; Turnkey Enterprise</span>
+                  <h3 className="font-serif text-lg font-normal text-[#f5f3ef]">Full Custom Domain Suite</h3>
+                  <div className="pt-1 flex items-baseline gap-2">
+                    <span className="text-2xl font-serif text-[#d4af37]">₦75,000</span>
+                    <span className="text-xs text-[#8e887e]">50% milestone deposit (₦150k total)</span>
+                  </div>
+                </div>
+                <ul className="space-y-2.5 text-xs text-[#c9c4bc] font-light">
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> Dedicated .com or .com.ng custom domain included</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> Google Search & Maps #1 ranking setup</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> Full sector calculator + WhatsApp ledger</li>
+                  <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> 100% code ownership & source code handover</li>
+                </ul>
+                <a
+                  href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Lagos Desk! We want to commission the Full Turnkey Custom Domain Suite (₦75,000 milestone deposit) for our ${viralTool.category} enterprise. Please send scope.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#070b14] text-xs font-bold transition-all shadow-md shadow-[#d4af37]/20"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>Commission Turnkey Suite (₦75k Deposit)</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="border-t border-white/[0.05] pt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-[#8e887e] font-light">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#d4af37]" />
+                Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)
+              </span>
+              <span>Balance payable ONLY upon your verified live sign-off</span>
+            </div>
+          </section>
+
+          {/* Share Bar */}
+          <div className="bg-[#0a0e17] border border-white/[0.06] rounded-2xl p-5 shadow-xl">
             <ViralToolShareBar
               toolTitle={viralTool.title}
               toolSlug={`tools/${cleanSlug}`}
               summaryText={viralTool.summary}
               highlights={viralTool.highlights ? viralTool.highlights.map(h => ({ label: 'Feature', value: h })) : []}
               category={viralTool.category}
+              hideDisclaimer={true}
             />
           </div>
 
-          {/* Dual Checkout Trust Card (Selar + Moniepoint Direct) */}
-          <DualCheckoutTrustCard
-            productTitle={viralTool.selarProduct}
-            price={viralTool.selarPrice}
-            selarUrl={viralTool.selarUrl}
-            category={viralTool.category}
-          />
-
-          {/* Turnkey B2B SME Setup Offer Banner */}
-          <TurnkeySmeSetupBanner
-            toolName={viralTool.title}
-            category={viralTool.category}
-          />
-
-          {/* Security & Verification Footer Seal */}
-          <footer className="text-center py-6 text-xs text-slate-500 border-t border-white/5 space-y-2">
-            <p className="flex items-center justify-center gap-2 font-medium">
-              <Lock className="w-3.5 h-3.5 text-slate-400" />
-              <span>Bank-Grade 256-bit Encrypted Telemetry · Settlement via Moniepoint Microfinance Bank (6805375225)</span>
+          {/* Statutory Legal Notice & Disclaimer */}
+          <aside aria-label="Statutory Notice" className="bg-[#070b14] border border-white/[0.06] rounded-2xl p-5 text-xs text-[#8e887e] space-y-2">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2 text-[#c9c4bc] font-medium">
+                <ShieldCheck className="w-4 h-4 text-[#d4af37]" />
+                <span className="uppercase tracking-wider text-[11px] text-[#d4af37] font-semibold">
+                  Statutory Notice & Estimator Disclaimer
+                </span>
+              </div>
+              <span className="text-[10px] text-[#8e887e] font-mono">RC: 7034297</span>
+            </div>
+            <p className="leading-relaxed font-light">
+              This calculation engine provides automated preliminary feasibility estimates for planning purposes only. Bethelmind Digital Solutions operates as a technology and automation provider, not a COREN-registered engineering consultant, licensed customs broker, surveying authority, or chartered tax practitioner. Formal structural projects, customs clearance declarations, and binding agreements require on-site professional verification.
             </p>
-            <p>© 2026 Bethelmind Digital Solutions · Plot 12, Commercial Corridor, Lagos, Nigeria.</p>
-          </footer>
-        </div>
+            <div className="flex items-center gap-3 pt-2 text-[11px] text-[#8e887e] flex-wrap border-t border-white/[0.05]">
+              <span className="font-medium text-[#c9c4bc]">Statutory Policies:</span>
+              <Link href="/legal/disclaimer" className="text-[#d4af37] hover:underline">Sector Tools Disclaimer</Link>
+              <span>&bull;</span>
+              <Link href="/legal/terms" className="text-[#d4af37] hover:underline">Terms of Service</Link>
+              <span>&bull;</span>
+              <Link href="/legal/privacy" className="text-[#d4af37] hover:underline">Privacy Policy</Link>
+              <span>&bull;</span>
+              <Link href="/legal/delivery" className="text-[#d4af37] hover:underline">Delivery SLA</Link>
+            </div>
+          </aside>
+        </main>
 
-        {/* 24/7 Bethel AI Concierge */}
         <CustomerAiAgentWidget
           sector={viralTool.category}
-          agentTitle={`Bethel — ${viralTool.category} AI Specialist`}
+          agentTitle={`Bethel — ${viralTool.category} Specialist`}
         />
-      </main>
+
+        <Footer />
+      </div>
     );
   }
 
@@ -686,143 +609,198 @@ export default async function StandaloneToolPage({ params }: ToolPageProps) {
   const profile = getSectorProfile(cleanSlug);
 
   return (
-    <main className="min-h-screen bg-[#070b14] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 pb-36">
-      {/* Top Hairline Metallic Accent Glow */}
-      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent" />
+    <div className="min-h-screen bg-[#070b14] text-[#c9c4bc] font-sans selection:bg-[#d4af37]/30 selection:text-amber-200">
+      <Navbar />
 
-      {/* Atmospheric Ambient Glow */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-b from-[#d4af37]/5 via-slate-900/5 to-transparent blur-[120px] rounded-full" />
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
+      <main className="pt-36 sm:pt-40 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10">
         
-        {/* Executive Luxury Header Bar */}
-        <header className="bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 sm:p-7 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-white/5 space-y-5">
-          
-          {/* Top Metadata Row */}
-          <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-white/10 pb-4">
+        {/* Executive Luxury Header Bar (Spacious, Serene & Balanced) */}
+        <header className="space-y-4 pt-4 border-b border-white/[0.06] pb-8">
+          <div className="flex items-center justify-between flex-wrap gap-3">
             <Link
               href="/tools"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/10 transition-all font-semibold"
+              className="inline-flex items-center gap-2 text-xs font-medium text-[#8e887e] hover:text-[#d4af37] transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>All Tools Directory</span>
+              <span>Return to Sector Tools Directory</span>
             </Link>
 
-            <div className="flex items-center gap-2">
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-[11px]">
+            <div className="flex items-center gap-3 text-xs text-[#8e887e] font-light">
+              <span className="inline-flex items-center gap-1.5 text-[#d4af37]">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                CAC Certified Enterprise · RC 7034297
+                CAC RC: 7034297
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20 font-bold text-[11px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-pulse" />
-                2026 Production Release
-              </span>
+              <span>&bull;</span>
+              <span>Moniepoint NIP Settlement</span>
+              <span>&bull;</span>
+              <span>48-Hour SLA</span>
             </div>
           </div>
 
-          {/* Headline & Value Proposition */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pt-1">
-            <div className="space-y-2 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/25 text-[11px] font-black uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>{profile.tag}</span>
-              </div>
-              
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-['Outfit'] tracking-tight leading-tight">
-                {profile.title}
-              </h1>
+          <div className="space-y-2">
+            <span className="text-[11px] font-medium text-[#c5a880] uppercase tracking-widest block">
+              {profile.category} &bull; Commercial Specification Engine
+            </span>
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
+              {profile.title}
+            </h1>
+            <p className="text-xs sm:text-sm md:text-base text-[#c9c4bc] font-light leading-relaxed max-w-3xl">
+              {profile.summary}
+            </p>
+          </div>
 
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pt-1">
-                {profile.summary}
-              </p>
-
-              {/* Value Highlight Pills */}
-              <div className="flex flex-wrap items-center gap-2 pt-2">
-                {profile.highlightPills.map((pill, i) => (
-                  <span
-                    key={i}
-                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-300 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg"
-                  >
-                    <CheckCircle2 className="w-3 h-3 text-[#d4af37]" />
-                    <span>{pill}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Direct Commercial Activation CTA Card */}
-            <div className="lg:w-72 shrink-0 bg-gradient-to-br from-slate-900/90 to-slate-950 p-4 rounded-2xl border border-[#d4af37]/30 shadow-xl space-y-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400 font-semibold">Custom SME Setup</span>
-                <span className="text-emerald-400 font-black">₦35,000 Starter</span>
-              </div>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                Want this exact tool + 24/7 AI WhatsApp closer deployed on your dedicated custom domain?
-              </p>
-              <a
-                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I am testing the live *${profile.title}* on your website. I would like to activate our dedicated business setup with 24/7 AI WhatsApp closer (₦35k Starter Package).`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#080d19] font-bold text-xs transition-all shadow-md shadow-[#d4af37]/20 active:scale-95"
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            {profile.highlightPills.map((pill, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-1.5 text-xs text-[#c9c4bc] bg-white/[0.03] border border-white/[0.06] px-3 py-1 rounded-full font-light"
               >
-                <MessageCircle className="w-3.5 h-3.5 fill-current" />
-                <span>Claim Setup on WhatsApp →</span>
-              </a>
-            </div>
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" />
+                <span>{pill}</span>
+              </span>
+            ))}
           </div>
         </header>
 
-        {/* Feature Interactive Suite */}
-        <section aria-label="Interactive Tool Engine">
+        {/* Feature Interactive Suite (Dedicated to this sector, tabs suppressed) */}
+        <section aria-label="Interactive Tool Engine" className="rounded-3xl bg-[#0a0e17] border border-[#d4af37]/25 p-4 sm:p-8 shadow-2xl shadow-black/80">
           {cleanSlug === 'recruitment' ? (
             <RecruitmentEngineWidget />
           ) : (
-            <SectorToolsWidget businessCategory={profile.category} hideHeader={true} />
+            <SectorToolsWidget 
+              businessCategory={profile.category} 
+              hideHeader={true} 
+              lockTab={profile.sectorTab}
+              hideTabBar={true}
+            />
           )}
         </section>
 
-        {/* 1-Tap WhatsApp & Nairaland Viral Loop */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-5 shadow-xl">
+        {/* Executive Commercial Activation Suite (Clear 2-Tier Options & Moniepoint Escrow) */}
+        <section className="rounded-3xl bg-[#0c101a] border border-[#d4af37]/30 p-6 sm:p-10 space-y-6 shadow-2xl">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#d4af37]">
+              Commercial Deployment & Turnkey Activation
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-normal text-[#f5f3ef]">
+              Deploy This Exact Engine for {profile.category}
+            </h2>
+            <p className="text-xs sm:text-sm text-[#c9c4bc] font-light leading-relaxed">
+              Eliminate quote fatigue, stop unverified payment slips, and close prospects 24/7 with your branded website and automated WhatsApp quotation assistant.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            {/* Option 1: Starter Go-Live */}
+            <div className="p-6 rounded-2xl bg-[#070b14] border border-white/[0.08] hover:border-[#d4af37]/40 transition-colors space-y-4">
+              <div className="space-y-1">
+                <span className="text-[10px] uppercase tracking-wider text-[#8e887e] font-semibold">Tier 1 &bull; Fast Activation</span>
+                <h3 className="font-serif text-lg font-normal text-[#f5f3ef]">Starter Go-Live Setup</h3>
+                <div className="pt-1 flex items-baseline gap-2">
+                  <span className="text-2xl font-serif text-[#d4af37]">₦35,000</span>
+                  <span className="text-xs text-[#8e887e]">one-time setup (or ₦25,000/mo)</span>
+                </div>
+              </div>
+              <ul className="space-y-2.5 text-xs text-[#c9c4bc] font-light">
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> Pre-built official mobile website</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> 24/7 AI WhatsApp closer configured with your pricing</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> OPay & Moniepoint transfer verification</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> 48-Hour delivery guarantee</li>
+              </ul>
+              <a
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Lagos Desk! I want to activate the Starter Setup (₦35,000) for our ${profile.category} business. Please connect with our team.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-[#f5f3ef] border border-white/[0.12] text-xs font-semibold transition-all"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-[#d4af37]" />
+                <span>Request Starter Activation (₦35k)</span>
+              </a>
+            </div>
+
+            {/* Option 2: Full Turnkey Suite */}
+            <div className="p-6 rounded-2xl bg-[#090d16] border border-[#d4af37]/40 space-y-4 shadow-xl shadow-black/50 relative overflow-hidden">
+              <div className="space-y-1">
+                <span className="text-[10px] uppercase tracking-wider text-[#d4af37] font-semibold">Tier 2 &bull; Turnkey Enterprise</span>
+                <h3 className="font-serif text-lg font-normal text-[#f5f3ef]">Full Custom Domain Suite</h3>
+                <div className="pt-1 flex items-baseline gap-2">
+                  <span className="text-2xl font-serif text-[#d4af37]">₦75,000</span>
+                  <span className="text-xs text-[#8e887e]">50% milestone deposit (₦150k total)</span>
+                </div>
+              </div>
+              <ul className="space-y-2.5 text-xs text-[#c9c4bc] font-light">
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> Dedicated .com or .com.ng custom domain included</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> Google Search & Maps #1 ranking setup</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> Full sector calculator + WhatsApp ledger</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-[#d4af37]" /> 100% code ownership & source code handover</li>
+              </ul>
+              <a
+                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Lagos Desk! We want to commission the Full Turnkey Custom Domain Suite (₦75,000 milestone deposit) for our ${profile.category} enterprise. Please send scope.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#070b14] text-xs font-bold transition-all shadow-md shadow-[#d4af37]/20"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                <span>Commission Turnkey Suite (₦75k Deposit)</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="border-t border-white/[0.05] pt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-[#8e887e] font-light">
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-[#d4af37]" />
+              Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)
+            </span>
+            <span>Balance payable ONLY upon your verified live sign-off</span>
+          </div>
+        </section>
+
+        {/* Share Bar */}
+        <div className="bg-[#0a0e17] border border-white/[0.06] rounded-2xl p-5 shadow-xl">
           <ViralToolShareBar
             toolTitle={profile.title}
             toolSlug={`tools/${cleanSlug}`}
             summaryText={profile.summary}
             highlights={profile.highlightPills ? profile.highlightPills.map(p => ({ label: 'Highlight', value: p })) : []}
             category={profile.category}
+            hideDisclaimer={true}
           />
         </div>
 
-        {/* Dual Checkout Trust Card (Selar + Moniepoint Direct) */}
-        <DualCheckoutTrustCard
-          productTitle={`${profile.title} Commercial Implementation Bundle`}
-          price="₦25,000 / $30"
-          selarUrl="https://selar.com/showlove/bethelmind"
-          category={profile.category}
-        />
-
-        {/* Turnkey B2B SME Setup Offer Banner */}
-        <TurnkeySmeSetupBanner
-          toolName={profile.title}
-          category={profile.category}
-        />
-
-        {/* Security & Verification Footer Seal */}
-        <footer className="text-center py-6 text-xs text-slate-500 border-t border-white/5 space-y-2">
-          <p className="flex items-center justify-center gap-2 font-medium">
-            <Lock className="w-3.5 h-3.5 text-slate-400" />
-            <span>Bank-Grade 256-bit Encrypted Telemetry · Settlement via Moniepoint Microfinance Bank (6805375225)</span>
+        {/* Statutory Legal Notice & Disclaimer */}
+        <aside aria-label="Statutory Notice" className="bg-[#070b14] border border-white/[0.06] rounded-2xl p-5 text-xs text-[#8e887e] space-y-2">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2 text-[#c9c4bc] font-medium">
+              <ShieldCheck className="w-4 h-4 text-[#d4af37]" />
+              <span className="uppercase tracking-wider text-[11px] text-[#d4af37] font-semibold">
+                Statutory Notice & Estimator Disclaimer
+              </span>
+            </div>
+            <span className="text-[10px] text-[#8e887e] font-mono">RC: 7034297</span>
+          </div>
+          <p className="leading-relaxed font-light">
+            This calculation engine provides automated preliminary feasibility estimates for planning purposes only. Bethelmind Digital Solutions operates as a technology and automation provider, not a COREN-registered engineering consultant, licensed customs broker, surveying authority, or chartered tax practitioner. Formal structural projects, customs clearance declarations, and binding agreements require on-site professional verification.
           </p>
-          <p>© 2026 Bethelmind Digital Solutions · Plot 12, Commercial Corridor, Lagos, Nigeria.</p>
-        </footer>
-      </div>
+          <div className="flex items-center gap-3 pt-2 text-[11px] text-[#8e887e] flex-wrap border-t border-white/[0.05]">
+            <span className="font-medium text-[#c9c4bc]">Statutory Policies:</span>
+            <Link href="/legal/disclaimer" className="text-[#d4af37] hover:underline">Sector Tools Disclaimer</Link>
+            <span>&bull;</span>
+            <Link href="/legal/terms" className="text-[#d4af37] hover:underline">Terms of Service</Link>
+            <span>&bull;</span>
+            <Link href="/legal/privacy" className="text-[#d4af37] hover:underline">Privacy Policy</Link>
+            <span>&bull;</span>
+            <Link href="/legal/delivery" className="text-[#d4af37] hover:underline">Delivery SLA</Link>
+          </div>
+        </aside>
 
-      {/* 24/7 Bethel AI Concierge */}
+      </main>
+
       <CustomerAiAgentWidget
         sector={profile.category}
-        agentTitle={`Bethel — ${profile.category} AI Specialist`}
+        agentTitle={`Bethel — ${profile.category} Specialist`}
       />
-    </main>
+
+      <Footer />
+    </div>
   );
 }

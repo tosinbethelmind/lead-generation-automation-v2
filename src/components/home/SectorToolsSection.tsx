@@ -807,14 +807,14 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
         )}
       </div>
 
-      {/* 6-Month Independence Package Direct Conversion Card Inside Every Calculator Result */}
+      {/* Executive Commercial Activation Suite */}
       <div
         style={{
-          marginTop: 6,
-          background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(15,23,42,0.95) 100%)',
-          border: '1px solid rgba(16,185,129,0.35)',
+          marginTop: 8,
+          background: '#090d16',
+          border: '1px solid rgba(212, 175, 55, 0.3)',
           borderRadius: 16,
-          padding: '14px 16px',
+          padding: '16px 18px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -823,38 +823,36 @@ function ResultVisualizer({ toolName, result, onOpenAiChat }: ResultVisualizerPr
         }}
       >
         <div>
-          <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            SME DIGITAL GROWTH INITIATIVE
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#d4af37', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Executive Commercial Activation Suite
           </div>
-          <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#f8fafc', marginTop: 2 }}>
-            Get This Calculator + Your Official .COM.NG Website:{' '}
-            <span style={{ textDecoration: 'line-through', color: '#f87171' }}>₦130,000</span>{' '}
-            <span style={{ color: '#34d399' }}>→ ₦65,000 Total</span>
+          <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#f5f3ef', marginTop: 2 }}>
+            Deploy This Engine + Dedicated Mobile Website &amp; 24/7 WhatsApp AI Closer
           </div>
-          <div style={{ fontSize: '0.73rem', color: '#94a3b8', marginTop: 2 }}>
-            Start today with <strong style={{ color: '#fff' }}>₦35,000 Deposit</strong> (Pay ₦30k balance ONLY after live on Google) • Moniepoint: <strong style={{ color: '#38bdf8' }}>6805375225</strong>
+          <div style={{ fontSize: '0.75rem', color: '#c9c4bc', marginTop: 3 }}>
+            ₦35,000 Starter Milestone Deposit (₦65,000 Total) &bull; Moniepoint MFB: <strong style={{ color: '#d4af37' }}>6805375225</strong>
           </div>
         </div>
         <a
           href={buildWhatsAppLink(
             paymentConfig.whatsappNumber,
-            `Hello Bethelmind Lagos Desk! I just tested the *${toolName}* calculator and want to claim the 6-Month Independence Bundle (₦75,000 Total / ₦35,000 Deposit) to launch this tool + Official .COM.NG Website for my business!`
+            `Hello Bethelmind Lagos Desk! I just tested the *${toolName}* calculator and want to activate this engine with the Starter Setup (₦35,000 Deposit / ₦65,000 Total) for my business.`
           )}
           target="_blank"
           rel="noreferrer noopener"
           style={{
-            background: '#10b981',
-            color: '#022c22',
+            background: 'linear-gradient(135deg, #d4af37 0%, #aa8620 100%)',
+            color: '#070b14',
             textDecoration: 'none',
             borderRadius: 10,
-            padding: '9px 14px',
+            padding: '10px 16px',
             fontSize: '0.78rem',
-            fontWeight: 900,
+            fontWeight: 800,
             whiteSpace: 'nowrap',
-            boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
+            boxShadow: '0 4px 14px rgba(212,175,55,0.25)',
           }}
         >
-          Activate ₦35k Setup →
+          Activate on WhatsApp &rarr;
         </a>
       </div>
 
@@ -928,8 +926,8 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
       style={{ padding: '72px clamp(16px, 4vw, 40px)', maxWidth: 1200, margin: '0 auto', scrollMarginTop: 90 }}
     >
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 100, padding: '5px 16px', marginBottom: 14 }}>
-          <span style={{ fontSize: '0.78rem', color: '#c084fc', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>1-Click Sector Tools</span>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.25)', borderRadius: 100, padding: '5px 16px', marginBottom: 14 }}>
+          <span style={{ fontSize: '0.75rem', color: '#d4af37', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Interactive Industry Engines</span>
         </div>
         <h2
           id="sector-tools-heading"
@@ -940,9 +938,7 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
         <p style={{ color: '#94a3b8', fontSize: '0.96rem', maxWidth: 700, margin: '0 auto 8px', lineHeight: 1.5 }}>
           Save your sales team 10+ hours a week. Let your clients calculate their exact Solar load, Real Estate installments, Vehicle customs duty, or Legal fees in 2 minutes with instant PDF quotes.
         </p>
-        <p style={{ color: '#10b981', fontSize: '0.84rem', fontWeight: 700, maxWidth: 620, margin: '0 auto' }}>
-          ✓ Select your industry below to run a live calculation simulation right now.
-        </p>
+        
       </div>
 
       {/* Sector Tabs */}
@@ -963,14 +959,14 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
             style={{
               padding: '9px 18px', borderRadius: 12, cursor: 'pointer', fontWeight: 700, fontSize: '0.84rem',
               display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.2s',
-              background: selectedIndustry === s.id ? s.color : 'rgba(255,255,255,0.03)',
-              color: selectedIndustry === s.id ? '#fff' : '#94a3b8',
-              border: `1px solid ${selectedIndustry === s.id ? s.color : 'rgba(255,255,255,0.08)'}`,
+              background: selectedIndustry === s.id ? 'linear-gradient(135deg, #d4af37 0%, #aa8620 100%)' : 'rgba(255,255,255,0.03)',
+              color: selectedIndustry === s.id ? '#070b14' : '#c9c4bc',
+              border: `1px solid ${selectedIndustry === s.id ? '#d4af37' : 'rgba(255,255,255,0.08)'}`,
               outline: 'none',
-              boxShadow: selectedIndustry === s.id ? `0 4px 20px ${s.color}35` : 'none'
+              boxShadow: selectedIndustry === s.id ? '0 4px 16px rgba(212,175,55,0.25)' : 'none'
             }}
           >
-            <span aria-hidden="true">{s.emoji}</span> {s.name}
+            {s.name}
           </button>
         ))}
       </div>
@@ -1078,13 +1074,8 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
                   gap: 8,
                   padding: '11px 18px',
                   borderRadius: 12,
-                  background: `linear-gradient(135deg, ${profile.color}, #7c3aed)`,
-                  color: '#fff',
-                  border: 'none',
-                  fontWeight: 800,
-                  fontSize: '0.86rem',
-                  cursor: 'pointer',
-                  boxShadow: `0 6px 20px ${profile.color}30`
+                  background: 'linear-gradient(135deg, #d4af37 0%, #aa8620 100%)',
+                  color: '#070b14', border: 'none', fontWeight: 800, fontSize: '0.86rem', cursor: 'pointer', boxShadow: '0 4px 14px rgba(212,175,55,0.2)'
                 }}
                 aria-label={`Test ${tool.name} calculator`}
               >
@@ -1107,7 +1098,7 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
           aria-label={`${modal.tool.name} calculator`}
           style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(16px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
         >
-          <div style={{ background: '#090d16', border: '1px solid rgba(6,182,212,0.4)', borderRadius: 24, padding: '28px clamp(16px, 4vw, 32px)', maxWidth: 580, width: '100%', maxHeight: '92vh', overflowY: 'auto', position: 'relative', boxShadow: '0 25px 80px rgba(0,0,0,0.8)' }}>
+          <div style={{ background: '#090d16', border: '1px solid rgba(212,175,55,0.3)', borderRadius: 24, padding: '28px clamp(16px, 4vw, 32px)', maxWidth: 580, width: '100%', maxHeight: '92vh', overflowY: 'auto', position: 'relative', boxShadow: '0 25px 80px rgba(0,0,0,0.8)' }}>
 
             <button
               onClick={closeModal}
@@ -1169,7 +1160,7 @@ export default function SectorToolsSection({ selectedIndustry, setSelectedIndust
                 style={{
                   padding: '14px',
                   borderRadius: 14,
-                  background: 'linear-gradient(135deg, #06b6d4, #8b5cf6)',
+                  background: 'linear-gradient(135deg, #d4af37 0%, #aa8620 100%)', color: '#070b14', boxShadow: '0 8px 24px rgba(212,175,55,0.25)',
                   color: '#fff',
                   border: 'none',
                   fontWeight: 900,

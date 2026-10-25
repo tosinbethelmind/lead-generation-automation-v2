@@ -17,11 +17,37 @@ const { chromium } = require('playwright');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
-const SESSION_FILE = path.join(__dirname, '..', 'local_db', 'nairaland_session.json');
+const ACCOUNTS_REGISTRY = path.join(__dirname, '..', 'local_db', 'nairaland_accounts.json');
+
+function getActiveAccountName() {
+  const accountArg = process.argv.find(a => a.startsWith('--account=') || a.startsWith('--user='));
+  if (accountArg) return accountArg.split('=')[1].trim();
+  return null;
+}
+
+function resolveSessionFile(accountOverride = null) {
+  const acc = accountOverride || getActiveAccountName();
+  if (acc) {
+    if (acc.toLowerCase().includes('kenetwork')) {
+      return path.join(__dirname, '..', 'local_db', 'nairaland_session_kenetwork2026.json');
+    }
+    if (acc.toLowerCase().includes('4thmainland')) {
+      return path.join(__dirname, '..', 'local_db', 'nairaland_session_4thmainland.json');
+    }
+    if (acc.toLowerCase().includes('bethelsolution')) {
+      return path.join(__dirname, '..', 'local_db', 'nairaland_session.json');
+    }
+  }
+  return path.join(__dirname, '..', 'local_db', 'nairaland_session.json');
+}
+
+let SESSION_FILE = resolveSessionFile();
 const CAMPAIGNS_LEDGER = path.join(__dirname, '..', 'local_db', 'nairaland_campaigns.json');
 
 // Nairaland Board Mapping
 const BOARDS = {
+  vin: { id: 78, name: 'Car Talk', slug: 'tokunbo-vin-checker' },
+  arbitrage: { id: 15, name: 'Computers', slug: 'p2p-arbitrage' },
   solar: { id: 14, name: 'Properties', slug: 'solar-boq' },
   auto: { id: 78, name: 'Car Talk', slug: 'tokunbo-duty' },
   properties: { id: 14, name: 'Properties', slug: 'mortgage-calculator' },
@@ -30,10 +56,182 @@ const BOARDS = {
   salon: { id: 37, name: 'Fashion & Beauty', slug: 'salon-booking' },
   restaurant: { id: 38, name: 'Food', slug: 'restaurant-order' },
   logistics: { id: 24, name: 'Business', slug: 'logistics-quote' },
+  sports: { id: 22, name: 'Sports', slug: 'footy-wordle' },
 };
 
 // Campaign Catalog with Anti-Duplicate Templates
 const CAMPAIGN_CATALOG = {
+  'tokunbo-vin-checker': {
+    boardId: 78,
+    boardName: 'Car Talk',
+    toolSlug: 'vin',
+    titles: [
+      'How to Check Tokunbo VIN Free & Detect Auction Water-Damage Before Wiring Millions in Lagos',
+      'Lagos Auto Buyers Guide: 17-Digit VIN Decoders, Copart Salvage Traps & NCS Customs Duty (2026)',
+      'Before You Buy That Tokunbo Lexus RX350 or Corolla in Lagos: Free Salvage & VIN Decoder'
+    ],
+    generateBody: () => {
+      const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      return `[b]How to Check Tokunbo VIN Free & Detect Auction Water-Damage Before Wiring Millions in Lagos[/b]
+
+To all car buyers, auto enthusiasts, and Tokunbo car dealers on Nairaland,
+
+With standard Tokunbo vehicles (Lexus RX350, Toyota Corolla, Camry, Honda Accord) currently trading between [b]₦14,000,000 to ₦26,000,000[/b] in Lagos, buying a bad car with hidden salvage history is an expensive mistake.
+
+Over 35% of auction vehicles shipped through Tin Can and PTML ports have hidden issues:
+[quote]
+[b]The 3 Big Traps in Nigerian Tokunbo Dealerships:[/b]
+1. [b]Flood & Saltwater Submersion:[/b] Hurricane flood-damaged cars from Texas/Florida auctioned as clean titles. Corroded wiring harnesses cause electrical fires within 3 months.
+2. [b]Odometer Rollback:[/b] Mileage wound back from 180,000 miles to 65,000 miles before container loading.
+3. [b]Stolen Catalytic Converters:[/b] Exhaust components hollowed out before port discharge, triggering immediate check engine lights.
+[/quote]
+
+[b]How to Verify Any 17-Digit VIN Free Before Leaving Home:[/b]
+Instead of paying roadside mechanics to guess, you can decode the complete factory specs, NHTSA recalls, and auction history free on your phone:
+
+[url=https://www.bethelmindanalytics.com/vin][b]🚗 Test The Free 17-Digit Tokunbo VIN & Salvage Checker[/b][/url]
+[url=https://t.me/BethelmindAsistantBot][b]🤖 Run on 24/7 Telegram Master Bot: @BethelmindAsistantBot (Send /vin)[/b][/url]
+
+[quote]
+[b]💳 Need an Official Stamped NCS Valuation & VIN Passport Certificate?[/b]
+Generate an instant official PDF report for vehicle registration, customs clearance, or buyer confidence (₦2,500 via Card/OPay):
+👉 [url=https://selar.com/showlove/bethelmind?amount=2500][b]Order Official Stamped VIN Certificate (₦2,500 via Selar)[/b][/url]
+[/quote]
+
+[quote]
+[b]⚡ Enterprise Notice for Lagos Auto Dealers & Clearing Agents:[/b]
+Deploy this exact live 17-digit VIN Customs Duty & Salvage History Checker on your dealership website and WhatsApp profile:
+• [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month) — Active in 24 Hours.
+• [b]Tier 2 (Turnkey Custom Domain Suite):[/b] ₦75,000 Deposit (₦150,000 Total) — Dedicated .com.ng domain + Google SEO.
+Settlement: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
+WhatsApp Closer Desk: [b]0802 279 1227[/b]
+[/quote]
+
+[b]Car Buyers & Dealers:[/b] Drop your 17-digit VIN or vehicle model below for instant audit specs!
+
+[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
+    }
+  },
+
+  'construction-estimator': {
+    boardId: 14,
+    boardName: 'Properties',
+    toolSlug: 'mortgage-calc',
+    titles: [
+      'Building in Lagos 2026: Exact Cement, Sand, Granite & Iron Rod Cost Matrix Before Mobilizing Workers',
+      'Audited Lagos Duplex Foundation & Decking Sheet: How to Avoid 30% Site Material Pilferage',
+      '2026 Reality of Building in Lekki & Ibeju: Real Cost of Sharp Sand, Granite & 42.5R Cement'
+    ],
+    generateBody: () => {
+      const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      return `[b]Building in Lagos 2026: Exact Cement, Sand, Granite & Iron Rod Cost Matrix (Avoid 30% Site Pilferage)[/b]
+
+To all home builders, site supervisors, engineers, and property developers on Nairaland,
+
+Building in Lagos in 2026 requires strict mathematical auditing. With [b]42.5R Grade Cement sitting at N10,200 – N10,800 per bag[/b], sharp sand tippers at [b]N140,000 – N180,000[/b], and high-yield 16mm iron rods at [b]N18,500 – N21,000 per length[/b], any unchecked site wastage or worker theft will blow your building budget by millions.
+
+Here is an audited material matrix for a standard [b]1:2:4 Mix Ratio (Decking / German Floor Slab)[/b]:
+
+[quote]
+[b]• Cement Requirement:[/b] ~7.5 bags per cubic meter of finished structural concrete
+[b]• Sharp Sand:[/b] ~0.5 cubic meters (Clean washed dredged sand, zero clay silt)
+[b]• 3/4 Clean Granite:[/b] ~0.85 cubic meters (Crushed granite, zero dust)
+[b]• Water-Cement Ratio:[/b] Strictly 0.45 – 0.50 (Excessive water weakens concrete compressive strength below 25 N/mm²)
+[b]• Reinforcement (TMT):[/b] High-yield ribbed 12mm & 16mm rods tied with double binding wire at 150mm centers
+[/quote]
+
+To audit your plot layout, deed fees, and structural material requirements before buying materials or wiring money to site foremen, run the free interactive estimator on your phone:
+
+[url=https://www.bethelmindanalytics.com/tools/mortgage-calc][b]👉 Test The Free Lagos Property Layout, Survey & Material Estimator[/b][/url]
+
+[quote]
+[b]⚡ Enterprise Deployment Notice for Building Contractors, Engineers & Developers:[/b]
+If you run a construction or civil engineering firm and want this automated material estimator + 24/7 AI WhatsApp site quoting engine deployed under your company brand in 24 hours:
+• [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month Pay-Small-Small) — Live in 24 Hours.
+• [b]Tier 2 (Turnkey Custom Domain Suite):[/b] ₦75,000 Milestone Deposit (₦150,000 Total) — Dedicated .com.ng domain, Google SEO, 100% code ownership in 48 hours.
+Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
+WhatsApp Closer Desk: [b]0802 279 1227[/b]
+[/quote]
+
+[b]Engineers & Homebuilders:[/b] What stage of building are you currently executing (Foundation, German Floor, Decking, or Roofing)? Drop your specs below for estimated material quantities!
+
+[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
+    }
+  },
+
+  'fake-alert-shield': {
+    boardId: 15,
+    boardName: 'Computers',
+    toolSlug: 'retail-catalog',
+    titles: [
+      'How Lagos Retailers & Supermarkets Stop Weekend Fake Alerts with Automated Webhook Reconciliation',
+      'The Fake Alert Epidemic in Nigerian Retail: Why SMS/Email Alerts Fail and How Webhooks Solve It',
+      'Stopping Fake Bank Transfers in Walk-in Boutiques: Moniepoint Webhook Verification Matrix'
+    ],
+    generateBody: () => {
+      const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      return `[b]The Fake Alert Epidemic in Nigerian Retail: Why SMS/Email Alerts Fail and How Direct Webhooks Protect Cashiers[/b]
+
+To business owners, boutique managers, and supermarket operators across Nigeria,
+
+Every weekend, Nigerian retail merchants lose hundreds of thousands of Naira to sophisticated fake bank transfer fraud. 
+
+The two most common fraud schemes:
+1. [b]Counterfeit Transfer Receipts:[/b] Fraudsters use mobile graphic apps to generate photorealistic bank debit slips bearing your exact business name.
+2. [b]Spoofed SMS Sender IDs:[/b] Bulk SMS gateways are abused to send fake credit alerts impersonating your bank before the customer walks out of the store.
+
+[quote]
+[b]The Real Difference: Surface Alerts vs. Programmatic Ledger Reconciliation[/b]
+
+• [b]SMS/Email Alerts:[/b] Highly delayed (especially on weekends) and trivially spoofed. Relying on cashier phones creates long customer queues.
+• [b]Automated Webhook Ledger:[/b] The instant a customer transfers funds to your Moniepoint or OPay virtual account, a secure 256-bit server webhook fires directly to your cashier screen or printer in [b]under 2.5 seconds[/b].
+• [b]Result:[/b] Goods are never handed over based on customer phone screenshots. Zero fake alerts, zero cashier arguments, and instantaneous digital WhatsApp receipts.
+[/quote]
+
+To test how an automated WhatsApp catalog and instant anti-fake alert reconciliation ledger works for retail stores, test the free interactive engine here:
+
+[url=https://www.bethelmindanalytics.com/tools/retail-catalog][b]👉 Test The Free Retail WhatsApp Closer & Anti-Fake Alert Engine[/b][/url]
+
+[b]Business Owners & Retailers:[/b] How does your shop currently handle bank transfer confirmations during peak weekend rush hours? Share your experience below!
+
+[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
+    }
+  },
+
+  'footy-wordle': {
+    boardId: 22,
+    boardName: 'Sports',
+    toolSlug: 'footy-wordle',
+    titles: [
+      'FootyWordle AI: Daily 5-Letter Football Star Mystery & Transfer Value Guessing Game',
+      'Free Daily Football Wordle For Nigerian Fans (Test Your Premier League & UCL Knowledge)',
+      'How Many Tries To Guess Today 5-Letter Mystery Player? (Naija Football Fans Challenge)'
+    ],
+    generateBody: () => {
+      const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      return `[b]⚽ Daily Football Mystery Player & Transfer Value Game (Play Free in Browser)[/b]
+
+Naija Football Fans & Premier League Analysts,
+
+We built a free, lightweight [b]daily 5-letter football Wordle game[/b] tailored for African sports enthusiasts. 
+
+[quote]
+[b]How to Play:[/b]
+• Guess today's 5-letter football superstar or iconic club in 6 tries.
+• Each guess gives you instant green/yellow letter clues.
+• Once solved, view current transfer market valuations, league stats & historical trophies.
+• Share your emoji score grid on WhatsApp or right here on Nairaland to challenge your friends!
+[/quote]
+
+Test today's mystery puzzle directly on your phone:
+
+[url=https://www.bethelmindanalytics.com/tools/footy-wordle][b]👉 Play Today's Daily FootyWordle Free Here[/b][/url]
+
+[b]Challenge:[/b] How many tries did it take you to crack today's player? Share your emoji grid results in the comments below!
+
+[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions[/i]`;
+    }
+  },
   'solar-boq': {
     boardId: 14,
     boardName: 'Properties',
@@ -66,6 +264,15 @@ Instead of guessing your sizing or overpaying roadside technicians, you can run 
 [url=https://www.bethelmindanalytics.com/tools/solar-boq][b]👉 Test Your Exact Property Load & DisCo Sizing Free (No Sign-Up Needed)[/b][/url]
 
 You can select Flat, Duplex, or Commercial Facility, enter your current monthly diesel spend, and generate an audited WhatsApp proposal instantly.
+
+[quote]
+[b]⚡ Enterprise Deployment Notice for Solar Installers & Contractors:[/b]
+If you are still sending manual Word/PDF quotations that clients reject, get this automated 5kVA–20kVA load calculator + 24/7 AI WhatsApp BOQ closer deployed under your company brand in 24 hours:
+• [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month Pay-Small-Small) — Live in 24 Hours.
+• [b]Tier 2 (Turnkey Custom Domain Suite):[/b] ₦75,000 Milestone Deposit (₦150,000 Total) — Dedicated .com.ng domain, Google SEO, 100% code ownership in 48 hours.
+Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
+WhatsApp Closer Desk: [b]0802 279 1227[/b]
+[/quote]
 
 [i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
     }
@@ -100,9 +307,80 @@ Here is the statutory NCS clearing formula:
 
 To verify vehicle duty before committing funds or wiring money to auction houses, you can run the live 17-digit VIN clearing calculator here:
 
-[url=https://www.bethelmindanalytics.com/tools/tokunbo-duty][b]👉 Check Exact Tokunbo Customs Duty & Port Landing Cost Free[/b][/url]
+[url=https://www.bethelmindanalytics.com/vin][b]👉 Check Exact Tokunbo VIN History & Customs Duty Free[/b][/url]
+
+[url=https://t.me/BethelmindAsistantBot][b]🤖 Run on 24/7 Telegram Master Bot: @BethelmindAsistantBot[/b][/url]
+
+[quote]
+[b]💳 Need an Official NCS Valuation Certificate for Clearing or Resale?[/b]
+Generate an instant official stamped Tokunbo Passport PDF with customs clearing breakdown via Selar / Card / OPay (₦2,000):
+👉 [url=https://selar.com/showlove/bethelmind?amount=2500][b]Order Official Stamped Certificate (₦2,500 on Selar)[/b][/url]
+[/quote]
+
+[quote]
+[b]⚡ Enterprise Notice for Lagos Auto Dealers & Clearing Agents:[/b]
+Embed this exact live 17-digit VIN Customs Duty & PTML Surcharge Calculator directly onto your dealership website or WhatsApp business profile:
+• [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month) — Active in 24 Hours.
+• [b]Tier 2 (Full Turnkey Suite):[/b] ₦75,000 Deposit (₦150,000 Total) — Dedicated domain + Google SEO ranking.
+Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
+WhatsApp Closer Desk: [b]0802 279 1227[/b]
+[/quote]
 
 [i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
+    }
+  },
+
+  'p2p-arbitrage': {
+    boardId: 15,
+    boardName: 'Computers',
+    toolSlug: 'p2p-arbitrage',
+    titles: [
+      'Official 2026 Binance P2P vs Bybit Dollar Spread Matrix: How to Legally Arbitrage ₦15–₦45/$ Daily',
+      'Automated 2026 Binance P2P vs Bybit Dollar Spread Desk: How Traders Track ₦15–₦45/$ Arbitrage Free',
+      'The 2026 Nigerian Dollar Arbitrage Blueprint: Capital Rotation, Account Safety & Live Spread Desk'
+    ],
+    generateBody: () => {
+      const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      return `[b]Official 2026 Binance P2P vs Bybit Dollar Spread Matrix: How to Legally Arbitrage ₦15–₦45/$ Daily[/b]
+
+To all digital merchants, P2P vendors, crypto traders, software developers, and FX operators on Nairaland,
+
+In the current Nigerian foreign exchange landscape, market fragmentation between major orderbooks (Binance P2P, Bybit, KuCoin) and OTC bank settlement desks creates persistent daily price spreads ranging from [b]₦15 to ₦50 per USDT/Dollar[/b].
+
+Here is how quantitative P2P arbitrage works legally and sustainably:
+
+[quote]
+[b]1. The Core Arbitrage Mechanism:[/b]
+When Binance P2P buy orders clear at ₦1,485/$ and Bybit sell desks absorb volume at ₦1,510/$, an instant gross spread of [b]₦25/USDT[/b] exists across orderbooks.
+
+[b]2. Daily Capital Rotation Return:[/b]
+• Capital: $1,000 (Approx ₦1,485,000)
+• Net spread after taker/merchant fees (0.15%): ₦22/USDT
+• Net profit per completed rotation cycle: [b]₦22,000[/b]
+• Rotating the same capital 3 times daily = [b]₦66,000 net profit / day[/b]
+
+[b]3. Critical Risk Controls (Account Safety):[/b]
+• Only trade with 98%+ completion merchants to prevent 3rd-party fraudulent bank transfer flags.
+• Strictly utilize dedicated merchant accounts (OPay, Kuda, Moniepoint) with verified narration tags.
+• Never hold volatile assets—execute instant USDT/NGN conversion cycles within sub-4 minute windows.
+[/quote]
+
+To monitor live real-time Binance vs Bybit spreads, black market parallel rates, and calculate instant rotation profits free:
+
+[url=https://www.bethelmindanalytics.com/arbitrage][b]⚡ Open Live Bethelmind P2P Arbitrage & FX Desk Free[/b][/url]
+
+[url=https://t.me/BethelmindAsistantBot][b]🤖 Receive 24/7 Live Spread Alerts on Telegram: @BethelmindAsistantBot[/b][/url]
+
+[quote]
+[b]⭐ Upgrade to VIP Real-Time Arbitrage Alert Stream:[/b]
+Get instant automated notifications pushed directly to your Telegram the second a ₦15–₦50 spread opens, plus audited dealer orderbooks:
+• [b]Subscription:[/b] ₦3,500/month (One $500 rotation pays back the entire subscription immediately).
+👉 [url=https://selar.com/showlove/bethelmind?amount=3500][b]Join VIP Instant Signals via Selar / Card / OPay (₦3,500/mo)[/b][/url]
+[/quote]
+
+[b]📥 FREE ON WHATSAPP:[/b] Need our verified P2P Merchant Ledger & Bank Narration Safety Guide? Send "ARBITRAGE GUIDE" to our desk on [b]0802 279 1227[/b] ([url=https://wa.me/2348022791227?text=Please%20send%20me%20the%20P2P%20Arbitrage%20Safety%20Guide][b]Click Here to Chat on WhatsApp[/b][/url]).
+
+[i]Updated: ${dateStr} · Source: Bethelmind Analytics FX Desk (CAC Certified Enterprise RC 7034297)[/i]`;
     }
   },
 
@@ -190,6 +468,17 @@ Every school term, private nursery, primary, and secondary school proprietors st
 Test the interactive school tuition & PIN ledger suite here:
 
 [url=https://www.bethelmindanalytics.com/tools/school-portal][b]👉 Test The School Tuition & Result PIN Ledger Free[/b][/url]
+
+[quote]
+[b]⚡ Enterprise Deployment Notice for School Proprietors & Principals:[/b]
+Deploy this automated term tuition portal + Scratch-PIN broadsheet result gating suite under your school's dedicated domain in 24 hours:
+• [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month) — Active in 24 Hours.
+• [b]Tier 2 (Full Turnkey School Suite):[/b] ₦75,000 Milestone Deposit (₦150,000 Total) — Custom domain + full PIN batch accounting.
+Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
+WhatsApp Closer Desk: [b]0802 279 1227[/b]
+[/quote]
+
+[b]Proprietors & Educators:[/b] How do you currently handle parents who owe second-term fees before exam slips are released? Share your experience below!
 
 [i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions[/i]`;
     }
@@ -430,7 +719,8 @@ async function postCampaign(campaignKey = 'solar-boq') {
 
   console.log(`\n[AUTONOMOUS POST] Launching Campaign: ${campaignKey} on Board: ${campaign.boardName} (#${campaign.boardId})...`);
 
-  const { browser, context } = await createStealthBrowser(true);
+  const isVisible = process.argv.includes('--visible') || process.argv.includes('--headful');
+  const { browser, context } = await createStealthBrowser(!isVisible);
   const page = await context.newPage();
 
   try {
@@ -462,15 +752,26 @@ async function postCampaign(campaignKey = 'solar-boq') {
     console.log('Submitting topic to Nairaland...');
     await page.click('input[value="Submit"]');
 
-    // Wait for Cloudflare verification challenge to complete & redirect to thread (up to 25s)
+    // Wait for Cloudflare verification challenge to complete & redirect to thread (up to 30s)
     console.log('Waiting for Cloudflare security verification and thread redirect...');
     let postResultUrl = page.url();
-    for (let w = 0; w < 12; w++) {
+    for (let w = 0; w < 15; w++) {
       await page.waitForTimeout(2000);
       postResultUrl = page.url();
       if (!postResultUrl.includes('/do_newtopic') && postResultUrl.match(/\/(\d+)\//)) {
         console.log('✓ Redirect confirmed to live thread!');
         break;
+      }
+      // Check for Turnstile frame
+      const frames = page.frames();
+      for (const frame of frames) {
+        if (frame.url().includes('cloudflare') || frame.url().includes('turnstile') || frame.url().includes('challenge')) {
+          const box = await frame.$('input[type="checkbox"], .ctp-checkbox-label, #cf-stage, #challenge-stage');
+          if (box) {
+            await box.click().catch(() => {});
+            console.log('Detected Turnstile frame: clicked checkbox.');
+          }
+        }
       }
     }
     console.log('Post Result URL:', postResultUrl);
@@ -481,33 +782,121 @@ async function postCampaign(campaignKey = 'solar-boq') {
       threadId = match[1];
     }
 
-    const ledger = loadLedger();
-    const threadRecord = {
-      id: threadId || `NL-${Date.now()}`,
-      campaignKey,
-      title,
-      boardId: campaign.boardId,
-      boardName: campaign.boardName,
-      url: postResultUrl,
-      postedAt: new Date().toISOString(),
-      lastBumpedAt: new Date().toISOString(),
-      bumpCount: 0,
-      repliesCount: 0,
-    };
+    if (threadId && !postResultUrl.includes('/do_newtopic') && !postResultUrl.includes('/newtopic')) {
+      const ledger = loadLedger();
+      const threadRecord = {
+        id: threadId,
+        campaignKey,
+        title,
+        boardId: campaign.boardId,
+        boardName: campaign.boardName,
+        url: postResultUrl,
+        postedAt: new Date().toISOString(),
+        lastBumpedAt: new Date().toISOString(),
+        bumpCount: 0,
+        repliesCount: 0,
+      };
 
-    ledger.threads.unshift(threadRecord);
-    ledger.stats.totalPosted = (ledger.stats.totalPosted || 0) + 1;
-    saveLedger(ledger);
+      const exists = (ledger.threads || []).some(t => t.id === threadId);
+      if (!exists) {
+        ledger.threads.unshift(threadRecord);
+        ledger.stats.totalPosted = (ledger.stats.totalPosted || 0) + 1;
+        saveLedger(ledger);
+      }
 
-    console.log('✓ Topic successfully posted and recorded in ledger!');
-    await browser.close();
-    return { success: true, thread: threadRecord };
+      console.log('✓ Topic successfully posted and recorded in ledger:', threadRecord.url);
+      await browser.close();
+      return { success: true, thread: threadRecord };
+    } else {
+      console.warn('⚠️ Topic publication did not redirect to a live topic URL. Current URL:', postResultUrl);
+      await browser.close();
+      return { success: false, reason: 'NOT_REDIRECTED', url: postResultUrl };
+    }
 
   } catch (err) {
     console.error('Error during post:', err.message);
     await browser.close();
     return { success: false, error: err.message };
   }
+}
+
+function getContextualBumpMessage(campaignKey) {
+  if (campaignKey === 'construction-estimator') {
+    return `[b]⚡ Site Procurement & Cement Price Update (Lagos):[/b]
+
+To site engineers and developers procuring materials this week:
+• Cement distributors in Ikorodu, Epe, and Agege are holding 42.5R Grade at N10,400 – N10,800/bag.
+• For decking slabs, ensure your gravel-to-sand ratio is strictly measured in gauge boxes rather than unverified headpan counts to prevent 20% cement overconsumption.
+• Test the live property layout, survey levies, and structural concrete estimator free on your phone:
+[url=https://www.bethelmindanalytics.com/tools/mortgage-calc][b]👉 Test Free Lagos Construction & Layout Sizer[/b][/url]
+
+[b]📥 FREE ON WHATSAPP:[/b] Need the Lekki-Epe Soil Piling Engineering Guide & Direct Ogun Quarry Tipper Driver Contacts? Send "QUARRY CONTACTS" to our desk: [b]0802 279 1227[/b] ([url=https://wa.me/2348022791227?text=Please%20send%20me%20the%20Lekki%20Soil%20Piling%20Guide%20and%20Quarry%20Contacts][b]Click Here to Receive on WhatsApp[/b][/url]).
+
+[b]Building Contractors & Engineers:[/b] Want this automated material estimator deployed with your construction firm branding for ₦35,000? WhatsApp our desk: [b]0802 279 1227[/b].
+Drop your building stage below for estimated material quantities!`;
+  }
+
+  if (campaignKey === 'tokunbo-duty' || campaignKey === 'tokunbo-vin-checker') {
+    return `[b]⚡ 2026 PTML & Tin Can Port Clearance & Tokunbo VIN Passport Update:[/b]
+
+To car buyers and auto importers asking about terminal dwell time, statutory clearing, and auction salvage traps:
+• Remember that statutory Customs Duty (20%) + NAC Levy (15%) + VAT (7.5%) are strictly calculated on the assessed CIF valuation sheet, not on auction bid prices.
+• Over 40% of salvage auction cars imported into Lagos have undisclosed salt-water flood submersion or missing catalytic converters.
+• Always verify the statutory duty and salvage history before wiring auction payments:
+[url=https://www.bethelmindanalytics.com/vin][b]🚗 Test Exact Tokunbo VIN Customs Duty & Salvage Auditor Free[/b][/url]
+[url=https://t.me/BethelmindAsistantBot][b]🤖 Telegram Master Bot: @BethelmindAsistantBot (Instant /vin command)[/b][/url]
+[url=https://selar.com/showlove/bethelmind?amount=2500][b]💳 Instant Official Stamped PDF Valuation Certificate (₦2,500 via Selar)[/b][/url]
+
+[b]📥 FREE ON WHATSAPP:[/b] Need the NCS 2026 Single-Sheet Valuation Matrix & FOU Road Interception Clearance Checklist? Send "CUSTOMS SHEET" to our desk: [b]0802 279 1227[/b] ([url=https://wa.me/2348022791227?text=Please%20send%20me%20the%20NCS%202026%20Customs%20Valuation%20Sheet][b]Click Here to Receive on WhatsApp[/b][/url]).
+
+[b]⚡ For Car Dealers & Clearing Agents:[/b]
+Want this exact live clearing duty calculator deployed under your own dealership brand and WhatsApp number for ₦35,000? WhatsApp our desk on [b]0802 279 1227[/b] (CAC Certified RC 7034297).
+Drop your car year and model below for instant estimates!`;
+  }
+
+  if (campaignKey === 'p2p-arbitrage') {
+    return `[b]⚡ Live P2P Arbitrage & Parallel Market Spread Alert:[/b]
+
+To crypto merchants and FX operators monitoring orderbook volatility:
+• Spreads between Binance P2P and Bybit merchant desks peak during 11:00 AM – 2:00 PM and 8:00 PM – 11:00 PM WAT.
+• Always calculate taker/merchant fees and bank transfer tariffs before locking orderbook inventory.
+• Track live real-time spreads and test the profit rotation calculator free on your phone:
+[url=https://www.bethelmindanalytics.com/arbitrage][b]⚡ Live P2P Arbitrage & FX Terminal[/b][/url]
+[url=https://t.me/BethelmindAsistantBot][b]🤖 Run on Telegram: @BethelmindAsistantBot (Instant /arbitrage and /calc)[/b][/url]
+[url=https://selar.com/showlove/bethelmind?amount=3500][b]💳 Join VIP 24/7 High-Spread Signal Feed (₦3,500/mo via Selar)[/b][/url]
+
+Drop your trading capital size below to see your net daily rotation profit!`;
+  }
+
+  if (campaignKey === 'fake-alert-shield') {
+    return `[b]⚡ Retail Fraud Prevention Update for Weekend Trading:[/b]
+
+To boutique, supermarket, and pharmacy cashiers dealing with rush hour queues:
+• Fake bank debit alert apps and modified SMS sender IDs spike during Friday–Sunday evening trading.
+• Never hand over goods based on customer phone screenshots or unverified SMS alerts. Only release items upon verified server ledger credit.
+• Test the live sub-2.5s Moniepoint/OPay webhook reconciliation and WhatsApp receipt closer free on your phone:
+[url=https://www.bethelmindanalytics.com/tools/retail-catalog][b]👉 Test Free Retail WhatsApp Closer & Anti-Fake Alert Engine[/b][/url]
+
+[b]📥 FREE ON WHATSAPP:[/b] Need the Weekend Fake Alert App Blacklist & Automated Moniepoint Webhook Setup Card? Send "FAKE ALERT BLACKLIST" to our desk: [b]0802 279 1227[/b] ([url=https://wa.me/2348022791227?text=Please%20send%20me%20the%20Fake%20Alert%20Blacklist][b]Click Here to Receive on WhatsApp[/b][/url]).
+
+[b]⚡ For Store Owners & Supermarkets:[/b]
+Deploy this exact webhook verification screen + WhatsApp closer for your cashiers in 24 hours (₦35,000 Starter Setup / ₦25,000 monthly). WhatsApp: [b]0802 279 1227[/b].
+How does your store currently handle transfer confirmations during rush hours? Share below!`;
+  }
+
+  // Default Solar BOQ
+  return `[b]⚡ Practical Sizing & Diesel Replacement Update:[/b]
+
+For those asking about sizing during peak sunshine hours:
+• Prioritize heavy appliance operation (water pumping, pressing iron, deep freezer freezing cycles) between 11:00 AM and 02:30 PM to run 100% on direct solar PV without battery degradation.
+• Test your exact custom kVA and monthly diesel displacement calculation free on your phone:
+[url=https://www.bethelmindanalytics.com/tools/solar-boq][b]👉 Test Free 5kVA–20kVA Solar & Lithium BOQ Sizer[/b][/url]
+
+[b]📥 FREE ON WHATSAPP:[/b] Want the confidential 2026 Alaba & Trade Fair Wholesale Supplier Directory (CATL lithium cells & Tier-1 Growatt distributors)? Send "ALABA DIRECTORY" to our WhatsApp desk: [b]0802 279 1227[/b] ([url=https://wa.me/2348022791227?text=Please%20send%20me%20the%202026%20Alaba%20Solar%20Wholesale%20Directory][b]Click Here to Receive Free on WhatsApp[/b][/url]).
+
+[b]⚡ For Registered Solar Installers & Clean Energy Contractors:[/b]
+Want this exact automated load calculator + 24/7 WhatsApp BOQ closer deployed with your company logo & phone number in 24 hours (₦35k Starter / ₦75k deposit for full custom domain)? WhatsApp our engineering desk: [b]0802 279 1227[/b].
+Drop your current monthly generator fuel spend or DisCo tariff below for custom sizing!`;
 }
 
 // 3. Autonomous Bump & Auto-Reply Engine
@@ -519,7 +908,8 @@ async function bumpAndReplyToThreads() {
   }
 
   console.log(`\n[AUTONOMOUS BUMPER] Checking ${ledger.threads.length} active threads...`);
-  const { browser, context } = await createStealthBrowser(true);
+  const isVisible = process.argv.includes('--visible') || process.argv.includes('--headful');
+  const { browser, context } = await createStealthBrowser(!isVisible);
   const page = await context.newPage();
 
   let bumped = 0;
@@ -535,9 +925,16 @@ async function bumpAndReplyToThreads() {
       continue;
     }
 
-    console.log(`Checking thread: ${thread.title} (${thread.url})...`);
+    const threadIdMatch = (thread.id && !thread.id.startsWith('NL-')) ? thread.id : (thread.url ? thread.url.match(/\/(\d+)\//) : null);
+    const threadId = Array.isArray(threadIdMatch) ? threadIdMatch[1] : threadIdMatch;
+    if (!threadId) {
+      console.log(`Skipping unposted or placeholder thread: ${thread.title}`);
+      continue;
+    }
+    const replyUrl = `https://www.nairaland.com/newpost?topic=${threadId}`;
+    console.log(`Navigating to reply page for "${thread.title}": ${replyUrl}...`);
     try {
-      await page.goto(thread.url, { waitUntil: 'domcontentloaded', timeout: 25000 });
+      await page.goto(replyUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
       const currentUrl = page.url();
       if (currentUrl.includes('/login')) {
         console.warn('⚠️ Session expired. Skipping bumps.');
@@ -548,12 +945,21 @@ async function bumpAndReplyToThreads() {
       const hasReplyBox = await page.$('textarea[name="body"]');
       if (hasReplyBox) {
         // Compose an expert organic bump message
-        const bumpMessage = `[b]⚡ Quick Sizing Update for Inquirers:[/b]\n\nFor those asking about sizing during peak sunshine hours:\n• Remember to prioritize heavy appliances (water pumping, ironing, washing machines) between 11:00 AM and 02:30 PM to run 100% on direct solar PV without battery degradation.\n• You can run your exact custom kVA and diesel displacement calculations anytime here: [url=https://www.bethelmindanalytics.com/tools/${thread.campaignKey || 'solar-boq'}][b]Bethelmind Sector Tools Suite[/b][/url].\n\nDrop your current daily fuel spend or Disco tariff below if you want custom calculations.`;
+const bumpMessage = getContextualBumpMessage(thread.campaignKey);
 
         await page.fill('textarea[name="body"]', bumpMessage);
         await page.waitForTimeout(2000);
+        console.log('Submitting bump reply...');
         await page.click('input[value="Submit"]');
-        await page.waitForTimeout(3000);
+        
+        // Wait up to 15s for Cloudflare or redirect
+        for (let w = 0; w < 6; w++) {
+          await page.waitForTimeout(2000);
+          if (page.url().includes('/' + threadId + '/')) {
+            console.log('✓ Bump confirmed on live thread!');
+            break;
+          }
+        }
 
         thread.lastBumpedAt = new Date().toISOString();
         thread.bumpCount = (thread.bumpCount || 0) + 1;

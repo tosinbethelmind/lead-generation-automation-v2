@@ -1,0 +1,27 @@
+{
+  "cookies": [
+    {
+      "name": "cf_clearance",
+      "value": "jnCquaTyX.IVjdaYtCOHPIxv1gaBVytsorlBu._ES3Y-1792682266-1.2.1.1-faCkEiTfHsEF_Ws6vDw.hNUktsvXWu8lHg3m5FFNwDd88di66_6C_hoHNvYi9tKXrA4xKCqcm0WFIf0ijnh6gCeh6BUJ6aMkBKBKVv_8lIgknYgeJcYq2_LD.fc4se9o0Tqyn0Li5yCl.ufhWZUkQ_OMB8Ywkr2FUUc4vBIeyNs4fFmBmzhbw7E68KHAJHVPFIdCleEV8ASEZSuCkoHp1g35CdIaAEMTdMBQRdGzkvQde6Ulk7lPS.QOiNGs6mWfJqVK6cegxhbfUwfOJ62EAsUhAqYOOpvkCgJFnDNek20FtlBRME7ATGCDUPuV_E2S62.FPYFJ160A8roPVkHThJLDf3pG5YGuL_WtXkNDnZU",
+      "domain": ".nairaland.com",
+      "path": "/",
+      "expires": 1824218270.182347,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://nairaland.com",
+      "_crHasCrossSiteAncestor": false
+    },
+    {
+      "name": "session",
+      "value": "DDA8981D646078F9AACAD7B8F993ED0317A4E31EFACA56558B60E6705E3C1C2B",
+      "domain": "www.nairaland.com",
+      "path": "/",
+      "expires": 1824218270.419986,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

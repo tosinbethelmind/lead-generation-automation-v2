@@ -174,7 +174,7 @@ export default function InvoiceModal({
             </span>
             <p style={{ margin: '6px 0 0', fontSize: '0.8rem', color: '#64748b', lineHeight: 1.45 }}>
               Lagos Tech Hub, Ikeja / Lekki Phase 1, Lagos State<br />
-              RC Registered • NDPA Compliance Verified<br />
+              CAC Certified Enterprise · RC 7034297 · NDPA Compliance Verified<br />
               Email: billing@bethelmindanalytics.com
             </p>
           </div>
@@ -285,7 +285,7 @@ export default function InvoiceModal({
               </span>
             </div>
             <span style={{ fontSize: '0.72rem', color: '#34d399', fontWeight: 700, background: 'rgba(52,211,153,0.15)', padding: '3px 10px', borderRadius: 12 }}>
-              ✓ Verified Merchant Account
+              Verified Merchant Account
             </span>
           </div>
 
@@ -321,6 +321,10 @@ export default function InvoiceModal({
             To guarantee your payment security against website spoofing, once you transfer, tap the green button below. Our official WhatsApp automated desk will cross-verify your transfer reference <code>{paymentRef}</code> and start your onboarding.
           </p>
         </div>
+
+        <p style={{ margin: '12px 0 16px', fontSize: '0.72rem', color: '#64748b', borderTop: '1px solid #e2e8f0', paddingTop: '8px' }}>
+          Bethelmind Digital Solutions (RC 7034297) &bull; Corporate Settlement Account: Moniepoint Microfinance Bank (6805375225) &bull; Governed by Bethelmind Commercial Delivery SLA & Terms of Service (https://www.bethelmindanalytics.com/legal/delivery).
+        </p>
 
         {/* Primary Action Button (Hidden in Print) */}
         <div className="no-print" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>

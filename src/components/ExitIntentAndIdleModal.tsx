@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { MessageCircle, X, Zap, ShieldCheck, ArrowRight, CheckCircle2, Clock, Phone, Loader2 } from 'lucide-react';
+import { MessageCircle, X, Zap, ShieldCheck, ArrowRight, CheckCircle2, Clock, Phone, Loader2, Sparkles } from 'lucide-react';
 
 interface ExitIntentAndIdleModalProps {
   businessName: string;
@@ -47,7 +47,7 @@ export default function ExitIntentAndIdleModal({
       }
     };
 
-    // 2. Mobile Exit / Inaction Guard: Gentle 50-second timer on mobile (or 20s on desktop), preventing mid-reading interruption
+    // 2. Mobile Exit / Inaction Guard: Gentle 50-second timer on mobile (or 20s on desktop)
     const timeoutDuration = isMobile ? 50000 : 20000;
     const idleTimer = setTimeout(() => {
       if (!hasTriggered) {
@@ -102,7 +102,7 @@ export default function ExitIntentAndIdleModal({
 
       const data = await resp.json();
       if (data.success) {
-        setSuccessMsg(`🎉 Live demo dispatched to ${data.phone}! Tap below to open WhatsApp.`);
+        setSuccessMsg(`Live demo dispatched to ${data.phone}! Tap below to open WhatsApp.`);
         setUserPhone('');
       } else {
         setErrorMsg(data.error || 'Please enter a valid 11-digit Nigerian WhatsApp number.');
@@ -120,9 +120,9 @@ export default function ExitIntentAndIdleModal({
       style={{ boxSizing: 'border-box' }}
     >
       <div 
-        className="relative w-full max-w-lg bg-gradient-to-b from-slate-900 to-slate-950 border border-emerald-500/50 rounded-2xl shadow-2xl p-5 sm:p-7 text-slate-100 space-y-4"
+        className="relative w-full max-w-lg bg-gradient-to-b from-slate-900 to-slate-950 border border-[#d4af37]/40 rounded-2xl shadow-2xl p-5 sm:p-7 text-slate-100 space-y-4"
         style={{
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(16, 185, 129, 0.25)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(212, 175, 55, 0.15)',
           maxHeight: '92vh',
           overflowY: 'auto'
         }}
@@ -137,15 +137,15 @@ export default function ExitIntentAndIdleModal({
         </button>
 
         {/* Top Attention Hook */}
-        <div className="flex items-center gap-2 text-emerald-400 text-xs font-black uppercase tracking-wider">
-          <span className="p-1 bg-emerald-500/20 rounded-md">⚡</span>
+        <div className="flex items-center gap-2 text-[#d4af37] text-xs font-black uppercase tracking-wider">
+          <span className="p-1 bg-[#d4af37]/20 rounded-md"><Sparkles className="w-3.5 h-3.5 text-[#d4af37]" /></span>
           <span>Wait! Before You Leave...</span>
         </div>
 
         {/* Dynamic Business Title */}
         <div className="space-y-1 text-left">
-          <h2 className="text-lg sm:text-xl font-black text-white leading-tight">
-            See How <span className="text-emerald-400">{businessName}</span> Can Close 3x More Sales in Under 2 Seconds.
+          <h2 className="text-lg sm:text-xl font-black text-white leading-tight font-['Outfit']">
+            See How <span className="text-[#d4af37]">{businessName}</span> Can Close 3x More Sales in Under 2 Seconds.
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
             While you sleep or focus on operations, after-hours Nigerian clients messaging your firm get instant price quotes, BOQ calculations, and booking confirmations 24/7.
@@ -159,7 +159,7 @@ export default function ExitIntentAndIdleModal({
             <span className="text-xs font-semibold text-slate-200">2-Second Auto-Reply</span>
           </div>
           <div className="bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#d4af37] shrink-0" />
             <span className="text-xs font-semibold text-slate-200">₦0 Upfront Demo</span>
           </div>
           <div className="bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl flex items-center gap-2">
@@ -167,15 +167,15 @@ export default function ExitIntentAndIdleModal({
             <span className="text-xs font-semibold text-slate-200">Zero Technical Skills</span>
           </div>
           <div className="bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#d4af37] shrink-0" />
             <span className="text-xs font-semibold text-slate-200">Natural Nigerian Tone</span>
           </div>
         </div>
 
         {/* Action 1: Instant Phone Test Form */}
-        <div className="bg-slate-900/80 border border-emerald-500/30 rounded-xl p-3.5 space-y-2 text-left">
+        <div className="bg-slate-900/80 border border-[#d4af37]/30 rounded-xl p-3.5 space-y-2 text-left">
           <div className="flex items-center gap-1.5 text-xs font-bold text-white">
-            <Phone className="w-3.5 h-3.5 text-emerald-400" />
+            <Phone className="w-3.5 h-3.5 text-[#d4af37]" />
             <span>Test a Live 10-Second Demo On Your Phone Right Now:</span>
           </div>
 
@@ -186,12 +186,12 @@ export default function ExitIntentAndIdleModal({
               onChange={e => setUserPhone(e.target.value)}
               placeholder="e.g. 0802 279 1227"
               required
-              className="flex-1 min-w-[160px] bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2 text-xs sm:text-sm text-white placeholder-slate-500 outline-none"
+              className="flex-1 min-w-[160px] bg-slate-950 border border-slate-700 focus:border-[#d4af37] rounded-xl px-3 py-2 text-xs sm:text-sm text-white placeholder-slate-500 outline-none"
             />
             <button
               type="submit"
               disabled={isSending}
-              className="py-2 px-3 sm:px-4 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shrink-0"
+              className="py-2 px-3 sm:px-4 bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] disabled:opacity-50 text-[#080d19] font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shrink-0"
             >
               {isSending ? (
                 <>
@@ -229,7 +229,7 @@ export default function ExitIntentAndIdleModal({
             className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/25 text-center"
           >
             <MessageCircle className="w-4 h-4 fill-current" />
-            <span>🟢 Tap to Chat Bethelmind Lagos Desk (₦0 Upfront) →</span>
+            <span>Chat with Lagos Desk on WhatsApp (₦0 Upfront) →</span>
           </a>
 
           <button
@@ -243,7 +243,7 @@ export default function ExitIntentAndIdleModal({
         {/* Trust Footer */}
         <div className="flex items-center justify-center gap-2 pt-2 border-t border-slate-800/80 text-[11px] text-slate-400">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-          <span>Bethelmind Digital Solutions · 100% Zero Capital Risk · Verified 24/7 SLA</span>
+          <span>Bethelmind Digital Solutions &bull; CAC RC 7034297 &bull; Moniepoint 6805375225</span>
         </div>
       </div>
     </div>

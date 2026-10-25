@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { SocialAdAutomationWidget } from './SocialAdAutomationWidget';
 import { RecruitmentEngineWidget } from './RecruitmentEngineWidget';
 import { KineticNumber } from './interactive/KineticNumber';
@@ -67,6 +68,8 @@ interface SectorToolsWidgetProps {
   merchantPhone?: string;
   hasWebsite?: boolean;
   hideHeader?: boolean;
+  lockTab?: SectorToolTab;
+  hideTabBar?: boolean;
 }
 
 export function detectCategoryTab(category: string = ''): SectorToolTab {
@@ -74,17 +77,17 @@ export function detectCategoryTab(category: string = ''): SectorToolTab {
   if (/salon|spa|beauty|hair|barber|makeup|skincare|nails|aesthetic|cosmetic/.test(c)) return 'beauty';
   if (/solar|inverter|energy|battery|power|panel|clean energy/.test(c)) return 'solar';
   if (/restaurant|dining|lounge|cafe|bistro|bar|kitchen|eatery|fast food|grills?|bakery|food/.test(c)) return 'restaurant';
-  if (/boutique|retail|store|supermarket|fashion|cloth|wear|shoe|bag|perfume|phone|gadget/.test(c)) return 'retail';
+  if (/boutique|retail|store|supermarket|fashion|cloth|wear|shoe|bag|perfume|phone|gadget|catalog|closer/.test(c)) return 'retail';
   if (/hotel|shortlet|apartment|suite|hospitality|resort|lodge/.test(c)) return 'hospitality';
-  if (/(\bcar\b|\bcars\b|auto|motor|vehicle|tokunbo|dealership|mechanic|garage|tyre|spare)/.test(c)) return 'auto';
-  if (/estate|property|home|realty|housing|developer|land|mansion/.test(c)) return 'mortgage';
+  if (/(\bcar\b|\bcars\b|auto|motor|vehicle|tokunbo|dealership|mechanic|garage|tyre|spare|clearing|vin)/.test(c)) return 'auto';
+  if (/estate|property|home|realty|housing|developer|land|mansion|mortgage|survey/.test(c)) return 'mortgage';
   if (/clinic|medical|doctor|health|\bhospitals?\b|pharmacy|dental|dentist|eye|optician|lab|surgery|hmo/.test(c)) return 'healthcare';
-  if (/school|academy|education|college|creche|tutor|university|institute/.test(c)) return 'education';
-  if (/logistics|haulage|courier|dispatch|delivery|freight|cargo|truck|transport/.test(c)) return 'logistics';
-  if (/law|legal|attorney|solicitor|advocate|barrister|cac|chamber/.test(c)) return 'legal';
+  if (/school|academy|education|college|creche|tutor|university|institute|tuition/.test(c)) return 'education';
+  if (/logistics|haulage|courier|dispatch|delivery|freight|cargo|truck|transport|waybill/.test(c)) return 'logistics';
+  if (/law|legal|attorney|solicitor|advocate|barrister|cac|chamber|filing/.test(c)) return 'legal';
   if (/recruit|talent|hr|staff|hiring/.test(c)) return 'recruitment';
   if (/social|ad|marketing|agency/.test(c)) return 'social_ads';
-  if (/security|cctv|surveillance|guard|alarm|access control|spy|tracking/.test(c)) return 'dva';
+  if (/security|cctv|surveillance|guard|alarm|access control|spy|tracking|dva|transfer|bank|reconciliation|alert|fraud/.test(c)) return 'dva';
   return 'solar';
 }
 
@@ -103,8 +106,8 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
   return (
     <div
       style={{
-        background: 'rgba(255, 255, 255, 0.03)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
+        background: 'rgba(255, 255, 255, 0.02)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: 16,
         padding: '12px 18px',
         display: 'flex',
@@ -119,19 +122,21 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
         <span
           style={{
             padding: '6px 10px',
-            background: 'rgba(6, 182, 212, 0.15)',
-            border: '1px solid rgba(6, 182, 212, 0.35)',
+            background: 'rgba(212, 175, 55, 0.1)',
+            border: '1px solid rgba(212, 175, 55, 0.25)',
             borderRadius: 10,
             color: '#d4af37',
-            fontSize: '0.85rem',
-            fontWeight: 800,
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
           }}
         >
-          
+          Direct Link
         </span>
         <div>
-          <span style={{ fontWeight: 800, color: '#e2e8f0', fontSize: '0.82rem' }}>Shareable Demo Link: </span>
-          <span style={{ color: '#38bdf8', fontFamily: 'monospace', fontSize: '0.78rem', userSelect: 'all' }}>{shareUrl}</span>
+          <span style={{ fontWeight: 600, color: '#f5f3ef', fontSize: '0.82rem' }}>Shareable Demo: </span>
+          <span style={{ color: '#d4af37', fontFamily: 'monospace', fontSize: '0.78rem', userSelect: 'all' }}>{shareUrl}</span>
         </div>
       </div>
 
@@ -142,12 +147,12 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
           rel="noreferrer"
           style={{
             padding: '8px 16px',
-            background: 'rgba(16, 185, 129, 0.15)',
-            border: '1px solid rgba(16, 185, 129, 0.35)',
+            background: 'rgba(16, 185, 129, 0.12)',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
             color: '#34d399',
             borderRadius: 12,
             fontSize: '0.78rem',
-            fontWeight: 800,
+            fontWeight: 700,
             textDecoration: 'none',
             display: 'inline-flex',
             alignItems: 'center',
@@ -155,6 +160,7 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
             transition: 'all 0.15s ease',
           }}
         >
+          <MessageCircle style={{ width: 13, height: 13 }} />
           <span>Share on WhatsApp</span>
         </a>
         <button
@@ -162,12 +168,12 @@ export function FeatureShareBar({ toolTitle, toolSlug, description }: { toolTitl
           onClick={handleCopy}
           style={{
             padding: '8px 16px',
-            background: 'rgba(255, 255, 255, 0.06)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            color: '#f8fafc',
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            color: '#c9c4bc',
             borderRadius: 12,
             fontSize: '0.78rem',
-            fontWeight: 800,
+            fontWeight: 700,
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
@@ -221,8 +227,10 @@ export function SectorToolsWidget({
   merchantPhone = '2348022791227',
   hasWebsite = false,
   hideHeader = false,
+  lockTab,
+  hideTabBar = false,
 }: SectorToolsWidgetProps) {
-  const initialTab = detectCategoryTab(businessCategory);
+  const initialTab = lockTab || detectCategoryTab(businessCategory);
   const [activeTab, setActiveTab] = useState<SectorToolTab>(initialTab);
 
   const [loading, setLoading] = useState(false);
@@ -242,9 +250,13 @@ export function SectorToolsWidget({
 
   // Keep activeTab in sync if businessCategory changes
   useEffect(() => {
-    setActiveTab(detectCategoryTab(businessCategory));
+    if (lockTab) {
+      setActiveTab(lockTab);
+    } else {
+      setActiveTab(detectCategoryTab(businessCategory));
+    }
     setResult(null);
-  }, [businessCategory]);
+  }, [lockTab, businessCategory]);
 
   // Smooth scroll to result card on calculation
   useEffect(() => {
@@ -448,7 +460,7 @@ export function SectorToolsWidget({
 
   return (
     <div className="w-full">
-      <div className="w-full max-w-5xl mx-auto my-2 bg-[#080d1a]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_25px_80px_rgba(0,0,0,0.85)] ring-1 ring-white/5 overflow-hidden text-slate-100 font-sans">
+      <div className={`w-full max-w-5xl mx-auto ${hideHeader ? 'bg-transparent border-0 shadow-none' : 'my-2 bg-[#080d1a]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_25px_80px_rgba(0,0,0,0.85)] ring-1 ring-white/5'} overflow-hidden text-slate-100 font-sans`}>
         
         {/* Luxury Obsidian Header Banner (Shown only when standalone page header is not active) */}
         {!hideHeader && (
@@ -504,59 +516,61 @@ export function SectorToolsWidget({
           </div>
         )}
 
-        {/* Luxury Glass Navigation Tabs Track */}
-        <div className="flex items-center justify-between border-b border-white/10 bg-[#080d19] px-3 py-2.5 gap-3">
-          <div className="flex items-center overflow-x-auto gap-2 scrollbar-none py-1 flex-1">
-            {SECTOR_TABS.map((tab) => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => { setActiveTab(tab.id); setResult(null); }}
-                  style={{
-                    background: isActive ? 'rgba(212, 175, 55, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                    border: `1px solid ${isActive ? '#d4af37' : 'rgba(255, 255, 255, 0.08)'}`,
-                    color: isActive ? '#ffffff' : '#94a3b8',
-                    boxShadow: isActive ? '0 4px 16px rgba(212, 175, 55, 0.2)' : 'none',
-                  }}
-                  className="px-3.5 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-all flex items-center gap-2 hover:text-white hover:bg-white/[0.06] active:scale-95"
-                >
-                  <span className={isActive ? 'text-[#d4af37]' : 'text-slate-400'}>{renderTabIcon(tab.id)}</span>
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {hideHeader && (
-            <div className="hidden md:flex items-center shrink-0 pl-2 border-l border-white/10">
-              <button
-                type="button"
-                onClick={() => setShowEmbedModal(true)}
-                style={{
-                  padding: '7px 14px',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#94a3b8',
-                  borderRadius: 10,
-                  fontSize: '0.74rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  whiteSpace: 'nowrap',
-                }}
-                className="hover:text-white hover:bg-white/[0.08] transition-all"
-                title="Embed on existing WordPress/Wix website"
-              >
-                <Code style={{ width: 13, height: 13, color: '#38bdf8' }} />
-                <span>1-Line Embed</span>
-              </button>
+        {/* Luxury Glass Navigation Tabs Track - suppressed in dedicated tool view */}
+        {!hideTabBar && (
+          <div className="flex items-center justify-between border-b border-white/10 bg-[#080d19] px-3 py-2.5 gap-3">
+            <div className="flex items-center overflow-x-auto gap-2 scrollbar-none py-1 flex-1">
+              {SECTOR_TABS.map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => { setActiveTab(tab.id); setResult(null); }}
+                    style={{
+                      background: isActive ? 'rgba(212, 175, 55, 0.12)' : 'rgba(255, 255, 255, 0.02)',
+                      border: `1px solid ${isActive ? '#d4af37' : 'rgba(255, 255, 255, 0.08)'}`,
+                      color: isActive ? '#ffffff' : '#94a3b8',
+                      boxShadow: isActive ? '0 4px 16px rgba(212, 175, 55, 0.2)' : 'none',
+                    }}
+                    className="px-3.5 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-all flex items-center gap-2 hover:text-white hover:bg-white/[0.06] active:scale-95"
+                  >
+                    <span className={isActive ? 'text-[#d4af37]' : 'text-slate-400'}>{renderTabIcon(tab.id)}</span>
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          )}
-        </div>
+
+            {hideHeader && (
+              <div className="hidden md:flex items-center shrink-0 pl-2 border-l border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setShowEmbedModal(true)}
+                  style={{
+                    padding: '7px 14px',
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    color: '#94a3b8',
+                    borderRadius: 10,
+                    fontSize: '0.74rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    whiteSpace: 'nowrap',
+                  }}
+                  className="hover:text-white hover:bg-white/[0.08] transition-all"
+                  title="Embed on existing WordPress/Wix website"
+                >
+                  <Code style={{ width: 13, height: 13, color: '#d4af37' }} />
+                  <span>1-Line Embed</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Tab Panels */}
         <div className="p-5 sm:p-6 space-y-6">
@@ -591,26 +605,27 @@ export function SectorToolsWidget({
                         type="button"
                         onClick={() => setKva(p.kvaVal)}
                         style={{
-                          background: isSelected ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.18) 0%, rgba(234, 88, 12, 0.12) 100%)' : 'rgba(255, 255, 255, 0.02)',
-                          border: isSelected ? '1.5px solid #f59e0b' : '1px solid rgba(255, 255, 255, 0.08)',
-                          boxShadow: isSelected ? '0 8px 24px rgba(245, 158, 11, 0.25)' : 'none',
+                          background: isSelected ? 'rgba(212, 175, 55, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                          border: isSelected ? '1px solid rgba(212, 175, 55, 0.6)' : '1px solid rgba(255, 255, 255, 0.07)',
+                          boxShadow: isSelected ? '0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(212, 175, 55, 0.04)' : 'none',
                         }}
-                        className="p-4 rounded-2xl text-left transition-all hover:border-white/20 active:scale-[0.98] cursor-pointer"
+                        className="p-4 sm:p-5 rounded-2xl text-left transition-all hover:border-[#d4af37]/30 active:scale-[0.98] cursor-pointer"
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xl p-2 rounded-xl bg-white/[0.04] border border-white/5">{p.icon === 'flat' ? <Building className="w-4 h-4 text-[#d4af37]" /> : p.icon === 'duplex' ? <Home className="w-4 h-4 text-[#d4af37]" /> : <Factory className="w-4 h-4 text-[#d4af37]" />}</span>
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="p-2 rounded-xl bg-white/[0.04] border border-white/5 text-[#d4af37]">{p.icon === 'flat' ? <Building className="w-4 h-4" /> : p.icon === 'duplex' ? <Home className="w-4 h-4" /> : <Factory className="w-4 h-4" />}</span>
                           <span
                             style={{
-                              background: isSelected ? '#f59e0b' : 'rgba(255, 255, 255, 0.06)',
-                              color: isSelected ? '#050811' : '#94a3b8',
+                              background: isSelected ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                              color: isSelected ? '#d4af37' : '#94a3b8',
+                              border: isSelected ? '1px solid rgba(212, 175, 55, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
                             }}
-                            className="text-xs font-black px-2.5 py-1 rounded-lg transition-colors"
+                            className="text-xs font-semibold px-2.5 py-0.5 rounded-full transition-colors"
                           >
                             {p.kvaVal} kVA
                           </span>
                         </div>
-                        <div className="font-bold text-white text-sm">{p.title}</div>
-                        <div className="text-[11px] text-slate-400 mt-1 leading-snug">{p.desc}</div>
+                        <div className="font-serif text-[#f5f3ef] font-normal text-sm sm:text-base">{p.title}</div>
+                        <div className="text-[11px] text-[#94a3b8] font-light mt-1 leading-snug">{p.desc}</div>
                       </button>
                     );
                   })}
@@ -2434,6 +2449,32 @@ export function SectorToolsWidget({
             </div>
           )}
 
+          {/* Statutory Policy Strip */}
+          {!hideHeader && (
+            <div className="mt-8 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#d4af37]" />
+                <span>Bethelmind Digital Solutions &bull; CAC RC 7034297 &bull; Algorithmic estimation engine</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Link href="/legal/disclaimer" className="text-[#d4af37] hover:underline" target="_blank">
+                  Sector Disclaimer
+                </Link>
+                <span>·</span>
+                <Link href="/legal/terms" className="text-slate-400 hover:text-slate-200" target="_blank">
+                  Terms
+                </Link>
+                <span>·</span>
+                <Link href="/legal/privacy" className="text-slate-400 hover:text-slate-200" target="_blank">
+                  Privacy
+                </Link>
+                <span>·</span>
+                <Link href="/legal/delivery" className="text-slate-400 hover:text-slate-200" target="_blank">
+                  Delivery SLA
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

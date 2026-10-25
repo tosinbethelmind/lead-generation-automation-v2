@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "dossierId": "BM-DD-FUTURELINK-3533",
+    "generatedAt": "2026-10-22T15:08:40.265Z",
+    "issuer": "Bethelmind Digital Solutions — Institutional Intelligence Desk",
+    "settlementAccount": "Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)",
+    "priceTierNGN": 150000,
+    "classification": "CONFIDENTIAL B2B COUNTERPARTY AUDIT"
+  },
+  "entity": {
+    "commercialName": "Future Link Car Hire",
+    "category": "Educational Institutions",
+    "address": "Shop 11 Alhassan Dantata plaza 13 Ashton Rd opposite Aiforce primary school Fagge , Kano, Kano, Nigeria",
+    "district": "Kano",
+    "state": "Lagos State, Nigeria",
+    "primaryDirectorOrLead": "Managing Director / Principal",
+    "cacPublicVerificationVector": "https://search.cac.gov.ng/list?search=Future%20Link%20Car%20Hire"
+  },
+  "telecomIntelligence": {
+    "verifiedPhone": "08123420937",
+    "internationalE164": "+2348123420937",
+    "carrier": "Airtel",
+    "lineType": "Mobile GSM",
+    "isWhatsAppEnabled": true,
+    "directWhatsAppLink": "https://wa.me/2348123420937"
+  },
+  "riskAssessment": {
+    "trustScore": 100,
+    "compositeGrade": "AAA (Prime Institutional)",
+    "rule5AntiSyntheticPassed": true,
+    "auditFactors": [
+      "Verified valid Nigerian telecom line (Airtel GSM)",
+      "Primary business contact is on Tier-1 enterprise carrier",
+      "High Google Maps public reputation (4.8★ rating)",
+      "Confirmed physical address footprint"
+    ]
+  },
+  "digitalFootprint": {
+    "linkedInSearch": "https://www.linkedin.com/search/results/companies/?keywords=Future%20Link%20Car%20Hire",
+    "googleMapsSearch": "https://www.google.com/maps/search/?api=1&query=Future%20Link%20Car%20Hire%20Kano%20Nigeria",
+    "instagramQuery": "https://www.google.com/search?q=site:instagram.com+Future%20Link%20Car%20Hire+lagos"
+  }
+}

@@ -49,27 +49,27 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#070b14] text-[#f5f3ef] font-sans selection:bg-[#d4af37]/30 selection:text-amber-200">
       <Navbar />
 
-      <main className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-16">
+      <main className="pt-36 sm:pt-40 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-20">
         
         {/* Header Hero */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 pt-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-bold uppercase tracking-wider">
-            <MessageCircle className="w-3.5 h-3.5" />
-            <span>Direct WhatsApp Concierge &bull; Lagos Technical Desk</span>
+        <div className="text-center max-w-3xl mx-auto space-y-4 pt-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 text-[#d4af37] text-xs font-semibold uppercase tracking-widest">
+            <MessageCircle className="w-3.5 h-3.5 text-[#d4af37]" />
+            <span>Direct WhatsApp Concierge &bull; Lagos Technical Advisory</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-tight">
-            Book Your Live Demo or <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400">
-              Speak with a Solutions Consultant.
+          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
+            Book Your Private Consultation or <br />
+            <span className="italic font-light text-[#d4af37]">
+              Speak with a Solutions Director.
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
-            Get an instant consultation on building your official mobile website, 24/7 AI WhatsApp closer, or specialized Nigerian sector calculator.
+          <p className="text-sm sm:text-base text-[#c9c4bc] font-light leading-relaxed max-w-2xl mx-auto">
+            Receive a tailored evaluation on launching your bespoke mobile website, 24/7 AI WhatsApp closer, or specialized Nigerian sector calculation engines.
           </p>
         </div>
 
@@ -77,19 +77,22 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto">
           
           {/* Left Column: Interactive Demo Booking Form (7 Cols) */}
-          <div className="lg:col-span-7 bg-slate-900/80 border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
-            <div className="space-y-1">
-              <h2 className="text-xl font-black text-white font-['Outfit']">
-                Schedule Live WhatsApp Demo
+          <div className="lg:col-span-7 bg-[#090d16]/90 border border-white/[0.08] rounded-3xl p-6 sm:p-9 shadow-2xl backdrop-blur-md space-y-6">
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-semibold text-[#d4af37] uppercase tracking-widest block">
+                Private Consultation
+              </span>
+              <h2 className="font-serif text-xl sm:text-2xl font-normal text-[#f5f3ef]">
+                Schedule Live WhatsApp Demonstration
               </h2>
-              <p className="text-xs text-slate-400">
-                Fill in your business details. Our team prepares your customized prototype before connecting on WhatsApp.
+              <p className="text-xs text-[#c9c4bc] font-light leading-relaxed">
+                Provide your commercial requirements. Our solutions desk prepares your interactive prototype before connecting directly on WhatsApp.
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 pt-2">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-xs font-medium text-[#c9c4bc] mb-1.5">
                   Business / Company Name *
                 </label>
                 <input
@@ -98,19 +101,19 @@ export default function ContactPage() {
                   placeholder="e.g. Apex Solar Systems Ltd"
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl bg-[#0a0e17] border border-white/[0.08] text-[#f5f3ef] text-xs placeholder:text-[#c9c4bc]/40 focus:outline-none focus:border-[#d4af37] transition-colors"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                  <label className="block text-xs font-medium text-[#c9c4bc] mb-1.5">
                     Industry Sector *
                   </label>
                   <select
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0a0e17] border border-white/[0.08] text-[#f5f3ef] text-xs focus:outline-none focus:border-[#d4af37] transition-colors"
                   >
                     <option value="Solar & Renewable Energy">Solar & Renewable Energy</option>
                     <option value="Automotive & Tokunbo Car Sales">Automotive & Tokunbo Car Sales</option>
@@ -128,13 +131,13 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                  <label className="block text-xs font-medium text-[#c9c4bc] mb-1.5">
                     Location / City *
                   </label>
                   <select
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0a0e17] border border-white/[0.08] text-[#f5f3ef] text-xs focus:outline-none focus:border-[#d4af37] transition-colors"
                   >
                     <option value="Lagos (Ikeja, Lekki, VI, Mainland)">Lagos</option>
                     <option value="Abuja FCT">Abuja FCT</option>
@@ -149,29 +152,29 @@ export default function ContactPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                  <label className="block text-xs font-medium text-[#c9c4bc] mb-1.5">
                     Do you have an active website?
                   </label>
                   <select
                     value={hasWebsite}
                     onChange={(e) => setHasWebsite(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0a0e17] border border-white/[0.08] text-[#f5f3ef] text-xs focus:outline-none focus:border-[#d4af37] transition-colors"
                   >
-                    <option value="no">No (Directory/Social Only — Need Website)</option>
-                    <option value="yes">Yes (Have WordPress/Wix — Want 1-Line Embed)</option>
+                    <option value="no">No (Directory/Social Only &bull; Need Website)</option>
+                    <option value="yes">Yes (Have WordPress/Wix &bull; Want 1-Line Embed)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                    Preferred Package Tier
+                  <label className="block text-xs font-medium text-[#c9c4bc] mb-1.5">
+                    Preferred Engagement Tier
                   </label>
                   <select
                     value={preferredPlan}
                     onChange={(e) => setPreferredPlan(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0a0e17] border border-white/[0.08] text-[#f5f3ef] text-xs focus:outline-none focus:border-[#d4af37] transition-colors"
                   >
-                    <option value="starter">Starter Go-Live (₦35k dep / ₦65k total)</option>
+                    <option value="starter">Starter Activation (₦35k dep / ₦65k total)</option>
                     <option value="pro">Corporate Pro Suite (₦60k dep / ₦120k total)</option>
                     <option value="enterprise">Enterprise Web + APK (₦85k dep / ₦175k total)</option>
                     <option value="embed">1-Line Embed Only (₦35k one-time)</option>
@@ -181,7 +184,7 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-xs font-medium text-[#c9c4bc] mb-1.5">
                   Your WhatsApp Phone Number *
                 </label>
                 <input
@@ -190,33 +193,33 @@ export default function ContactPage() {
                   placeholder="e.g. 0802 123 4567"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-cyan-500 font-mono"
+                  className="w-full px-4 py-3 rounded-xl bg-[#0a0e17] border border-white/[0.08] text-[#f5f3ef] text-xs placeholder:text-[#c9c4bc]/40 focus:outline-none focus:border-[#d4af37] font-mono transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                <label className="block text-xs font-medium text-[#c9c4bc] mb-1.5">
                   Specific Requirements or Questions (Optional)
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Tell us about your price lists, primary customer questions, or specific calculator needs..."
+                  placeholder="Describe your price catalog, primary client inquiries, or required calculation features..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl bg-[#0a0e17] border border-white/[0.08] text-[#f5f3ef] text-xs placeholder:text-[#c9c4bc]/40 focus:outline-none focus:border-[#d4af37] transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#070b14] font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#d4af37]/20 active:scale-95"
               >
                 <MessageCircle className="w-4 h-4 fill-current" />
-                <span>Launch Live WhatsApp Demo Consultation →</span>
+                <span>Launch Live WhatsApp Demo Consultation &rarr;</span>
               </button>
 
-              <p className="text-[11px] text-slate-500 text-center">
-                🔒 We respect your privacy under the Nigeria Data Protection Act (NDPA 2023). Zero spam guaranteed.
+              <p className="text-[11px] text-[#c9c4bc]/70 text-center font-light pt-1">
+                Data strictly protected under the Nigeria Data Protection Act (NDPA 2023). Zero unsolicited spam.
               </p>
             </form>
           </div>
@@ -225,42 +228,42 @@ export default function ContactPage() {
           <div className="lg:col-span-5 space-y-6">
             
             {/* Quick Contact Card */}
-            <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 sm:p-7 space-y-5 shadow-xl">
-              <h3 className="text-base font-bold text-white font-['Outfit'] border-b border-white/10 pb-3">
+            <div className="bg-[#090d16]/90 border border-white/[0.08] rounded-3xl p-6 sm:p-7 space-y-5 shadow-xl backdrop-blur-md">
+              <h3 className="font-serif text-lg font-normal text-[#f5f3ef] border-b border-white/[0.06] pb-3">
                 Direct Contact Hotline
               </h3>
 
-              <div className="space-y-4 text-xs">
+              <div className="space-y-3.5 text-xs">
                 <a
                   href={`https://wa.me/${adminPhone}?text=Hello%20Bethelmind%20Lagos%20Desk!`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/15 transition-all text-emerald-300"
+                  className="flex items-start gap-3 p-3.5 rounded-xl bg-[#d4af37]/10 border border-[#d4af37]/20 hover:bg-[#d4af37]/15 transition-all text-[#f5f3ef]"
                 >
-                  <MessageCircle className="w-4 h-4 shrink-0 mt-0.5 fill-current" />
+                  <MessageCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#d4af37] fill-current" />
                   <div>
-                    <span className="font-bold block text-white">WhatsApp & Phone Desk</span>
-                    <span className="font-mono text-emerald-400">+234 802 279 1227</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">Available Mon &ndash; Sat (8:00 AM &ndash; 7:00 PM WAT)</span>
+                    <span className="font-medium block text-[#f5f3ef]">WhatsApp &amp; Phone Advisory Desk</span>
+                    <span className="font-mono text-[#d4af37] font-semibold">+234 802 279 1227</span>
+                    <span className="text-[10px] text-[#c9c4bc] block mt-0.5">Mon &ndash; Sat (8:00 AM &ndash; 7:00 PM WAT)</span>
                   </div>
                 </a>
 
                 <a
                   href="mailto:bethelmindrecruit@gmail.com"
-                  className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] transition-all text-slate-300"
+                  className="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] transition-all text-[#c9c4bc]"
                 >
-                  <Mail className="w-4 h-4 shrink-0 mt-0.5 text-cyan-400" />
+                  <Mail className="w-4 h-4 shrink-0 mt-0.5 text-[#c5a880]" />
                   <div>
-                    <span className="font-bold block text-white">Official Corporate Email</span>
-                    <span className="font-mono text-cyan-400">bethelmindrecruit@gmail.com</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">Written proposals & partnership inquiries</span>
+                    <span className="font-medium block text-[#f5f3ef]">Official Corporate Email</span>
+                    <span className="font-mono text-[#c5a880]">bethelmindrecruit@gmail.com</span>
+                    <span className="text-[10px] text-[#c9c4bc]/70 block mt-0.5">Formal proposals &amp; client onboarding</span>
                   </div>
                 </a>
 
-                <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-slate-300">
-                  <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+                <div className="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] text-[#c9c4bc]">
+                  <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-[#d4af37]" />
                   <div>
-                    <span className="font-bold block text-white">Physical Commercial Office</span>
+                    <span className="font-medium block text-[#f5f3ef]">Physical Commercial Office</span>
                     <span>Plot 12, Commercial Corridor, Lagos, Nigeria</span>
                   </div>
                 </div>
@@ -268,28 +271,28 @@ export default function ContactPage() {
             </div>
 
             {/* Corporate Settlement & Verification Seal */}
-            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-7 space-y-4 shadow-xl text-xs text-slate-400">
-              <div className="flex items-center gap-2 text-white font-bold text-sm">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+            <div className="bg-[#090d16]/90 border border-white/[0.08] rounded-3xl p-6 sm:p-7 space-y-4 shadow-xl backdrop-blur-md text-xs text-[#c9c4bc]">
+              <div className="flex items-center gap-2 text-[#f5f3ef] font-medium text-sm">
+                <ShieldCheck className="w-5 h-5 text-[#d4af37]" />
                 <span>CAC Certified Nigerian Enterprise</span>
               </div>
 
-              <p className="leading-relaxed">
+              <p className="font-light leading-relaxed">
                 Registered under the Corporate Affairs Commission of the Federal Republic of Nigeria (RC 7034297).
               </p>
 
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-white/5 space-y-1 font-mono text-[11px]">
+              <div className="p-4 rounded-xl bg-[#0a0e17] border border-white/[0.06] space-y-1.5 font-mono text-[11px]">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Corporate Bank:</span>
-                  <span className="text-white font-bold">Moniepoint Microfinance Bank</span>
+                  <span className="text-[#c9c4bc]/70">Corporate Bank:</span>
+                  <span className="text-[#f5f3ef] font-medium">Moniepoint Microfinance Bank</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Account Number:</span>
-                  <span className="text-emerald-400 font-bold">6805375225</span>
+                  <span className="text-[#c9c4bc]/70">Account Number:</span>
+                  <span className="text-[#d4af37] font-bold">6805375225</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Account Name:</span>
-                  <span className="text-white font-bold">Bethelmind Digital Solutions</span>
+                  <span className="text-[#c9c4bc]/70">Account Name:</span>
+                  <span className="text-[#f5f3ef] font-medium">Bethelmind Digital Solutions</span>
                 </div>
               </div>
             </div>

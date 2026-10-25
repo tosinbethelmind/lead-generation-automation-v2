@@ -2,11 +2,10 @@
 
 /**
  * @file src/components/home/PaymentSection.tsx
- * Manual OPay transfer payment box.
+ * Manual Moniepoint / Bank transfer payment box.
  *
  * - Account details read from NEXT_PUBLIC_* env vars via paymentConfig
  * - No hard-coded account numbers in JSX
- * - No fake "instant activation" or "OPay verified" claims
  * - Clipboard copy with aria-live toast
  * - WhatsApp message includes the correct selected plan and amount
  * - Payment reference generated per-plan per-session
@@ -65,7 +64,6 @@ export default function PaymentSection({
     try {
       await navigator.clipboard.writeText(text);
     } catch {
-      // Fallback for browsers without clipboard API
       const el = document.createElement('textarea');
       el.value = text;
       el.style.position = 'fixed';
@@ -80,9 +78,6 @@ export default function PaymentSection({
   };
 
   const isDeposit = plan.balanceAmountNGN > 0;
-  const depositText = isDeposit
-    ? `50% Milestone Deposit: ₦${plan.depositAmountNGN.toLocaleString()} (Total Value: ₦${plan.totalAmountNGN.toLocaleString()})`
-    : `One-Time Setup: ₦${plan.setupFeeNGN.toLocaleString()}`;
 
   const waMessage =
     `Hello Bethelmind Lagos Desk,\n\n` +
@@ -104,7 +99,7 @@ export default function PaymentSection({
     <section
       id="payment"
       aria-labelledby="payment-heading"
-      style={{ padding: '72px clamp(16px, 4vw, 40px)', maxWidth: 860, margin: '0 auto', scrollMarginTop: 90 }}
+      className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto scroll-mt-24"
     >
       {/* Invoice Modal */}
       <InvoiceModal
@@ -123,99 +118,103 @@ export default function PaymentSection({
         role="status"
         aria-live="polite"
         aria-atomic="true"
-        style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 200, pointerEvents: 'none' }}
+        className="fixed bottom-6 right-6 z-50 pointer-events-none"
       >
         {copied && (
-          <div style={{ background: '#10b981', color: '#fff', padding: '10px 18px', borderRadius: 12, fontWeight: 700, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 8px 28px rgba(0,0,0,0.4)', animation: 'fadeInUp 0.2s ease' }}>
-            <CheckCircle style={{ width: 16, height: 16 }} aria-hidden="true" />
-            {copied === 'account' ? 'Account number copied' : 'Payment reference copied'}
+          <div className="bg-[#d4af37] text-[#070b14] px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-2xl animate-fade-in-up">
+            <CheckCircle className="w-4 h-4" aria-hidden="true" />
+            <span>{copied === 'account' ? 'Account number copied' : 'Payment reference copied'}</span>
           </div>
         )}
       </div>
 
-      <div style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.06), rgba(139,92,246,0.06))', border: '1px solid rgba(6,182,212,0.2)', borderRadius: 24, padding: 'clamp(20px, 4vw, 36px)' }}>
+      <div className="bg-[#090d16]/95 border border-white/[0.08] hover:border-[#d4af37]/30 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-md space-y-8 transition-all">
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 20, padding: '5px 16px', marginBottom: 14 }}>
-            <ShieldCheck size={14} style={{ color: '#10b981' }} />
-            <span style={{ fontSize: '0.76rem', color: '#34d399', fontWeight: 800 }}>
-              Official Bethelmind Digital Solutions Settlement Desk • 50% Milestone Escrow Protection
-            </span>
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 text-[#d4af37] text-xs font-semibold uppercase tracking-widest">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#d4af37]" />
+            <span>Official Settlement Desk &bull; 50% Milestone Escrow</span>
           </div>
+          
           <h2
             id="payment-heading"
-            style={{ fontSize: 'clamp(1.4rem, 3.2vw, 1.85rem)', fontWeight: 800, margin: '0 0 10px', color: '#fff', fontFamily: "'Outfit', sans-serif" }}
+            className="font-serif text-2xl sm:text-3xl font-normal text-[#f5f3ef]"
           >
-            Milestone Settlement & Official Invoicing
+            Milestone Settlement &amp; Official Invoicing
           </h2>
-          <p style={{ color: '#94a3b8', fontSize: '0.88rem', margin: 0, maxWidth: 580, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.6 }}>
-            Your investment is 100% protected. Pay the 50% milestone deposit to commence your build. The remaining balance is paid <strong>ONLY</strong> after you inspect and approve your live staging website.
+          
+          <p className="text-xs sm:text-sm text-[#c9c4bc] font-light max-w-xl mx-auto leading-relaxed">
+            Your investment is fully protected. Pay the 50% milestone deposit to commence your build. The balance is settled <span className="text-[#f5f3ef] font-medium underline decoration-[#d4af37] underline-offset-4">ONLY</span> after you inspect and approve your live mobile website.
           </p>
         </div>
 
         {/* Selected plan summary */}
-        <div style={{ background: 'rgba(7,9,14,0.6)', border: `2px solid ${getPlanById(selectedPlanId).color}40`, borderRadius: 16, padding: '16px 20px', marginBottom: 20 }}>
-          <p style={{ margin: '0 0 4px', fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>Selected Package</p>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-            <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', fontFamily: "'Outfit', sans-serif" }}>{plan.name}</span>
-            <div style={{ textAlign: 'right' }}>
-              <span style={{ fontSize: '1.6rem', fontWeight: 900, color: getPlanById(selectedPlanId).color, fontFamily: "'Outfit', sans-serif" }}>
-                ₦{plan.depositAmountNGN.toLocaleString()}
+        <div className="bg-[#0a0e17] border border-white/[0.06] rounded-2xl p-5 space-y-3">
+          <span className="text-[10px] font-semibold text-[#c5a880] uppercase tracking-widest block">
+            Selected Engagement Package
+          </span>
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+            <span className="font-serif text-xl font-normal text-[#f5f3ef]">
+              {plan.name}
+            </span>
+            <div className="text-left sm:text-right">
+              <span className="font-mono text-2xl font-normal text-[#d4af37]">
+                &#8358;{plan.depositAmountNGN.toLocaleString()}
               </span>
-              <span style={{ color: '#34d399', fontSize: '0.8rem', fontWeight: 800, marginLeft: 6 }}>
-                {plan.balanceAmountNGN > 0 ? '(50% Deposit to Start)' : '(Complete 1-Time Setup)'}
+              <span className="text-xs text-[#c5a880] font-medium ml-2">
+                {plan.balanceAmountNGN > 0 ? '(50% Milestone Deposit)' : '(Complete Activation)'}
               </span>
-              <br />
-              <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+              <p className="text-[11px] text-[#c9c4bc]/70 font-light mt-0.5">
                 {plan.balanceAmountNGN > 0
-                  ? `Total Investment: ₦${plan.totalAmountNGN.toLocaleString()} • Balance of ₦${plan.balanceAmountNGN.toLocaleString()} paid ONLY after live approval`
+                  ? `Total Project: ₦${plan.totalAmountNGN.toLocaleString()} • Balance of ₦${plan.balanceAmountNGN.toLocaleString()} due strictly upon live approval`
                   : `Guaranteed ${plan.slaHours}h Live Handover`}
-              </span>
+              </p>
             </div>
           </div>
         </div>
 
         {/* Account details */}
         {!isConfigured ? (
-          <div style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 14, padding: '16px 18px', marginBottom: 20, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <AlertTriangle style={{ width: 20, height: 20, color: '#f59e0b', flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
-            <div>
-              <p style={{ margin: '0 0 4px', color: '#f59e0b', fontWeight: 700, fontSize: '0.88rem' }}>Payment account not configured</p>
-              <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.8rem' }}>
-                Set <code style={{ background: 'rgba(255,255,255,0.05)', padding: '1px 5px', borderRadius: 4 }}>NEXT_PUBLIC_PAYMENT_ACCOUNT_NUMBER</code> in your <code>.env.local</code> to display payment details.
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="text-xs">
+              <p className="text-amber-300 font-semibold mb-1">Payment account not configured</p>
+              <p className="text-[#c9c4bc] font-light">
+                Configure account credentials in your environment variables.
               </p>
             </div>
           </div>
         ) : (
-          <div style={{ background: 'rgba(7,9,14,0.7)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: '18px 20px', marginBottom: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
-              <div>
-                <p style={{ margin: '0 0 3px', fontSize: '0.76rem', color: '#64748b' }}>Bank: <strong style={{ color: '#94a3b8' }}>{bankName}</strong></p>
-                <p style={{ margin: '0 0 3px', fontSize: '0.76rem', color: '#64748b' }}>Account Name: <strong style={{ color: '#fff' }}>{accountName}</strong></p>
-                <p style={{ margin: '0 0 8px', fontSize: '0.76rem', color: '#64748b' }}>Account Number:</p>
-                <p style={{ margin: 0, fontSize: '1.8rem', fontWeight: 900, color: '#06b6d4', letterSpacing: '0.06em', fontFamily: "'Outfit', sans-serif" }}>
+          <div className="bg-[#0a0e17] border border-white/[0.06] rounded-2xl p-5 sm:p-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div className="space-y-1">
+                <p className="text-xs text-[#c9c4bc]/70 font-light">Bank: <strong className="text-[#f5f3ef] font-medium">{bankName}</strong></p>
+                <p className="text-xs text-[#c9c4bc]/70 font-light">Account Name: <strong className="text-[#f5f3ef] font-medium">{accountName}</strong></p>
+                <p className="text-xs text-[#c9c4bc]/70 font-light pt-1">Corporate Account Number:</p>
+                <p className="text-2xl sm:text-3xl font-mono text-[#d4af37] tracking-wider pt-0.5">
                   {accountNumber}
                 </p>
               </div>
+
               <button
                 id="copy-account-btn"
                 onClick={() => copyToClipboard(accountNumber, 'account')}
                 aria-label="Copy account number to clipboard"
-                style={{ background: copied === 'account' ? '#10b981' : 'rgba(6,182,212,0.12)', color: copied === 'account' ? '#fff' : '#06b6d4', border: '1px solid rgba(6,182,212,0.25)', borderRadius: 12, padding: '10px 16px', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s', alignSelf: 'flex-start', whiteSpace: 'nowrap' }}
+                className="py-2.5 px-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] text-[#d4af37] border border-[#d4af37]/30 text-xs font-semibold flex items-center gap-2 transition-all self-start whitespace-nowrap active:scale-95"
               >
-                <Copy style={{ width: 14, height: 14 }} aria-hidden="true" />
-                {copied === 'account' ? 'Copied!' : 'Copy Account No.'}
+                <Copy className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>{copied === 'account' ? 'Copied' : 'Copy Account No.'}</span>
               </button>
             </div>
           </div>
         )}
 
         {/* Payment reference */}
-        <div style={{ background: 'rgba(7,9,14,0.5)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <div>
-            <p style={{ margin: '0 0 2px', fontSize: '0.76rem', color: '#64748b' }}>Payment Reference (use as transfer narration if possible):</p>
-            <code style={{ fontSize: '0.95rem', fontWeight: 800, color: '#8b5cf6', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
+        <div className="bg-[#0a0e17] border border-white/[0.06] rounded-2xl p-4 sm:p-5 flex items-center justify-between flex-wrap gap-3">
+          <div className="space-y-0.5">
+            <p className="text-xs text-[#c9c4bc]/70 font-light">Payment Reference (Transfer Narration):</p>
+            <code className="text-sm font-mono text-[#c5a880] tracking-wider">
               {paymentRef}
             </code>
           </div>
@@ -223,126 +222,99 @@ export default function PaymentSection({
             id="copy-ref-btn"
             onClick={() => copyToClipboard(paymentRef, 'reference')}
             aria-label="Copy payment reference to clipboard"
-            style={{ background: copied === 'reference' ? '#10b981' : 'rgba(139,92,246,0.1)', color: copied === 'reference' ? '#fff' : '#8b5cf6', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 10, padding: '8px 14px', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+            className="py-2 px-3.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] text-[#c9c4bc] hover:text-[#f5f3ef] border border-white/[0.08] text-xs font-medium flex items-center gap-1.5 transition-all whitespace-nowrap active:scale-95"
           >
-            <Copy style={{ width: 13, height: 13 }} aria-hidden="true" />
-            {copied === 'reference' ? 'Copied!' : 'Copy Reference'}
+            <Copy className="w-3 h-3" aria-hidden="true" />
+            <span>{copied === 'reference' ? 'Copied' : 'Copy Reference'}</span>
           </button>
         </div>
 
-        {/* WhatsApp Security Cross-Check Protection Guard */}
-        <div style={{ background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.2)', borderRadius: 14, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-          <ShieldCheck style={{ color: '#38bdf8', width: 20, height: 20, flexShrink: 0, marginTop: 2 }} />
-          <div>
-            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              WhatsApp Security Cross-Check Protection
+        {/* Security Cross-Check Protection Guard */}
+        <div className="bg-[#d4af37]/[0.03] border border-[#d4af37]/20 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5">
+          <ShieldCheck className="text-[#d4af37] w-5 h-5 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-[#d4af37] uppercase tracking-wider block">
+              Direct Verification Cross-Check Guard
             </span>
-            <p style={{ margin: '4px 0 0', color: '#cbd5e1', fontSize: '0.78rem', lineHeight: 1.5 }}>
-              To ensure 100% payment safety and guard against website spoofing, your transfer receipt and narration reference <code>{paymentRef}</code> are cross-verified directly on our official WhatsApp desk before onboarding starts.
+            <p className="text-xs text-[#c9c4bc] font-light leading-relaxed">
+              To ensure 100% transaction safety and verify against spoofing, your transfer credit and narration reference <code className="text-[#f5f3ef] font-mono">{paymentRef}</code> are cross-verified directly on our official WhatsApp desk before onboarding commences.
             </p>
           </div>
         </div>
 
-        {/* Steps */}
-        <div style={{ marginBottom: 24 }}>
-          <p style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>Payment Steps</p>
-          <ol style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {/* Payment Steps */}
+        <div className="space-y-3">
+          <span className="text-[11px] font-semibold text-[#c5a880] uppercase tracking-widest block">
+            Onboarding Protocol
+          </span>
+          <ol className="space-y-2">
             {instructions.map((step, i) => (
-              <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.25)', color: '#06b6d4', fontWeight: 800, fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+              <li key={i} className="flex items-start gap-3 text-xs text-[#c9c4bc] font-light">
+                <span className="w-5 h-5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 text-[#d4af37] font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">
                   {i + 1}
                 </span>
-                <span style={{ color: '#94a3b8', fontSize: '0.83rem', lineHeight: 1.5 }}>{step}</span>
+                <span className="leading-relaxed">{step}</span>
               </li>
             ))}
           </ol>
         </div>
 
         {/* Primary Action Buttons */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center', marginBottom: 20 }}>
+        <div className="flex flex-col gap-3 pt-2">
           <a
             id="payment-whatsapp-cta"
             href={waLink}
             target="_blank"
             rel="noreferrer noopener"
             onClick={handleWhatsAppClick}
-            style={{
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              color: '#fff',
-              textDecoration: 'none',
-              borderRadius: 14,
-              padding: '16px 32px',
-              fontWeight: 900,
-              fontSize: '1rem',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 10,
-              boxShadow: '0 8px 30px rgba(16,185,129,0.3)',
-              border: '1px solid rgba(255,255,255,0.2)',
-            }}
+            className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#070b14] font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#d4af37]/20 active:scale-95"
             aria-label="Request Settlement Account & Invoice on WhatsApp"
           >
-            <MessageSquare style={{ width: 20, height: 20 }} aria-hidden="true" />
-            Request Verified Settlement Account & Invoice on WhatsApp
+            <MessageSquare className="w-4 h-4 fill-current" aria-hidden="true" />
+            <span>Request Verified Settlement Account &amp; Invoice on WhatsApp</span>
           </a>
 
           <button
             onClick={() => setShowInvoiceModal(true)}
-            style={{
-              background: 'rgba(56,189,248,0.12)',
-              color: '#38bdf8',
-              border: '1px solid rgba(56,189,248,0.3)',
-              borderRadius: 12,
-              padding: '12px 24px',
-              fontWeight: 800,
-              fontSize: '0.88rem',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
+            className="w-full py-3 px-6 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] text-[#c9c4bc] hover:text-[#f5f3ef] border border-white/[0.08] text-xs font-medium flex items-center justify-center gap-2 transition-all"
           >
-            <FileText size={16} /> Preview Instant Pro-Forma Invoice (PDF)
+            <FileText className="w-4 h-4 text-[#d4af37]" />
+            <span>Preview Instant Pro-Forma Invoice (PDF)</span>
           </button>
         </div>
 
         {/* Post-click note */}
         {whatsappOpened && (
-          <div role="status" aria-live="polite" style={{ textAlign: 'center', background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 12, padding: '10px 16px', marginBottom: 16 }}>
-            <p style={{ margin: 0, color: '#10b981', fontSize: '0.82rem', fontWeight: 600 }}>
-              WhatsApp has opened for receipt submission. Your payment will be reviewed before onboarding starts.
+          <div role="status" aria-live="polite" className="text-center p-3 rounded-xl bg-[#d4af37]/10 border border-[#d4af37]/20">
+            <p className="text-xs text-[#d4af37] font-medium">
+              WhatsApp opened for receipt submission. Your payment is reviewed by our desk prior to onboarding.
             </p>
           </div>
         )}
 
         {/* Nigerian Security & Compliance Badges */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap', margin: '16px 0', padding: '10px 0', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Lock size={12} style={{ color: '#10b981' }} /> 256-Bit SSL Encrypted
+        <div className="flex justify-center gap-6 flex-wrap pt-4 border-t border-white/[0.06] text-xs text-[#c9c4bc]/70 font-light">
+          <span className="flex items-center gap-1.5">
+            <Lock className="w-3.5 h-3.5 text-[#d4af37]" />
+            <span>256-Bit SSL Encrypted</span>
           </span>
-          <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <ShieldCheck size={12} style={{ color: '#06b6d4' }} /> NDPA Data Compliance Verified
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#d4af37]" />
+            <span>NDPA Data Compliance Verified</span>
           </span>
-          <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}>
-            Verified Bank Transfer Settlement
+          <span className="flex items-center gap-1.5">
+            <span>CAC RC 7034297</span>
           </span>
         </div>
 
         {/* Safety note */}
-        <div style={{ background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 12, padding: '12px 16px' }}>
-          <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.78rem', lineHeight: 1.55 }}>
-            <strong style={{ color: '#f87171' }}>Safety: </strong>{safetyNote}
+        <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-3.5">
+          <p className="text-[11px] text-[#c9c4bc]/80 font-light leading-relaxed">
+            <strong className="text-[#f5f3ef] font-medium">Safety: </strong>{safetyNote}
           </p>
         </div>
 
       </div>
-
-      <style>{`
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </section>
   );
 }
