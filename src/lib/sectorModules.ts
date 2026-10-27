@@ -3543,4 +3543,222 @@ export function buildSectorWhatsAppQuoteMessage(
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
 }
 
+// ============================================================================
+// 41. STARLINK SATELLITE & ESTATE MESH INTERNET SIZER
+// ============================================================================
+
+export interface StarlinkInstallationResult {
+  kitModel: string;
+  kitHardwareCostNgn: number;
+  monthlySubscriptionNgn: number;
+  mountHardwareCostNgn: number;
+  meshExtensionCostNgn: number;
+  meshNodesCount: number;
+  surgeAndPowerBackupCostNgn: number;
+  technicianInstallationFeeNgn: number;
+  totalHardwareAndSetupNgn: number;
+  firstMonthTotalNgn: number;
+  recommendedBandwidthMbps: string;
+  installationChecklist: string[];
+}
+
+export function calculateStarlinkInstallationSizer(
+  kitModel: 'standard_gen3' | 'starlink_mini' | 'enterprise_high_perf' = 'standard_gen3',
+  propertyType: 'bungalow_flat' | 'duplex_multistory' | 'commercial_office' | 'remote_farm_rig' = 'bungalow_flat',
+  meshNodesCount = 0,
+  mountType: 'standard_base' | 'wall_pipe_adapter' | 'ridge_roof_mount' | 'tower_mast_pole' = 'wall_pipe_adapter',
+  includePowerUpsBackup = true,
+  includeSurgeProtection = true
+): StarlinkInstallationResult {
+  const kitPrices: Record<string, { hardware: number; sub: number; label: string }> = {
+    standard_gen3: { hardware: 590000, sub: 38000, label: 'Starlink Standard Kit Gen 3 (Motorless / High-Gain)' },
+    starlink_mini: { hardware: 330000, sub: 50000, label: 'Starlink Mini Portable DC Kit' },
+    enterprise_high_perf: { hardware: 2200000, sub: 115000, label: 'Starlink Enterprise High-Performance Flat Dish' },
+  };
+
+  const selectedKit = kitPrices[kitModel] || kitPrices.standard_gen3;
+
+  const mountPrices: Record<string, number> = {
+    standard_base: 0,
+    wall_pipe_adapter: 35000,
+    ridge_roof_mount: 48000,
+    tower_mast_pole: 65000,
+  };
+  const mountHardwareCostNgn = mountPrices[mountType] ?? 35000;
+
+  const meshExtensionCostNgn = Math.max(0, Math.round(meshNodesCount)) * 95000;
+
+  let surgeAndPowerBackupCostNgn = 0;
+  if (includePowerUpsBackup) surgeAndPowerBackupCostNgn += 48000;
+  if (includeSurgeProtection) surgeAndPowerBackupCostNgn += 25000;
+
+  const laborMap: Record<string, number> = {
+    bungalow_flat: 35000,
+    duplex_multistory: 55000,
+    commercial_office: 75000,
+    remote_farm_rig: 95000,
+  };
+  const technicianInstallationFeeNgn = laborMap[propertyType] || 35000;
+
+  const totalHardwareAndSetupNgn =
+    selectedKit.hardware +
+    mountHardwareCostNgn +
+    meshExtensionCostNgn +
+    surgeAndPowerBackupCostNgn +
+    technicianInstallationFeeNgn;
+
+  const firstMonthTotalNgn = totalHardwareAndSetupNgn + selectedKit.sub;
+
+  return {
+    kitModel: selectedKit.label,
+    kitHardwareCostNgn: selectedKit.hardware,
+    monthlySubscriptionNgn: selectedKit.sub,
+    mountHardwareCostNgn,
+    meshExtensionCostNgn,
+    meshNodesCount: Math.max(0, Math.round(meshNodesCount)),
+    surgeAndPowerBackupCostNgn,
+    technicianInstallationFeeNgn,
+    totalHardwareAndSetupNgn,
+    firstMonthTotalNgn,
+    recommendedBandwidthMbps: '150 - 280 Mbps Low-Latency Unlimited Satellite Internet',
+    installationChecklist: [
+      'Pre-install Starlink mobile app 360° sky obstruction sweep',
+      'Structural roof/wall pipe mount anchor with water-tight silicon grommets',
+      'Exterior UV-shielded Cat6 cable routing through protective PVC conduits',
+      'RJ45 PoE lightning surge suppressor grounding to building copper earthing',
+      'Pure sine wave Mini-UPS auto-switchover testing during power cuts',
+      'Dual-band 2.4/5GHz estate mesh router synchronization and speed test certification (>150 Mbps)',
+    ],
+  };
+}
+
+// ============================================================================
+// 42. RESIDENTIAL DEEP CLEANING & POST-CONSTRUCTION FUMIGATION SIZER
+// ============================================================================
+
+export interface CleaningFumigationResult {
+  serviceScope: string;
+  squareMeters: number;
+  propertyType: string;
+  bedroomsCount: number;
+  chemicalsAndConsumablesCostNgn: number;
+  professionalLaborCostNgn: number;
+  totalEstimateNgn: number;
+  deposit50PercentNgn: number;
+  estimatedDurationHours: number;
+  fumigationEvacuationHours: number;
+  cleaningChecklist: string[];
+  summary: string;
+}
+
+export function calculateCleaningAndFumigationSizer(
+  serviceScope: 'deep_cleaning' | 'post_construction' | 'fumigation_pest_control' | 'deep_clean_plus_fumigation_combo' = 'deep_cleaning',
+  squareMeters = 0,
+  propertyType: 'flat_apartment' | 'duplex' | 'mansion_estate' | 'commercial_office' = 'flat_apartment',
+  bedroomsCount = 3,
+  frequency: 'one_time' | 'monthly_contract' | 'quarterly_contract' = 'one_time'
+): CleaningFumigationResult {
+  let effectiveArea = Number(squareMeters);
+  if (!effectiveArea || effectiveArea <= 0) {
+    if (propertyType === 'duplex') effectiveArea = Math.max(180, bedroomsCount * 65);
+    else if (propertyType === 'mansion_estate') effectiveArea = Math.max(350, bedroomsCount * 90);
+    else if (propertyType === 'commercial_office') effectiveArea = 250;
+    else effectiveArea = Math.max(80, bedroomsCount * 40);
+  }
+
+  const ratesPerSqm: Record<string, { rate: number; minPrice: number; label: string; chemShare: number; durationBase: number; evacHours: number }> = {
+    deep_cleaning: {
+      rate: 350,
+      minPrice: 35000,
+      label: 'Comprehensive Residential Deep Sanitization & Scrubbing',
+      chemShare: 0.35,
+      durationBase: 4,
+      evacHours: 0,
+    },
+    post_construction: {
+      rate: 480,
+      minPrice: 55000,
+      label: 'Post-Construction Paint Scrape, Cement Haze & Tile Acid Wash',
+      chemShare: 0.40,
+      durationBase: 6,
+      evacHours: 0,
+    },
+    fumigation_pest_control: {
+      rate: 220,
+      minPrice: 25000,
+      label: 'Thermal Fogging, German Cockroach Gel & Snake/Rodent Barrier',
+      chemShare: 0.50,
+      durationBase: 3,
+      evacHours: 4,
+    },
+    deep_clean_plus_fumigation_combo: {
+      rate: 520,
+      minPrice: 65000,
+      label: 'Turnkey Deep Clean Scrubbing + Complete Fumigation Eradication',
+      chemShare: 0.42,
+      durationBase: 7,
+      evacHours: 4,
+    },
+  };
+
+  const selected = ratesPerSqm[serviceScope] || ratesPerSqm.deep_cleaning;
+
+  let calculatedPrice = Math.round(effectiveArea * selected.rate);
+  if (calculatedPrice < selected.minPrice) calculatedPrice = selected.minPrice;
+
+  if (frequency === 'monthly_contract') calculatedPrice = Math.round(calculatedPrice * 0.80);
+  else if (frequency === 'quarterly_contract') calculatedPrice = Math.round(calculatedPrice * 0.85);
+
+  const chemicalsAndConsumablesCostNgn = Math.round(calculatedPrice * selected.chemShare);
+  const professionalLaborCostNgn = calculatedPrice - chemicalsAndConsumablesCostNgn;
+  const deposit50PercentNgn = Math.round(calculatedPrice * 0.5);
+
+  const estimatedDurationHours = Math.min(12, Math.max(selected.durationBase, Math.round(selected.durationBase + (effectiveArea / 120))));
+
+  const checklists: Record<string, string[]> = {
+    deep_cleaning: [
+      'Rotary floor machine scrubbing of vitreous tiles and marble grout',
+      'High-pressure bathroom tile descaling, toilet bowl sanitization, and chrome polish',
+      'Kitchen cabinetry degreasing, extractor hood carbon removal, and sink sanitization',
+      'Dual-side glass window streak-free clean and aluminum frame dust removal',
+      'Cobweb brushing of high ceilings, light fixtures, and AC vent vents',
+    ],
+    post_construction: [
+      'Chemical acid washing & mechanical scraper removal of stubborn cement drops',
+      'Paint splatter scraping from windows, tiles, light switches, and skirting boards',
+      'Industrial HEPA vacuuming of fine plaster dust from conduits, wardrobes, and drawers',
+      'Tile deep-grout brightening and sealing against construction grease',
+      'Exterior balcony, perimeter drain, and window lintel debris cleanup',
+    ],
+    fumigation_pest_control: [
+      'Thermal aerosol fogging targeting hidden crevices, ceilings, and wardrobes',
+      'Residual chemical barrier perimeter spray against termites, ants, and spiders',
+      'Targeted non-toxic gel baiting inside kitchen cabinets for German cockroaches',
+      'Rodent bait station placement in attic cavities and external perimeter fences',
+      '4-Hour safety evacuation advisory with post-ventilation air safety guarantee',
+    ],
+    deep_clean_plus_fumigation_combo: [
+      'Phase 1: Full-structure chemical pest eradication, thermal fogging & gel baiting',
+      'Phase 2: 4-Hour fumigation quarantine and chemical clearance ventilation',
+      'Phase 3: Deep mechanical floor scrubbing, window cleaning, and sanitization',
+      'Phase 4: Dead insect removal, surface disinfectant wipe-down, and fresh fragrance spray',
+      'Quality handover checklist with 3-month pest-free guarantee certificate',
+    ],
+  };
+
+  return {
+    serviceScope: selected.label,
+    squareMeters: effectiveArea,
+    propertyType,
+    bedroomsCount,
+    chemicalsAndConsumablesCostNgn,
+    professionalLaborCostNgn,
+    totalEstimateNgn: calculatedPrice,
+    deposit50PercentNgn,
+    estimatedDurationHours,
+    fumigationEvacuationHours: selected.evacHours,
+    cleaningChecklist: checklists[serviceScope] || checklists.deep_cleaning,
+    summary: `${selected.label} for ${effectiveArea} sqm (${propertyType.replace(/_/g, ' ')}): ₦${calculatedPrice.toLocaleString()}`,
+  };
+}
 

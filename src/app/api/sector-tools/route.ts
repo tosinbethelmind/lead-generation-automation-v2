@@ -64,6 +64,8 @@ import {
   calculateEstateVisitorPassCapacity,
   calculateB2bProformaInvoice,
   calculateBeautySalonStylistBooking,
+  calculateStarlinkInstallationSizer,
+  calculateCleaningAndFumigationSizer,
 } from '@/lib/sectorModules';
 import { TEN_SECTOR_MONETIZATION_TOOLS } from '@/lib/monetization/tenSectorMonetizationTools';
 import { SECTOR_PROFILES } from '@/config/sectors';
@@ -101,7 +103,7 @@ export async function GET() {
 /** POST /api/sector-tools — Execute sector calculation engine */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { action } = body;
 
     if (action === 'solar_boq') {
@@ -150,9 +152,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, result });
     }
 
-    if (action === 'cac_fees' || action === 'cac_filing') {
-      const { entityType, shareCapital, shareCapitalNgn } = body;
+    if (action === 'cac_fees' || action === 'cac_filing' || action === 'cac_registration_sizer') {
+      const { entityType, shareCapital, shareCapitalNgn, proposedName } = body;
       const result = calculateCacFilingFees(entityType || 'company_ltd', Number(shareCapital || shareCapitalNgn || 1000000));
+      if (proposedName) {
+        const nameAvailability = checkCacNameAvailability(proposedName);
+        return NextResponse.json({ success: true, result: { ...result, nameAvailability } });
+      }
       return NextResponse.json({ success: true, result });
     }
 
@@ -353,7 +359,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, result });
     }
 
-    if (action === 'shortlet_booking') {
+    if (action === 'shortlet_booking' || action === 'shortlet_caution_sizer') {
       const { nightlyRateNgn, nightsCount, cautionDepositNgn, estimatedKwhPerDay } = body;
       const result = calculateShortletBookingAndCaution(
         Number(nightlyRateNgn || 85000),
@@ -649,7 +655,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, result });
     }
 
-    if (action === 'gps_diesel_mileage_audit') {
+    if (action === 'gps_diesel_mileage_audit' || action === 'gps_fuel_mileage_audit') {
       const { tripDistanceKm, dieselLitersAllocated, truckTonnage, dieselPricePerLiterNgn } = body;
       const result = calculateGpsDieselMileageAudit(
         Number(tripDistanceKm || 1020),
@@ -785,6 +791,31 @@ export async function POST(req: NextRequest) {
         Boolean(applyVat75Percent ?? true),
         Boolean(applyWht5Percent ?? true),
         Number(deliveryOrReimbursableNgn || 120000)
+      );
+      return NextResponse.json({ success: true, result });
+    }
+
+    if (action === 'starlink_installation_sizer') {
+      const { kitModel, propertyType, meshNodesCount, mountType, includePowerUpsBackup, includeSurgeProtection } = body;
+      const result = calculateStarlinkInstallationSizer(
+        kitModel || 'standard_gen3',
+        propertyType || 'bungalow_flat',
+        Number(meshNodesCount || 0),
+        mountType || 'wall_pipe_adapter',
+        includePowerUpsBackup !== undefined ? Boolean(includePowerUpsBackup) : true,
+        includeSurgeProtection !== undefined ? Boolean(includeSurgeProtection) : true
+      );
+      return NextResponse.json({ success: true, result });
+    }
+
+    if (action === 'cleaning_fumigation_sizer') {
+      const { serviceScope, squareMeters, propertyType, bedroomsCount, frequency } = body;
+      const result = calculateCleaningAndFumigationSizer(
+        serviceScope || 'deep_cleaning',
+        Number(squareMeters || 0),
+        propertyType || 'flat_apartment',
+        Number(bedroomsCount || 3),
+        frequency || 'one_time'
       );
       return NextResponse.json({ success: true, result });
     }

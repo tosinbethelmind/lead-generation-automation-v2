@@ -255,6 +255,40 @@ interface SectorProfile {
 function getSectorProfile(rawSlug: string): SectorProfile {
   const slug = (rawSlug || 'solar').toLowerCase().replace(/\.html$/i, '');
 
+  if (/starlink|satellite|mesh|dish/.test(slug)) {
+    return {
+      title: 'Starlink Satellite Internet Installation & Estate Mesh Sizer',
+      category: 'Telecommunications & High-Speed Satellite',
+      tag: 'Multi-Floor Duplex & Estate Mesh Suite',
+      summary: 'Sizes Starlink Standard Kit vs Mini vs Enterprise dishes, roof ridge vs wall pipe mounts, multi-floor estate WiFi mesh nodes, pure sine wave UPS backup, and lightning surge protection.',
+      highlightPills: ['Standard Gen3 / Mini Kit Hardware', 'Multi-Floor Duplex Mesh Nodes', 'Surge & UPS Power Protection'],
+      sectorTab: 'solar',
+    };
+  }
+
+  if (/clean|fumigat|janitor|pest/.test(slug)) {
+    return {
+      title: 'Residential Deep Cleaning & Post-Construction Fumigation Sizer',
+      category: 'Janitorial & Environmental Pest Control',
+      tag: 'Per-Sqm Estimator & Chemical Safety',
+      summary: 'Generates instant sqm-based quotes for residential post-construction scrubbing, commercial deep cleaning, and pest control/fumigation with safe re-entry timelines.',
+      highlightPills: ['₦350/sqm Deep Cleaning', '₦480/sqm Post-Construction', 'Safe 4-Hour Fumigation Evacuation'],
+      sectorTab: 'beauty',
+    };
+  }
+
+  if (/gps|tracker|siphon|mileage|fleet/.test(slug)) {
+    return {
+      title: 'Commercial GPS Fleet Tracker & Highway Diesel Siphon Auditor',
+      category: 'Logistics & Fleet Haulage',
+      tag: 'Anti-Fuel-Pilferage Guard',
+      summary: 'Reconciles real-time GPS trip odometer distances against fuel station diesel allocations, automatically flagging roadside siphon theft, driver fuel decanting, and debit notes.',
+      highlightPills: ['GPS Odometer vs Liters Audit', '15-Ton / 30-Ton / 40-Ton Tonnage Standard', 'Instant Driver Deduction Note'],
+      sectorTab: 'logistics',
+    };
+  }
+
+
   if (/solar|boq|inverter|energy/.test(slug)) {
     return {
       title: 'Solar & Renewable Energy BOQ Load Sizer',
@@ -354,7 +388,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     };
   }
 
-  if (/cac|legal|filing|compliance/.test(slug)) {
+  if (/cac|legal|filing|compliance|incorporation|registration/.test(slug)) {
     return {
       title: 'CAC Corporate Filing Fees & Legal Retainer Suite',
       category: 'Legal & CAC Corporate Services',
@@ -365,7 +399,7 @@ function getSectorProfile(rawSlug: string): SectorProfile {
     };
   }
 
-  if (/shortlet|hospitality|hotel|apartment/.test(slug)) {
+  if (/shortlet|hospitality|hotel|apartment|caution|airbnb|escrow/.test(slug)) {
     return {
       title: 'Shortlet Electricity Token & Caution Deposit Reconciler',
       category: 'Shortlet & Hospitality Apartments',

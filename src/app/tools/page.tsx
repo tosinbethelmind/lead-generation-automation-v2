@@ -186,6 +186,62 @@ const TOOLS: ToolItem[] = [
     upsell: '₦35,000 Fintech Shield'
   },
 
+  {
+    id: 'cac-registration-sizer',
+    title: 'CAC Business Name & Company Incorporation Fee Sizer',
+    badge: 'Official CAC & Stamp Duty',
+    category: 'b2b',
+    description: 'Instant statutory CAC filing fees, name reservation availability check, FIRS stamp duty, and SCUML compliance matrix for Nigerian business owners and accredited agents.',
+    icon: Scale,
+    color: 'text-[#d4af37]',
+    href: '/tools/cac-registration-sizer',
+    upsell: '₦35,000 Legal Suite'
+  },
+  {
+    id: 'shortlet-booking-escrow',
+    title: 'Shortlet Apartment Booking & Caution Escrow Lock',
+    badge: 'DisCo Token & Caution Lock',
+    category: 'realestate',
+    description: 'Direct guest booking engine that locks reservation deposits, automates check-in receipts, and reconciles prepaid DisCo electricity token quotas against caution deposits.',
+    icon: Hotel,
+    color: 'text-[#d4af37]',
+    href: '/tools/shortlet-booking-escrow',
+    upsell: '₦35,000 Hospitality Suite'
+  },
+  {
+    id: 'gps-tracker-fuel-audit',
+    title: 'Commercial GPS Fleet Tracker & Diesel Siphon Auditor',
+    badge: 'Anti-Siphon Fuel Guard',
+    category: 'b2b',
+    description: 'Reconciles real-time GPS trip odometer distances against fuel station allocations, auditing driver consumption and generating instant debit notes for siphoned diesel.',
+    icon: Truck,
+    color: 'text-[#d4af37]',
+    href: '/tools/gps-tracker-fuel-audit',
+    upsell: '₦35,000 Haulage Suite'
+  },
+  {
+    id: 'starlink-installation-sizer',
+    title: 'Starlink Satellite Internet Installation & Estate Mesh Sizer',
+    badge: 'High-Speed Satellite',
+    category: 'b2b',
+    description: 'Precision hardware, roof ridge/wall pipe mounts, multi-floor duplex WiFi mesh nodes, lightning surge arrestors, and pure sine wave UPS backup sizer for Nigerian estates and offices.',
+    icon: Zap,
+    color: 'text-[#d4af37]',
+    href: '/tools/starlink-installation-sizer',
+    upsell: '₦35,000 Starlink Suite'
+  },
+  {
+    id: 'cleaning-fumigation-sizer',
+    title: 'Residential Deep Cleaning & Post-Construction Fumigation Sizer',
+    badge: 'Per-Sqm Estimator',
+    category: 'b2b',
+    description: 'Instant square-meter quotes for post-construction scrubbing, cement haze scraping, deep janitorial sanitization, and 4-hour chemical fumigation pest barriers.',
+    icon: Sparkles,
+    color: 'text-[#d4af37]',
+    href: '/tools/cleaning-fumigation-sizer',
+    upsell: '₦35,000 Cleaning Suite'
+  },
+
   // --- Lifestyle & Wealth Utility Engines ---
   {
     id: 'kids-learning',
