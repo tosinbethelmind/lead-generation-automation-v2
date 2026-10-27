@@ -230,7 +230,7 @@ What Your New Website Does for ${cleanName}:
 • Confirms customer bank transfers cleanly (OPay, Moniepoint & Paystack)
 
 🇳🇬 Official SME Digital Growth Initiative (Because Your Sample Is Already 80% Built):
-1. Option 1 (Official .COM.NG Website + WhatsApp Assistant): ₦65,000 Total (Normal Price ₦130,000) — Start today with ₦35,000 Deposit, and pay the ₦30,000 balance ONLY after your website is live on Google with your real photos!
+1. Option 1 (Official .COM.NG Website + WhatsApp Assistant): ₦65,000 Total (Normal Price ₦130,000) — 100% Risk-Free 48-Hour Live Pilot (₦0 Upfront). You only pay the ₦35,000 activation fee AFTER you inspect and approve it live on your phone!
 2. Option 2 (Corporate .COM Website + 3 Official Staff Emails): ₦120,000 Total (Normal Price ₦240,000) — Start today with ₦60,000 Deposit.
 3. Want to see your real shop photos on it first? Send 2–3 photos of your work on WhatsApp (+234 802 279 1227) and we will update your sample page FREE before you pay shishi!
 4. Official CAC Registered Company Account: Moniepoint Microfinance Bank · 6805375225 · Bethelmind Digital Solutions.
@@ -273,7 +273,7 @@ Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)`;
 
       <div style="background:#111c35; border:1px solid #10b981; border-radius:8px; padding:14px 16px; margin:18px 0; text-align:left;">
         <div style="color:#34d399; font-size:12px; font-weight:800; text-transform:uppercase; margin-bottom:8px;">🇳🇬 Official SME Growth Initiative (Because Your Sample Is Already 80% Built)</div>
-        <div style="color:#e2e8f0; font-size:13px; line-height:1.6; margin-bottom:6px;">• <strong>Option 1 (Official .COM.NG Website): ₦65,000 Total</strong> <span style="text-decoration:line-through; color:#94a3b8;">(₦130k)</span> — <strong>Start today with ₦35,000 Deposit</strong>, and pay the ₦30,000 balance ONLY after your website is live with your real photos!</div>
+        <div style="color:#e2e8f0; font-size:13px; line-height:1.6; margin-bottom:6px;">• <strong>Option 1 (Official .COM.NG Website): ₦65,000 Total</strong> <span style="text-decoration:line-through; color:#94a3b8;">(₦130k)</span> — <strong>100% Risk-Free 48-Hour Pilot (₦0 Upfront). Pay ₦35,000 ONLY after live approval</strong>, and pay the ₦30,000 balance ONLY after your website is live with your real photos!</div>
         <div style="color:#e2e8f0; font-size:13px; line-height:1.6; margin-bottom:6px;">• <strong>Option 2 (Corporate .COM + Staff Emails): ₦120,000 Total</strong> <span style="text-decoration:line-through; color:#94a3b8;">(₦240k)</span> — <strong>Start today with ₦60,000 Deposit</strong> (Includes <code>.com</code> domain &amp; official company emails).</div>
         <div style="color:#fde68a; font-size:12.5px; line-height:1.5; margin-bottom:6px;">• <strong>✏️ Want to see your real shop photos first?</strong> Send 2–3 photos on WhatsApp and we will update your sample page <strong>FREE (₦0) before you pay shishi</strong>!</div>
         <div style="color:#94a3b8; font-size:12px; line-height:1.5; border-top:1px solid #1e293b; padding-top:6px; margin-top:6px;">🏛️ <strong>CAC Registered Company Account:</strong> Moniepoint MFB · <strong>6805375225</strong> · <strong>Bethelmind Digital Solutions</strong></div>

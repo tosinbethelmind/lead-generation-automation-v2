@@ -38,7 +38,7 @@ export const ViralQuoteForwarder: React.FC<ViralQuoteForwarderProps> = ({
   const [copied, setCopied] = useState(false);
 
   const displayClient = clientName.trim() || 'Valued Client';
-  const displaySender = businessName.trim() || 'Bethelmind Digital Solutions (RC 7034297)';
+  const displaySender = businessName.trim() || 'Bethelmind Digital Solutions (CAC Certified Enterprise (Reg: 9912717))';
 
   const metricsText = summaryMetrics.length > 0 
     ? summaryMetrics.map(m => `• ${m.label}: ${m.value}`).join('\n')
@@ -56,7 +56,7 @@ ${metricsText}
 *TERMS & PRICE LOCK:*
 • Tariff & Material Price Validity: 48 Hours from issuance
 • Corporate Settlement: Moniepoint Microfinance Bank (6805375225)
-• CAC Certified Verification: RC 7034297
+• CAC Certified Verification: CAC Certified Enterprise (Reg: 9912717)
 
 ----------------------------------------
 *Audited with Bethelmind Commercial Quoting Engine*

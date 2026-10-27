@@ -302,7 +302,7 @@ export const WhatsAppLeadMagnetModal: React.FC<WhatsAppLeadMagnetProps> = ({
               </a>
 
               <p className="text-center text-[11px] text-slate-400">
-                <span className="inline-flex items-center gap-1.5"><Lock className="w-3 h-3 text-slate-400" /> We respect your privacy. No spam. Direct verification from Bethelmind Digital Solutions (RC 7034297).</span>
+                <span className="inline-flex items-center gap-1.5"><Lock className="w-3 h-3 text-slate-400" /> We respect your privacy. No spam. Direct verification from Bethelmind Digital Solutions (CAC Certified Enterprise (Reg: 9912717)).</span>
               </p>
             </div>
 

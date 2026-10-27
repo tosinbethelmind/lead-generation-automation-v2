@@ -10,7 +10,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **ENGINE 1: 100% ZERO-CRYPTO B2B COMMERCIAL GROWTH ENGINE (SOLE ACTIVE PRIMARY FOCUS)**: All customer outreach, scrapers, SMS, WhatsApp dispatches, email templates, and executive digests are strictly focused **100% on Engine 1**. Messaging highlights the **10 High-Conversion Sector Monetization Tools & DFY SME Prototypes** (₦15k–₦150k setups, ₦15k–₦70k/mo retainers, 24/7 AI WhatsApp Sales Assistants, Solar BOQ Load Sizers, Fake Alert Proof Bank Transfer Reconciliation, Hyperlocal Dispatch Aggregator, Multi-Location Stock Theft Prevention, Service Booking Deposit Lock, Tenant Escrow Manager, Construction Material Estimator, School Fee Result Gating, Agribusiness Order Consolidator). ZERO crypto jargon, ZERO wallet references, and ZERO crypto keywords allowed in outreach.
 - **CHINA FACTORY / FX / ESCROW COPY EXPUNGED FROM COLD OUTREACH**: Cold customer outreach copy strictly expunges China factory, RMB/USD direct wire, and escrow copy. All messaging highlights 24/7 AI WhatsApp Assistants, Sector Tools, and DFY SME Prototypes.
 - **ENGINE 2: STANDALONE INDEPENDENT CRYPTO ENGINE (`cryptoEngineStandalone.ts`)**: Completely decoupled, isolated, and PAUSED. Zero messages or notifications dispatched to or from crypto modules.
-- **STRICT BRANDING & CAC CERTIFICATION**: All outreach messages, signatures, SMS, emails, and client preview pages MUST strictly use **Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)** and route all corporate settlements to **Moniepoint Microfinance Bank (`6805375225` — Bethelmind Digital Solutions)**. NEVER use `ApexReach` or old `Bethelmind Analytics` names.
+- **STRICT BRANDING & CAC CERTIFICATION**: All outreach messages, signatures, SMS, emails, and client preview pages MUST strictly use **Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise (Reg: 9912717))** and route all corporate settlements to **Moniepoint Microfinance Bank (`6805375225` — Bethelmind Digital Solutions)**. NEVER use `ApexReach` or old `Bethelmind Analytics` names.
 
 ## 1B. PERMANENT CONVERSION MANDATE: 100% STRICT NON-WEBSITE BUSINESS FOCUS (`hasWebsite === false` / DIRECTORY-ONLY SMEs)
 - **SOLE TARGET SEGMENT (VERIFIED NIGERIAN BUSINESSES WITHOUT A STANDALONE WEBSITE)**:
@@ -708,15 +708,15 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 43. PERMANENT MANDATE: OFFICIAL CAC CORPORATE IDENTITY, NIGERIAN MARKET SIMPLE CONVERSION COPY & OPTIMUM 86-DISTRICT SCRAPER (SOLIDIFIED IN MEMORY)
 - **1. OFFICIAL CORPORATE IDENTITY & BANK SETTLEMENT (ZERO LEGACY NAMES)**:
-  - **Official Registered Business Name**: **`Bethelmind Digital Solutions`** *(CAC Certified Nigerian Enterprise)*.
+  - **Official Registered Business Name**: **`Bethelmind Digital Solutions`** *(CAC Certified Nigerian Enterprise (Reg: 9912717))*.
   - **Official Corporate Bank Account**:
     * **Bank Name**: **`Moniepoint Microfinance Bank`**
     * **Account Number**: **`6805375225`**
     * **Account Name**: **`Bethelmind Digital Solutions`**
   - **CAC Trust & Security Practice**:
-    * Every `/preview/[lead_id]` prototype page, sticky conversion bar, invoice, and email footer displays the **CAC Certified Nigerian Enterprise Badge** + **CAC Public Registry Verification (`search.cac.gov.ng`)** + **Corporate Bank Name Match (`Bethelmind Digital Solutions`)**.
+    * Every `/preview/[lead_id]` prototype page, sticky conversion bar, invoice, and email footer displays the **CAC Certified Nigerian Enterprise (Reg: 9912717) Badge** + **CAC Public Registry Verification (`search.cac.gov.ng`)** + **Corporate Bank Name Match (`Bethelmind Digital Solutions`)**.
     * Never upload raw, unwatermarked CAC certificates on public web pages (prevents impersonation); provide a watermarked copy on WhatsApp upon a client's request.
-  - **Strict Prohibition**: NEVER use `Bethelmind Analytics`, `Bethelmind Analytics & Strategy`, `ApexReach`, or personal OPay `7034297995` (`Oyelakin Tosin Matthew`) anywhere in the codebase, templates, or outreach. (Keep `@bethelmindanalytics.com` email addresses and `https://www.bethelmindanalytics.com` domain URLs intact).
+  - **Strict Prohibition**: NEVER use `Bethelmind Analytics`, `Bethelmind Analytics & Strategy`, `ApexReach`, or personal OPay `9912717995` (`Oyelakin Tosin Matthew`) anywhere in the codebase, templates, or outreach. (Keep `@bethelmindanalytics.com` email addresses and `https://www.bethelmindanalytics.com` domain URLs intact).
 
 - **2. NIGERIAN MARKET HIGH-CONVERSION SIMPLE COPY ARCHITECTURE (ZERO BIG GRAMMAR / ZERO TECH JARGON)**:
   - **Core Copy Principle**: Speak to Nigerian businessmen and businesswomen in warm, respectful, everyday Nigerian business English (*"Good day Boss / Management at [Business Name], Well done with your business!"*). Avoid foreign technical jargon (*"third-party directory listings"*, *"50% Milestone Deposit"*, *"Turnkey Handover"*, *"Reconciliation Shield"*).

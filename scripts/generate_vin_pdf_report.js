@@ -330,7 +330,7 @@ async function generateVinPdf(vin = 'JHLRD1851WC804433') {
     <div class="header">
       <div class="logo-block">
         <div class="corp-name">Bethelmind Digital Solutions</div>
-        <div class="corp-tag">CAC Certified Enterprise • RC 7034297 • Nigerian Trade & Customs Desk</div>
+        <div class="corp-tag">CAC Certified Enterprise (Reg: 9912717) • CAC Certified Enterprise (Reg: 9912717) • Nigerian Trade & Customs Desk</div>
       </div>
       <div class="header-badge-box">
         <div class="cert-badge">Official Tokunbo Inspection Passport</div>
@@ -412,18 +412,18 @@ async function generateVinPdf(vin = 'JHLRD1851WC804433') {
       </tbody>
     </table>
 
-    <!-- 3. SALVAGE & HURRICANE FLOOD AUDIT -->
-    <div class="section-heading">3. North American Salvage & Hurricane Flood Corridor Provenance</div>
+    <!-- 3. SALVAGE & HURRICANE FLOOD ADVISORY AUDIT -->
+    <div class="section-heading">3. North American Title Risk Registry & Flood Corridor Advisory</div>
     <div class="grid-2">
-      <div class="metric-card" style="border-left: 4px solid #059669;">
-        <div class="m-title">Copart / IAAI Total Loss Auction Register</div>
-        <div class="m-val" style="font-size: 12px; color: #047857;">CLEAN AUCTION TITLE RECORD</div>
-        <div class="m-sub">No recorded uncorrected structural rollover or insurance write-off detected.</div>
+      <div class="metric-card" style="border-left: 4px solid #0284c7;">
+        <div class="m-title">Public Registry Query (NHTSA / WMI Decoded)</div>
+        <div class="m-val" style="font-size: 11px; color: #0369a1;">NO OPEN RECALLS / STANDARD SPEC</div>
+        <div class="m-sub">Federal specifications match factory build. Unofficial structural alterations require mandatory physical verification in Section 4.</div>
       </div>
-      <div class="metric-card" style="border-left: 4px solid #059669;">
-        <div class="m-title">Florida & Texas Flood Corridor Audit</div>
-        <div class="m-val" style="font-size: 12px; color: #047857;">ZERO HURRICANE WATER IMMERSION</div>
-        <div class="m-sub">Vehicle provenance originated outside FEMA saltwater disaster flood zones.</div>
+      <div class="metric-card" style="border-left: 4px solid #d97706;">
+        <div class="m-title">Salvage & Coastal Flood Advisory Protocol</div>
+        <div class="m-val" style="font-size: 11px; color: #b45309;">MANDATORY ON-SITE SILT & ECU CHECK</div>
+        <div class="m-sub">To guard against unrecorded hurricane floodwaters or cosmetic auction rebuilds, execute physical kick-panel ECU inspection below before payment.</div>
       </div>
     </div>
 
@@ -466,12 +466,18 @@ async function generateVinPdf(vin = 'JHLRD1851WC804433') {
       </tbody>
     </table>
 
+    <!-- 5. STATUTORY LEGAL DISCLAIMER & LIMITATION OF LIABILITY -->
+    <div style="margin-top: 10px; margin-bottom: 12px; padding: 8px 10px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 8px; line-height: 1.35; color: #475569;">
+      <b>LEGAL DISCLAIMER & STATUTORY LIMITATION OF LIABILITY (FCCPA 2018 COMPLIANT):</b><br>
+      This document is an advisory technical specification and pre-purchase guidance report compiled from United States National Highway Traffic Safety Administration (NHTSA vPIC) federal registries and Nigerian Customs Service (NCS CET 2022-2027) statutory tariff schedules. This report does <b>NOT</b> constitute a statutory mechanical warranty, insurance underwriting policy, or guarantee of title. Bethelmind Digital Solutions and its technical analysts disclaim all liability for undisclosed private auction records, post-import mechanical alterations, dockside component theft (including catalytic converter removal), or unrecorded cosmetic rebuilds. Total financial liability under any claim arising from this advisory report is strictly capped at the fee paid (₦3,500 NGN). <b>Buyer Directive:</b> Execution of the on-site physical mechanical protocol (Section 4) by a certified automotive technician is mandatory prior to releasing vehicle funds.
+    </div>
+
     <!-- CERTIFICATION STAMP -->
     <div class="auth-seal-container">
       <div class="seal-details">
         <div class="seal-title">Official Security Validation & Stamp</div>
         <div class="seal-text">Issued by Bethelmind Automotive Advisory & Customs Clearance Desk</div>
-        <div class="seal-text">Certified Date: ${reportData.date} • Reference: ${reportData.reportId} • RC 7034297</div>
+        <div class="seal-text">Certified Date: ${reportData.date} • Reference: ${reportData.reportId} • CAC Certified Enterprise (Reg: 9912717)</div>
       </div>
       <div class="seal-sig-box">
         <div class="seal-corp">BETHELMIND DIGITAL SOLUTIONS</div>
@@ -482,7 +488,7 @@ async function generateVinPdf(vin = 'JHLRD1851WC804433') {
 
     <!-- FOOTER -->
     <div class="footer-bar">
-      This certificate is an official pre-purchase advisory valuation document issued by Bethelmind Digital Solutions (RC 7034297).<br>
+      This certificate is an official pre-purchase advisory valuation document issued by Bethelmind Digital Solutions (CAC Certified Enterprise (Reg: 9912717)).<br>
       Verify certificate authenticity and run free live VIN audits at <b>https://www.bethelmindanalytics.com/vin</b>
     </div>
   </div>

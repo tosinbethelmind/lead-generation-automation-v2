@@ -2,7 +2,7 @@
 
 /**
  * @file src/components/home/Footer.tsx
- * Site footer with full statutory transparency, CAC RC 7034297 accreditation,
+ * Site footer with full statutory transparency, CAC CAC Reg: 9912717 accreditation,
  * NDPA 2023 compliance, Moniepoint settlement credentials, and luxury obsidian palette.
  */
 
@@ -58,7 +58,7 @@ export default function Footer() {
             <div className="pt-2 flex flex-wrap items-center gap-4 text-[11px] text-[#c5a880]">
               <span className="inline-flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#d4af37]" />
-                CAC Certified: BN/RC 7034297
+                CAC Certified: BN/CAC Reg: 9912717
               </span>
               <span>&bull;</span>
               <span>Moniepoint MFB: 6805375225</span>
@@ -114,7 +114,7 @@ export default function Footer() {
         {/* Bottom row */}
         <div className="border-t border-white/[0.05] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#8e887e] font-light">
           <p className="m-0">
-            &copy; {new Date().getFullYear()} Bethelmind Digital Solutions (CAC BN/RC: 7034297). All rights reserved.
+            &copy; {new Date().getFullYear()} Bethelmind Digital Solutions (CAC BN/CAC Reg: 9912717). All rights reserved.
           </p>
           <p className="m-0 text-center sm:text-right">
             NDPA 2023 Compliant &bull; 50% Milestone Escrow Protected &bull; Built For Nigerian Enterprise Growth

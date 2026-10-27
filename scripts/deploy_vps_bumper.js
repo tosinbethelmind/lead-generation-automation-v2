@@ -9,6 +9,10 @@ const REMOTE_ROOT = '/root/lead-generation-automation-v2';
 
 const files = [
   'scripts/nairaland_autonomous_engine.js',
+  'scripts/nairaland_autonomous_engine_vps.js',
+  'scripts/lib/closer_engine.js',
+  'scripts/dispatch_sales_closer_autoresponses.js',
+  'scripts/execute_today_300_emails_and_webforms.ts',
   'scripts/run_nairaland_daemon.js',
   'local_db/nairaland_accounts.json',
   'local_db/nairaland_campaigns.json',
@@ -73,5 +77,6 @@ conn.on('ready', () => {
   port: 22,
   username: VPS_USER,
   password: VPS_PASS,
-  readyTimeout: 30000
+  readyTimeout: 60000,
+  keepaliveInterval: 5000
 });

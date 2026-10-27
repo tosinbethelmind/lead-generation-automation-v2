@@ -1,6 +1,6 @@
 /**
  * @file programmaticSeoEngine.ts
- * BETHELMIND DIGITAL SOLUTIONS (RC 7034297)
+ * BETHELMIND DIGITAL SOLUTIONS (CAC Reg: 9912717)
  * High-Velocity Programmatic SEO (pSEO) Data Engine & Dynamic Route Generator
  * Generates 250+ targeted, high-intent Nigerian commercial landing page models.
  */

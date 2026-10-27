@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { BlogEngine } from '@/lib/blog/blogEngine';
+import { ProgrammaticSeoEngine } from '@/lib/seo/programmaticSeoEngine';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.bethelmindanalytics.com';
@@ -11,7 +12,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog',
     '/marketplace',
     '/recruitment',
+    '/vin',
+    '/solar',
+    '/arbitrage',
+    '/tools',
     '/tools/solar-quote-pro',
+    '/tools/solar-boq',
+    '/tools/tokunbo-duty',
+    '/tools/construction-estimator',
     '/tools/lagos-lead-harvester',
     '/tools/whatsapp-voice-notes',
     '/tools/integrations',
@@ -31,9 +39,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     if (route === '' || route === '/home' || route === '/blog') {
       priority = 1.0;
       changeFrequency = 'daily';
-    } else if (route === '/marketplace' || route.startsWith('/tools/')) {
-      priority = 0.9;
-      changeFrequency = 'weekly';
+    } else if (route === '/marketplace' || route.startsWith('/tools') || route === '/vin' || route === '/solar' || route === '/arbitrage') {
+      priority = 0.95;
+      changeFrequency = 'daily';
     } else if (route.startsWith('/legal')) {
       priority = 0.5;
       changeFrequency = 'monthly';
@@ -56,5 +64,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  return [...staticEntries, ...blogEntries];
+  // Programmatic SEO Dynamic Routes for Google Nigeria Rankings (7,740+ Long-Tail Matrix)
+  const pSeoRoutes = ProgrammaticSeoEngine.getAllProgrammaticRoutes();
+  const pSeoEntries: MetadataRoute.Sitemap = pSeoRoutes.map((route) => ({
+    url: route.url,
+    lastModified: currentDate,
+    changeFrequency: route.changeFrequency,
+    priority: route.priority,
+  }));
+
+  return [...staticEntries, ...blogEntries, ...pSeoEntries];
 }

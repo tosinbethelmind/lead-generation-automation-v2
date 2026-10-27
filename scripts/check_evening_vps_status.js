@@ -24,5 +24,6 @@ conn.on('ready', () => {
   port: 22,
   username: 'root',
   password: 'bethelmind2026',
-  readyTimeout: 30000
+  readyTimeout: 60000,
+  keepaliveInterval: 5000
 });

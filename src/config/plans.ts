@@ -1,7 +1,7 @@
 /**
  * @file src/config/plans.ts
  * Centralised subscription plan definitions for Bethelmind Digital Solutions.
- * CAC Certified Nigerian Enterprise (RC 7034297)
+ * CAC Certified Nigerian Enterprise (Reg: 9912717) (CAC Certified Enterprise (Reg: 9912717))
  *
  * HOW TO UPDATE PRICES:
  * Change monthlyNGN or setupFeeNGN here — the pricing UI and

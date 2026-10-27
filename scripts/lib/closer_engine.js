@@ -361,7 +361,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
         `Send 2 more photos or your price list here make we add am free!\n\n` +
         `Ready to register your official *.com.ng* domain today?\n` +
         `• Total: *₦65,000* for 1 full year\n` +
-        `• *Deposit to start:* *₦35,000* (balance only after custom domain is live on Google!)\n` +
+        `• *100% Risk-Free 48h Pilot:* Test live on your phone first. Pay ₦35,000 only after you inspect and approve!\n` +
         `• *Bank:* Moniepoint MFB · *${CORPORATE_BANK.accountNumber}* · *${CORPORATE_BANK.accountName}*\n\n` +
         `Drop receipt here once sent to activate!`,
       suggestedAction: 'AWAIT_DOMAIN_OR_DEPOSIT',

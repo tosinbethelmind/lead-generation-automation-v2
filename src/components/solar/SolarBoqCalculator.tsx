@@ -18,6 +18,7 @@ import {
   Info
 } from 'lucide-react';
 import { ExecutivePdfQuoteModal } from '@/components/ExecutivePdfQuoteModal';
+import WhatsAppLeadCaptureGate from '@/components/WhatsAppLeadCaptureGate';
 
 export interface SolarBoqCalculatorProps {
   businessName?: string;
@@ -572,6 +573,16 @@ export default function SolarBoqCalculator({
         </div>
 
       </div>
+
+      {/* Interactive WhatsApp Lead Capture & Instant BOQ Dispatch Gate */}
+      <WhatsAppLeadCaptureGate
+        toolType="solar"
+        toolTitle={`${metrics.recommendedKva}kVA Solar BOQ Specification`}
+        calculationSummary={`${metrics.recommendedKva}kVA Inverter System, ${metrics.totalSolarKw}kWp Solar PV (${metrics.panelCount} panels), ${batteryType === 'lithium' ? metrics.lithiumPacks + 'x 5.12kWh LiFePO4' : metrics.gelBatteries + 'x 200Ah Gel'}. Est. BOQ: ₦${metrics.finalBoqTotal.toLocaleString()}. Est. Monthly Fuel/Tariff Savings: +₦${metrics.totalMonthlyEnergySavings.toLocaleString()}/mo.`}
+        onDirectDownloadPdf={() => {
+          window.print();
+        }}
+      />
 
       {/* Assumptions & Disclaimers Strip */}
       <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-xs text-slate-400 leading-relaxed flex items-start gap-3">

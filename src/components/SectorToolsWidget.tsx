@@ -2454,7 +2454,7 @@ export function SectorToolsWidget({
             <div className="mt-8 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#d4af37]" />
-                <span>Bethelmind Digital Solutions &bull; CAC RC 7034297 &bull; Algorithmic estimation engine</span>
+                <span>Bethelmind Digital Solutions &bull; CAC CAC Certified Enterprise (Reg: 9912717) &bull; Algorithmic estimation engine</span>
               </div>
               <div className="flex items-center gap-3">
                 <Link href="/legal/disclaimer" className="text-[#d4af37] hover:underline" target="_blank">

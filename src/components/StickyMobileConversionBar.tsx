@@ -180,7 +180,7 @@ export default function StickyMobileConversionBar({
       <div className="flex items-center justify-center gap-3 mt-1.5 text-[10px] text-slate-400 font-medium">
         <span className="flex items-center gap-1 text-emerald-400">
           <Zap className="w-3 h-3 text-emerald-400 fill-current" />
-          CAC Certified Enterprise: Bethelmind Digital Solutions
+          CAC Certified Enterprise (Reg: 9912717): Bethelmind Digital Solutions
         </span>
         <span>•</span>
         <span className="flex items-center gap-1 text-slate-300">

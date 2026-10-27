@@ -57,6 +57,12 @@ const BOARDS = {
   restaurant: { id: 38, name: 'Food', slug: 'restaurant-order' },
   logistics: { id: 24, name: 'Business', slug: 'logistics-quote' },
   sports: { id: 22, name: 'Sports', slug: 'footy-wordle' },
+  investment: { id: 9, name: 'Investment', slug: 'p2p-arbitrage-desk' },
+  agriculture: { id: 28, name: 'Agriculture', slug: 'agribusiness-boq' },
+  phones: { id: 16, name: 'Phones', slug: 'retail-anti-fraud' },
+  jobs: { id: 13, name: 'Career', slug: 'recruitment-engine' },
+  health: { id: 33, name: 'Health', slug: 'clinic-booking' },
+  general: { id: 1, name: 'General', slug: 'solar-boq' },
 };
 
 // Campaign Catalog with Anti-Duplicate Templates
@@ -103,13 +109,13 @@ Generate an instant official PDF report for vehicle registration, customs cleara
 Deploy this exact live 17-digit VIN Customs Duty & Salvage History Checker on your dealership website and WhatsApp profile:
 • [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month) — Active in 24 Hours.
 • [b]Tier 2 (Turnkey Custom Domain Suite):[/b] ₦75,000 Deposit (₦150,000 Total) — Dedicated .com.ng domain + Google SEO.
-Settlement: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
+Settlement: Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC CAC Reg: 9912717).
 WhatsApp Closer Desk: [b]0802 279 1227[/b]
 [/quote]
 
 [b]Car Buyers & Dealers:[/b] Drop your 17-digit VIN or vehicle model below for instant audit specs!
 
-[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
+[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise CAC Reg: 9912717)[/i]`;
     }
   },
 
@@ -149,13 +155,13 @@ To audit your plot layout, deed fees, and structural material requirements befor
 If you run a construction or civil engineering firm and want this automated material estimator + 24/7 AI WhatsApp site quoting engine deployed under your company brand in 24 hours:
 • [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month Pay-Small-Small) — Live in 24 Hours.
 • [b]Tier 2 (Turnkey Custom Domain Suite):[/b] ₦75,000 Milestone Deposit (₦150,000 Total) — Dedicated .com.ng domain, Google SEO, 100% code ownership in 48 hours.
-Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
+Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC CAC Reg: 9912717).
 WhatsApp Closer Desk: [b]0802 279 1227[/b]
 [/quote]
 
 [b]Engineers & Homebuilders:[/b] What stage of building are you currently executing (Foundation, German Floor, Decking, or Roofing)? Drop your specs below for estimated material quantities!
 
-[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
+[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise CAC Reg: 9912717)[/i]`;
     }
   },
 
@@ -194,7 +200,7 @@ To test how an automated WhatsApp catalog and instant anti-fake alert reconcilia
 
 [b]Business Owners & Retailers:[/b] How does your shop currently handle bank transfer confirmations during peak weekend rush hours? Share your experience below!
 
-[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
+[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise CAC Reg: 9912717)[/i]`;
     }
   },
 
@@ -270,11 +276,11 @@ You can select Flat, Duplex, or Commercial Facility, enter your current monthly 
 If you are still sending manual Word/PDF quotations that clients reject, get this automated 5kVA–20kVA load calculator + 24/7 AI WhatsApp BOQ closer deployed under your company brand in 24 hours:
 • [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month Pay-Small-Small) — Live in 24 Hours.
 • [b]Tier 2 (Turnkey Custom Domain Suite):[/b] ₦75,000 Milestone Deposit (₦150,000 Total) — Dedicated .com.ng domain, Google SEO, 100% code ownership in 48 hours.
-Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
+Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC CAC Reg: 9912717).
 WhatsApp Closer Desk: [b]0802 279 1227[/b]
 [/quote]
 
-[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
+[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise CAC Reg: 9912717)[/i]`;
     }
   },
 
@@ -322,11 +328,11 @@ Generate an instant official stamped Tokunbo Passport PDF with customs clearing 
 Embed this exact live 17-digit VIN Customs Duty & PTML Surcharge Calculator directly onto your dealership website or WhatsApp business profile:
 • [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month) — Active in 24 Hours.
 • [b]Tier 2 (Full Turnkey Suite):[/b] ₦75,000 Deposit (₦150,000 Total) — Dedicated domain + Google SEO ranking.
-Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
+Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC CAC Reg: 9912717).
 WhatsApp Closer Desk: [b]0802 279 1227[/b]
 [/quote]
 
-[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`;
+[i]Updated: ${dateStr} · Source: Bethelmind Digital Solutions (CAC Certified Enterprise CAC Reg: 9912717)[/i]`;
     }
   },
 
@@ -380,7 +386,7 @@ Get instant automated notifications pushed directly to your Telegram the second 
 
 [b]📥 FREE ON WHATSAPP:[/b] Need our verified P2P Merchant Ledger & Bank Narration Safety Guide? Send "ARBITRAGE GUIDE" to our desk on [b]0802 279 1227[/b] ([url=https://wa.me/2348022791227?text=Please%20send%20me%20the%20P2P%20Arbitrage%20Safety%20Guide][b]Click Here to Chat on WhatsApp[/b][/url]).
 
-[i]Updated: ${dateStr} · Source: Bethelmind Analytics FX Desk (CAC Certified Enterprise RC 7034297)[/i]`;
+[i]Updated: ${dateStr} · Source: Bethelmind Analytics FX Desk (CAC Certified Enterprise CAC Reg: 9912717)[/i]`;
     }
   },
 
@@ -474,7 +480,7 @@ Test the interactive school tuition & PIN ledger suite here:
 Deploy this automated term tuition portal + Scratch-PIN broadsheet result gating suite under your school's dedicated domain in 24 hours:
 • [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month) — Active in 24 Hours.
 • [b]Tier 2 (Full Turnkey School Suite):[/b] ₦75,000 Milestone Deposit (₦150,000 Total) — Custom domain + full PIN batch accounting.
-Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
+Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC CAC Reg: 9912717).
 WhatsApp Closer Desk: [b]0802 279 1227[/b]
 [/quote]
 
@@ -850,8 +856,10 @@ To car buyers and auto importers asking about terminal dwell time, statutory cle
 [b]📥 FREE ON WHATSAPP:[/b] Need the NCS 2026 Single-Sheet Valuation Matrix & FOU Road Interception Clearance Checklist? Send "CUSTOMS SHEET" to our desk: [b]0802 279 1227[/b] ([url=https://wa.me/2348022791227?text=Please%20send%20me%20the%20NCS%202026%20Customs%20Valuation%20Sheet][b]Click Here to Receive on WhatsApp[/b][/url]).
 
 [b]⚡ For Car Dealers & Clearing Agents:[/b]
-Want this exact live clearing duty calculator deployed under your own dealership brand and WhatsApp number for ₦35,000? WhatsApp our desk on [b]0802 279 1227[/b] (CAC Certified RC 7034297).
-Drop your car year and model below for instant estimates!`;
+Want this exact live clearing duty calculator deployed under your own dealership brand and WhatsApp number for ₦35,000? WhatsApp our desk on [b]0802 279 1227[/b] (CAC Certified CAC Reg: 9912717).
+[b]🚨 Free 2026 Tokunbo VIN Pre-Purchase & Customs Duty Audit for Nairalanders:[/b]
+Before wiring millions, drop your 17-digit VIN or model below OR message WhatsApp [b]0802 279 1227[/b]. We will decode factory specs, auction flood history, and calculate exact NCS customs duty 100% FREE!
+[b]⚡ Auto Dealers:[/b] Test our 48-Hour Live Dealership Quoter with ₦0 Upfront. Pay ₦35,000 only after live approval.`;
   }
 
   if (campaignKey === 'p2p-arbitrage') {
@@ -896,7 +904,9 @@ For those asking about sizing during peak sunshine hours:
 
 [b]⚡ For Registered Solar Installers & Clean Energy Contractors:[/b]
 Want this exact automated load calculator + 24/7 WhatsApp BOQ closer deployed with your company logo & phone number in 24 hours (₦35k Starter / ₦75k deposit for full custom domain)? WhatsApp our engineering desk: [b]0802 279 1227[/b].
-Drop your current monthly generator fuel spend or DisCo tariff below for custom sizing!`;
+[b]🚨 Free 2026 Solar Load Sizing & DisCo Band A Audit for Nairalanders:[/b]
+Reply below with your appliance list (e.g. 1.5HP AC, freezer, lighting) OR WhatsApp [b]0802 279 1227[/b]. We will calculate your exact continuous wattage and generate your audited 2026 BOQ 100% FREE!
+[b]⚡ Registered Installers:[/b] Test our 48-Hour Live WhatsApp Pilot with ₦0 Upfront deposit. Pay ₦35,000 only after live phone approval.`;
 }
 
 // 3. Autonomous Bump & Auto-Reply Engine
