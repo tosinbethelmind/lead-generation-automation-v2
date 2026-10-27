@@ -567,7 +567,7 @@ export default function DigitalProductsStorePage() {
           <span>Institutional Due-Diligence & Growth Asset Hub (16 Master Toolkits)</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white max-w-4xl mx-auto leading-tight">
+        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white max-w-4xl mx-auto leading-snug sm:leading-tight">
           Verified Digital Assets & <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">Due-Diligence Kits</span>
         </h1>
 

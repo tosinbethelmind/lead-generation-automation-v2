@@ -113,14 +113,14 @@ export default function Navbar() {
       <Link
         href="/home"
         aria-label="Bethelmind Digital Solutions Home"
-        className="flex items-center gap-3 text-decoration-none shrink-0"
+        className="flex items-center gap-2.5 sm:gap-3 text-decoration-none shrink-0 min-w-0"
       >
         <ShaderGradientLiquidLogo size={36} initials="BM" palette="bethelmind" />
-        <div className="flex flex-col">
-          <span className="font-serif text-sm sm:text-base font-normal text-[#f5f3ef] tracking-tight leading-tight">
+        <div className="flex flex-col min-w-0">
+          <span className="font-serif text-xs sm:text-base font-normal text-[#f5f3ef] tracking-tight leading-tight truncate">
             Bethelmind Digital Solutions
           </span>
-          <span className="text-[10px] text-[#c9c4bc]/70 font-light flex items-center gap-1.5 mt-0.5">
+          <span className="text-[10px] text-[#c9c4bc]/70 font-light hidden sm:flex items-center gap-1.5 mt-0.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37]" />
             Lagos Advisory Desk &bull; CAC RC 7034297
           </span>
@@ -238,7 +238,7 @@ export default function Navbar() {
         <Link
           id="nav-demo-cta"
           href="/contact"
-          className="py-2 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#070b14] font-semibold text-xs inline-flex items-center gap-1.5 shadow-md shadow-[#d4af37]/20 transition-all active:scale-95 whitespace-nowrap"
+          className="hidden sm:inline-flex py-2 px-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa8620] hover:from-[#dfbc46] hover:to-[#b89329] text-[#070b14] font-semibold text-xs items-center gap-1.5 shadow-md shadow-[#d4af37]/20 transition-all active:scale-95 whitespace-nowrap"
         >
           <span>Book Private Demo</span>
           <ArrowRight className="w-3.5 h-3.5" />

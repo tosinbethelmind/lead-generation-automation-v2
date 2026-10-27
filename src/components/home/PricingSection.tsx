@@ -11,7 +11,7 @@
  */
 
 import React, { useState } from 'react';
-import { CheckCircle, ArrowRight, FileText, Globe, Code, ShieldCheck } from 'lucide-react';
+import { CheckCircle, ArrowRight, FileText, Globe, Code, ShieldCheck, Clock } from 'lucide-react';
 import {
   PLANS_NEED_WEBSITE,
   PLANS_HAVE_WEBSITE,
@@ -419,8 +419,9 @@ export default function PricingSection({
                       <span style={{ fontSize: '0.88rem', color: '#f87171', textDecoration: 'line-through', fontWeight: 700 }}>
                         ₦{plan.originalTotalNGN.toLocaleString()}
                       </span>
-                      <span style={{ fontSize: '0.7rem', background: 'rgba(245,158,11,0.15)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.35)', padding: '1px 7px', borderRadius: 6, fontWeight: 800 }}>
-                        🇳🇬 DIRECT SME INITIATIVE
+                      <span style={{ fontSize: '0.7rem', background: 'rgba(245,158,11,0.15)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.35)', padding: '2px 7px', borderRadius: 6, fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <ShieldCheck style={{ width: 12, height: 12 }} />
+                        DIRECT SME INITIATIVE
                       </span>
                     </div>
                   )}
@@ -432,16 +433,18 @@ export default function PricingSection({
                       {plan.balanceAmountNGN > 0 ? 'Deposit to Start Today' : 'Complete 1-Time Setup'}
                     </span>
                   </p>
-                  <p style={{ margin: '0 0 4px', fontSize: '0.82rem', color: '#cbd5e1', fontWeight: 600 }}>
-                    Direct SME Total: <strong style={{ color: '#fff' }}>₦{plan.totalAmountNGN.toLocaleString()}</strong> <span style={{ color: '#34d399', fontSize: '0.75rem' }}>(1 Full Year Included • ₦0 Monthly)</span>
+                  <p style={{ margin: '0 0 6px', fontSize: '0.82rem', color: '#cbd5e1', fontWeight: 600, lineHeight: 1.45 }}>
+                    Direct SME Total: <strong style={{ color: '#fff' }}>₦{plan.totalAmountNGN.toLocaleString()}</strong>{' '}
+                    <span style={{ color: '#34d399', fontSize: '0.75rem', display: 'inline-block' }}>(1 Full Year Included &bull; ₦0 Monthly)</span>
                   </p>
-                  <p style={{ margin: 0, fontSize: '0.76rem', color: '#94a3b8', lineHeight: 1.4 }}>
+                  <p style={{ margin: '0 0 6px', fontSize: '0.76rem', color: '#94a3b8', lineHeight: 1.45 }}>
                     {plan.balanceAmountNGN > 0
                       ? `Balance of ₦${plan.balanceAmountNGN.toLocaleString()} strictly due ONLY after you inspect & approve your live website on your phone.`
                       : 'Zero forced monthly subscriptions. Complete same-day integration.'}
                   </p>
-                  <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.76rem', color: '#38bdf8', fontWeight: 700 }}>
-                    <span>⏱️ Guaranteed {plan.slaHours}-Hour Live Delivery SLA</span>
+                  <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '0.76rem', color: '#38bdf8', fontWeight: 700 }}>
+                    <Clock style={{ width: 13, height: 13, color: '#38bdf8' }} />
+                    <span>Guaranteed {plan.slaHours}-Hour Live Delivery SLA</span>
                   </div>
                 </div>
 

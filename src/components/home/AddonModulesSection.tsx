@@ -125,6 +125,7 @@ export default function AddonModulesSection() {
           style={{
             fontSize: 'clamp(1.4rem, 3.5vw, 2rem)',
             fontWeight: 900,
+            lineHeight: 1.25,
             margin: '0 0 10px',
             fontFamily: "'Outfit', sans-serif",
             color: '#f8fafc',

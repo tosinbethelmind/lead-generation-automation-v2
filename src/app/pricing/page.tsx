@@ -56,13 +56,14 @@ export default function PricingPage() {
         
         {/* Header Hero */}
         <div className="text-center max-w-3xl mx-auto space-y-4 pt-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex flex-wrap justify-center items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] text-xs font-bold uppercase tracking-wider text-center">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Transparent Commercial Pricing &bull; CAC Certified Enterprise RC 7034297</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-tight">
-            Invest in a 24/7 Revenue Engine. <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] to-[#f3e5ab]">Zero Risk.</span>
+          <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-snug sm:leading-tight">
+            Invest in a 24/7 Revenue Engine.{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] to-[#f3e5ab] inline-block">Zero Risk.</span>
           </h1>
 
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">

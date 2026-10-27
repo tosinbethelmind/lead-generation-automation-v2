@@ -37,8 +37,8 @@ export default function SolarPortalPage() {
             <span>Integrated Solar Quoting Suite</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
-            SolarQuotePro &bull; <br />
+          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug sm:leading-tight">
+            SolarQuotePro &bull; <br className="hidden sm:inline" />{' '}
             <span className="italic font-light text-[#d4af37]">
               Interactive Solar BOQ &amp; ROI Engine
             </span>

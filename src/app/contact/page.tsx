@@ -56,13 +56,13 @@ export default function ContactPage() {
         
         {/* Header Hero */}
         <div className="text-center max-w-3xl mx-auto space-y-4 pt-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 text-[#d4af37] text-xs font-semibold uppercase tracking-widest">
+          <div className="inline-flex flex-wrap justify-center items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 text-[#d4af37] text-xs font-semibold uppercase tracking-widest text-center">
             <MessageCircle className="w-3.5 h-3.5 text-[#d4af37]" />
             <span>Direct WhatsApp Concierge &bull; Lagos Technical Advisory</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
-            Book Your Private Consultation or <br />
+          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug sm:leading-tight">
+            Book Your Private Consultation or <br className="hidden sm:inline" />{' '}
             <span className="italic font-light text-[#d4af37]">
               Speak with a Solutions Director.
             </span>

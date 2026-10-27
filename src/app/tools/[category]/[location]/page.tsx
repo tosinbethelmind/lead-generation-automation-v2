@@ -128,7 +128,7 @@ export default async function ProgrammaticToolPage({ params }: PageProps) {
               <span>{hub.state} Commercial Corridor · DisCo: {hub.disco}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-snug sm:leading-tight">
               {hub.name} Solar BOQ & Band A Tariff Sizer (2026)
             </h1>
 
@@ -259,7 +259,7 @@ export default async function ProgrammaticToolPage({ params }: PageProps) {
               <span>NCS Statutory Tariff · Terminal: {car.terminalPort}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-snug sm:leading-tight">
               {car.year} {car.make} {car.model} Customs Duty & VIN Clearing Sheet (2026)
             </h1>
 
@@ -352,7 +352,7 @@ export default async function ProgrammaticToolPage({ params }: PageProps) {
               <span>{bld.city} Corridor · Soil Type: {bld.soilType}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-5xl font-black text-white font-['Outfit'] tracking-tight leading-snug sm:leading-tight">
               {bld.area} Building Material Cost & Foundation Guide (2026)
             </h1>
 

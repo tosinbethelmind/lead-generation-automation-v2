@@ -38,7 +38,7 @@ export default function GmbScannerIndexPage() {
             <ShieldAlert className="w-4 h-4" />
             Google Business Profile Vulnerability Scanner
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4 leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4 leading-snug sm:leading-tight">
             Is Your Google Maps Profile <span className="text-rose-400">Exposed to Competitor Hijacks?</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-300">

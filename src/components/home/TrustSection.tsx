@@ -48,7 +48,7 @@ export default function TrustSection() {
           </div>
           <h2
             id="trust-heading"
-            className="font-serif text-2xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight"
+            className="font-serif text-2xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug md:leading-tight"
           >
             Engineering Rigor & Dedicated Lagos Executive Support
           </h2>

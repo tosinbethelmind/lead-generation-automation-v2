@@ -245,18 +245,18 @@ export default function HeroSection({
             textAlign: 'center',
             fontSize: 'clamp(1.75rem, 4.2vw, 3.5rem)',
             fontWeight: 900,
-            lineHeight: 1.15,
-            margin: '0 auto 14px',
+            lineHeight: 1.25,
+            margin: '0 auto 16px',
             maxWidth: 960,
             fontFamily: "'Outfit', sans-serif",
             color: '#ffffff',
-            letterSpacing: '-0.03em',
+            letterSpacing: '-0.025em',
             textShadow: '0 2px 20px rgba(0, 0, 0, 0.9)'
           }}
         >
-          Never Lose Another Customer To Slow Replies.<br />
-          <span className="luxury-gradient-text">
-            24/7 WhatsApp AI Quoting Assistant & Luxury Business Website.
+          Never Lose Another Customer To Slow Replies.<br className="hidden sm:inline" />{' '}
+          <span className="luxury-gradient-text" style={{ display: 'inline-block', paddingBottom: 2 }}>
+            24/7 WhatsApp AI Quoting Assistant &amp; Luxury Business Website.
           </span>
         </h1>
 

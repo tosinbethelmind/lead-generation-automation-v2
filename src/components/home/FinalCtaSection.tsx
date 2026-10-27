@@ -27,7 +27,7 @@ export default function FinalCtaSection() {
           <span className="text-[10px] uppercase tracking-widest text-[#c5a880] font-semibold block">
             Guaranteed 48-Hour Prototype Turnaround
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug md:leading-tight">
             Request your private consultation.
           </h2>
           <p className="text-xs sm:text-sm md:text-base text-[#c9c4bc] font-light leading-relaxed">

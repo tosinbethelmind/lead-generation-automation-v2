@@ -102,7 +102,7 @@ export default function LeadMarketplaceSection() {
             <ShoppingBag size={14} style={{ color: '#60a5fa' }} />
             <span style={{ fontSize: '0.78rem', color: '#60a5fa', fontWeight: 800 }}>Verified B2B Lead Store</span>
           </div>
-          <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', fontWeight: 800, color: '#ffffff', marginBottom: 12 }}>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', fontWeight: 800, color: '#ffffff', marginBottom: 12, lineHeight: 1.25 }}>
             Instant Verified B2B Lead Marketplace
           </h2>
           <p style={{ color: '#94a3b8', fontSize: '1rem', maxWidth: 640, margin: '0 auto' }}>

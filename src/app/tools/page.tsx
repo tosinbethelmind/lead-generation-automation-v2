@@ -344,7 +344,7 @@ export default function ToolsHubPage() {
             <Sparkles className="w-3.5 h-3.5 text-[#d4af37]" />
             <span>2026 Production Sector Tools &amp; Sizers Directory</span>
           </div>
-          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
+          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug sm:leading-tight">
             Commercial Calculators, Sizers &amp; Surcharges
           </h1>
           <p className="text-[#c9c4bc] text-sm sm:text-base font-light leading-relaxed max-w-2xl mx-auto">

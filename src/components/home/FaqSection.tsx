@@ -70,7 +70,7 @@ export default function FaqSection() {
 
         <h2
           id="faq-heading"
-          className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight"
+          className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug md:leading-tight"
         >
           Frequently Asked <span className="italic font-light text-[#d4af37]">Questions</span>
         </h2>

@@ -65,9 +65,9 @@ export default function HowItWorksPage() {
             <span>Nigerian SME Onboarding &bull; 48-Hour Delivery SLA</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
-            How Bethelmind Works. <br />
-            <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-[#f5f3ef] via-[#d4af37] to-[#aa8620]">
+          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug sm:leading-tight">
+            How Bethelmind Works. <br className="hidden sm:inline" />{' '}
+            <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-[#f5f3ef] via-[#d4af37] to-[#aa8620] inline-block pb-0.5">
               From Scope to Live Handover in 48 Hours.
             </span>
           </h1>

@@ -37,8 +37,8 @@ export default function SupportPage() {
             <span>Dedicated Lagos Technical Desk &bull; Rapid SLA Response</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
-            Support &amp; Maintenance. <br />
+          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug sm:leading-tight">
+            Support &amp; Maintenance. <br className="hidden sm:inline" />{' '}
             <span className="italic font-light text-[#d4af37]">
               Keeping Your Enterprise Operational 24/7.
             </span>

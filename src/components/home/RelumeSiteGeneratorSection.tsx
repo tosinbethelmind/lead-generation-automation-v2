@@ -41,7 +41,7 @@ export default function RelumeSiteGeneratorSection() {
             <Sparkles size={14} style={{ color: '#ec4899' }} />
             <span style={{ fontSize: '0.78rem', color: '#ec4899', fontWeight: 800 }}>100% Free Live UI Generator</span>
           </div>
-          <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', fontWeight: 800, color: '#f8fafc', marginBottom: 12 }}>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', fontWeight: 800, color: '#f8fafc', marginBottom: 12, lineHeight: 1.25 }}>
             Relume UI Site Redesign Generator
           </h2>
           <p style={{ color: '#94a3b8', fontSize: '1rem', maxWidth: 640, margin: '0 auto' }}>

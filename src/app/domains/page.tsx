@@ -39,7 +39,7 @@ export default function DomainsIndexPage() {
             <Globe2 className="w-4 h-4" />
             Sovereign Escrow Domain Registry & Custody
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4 leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4 leading-snug sm:leading-tight">
             Expired Nigerian Domain <span className="text-cyan-400">Reinstatement & Custody</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-300">

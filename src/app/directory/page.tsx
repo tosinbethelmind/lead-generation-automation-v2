@@ -281,7 +281,7 @@ export default function PublicAuthorityDirectoryPage() {
             <span>Over 800+ Vetted Lagos & Abuja Commercial Providers</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-4">
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-snug sm:leading-tight mb-4">
             Find & Hire <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">Verified Providers</span> with Instant 0ms WhatsApp Desks
           </h1>
 

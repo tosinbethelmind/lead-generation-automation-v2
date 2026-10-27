@@ -59,7 +59,7 @@ export default function CrmPreviewSection() {
         </div>
         <h2
           id="crm-heading"
-          style={{ fontSize: 'clamp(1.7rem, 4vw, 2.5rem)', fontWeight: 900, margin: '0 0 12px', fontFamily: "'Outfit', sans-serif", color: '#f8fafc' }}
+          style={{ fontSize: 'clamp(1.7rem, 4vw, 2.5rem)', fontWeight: 900, margin: '0 0 12px', fontFamily: "'Outfit', sans-serif", color: '#f8fafc', lineHeight: 1.25 }}
         >
           See Where Every Enquiry Stands
         </h2>

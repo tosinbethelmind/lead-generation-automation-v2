@@ -127,15 +127,15 @@ export default function SolutionsSection() {
               </p>
             </div>
 
-            <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between">
-              <div>
+            <div className="pt-4 border-t border-white/[0.06] flex flex-wrap items-end justify-between gap-2">
+              <div className="max-w-[75%]">
                 <span className="text-[10px] text-[#c9c4bc]/70 block font-light">Structure:</span>
-                <span className="text-xs font-medium text-[#f5f3ef] font-mono">{pricing}</span>
+                <span className="text-xs font-medium text-[#f5f3ef] font-mono leading-relaxed block">{pricing}</span>
               </div>
 
               <Link
                 href={href}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#d4af37] group-hover:text-[#dfbc46] transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#d4af37] group-hover:text-[#dfbc46] transition-colors shrink-0"
               >
                 <span>Explore</span>
                 <ArrowRight className="w-3.5 h-3.5" />

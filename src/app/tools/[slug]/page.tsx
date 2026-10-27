@@ -442,7 +442,7 @@ export default function StandaloneToolPage({ params }: ToolPageProps) {
               <span className="text-[11px] font-medium text-[#c5a880] uppercase tracking-widest block">
                 {viralTool.category} &bull; Client Specification
               </span>
-              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
+              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug md:leading-tight">
                 {viralTool.title}
               </h1>
               <p className="text-xs sm:text-sm md:text-base text-[#c9c4bc] font-light leading-relaxed max-w-3xl">
@@ -641,7 +641,7 @@ export default function StandaloneToolPage({ params }: ToolPageProps) {
             <span className="text-[11px] font-medium text-[#c5a880] uppercase tracking-widest block">
               {profile.category} &bull; Commercial Specification Engine
             </span>
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug md:leading-tight">
               {profile.title}
             </h1>
             <p className="text-xs sm:text-sm md:text-base text-[#c9c4bc] font-light leading-relaxed max-w-3xl">

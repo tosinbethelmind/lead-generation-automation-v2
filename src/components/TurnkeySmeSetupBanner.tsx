@@ -32,7 +32,7 @@ export const TurnkeySmeSetupBanner: React.FC<TurnkeySmeSetupBannerProps> = ({
             <span>Turnkey B2B SME Deployment &bull; 48-Hour Guarantee</span>
           </div>
 
-          <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl font-normal text-[#f5f3ef] leading-tight">
+          <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl font-normal text-[#f5f3ef] leading-snug">
             Want This Exact {toolName} Branded for Your Business?
           </h3>
 

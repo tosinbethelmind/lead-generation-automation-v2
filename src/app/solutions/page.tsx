@@ -243,8 +243,8 @@ export default function SolutionsPage() {
             <span>Customer Acquisition &amp; Commercial Cashflow</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
-            Solutions That Bring Your Enterprise <br />
+          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug sm:leading-tight">
+            Solutions That Bring Your Enterprise <br className="hidden sm:inline" />{' '}
             <span className="italic font-light text-[#d4af37]">
               More High-Value Clients.
             </span>
@@ -255,27 +255,27 @@ export default function SolutionsPage() {
           </p>
 
           {/* DUAL DELIVERY MODE TOGGLE */}
-          <div className="inline-flex bg-[#090d16] border border-white/[0.08] rounded-2xl p-1 gap-1 pt-1 mt-4">
+          <div className="inline-flex flex-col sm:flex-row bg-[#090d16] border border-white/[0.08] rounded-2xl p-1 gap-1 mt-4 max-w-full">
             <button
               onClick={() => setDeliveryMode('turnkey')}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
+              className={`px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
                 deliveryMode === 'turnkey'
                   ? 'bg-gradient-to-r from-[#d4af37] to-[#aa8620] text-[#070b14] shadow-md shadow-[#d4af37]/20 font-bold'
                   : 'text-[#c9c4bc] hover:text-[#f5f3ef]'
               }`}
             >
-              <Zap className="w-4 h-4" />
+              <Zap className="w-4 h-4 shrink-0" />
               <span>Option A: Full Mobile Website + Tool (₦35k Deposit / ₦65k Total)</span>
             </button>
             <button
               onClick={() => setDeliveryMode('embed')}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
+              className={`px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
                 deliveryMode === 'embed'
                   ? 'bg-gradient-to-r from-[#d4af37] to-[#aa8620] text-[#070b14] shadow-md shadow-[#d4af37]/20 font-bold'
                   : 'text-[#c9c4bc] hover:text-[#f5f3ef]'
               }`}
             >
-              <Code2 className="w-4 h-4" />
+              <Code2 className="w-4 h-4 shrink-0" />
               <span>Option B: 1-Line Embed on Existing Site (₦35k One-Time)</span>
             </button>
           </div>

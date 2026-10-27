@@ -140,7 +140,7 @@ export default function MonetizationHubPage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-4">
             ⚡ Bethelmind B2B Commercial Architecture
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4 leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4 leading-snug sm:leading-tight">
             The 5 Core Commercial <span className="text-emerald-400">Growth Engines</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed">

@@ -131,13 +131,13 @@ export default function ResultsPage() {
         
         {/* Header Hero */}
         <div className="text-center max-w-3xl mx-auto space-y-4 pt-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 text-[#d4af37] text-xs font-semibold uppercase tracking-widest">
+          <div className="inline-flex flex-wrap justify-center items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/25 text-[#d4af37] text-xs font-semibold uppercase tracking-widest text-center">
             <TrendingUp className="w-3.5 h-3.5 text-[#d4af37]" />
             <span>Verified Nigerian Enterprise Outcomes &bull; Client Studies</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-tight">
-            Real Nigerian Enterprises. <br />
+          <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#f5f3ef] tracking-tight leading-snug sm:leading-tight">
+            Real Nigerian Enterprises. <br className="hidden sm:inline" />{' '}
             <span className="italic font-light text-[#d4af37]">
               Measurable Commercial Growth.
             </span>

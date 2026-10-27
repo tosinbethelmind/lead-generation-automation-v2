@@ -214,9 +214,9 @@ export function VinCheckerClient() {
           </div>
 
           {/* High-Contrast Editorial Title */}
-          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal text-[#f5f3ef] leading-[1.15] tracking-tight mb-5">
+          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal text-[#f5f3ef] leading-snug lg:leading-[1.18] tracking-tight mb-5">
             Decode Any Car&rsquo;s VIN &amp; Reveal Its{' '}
-            <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-[#f5f3ef] via-[#d4af37] to-[#aa8620]">
+            <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-[#f5f3ef] via-[#d4af37] to-[#aa8620] inline-block pb-1">
               True Foreign History
             </span>
           </h1>
