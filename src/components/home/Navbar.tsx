@@ -17,7 +17,19 @@ import {
   ShieldCheck, ArrowRight, Car, Building2, ShoppingBag
 } from 'lucide-react';
 import { paymentConfig, buildWhatsAppLink } from '@/config/payment';
-import ShaderGradientLiquidLogo from '@/components/three/ShaderGradientLiquidLogo';
+import dynamic from 'next/dynamic';
+
+const ShaderGradientLiquidLogo = dynamic(
+  () => import('@/components/three/ShaderGradientLiquidLogo'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#d4af37]/20 to-[#d4af37]/5 border border-[#d4af37]/40 flex items-center justify-center font-bold text-xs text-[#d4af37] shrink-0">
+        BM
+      </div>
+    )
+  }
+);
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);

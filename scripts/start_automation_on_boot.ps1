@@ -62,7 +62,7 @@ if ($portInUse) {
     Log-Msg "Port 3006 is already in use. Dev server is already running."
 } else {
     # Start Next.js dev server with capped 512MB memory in hidden background window
-    $devProc = Start-Process -FilePath $NodeExe -ArgumentList "--max-old-space-size=512", "node_modules\next\dist\bin\next", "dev", "-p", "3006" -WorkingDirectory $WorkDir -WindowStyle Hidden -PassThru
+    $devProc = Start-Process -FilePath $NodeExe -ArgumentList "--max-old-space-size=1536", "node_modules\next\dist\bin\next", "dev", "--turbo", "-p", "3006" -WorkingDirectory $WorkDir -WindowStyle Hidden -PassThru
     try { $devProc.PriorityClass = 'BelowNormal' } catch {}
     Log-Msg "Dev server launched in silent background mode on port 3006 (RAM capped at 384MB, CPU: BelowNormal)."
     Start-Sleep -Seconds 4

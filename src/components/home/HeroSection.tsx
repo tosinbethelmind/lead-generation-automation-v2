@@ -5,7 +5,8 @@ import { Sparkles, ShieldCheck, Play, Pause, Bot, Sun, Truck, RefreshCw } from '
 import { ORDERED_SECTORS, LAGOS_DISTRICTS, getSectorById } from '@/config/sectors';
 import { paymentConfig, buildWhatsAppLink } from '@/config/payment';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
-import ShaderGradientLiquidLogo from '@/components/three/ShaderGradientLiquidLogo';
+import dynamic from 'next/dynamic';
+const ShaderGradientLiquidLogo = dynamic(() => import('@/components/three/ShaderGradientLiquidLogo'), { ssr: false });
 import { LiquidGlassCard } from '@/components/three/LiquidGlass';
 
 interface HeroSectionProps {
