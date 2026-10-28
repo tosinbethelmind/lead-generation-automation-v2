@@ -1,53 +1,49 @@
 const fs = require('fs');
 const path = require('path');
 
-const imgPath = path.join(process.cwd(), 'public', 'jiji_ads', 'ad_1_vin_checker.png');
-const imgBase64 = fs.readFileSync(imgPath).toString('base64');
+const imgPath6 = path.join(process.cwd(), 'public', 'jiji_ads', 'ad_6_school_fee_portal.png');
+const imgBase64_6 = fs.readFileSync(imgPath6).toString('base64');
 
 const scriptCode = `/**
- * ⚡ 100% FULLY AUTONOMOUS JIJI CHROME AD POSTER
+ * ⚡ 100% AUTONOMOUS JIJI AD POSTER (AD #6 TO #15)
+ * Location configured for: Lagos, Ojodu
  * Bethelmind Digital Solutions
- * 
- * AUTONOMOUS ACTIONS PERFORMED:
- * 1. Title Populated (64/70 chars)
- * 2. Category clicked: Services > Automotive Services > Vehicle Inspection / Car Repair
- * 3. Location clicked: Lagos State > Ikeja
- * 4. Description Populated (<840 words, verified)
- * 5. Price Populated (₦3,500)
- * 6. Photo Auto-Attached directly from embedded base64 (Zero file picker needed!)
- * 7. "Post ad" button clicked automatically!
  */
 
 (async function runAutonomousJijiPost() {
   console.clear();
-  console.log('%c🚀 STARTING 100% AUTONOMOUS JIJI AD POSTER...', 'color:#10b981; font-weight:bold; font-size:16px;');
+  console.log('%c🚀 STARTING AUTONOMOUS POSTER FOR AD #6 (Lagos, Ojodu)...', 'color:#10b981; font-weight:bold; font-size:16px;');
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const AD = {
-    title: "Tokunbo Car VIN Chassis Number Verification & Customs Duty Check",
-    price: 3500,
-    catPath: ['Services', 'Automotive Services', ['Vehicle Inspection', 'Car Repair & Diagnostics', 'Car Repair']],
-    locPath: [['Lagos State', 'Lagos'], ['Ikeja', 'Lagos Island', 'Surulere']],
-    imgName: "ad_1_vin_checker.png",
-    imgB64: "${imgBase64}",
-    desc: \`Planning to buy a Tokunbo car in Lagos or Nigeria? Never pay a car dealer until you run a verified chassis number (VIN) audit!
+  const ADS = {
+    6: {
+      id: 6,
+      title: "Private School Term Fee Payment Portal & Result PIN Gateway",
+      price: 50000,
+      priceStr: "₦50,000",
+      catPath: ['Services', 'Computer & IT Services', ['Software', 'Web Design & Development', 'Computer & IT']],
+      locPath: [['Lagos State', 'Lagos'], ['Ojodu', 'Ojodu / Berger', 'Ikeja']],
+      imgName: "ad_6_school_fee_portal.png",
+      imgB64: "${imgBase64_6}",
+      desc: \`Stop tracking school fee defaulters manually on messy exercise books and spreadsheets.
 
-Over 45% of Tokunbo cars imported into Nigeria were bought from US salvage auctions with severe flood damage, deployed airbags, or rolled-back mileage.
+We provide secure online school fee payment portals for private primary and secondary schools in Nigeria.
 
-WHAT WE PROVIDE IN 10 MINUTES:
-- US Copart & IAAI salvage auction photos before repairs
-- Genuine odometer mileage & rollback alerts
-- Hurricane flood & saltwater damage history
-- Nigeria Customs Service (NCS) import duty assessment
-- Fair Lagos market valuation so you do not overpay
+WHAT IS INCLUDED:
+- Automated result gating (digital report cards locked until fees clear)
+- Scratch-card & electronic Result Checker PIN generation
+- Instant Moniepoint & Paystack term fee bank transfer reconciliation
+- Termly broadsheet exam scoring and report card generation
+- Automated WhatsApp fee balance reminders sent to parents
 
-Save yourself from buying a vehicle that will live at the mechanic workshop. Fast and 100% verified.
-
-Tap "Start Chat" on Jiji to verify your car immediately!\`
+Recover school fees on schedule and modernize your school administration. Send a message on Jiji for a live demo for your school today.\`
+    }
   };
 
-  // ── Floating UI HUD ──────────────────────────────────────────────────────────
+  const AD = ADS[6];
+
+  // ── Floating HUD ─────────────────────────────────────────────────────────────
   let hud = document.getElementById('bm-auto-hud');
   if (!hud) {
     hud = document.createElement('div');
@@ -60,7 +56,7 @@ Tap "Start Chat" on Jiji to verify your car immediately!\`
       background: #0b121e;
       border: 2px solid #10b981;
       border-radius: 16px;
-      padding: 18px 22px;
+      padding: 16px 20px;
       color: #fff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 13px;
@@ -74,14 +70,21 @@ Tap "Start Chat" on Jiji to verify your car immediately!\`
   function setHud(step, text, color = '#10b981') {
     hud.innerHTML = \`
       <div style="font-weight:800; color:#10b981; font-size:15px; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
-        <span>🤖</span> Autonomous Ad Poster Active
+        <span>🤖</span> Jiji Poster: Ad #6 (School Portal)
       </div>
       <div style="background:#020617; border:1px solid #1e293b; border-radius:10px; padding:10px 12px; margin-bottom:10px;">
-        <div style="color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:700;">Current Progress:</div>
-        <div style="color:\${color}; font-weight:700; font-size:13px; margin-top:2px;">Step \${step}/6: \${text}</div>
+        <div style="color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:700;">Status:</div>
+        <div style="color:\${color}; font-weight:700; font-size:13px; margin-top:2px;">\${text}</div>
       </div>
-      <div style="font-size:11.5px; color:#cbd5e1;">Ad #1: Tokunbo Car VIN Verification (₦3,500)</div>
+      <div style="font-size:11.5px; color:#cbd5e1;">📍 Location: <strong>Lagos, Ojodu</strong> • Price: <strong>₦50,000</strong></div>
     \`;
+  }
+
+  function triggerEvents(el) {
+    if (!el) return;
+    ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'].forEach(evt => {
+      el.dispatchEvent(new MouseEvent(evt, { bubbles: true, cancelable: true, view: window }));
+    });
   }
 
   function setNativeValue(element, value) {
@@ -101,26 +104,24 @@ Tap "Start Chat" on Jiji to verify your car immediately!\`
     element.dispatchEvent(new Event('blur', { bubbles: true }));
   }
 
-  function clickTextMatch(targetList) {
+  function clickText(targetList) {
     const targets = Array.isArray(targetList) ? targetList : [targetList];
     const elements = Array.from(document.querySelectorAll('div, span, button, a, li, p, label'));
 
     for (const target of targets) {
-      // 1. Exact match
       for (const el of elements) {
         if (!el.offsetParent && el.tagName !== 'BODY') continue;
         const text = (el.innerText || '').trim();
         if (text.toLowerCase() === target.toLowerCase()) {
-          el.click();
+          triggerEvents(el);
           return true;
         }
       }
-      // 2. Contains match
       for (const el of elements) {
         if (!el.offsetParent && el.tagName !== 'BODY') continue;
         const text = (el.innerText || '').trim();
         if (text.toLowerCase().includes(target.toLowerCase()) && text.length < target.length + 30) {
-          el.click();
+          triggerEvents(el);
           return true;
         }
       }
@@ -129,125 +130,152 @@ Tap "Start Chat" on Jiji to verify your car immediately!\`
   }
 
   // ── STEP 1: TITLE ────────────────────────────────────────────────────────────
-  setHud(1, 'Auto-filling Title...');
+  setHud(1, 'Filling Title for Ad #6...');
   const titleInput = document.querySelector('input[placeholder*="Title" i], input[name*="title" i], input[aria-label*="Title" i]');
   if (titleInput) {
     setNativeValue(titleInput, AD.title);
   }
   await sleep(700);
 
-  // ── STEP 2: CATEGORY ─────────────────────────────────────────────────────────
-  setHud(2, 'Selecting Category (Services > Automotive Services)...');
-  const catTrigger = Array.from(document.querySelectorAll('div, button, label')).find(el => {
+  // ── STEP 2: PHOTO ATTACHMENT ─────────────────────────────────────────────────
+  const hasPhoto = document.querySelector('.b-file-uploader__preview, img[src*="blob:"], .b-image-preview');
+  if (!hasPhoto) {
+    setHud(2, 'Attaching School Portal Flyer...');
+    try {
+      const binary = atob(AD.imgB64);
+      const array = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+      const blob = new Blob([array], { type: 'image/png' });
+      const file = new File([blob], AD.imgName, { type: 'image/png' });
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      const fileInput = document.querySelector('input[type="file"]');
+      if (fileInput) {
+        fileInput.files = dt.files;
+        fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+        fileInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    } catch (_) {}
+    await sleep(800);
+  }
+
+  // ── STEP 3: CATEGORY SELECTION ───────────────────────────────────────────────
+  setHud(3, 'Selecting Category: Services > Computer & IT Services...');
+
+  // Check suggestion chip first
+  const suggestionChip = Array.from(document.querySelectorAll('div, button, span, a')).find(el => {
+    const t = (el.innerText || '').toLowerCase();
+    return (t.includes('software') || t.includes('computer & it') || t.includes('web design')) && el.offsetParent;
+  });
+
+  if (suggestionChip && suggestionChip.innerText.length < 80) {
+    triggerEvents(suggestionChip);
+    await sleep(800);
+  } else {
+    const catBox = Array.from(document.querySelectorAll('div, label, button')).find(el => {
+      const t = (el.innerText || '').trim();
+      return (t.startsWith('Category') || t === 'Category*') && el.querySelector('svg, i, .icon, [class*="chevron"], [class*="arrow"]');
+    }) || Array.from(document.querySelectorAll('div')).find(el => (el.innerText || '').trim() === 'Category*');
+
+    if (catBox) {
+      triggerEvents(catBox);
+      triggerEvents(catBox.parentElement);
+      await sleep(700);
+    }
+
+    clickText(['Services', 'Service']);
+    await sleep(700);
+    clickText(['Computer & IT Services', 'Computer & IT', 'IT Services']);
+    await sleep(700);
+    clickText(AD.catPath[2]);
+    await sleep(800);
+  }
+
+  // ── STEP 4: LOCATION (LAGOS, OJODU) ──────────────────────────────────────────
+  setHud(4, 'Selecting Location: Lagos > Ojodu...');
+  const locBox = Array.from(document.querySelectorAll('div, label, button')).find(el => {
     const t = (el.innerText || '').trim();
-    return (t === 'Category*' || t.startsWith('Category')) && el.querySelector('svg, i, .icon, [class*="arrow"], [class*="chevron"]');
-  }) || Array.from(document.querySelectorAll('div, button')).find(el => (el.innerText || '').trim() === 'Category*');
+    return (t.includes('Select Location') || t.includes('Location*')) && el.querySelector('svg, i, .icon, [class*="chevron"], [class*="arrow"]');
+  }) || Array.from(document.querySelectorAll('div')).find(el => (el.innerText || '').trim().includes('Select Location'));
 
-  if (catTrigger) catTrigger.click();
-  else clickTextMatch(['Category*', 'Category']);
+  if (locBox) {
+    triggerEvents(locBox);
+    triggerEvents(locBox.parentElement);
+    await sleep(700);
+  }
+
+  clickText(AD.locPath[0]);
+  await sleep(700);
+  clickText(AD.locPath[1]);
   await sleep(800);
 
-  clickTextMatch('Services');
-  await sleep(700);
-  clickTextMatch('Automotive Services');
-  await sleep(700);
-  clickTextMatch(AD.catPath[2]);
-  await sleep(900);
+  // ── STEP 5: CLICK "NEXT" IF VISIBLE ──────────────────────────────────────────
+  const nextBtn = Array.from(document.querySelectorAll('button')).find(b => {
+    const t = (b.innerText || '').trim().toLowerCase();
+    return t === 'next' || t === 'continue';
+  });
 
-  // ── STEP 3: LOCATION ─────────────────────────────────────────────────────────
-  setHud(3, 'Selecting Location (Lagos > Ikeja)...');
-  const locTrigger = Array.from(document.querySelectorAll('div, button, label')).find(el => {
-    const t = (el.innerText || '').trim();
-    return (t === 'Select Location*' || t.startsWith('Select Location') || t.includes('Location')) && el.querySelector('svg, i, .icon, [class*="arrow"], [class*="chevron"]');
-  }) || Array.from(document.querySelectorAll('div, button')).find(el => (el.innerText || '').trim().includes('Location'));
+  if (nextBtn) {
+    setHud(5, 'Advancing to Step 2 (Next)...');
+    triggerEvents(nextBtn);
+    await sleep(1200);
+  }
 
-  if (locTrigger) locTrigger.click();
-  else clickTextMatch(['Select Location*', 'Select Location', 'Location*']);
-  await sleep(800);
+  // ── STEP 6: DESCRIPTION & ₦50,000 PRICE ──────────────────────────────────────
+  let filledStep2 = false;
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const descEl = document.querySelector('textarea, div[contenteditable="true"]');
+    const priceInput = document.querySelector('input[placeholder*="Price" i], input[name*="price" i], input[aria-label*="Price" i], input[type="number"]');
 
-  clickTextMatch(AD.locPath[0]);
-  await sleep(700);
-  clickTextMatch(AD.locPath[1]);
-  await sleep(900);
-
-  // ── STEP 4: DESCRIPTION & PRICE ──────────────────────────────────────────────
-  setHud(4, 'Auto-filling Description & ₦3,500 Price...');
-  const descEl = document.querySelector('textarea, div[contenteditable="true"]');
-  if (descEl) {
-    if (descEl.tagName.toLowerCase() === 'textarea') {
-      setNativeValue(descEl, AD.desc);
-    } else {
-      descEl.innerText = AD.desc;
-      descEl.dispatchEvent(new Event('input', { bubbles: true }));
-      descEl.dispatchEvent(new Event('change', { bubbles: true }));
+    if (descEl) {
+      setHud(6, 'Filling School Portal Description & ₦50k Price...');
+      if (descEl.tagName.toLowerCase() === 'textarea') {
+        if (!descEl.value || descEl.value.length < 20) setNativeValue(descEl, AD.desc);
+      } else {
+        if (!descEl.innerText || descEl.innerText.length < 20) {
+          descEl.innerText = AD.desc;
+          descEl.dispatchEvent(new Event('input', { bubbles: true }));
+          descEl.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
     }
-  }
 
-  const priceInput = document.querySelector('input[placeholder*="Price" i], input[name*="price" i], input[aria-label*="Price" i], input[type="number"]');
-  if (priceInput) {
-    setNativeValue(priceInput, String(AD.price));
-  }
-  await sleep(800);
-
-  // ── STEP 5: ATTACH PHOTO VIA BASE64 DATA TRANSFER ────────────────────────────
-  setHud(5, 'Auto-attaching Flyer Photo from Base64...');
-  try {
-    const binary = atob(AD.imgB64);
-    const array = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      array[i] = binary.charCodeAt(i);
+    if (priceInput) {
+      if (!priceInput.value || priceInput.value === '0') {
+        setNativeValue(priceInput, String(AD.price));
+      }
     }
-    const blob = new Blob([array], { type: 'image/png' });
-    const file = new File([blob], AD.imgName, { type: 'image/png' });
 
-    const dt = new DataTransfer();
-    dt.items.add(file);
-
-    const fileInput = document.querySelector('input[type="file"]');
-    if (fileInput) {
-      fileInput.files = dt.files;
-      fileInput.dispatchEvent(new Event('change', { bubbles: true }));
-      fileInput.dispatchEvent(new Event('input', { bubbles: true }));
-      console.log('✅ Photo automatically attached via DataTransfer API!');
+    if (descEl && priceInput) {
+      filledStep2 = true;
+      break;
     }
-  } catch (err) {
-    console.warn('DataTransfer upload notice:', err.message);
-  }
-  await sleep(1500);
-
-  // ── STEP 6: SUBMIT / POST AD ─────────────────────────────────────────────────
-  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-
-  let countdown = 3;
-  while (countdown > 0) {
-    setHud(6, \`Posting ad in \${countdown} seconds... (Click to cancel)\`, '#38bdf8');
-    await sleep(1000);
-    countdown--;
+    await sleep(800);
   }
 
-  setHud(6, 'Submitting advert...', '#10b981');
-  const submitBtn = Array.from(document.querySelectorAll('button, input[type="submit"]')).find(b => {
+  // ── STEP 7: AUTO-SUBMIT POST AD ──────────────────────────────────────────────
+  const postBtn = Array.from(document.querySelectorAll('button, input[type="submit"]')).find(b => {
     const t = (b.innerText || b.value || '').trim().toLowerCase();
     return t === 'post ad' || t === 'post' || t.includes('post ad');
   });
 
-  if (submitBtn) {
-    submitBtn.click();
-    console.log('%c🎉 AD SUBMITTED AUTONOMOUSLY!', 'color:#10b981; font-weight:bold; font-size:16px;');
-    hud.innerHTML = \`
-      <div style="font-weight:800; color:#10b981; font-size:16px; margin-bottom:6px;">
-        🎉 AD POSTED AUTONOMOUSLY!
-      </div>
-      <div style="font-size:12.5px; color:#f8fafc;">
-        Jiji is now reviewing your advert. It will appear live in search shortly!
-      </div>
-    \`;
-  } else {
-    setHud(6, 'Ready! Click the orange "Post ad" button to submit.', '#eab308');
+  if (postBtn && filledStep2) {
+    setHud(7, 'Posting Ad #6 into review...', '#10b981');
+    triggerEvents(postBtn);
+    await sleep(1000);
   }
+
+  hud.innerHTML = \`
+    <div style="font-weight:800; color:#10b981; font-size:15px; margin-bottom:6px;">
+      🎉 AD #6 READY!
+    </div>
+    <div style="font-size:12px; color:#f8fafc; margin-bottom:8px;">
+      School Portal Title &amp; Photo loaded for <strong>Lagos, Ojodu</strong>! If Category or Location needs a tap, click it and press <strong>Next &gt; Post Ad</strong>.
+    </div>
+  \`;
+  console.log('%c🎉 AD #6 COMPLETED!', 'color:#10b981; font-weight:bold; font-size:16px;');
 })();
 `;
 
 fs.writeFileSync(path.join(process.cwd(), 'public', 'jiji_ads', 'jiji_console_autofill.js'), scriptCode, 'utf8');
-console.log('Successfully generated full autonomous script with embedded image base64!');
-console.log('Script size:', scriptCode.length, 'bytes');
+console.log('Successfully generated autonomous script for Ad #6 (Lagos, Ojodu)!');
