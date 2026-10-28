@@ -1,5 +1,5 @@
 {
-  "cat_idx": 7,
+  "cat_idx": 0,
   "page_offsets": {
     "solar-energy": 122,
     "construction-services": 122,
@@ -8,20 +8,20 @@
     "vehicle-services": 122,
     "architects": 122,
     "schools": 122,
-    "hotels": 121,
-    "lawyers": 121,
-    "restaurants": 121,
-    "beauty-salons": 121,
-    "supermarkets": 121,
-    "pharmacies": 121,
-    "event-management": 121,
-    "cleaning-services": 121,
-    "bakeries": 121,
-    "furniture": 121,
-    "security-services": 121,
-    "printing-services": 121,
-    "courier-services": 121,
-    "travel-agencies": 121,
-    "computer-dealers": 121
+    "hotels": 122,
+    "lawyers": 122,
+    "restaurants": 122,
+    "beauty-salons": 122,
+    "supermarkets": 122,
+    "pharmacies": 122,
+    "event-management": 122,
+    "cleaning-services": 122,
+    "bakeries": 122,
+    "furniture": 122,
+    "security-services": 122,
+    "printing-services": 122,
+    "courier-services": 122,
+    "travel-agencies": 122,
+    "computer-dealers": 122
   }
 }
