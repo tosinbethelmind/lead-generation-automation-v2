@@ -130,7 +130,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/((?!preview|api/widget|calc).*)",
+        source: "/jiji_ads/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Methods", value: "GET, OPTIONS" },
+          { key: "Access-Control-Allow-Headers", value: "*" },
+        ],
+      },
+      {
+        source: "/((?!preview|api/widget|calc|jiji_ads).*)",
         headers: securityHeaders,
       },
     ];
