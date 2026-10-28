@@ -48,7 +48,6 @@ const nextConfig: NextConfig = {
 
   experimental: {
     optimizePackageImports: [
-      'lucide-react',
       'date-fns',
       'recharts',
       '@supabase/supabase-js',

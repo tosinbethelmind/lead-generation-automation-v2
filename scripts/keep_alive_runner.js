@@ -3,11 +3,12 @@
  * 
  * Keeps local_job_runner.ts alive at all times while the laptop is awake.
  * - Auto-restarts the runner if it crashes or exits
- * - Detects laptop wake-from-sleep and gives the runner time to reconnect
+ * - Detects laptop wake-from-sleep and safely terminates old process tree with taskkill
+ * - Strictly prevents duplicate zombie processes from accumulating
  * - Prints a heartbeat every 5 minutes so you can confirm it's still running
  */
 
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const path = require('path');
 
 const projectDir = path.resolve(__dirname, '..');
@@ -17,6 +18,31 @@ let restartCount = 0;
 let lastRestartTime = Date.now();
 let isIntentionallyStopped = false;
 
+function killProcessTree(pid) {
+  if (!pid) return;
+  try {
+    if (process.platform === 'win32') {
+      execSync(`taskkill /F /T /PID ${pid}`, { stdio: 'ignore' });
+    } else {
+      process.kill(-pid, 'SIGKILL');
+    }
+  } catch (_) {}
+}
+
+function isRunnerAlreadyRunning() {
+  try {
+    if (process.platform === 'win32') {
+      const out = execSync('wmic process where "name=\'node.exe\' and commandline like \'%local_job_runner.ts%\'" get processid', {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore']
+      });
+      const pids = out.split(/\r?\n/).map(s => s.trim()).filter(s => /^\d+$/.test(s));
+      return pids.length > 0;
+    }
+  } catch (_) {}
+  return false;
+}
+
 // ── Heartbeat: print status every 5 minutes ──────────────────────────────
 const HEARTBEAT_INTERVAL_MS = 5 * 60 * 1000;
 setInterval(() => {
@@ -25,7 +51,6 @@ setInterval(() => {
 }, HEARTBEAT_INTERVAL_MS);
 
 // ── Wake-from-sleep detection ─────────────────────────────────────────────
-// If more than 3 minutes pass between heartbeat checks, the laptop was likely sleeping.
 let lastWakeCheck = Date.now();
 const SLEEP_DETECT_INTERVAL_MS = 30 * 1000; // check every 30s
 const SLEEP_GAP_THRESHOLD_MS = 3 * 60 * 1000; // 3+ min gap = sleep detected
@@ -40,14 +65,11 @@ setInterval(() => {
     console.log(`\n[KeepAlive] 💤 Laptop wake-from-sleep detected (was asleep ~${sleepMinutes} minutes).`);
     console.log(`[KeepAlive] ⏳ Waiting 10s for network to reconnect before restarting runner...`);
 
-    // Kill the current runner and let it restart fresh after the network comes up
-    if (childProcess) {
-      try {
-        childProcess.kill();
-      } catch (_) {}
+    if (childProcess && childProcess.pid) {
+      killProcessTree(childProcess.pid);
+      childProcess = null;
     }
 
-    // Delay restart by 10s to allow network/Supabase to reconnect
     setTimeout(() => {
       if (!isIntentionallyStopped) {
         console.log('[KeepAlive] 🔄 Post-sleep restart triggered.');
@@ -61,18 +83,17 @@ setInterval(() => {
 process.on('SIGINT', () => {
   isIntentionallyStopped = true;
   console.log('\n[KeepAlive] SIGINT received — shutting down gracefully...');
-  if (childProcess) childProcess.kill();
+  if (childProcess && childProcess.pid) killProcessTree(childProcess.pid);
   process.exit(0);
 });
 
 process.on('SIGTERM', () => {
   isIntentionallyStopped = true;
   console.log('[KeepAlive] SIGTERM received — shutting down gracefully...');
-  if (childProcess) childProcess.kill();
+  if (childProcess && childProcess.pid) killProcessTree(childProcess.pid);
   process.exit(0);
 });
 
-// ── Global Error / Rejection Interceptors ─────────────────────────────────
 process.on('uncaughtException', (err) => {
   console.error('[KeepAlive UncaughtException] Fatal error caught globally:', err.stack || err.message || err);
 });
@@ -84,6 +105,13 @@ process.on('unhandledRejection', (reason, promise) => {
 // ── Runner process management ─────────────────────────────────────────────
 function startRunner() {
   if (isIntentionallyStopped) return;
+
+  // Single-instance check: do not start duplicate if one is already alive
+  if (isRunnerAlreadyRunning()) {
+    console.log('[KeepAlive] 🔒 local_job_runner.ts is already running in background. Waiting 60s before re-checking...');
+    setTimeout(startRunner, 60000);
+    return;
+  }
 
   console.log(`\n[KeepAlive] 🚀 Starting local_job_runner.ts... (restart #${restartCount})`);
   lastRestartTime = Date.now();
@@ -97,15 +125,16 @@ function startRunner() {
     });
 
     childProcess.on('close', (code) => {
+      childProcess = null;
       if (isIntentionallyStopped) return;
       restartCount++;
-      // If exited cleanly with code 0 (e.g. singleton guard active in another instance), back off for 5 minutes
       const delay = code === 0 ? 300000 : Math.min(5000 * restartCount, 60000);
       console.log(`[KeepAlive] ⚠️ Runner exited with code ${code}. Resting ${delay / 1000}s before next check...`);
       setTimeout(startRunner, delay);
     });
 
     childProcess.on('error', (err) => {
+      childProcess = null;
       if (isIntentionallyStopped) return;
       restartCount++;
       console.error(`[KeepAlive] ❌ Runner process error:`, err.message);
@@ -114,6 +143,7 @@ function startRunner() {
       setTimeout(startRunner, delay);
     });
   } catch (err) {
+    childProcess = null;
     if (isIntentionallyStopped) return;
     restartCount++;
     console.error(`[KeepAlive] ❌ Direct spawn failed:`, err.message);
@@ -126,8 +156,8 @@ console.log('====================================================');
 console.log('🔁 Bethelmind Digital Solutions Keep-Alive Runner Starting');
 console.log(`   Project: ${projectDir}`);
 console.log('   Heartbeat: every 5 minutes');
-console.log('   Sleep detection: active');
-console.log('   Auto-restart: yes (exponential backoff to 30s max)');
+console.log('   Sleep detection: active (taskkill tree cleanup enabled)');
+console.log('   Auto-restart: yes (single instance protected)');
 console.log('====================================================');
 
 startRunner();
