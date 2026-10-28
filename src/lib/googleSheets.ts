@@ -1,4 +1,4 @@
-﻿import { google } from 'googleapis';
+// googleapis dynamically imported in getSheetsInstance only when needed
 import fs from 'fs';
 import { promises as fsPromises } from 'fs';
 import path from 'path';
@@ -470,6 +470,7 @@ export async function isPhoneOnDnc(phone: string, country = 'NG'): Promise<boole
 // ============================================================================
 
 export async function getSheetsInstance() {
+  const { google } = await import('googleapis');
   const rootDir = process.cwd();
   const credentialsPath = path.join(rootDir, 'credentials.json');
   const config = getRuntimeConfig();
