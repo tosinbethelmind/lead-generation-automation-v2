@@ -510,7 +510,37 @@ Settlement Vault: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digita
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <a
+                          href={`/deal/${brief.deal_id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition"
+                        >
+                          <span>🔗 View Teaser</span>
+                        </a>
+
+                        <button
+                          onClick={() => {
+                            const pShare = brief.estimated_commission_pool_ngn - brief.bethelmind_origination_fee_ngn;
+                            const teaserMsg = 
+`Good day Boss! 👋 Bethelmind Digital Solutions (CAC: 9912717) has an incoming cash-ready buyer:
+
+• Brief: ${brief.title}
+• Location: ${brief.location.area}, ${brief.location.city}
+• Verified Budget: ${brief.formatted_budget} (Direct Wire Ready)
+• Your Partner Share: ₦${pShare.toLocaleString()}
+
+We are offering your desk first-look rights on a 50/50 co-brokerage split. Review criteria and unlock the direct buyer line here (45-min exclusive window):
+👉 https://www.bethelmindanalytics.com/deal/${brief.deal_id}`;
+                            copyToClipboard(teaserMsg, `teaser-${brief.deal_id}`);
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition"
+                        >
+                          {copiedId === `teaser-${brief.deal_id}` ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                          <span>Copy Teaser Pitch</span>
+                        </button>
+
                         <button
                           onClick={() => copyToClipboard(brief.digital_mandate.mandate_text, brief.deal_id)}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition"
@@ -520,13 +550,15 @@ Settlement Vault: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digita
                         </button>
 
                         <a
-                          href={`https://wa.me/?text=${encodeURIComponent(brief.digital_mandate.mandate_text)}`}
+                          href={`https://wa.me/?text=${encodeURIComponent(
+                            `Good day Boss! 👋 Bethelmind Digital Solutions (CAC: 9912717) has an incoming cash-ready buyer:\n\n• Brief: ${brief.title}\n• Location: ${brief.location.area}\n• Budget: ${brief.formatted_budget}\n\nReview criteria and claim buyer line here:\n👉 https://www.bethelmindanalytics.com/deal/${brief.deal_id}`
+                          )}`}
                           target="_blank"
                           rel="noreferrer"
                           className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs transition shadow-md"
                         >
                           <MessageCircle className="w-3.5 h-3.5" />
-                          <span>Dispatch via WhatsApp</span>
+                          <span>Dispatch Teaser</span>
                         </a>
                       </div>
                     </div>

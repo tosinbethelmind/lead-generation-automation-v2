@@ -38,6 +38,7 @@ const PASSTHROUGH_PREFIXES = [
   '/sites/',
   '/handover/',
   '/admin',
+  '/deal',
 ];
 
 export async function proxy(req: NextRequest) {
