@@ -15,7 +15,19 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Deal brief not found' }, { status: 404 });
     }
 
-    // Mask phone number for public teaser view (revealed only upon digital claim)
+    // Check action param for downloading legal documents
+    const url = new URL(req.url);
+    const docType = url.searchParams.get('doc');
+    if (docType === 'section84') {
+      const cert = engine.generateSection84Certificate(deal_id);
+      return new NextResponse(cert, {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Content-Disposition': `attachment; filename="SECTION_84_CERTIFICATE_${deal_id}.txt"`
+        }
+      });
+    }
+
     const isClaimed = !!brief.exclusive_partner_assigned;
     const maskedPhone = brief.buyer_contact.phone
       ? `${brief.buyer_contact.phone.slice(0, 4)} ••• ••• ${brief.buyer_contact.phone.slice(-4)}`
@@ -39,6 +51,7 @@ export async function GET(
         agency_name: brief.exclusive_partner_assigned.agency_name,
         contact_person: brief.exclusive_partner_assigned.contact_person
       } : null,
+      sla_tracking: brief.sla_tracking || null,
       buyer_contact: isClaimed ? brief.buyer_contact : {
         name: brief.buyer_contact.name || 'Verified Cash Buyer',
         phone: maskedPhone,
@@ -62,8 +75,17 @@ export async function POST(
   try {
     const { deal_id } = await context.params;
     const body = await req.json();
-    const { agency_name, contact_person, phone } = body;
+    const engine = HighTicketDealWireEngine.getInstance();
 
+    // ── ACTION A: Log Partner Milestone (Fulfills 24-Hour SLA) ──
+    if (body.action === 'log_milestone') {
+      const { inspection_notes } = body;
+      const res = engine.logPartnerMilestone(deal_id, inspection_notes || 'Confirmed with buyer');
+      return NextResponse.json(res);
+    }
+
+    // ── ACTION B: Initial Deal Claim & Mandate Signature ──
+    const { agency_name, contact_person, phone } = body;
     if (!agency_name || !contact_person || !phone) {
       return NextResponse.json({
         success: false,
@@ -71,7 +93,6 @@ export async function POST(
       }, { status: 400 });
     }
 
-    const engine = HighTicketDealWireEngine.getInstance();
     const briefs = engine.getStoredBriefs();
     const index = briefs.findIndex(b => b.deal_id.toLowerCase() === deal_id.toLowerCase());
 
@@ -87,15 +108,22 @@ export async function POST(
       }, { status: 409 });
     }
 
-    // Assign exclusive partner & update qualification status
+    const assignedAt = new Date().toISOString();
+    const slaExpiresAt = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
+
+    // Assign exclusive partner & bind 24-hour speed-to-lead SLA
     brief.exclusive_partner_assigned = {
       agency_name: agency_name.trim(),
       contact_person: contact_person.trim(),
       phone: phone.trim(),
-      assigned_at: new Date().toISOString()
+      assigned_at: assignedAt
+    };
+    brief.sla_tracking = {
+      sla_expires_at: slaExpiresAt,
+      sla_status: 'PENDING_CONTACT'
     };
     brief.qualification_status = 'DISPATCHED_TO_PARTNER';
-    brief.timestamps.dispatched_at = new Date().toISOString();
+    brief.timestamps.dispatched_at = assignedAt;
 
     briefs[index] = brief;
     engine.saveBriefs(briefs);
@@ -104,17 +132,19 @@ export async function POST(
     const cleanBuyerPhone = buyerPhone.replace(/\D/g, '');
     const intlPhone = cleanBuyerPhone.startsWith('0') ? `234${cleanBuyerPhone.slice(1)}` : cleanBuyerPhone;
     const directChatText = encodeURIComponent(
-      `Good day ${brief.buyer_contact.name || 'Boss'}! This is ${contact_person} from ${agency_name}. Bethelmind Executive Desk assigned us to manage your private tour/quote for: "${brief.title}". When is convenient for your private inspection this weekend?`
+      `Good day ${brief.buyer_contact.name || 'Boss'}! This is ${contact_person} from ${agency_name}. Bethelmind Executive Desk assigned our desk to conduct your private viewing/quote for: "${brief.title}". When is convenient for your private inspection this weekend?`
     );
     const waChatUrl = `https://wa.me/${intlPhone}?text=${directChatText}`;
 
     return NextResponse.json({
       success: true,
-      message: 'Co-Brokerage Mandate successfully signed. Full buyer contact unlocked.',
+      message: 'Co-Brokerage Mandate signed under LASRERA Covenant. 24-Hour SLA Active. Full buyer line unlocked.',
       deal_id: brief.deal_id,
       unlocked_buyer_contact: brief.buyer_contact,
       wa_chat_url: waChatUrl,
-      mandate_ref: brief.digital_mandate.mandate_ref
+      mandate_ref: brief.digital_mandate.mandate_ref,
+      sla_expires_at: slaExpiresAt,
+      liquidated_damages_ngn: brief.digital_mandate.legal_shield?.liquidated_damages_ngn || 0
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

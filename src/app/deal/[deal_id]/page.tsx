@@ -25,6 +25,11 @@ interface DealData {
     agency_name: string;
     contact_person: string;
   } | null;
+  sla_tracking?: {
+    sla_expires_at: string;
+    sla_status: string;
+    inspection_date?: string;
+  } | null;
   buyer_contact: {
     name: string;
     phone: string;
@@ -38,6 +43,12 @@ interface DealData {
     settlement_account: string;
     settlement_account_name: string;
     mandate_text: string;
+    legal_shield?: {
+      lasrera_clause: string;
+      liquidated_damages_ngn: number;
+      section_84_evidence_hash: string;
+      governing_law: string;
+    };
   };
   timestamps: {
     harvested_at: string;
@@ -61,9 +72,16 @@ export default function DealTeaserPage() {
     unlocked_buyer_contact: { name: string; phone: string; carrier: string };
     wa_chat_url: string;
     mandate_ref: string;
+    sla_expires_at?: string;
+    liquidated_damages_ngn?: number;
   } | null>(null);
 
-  // 45-minute countdown timer
+  // Milestone logging states
+  const [tourDateInput, setTourDateInput] = useState('');
+  const [loggingMilestone, setLoggingMilestone] = useState(false);
+  const [milestoneSuccess, setMilestoneSuccess] = useState<string | null>(null);
+
+  // 45-minute countdown timer for initial claim
   const [timeLeft, setTimeLeft] = useState(45 * 60);
 
   useEffect(() => {
@@ -87,6 +105,9 @@ export default function DealTeaserPage() {
       .then(data => {
         if (data.success && data.deal) {
           setDeal(data.deal);
+          if (data.deal.is_claimed && data.deal.exclusive_partner_assigned) {
+            setMilestoneSuccess(data.deal.sla_tracking?.inspection_date || null);
+          }
         } else {
           setError(data.error || 'Deal brief not found.');
         }
@@ -119,7 +140,9 @@ export default function DealTeaserPage() {
         setClaimResult({
           unlocked_buyer_contact: data.unlocked_buyer_contact,
           wa_chat_url: data.wa_chat_url,
-          mandate_ref: data.mandate_ref
+          mandate_ref: data.mandate_ref,
+          sla_expires_at: data.sla_expires_at,
+          liquidated_damages_ngn: data.liquidated_damages_ngn
         });
       } else {
         alert(data.error || 'Failed to claim brief.');
@@ -128,6 +151,34 @@ export default function DealTeaserPage() {
       alert(err.message || 'Network error claiming brief.');
     } finally {
       setClaiming(false);
+    }
+  };
+
+  const handleLogMilestone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tourDateInput.trim()) return;
+
+    setLoggingMilestone(true);
+    try {
+      const res = await fetch(`/api/deal/${dealId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'log_milestone',
+          inspection_notes: tourDateInput.trim()
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMilestoneSuccess(tourDateInput.trim());
+        alert('✅ Tour confirmed! Your 24-hour follow-up SLA is fulfilled.');
+      } else {
+        alert(data.error || 'Failed to log milestone.');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Error updating milestone.');
+    } finally {
+      setLoggingMilestone(false);
     }
   };
 
@@ -153,6 +204,7 @@ export default function DealTeaserPage() {
   }
 
   const partnerShare = deal.estimated_commission_pool_ngn - deal.bethelmind_origination_fee_ngn;
+  const liquidatedDamages = deal.digital_mandate.legal_shield?.liquidated_damages_ngn || deal.bethelmind_origination_fee_ngn * 2;
 
   return (
     <div className="min-h-screen bg-[#07090E] text-white antialiased font-sans selection:bg-amber-400 selection:text-black">
@@ -251,13 +303,13 @@ export default function DealTeaserPage() {
                 <span className="text-emerald-400">✓</span> Carrier Verified ({deal.buyer_contact.carrier || 'Active Line'})
               </span>
               <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-gray-300 flex items-center gap-1">
-                <span className="text-emerald-400">✓</span> Economic Viability Passed (&ge; ₦4M Threshold)
+                <span className="text-emerald-400">✓</span> Economic Viability Floor (&ge; ₦4M Threshold)
               </span>
               <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-gray-300 flex items-center gap-1">
-                <span className="text-emerald-400">✓</span> Zero Low-Budget / Student Noise Filter
+                <span className="text-emerald-400">✓</span> Zero Low-Budget / Student Noise
               </span>
               <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-gray-300 flex items-center gap-1">
-                <span className="text-emerald-400">✓</span> Pre-Flight WhatsApp Handshake Active
+                <span className="text-emerald-400">✓</span> Pre-Flight WhatsApp Liquidity Check Active
               </span>
             </div>
           </div>
@@ -265,9 +317,9 @@ export default function DealTeaserPage() {
 
         {/* Action Panel: Claim Brief or Unlocked Buyer View */}
         {claimResult ? (
-          /* UNLOCKED VIEW AFTER CLAIM */
-          <div className="bg-gradient-to-b from-emerald-950/40 to-[#0D121F] border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div className="flex items-center gap-3 mb-4">
+          /* UNLOCKED VIEW AFTER CLAIM WITH 24H SLA */
+          <div className="bg-gradient-to-b from-emerald-950/40 to-[#0D121F] border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl animate-in fade-in zoom-in duration-300 space-y-6">
+            <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl font-bold">
                 ✓
               </div>
@@ -277,11 +329,23 @@ export default function DealTeaserPage() {
               </div>
             </div>
 
-            <p className="text-sm text-gray-300 mb-6 leading-relaxed">
-              Full buyer contact credentials are now unlocked for your desk. You have exclusive inspection representation rights under our CAC-certified non-circumvention framework.
-            </p>
+            {/* 24-Hour SLA Follow-Up Banner */}
+            <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-amber-300 uppercase tracking-wide">
+                  ⏱️ 24-Hour Speed-to-Follow-up SLA Active
+                </p>
+                <p className="text-xs text-gray-300 mt-0.5">
+                  You have 24 hours to initiate contact with the buyer and confirm a private tour date to retain exclusive representation.
+                </p>
+              </div>
+              <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-lg bg-black/60 border border-amber-400/30 text-amber-300 self-start sm:self-auto">
+                24h Clock Running
+              </span>
+            </div>
 
-            <div className="bg-black/60 border border-emerald-500/30 p-5 rounded-2xl mb-6">
+            {/* Buyer Contact Card */}
+            <div className="bg-black/60 border border-emerald-500/30 p-5 rounded-2xl">
               <p className="text-xs text-gray-400 mb-1">Direct Buyer Name</p>
               <p className="text-lg font-bold text-white mb-3">{claimResult.unlocked_buyer_contact.name}</p>
 
@@ -303,6 +367,51 @@ export default function DealTeaserPage() {
               <span className="text-xl">💬</span>
               Open Direct WhatsApp Handshake with Buyer
             </a>
+
+            {/* Fulfill 24h SLA Milestone Box */}
+            <div className="bg-black/40 border border-white/10 p-5 rounded-2xl">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">
+                Log Confirmed Tour Date (Fulfills Your 24h SLA)
+              </h4>
+              {milestoneSuccess ? (
+                <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl text-xs text-emerald-300 font-semibold">
+                  ✅ Tour milestone confirmed: "{milestoneSuccess}". Your exclusive representation is locked.
+                </div>
+              ) : (
+                <form onSubmit={handleLogMilestone} className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    required
+                    value={tourDateInput}
+                    onChange={e => setTourDateInput(e.target.value)}
+                    placeholder="e.g., Saturday 11:00 AM private inspection"
+                    className="flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loggingMilestone}
+                    className="px-4 py-2.5 rounded-xl font-bold text-xs bg-amber-400 text-black hover:bg-amber-300 transition"
+                  >
+                    {loggingMilestone ? 'Saving...' : 'Confirm Milestone'}
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* Legal Documents Bar */}
+            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs border-t border-white/10">
+              <span className="text-gray-400">
+                ⚖️ Liquidated Damages Clause: <span className="text-amber-400 font-semibold">₦{liquidatedDamages.toLocaleString()}</span>
+              </span>
+              <a
+                href={`/api/deal/${dealId}?doc=section84`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-amber-300 hover:underline flex items-center gap-1 font-mono text-[11px]"
+              >
+                <span>📜</span> Download Section 84 Evidence Act Certificate
+              </a>
+            </div>
           </div>
         ) : deal.is_claimed ? (
           /* ALREADY CLAIMED BY ANOTHER PARTNER */
@@ -310,7 +419,7 @@ export default function DealTeaserPage() {
             <span className="text-3xl mb-2 block">🔒</span>
             <h3 className="text-lg font-bold text-gray-300 mb-1">Brief Locked by Partner</h3>
             <p className="text-xs text-gray-500 max-w-md mx-auto">
-              This deal was already claimed exclusively by {deal.exclusive_partner_assigned?.agency_name || 'another licensed partner'}. Watch your WhatsApp for the next wire dispatch.
+              This deal was already claimed exclusively by {deal.exclusive_partner_assigned?.agency_name || 'another licensed partner'} under 24-hour follow-up SLA. If their SLA expires without milestone confirmation, the brief automatically re-opens.
             </p>
           </div>
         ) : (
@@ -321,7 +430,7 @@ export default function DealTeaserPage() {
                 Claim Exclusive Representation & Unlock Direct Buyer
               </h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                We do not charge upfront marketing retainers for this initial brief. Confirm your firm’s details below to co-sign the digital co-brokerage mandate (50/50 split upon successful closing).
+                We do not charge upfront marketing retainers for this initial brief. Confirm your firm’s details below to co-sign the digital co-brokerage mandate (50/50 split upon successful closing). You will have 24 hours to log a confirmed tour date.
               </p>
             </div>
 
@@ -369,11 +478,11 @@ export default function DealTeaserPage() {
                 </div>
               </div>
 
-              {/* Legal Mandate Acknowledgment */}
+              {/* Legal Mandate & LASRERA Acknowledgment */}
               <div className="bg-black/30 border border-white/5 p-3 rounded-xl text-[11px] text-gray-400 leading-normal">
                 ⚖️ <strong>Legal Agreement:</strong> By tapping below, you agree to represent this buyer under the{' '}
                 <span className="text-amber-300">Bethelmind Digital Solutions Co-Agency Mandate ({deal.digital_mandate.mandate_ref})</span>{' '}
-                and protect the 50/50 commission split upon closed contract, settled to Moniepoint MFB ({deal.digital_mandate.settlement_account}).
+                subject to the <span className="text-white">LASRERA Co-Brokerage Covenant</span> and Section 84 Evidence Act 2011 electronic contract binding. Liquidated damages for circumvention: ₦{liquidatedDamages.toLocaleString()}. Settlement to Moniepoint MFB ({deal.digital_mandate.settlement_account}).
               </div>
 
               <button
@@ -406,7 +515,7 @@ export default function DealTeaserPage() {
             Corporate Settlement Vault: Moniepoint Microfinance Bank · 6805375225
           </p>
           <p className="mt-1 text-gray-600">
-            All rights reserved. Anti-Circumvention enforced under Nigerian Commercial Law.
+            LASRERA Compliant Co-Brokerage · Section 84 Evidence Act 2011 Certified.
           </p>
         </footer>
       </main>

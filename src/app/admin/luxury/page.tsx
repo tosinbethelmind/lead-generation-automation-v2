@@ -520,6 +520,37 @@ Settlement Vault: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digita
                           <span>🔗 View Teaser</span>
                         </a>
 
+                        <a
+                          href={`/api/deal/${brief.deal_id}?doc=section84`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-mono transition hover:bg-slate-800"
+                          title="Evidence Act 2011 Section 84 Certificate"
+                        >
+                          <span>📜 Sec 84 Cert</span>
+                        </a>
+
+                        <button
+                          onClick={() => {
+                            const protMsg = 
+`🛡️ *BETHELMIND CORPORATE LEGAL: BUYER TITLE PROTECTION NOTICE*
+*Bethelmind Digital Solutions (CAC Certified: Reg 9912717)*
+────────────────────────────────
+Dear ${brief.buyer_contact.name},
+
+For your complete financial safety regarding: "${brief.title}":
+1. 🏛️ *Free Title Deed Vetting:* Bethelmind Corporate Legal independently verifies Governor's Consent, C of O, Gazette, or NEMSA clearance at NO extra cost.
+2. 🔒 *Zero Direct Cash to Agents:* Never pay inspection fees or deposits to personal accounts. Settlements are backed by official escrow invoices.
+3. 📞 Senior Mandate Desk Hotline: 0802 279 1227.`;
+                            copyToClipboard(protMsg, `prot-${brief.deal_id}`);
+                          }}
+                          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs transition hover:bg-slate-800"
+                          title="Copy Buyer Title Protection Advisory"
+                        >
+                          {copiedId === `prot-${brief.deal_id}` ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <span>🛡️</span>}
+                          <span>Buyer Notice</span>
+                        </button>
+
                         <button
                           onClick={() => {
                             const pShare = brief.estimated_commission_pool_ngn - brief.bethelmind_origination_fee_ngn;
