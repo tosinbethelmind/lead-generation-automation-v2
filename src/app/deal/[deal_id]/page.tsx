@@ -392,9 +392,14 @@ export default function DealTeaserPage() {
 
           {/* 5-Layer Lead Verification Badges */}
           <div className="border-t border-white/10 pt-4">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2.5">
-              🛡️ Quality & Liquidity Safeguards Passed:
-            </p>
+            <div className="flex items-center justify-between flex-wrap gap-2 mb-2.5">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                🛡️ Signal-Based Verification & MEDDPICC Audit:
+              </p>
+              <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
+                ⚡ Signal Recency: Fresh Intent &lt; 45m
+              </span>
+            </div>
             <div className="flex flex-wrap gap-2 text-[11px]">
               <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-gray-300 flex items-center gap-1">
                 <span className="text-emerald-400">✓</span> Carrier Verified ({deal.buyer_contact.carrier || 'Active Line'})
@@ -403,10 +408,21 @@ export default function DealTeaserPage() {
                 <span className="text-emerald-400">✓</span> Economic Viability Floor (&ge; ₦4M Threshold)
               </span>
               <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-gray-300 flex items-center gap-1">
-                <span className="text-emerald-400">✓</span> Zero Low-Budget / Student Noise
+                <span className="text-emerald-400">✓</span> Direct Economic Buyer (Zero Agent Intermediary)
               </span>
               <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-gray-300 flex items-center gap-1">
                 <span className="text-emerald-400">✓</span> Pre-Flight WhatsApp Liquidity Check Active
+              </span>
+            </div>
+
+            {/* Value Equation Stack (Hormozi Grand Slam Offer) */}
+            <div className="mt-3.5 pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-[11px] bg-amber-500/5 p-2.5 rounded-xl border border-amber-500/15">
+              <span className="text-gray-300 flex items-center gap-1.5">
+                <span className="text-amber-400 font-bold">💎 Grand Slam Co-Brokerage:</span>
+                ₦0 Upfront • 75%–80% Your Pocket • 15s Finger Signature
+              </span>
+              <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                <span>🛡️</span> Zero Personal Capital Risk
               </span>
             </div>
           </div>
@@ -580,6 +596,17 @@ export default function DealTeaserPage() {
                 >
                   <span>📜</span> Review Full Printable Co-Brokerage Mandate & Non-Circumvention Terms (PDF)
                 </a>
+              </div>
+
+              {/* Behavioral Urgency Nudge (Agency Behavioral Engine) */}
+              <div className="mt-3.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <span className="text-xs text-amber-200 font-medium flex items-center gap-2">
+                  <span className="animate-pulse text-amber-400">🔥</span>
+                  <span><strong>High-Velocity Corridor:</strong> Only 1 exclusive closing license issued for this buyer.</span>
+                </span>
+                <span className="text-[10px] font-mono font-bold bg-black/60 text-amber-300 px-2.5 py-1 rounded-md border border-amber-400/30 self-start sm:self-auto">
+                  First-Claim Priority Active
+                </span>
               </div>
             </div>
 

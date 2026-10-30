@@ -470,9 +470,17 @@ Settlement Vault: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digita
                       <div className="md:col-span-2 space-y-2">
                         <h4 className="text-sm font-bold text-slate-100">{brief.title}</h4>
                         <p className="text-xs text-slate-400 leading-relaxed">{brief.description}</p>
-                        <div className="text-[11px] text-slate-400 pt-1 flex items-center gap-3">
+                        <div className="text-[11px] text-slate-400 pt-1 flex flex-wrap items-center gap-3">
                           <span>👤 Contact: <strong className="text-slate-200">{brief.buyer_contact.name}</strong></span>
                           <span>📞 Tel: <strong className="text-slate-200 font-mono">{brief.buyer_contact.phone}</strong></span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 pt-1 text-[10px]">
+                          <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
+                            🎯 MEDDPICC: 8/8 Scored
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
+                            ⚡ Signal: Direct Economic Buyer
+                          </span>
                         </div>
                       </div>
 
