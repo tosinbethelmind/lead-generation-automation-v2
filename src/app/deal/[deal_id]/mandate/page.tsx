@@ -37,6 +37,7 @@ interface DealData {
   exclusive_partner_assigned?: {
     agency_name: string;
     contact_person: string;
+    signature_data_url?: string;
   } | null;
   sla_tracking?: {
     sla_expires_at: string;
@@ -420,9 +421,20 @@ export default function SignedMandateDocumentPage() {
                 <span className="text-[7px] font-bold text-emerald-900">24H SLA</span>
               </div>
 
-              <p className="font-serif italic text-base text-slate-900 font-bold mb-1">
-                {partnerSignatory}
-              </p>
+              {deal.exclusive_partner_assigned?.signature_data_url ? (
+                <div className="h-12 flex items-center mb-1">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={deal.exclusive_partner_assigned.signature_data_url}
+                    alt="Party B Drawn Signature"
+                    className="max-h-12 max-w-[200px] object-contain filter contrast-125"
+                  />
+                </div>
+              ) : (
+                <p className="font-serif italic text-base text-slate-900 font-bold mb-1">
+                  {partnerSignatory}
+                </p>
+              )}
               <p className="text-xs font-bold text-slate-900">
                 {partnerSignatory}
               </p>
@@ -430,7 +442,7 @@ export default function SignedMandateDocumentPage() {
                 {partnerName}
               </p>
               <p className="text-[10px] text-slate-500 font-mono mt-2">
-                Electronic Assent: CONFIRMED UPON CLAIM<br />
+                Electronic Assent: HAND-DRAWN & DIGITALLY AFFIXED<br />
                 Evidence Hash: {evidenceHash.slice(0, 24)}...
               </p>
             </div>

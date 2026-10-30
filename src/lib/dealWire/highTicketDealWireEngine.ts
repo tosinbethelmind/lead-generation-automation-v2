@@ -52,6 +52,7 @@ export interface DealWireBrief {
     contact_person: string;
     phone: string;
     assigned_at: string;
+    signature_data_url?: string;
   };
   sla_tracking?: {
     sla_expires_at: string; // 24 hours from assigned_at

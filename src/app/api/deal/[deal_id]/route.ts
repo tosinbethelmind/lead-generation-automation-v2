@@ -49,7 +49,8 @@ export async function GET(
       is_claimed: isClaimed,
       exclusive_partner_assigned: brief.exclusive_partner_assigned ? {
         agency_name: brief.exclusive_partner_assigned.agency_name,
-        contact_person: brief.exclusive_partner_assigned.contact_person
+        contact_person: brief.exclusive_partner_assigned.contact_person,
+        signature_data_url: brief.exclusive_partner_assigned.signature_data_url || null
       } : null,
       sla_tracking: brief.sla_tracking || null,
       buyer_contact: isClaimed ? brief.buyer_contact : {
@@ -85,7 +86,7 @@ export async function POST(
     }
 
     // ── ACTION B: Initial Deal Claim & Mandate Signature ──
-    const { agency_name, contact_person, phone } = body;
+    const { agency_name, contact_person, phone, signature_data_url } = body;
     if (!agency_name || !contact_person || !phone) {
       return NextResponse.json({
         success: false,
@@ -116,7 +117,8 @@ export async function POST(
       agency_name: agency_name.trim(),
       contact_person: contact_person.trim(),
       phone: phone.trim(),
-      assigned_at: assignedAt
+      assigned_at: assignedAt,
+      signature_data_url: signature_data_url || undefined
     };
     brief.sla_tracking = {
       sla_expires_at: slaExpiresAt,

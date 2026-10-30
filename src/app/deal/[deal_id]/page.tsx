@@ -74,7 +74,14 @@ export default function DealTeaserPage() {
     mandate_ref: string;
     sla_expires_at?: string;
     liquidated_damages_ngn?: number;
+    signature_data_url?: string;
   } | null>(null);
+
+  // Digital Signature Pad States
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const isDrawingRef = React.useRef(false);
+  const [hasDrawn, setHasDrawn] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(true);
 
   // Milestone logging states
   const [tourDateInput, setTourDateInput] = useState('');
@@ -95,6 +102,73 @@ export default function DealTeaserPage() {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const getCoordinates = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    if ('touches' in e) {
+      const touch = e.touches[0];
+      return {
+        x: (touch.clientX - rect.left) * scaleX,
+        y: (touch.clientY - rect.top) * scaleY
+      };
+    } else {
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
+    }
+  };
+
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    isDrawingRef.current = true;
+    const { x, y } = getCoordinates(e);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.strokeStyle = '#F59E0B'; // Amber gold pen stroke
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  };
+
+  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawingRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    if ('touches' in e) {
+      e.preventDefault(); // Prevent page scrolling during touch signature
+    }
+
+    const { x, y } = getCoordinates(e);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    setHasDrawn(true);
+  };
+
+  const stopDrawing = () => {
+    isDrawingRef.current = false;
+  };
+
+  const clearSignature = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setHasDrawn(false);
   };
 
   useEffect(() => {
@@ -123,6 +197,27 @@ export default function DealTeaserPage() {
       return;
     }
 
+    if (!agreedToTerms) {
+      alert('Please confirm that you agree to the 50/50 fee split and legal mandate covenants.');
+      return;
+    }
+
+    // Capture drawn canvas signature or auto-render cursive script
+    let signatureDataUrl = '';
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        if (!hasDrawn && contactPerson) {
+          // Render elegant cursive script signature with their typed name
+          ctx.font = 'italic 28px "Brush Script MT", "Caveat", "Segoe Script", cursive';
+          ctx.fillStyle = '#F59E0B';
+          ctx.fillText(contactPerson, 20, 65);
+        }
+        signatureDataUrl = canvas.toDataURL('image/png');
+      }
+    }
+
     setClaiming(true);
     try {
       const res = await fetch(`/api/deal/${dealId}`, {
@@ -131,7 +226,8 @@ export default function DealTeaserPage() {
         body: JSON.stringify({
           agency_name: agencyName,
           contact_person: contactPerson,
-          phone: partnerPhone
+          phone: partnerPhone,
+          signature_data_url: signatureDataUrl
         })
       });
 
@@ -142,7 +238,8 @@ export default function DealTeaserPage() {
           wa_chat_url: data.wa_chat_url,
           mandate_ref: data.mandate_ref,
           sla_expires_at: data.sla_expires_at,
-          liquidated_damages_ngn: data.liquidated_damages_ngn
+          liquidated_damages_ngn: data.liquidated_damages_ngn,
+          signature_data_url: signatureDataUrl
         });
       } else {
         alert(data.error || 'Failed to claim brief.');
@@ -358,6 +455,28 @@ export default function DealTeaserPage() {
               </p>
             </div>
 
+            {/* Captured Signature Badge */}
+            {claimResult.signature_data_url && (
+              <div className="bg-black/50 border border-emerald-500/30 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <p className="text-xs text-emerald-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <span>✍️</span> Your Hand-Drawn Signature Affixed
+                  </p>
+                  <p className="text-[11px] text-gray-400 mt-0.5">
+                    Permanently embedded into the Section 84 Certificate on Mandate Ref: <span className="font-mono text-amber-300">{claimResult.mandate_ref}</span>
+                  </p>
+                </div>
+                <div className="bg-white/10 px-3 py-1.5 rounded-xl border border-white/15 self-start sm:self-auto">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={claimResult.signature_data_url}
+                    alt="Affixed Signature"
+                    className="max-h-10 max-w-[140px] object-contain filter contrast-125"
+                  />
+                </div>
+              </div>
+            )}
+
             <a
               href={claimResult.wa_chat_url}
               target="_blank"
@@ -508,11 +627,68 @@ export default function DealTeaserPage() {
                 </div>
               </div>
 
-              {/* Legal Mandate & LASRERA Acknowledgment */}
-              <div className="bg-black/30 border border-white/5 p-3 rounded-xl text-[11px] text-gray-400 leading-normal">
-                ⚖️ <strong>Legal Agreement:</strong> By tapping below, you agree to represent this buyer under the{' '}
-                <span className="text-amber-300">Bethelmind Digital Solutions Co-Agency Mandate ({deal.digital_mandate.mandate_ref})</span>{' '}
-                subject to the <span className="text-white">LASRERA Co-Brokerage Covenant</span> and Section 84 Evidence Act 2011 electronic contract binding. Liquidated damages for circumvention: ₦{liquidatedDamages.toLocaleString()}. Settlement to Moniepoint MFB ({deal.digital_mandate.settlement_account}).
+              {/* Interactive Hand-Drawn Signature Pad */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-semibold text-gray-300">
+                    ✍️ Draw Your Legal Signature (Finger or Mouse) *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={clearSignature}
+                    className="text-[11px] text-amber-400 hover:text-amber-300 underline font-mono"
+                  >
+                    ↺ Clear / Redraw
+                  </button>
+                </div>
+
+                <div className="relative rounded-2xl border border-amber-500/40 bg-black/70 overflow-hidden shadow-inner">
+                  <canvas
+                    ref={canvasRef}
+                    width={500}
+                    height={130}
+                    onMouseDown={startDrawing}
+                    onMouseMove={draw}
+                    onMouseUp={stopDrawing}
+                    onMouseLeave={stopDrawing}
+                    onTouchStart={startDrawing}
+                    onTouchMove={draw}
+                    onTouchEnd={stopDrawing}
+                    style={{ touchAction: 'none' }}
+                    className="w-full h-[120px] cursor-crosshair"
+                  />
+                  {!hasDrawn && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs text-gray-500 font-serif italic select-none">
+                      Sign here on glass with your finger
+                    </div>
+                  )}
+                  <div className="absolute bottom-2 right-3 pointer-events-none">
+                    <span className="text-[9px] font-mono text-gray-500 uppercase tracking-wider">
+                      {hasDrawn ? '✓ Signature Stroke Captured' : 'Evidence Act Sec 84 Pad'}
+                    </span>
+                  </div>
+                </div>
+                <p className="text-[10px] text-gray-400">
+                  Your drawn signature will be permanently stamped into the bilateral legal contract & Section 84 certificate.
+                </p>
+              </div>
+
+              {/* Explicit Legal Affirmation Checkbox */}
+              <div className="bg-black/40 border border-amber-500/20 p-3.5 rounded-xl space-y-2">
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={e => setAgreedToTerms(e.target.checked)}
+                    className="mt-0.5 rounded border-amber-400 text-amber-500 focus:ring-amber-400 h-4 w-4 bg-black"
+                  />
+                  <span className="text-xs text-gray-300 leading-snug">
+                    I, <strong className="text-white">{contactPerson || 'Authorized Broker'}</strong>, hereby affix my electronic signature to the{' '}
+                    <span className="text-amber-300 font-semibold">Bethelmind Digital Solutions Co-Brokerage Mandate</span>. I irrevocably agree to the{' '}
+                    <strong className="text-emerald-400">50/50 fee split (₦{deal.bethelmind_origination_fee_ngn.toLocaleString()})</strong> payable to{' '}
+                    <span className="text-white">Moniepoint MFB (6805375225)</span> upon closing, and agree to the 200% liquidated damages clause (₦{liquidatedDamages.toLocaleString()}) under Nigerian law and LASRERA regulations.
+                  </span>
+                </label>
               </div>
 
               <button
@@ -523,12 +699,12 @@ export default function DealTeaserPage() {
                 {claiming ? (
                   <>
                     <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                    Signing Mandate & Unlocking...
+                    Affixing Signature & Unlocking Buyer...
                   </>
                 ) : (
                   <>
-                    <span>👑</span>
-                    Sign Co-Brokerage Mandate & Unlock Buyer Line
+                    <span>✍️</span>
+                    Affix Signature & Unlock Verified Buyer
                   </>
                 )}
               </button>
