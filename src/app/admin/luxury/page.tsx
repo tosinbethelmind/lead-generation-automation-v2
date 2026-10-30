@@ -521,6 +521,16 @@ Settlement Vault: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digita
                         </a>
 
                         <a
+                          href={`/deal/${brief.deal_id}/mandate`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition"
+                          title="Printable Bilateral Mandate & Section 84 Document"
+                        >
+                          <span>📜 Signed Mandate</span>
+                        </a>
+
+                        <a
                           href={`/api/deal/${brief.deal_id}?doc=section84`}
                           target="_blank"
                           rel="noreferrer"

@@ -399,28 +399,48 @@ export default function DealTeaserPage() {
             </div>
 
             {/* Legal Documents Bar */}
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs border-t border-white/10">
+            <div className="pt-3 flex flex-wrap items-center justify-between gap-3 text-xs border-t border-white/10">
               <span className="text-gray-400">
                 ⚖️ Liquidated Damages Clause: <span className="text-amber-400 font-semibold">₦{liquidatedDamages.toLocaleString()}</span>
               </span>
-              <a
-                href={`/api/deal/${dealId}?doc=section84`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-amber-300 hover:underline flex items-center gap-1 font-mono text-[11px]"
-              >
-                <span>📜</span> Download Section 84 Evidence Act Certificate
-              </a>
+              <div className="flex flex-wrap items-center gap-2">
+                <a
+                  href={`/deal/${dealId}/mandate`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold flex items-center gap-1.5 shadow-md shadow-amber-500/20 text-xs transition"
+                >
+                  <span>📜</span> View Signed Legal Agreement (PDF)
+                </a>
+                <a
+                  href={`/api/deal/${dealId}?doc=section84`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-amber-300 flex items-center gap-1 font-mono text-[11px]"
+                >
+                  <span>📜</span> Sec 84 Cert (.txt)
+                </a>
+              </div>
             </div>
           </div>
         ) : deal.is_claimed ? (
           /* ALREADY CLAIMED BY ANOTHER PARTNER */
-          <div className="bg-[#0D121F] border border-white/10 rounded-3xl p-6 text-center">
-            <span className="text-3xl mb-2 block">🔒</span>
+          <div className="bg-[#0D121F] border border-white/10 rounded-3xl p-6 text-center space-y-4">
+            <span className="text-3xl mb-1 block">🔒</span>
             <h3 className="text-lg font-bold text-gray-300 mb-1">Brief Locked by Partner</h3>
             <p className="text-xs text-gray-500 max-w-md mx-auto">
               This deal was already claimed exclusively by {deal.exclusive_partner_assigned?.agency_name || 'another licensed partner'} under 24-hour follow-up SLA. If their SLA expires without milestone confirmation, the brief automatically re-opens.
             </p>
+            <div className="pt-2">
+              <a
+                href={`/deal/${dealId}/mandate`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition"
+              >
+                <span>📜</span> Inspect Active Signed Legal Mandate & Sec 84 Schedule
+              </a>
+            </div>
           </div>
         ) : (
           /* CLAIM FORM (FIRST DEAL PERFORMANCE HOOK) */
@@ -432,6 +452,16 @@ export default function DealTeaserPage() {
               <p className="text-xs text-gray-400 leading-relaxed">
                 We do not charge upfront marketing retainers for this initial brief. Confirm your firm’s details below to co-sign the digital co-brokerage mandate (50/50 split upon successful closing). You will have 24 hours to log a confirmed tour date.
               </p>
+              <div className="mt-2.5">
+                <a
+                  href={`/deal/${dealId}/mandate`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 underline font-medium"
+                >
+                  <span>📜</span> Review Full Printable Co-Brokerage Mandate & Non-Circumvention Terms (PDF)
+                </a>
+              </div>
             </div>
 
             <form onSubmit={handleClaim} className="space-y-4">
