@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
+  Crown,
   Rocket,
   ExternalLink,
   RefreshCw,
@@ -351,6 +352,30 @@ export default function CleanExecutiveAdminDashboard() {
                 Ctrl+K
               </span>
             </button>
+
+            {/* Sovereign Luxury Command Deck */}
+            <Link
+              href="/admin/luxury"
+              style={{
+                background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+                border: '1px solid #f59e0b',
+                color: '#ffffff',
+                padding: '8px 14px',
+                borderRadius: '10px',
+                fontSize: '0.8rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                textDecoration: 'none',
+                boxShadow: '0 0 16px rgba(245, 158, 11, 0.3)'
+              }}
+              title="Open Bethelmind Sovereign Luxury Command Deck"
+            >
+              <Crown size={15} style={{ color: '#fef08a' }} />
+              <span>Sovereign Deck</span>
+            </Link>
 
             {/* Sync Live Data */}
             <button

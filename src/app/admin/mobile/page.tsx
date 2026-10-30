@@ -14,6 +14,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { 
   Zap, 
   Send, 
@@ -37,7 +38,7 @@ import {
 } from 'lucide-react';
 
 export default function MobileAdminCommandCenter() {
-  const [activeTab, setActiveTab] = useState<'radar' | 'closer' | 'claim' | 'onboard' | 'ai_tester' | 'hubs'>('radar');
+  const [activeTab, setActiveTab] = useState<'radar' | 'closer' | 'claim' | 'onboard' | 'ai_tester' | 'hubs'>('claim');
   const [telemetry, setTelemetry] = useState<any>(null);
   const [activeProspects, setActiveProspects] = useState<any[]>([]);
   const [crmLeads, setCrmLeads] = useState<any[]>([]);
@@ -68,6 +69,7 @@ export default function MobileAdminCommandCenter() {
   // PWA Install State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
 
   useEffect(() => {
     fetchTelemetry();
@@ -103,15 +105,15 @@ export default function MobileAdminCommandCenter() {
   };
 
   const handleInstallPwa = async () => {
-    if (!deferredPrompt) {
-      alert('To install on iOS: Tap Share in Safari -> "Add to Home Screen".\nOn Android: Tap 3 dots in Chrome -> "Install app" or "Add to Home screen".');
-      return;
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setIsInstallable(false);
+        return;
+      }
     }
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setIsInstallable(false);
-    }
+    setShowInstallModal(true);
   };
 
   const handleTriggerAction = async (actionKey: string, label: string) => {
@@ -289,25 +291,64 @@ export default function MobileAdminCommandCenter() {
           </div>
         </div>
 
-        <button
-          onClick={fetchTelemetry}
-          style={{
-            background: '#1e293b',
-            border: '1px solid #334155',
-            color: '#38bdf8',
-            borderRadius: '8px',
-            padding: '6px 12px',
-            fontSize: '11px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            cursor: 'pointer',
-            fontWeight: 700
-          }}
-        >
-          <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
-          <span>Sync</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Link
+            href="/admin/luxury"
+            style={{
+              background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+              border: '1px solid #f59e0b',
+              color: '#ffffff',
+              borderRadius: '8px',
+              padding: '6px 10px',
+              fontSize: '11px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              textDecoration: 'none',
+              fontWeight: 800
+            }}
+          >
+            <span>👑 Sovereign Deck</span>
+          </Link>
+          <button
+            onClick={handleInstallPwa}
+            style={{
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              border: 'none',
+              color: '#ffffff',
+              borderRadius: '8px',
+              padding: '6px 10px',
+              fontSize: '11px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              cursor: 'pointer',
+              fontWeight: 800
+            }}
+          >
+            <Smartphone size={13} />
+            <span>📲 Install App</span>
+          </button>
+          <button
+            onClick={fetchTelemetry}
+            style={{
+              background: '#1e293b',
+              border: '1px solid #334155',
+              color: '#38bdf8',
+              borderRadius: '8px',
+              padding: '6px 10px',
+              fontSize: '11px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              cursor: 'pointer',
+              fontWeight: 700
+            }}
+          >
+            <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
+            <span>Sync</span>
+          </button>
+        </div>
       </header>
 
       {/* PWA Install Banner */}
@@ -943,7 +984,7 @@ export default function MobileAdminCommandCenter() {
                   </div>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <a
-                      href={`https://wa.me/${p.phone}?text=${encodeURIComponent(`Good day Boss at *${p.name}*! We already built an official mobile website + 24/7 WhatsApp assistant for *${p.name}* to test free on your phone: ${p.previewUrl}`)}`}
+                      href={`https://wa.me/${p.phone}?text=${encodeURIComponent(`Good day Boss at *${p.name}*! 👋 Bethelmind Digital Solutions here.\n\nWe noticed you do not have an official mobile website on Google yet, so we pre-built an official mobile website + 24/7 WhatsApp AI Sales Assistant for *${p.name}*:\n👉 Test drive free on your phone: ${p.previewUrl}\n\nLaunch today for ₦70,000 flat (1-Year All-Inclusive, Zero Monthly Bills).\nMoniepoint Bank: 6805375225 - Bethelmind Digital Solutions.\n\nReply here to claim!`)}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{
@@ -1074,9 +1115,9 @@ export default function MobileAdminCommandCenter() {
                     boxSizing: 'border-box'
                   }}
                 >
-                  <option value="Starter Official Website (.com.ng)">Option 1: Starter Official .COM.NG (₦65,000 Total)</option>
-                  <option value="Corporate Growth Suite (.com)">Option 2: Corporate .COM + Staff Emails (₦120,000 Total)</option>
-                  <option value="Pay-Small-Small Monthly">Option 3: Pay-Small-Small Monthly (₦25,000/mo)</option>
+                  <option value="Starter Official Website (.com.ng)">Option 1: Starter Go-Live 1-Year All-Inclusive (₦70,000 Flat)</option>
+                  <option value="Corporate Growth Suite (.com)">Option 2: Full Turnkey Custom Domain Suite (₦150,000 Total)</option>
+                  <option value="School / Estate Result & Escrow Portal">Option 3: School / Estate Automated Portal (₦85,000)</option>
                 </select>
               </div>
 
@@ -1359,6 +1400,96 @@ export default function MobileAdminCommandCenter() {
         )}
 
       </main>
+      {/* PWA Phone Installation Step-by-Step Modal */}
+      {showInstallModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.85)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#0b1120',
+            border: '2px solid #0284c7',
+            borderRadius: '16px',
+            padding: '24px',
+            maxWidth: '380px',
+            width: '100%',
+            color: '#f8fafc',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.8)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '20px' }}>📲</span>
+                <h3 style={{ fontSize: '16px', fontWeight: 800, margin: 0, color: '#38bdf8' }}>Install Bethelmind on Phone</h3>
+              </div>
+              <button
+                onClick={() => setShowInstallModal(false)}
+                style={{
+                  background: '#1e293b',
+                  border: 'none',
+                  color: '#94a3b8',
+                  borderRadius: '50%',
+                  width: '28px',
+                  height: '28px',
+                  cursor: 'pointer',
+                  fontWeight: 800
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <p style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.5', margin: '0 0 16px 0' }}>
+              Install this command center on your phone home screen like a native Play Store app:
+            </p>
+
+            <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '10px', padding: '12px', marginBottom: '12px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 800, color: '#10b981', marginBottom: '4px' }}>🤖 Android (Google Chrome):</div>
+              <ol style={{ margin: 0, paddingLeft: '18px', fontSize: '11px', color: '#94a3b8', lineHeight: '1.6' }}>
+                <li>Tap the <b>3 dots menu (⋮)</b> at top right of Chrome.</li>
+                <li>Tap <b>"Install app"</b> or <b>"Add to Home screen"</b>.</li>
+                <li>Tap <b>Install</b>. Bethelmind icon appears on your home screen!</li>
+              </ol>
+            </div>
+
+            <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '10px', padding: '12px', marginBottom: '16px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 800, color: '#38bdf8', marginBottom: '4px' }}>🍏 iPhone (Safari):</div>
+              <ol style={{ margin: 0, paddingLeft: '18px', fontSize: '11px', color: '#94a3b8', lineHeight: '1.6' }}>
+                <li>Tap the <b>Share icon (square with arrow up)</b> at bottom.</li>
+                <li>Scroll down and tap <b>"Add to Home Screen"</b>.</li>
+                <li>Tap <b>Add</b>. Launches in full-screen standalone mode!</li>
+              </ol>
+            </div>
+
+            <button
+              onClick={() => setShowInstallModal(false)}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '12px',
+                fontWeight: 800,
+                fontSize: '12px',
+                cursor: 'pointer'
+              }}
+            >
+              Got It, Continue to App
+            </button>
+          </div>
+        </div>
+      )}
+
 
       {/* Persistent Bottom Mobile Navigation Bar */}
       <nav style={{

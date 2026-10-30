@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generatePostPaymentSolarReferralMessage } from '../../../../../scripts/regular_business_outreach';
 import { createHmac } from 'crypto';
 import { safeCompareStrings } from '@/lib/security';
+
+function generatePostPaymentSolarReferralMessage(lead: { company_name: string; city: string; email: string; phone: string }) {
+  const companyName = lead.company_name || 'Valued Client';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
+  const dashboardUrl = `${appUrl}/client/dashboard?biz=${encodeURIComponent(companyName)}`;
+
+  return {
+    phase: 'POST_PAYMENT_ONBOARDING',
+    company_name: companyName,
+    dashboard_url: dashboardUrl,
+    message_body: `🎉 Congratulations! Your custom business portal & AI assistant for ${companyName} is now LIVE and active!\n\n⚡ Getting Started:\n1. 📱 Connect your official WhatsApp business number to start receiving 24/7 client booking alerts.\n2. 📊 Access your live CRM & lead dashboard at: ${dashboardUrl}\n3. 💬 Your 24/7 AI Concierge is now actively quoting visitors and generating instant invoices.\n\nWarm regards,\nClient Success Team | Bethelmind Digital Solutions\ncontact@bethelmindanalytics.com`
+  };
+}
 
 /**
  * Payment Webhook Handler
@@ -31,7 +43,6 @@ export async function POST(req: NextRequest) {
     const body = JSON.parse(rawBody);
 
     const {
-      event,
       data
     } = body;
 
@@ -51,7 +62,7 @@ export async function POST(req: NextRequest) {
       phone: phone
     });
 
-    const postPaymentUrl = (solarReferral as any).dashboard_url || (solarReferral as any).calculator_url || 'https://www.bethelmindanalytics.com/client/dashboard';
+    const postPaymentUrl = solarReferral.dashboard_url || 'https://www.bethelmindanalytics.com/client/dashboard';
 
     console.log(`⚡ [Post-Payment Trigger] Client Onboarding Generated:`, postPaymentUrl);
 

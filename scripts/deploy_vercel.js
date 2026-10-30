@@ -20,7 +20,16 @@ if (!token) {
 
 console.log('🚀 Deploying verified build to Vercel production (www.bethelmindanalytics.com)...');
 try {
-  execSync(`npx vercel --prod --yes --token ${token}`, { encoding: 'utf8', stdio: 'inherit' });
+  execSync('vercel --prod --yes', {
+    encoding: 'utf8',
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      VERCEL_TOKEN: token,
+      VERCEL_ORG_ID: 'team_qpoBet79QVTOafYzfLHzxKdG',
+      VERCEL_PROJECT_ID: 'prj_vfMEvGXha5E1pvAZLXY9F9F0dp0n'
+    }
+  });
   console.log('\n✅ Vercel production build deployed successfully!');
   console.log('🔍 Executing Automated 360° Post-Deployment QA Suite on Live Production (https://www.bethelmindanalytics.com)...');
   
