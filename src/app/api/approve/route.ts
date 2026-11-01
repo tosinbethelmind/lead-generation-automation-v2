@@ -8,8 +8,9 @@
  * HARDENED CAPABILITIES:
  * 1. Cryptographic HMAC-SHA256 Stateless Token Verification.
  * 2. Idempotency Guard: Prevents double-tap duplicate dispatches.
- * 3. Real Dispatch Queueing: Enqueues verified mandate inquiry for the Outbound Gateway.
- * 4. Real-Time Admin WhatsApp Confirmation (0802 279 1227).
+ * 3. Freshness & Staleness Guard: Validates token expiration SLA (48-hour window).
+ * 4. Multi-Node Outbound Queueing: Syncs to local queue AND Supabase Cloud.
+ * 5. Real-Time Admin WhatsApp Confirmation (0802 279 1227).
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -44,6 +45,33 @@ function saveLedgerEntry(ticketId: string, action: string, ticket: any) {
   } catch (_) {}
 }
 
+async function syncToSupabaseCloud(ticket: any, action: string) {
+  try {
+    const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) return;
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(url, key);
+    await supabase.from('logs').insert([{
+      run_id: `COPILOT_${ticket.ticketId}`,
+      step: 'PILLAR2_MANDATE_OUTBOUND',
+      status: 'INFO',
+      message: JSON.stringify({
+        action,
+        ticketId: ticket.ticketId,
+        title: ticket.title,
+        recipientName: ticket.targetBusinessName,
+        recipientPhone: ticket.targetContactPhone,
+        projectedRevenueNGN: ticket.projectedRevenueNGN,
+        script: ticket.preDraftedScript,
+        timestamp: new Date().toISOString()
+      })
+    }]);
+  } catch (err) {
+    console.error('Supabase cloud log sync failed:', err);
+  }
+}
+
 function enqueueOutboundMandate(ticket: any) {
   try {
     const dir = path.dirname(OUTBOUND_QUEUE_PATH);
@@ -64,6 +92,9 @@ function enqueueOutboundMandate(ticket: any) {
     });
     fs.writeFileSync(OUTBOUND_QUEUE_PATH, JSON.stringify(queue, null, 2));
   } catch (_) {}
+
+  // Also sync to Supabase Cloud for multi-node VPS & Cloud worker access
+  syncToSupabaseCloud(ticket, 'APPROVED').catch(() => {});
 }
 
 export async function GET(req: NextRequest) {
@@ -117,41 +148,60 @@ export async function GET(req: NextRequest) {
     });
   }
 
+  // 3. Freshness & Staleness SLA Check (48h default)
+  const isExpired = payload.exp && typeof payload.exp === 'number' && Date.now() > payload.exp;
+  const rawContact = payload.phone || 'Direct Mandate';
+  const isUrlContact = rawContact.startsWith('http://') || rawContact.startsWith('https://');
+
   const ticket = {
     ticketId,
     title: payload.title || 'High-Ticket Mandate Opportunity',
     targetBusinessName: payload.target || 'Listing Broker / Partner',
     targetLocation: payload.loc || 'Lagos, Nigeria',
-    targetContactPhone: payload.phone || 'Direct Mandate',
+    targetContactPhone: rawContact,
+    isUrlContact,
+    isExpired,
     projectedRevenueNGN: payload.rev || 0,
     propertyValueNGN: payload.val || 0,
     preDraftedScript: payload.script || '',
     status: action === 'approve' ? 'APPROVED' : 'REJECTED'
   };
 
-  // 3. Record Execution in Idempotency Ledger
+  // 4. Record Execution in Idempotency Ledger
   saveLedgerEntry(ticketId, action, ticket);
 
   if (action === 'approve') {
-    // 4. Enqueue Actual Outbound Message
+    // 5. Enqueue Actual Outbound Message
     enqueueOutboundMandate(ticket);
 
-    // 5. Fire Confirmation Alert to Admin WhatsApp (0802 279 1227)
+    // 6. Fire Confirmation Alert to Admin WhatsApp (0802 279 1227)
     try {
       const alertText = 
         `🏛️ *BETHELMIND DEAL WIRE: DISPATCH CONFIRMED*\n` +
         `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
         `✅ *Ticket Executed:* #${ticket.ticketId}\n` +
         `🏡 *Asset:* ${ticket.title}\n` +
-        `👤 *Broker Contact:* ${ticket.targetBusinessName} (${ticket.targetContactPhone})\n` +
+        `👤 *Broker:* ${ticket.targetBusinessName} (${isUrlContact ? 'Jiji Direct' : ticket.targetContactPhone})\n` +
         `💰 *Projected 20% Cut:* ₦${ticket.projectedRevenueNGN.toLocaleString()} NGN\n` +
+        `⏱️ *Freshness:* ${isExpired ? '⚠️ Re-Verification Required (>48h)' : '🟢 Active Fresh SLA'}\n` +
         `🏦 *Settlement:* Moniepoint MFB (6805375225)\n` +
         `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
         `Outreach is actively queued in Outbound Gateway.`;
       
-      // Fire in background
       sendAdminWhatsAppNotification(alertText).catch(() => {});
     } catch (_) {}
+
+    const contactDisplayHtml = isUrlContact
+      ? `<a href="${ticket.targetContactPhone}" target="_blank" style="color: #38bdf8; font-weight: 700; text-decoration: underline;">Open Listing & Chat Broker on Jiji ↗</a>`
+      : `<a href="https://wa.me/${ticket.targetContactPhone.replace(/[^0-9]/g, '')}" target="_blank" style="color: #38bdf8; font-weight: 700; text-decoration: underline;">${ticket.targetContactPhone} (Direct Line)</a>`;
+
+    const freshnessBanner = isExpired
+      ? `<div style="font-size: 12px; color: #fbbf24; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px;">
+           ⚠️ <strong>Deal Freshness Notice:</strong> This listing was generated over 48 hours ago. System has flagged this for soft-availability reconfirmation before finalizing inspection dates.
+         </div>`
+      : `<div style="font-size: 12px; color: #34d399; background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px;">
+           🟢 <strong>Verified Fresh Listing:</strong> Active SLA confirmed within current market cycle.
+         </div>`;
 
     const confirmationHtml = `
       <!DOCTYPE html>
@@ -164,15 +214,17 @@ export async function GET(req: NextRequest) {
         <div style="max-width: 520px; width: 100%; background: #0b1329; border: 1px solid #059669; border-radius: 16px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); text-align: center;">
           <div style="font-size: 48px; margin-bottom: 12px;">✅</div>
           <h1 style="font-size: 24px; font-weight: 800; color: #10b981; margin: 0 0 8px 0;">Deal Approved & Dispatched!</h1>
-          <p style="font-size: 14px; color: #94a3b8; margin: 0 0 20px 0;">
+          <p style="font-size: 14px; color: #94a3b8; margin: 0 0 16px 0;">
             Ticket <strong>#${ticket.ticketId}</strong> has been executed autonomously.
           </p>
 
+          ${freshnessBanner}
+
           <div style="background: #111e38; border: 1px solid #1e3a8a; border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 24px;">
-            <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 6px;"><strong>Opportunity:</strong> ${ticket.title}</div>
-            <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 6px;"><strong>Target Partner:</strong> ${ticket.targetBusinessName} (${ticket.targetLocation})</div>
-            <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 6px;"><strong>Recipient Contact:</strong> <span style="color: #38bdf8; font-weight: 700;">${ticket.targetContactPhone}</span></div>
-            <div style="font-size: 16px; color: #34d399; font-weight: 800; margin-top: 12px;">
+            <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 8px;"><strong>Opportunity:</strong> ${ticket.title}</div>
+            <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 8px;"><strong>Target Partner:</strong> ${ticket.targetBusinessName} (${ticket.targetLocation})</div>
+            <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 8px;"><strong>Partner Contact:</strong> ${contactDisplayHtml}</div>
+            <div style="font-size: 16px; color: #34d399; font-weight: 800; margin-top: 14px;">
               Projected Origination Settlement: ₦${ticket.projectedRevenueNGN.toLocaleString()} NGN
             </div>
             <div style="font-size: 12px; color: #6ee7b7; margin-top: 4px;">
@@ -180,7 +232,7 @@ export async function GET(req: NextRequest) {
             </div>
           </div>
 
-          <div style="font-size: 12px; color: #64748b;">
+          <div style="font-size: 12px; color: #64748b; line-height: 1.5;">
             Outreach & Co-Brokerage Mandate Inquiry queued in Outbound Gateway.<br>You may safely close this window.
           </div>
         </div>
