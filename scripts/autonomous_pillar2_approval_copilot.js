@@ -102,8 +102,8 @@ function runAutonomousPillar2CoPilot() {
       };
       const { data: encodedData, sig } = generateStatelessToken(tokenPayload);
 
-      const approveUrl = `${BASE_URL}/api/admin/one-tap-approval?data=${encodedData}&action=approve&sig=${sig}`;
-      const rejectUrl = `${BASE_URL}/api/admin/one-tap-approval?data=${encodedData}&action=reject&sig=${sig}`;
+      const approveUrl = `${BASE_URL}/api/approve?data=${encodedData}&action=approve&sig=${sig}`;
+      const rejectUrl = `${BASE_URL}/api/approve?data=${encodedData}&action=reject&sig=${sig}`;
 
       const preDraftedScript = `Good day,
 My name is Tosin Oyelakin from Bethelmind Digital Solutions (CAC Certified: Reg 9912717).
