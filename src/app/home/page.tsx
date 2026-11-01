@@ -36,6 +36,7 @@ export default function HomePage() {
   const [targetDistrict, setTargetDistrict] = useState('Ikeja');
   const [selectedPlanId, setSelectedPlanId] = useState('starter');
   const [mounted, setMounted] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -54,7 +55,7 @@ export default function HomePage() {
         paddingBottom: 95, // Buffer for mobile sticky bar
       }}
     >
-      {mounted && <ScrollWorld theme="bethelmind" />}
+      {mounted && isDesktop && <ScrollWorld theme="bethelmind" />}
       <Navbar />
 
       <main id="main-content">

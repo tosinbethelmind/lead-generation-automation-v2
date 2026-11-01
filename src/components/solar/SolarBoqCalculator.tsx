@@ -77,6 +77,52 @@ export default function SolarBoqCalculator({
   const [discoBandTariff, setDiscoBandTariff] = useState<'Band A' | 'Band B' | 'Band C'>('Band A');
   const [discoMonthlySpendNgn, setDiscoMonthlySpendNgn] = useState<number>(120000);
 
+  const applyPreset = (presetKey: 'starter_3_5kva' | 'pro_5kva' | 'commercial_10kva') => {
+    if (presetKey === 'starter_3_5kva') {
+      setPropertyType('residential');
+      setBackupHours(12);
+      setBatteryType('lithium');
+      setQuantities({
+        ac_1hp: 1,
+        ac_1_5hp: 0,
+        ac_2hp: 0,
+        fridge_inv: 1,
+        water_pump: 0,
+        lighting: 1,
+        tv_sound: 1,
+        pc_workstation: 1,
+      });
+    } else if (presetKey === 'pro_5kva') {
+      setPropertyType('residential');
+      setBackupHours(16);
+      setBatteryType('lithium');
+      setQuantities({
+        ac_1hp: 2,
+        ac_1_5hp: 0,
+        ac_2hp: 0,
+        fridge_inv: 1,
+        water_pump: 1,
+        lighting: 2,
+        tv_sound: 1,
+        pc_workstation: 1,
+      });
+    } else if (presetKey === 'commercial_10kva') {
+      setPropertyType('commercial');
+      setBackupHours(12);
+      setBatteryType('lithium');
+      setQuantities({
+        ac_1hp: 2,
+        ac_1_5hp: 2,
+        ac_2hp: 0,
+        fridge_inv: 2,
+        water_pump: 1,
+        lighting: 3,
+        tv_sound: 1,
+        pc_workstation: 3,
+      });
+    }
+  };
+
   const handleQtyChange = (id: string, delta: number) => {
     setQuantities(prev => ({
       ...prev,
@@ -231,7 +277,7 @@ export default function SolarBoqCalculator({
               category="Solar & Renewable Energy EPC"
               location={`${locationState}, Nigeria`}
               toolType="Solar Hybrid & BOQ Proposal Builder"
-              claimFeeNgn={65000}
+              claimFeeNgn={70000}
               depositFeeNgn={35000}
               adminPhone={adminPhone}
             />

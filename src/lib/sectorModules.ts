@@ -3762,3 +3762,659 @@ export function calculateCleaningAndFumigationSizer(
   };
 }
 
+
+
+// ============================================================================
+// 41. FMCG & WATER FACTORY PRODUCTION & DRIVER ROUTE RECONCILIATION ENGINE
+// ============================================================================
+
+export interface WaterFactoryRouteInput {
+  driverName?: string;
+  truckReg?: string;
+  sachetBagsLoaded?: number;
+  sachetPricePerBag?: number;
+  bottle50clPacksLoaded?: number;
+  bottle50clPricePerPack?: number;
+  bottle75clPacksLoaded?: number;
+  bottle75clPricePerPack?: number;
+  dispenserJarsLoaded?: number;
+  dispenserJarPrice?: number;
+  cashHandedIn?: number;
+  moniepointTransfersVerified?: number;
+  burstOrDamagedReturns?: number;
+  unsoldReturnsBags?: number;
+  authorizedCustomerDebtsNgn?: number;
+  nylonRollsUsed?: number;
+  bagsProducedFromNylon?: number;
+}
+
+export interface WaterFactoryRouteResult {
+  totalTruckValueNgn: number;
+  totalAccountedReturnsNgn: number;
+  varianceNgn: number;
+  status: 'BALANCED' | 'SHORTAGE_DETECTED' | 'SURPLUS';
+  burstLossAllowanceNgn: number;
+  unsoldStockValueNgn: number;
+  nylonYieldPerRoll: number;
+  expectedNylonYieldPerRoll: number;
+  productionTheftRisk: 'NORMAL' | 'ELEVATED' | 'CRITICAL_LEAK';
+  driverDebitNoteNgn: number;
+  ownerGrossProfitEstimateNgn: number;
+  summary: string;
+}
+
+export function calculateWaterFactoryRouteReconciliation(
+  input: WaterFactoryRouteInput
+): WaterFactoryRouteResult {
+  const sachetBags = input.sachetBagsLoaded || 0;
+  const sachetPrice = input.sachetPricePerBag || 450;
+  const bottle50cl = input.bottle50clPacksLoaded || 0;
+  const bottle50clPrice = input.bottle50clPricePerPack || 1200;
+  const bottle75cl = input.bottle75clPacksLoaded || 0;
+  const bottle75clPrice = input.bottle75clPricePerPack || 1500;
+  const dispenser = input.dispenserJarsLoaded || 0;
+  const dispenserPrice = input.dispenserJarPrice || 1000;
+
+  const totalTruckValueNgn = 
+    (sachetBags * sachetPrice) + 
+    (bottle50cl * bottle50clPrice) + 
+    (bottle75cl * bottle75clPrice) + 
+    (dispenser * dispenserPrice);
+
+  const cash = input.cashHandedIn || 0;
+  const transfers = input.moniepointTransfersVerified || 0;
+  const burstBags = input.burstOrDamagedReturns || 0;
+  const burstLossAllowanceNgn = burstBags * sachetPrice;
+  const unsoldBags = input.unsoldReturnsBags || 0;
+  const unsoldStockValueNgn = unsoldBags * sachetPrice;
+  const debts = input.authorizedCustomerDebtsNgn || 0;
+
+  const totalAccountedReturnsNgn = cash + transfers + burstLossAllowanceNgn + unsoldStockValueNgn + debts;
+  const varianceNgn = totalAccountedReturnsNgn - totalTruckValueNgn;
+
+  let status: 'BALANCED' | 'SHORTAGE_DETECTED' | 'SURPLUS' = 'BALANCED';
+  let driverDebitNoteNgn = 0;
+
+  if (varianceNgn < -500) {
+    status = 'SHORTAGE_DETECTED';
+    driverDebitNoteNgn = Math.abs(varianceNgn);
+  } else if (varianceNgn > 500) {
+    status = 'SURPLUS';
+  }
+
+  // Factory production nylon yield audit (1 standard 30kg roll produces ~150-180 bags of 20 sachets)
+  const nylonRolls = input.nylonRollsUsed || 0;
+  const bagsProduced = input.bagsProducedFromNylon || 0;
+  const nylonYieldPerRoll = nylonRolls > 0 ? Math.round(bagsProduced / nylonRolls) : 0;
+  const expectedNylonYieldPerRoll = 165;
+
+  let productionTheftRisk: 'NORMAL' | 'ELEVATED' | 'CRITICAL_LEAK' = 'NORMAL';
+  if (nylonRolls > 0) {
+    if (nylonYieldPerRoll < 135) productionTheftRisk = 'CRITICAL_LEAK';
+    else if (nylonYieldPerRoll < 150) productionTheftRisk = 'ELEVATED';
+  }
+
+  // Estimated gross profit (average Nigerian pure water margin is ~35% after diesel, nylon, packing bags, operator wages)
+  const realizedRevenue = cash + transfers;
+  const ownerGrossProfitEstimateNgn = Math.round(realizedRevenue * 0.35);
+
+  const summary = status === 'SHORTAGE_DETECTED'
+    ? `⚠️ DISPATCH SHORTAGE: Driver ${input.driverName || 'Truck'} has an unverified deficit of ₦${driverDebitNoteNgn.toLocaleString()} on ₦${totalTruckValueNgn.toLocaleString()} dispatched stock!`
+    : `✅ BALANCED ROUTE: ₦${totalAccountedReturnsNgn.toLocaleString()} fully reconciled. Estimated gross profit: ₦${ownerGrossProfitEstimateNgn.toLocaleString()}.`;
+
+  return {
+    totalTruckValueNgn,
+    totalAccountedReturnsNgn,
+    varianceNgn,
+    status,
+    burstLossAllowanceNgn,
+    unsoldStockValueNgn,
+    nylonYieldPerRoll,
+    expectedNylonYieldPerRoll,
+    productionTheftRisk,
+    driverDebitNoteNgn,
+    ownerGrossProfitEstimateNgn,
+    summary
+  };
+}
+
+// ============================================================================
+// 42. SOLAR MOTOR INRUSH SURGE & BAND-A FUEL PAYBACK SIMULATOR
+// ============================================================================
+
+export interface SolarAdvancedSurgeInput {
+  ac1HpCount?: number;
+  ac1_5HpCount?: number;
+  ac2HpCount?: number;
+  acType?: 'inverter' | 'non_inverter';
+  boreholePumpHp?: number;
+  freezerCount?: number;
+  fridgeCount?: number;
+  tvCount?: number;
+  weeklyFuelSpendNgn?: number;
+  fuelType?: 'petrol' | 'diesel';
+  discoTariffBand?: 'band_a' | 'band_b' | 'band_c' | 'off_grid';
+  dailyDiscoHours?: number;
+}
+
+export interface SolarAdvancedSurgeResult {
+  continuousRunningWatts: number;
+  motorStartingSurgeWatts: number;
+  recommendedInverterKva: number;
+  inverterOverloadRisk: 'SAFE' | 'BORDERLINE' | 'CRITICAL_TRIP_RISK';
+  monthlyGeneratorFuelCostNgn: number;
+  monthlyDiscoBillEstimateNgn: number;
+  totalMonthlyPowerBleedNgn: number;
+  estimatedSystemCostNgn: number;
+  paybackPeriodMonths: number;
+  fiveYearNetSavingsNgn: number;
+  lithiumVsGelRecommendation: string;
+  summary: string;
+}
+
+export function calculateSolarAdvancedSurgeAndPayback(
+  input: SolarAdvancedSurgeInput
+): SolarAdvancedSurgeResult {
+  const ac1Hp = input.ac1HpCount || 0;
+  const ac1_5Hp = input.ac1_5HpCount || 0;
+  const ac2Hp = input.ac2HpCount || 0;
+  const isInverterAc = input.acType === 'inverter';
+  const pumpHp = input.boreholePumpHp || 0;
+  const freezers = input.freezerCount || 0;
+  const fridges = input.fridgeCount || 0;
+  const tvs = input.tvCount || 1;
+
+  // Continuous running wattage
+  const acWatts = (ac1Hp * 900) + (ac1_5Hp * 1350) + (ac2Hp * 1800);
+  const pumpWatts = pumpHp * 746;
+  const refrigerationWatts = (freezers * 250) + (fridges * 180);
+  const entertainmentWatts = (tvs * 120) + 200;
+  const continuousRunningWatts = acWatts + pumpWatts + refrigerationWatts + entertainmentWatts;
+
+  // Inrush starting surge
+  const acSurgeMultiplier = isInverterAc ? 1.4 : 3.2;
+  const pumpSurge = pumpWatts * 3.0;
+  const motorStartingSurgeWatts = Math.round((acWatts * acSurgeMultiplier) + pumpSurge + refrigerationWatts * 2.2 + entertainmentWatts);
+
+  let recommendedInverterKva = 3.5;
+  if (motorStartingSurgeWatts > 12000 || continuousRunningWatts > 7000) recommendedInverterKva = 15;
+  else if (motorStartingSurgeWatts > 8000 || continuousRunningWatts > 4500) recommendedInverterKva = 10;
+  else if (motorStartingSurgeWatts > 4500 || continuousRunningWatts > 2500) recommendedInverterKva = 5.5;
+  else if (motorStartingSurgeWatts > 2800) recommendedInverterKva = 3.5;
+
+  let inverterOverloadRisk: 'SAFE' | 'BORDERLINE' | 'CRITICAL_TRIP_RISK' = 'SAFE';
+  if (!isInverterAc && (ac1_5Hp + ac2Hp) >= 2 && recommendedInverterKva <= 5.5) {
+    inverterOverloadRisk = 'CRITICAL_TRIP_RISK';
+  } else if (!isInverterAc && (ac1_5Hp > 0 || pumpHp > 0) && recommendedInverterKva <= 3.5) {
+    inverterOverloadRisk = 'BORDERLINE';
+  }
+
+  // Power economics & fuel payback
+  const weeklyFuel = input.weeklyFuelSpendNgn || 35000;
+  const monthlyGeneratorFuelCostNgn = weeklyFuel * 4.33;
+
+  const tariffRates: Record<string, number> = {
+    band_a: 209,
+    band_b: 68,
+    band_c: 50,
+    off_grid: 0
+  };
+  const rate = tariffRates[input.discoTariffBand || 'band_a'] || 209;
+  const discoHours = input.dailyDiscoHours ?? (input.discoTariffBand === 'band_a' ? 20 : 8);
+  const monthlyKwh = Math.round(((continuousRunningWatts * 0.7) / 1000) * discoHours * 30);
+  const monthlyDiscoBillEstimateNgn = input.discoTariffBand === 'off_grid' ? 0 : Math.round(monthlyKwh * rate);
+
+  const totalMonthlyPowerBleedNgn = monthlyGeneratorFuelCostNgn + (monthlyDiscoBillEstimateNgn * 0.65);
+
+  const systemCosts: Record<number, number> = {
+    3.5: 2450000,
+    5.5: 3950000,
+    10: 7200000,
+    15: 11500000
+  };
+  const estimatedSystemCostNgn = systemCosts[recommendedInverterKva] || 4500000;
+
+  const paybackPeriodMonths = totalMonthlyPowerBleedNgn > 0 
+    ? Math.round((estimatedSystemCostNgn / totalMonthlyPowerBleedNgn) * 10) / 10 
+    : 18;
+
+  const fiveYearTotalPowerBleed = totalMonthlyPowerBleedNgn * 60;
+  const fiveYearNetSavingsNgn = Math.max(0, fiveYearTotalPowerBleed - estimatedSystemCostNgn);
+
+  const lithiumVsGelRecommendation = 'Tier-1 LiFePO4 (15-Year Life, 95% DOD) strictly recommended. Avoid Tubular Gel batteries: they fail in 18-24 months under Nigerian heat and frequent NEPA blackouts.';
+
+  const summary = `Solar System Sized: ${recommendedInverterKva}kVA Hybrid (Handles ${motorStartingSurgeWatts}W Motor Surge). Pays for itself in ${paybackPeriodMonths} months against current ₦${Math.round(totalMonthlyPowerBleedNgn).toLocaleString()}/mo fuel & Band A power bills!`;
+
+  return {
+    continuousRunningWatts,
+    motorStartingSurgeWatts,
+    recommendedInverterKva,
+    inverterOverloadRisk,
+    monthlyGeneratorFuelCostNgn,
+    monthlyDiscoBillEstimateNgn,
+    totalMonthlyPowerBleedNgn,
+    estimatedSystemCostNgn,
+    paybackPeriodMonths,
+    fiveYearNetSavingsNgn,
+    lithiumVsGelRecommendation,
+    summary
+  };
+}
+
+// ============================================================================
+// 43. MULTI-BRANCH STORE INVENTORY & INTER-BRANCH TRANSFER RECONCILER
+// ============================================================================
+
+export interface MultiBranchTransferInput {
+  dispatchLocation?: string;
+  receivingBranch?: string;
+  itemsDispatchedCount?: number;
+  itemsReceivedCount?: number;
+  averageItemRetailValueNgn?: number;
+  authorizedDefectAllowance?: number;
+  dailyStoreSalesRevenueNgn?: number;
+  reportedCashInDrawerNgn?: number;
+  verifiedBankTransfersNgn?: number;
+}
+
+export interface MultiBranchTransferResult {
+  dispatchedTotalNgn: number;
+  receivedTotalNgn: number;
+  shrinkageQuantity: number;
+  shrinkageValueNgn: number;
+  shrinkageRating: 'CLEAN' | 'MODERATE_BLEED' | 'CRITICAL_INTERNAL_THEFT';
+  cashierDrawerVarianceNgn: number;
+  cashierDrawerStatus: 'BALANCED' | 'CASH_DEFICIT' | 'SURPLUS';
+  recommendedAction: string;
+  summary: string;
+}
+
+export function calculateMultiBranchTransferReconciliation(
+  input: MultiBranchTransferInput
+): MultiBranchTransferResult {
+  const dispatched = input.itemsDispatchedCount || 100;
+  const received = input.itemsReceivedCount || 95;
+  const unitVal = input.averageItemRetailValueNgn || 15000;
+  const allowance = input.authorizedDefectAllowance || 0;
+
+  const dispatchedTotalNgn = dispatched * unitVal;
+  const receivedTotalNgn = received * unitVal;
+
+  const rawShortage = dispatched - received;
+  const shrinkageQuantity = Math.max(0, rawShortage - allowance);
+  const shrinkageValueNgn = shrinkageQuantity * unitVal;
+
+  let shrinkageRating: 'CLEAN' | 'MODERATE_BLEED' | 'CRITICAL_INTERNAL_THEFT' = 'CLEAN';
+  if (shrinkageQuantity >= 5 || shrinkageValueNgn >= 50000) shrinkageRating = 'CRITICAL_INTERNAL_THEFT';
+  else if (shrinkageQuantity > 0) shrinkageRating = 'MODERATE_BLEED';
+
+  // Cashier End-of-Day Drawer Audit
+  const totalSales = input.dailyStoreSalesRevenueNgn || 250000;
+  const cash = input.reportedCashInDrawerNgn || 120000;
+  const transfers = input.verifiedBankTransfersNgn || 130000;
+  const cashierDrawerVarianceNgn = (cash + transfers) - totalSales;
+
+  let cashierDrawerStatus: 'BALANCED' | 'CASH_DEFICIT' | 'SURPLUS' = 'BALANCED';
+  if (cashierDrawerVarianceNgn < -500) cashierDrawerStatus = 'CASH_DEFICIT';
+  else if (cashierDrawerVarianceNgn > 500) cashierDrawerStatus = 'SURPLUS';
+
+  const recommendedAction = shrinkageRating === 'CRITICAL_INTERNAL_THEFT'
+    ? 'Enforce Mandatory Dual-Signoff Gate Pass: Driver and receiving branch manager must upload photo of intake seal before waybill closes.'
+    : 'System reconciled within normal operating tolerance.';
+
+  const summary = shrinkageQuantity > 0
+    ? `⚠️ INTER-BRANCH LEAK: ${shrinkageQuantity} missing units valued at ₦${shrinkageValueNgn.toLocaleString()} between ${input.dispatchLocation || 'Warehouse'} and ${input.receivingBranch || 'Store'}!`
+    : `✅ TRANSFERS RECONCILED: Zero stock shrinkage logged across branches.`;
+
+  return {
+    dispatchedTotalNgn,
+    receivedTotalNgn,
+    shrinkageQuantity,
+    shrinkageValueNgn,
+    shrinkageRating,
+    cashierDrawerVarianceNgn,
+    cashierDrawerStatus,
+    recommendedAction,
+    summary
+  };
+}
+
+// ============================================================================
+// 44. TOKUNBO CUSTOMS NCS BENCHMARK & PORT DEMURRAGE SIZER
+// ============================================================================
+
+export interface TokunboCustomsRiskInput {
+  carMake?: string;
+  carModel?: string;
+  yearOfManufacture?: number;
+  declaredAuctionPriceUsd?: number;
+  daysAtTerminalPastFreePeriod?: number;
+  terminalName?: 'PTML' | 'Tin_Can' | 'Grimaldi';
+}
+
+export interface TokunboCustomsRiskResult {
+  officialNcsBenchmarkUsd: number;
+  declaredUnderValuationUsd: number;
+  potentialDebitNoteRiskNgn: number;
+  accumulatedDemurrageNgn: number;
+  terminalStorageDailyRateNgn: number;
+  statutoryDutyAndVatNgn: number;
+  trueLagosLandedCostEstimateNgn: number;
+  riskLevel: 'LOW_RISK' | 'HIGH_DEBIT_NOTE_RISK';
+  summary: string;
+}
+
+export function calculateTokunboCustomsAndDemurrageRisk(
+  input: TokunboCustomsRiskInput
+): TokunboCustomsRiskResult {
+  const year = input.yearOfManufacture || 2016;
+  const declaredUsd = input.declaredAuctionPriceUsd || 4500;
+  const daysOverdue = input.daysAtTerminalPastFreePeriod || 0;
+  const fxRateNgn = 1620;
+
+  const age = Math.max(1, 2026 - year);
+  const basePriceUsd = 28000;
+  const depreciationFactor = Math.max(0.25, 1 - (age * 0.08));
+  const officialNcsBenchmarkUsd = Math.round(basePriceUsd * depreciationFactor);
+
+  const declaredUnderValuationUsd = Math.max(0, officialNcsBenchmarkUsd - declaredUsd);
+  const potentialDebitNoteRiskNgn = Math.round(declaredUnderValuationUsd * fxRateNgn * 0.35);
+
+  let terminalStorageDailyRateNgn = 22000;
+  if (input.terminalName === 'Tin_Can') terminalStorageDailyRateNgn = 26500;
+  else if (input.terminalName === 'PTML') terminalStorageDailyRateNgn = 21000;
+
+  const accumulatedDemurrageNgn = daysOverdue * terminalStorageDailyRateNgn;
+  const statutoryDutyAndVatNgn = Math.round(officialNcsBenchmarkUsd * fxRateNgn * 0.375);
+  const trueLagosLandedCostEstimateNgn = (declaredUsd * fxRateNgn) + statutoryDutyAndVatNgn + potentialDebitNoteRiskNgn + accumulatedDemurrageNgn + 350000;
+
+  const riskLevel = potentialDebitNoteRiskNgn > 500000 ? 'HIGH_DEBIT_NOTE_RISK' : 'LOW_RISK';
+
+  const summary = riskLevel === 'HIGH_DEBIT_NOTE_RISK'
+    ? `⚠️ NCS VALUATION WARNING: Declared $${declaredUsd.toLocaleString()} is below NCS benchmark ($${officialNcsBenchmarkUsd.toLocaleString()}). Risk of ₦${potentialDebitNoteRiskNgn.toLocaleString()} Customs Debit Note (DN) + ₦${accumulatedDemurrageNgn.toLocaleString()} demurrage!`
+    : `✅ CUSTOMS CLEARING ON SCHEDULE: Statutory duty ₦${statutoryDutyAndVatNgn.toLocaleString()}. Total landing cost: ₦${trueLagosLandedCostEstimateNgn.toLocaleString()}.`;
+
+  return {
+    officialNcsBenchmarkUsd,
+    declaredUnderValuationUsd,
+    potentialDebitNoteRiskNgn,
+    accumulatedDemurrageNgn,
+    terminalStorageDailyRateNgn,
+    statutoryDutyAndVatNgn,
+    trueLagosLandedCostEstimateNgn,
+    riskLevel,
+    summary
+  };
+}
+
+// ============================================================================
+// 45. PRIVATE SCHOOL 3-STAGE INSTALLMENT DEBT AGING & RESULT GATE SIZER
+// ============================================================================
+
+export interface SchoolInstallmentDebtInput {
+  studentName?: string;
+  totalTermFeeNgn?: number;
+  resumptionDepositPaidNgn?: number;
+  midtermInstallmentPaidNgn?: number;
+  examWeekInstallmentPaidNgn?: number;
+  siblingCount?: number;
+  resultGatingThresholdNgn?: number;
+}
+
+export interface SchoolInstallmentDebtResult {
+  totalFeeAfterDiscountsNgn: number;
+  totalPaymentsLoggedNgn: number;
+  outstandingBalanceNgn: number;
+  collectionPercentage: number;
+  resultAccessStatus: 'FULL_CLEARANCE_UNLOCKED' | 'PROVISIONAL_CA_ONLY' | 'LOCKED_DEFICIT';
+  siblingDiscountNgn: number;
+  automatedParentReminderTone: string;
+  summary: string;
+}
+
+export function calculateSchoolInstallmentDebtAging(
+  input: SchoolInstallmentDebtInput
+): SchoolInstallmentDebtResult {
+  const baseFee = input.totalTermFeeNgn || 185000;
+  const siblings = input.siblingCount || 1;
+  const siblingDiscountNgn = siblings >= 3 ? Math.round(baseFee * 0.10) : 0;
+  const totalFeeAfterDiscountsNgn = baseFee - siblingDiscountNgn;
+
+  const p1 = input.resumptionDepositPaidNgn || 0;
+  const p2 = input.midtermInstallmentPaidNgn || 0;
+  const p3 = input.examWeekInstallmentPaidNgn || 0;
+
+  const totalPaymentsLoggedNgn = p1 + p2 + p3;
+  const outstandingBalanceNgn = Math.max(0, totalFeeAfterDiscountsNgn - totalPaymentsLoggedNgn);
+  const collectionPercentage = Math.min(100, Math.round((totalPaymentsLoggedNgn / totalFeeAfterDiscountsNgn) * 100));
+
+  const threshold = input.resultGatingThresholdNgn ?? 10000;
+
+  let resultAccessStatus: 'FULL_CLEARANCE_UNLOCKED' | 'PROVISIONAL_CA_ONLY' | 'LOCKED_DEFICIT' = 'FULL_CLEARANCE_UNLOCKED';
+  let automatedParentReminderTone = 'Statement settled. Thank you for your partnership.';
+
+  if (outstandingBalanceNgn > threshold) {
+    resultAccessStatus = 'LOCKED_DEFICIT';
+    automatedParentReminderTone = `Dear Parent, term exams have concluded. In line with school policy, terminal broadsheet results are gated pending clearance of your outstanding balance of ₦${outstandingBalanceNgn.toLocaleString()}. Tap to settle via Moniepoint.`;
+  } else if (outstandingBalanceNgn > 0) {
+    resultAccessStatus = 'PROVISIONAL_CA_ONLY';
+    automatedParentReminderTone = `Dear Parent, Continuous Assessment (CA) scores are released. Balance of ₦${outstandingBalanceNgn.toLocaleString()} due before report card issuance.`;
+  }
+
+  const summary = outstandingBalanceNgn > 0
+    ? `Student Fee Status: ${collectionPercentage}% collected (₦${outstandingBalanceNgn.toLocaleString()} unpaid). Digital report card: ${resultAccessStatus.replace(/_/g, ' ')}.`
+    : `Student Fee Status: 100% Cleared (₦${totalPaymentsLoggedNgn.toLocaleString()}). Digital report card PIN: ACTIVE.`;
+
+  return {
+    totalFeeAfterDiscountsNgn,
+    totalPaymentsLoggedNgn,
+    outstandingBalanceNgn,
+    collectionPercentage,
+    resultAccessStatus,
+    siblingDiscountNgn,
+    automatedParentReminderTone,
+    summary
+  };
+}
+
+// ============================================================================
+// 46. INTERSTATE HAULAGE DIESEL SIPHONING AUDIT ENGINE
+// ============================================================================
+
+export interface HaulageDieselSiphoningInput {
+  route?: string;
+  totalDistanceKm?: number;
+  payloadTons?: number;
+  driverClaimedLiters?: number;
+  dieselPricePerLiterNgn?: number;
+}
+
+export interface HaulageDieselSiphoningResult {
+  expectedLitersBenchmark: number;
+  siphonedLiters: number;
+  financialShortageNgn: number;
+  auditStatus: 'CLEAN_EFFICIENT' | 'SUSPICIOUS_OVERAGE' | 'CRITICAL_FUEL_SIPHON';
+  driverDeductionDebitNoteNgn: number;
+  summary: string;
+}
+
+export function calculateHaulageDieselSiphoningAudit(
+  input: HaulageDieselSiphoningInput
+): HaulageDieselSiphoningResult {
+  const distance = input.totalDistanceKm || 950;
+  const tons = input.payloadTons || 30;
+  const claimedLiters = input.driverClaimedLiters || 380;
+  const dieselPrice = input.dieselPricePerLiterNgn || 1350;
+
+  const kmPerLiter = tons <= 15 ? 4.2 : tons <= 30 ? 3.2 : 2.6;
+  const expectedLitersBenchmark = Math.round(distance / kmPerLiter);
+
+  const varianceLiters = claimedLiters - expectedLitersBenchmark;
+  const siphonedLiters = Math.max(0, varianceLiters - 15);
+  const financialShortageNgn = siphonedLiters * dieselPrice;
+
+  let auditStatus: 'CLEAN_EFFICIENT' | 'SUSPICIOUS_OVERAGE' | 'CRITICAL_FUEL_SIPHON' = 'CLEAN_EFFICIENT';
+  let driverDeductionDebitNoteNgn = 0;
+
+  if (siphonedLiters >= 40) {
+    auditStatus = 'CRITICAL_FUEL_SIPHON';
+    driverDeductionDebitNoteNgn = financialShortageNgn;
+  } else if (siphonedLiters > 0) {
+    auditStatus = 'SUSPICIOUS_OVERAGE';
+    driverDeductionDebitNoteNgn = Math.round(financialShortageNgn * 0.7);
+  }
+
+  const summary = siphonedLiters > 0
+    ? `⚠️ FUEL SIPHONING AUDIT: Driver claimed ${claimedLiters}L vs ${expectedLitersBenchmark}L benchmark. ${siphonedLiters}L discrepancy flagged (₦${financialShortageNgn.toLocaleString()} fuel loss)!`
+    : `✅ CLEAN TRIP: Driver fuel claim (${claimedLiters}L) aligns with expected ${expectedLitersBenchmark}L consumption for ${distance}km haul.`;
+
+  return {
+    expectedLitersBenchmark,
+    siphonedLiters,
+    financialShortageNgn,
+    auditStatus,
+    driverDeductionDebitNoteNgn,
+    summary
+  };
+}
+
+// ============================================================================
+// 47. SHORTLET 24/7 PREPAID DISCO KWH & CAUTION ESCROW DEDUCTOR
+// ============================================================================
+
+export interface ShortletElectricityInput {
+  nightsStayed?: number;
+  acCount?: number;
+  startingKwhReading?: number;
+  endingKwhReading?: number;
+  discoTariffPerKwhNgn?: number;
+  cautionDepositHeldNgn?: number;
+  physicalDamageLossesNgn?: number;
+}
+
+export interface ShortletElectricityResult {
+  totalKwhConsumed: number;
+  includedKwhAllowance: number;
+  excessKwhConsumed: number;
+  electricitySurchargeNgn: number;
+  totalDeductionsNgn: number;
+  refundableCautionDepositNgn: number;
+  status: 'FULL_REFUND_DUE' | 'PARTIAL_REFUND_ISSUED' | 'CAUTION_EXHAUSTED_SURCHARGE_DUE';
+  summary: string;
+}
+
+export function calculateShortletElectricityAndCautionDeduction(
+  input: ShortletElectricityInput
+): ShortletElectricityResult {
+  const nights = input.nightsStayed || 3;
+  const startKwh = input.startingKwhReading || 1200;
+  const endKwh = input.endingKwhReading || 1365;
+  const rate = input.discoTariffPerKwhNgn || 209;
+  const caution = input.cautionDepositHeldNgn || 50000;
+  const physicalLoss = input.physicalDamageLossesNgn || 0;
+
+  const totalKwhConsumed = Math.max(0, endKwh - startKwh);
+  const includedKwhAllowance = nights * 35;
+  const excessKwhConsumed = Math.max(0, totalKwhConsumed - includedKwhAllowance);
+
+  const electricitySurchargeNgn = Math.round(excessKwhConsumed * rate);
+  const totalDeductionsNgn = electricitySurchargeNgn + physicalLoss;
+  const refundableCautionDepositNgn = Math.max(0, caution - totalDeductionsNgn);
+
+  let status: 'FULL_REFUND_DUE' | 'PARTIAL_REFUND_ISSUED' | 'CAUTION_EXHAUSTED_SURCHARGE_DUE' = 'FULL_REFUND_DUE';
+  if (totalDeductionsNgn > caution) status = 'CAUTION_EXHAUSTED_SURCHARGE_DUE';
+  else if (totalDeductionsNgn > 0) status = 'PARTIAL_REFUND_ISSUED';
+
+  const summary = totalDeductionsNgn > 0
+    ? `Caution Audit: ₦${totalDeductionsNgn.toLocaleString()} deducted (${excessKwhConsumed} kWh excess electricity + ₦${physicalLoss.toLocaleString()} damages). ₦${refundableCautionDepositNgn.toLocaleString()} refunded to guest.`
+    : `Caution Audit: 100% full refund of ₦${caution.toLocaleString()} cleared to guest. Zero electricity overages.`;
+
+  return {
+    totalKwhConsumed,
+    includedKwhAllowance,
+    excessKwhConsumed,
+    electricitySurchargeNgn,
+    totalDeductionsNgn,
+    refundableCautionDepositNgn,
+    status,
+    summary
+  };
+}
+
+// ============================================================================
+// 48. CONSTRUCTION SITE MATERIAL INFLATION & WASTAGE SIZER
+// ============================================================================
+
+export interface ConstructionMaterialWastageInput {
+  scopeOfWork?: 'decking_foundation' | 'blockwork_wall' | 'tiling_floor' | 'wall_plastering';
+  areaSqm?: number;
+  artisanRequestedCementBags?: number;
+  artisanRequestedTileCartons?: number;
+  cementPricePerBagNgn?: number;
+  tileCartonPriceNgn?: number;
+}
+
+export interface ConstructionMaterialWastageResult {
+  actualRequiredBagsOrCartons: number;
+  recommendedWastageBuffer: number;
+  totalLegitimateRequirement: number;
+  artisanInflationExcess: number;
+  financialInflationLossSavedNgn: number;
+  recommendation: string;
+  summary: string;
+}
+
+export function calculateConstructionMaterialWastageAudit(
+  input: ConstructionMaterialWastageInput
+): ConstructionMaterialWastageResult {
+  const scope = input.scopeOfWork || 'tiling_floor';
+  const area = input.areaSqm || 150;
+  const cementPrice = input.cementPricePerBagNgn || 8800;
+  const tilePrice = input.tileCartonPriceNgn || 7500;
+
+  let actualRequired = 0;
+  let wastagePercentage = 0.10;
+
+  if (scope === 'tiling_floor') {
+    actualRequired = Math.ceil(area / 1.92);
+    wastagePercentage = 0.12;
+  } else if (scope === 'blockwork_wall') {
+    actualRequired = Math.ceil(area / 8);
+    wastagePercentage = 0.08;
+  } else if (scope === 'wall_plastering') {
+    actualRequired = Math.ceil(area / 12);
+    wastagePercentage = 0.10;
+  } else {
+    actualRequired = Math.ceil(area / 3.5);
+    wastagePercentage = 0.05;
+  }
+
+  const recommendedWastageBuffer = Math.ceil(actualRequired * wastagePercentage);
+  const totalLegitimateRequirement = actualRequired + recommendedWastageBuffer;
+
+  const artisanClaim = scope === 'tiling_floor' 
+    ? (input.artisanRequestedTileCartons || totalLegitimateRequirement + 25)
+    : (input.artisanRequestedCementBags || totalLegitimateRequirement + 20);
+
+  const artisanInflationExcess = Math.max(0, artisanClaim - totalLegitimateRequirement);
+  const unitRate = scope === 'tiling_floor' ? tilePrice : cementPrice;
+  const financialInflationLossSavedNgn = artisanInflationExcess * unitRate;
+
+  const recommendation = artisanInflationExcess > 0
+    ? `Approve only ${totalLegitimateRequirement} units (includes ${recommendedWastageBuffer} buffer for cuts). Do not purchase the extra ${artisanInflationExcess} units requested by the artisan.`
+    : `Artisan request (${artisanClaim} units) matches Nigerian structural standard. Approved.`;
+
+  const summary = artisanInflationExcess > 0
+    ? `⚠️ ARTISAN INFLATION FLAGGED: Artisan requested ${artisanClaim} units vs ${totalLegitimateRequirement} actual need. Saves property owner ₦${financialInflationLossSavedNgn.toLocaleString()}!`
+    : `✅ SITE MATERIAL ESTIMATE RECONCILED: ${totalLegitimateRequirement} units verified.`;
+
+  return {
+    actualRequiredBagsOrCartons: actualRequired,
+    recommendedWastageBuffer,
+    totalLegitimateRequirement,
+    artisanInflationExcess,
+    financialInflationLossSavedNgn,
+    recommendation,
+    summary
+  };
+}

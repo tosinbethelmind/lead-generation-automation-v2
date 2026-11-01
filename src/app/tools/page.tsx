@@ -33,7 +33,8 @@ import {
   Truck,
   GraduationCap,
   Scale,
-  Hotel
+  Hotel,
+  Factory
 } from 'lucide-react';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
@@ -52,6 +53,17 @@ interface ToolItem {
 }
 
 const TOOLS: ToolItem[] = [
+  {
+    id: 'fmcg-dispatch',
+    title: 'Water Factory & FMCG Fleet Route Reconciler',
+    badge: 'Driver & Nylon Audit',
+    category: 'b2b',
+    description: 'Reconciles morning delivery truck loading (sachet water & bottles) against evening driver cash, Moniepoint transfers, burst bags, and customer debts, flagging shortages instantly.',
+    icon: Factory,
+    color: 'text-[#d4af37]',
+    href: '/tools/fmcg-dispatch',
+    upsell: '₦50,000 Factory Setup'
+  },
   // --- High-Conversion Nigerian B2B Monetization Tools ---
   {
     id: 'solar-boq',

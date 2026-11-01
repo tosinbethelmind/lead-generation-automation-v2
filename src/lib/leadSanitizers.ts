@@ -108,6 +108,11 @@ export function sanitizeDisplayName(rawName: string, category: string = 'Commerc
 
   let cleaned = trimmed;
 
+  // Convert slug formats like "future-link-car" or "apex-solar-solutions" into clean readable names
+  if (cleaned.includes('-') && !cleaned.includes(' ')) {
+    cleaned = toTitleCase(cleaned.replace(/-/g, ' '));
+  }
+
   // 1. Delimiter splits
   if (cleaned.includes('||')) cleaned = cleaned.split('||')[0].trim();
   if (cleaned.includes(' | ')) cleaned = cleaned.split(' | ')[0].trim();

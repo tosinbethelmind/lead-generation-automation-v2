@@ -47,7 +47,7 @@ function buildPlanWhatsAppLink(plan: Plan, businessName?: string, industry?: str
   const biz = businessName ? ` for *${businessName}*` : '';
   const ind = industry ? ` in *${industry}*` : '';
   const dist = district ? ` (${district})` : '';
-  const isDeposit = plan.setupFeeNGN === 75_000 || plan.setupFeeNGN === 125_000 || plan.setupFeeNGN === 175_000;
+  const isDeposit = plan.depositAmountNGN > 0 && plan.balanceAmountNGN > 0;
   const priceText = isDeposit
     ? `₦${plan.setupFeeNGN.toLocaleString()} Milestone Deposit (50% to start, balance on live approval)`
     : `₦${plan.setupFeeNGN.toLocaleString()} one-time setup`;

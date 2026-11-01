@@ -425,9 +425,7 @@ export default function PreviewPage() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
             <a
-              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am the owner of *${data.lead.name}* (${data.lead.category}) in ${data.lead.area || data.lead.city || 'Lagos'}.\n\nI just reviewed our preview website (https://www.bethelmindanalytics.com/preview/${leadId}).\n\nI want to claim this website under the 6-Month Independence Bundle (₦75,000 Total / ₦35,000 Deposit). Please assist me!`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`/onboard?lead=${encodeURIComponent(leadId)}&name=${encodeURIComponent(data.lead.name)}&phone=${encodeURIComponent(data.lead.phone_raw || data.lead.phone_e164 || '')}&service=software_site`}
               style={{
                 flex: '1 1 280px',
                 display: 'inline-flex',
@@ -445,11 +443,11 @@ export default function PreviewPage() {
                 textAlign: 'center'
               }}
             >
-              <span>🟢 Claim This Website on WhatsApp (₦0 Upfront) →</span>
+              <span>🟢 Claim & Launch Website (₦70,000 Flat) →</span>
             </a>
 
             <a
-              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Good day Bethelmind! Here are 2 photos of my shop/goods for *${data.lead.name}*. Please update my sample website free (https://www.bethelmindanalytics.com/preview/${leadId}) before I pay shishi!`)}`}
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am the owner of *${data.lead.name}* (${data.lead.category}) in ${data.lead.area || data.lead.city || 'Lagos'}.\n\nI just reviewed our preview website (https://www.bethelmindanalytics.com/preview/${leadId}).\n\nI want to claim this website under the 1-Year All-Inclusive Go-Live (₦70,000 Flat). Please assist me!`)}`}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -469,7 +467,7 @@ export default function PreviewPage() {
                 textAlign: 'center'
               }}
             >
-              <span>Send Photos to Add Free First →</span>
+              <span>💬 Claim via WhatsApp Chat →</span>
             </a>
           </div>
         </div>
@@ -595,7 +593,7 @@ export default function PreviewPage() {
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', textAlign: 'left' }}>
-            {/* OPTION 1: STARTER GO-LIVE (₦35,000 ONE-TIME OR ₦25,000/MONTH) */}
+            {/* OPTION 1: STARTER GO-LIVE (₦70,000 ONE-TIME FLAT · 1-YEAR ALL-INCLUSIVE) */}
             <div 
               style={{
                 background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%)',
@@ -610,7 +608,7 @@ export default function PreviewPage() {
               }}
             >
               <div style={{ position: 'absolute', top: '-12px', right: '20px', background: '#10b981', color: '#022c22', fontSize: '0.72rem', fontWeight: 900, padding: '4px 12px', borderRadius: '9999px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Recommended for Commercial Growth
+                Recommended · 1-Year All-Inclusive
               </div>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
@@ -620,32 +618,28 @@ export default function PreviewPage() {
                   <span style={{ fontSize: '0.75rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 700 }}>₦130,000</span>
                 </div>
                 <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
-                  Official `.COM.NG` Website + WhatsApp Closer
+                  Official .COM.NG Website + 24/7 AI Closer
                 </h3>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', margin: '10px 0 4px 0' }}>
-                  ₦65,000 <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>Official Package Total</span>
+                  ₦70,000 <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>1-Year All-Inclusive Flat</span>
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#fde047', fontWeight: 800, marginBottom: '6px' }}>
-                  Starter Activation: ₦35,000 Deposit (Pay ₦30k Balance After Going Live!)
-                </div>
-                <div style={{ fontSize: '0.80rem', color: '#38bdf8', fontWeight: 800, marginBottom: '6px', background: 'rgba(56, 189, 248, 0.12)', padding: '4px 8px', borderRadius: '6px', display: 'inline-block' }}>
-                  Structured Installments: ₦25,000/month "Pay-Small-Small" (Zero Lump Sum)
+                  Milestone Option: ₦35,000 Deposit to Start · ₦35,000 Balance When Live!
                 </div>
                 <div style={{ fontSize: '0.80rem', color: '#34d399', fontWeight: 800, marginBottom: '14px', background: 'rgba(16, 185, 129, 0.15)', padding: '5px 10px', borderRadius: '6px', display: 'block', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                  6-Month Independence Bundle: ₦75,000 Total (Setup Fee Waived + 2 Months Free Hosting + Free .COM.NG Domain)
+                  ✅ Zero monthly bills for 12 full months. Setup, hosting, security &amp; domain all covered.
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.75 }}>
-                  <li>• Free 1-Year `.com.ng` domain &amp; hosting (Zero monthly fee)</li>
-                  <li>• We put your real shop photos, phone number &amp; price list</li>
-                  <li>• Customers message your WhatsApp directly from Google</li>
-                  <li>• Google Maps location pin &amp; 24–48hr live handover</li>
+                  <li>• Free 1-Year .com.ng domain &amp; SSL cloud hosting</li>
+                  <li>• Real product catalog, pricing, photos &amp; business location</li>
+                  <li>• 24/7 AI WhatsApp Sales &amp; Quoting Assistant</li>
+                  <li>• Moniepoint / OPay Bank Transfer Shield (Zero fake alerts)</li>
+                  <li>• 48-Hour Live Delivery SLA &amp; Handover Guarantee</li>
                 </ul>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <a
-                  href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want the 6-Month Independence Bundle (₦75,000 Total · Waived setup + 2 months free + free .com.ng domain). Please send the Moniepoint transfer details.`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`/onboard?lead=${encodeURIComponent(leadId)}&name=${encodeURIComponent(data.lead.name)}&phone=${encodeURIComponent(data.lead.phone_raw || data.lead.phone_e164 || '')}&service=software_site`}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -662,12 +656,12 @@ export default function PreviewPage() {
                     textAlign: 'center'
                   }}
                 >
-                  <span>Activate 6-Month Bundle (₦75,000 Total) →</span>
+                  <span>Claim &amp; Launch Website (₦70,000 Flat) →</span>
                 </a>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <a
-                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want Option 1 under the 6-Month Independence Bundle (₦75,000 Total · ₦35,000 Deposit today, balance after going live). Please help me get started.`)}`}
+                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want the ₦35,000 milestone deposit option for the Starter Website. Please send invoice.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -689,7 +683,7 @@ export default function PreviewPage() {
                   </a>
 
                   <a
-                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want to inquire about the ₦25,000/month "Pay-Small-Small" plan with zero lump sum setup. Please guide me.`)}`}
+                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind! I am the owner of *${data.lead.name}* and want to speak directly to a sales engineer before activating.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -707,7 +701,7 @@ export default function PreviewPage() {
                       textAlign: 'center'
                     }}
                   >
-                    <span>₦25k/mo Pay-Small-Small</span>
+                    <span>Talk to Us on WhatsApp</span>
                   </a>
                 </div>
               </div>
@@ -734,25 +728,24 @@ export default function PreviewPage() {
                   <span style={{ fontSize: '0.75rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 700 }}>₦240,000</span>
                 </div>
                 <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px 0' }}>
-                  International `.COM` + Staff Emails &amp; AI Suite
+                  International .COM + Staff Emails &amp; Sector Tool
                 </h3>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', margin: '10px 0 4px 0' }}>
-                  ₦120,000 <span style={{ fontSize: '0.82rem', color: '#38bdf8', fontWeight: 700 }}>Official Package Total</span>
+                  ₦150,000 <span style={{ fontSize: '0.82rem', color: '#38bdf8', fontWeight: 700 }}>Full Turnkey Total</span>
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#7dd3fc', fontWeight: 800, marginBottom: '14px' }}>
-                  Turnkey Corporate Activation: ₦60,000 Deposit (Pay ₦60k Balance on Handover!)
+                  Corporate Activation: ₦75,000 50% Milestone Deposit (Pay ₦75k on Handover!)
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.75 }}>
-                  <li>• International `.com` domain (`www.{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com`)</li>
-                  <li>• 3 Official corporate emails (`info@{data.lead.name.toLowerCase().replace(/[^a-z0-9]+/g, '')}.com`)</li>
-                  <li>• Interactive customer calculator + Google #1 SEO setup</li>
-                  <li>• 100% Full Code &amp; Domain Ownership + 60-Day VIP Support</li>
+                  <li>• International .com domain registration</li>
+                  <li>• 3 Official corporate staff emails (info@, sales@, md@)</li>
+                  <li>• Interactive sector software tool (BOQ, Booking, or Ledger)</li>
+                  <li>• Google Search #1 SEO setup &amp; Business Profile integration</li>
+                  <li>• 100% Full Code &amp; Domain Ownership + 60-Day VIP Priority Support</li>
                 </ul>
               </div>
               <a
-                href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I want Option 2 under the Full Turnkey Custom Domain Suite (₦150,000 Total · ₦75,000 Milestone Deposit) for *${data.lead.name}*. Please send the official invoice.`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`/onboard?lead=${encodeURIComponent(leadId)}&name=${encodeURIComponent(data.lead.name)}&phone=${encodeURIComponent(data.lead.phone_raw || data.lead.phone_e164 || '')}&service=custom_suite`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -769,7 +762,7 @@ export default function PreviewPage() {
                   textAlign: 'center'
                 }}
               >
-                <span>Lock Corporate .COM Promo (₦60k Deposit) →</span>
+                <span>Claim Corporate .COM Suite (₦75k Deposit) →</span>
               </a>
             </div>
 
@@ -852,7 +845,7 @@ export default function PreviewPage() {
             }}
           >
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#34d399', fontWeight: 800 }}>
-              CAC Certified Nigerian Enterprise (Bethelmind Digital Solutions)
+              CAC Certified Nigerian Enterprise (Reg: 9912717 — Bethelmind Digital Solutions)
             </span>
             <span style={{ color: '#475569' }}>•</span>
             <span>

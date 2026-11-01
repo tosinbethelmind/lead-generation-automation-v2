@@ -320,15 +320,22 @@ export async function POST(req: NextRequest) {
       const pitchText = 
 `Good day Boss! 👋 This is Bethelmind Digital Solutions (Plot 12 Commercial Corridor, Victoria Island).
 
-We pre-built your official mobile website and 24/7 AI Sales Assistant for *${leadInfo.businessName}*:
-👉 Test drive your live site free on your phone:
+When customers search for *${leadInfo.businessName}* on Google, they only see third-party directories alongside your competitors because you don't have an official mobile website yet.
+
+We already pre-built your live Official Mobile Website + 24/7 WhatsApp Quoting Assistant for *${leadInfo.businessName}*:
+👉 Test drive free on your phone:
 ${previewUrl}
 
-6-Month Independence Bundle: ₦75,000 Total (Waived setup + 2 months free + domain).
-Pay-Small-Small Option: ₦25,000/month.
-Direct Bank: Moniepoint Microfinance Bank | 6805375225 | Bethelmind Digital Solutions
+⚡ 1-Year All-Inclusive Go-Live: ₦70,000 Flat
+• Includes official .com.ng domain + 12 months hosting
+• 24/7 AI WhatsApp Sales & Quoting Assistant
+• Moniepoint/OPay Transfer Shield (zero fake alerts)
+• 48-Hour Live Delivery Guarantee (Zero monthly maintenance bills!)
+(Or Milestone Plan: ₦35,000 deposit to start · ₦35,000 balance after going live)
 
-Reply here to activate!`;
+Corporate Settlement: Moniepoint Microfinance Bank | 6805375225 | Bethelmind Digital Solutions
+
+Reply here to claim and launch for *${leadInfo.businessName}*!`;
 
       return NextResponse.json({
         success: true,
@@ -337,7 +344,9 @@ Reply here to activate!`;
         liveSiteUrl: `${APP_ORIGIN}/sites/${slug}`,
         handoverUrl: `${APP_ORIGIN}/handover/${slug}`,
         pitchText,
+        prefilledWhatsAppPitch: pitchText,
         waDirectLink: `https://wa.me/${cleanPhone}?text=${encodeURIComponent(pitchText)}`,
+        waLink: `https://wa.me/${cleanPhone}?text=${encodeURIComponent(pitchText)}`,
         provisioned: result
       });
     }

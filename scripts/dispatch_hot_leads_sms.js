@@ -83,7 +83,7 @@ async function main() {
     const slug = lead.leadId;
     
     // Strict 1-credit SMS (<= 158 chars)
-    const msg = `Engr, we saw your team checked our Solar BOQ email. Test your live solar calculator prototype for ${shortName}: bethelmindanalytics.com/preview/${slug} -Bethelmind`;
+    const msg = `Good day Boss at ${shortName}. We prepared a 60s interactive quoting demo for your brand. Should I send you the demo to test on your phone? -Bethelmind`;
     
     console.log(`[${i+1}/${hotWithPhones.length}] Sending SMS to ${lead.leadName} (${phone}) [${msg.length} chars]...`);
     
