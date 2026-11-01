@@ -45,6 +45,38 @@ export function generateTicketSignature(ticketId: string, engineType: string, re
     .substring(0, 32);
 }
 
+export function generateStatelessToken(payload: any): { data: string; sig: string } {
+  const jsonStr = JSON.stringify(payload);
+  const data = Buffer.from(jsonStr).toString('base64url');
+  const sig = crypto
+    .createHmac('sha256', HMAC_SECRET)
+    .update(data)
+    .digest('hex')
+    .substring(0, 32);
+  return { data, sig };
+}
+
+export function verifyStatelessToken(data: string, sig: string): any | null {
+  try {
+    const expectedSig = crypto
+      .createHmac('sha256', HMAC_SECRET)
+      .update(data)
+      .digest('hex')
+      .substring(0, 32);
+    if (!crypto.timingSafeEqual(Buffer.from(expectedSig), Buffer.from(sig))) {
+      return null;
+    }
+    const jsonStr = Buffer.from(data, 'base64url').toString('utf8');
+    const payload = JSON.parse(jsonStr);
+    if (payload.exp && Date.now() > payload.exp) {
+      return null; // Expired
+    }
+    return payload;
+  } catch (_) {
+    return null;
+  }
+}
+
 export function verifyTicketSignature(ticketId: string, engineType: string, revenue: number, expiresAt: number, signature: string): boolean {
   if (Date.now() > expiresAt) return false;
   const expected = generateTicketSignature(ticketId, engineType, revenue, expiresAt);

@@ -8,31 +8,50 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { loadStoredTickets, saveStoredTicket, verifyTicketSignature } from '@/lib/monetization/oneTapApprovalCoPilot';
-import { OPAY_BENEFICIARY_CONFIG } from '@/lib/monetization/directNairaAutoLiquidationRouter';
+import { loadStoredTickets, saveStoredTicket, verifyTicketSignature, verifyStatelessToken } from '@/lib/monetization/oneTapApprovalCoPilot';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const ticketId = searchParams.get('id');
-  const action = searchParams.get('action');
+  const data = searchParams.get('data');
+  const action = searchParams.get('action') || 'approve';
   const sig = searchParams.get('sig');
+  const ticketId = searchParams.get('id');
   const exp = parseInt(searchParams.get('exp') || '0', 10);
 
-  if (!ticketId || !action || !sig || !exp) {
+  let ticket: any = null;
+
+  // 1. Primary: Verify stateless self-contained token (Zero database or serverless ephemeral filesystem dependency)
+  if (data && sig) {
+    const payload = verifyStatelessToken(data, sig);
+    if (!payload) {
+      return new NextResponse('Invalid or expired approval token.', { status: 403 });
+    }
+    ticket = {
+      ticketId: payload.id || `CP-${Date.now().toString(36).toUpperCase()}`,
+      engineType: payload.type || 'ENGINE_4_BUNDLE',
+      title: payload.title || 'High-Ticket Opportunity',
+      targetBusinessName: payload.target || 'Commercial Partner',
+      targetLocation: payload.loc || 'Lagos, Nigeria',
+      targetContactPhone: payload.phone || 'Verified Desk',
+      projectedRevenueNGN: payload.rev || 0,
+      upfrontMilestoneNGN: payload.upfront || 0,
+      dealSummary: payload.summary || '',
+      status: action === 'approve' ? 'APPROVED' : 'REJECTED',
+      createdAt: new Date().toISOString()
+    };
+  } else if (ticketId && sig && exp) {
+    // 2. Fallback: Disk-stored lookup
+    const allTickets = loadStoredTickets();
+    ticket = allTickets[ticketId];
+    if (!ticket) {
+      return new NextResponse('Approval ticket not found or already processed.', { status: 404 });
+    }
+    const isValid = verifyTicketSignature(ticketId, ticket.engineType, ticket.projectedRevenueNGN, exp, sig);
+    if (!isValid) {
+      return new NextResponse('Invalid or expired approval token.', { status: 403 });
+    }
+  } else {
     return new NextResponse('Missing required approval parameters.', { status: 400 });
-  }
-
-  const allTickets = loadStoredTickets();
-  const ticket = allTickets[ticketId];
-
-  if (!ticket) {
-    return new NextResponse('Approval ticket not found or already processed.', { status: 404 });
-  }
-
-  // Verify cryptographic HMAC signature
-  const isValid = verifyTicketSignature(ticketId, ticket.engineType, ticket.projectedRevenueNGN, exp, sig);
-  if (!isValid) {
-    return new NextResponse('Invalid or expired approval token.', { status: 403 });
   }
 
   if (action === 'approve') {
@@ -59,15 +78,15 @@ export async function GET(req: NextRequest) {
             <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 6px;"><strong>Client:</strong> ${ticket.targetBusinessName} (${ticket.targetLocation})</div>
             <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 6px;"><strong>Contact:</strong> ${ticket.targetContactPhone}</div>
             <div style="font-size: 16px; color: #34d399; font-weight: 800; margin-top: 12px;">
-              Projected Settlement: ₦${ticket.projectedRevenueNGN.toLocaleString()} NGN
+              Projected Origination Settlement: ₦${ticket.projectedRevenueNGN.toLocaleString()} NGN
             </div>
             <div style="font-size: 12px; color: #6ee7b7; margin-top: 4px;">
-              Settlement Target: OPay (${OPAY_BENEFICIARY_CONFIG.accountNumber} - ${OPAY_BENEFICIARY_CONFIG.accountName})
+              Corporate Settlement: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digital Solutions)
             </div>
           </div>
 
           <div style="font-size: 12px; color: #64748b;">
-            Downstream SMS & Client Outreach queued in Tailscale Gateway.<br>You may safely close this window.
+            Outreach & Co-Brokerage Mandate Inquiry queued in Outbound Gateway.<br>You may safely close this window.
           </div>
         </div>
       </body>
