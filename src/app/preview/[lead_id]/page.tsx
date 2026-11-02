@@ -18,6 +18,7 @@ const LiveSocialProofTicker = dynamic(() => import('@/components/LiveSocialProof
 const SectorCaseStudyCallout = dynamic(() => import('@/components/blog/SectorCaseStudyCallout'), { ssr: false });
 const ScrollWorld = dynamic(() => import('@/components/three/ScrollWorld'), { ssr: false });
 const ShaderGradientLiquidLogo = dynamic(() => import('@/components/three/ShaderGradientLiquidLogo'), { ssr: false });
+const WaterFactoryErpDashboard = dynamic(() => import('@/app/factory/page'), { ssr: false });
 
 function resolveSectorPalette(cat: string = ''): 'solar' | 'luxury' | 'healthcare' | 'automotive' | 'bethelmind' {
   const lower = cat.toLowerCase();
@@ -88,6 +89,11 @@ export default function PreviewPage() {
   const params = useParams();
   const rawLeadId = params?.lead_id;
   const leadId = Array.isArray(rawLeadId) ? rawLeadId[0] : (rawLeadId as string || '');
+
+  // Instant high-conversion ERP redirect for Water Factory & Bottling leads
+  if (/water|table-water|pure-water|factory|sachet|bottling/i.test(leadId)) {
+    return <WaterFactoryErpDashboard />;
+  }
 
   // Pre-populate instant preview shell with luxury sector visual theme
   const [data, setData] = useState<PreviewData | null>(() => {
