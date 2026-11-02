@@ -2,14 +2,15 @@
  * @file src/app/api/admin/mobile-control/route.ts
  * 
  * 📱 MOBILE CONTROL API FOR BETHELMIND LAGOS DESK
- * Provides real-time telemetry, inbound WhatsApp sync, lead claiming, client onboarding,
- * domain binding, and 1-tap remote command execution for mobile smartphones.
+ * Unified Dual-Pillar Control:
+ * - Pillar 1: 100% Zero-Crypto B2B Commercial Growth Engine (SMEs, Turnkey Sites, Closer Desk)
+ * - Pillar 2: High-Ticket Brokerage & Luxury Deal Wire (₦300M–₦1.5B Mandates, LASRERA Co-Brokerage)
  * 
- * STRICT 100% REAL-ACTION & REAL-FIGURES ONLY (ZERO MOCK/HARDCODED NUMBERS)
+ * Settlement: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digital Solutions)
+ * CAC Certified: Reg 9912717
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
@@ -38,11 +39,61 @@ function readDbJson(filename: string, defaultValue: any = []): any {
   }
 }
 
+function writeDbJson(filename: string, data: any): void {
+  const p = resolveDbPath(filename);
+  const dir = path.dirname(p);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf8');
+}
+
 const SITES_DIR = path.join(process.cwd(), 'src/data/sites');
 const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
 
+function getPillar2Telemetry() {
+  const rawCopilotTickets = readDbJson('one_tap_copilot_tickets.json', {});
+  const copilotTicketsList: any[] = typeof rawCopilotTickets === 'object' && rawCopilotTickets !== null
+    ? Object.values(rawCopilotTickets)
+    : [];
+
+  // Sort newest first
+  copilotTicketsList.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+  const pendingPillar2 = copilotTicketsList.filter(t => t.status === 'PENDING_APPROVAL');
+  const approvedPillar2 = copilotTicketsList.filter(t => t.status === 'APPROVED');
+  const rejectedPillar2 = copilotTicketsList.filter(t => t.status === 'REJECTED' || t.status === 'ARCHIVED');
+
+  const totalAssetPool = pendingPillar2.reduce((sum, t) => sum + (t.propertyValueNGN || 0), 0);
+  const totalOriginationPool = pendingPillar2.reduce((sum, t) => sum + (t.projectedRevenueNGN || 0), 0);
+
+  const outboundQueue = readDbJson('mandate_outbound_queue.json', []);
+  const dispatchedLedger = readDbJson('mandate_dispatched_ledger.json', []);
+
+  return {
+    stats: {
+      pendingCount: pendingPillar2.length,
+      approvedCount: approvedPillar2.length,
+      rejectedCount: rejectedPillar2.length,
+      totalAssetPoolNGN: totalAssetPool,
+      totalOriginationPoolNGN: totalOriginationPool,
+      queuedOutboundCount: Array.isArray(outboundQueue) ? outboundQueue.filter((q: any) => q.status === 'QUEUED_FOR_OUTBOUND').length : 0,
+      dispatchedCount: Array.isArray(dispatchedLedger) ? dispatchedLedger.length : 0,
+    },
+    pendingTickets: pendingPillar2.slice(0, 20),
+    allTickets: copilotTicketsList.slice(0, 30),
+    outboundQueue: Array.isArray(outboundQueue) ? outboundQueue.slice(-15).reverse() : [],
+    dispatchedLedger: Array.isArray(dispatchedLedger) ? dispatchedLedger.slice(-15).reverse() : [],
+    settlementAccount: {
+      bankName: 'Moniepoint Microfinance Bank',
+      accountNumber: '6805375225',
+      accountName: 'Bethelmind Digital Solutions',
+      cacReg: 'Reg 9912717'
+    }
+  };
+}
+
 export async function GET() {
   const todayStr = new Date().toISOString().split('T')[0];
+  const pillar2 = getPillar2Telemetry();
 
   // 1. Primary: Query Contabo VPS live telemetry server (24/7 PM2 Engine)
   try {
@@ -57,7 +108,11 @@ export async function GET() {
     if (vpsRes.ok) {
       const vpsData = await vpsRes.json();
       if (vpsData?.telemetry?.sms?.sentToday !== undefined) {
-        return NextResponse.json(vpsData, {
+        return NextResponse.json({
+          ...vpsData,
+          pillar2,
+          corporateBank: CORPORATE_BANK
+        }, {
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0'
           }
@@ -72,14 +127,13 @@ export async function GET() {
   const smsLog = readDbJson('sms_dispatches.json', []);
   if (Array.isArray(smsLog)) {
     totalSmsAllTime = smsLog.length;
-    smsSentToday = smsLog.filter(s => (s.delivered_at || s.timestamp || s.sent_at || s.date || '').startsWith(todayStr)).length;
+    smsSentToday = smsLog.filter((s: any) => (s.delivered_at || s.timestamp || s.sent_at || s.date || '').startsWith(todayStr)).length;
   }
 
-  // Fallback to activities.json if sms_dispatches is not present on serverless
   if (smsSentToday === 0) {
     const acts = readDbJson('activities.json', []);
     if (Array.isArray(acts)) {
-      smsSentToday = acts.filter(a => (a.timestamp || a.created_at || '').startsWith(todayStr) && (a.smsSent || a.channel === 'sms' || a.type?.includes('sms'))).length;
+      smsSentToday = acts.filter((a: any) => (a.timestamp || a.created_at || '').startsWith(todayStr) && (a.smsSent || a.channel === 'sms' || a.type?.includes('sms'))).length;
     }
   }
 
@@ -89,13 +143,13 @@ export async function GET() {
   const emailLog = readDbJson('email_dispatches.json', []);
   if (Array.isArray(emailLog)) {
     totalEmailsAllTime = emailLog.length;
-    emailsSentToday = emailLog.filter(e => (e.delivered_at || e.timestamp || '').startsWith(todayStr)).length;
+    emailsSentToday = emailLog.filter((e: any) => (e.delivered_at || e.timestamp || '').startsWith(todayStr)).length;
   }
 
   if (emailsSentToday === 0) {
     const acts = readDbJson('activities.json', []);
     if (Array.isArray(acts)) {
-      emailsSentToday = acts.filter(a => (a.timestamp || a.created_at || '').startsWith(todayStr) && (a.emailSent || a.channel === 'email' || a.type?.includes('email'))).length;
+      emailsSentToday = acts.filter((a: any) => (a.timestamp || a.created_at || '').startsWith(todayStr) && (a.emailSent || a.channel === 'email' || a.type?.includes('email'))).length;
     }
   }
 
@@ -129,18 +183,15 @@ export async function GET() {
     totalLeadsCount = journeysList.length;
   }
 
-  // Find journeys contacted or active today
   const activeTodayJourneys = journeysList.filter((j: any) => {
     const lastActive = (j.lastActiveIso || j.createdAt || '').split('T')[0];
     const hasTodayEvent = (j.events || []).some((e: any) => (e.timestamp || '').startsWith(todayStr));
     return lastActive === todayStr || hasTodayEvent;
   });
 
-  // Prioritize prospects contacted today
   const contactedToday = list.filter((l: any) => (l.last_contacted_at || '').startsWith(todayStr));
   const remainingLeads = list.filter((l: any) => !(l.last_contacted_at || '').startsWith(todayStr));
   
-  // Build active prospect cards from journeys + leads
   const journeyProspects = activeTodayJourneys.map((j: any) => {
     const rawName = String(j.leadName || 'Solar Enterprise').trim();
     const cleanPhone = String(j.phone || '').replace(/\D/g, '');
@@ -194,7 +245,6 @@ export async function GET() {
     };
   });
 
-  // Deduplicate and prioritize hot prospects first
   const seenIds = new Set<string>();
   const combinedProspects: any[] = [];
   for (const p of [...journeyProspects, ...generalProspects]) {
@@ -206,11 +256,9 @@ export async function GET() {
   }
   activeProspects = combinedProspects.slice(0, 35);
 
-  // 5. Inbound WhatsApp Leads (CRM)
   const crmRaw = readDbJson('crm_leads.json', []);
   const crmLeads = Array.isArray(crmRaw) ? crmRaw.slice(0, 30) : [];
 
-  // 6. Provisioned Sites
   let provisionedSites: any[] = [];
   if (fs.existsSync(SITES_DIR)) {
     try {
@@ -236,8 +284,7 @@ export async function GET() {
     } catch (_) {}
   }
 
-  // 7. WhatsApp Telemetry (Outbound paused, Admin desk active)
-  const waSentToday = 0; // Outbound paused per mandate
+  const waSentToday = 0;
   const waActiveLines = 1;
 
   return NextResponse.json({
@@ -281,7 +328,8 @@ export async function GET() {
     activeProspects,
     crmLeads,
     provisionedSites,
-    corporateBank: CORPORATE_BANK
+    corporateBank: CORPORATE_BANK,
+    pillar2
   });
 }
 
@@ -289,9 +337,8 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { action } = body;
-    const cwd = process.cwd();
 
-    // ── ACTION A: Claim & Generate Website On The Fly ───────────────────────
+    // ── ACTION A: Claim & Generate Website On The Fly (Pillar 1) ─────────────
     if (action === 'claim_lead_site') {
       const { businessName, phone, category, area } = body;
       if (!businessName) {
@@ -351,7 +398,7 @@ Reply here to claim and launch for *${leadInfo.businessName}*!`;
       });
     }
 
-    // ── ACTION B: Onboard Client & Bind Domain ───────────────────────────────
+    // ── ACTION B: Onboard Client & Bind Domain (Pillar 1) ─────────────────────
     if (action === 'onboard_client') {
       const { slug, domain, selectedPackage, paymentReference } = body;
       if (!slug) {
@@ -382,7 +429,7 @@ Reply here to claim and launch for *${leadInfo.businessName}*!`;
       });
     }
 
-    // ── ACTION C: Test Inbound AI Response Engine ───────────────────────────
+    // ── ACTION C: Test Inbound AI Response Engine (Pillar 1) ─────────────────
     if (action === 'test_ai_closer') {
       const { message, businessName, category, area } = body;
       const testLead = {
@@ -399,6 +446,118 @@ Reply here to claim and launch for *${leadInfo.businessName}*!`;
         success: true,
         userPrompt: message,
         aiResponse: aiReply
+      });
+    }
+
+    // ── ACTION D: Discover Fresh Luxury Mandates (Pillar 2) ──────────────────
+    if (action === 'run_pillar2_discovery') {
+      let stagedResult: any = [];
+      try {
+        const { runAutonomousPillar2CoPilot } = require('../../../../../scripts/autonomous_pillar2_approval_copilot');
+        stagedResult = runAutonomousPillar2CoPilot();
+      } catch (err: any) {
+        console.error('Pillar 2 Discovery error:', err.message);
+      }
+
+      const updatedPillar2 = getPillar2Telemetry();
+      return NextResponse.json({
+        success: true,
+        message: 'Discovered and staged high-ticket luxury mandates.',
+        stagedCount: stagedResult?.length || 0,
+        pillar2: updatedPillar2
+      });
+    }
+
+    // ── ACTION E: Process Outbound Mandate Queue (Pillar 2) ───────────────────
+    if (action === 'process_pillar2_queue') {
+      let workerRes: any = { processed: 0, dispatched: 0 };
+      try {
+        const { processMandateOutboundQueue } = require('../../../../../scripts/mandate_outbound_worker');
+        workerRes = await processMandateOutboundQueue();
+      } catch (err: any) {
+        console.error('Pillar 2 Worker error:', err.message);
+      }
+
+      const updatedPillar2 = getPillar2Telemetry();
+      return NextResponse.json({
+        success: true,
+        message: `Queue processed. Dispatched: ${workerRes?.dispatched || 0}`,
+        workerRes,
+        pillar2: updatedPillar2
+      });
+    }
+
+    // ── ACTION F: 1-Tap In-App Mandate Approval (Pillar 2) ───────────────────
+    if (action === 'approve_pillar2_ticket') {
+      const { ticketId } = body;
+      if (!ticketId) {
+        return NextResponse.json({ success: false, error: 'ticketId is required' }, { status: 400 });
+      }
+
+      const tickets = readDbJson('one_tap_copilot_tickets.json', {});
+      const ticket = tickets[ticketId];
+      if (!ticket) {
+        return NextResponse.json({ success: false, error: 'Ticket not found' }, { status: 404 });
+      }
+
+      ticket.status = 'APPROVED';
+      ticket.approvedAt = new Date().toISOString();
+      tickets[ticketId] = ticket;
+      writeDbJson('one_tap_copilot_tickets.json', tickets);
+
+      // Enqueue in mandate_outbound_queue
+      const queue = readDbJson('mandate_outbound_queue.json', []);
+      const queueItem = {
+        enqueuedAt: new Date().toISOString(),
+        ticketId: ticket.ticketId,
+        recipientPhone: ticket.actionPayload?.recipientPhone || ticket.targetContactPhone,
+        recipientName: ticket.actionPayload?.recipientName || ticket.targetBusinessName,
+        opportunityTitle: ticket.title,
+        scriptText: ticket.preDraftedScript,
+        projectedSettlementNGN: ticket.projectedRevenueNGN,
+        status: 'QUEUED_FOR_OUTBOUND'
+      };
+      queue.push(queueItem);
+      writeDbJson('mandate_outbound_queue.json', queue);
+
+      // Attempt immediate dispatch
+      let workerRes: any = null;
+      try {
+        const { processMandateOutboundQueue } = require('../../../../../scripts/mandate_outbound_worker');
+        workerRes = await processMandateOutboundQueue();
+      } catch (err: any) {
+        console.warn('Auto-dispatch error (item remains safely queued):', err.message);
+      }
+
+      const updatedPillar2 = getPillar2Telemetry();
+      return NextResponse.json({
+        success: true,
+        message: `Ticket #${ticketId} approved & queued for outbound dispatch!`,
+        ticket,
+        workerRes,
+        pillar2: updatedPillar2
+      });
+    }
+
+    // ── ACTION G: Dismiss / Reject Mandate Ticket (Pillar 2) ──────────────────
+    if (action === 'reject_pillar2_ticket') {
+      const { ticketId } = body;
+      if (!ticketId) {
+        return NextResponse.json({ success: false, error: 'ticketId is required' }, { status: 400 });
+      }
+
+      const tickets = readDbJson('one_tap_copilot_tickets.json', {});
+      if (tickets[ticketId]) {
+        tickets[ticketId].status = 'REJECTED';
+        tickets[ticketId].rejectedAt = new Date().toISOString();
+        writeDbJson('one_tap_copilot_tickets.json', tickets);
+      }
+
+      const updatedPillar2 = getPillar2Telemetry();
+      return NextResponse.json({
+        success: true,
+        message: `Ticket #${ticketId} archived.`,
+        pillar2: updatedPillar2
       });
     }
 

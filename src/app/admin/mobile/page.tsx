@@ -34,10 +34,15 @@ import {
   Copy,
   ExternalLink,
   ShieldCheck,
-  Bot
+  Bot,
+  Building,
+  Briefcase
 } from 'lucide-react';
+import Pillar2ControlView from '../../../components/admin/Pillar2ControlView';
 
 export default function MobileAdminCommandCenter() {
+  const [pillarMode, setPillarMode] = useState<'pillar1' | 'pillar2'>('pillar1');
+  const [pillar2Data, setPillar2Data] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'radar' | 'closer' | 'claim' | 'onboard' | 'ai_tester' | 'hubs'>('claim');
   const [telemetry, setTelemetry] = useState<any>(null);
   const [activeProspects, setActiveProspects] = useState<any[]>([]);
@@ -97,6 +102,9 @@ export default function MobileAdminCommandCenter() {
         setActiveProspects(data.activeProspects || []);
         setCrmLeads(data.crmLeads || []);
         setProvisionedSites(data.provisionedSites || []);
+        if (data.pillar2) {
+          setPillar2Data(data.pillar2);
+        }
       }
     } catch (_) {
     } finally {
@@ -208,6 +216,114 @@ export default function MobileAdminCommandCenter() {
       alert('Error: ' + err.message);
     } finally {
       setOnboardLoading(false);
+    }
+  };
+
+  const handleApprovePillar2 = async (ticketId: string) => {
+    setTriggerLoading(ticketId);
+    setFeedbackMsg(null);
+    try {
+      const res = await fetch('/api/admin/mobile-control', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
+        body: JSON.stringify({
+          action: 'approve_pillar2_ticket',
+          ticketId
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFeedbackMsg(`✅ Deal #${ticketId} approved & queued for outbound dispatch!`);
+        if (data.pillar2) setPillar2Data(data.pillar2);
+        fetchTelemetry();
+      } else {
+        setFeedbackMsg(`❌ ${data.error || 'Failed to approve deal'}`);
+      }
+    } catch (err: any) {
+      setFeedbackMsg(`❌ Error: ${err.message}`);
+    } finally {
+      setTriggerLoading(null);
+    }
+  };
+
+  const handleRejectPillar2 = async (ticketId: string) => {
+    setTriggerLoading(ticketId);
+    setFeedbackMsg(null);
+    try {
+      const res = await fetch('/api/admin/mobile-control', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
+        body: JSON.stringify({
+          action: 'reject_pillar2_ticket',
+          ticketId
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFeedbackMsg(`🗑️ Deal #${ticketId} archived.`);
+        if (data.pillar2) setPillar2Data(data.pillar2);
+        fetchTelemetry();
+      }
+    } catch (err: any) {
+      setFeedbackMsg(`❌ Error: ${err.message}`);
+    } finally {
+      setTriggerLoading(null);
+    }
+  };
+
+  const handleRunPillar2Discovery = async () => {
+    setTriggerLoading('discovery');
+    setFeedbackMsg(null);
+    try {
+      const res = await fetch('/api/admin/mobile-control', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
+        body: JSON.stringify({ action: 'run_pillar2_discovery' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFeedbackMsg(`🔍 Discovered & staged fresh luxury deals!`);
+        if (data.pillar2) setPillar2Data(data.pillar2);
+        fetchTelemetry();
+      }
+    } catch (err: any) {
+      setFeedbackMsg(`❌ Error: ${err.message}`);
+    } finally {
+      setTriggerLoading(null);
+    }
+  };
+
+  const handleProcessPillar2Queue = async () => {
+    setTriggerLoading('process_queue');
+    setFeedbackMsg(null);
+    try {
+      const res = await fetch('/api/admin/mobile-control', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'bethelmind_admin_2026'
+        },
+        body: JSON.stringify({ action: 'process_pillar2_queue' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFeedbackMsg(`⚡ Outbound queue processed: ${data.workerRes?.dispatched || 0} dispatched.`);
+        if (data.pillar2) setPillar2Data(data.pillar2);
+        fetchTelemetry();
+      }
+    } catch (err: any) {
+      setFeedbackMsg(`❌ Error: ${err.message}`);
+    } finally {
+      setTriggerLoading(null);
     }
   };
 
@@ -400,7 +516,76 @@ export default function MobileAdminCommandCenter() {
         </div>
       )}
 
-      {/* Main Tab Navigation Header */}
+      {/* 🚀 DUAL-PILLAR MASTER MODE SWITCHER */}
+      <div style={{
+        background: '#090e1a',
+        borderBottom: '1px solid #1e293b',
+        padding: '10px 14px',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '8px'
+      }}>
+        <button
+          onClick={() => setPillarMode('pillar1')}
+          style={{
+            padding: '10px 12px',
+            borderRadius: '10px',
+            border: pillarMode === 'pillar1' ? '2px solid #0284c7' : '1px solid #1e293b',
+            background: pillarMode === 'pillar1' ? 'linear-gradient(135deg, rgba(2, 132, 199, 0.22) 0%, rgba(14, 165, 233, 0.1) 100%)' : '#0f172a',
+            color: pillarMode === 'pillar1' ? '#38bdf8' : '#94a3b8',
+            fontWeight: 800,
+            fontSize: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          <Building size={15} />
+          <span>🏢 PILLAR 1: SME Engine</span>
+        </button>
+
+        <button
+          onClick={() => setPillarMode('pillar2')}
+          style={{
+            padding: '10px 12px',
+            borderRadius: '10px',
+            border: pillarMode === 'pillar2' ? '2px solid #d97706' : '1px solid #1e293b',
+            background: pillarMode === 'pillar2' ? 'linear-gradient(135deg, rgba(217, 119, 6, 0.25) 0%, rgba(180, 83, 9, 0.12) 100%)' : '#0f172a',
+            color: pillarMode === 'pillar2' ? '#fbbf24' : '#94a3b8',
+            fontWeight: 800,
+            fontSize: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px',
+            cursor: 'pointer',
+            position: 'relative',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          <Briefcase size={15} />
+          <span>🏛️ PILLAR 2: Deal Wire</span>
+          {(pillar2Data?.stats?.pendingCount || 0) > 0 && (
+            <span style={{
+              background: '#ef4444',
+              color: '#ffffff',
+              borderRadius: '999px',
+              padding: '2px 6px',
+              fontSize: '10px',
+              fontWeight: 900,
+              marginLeft: '2px'
+            }}>
+              {pillar2Data?.stats?.pendingCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {pillarMode === 'pillar1' && (
+      /* Main Tab Navigation Header */
       <div style={{
         display: 'flex',
         overflowX: 'auto',
@@ -447,9 +632,23 @@ export default function MobileAdminCommandCenter() {
           </button>
         ))}
       </div>
+      )}
 
       {/* Main Content Area */}
       <main style={{ padding: '16px' }}>
+        {pillarMode === 'pillar2' ? (
+          <Pillar2ControlView
+            pillar2Data={pillar2Data}
+            triggerLoading={triggerLoading}
+            onApproveTicket={handleApprovePillar2}
+            onRejectTicket={handleRejectPillar2}
+            onRunDiscovery={handleRunPillar2Discovery}
+            onProcessQueue={handleProcessPillar2Queue}
+            onRefresh={fetchTelemetry}
+            onCopyText={copyToClipboard}
+          />
+        ) : (
+          <>
 
         {/* ── TAB 1: RADAR & OUTREACH ──────────────────────────────────────── */}
         {activeTab === 'radar' && (
@@ -1399,6 +1598,8 @@ export default function MobileAdminCommandCenter() {
           </div>
         )}
 
+          </>
+        )}
       </main>
       {/* PWA Phone Installation Step-by-Step Modal */}
       {showInstallModal && (
@@ -1491,7 +1692,7 @@ export default function MobileAdminCommandCenter() {
       )}
 
 
-      {/* Persistent Bottom Mobile Navigation Bar */}
+            {/* Persistent Bottom Mobile Navigation Bar */}
       <nav style={{
         position: 'fixed',
         bottom: 0,
@@ -1501,28 +1702,18 @@ export default function MobileAdminCommandCenter() {
         backdropFilter: 'blur(20px)',
         borderTop: '1px solid #1e293b',
         display: 'grid',
-        gridTemplateColumns: 'repeat(6, 1fr)',
+        gridTemplateColumns: pillarMode === 'pillar2' ? 'repeat(4, 1fr)' : 'repeat(6, 1fr)',
         padding: '8px 2px 12px 2px',
         zIndex: 100
       }}>
-        {[
-          { key: 'radar', label: 'Radar', icon: Zap },
-          { key: 'closer', label: 'Closer', icon: MessageSquare },
-          { key: 'claim', label: 'Claim', icon: PlusCircle },
-          { key: 'onboard', label: 'Domains', icon: Globe },
-          { key: 'ai_tester', label: 'AI Test', icon: Bot },
-          { key: 'hubs', label: 'All Hubs', icon: Layers }
-        ].map(item => {
-          const Icon = item.icon;
-          const isActive = activeTab === item.key;
-          return (
+        {pillarMode === 'pillar2' ? (
+          <>
             <button
-              key={item.key}
-              onClick={() => setActiveTab(item.key as any)}
+              onClick={() => setPillarMode('pillar1')}
               style={{
                 background: 'transparent',
                 border: 'none',
-                color: isActive ? '#38bdf8' : '#64748b',
+                color: '#38bdf8',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -1531,11 +1722,96 @@ export default function MobileAdminCommandCenter() {
                 padding: '4px 0'
               }}
             >
-              <Icon size={18} color={isActive ? '#38bdf8' : '#64748b'} />
-              <span style={{ fontSize: '10px', fontWeight: isActive ? 800 : 600 }}>{item.label}</span>
+              <Building size={18} color="#38bdf8" />
+              <span style={{ fontSize: '10px', fontWeight: 800 }}>← Pillar 1</span>
             </button>
-          );
-        })}
+            <button
+              onClick={handleRunPillar2Discovery}
+              disabled={triggerLoading === 'discovery'}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#fbbf24',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+                padding: '4px 0'
+              }}
+            >
+              <Search size={18} color="#fbbf24" />
+              <span style={{ fontSize: '10px', fontWeight: 800 }}>Discover</span>
+            </button>
+            <button
+              onClick={handleProcessPillar2Queue}
+              disabled={triggerLoading === 'process_queue'}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#10b981',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+                padding: '4px 0'
+              }}
+            >
+              <Send size={18} color="#10b981" />
+              <span style={{ fontSize: '10px', fontWeight: 800 }}>Queue ({pillar2Data?.stats?.queuedOutboundCount || 0})</span>
+            </button>
+            <button
+              onClick={fetchTelemetry}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#94a3b8',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+                padding: '4px 0'
+              }}
+            >
+              <RefreshCw size={18} color="#94a3b8" />
+              <span style={{ fontSize: '10px', fontWeight: 800 }}>Refresh</span>
+            </button>
+          </>
+        ) : (
+          [
+            { key: 'radar', label: 'Radar', icon: Zap },
+            { key: 'closer', label: 'Closer', icon: MessageSquare },
+            { key: 'claim', label: 'Claim', icon: PlusCircle },
+            { key: 'onboard', label: 'Domains', icon: Globe },
+            { key: 'ai_tester', label: 'AI Test', icon: Bot },
+            { key: 'deal_wire', label: 'Deal Wire', icon: Briefcase, onClick: () => setPillarMode('pillar2') }
+          ].map((item: any) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.key;
+            return (
+              <button
+                key={item.key}
+                onClick={item.onClick || (() => setActiveTab(item.key as any))}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: item.key === 'deal_wire' ? '#fbbf24' : (isActive ? '#38bdf8' : '#64748b'),
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                  cursor: 'pointer',
+                  padding: '4px 0'
+                }}
+              >
+                <Icon size={18} color={item.key === 'deal_wire' ? '#fbbf24' : (isActive ? '#38bdf8' : '#64748b')} />
+                <span style={{ fontSize: '10px', fontWeight: isActive || item.key === 'deal_wire' ? 800 : 600 }}>{item.label}</span>
+              </button>
+            );
+          })
+        )}
       </nav>
     </div>
   );
