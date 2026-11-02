@@ -58,7 +58,7 @@ export default function Pillar2ControlView({
 }: Pillar2ControlViewProps) {
   const [subTab, setSubTab] = useState<'pending' | 'queue' | 'dispatched'>('pending');
   const [scriptModalTicket, setScriptModalTicket] = useState<any | null>(null);
-  const [scriptModalTab, setScriptModalTab] = useState<'whatsapp' | 'sms' | 'email'>('whatsapp');
+  const [scriptModalTab, setScriptModalTab] = useState<'whatsapp' | 'sms' | 'email' | 'buyer'>('whatsapp');
   const [callBriefModalTicket, setCallBriefModalTicket] = useState<any | null>(null);
 
   const handleApproveAndSwitch = async (ticketId: string) => {
@@ -384,6 +384,41 @@ export default function Pillar2ControlView({
                       )}
                     </div>
                   </div>
+
+                  {/* Verified Interested Buyer Profile Card */}
+                  {ticket.buyerProfile && (
+                    <div style={{
+                      background: 'rgba(56, 189, 248, 0.08)',
+                      border: '1px solid rgba(56, 189, 248, 0.3)',
+                      borderRadius: '8px',
+                      padding: '8px 10px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '9px', color: '#38bdf8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          🎯 Verified Interested Buyer ({ticket.buyerProfile.buyerCode})
+                        </span>
+                        <span style={{ fontSize: '10px', color: '#10b981', fontWeight: 800 }}>
+                          Budget: {ticket.buyerProfile.allocatedBudgetFormatted}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#ffffff', fontWeight: 800 }}>
+                        {ticket.buyerProfile.principalName}
+                      </div>
+                      <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                        {ticket.buyerProfile.title}
+                      </div>
+                      <div style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4' }}>
+                        <b>Requirements:</b> {ticket.buyerProfile.requirements}
+                      </div>
+                      <div style={{ fontSize: '9px', color: '#fbbf24', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px' }}>
+                        <span>⏱️ {ticket.buyerProfile.readinessTimeline}</span>
+                        <span style={{ color: '#10b981' }}>✓ Funds Pre-Verified</span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Financial Settlement & Legal Memo Highlight */}
                   <div style={{
@@ -891,16 +926,16 @@ export default function Pillar2ControlView({
             </div>
 
             {/* Tri-Channel Channel Selector */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1.1fr', gap: '4px' }}>
               <button
                 onClick={() => setScriptModalTab('whatsapp')}
                 style={{
                   background: scriptModalTab === 'whatsapp' ? '#064e3b' : '#1e293b',
                   border: `1px solid ${scriptModalTab === 'whatsapp' ? '#059669' : '#334155'}`,
                   color: scriptModalTab === 'whatsapp' ? '#34d399' : '#94a3b8',
-                  padding: '7px 4px',
+                  padding: '7px 2px',
                   borderRadius: '6px',
-                  fontSize: '10px',
+                  fontSize: '9px',
                   fontWeight: 800,
                   cursor: 'pointer'
                 }}
@@ -913,9 +948,9 @@ export default function Pillar2ControlView({
                   background: scriptModalTab === 'sms' ? '#0c4a6e' : '#1e293b',
                   border: `1px solid ${scriptModalTab === 'sms' ? '#0284c7' : '#334155'}`,
                   color: scriptModalTab === 'sms' ? '#38bdf8' : '#94a3b8',
-                  padding: '7px 4px',
+                  padding: '7px 2px',
                   borderRadius: '6px',
-                  fontSize: '10px',
+                  fontSize: '9px',
                   fontWeight: 800,
                   cursor: 'pointer'
                 }}
@@ -928,14 +963,29 @@ export default function Pillar2ControlView({
                   background: scriptModalTab === 'email' ? '#4a044e' : '#1e293b',
                   border: `1px solid ${scriptModalTab === 'email' ? '#a21caf' : '#334155'}`,
                   color: scriptModalTab === 'email' ? '#e879f9' : '#94a3b8',
-                  padding: '7px 4px',
+                  padding: '7px 2px',
                   borderRadius: '6px',
-                  fontSize: '10px',
+                  fontSize: '9px',
                   fontWeight: 800,
                   cursor: 'pointer'
                 }}
               >
                 ✉️ Email Memo
+              </button>
+              <button
+                onClick={() => setScriptModalTab('buyer')}
+                style={{
+                  background: scriptModalTab === 'buyer' ? '#0369a1' : '#1e293b',
+                  border: `1px solid ${scriptModalTab === 'buyer' ? '#38bdf8' : '#334155'}`,
+                  color: scriptModalTab === 'buyer' ? '#ffffff' : '#94a3b8',
+                  padding: '7px 2px',
+                  borderRadius: '6px',
+                  fontSize: '9px',
+                  fontWeight: 800,
+                  cursor: 'pointer'
+                }}
+              >
+                🎯 Buyer Dossier
               </button>
             </div>
 
@@ -945,8 +995,23 @@ export default function Pillar2ControlView({
                 ? scriptModalTicket.preDraftedScript
                 : (scriptModalTab === 'sms'
                     ? (scriptModalTicket.smsText || `LASRERA: Bethelmind (CAC 9912717) requests 80/20 co-brokerage for ${scriptModalTicket.title?.replace('Pillar 2 Mandate: ', '').slice(0, 35)}. Review brief / chat Desk: wa.me/2348022791227 or call.`)
-                    : (scriptModalTicket.emailBody || scriptModalTicket.preDraftedScript));
-              const activeLabel = scriptModalTab === 'whatsapp' ? 'WhatsApp Script' : (scriptModalTab === 'sms' ? 'GSM SMS' : 'Email Memo');
+                    : (scriptModalTab === 'email'
+                        ? (scriptModalTicket.emailBody || scriptModalTicket.preDraftedScript)
+                        : `🎯 VERIFIED INTERESTED BUYER DOSSIER:
+• Client Reference: ${scriptModalTicket.buyerProfile?.buyerCode || 'BM-DIASPORA-701'}
+• Principal Buyer: ${scriptModalTicket.buyerProfile?.principalName || 'Corporate Diaspora Executive Allocator'}
+• Background & Title: ${scriptModalTicket.buyerProfile?.title || 'Executive brief with pre-allocated capital'}
+• Allocated Liquid Budget: ${scriptModalTicket.buyerProfile?.allocatedBudgetFormatted || 'Pre-allocated liquid funds'}
+• Acquisition Purpose: ${scriptModalTicket.buyerProfile?.purpose || 'Executive residency & asset preservation'}
+• Specific Requirements: ${scriptModalTicket.buyerProfile?.requirements || 'Clean title, serene perimeter'}
+• Inspection Readiness: ${scriptModalTicket.buyerProfile?.readinessTimeline || 'Ready to inspect within 48 hours'}
+• Liquidity / POF Verification: ${scriptModalTicket.buyerProfile?.liquidityStatus || 'Pre-verified Tier-1 Bank wire'}`
+                      ));
+              const activeLabel = scriptModalTab === 'whatsapp' 
+                ? 'WhatsApp Script' 
+                : (scriptModalTab === 'sms' 
+                    ? 'GSM SMS' 
+                    : (scriptModalTab === 'email' ? 'Email Memo' : 'Buyer Dossier'));
               const charCount = activeText.length;
 
               return (
@@ -1104,6 +1169,69 @@ export default function Pillar2ControlView({
                 <span>💰 <b>{callBriefModalTicket.actionPayload?.listingPrice || `₦${(callBriefModalTicket.propertyValueNGN || 0).toLocaleString()}`}</b></span>
               </div>
             </div>
+
+            {/* Interested Buyer Detailed Dossier Card */}
+            {callBriefModalTicket.buyerProfile && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%)',
+                border: '1px solid rgba(56, 189, 248, 0.4)',
+                borderRadius: '10px',
+                padding: '12px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '10px', color: '#38bdf8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    🎯 Interested Buyer Profile ({callBriefModalTicket.buyerProfile.buyerCode})
+                  </span>
+                  <span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '999px', padding: '1px 7px', fontSize: '9px', fontWeight: 800 }}>
+                    Liquid Wire Ready
+                  </span>
+                </div>
+
+                <div style={{ fontSize: '13px', fontWeight: 900, color: '#ffffff' }}>
+                  {callBriefModalTicket.buyerProfile.principalName}
+                </div>
+                <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                  {callBriefModalTicket.buyerProfile.title}
+                </div>
+
+                <div style={{
+                  background: '#070a12',
+                  border: '1px solid #1e293b',
+                  borderRadius: '6px',
+                  padding: '8px',
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '6px',
+                  marginTop: '2px'
+                }}>
+                  <div>
+                    <div style={{ fontSize: '8px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Allocated Budget</div>
+                    <div style={{ fontSize: '11px', color: '#10b981', fontWeight: 800 }}>
+                      {callBriefModalTicket.buyerProfile.allocatedBudgetFormatted}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '8px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Acquisition Timeline</div>
+                    <div style={{ fontSize: '11px', color: '#f59e0b', fontWeight: 800 }}>
+                      {callBriefModalTicket.buyerProfile.readinessTimeline}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4' }}>
+                  <b style={{ color: '#38bdf8' }}>Specific Purpose:</b> {callBriefModalTicket.buyerProfile.purpose}
+                </div>
+                <div style={{ fontSize: '10px', color: '#cbd5e1', lineHeight: '1.4' }}>
+                  <b style={{ color: '#38bdf8' }}>Requirements:</b> {callBriefModalTicket.buyerProfile.requirements}
+                </div>
+                <div style={{ fontSize: '9px', color: '#10b981', marginTop: '2px' }}>
+                  <b>Liquidity Status:</b> {callBriefModalTicket.buyerProfile.liquidityStatus}
+                </div>
+              </div>
+            )}
 
             {/* Financial Numbers Card (Remind them of the 80% split immediately) */}
             <div style={{

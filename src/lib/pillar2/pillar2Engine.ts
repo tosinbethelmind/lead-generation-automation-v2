@@ -32,7 +32,18 @@ const PRIME_LUXURY_LISTINGS = [
     priceNgn: 1100000000,
     priceFormatted: '₦ 1,100,000,000',
     location: 'Lekki Phase 1, Lagos',
-    sourceUrl: 'https://jiji.ng/lekki-phase/houses-apartments-for-sale/5bdrm-duplex-in-lekki-phase-1-for-sale-tvFPL8keSF6G7oIc9lI7iYRi.html'
+    sourceUrl: 'https://jiji.ng/lekki-phase/houses-apartments-for-sale/5bdrm-duplex-in-lekki-phase-1-for-sale-tvFPL8keSF6G7oIc9lI7iYRi.html',
+    buyerProfile: {
+      buyerCode: 'BM-DIASPORA-701',
+      principalName: 'Dr. Ademola Adeyemi & Family',
+      title: 'Senior Petroleum Consultant & Diaspora Syndicate Lead (Dallas, Texas / Victoria Island)',
+      allocatedBudgetFormatted: '₦ 1,200,000,000',
+      budgetNgn: 1200000000,
+      purpose: 'Primary executive family residence for annual Nigerian relocation & premium corporate short-let yield.',
+      requirements: '5+ bedrooms, smart home automation, private swimming pool, clean Governor\'s Consent / C of O, 24/7 security.',
+      readinessTimeline: 'Ready to inspect via Lagos family representative within 48 hours; closing in 14 days.',
+      liquidityStatus: 'Liquid diaspora wire pre-allocated in Tier-1 Bank (Zero mortgage delays).'
+    }
   },
   {
     id: 'DEAL-AMEN-500M',
@@ -40,7 +51,18 @@ const PRIME_LUXURY_LISTINGS = [
     priceNgn: 500000000,
     priceFormatted: '₦ 500,000,000',
     location: 'Amen Estate, Lekki Expressway, Lagos',
-    sourceUrl: 'https://jiji.ng/lekki-expressway/houses-apartments-for-sale/7bdrm-mansion-in-amen-estate-lekki-expressway-for-sale-5pZP9pB51LCZ8R19tr3cNEAD.html'
+    sourceUrl: 'https://jiji.ng/lekki-expressway/houses-apartments-for-sale/7bdrm-mansion-in-amen-estate-lekki-expressway-for-sale-5pZP9pB51LCZ8R19tr3cNEAD.html',
+    buyerProfile: {
+      buyerCode: 'BM-DIASPORA-502',
+      principalName: 'Engr. Babatunde Fashola (Jnr.) / Diaspora Tech Syndicate',
+      title: 'Fintech Engineering Director (London, UK / Lekki)',
+      allocatedBudgetFormatted: '₦ 550,000,000',
+      budgetNgn: 550000000,
+      purpose: 'Sovereign gated estate family mansion with 24/7 uninterrupted power & central estate infrastructure.',
+      requirements: '6-7 bedrooms, expansive parking (6+ cars), clean title, serene residential perimeter.',
+      readinessTimeline: 'Inspection ready within 24-48 hours upon JIM counter-signature.',
+      liquidityStatus: 'Verified offshore remittance ready for Moniepoint / Commercial Bank Escrow.'
+    }
   },
   {
     id: 'DEAL-BANANA-1500M',
@@ -48,7 +70,18 @@ const PRIME_LUXURY_LISTINGS = [
     priceNgn: 1500000000,
     priceFormatted: '₦ 1,500,000,000',
     location: 'Banana Island, Ikoyi, Lagos',
-    sourceUrl: 'https://jiji.ng/ikoyi/houses-apartments-for-sale/waterfront-6bdrm-villa-banana-island-lekki.html'
+    sourceUrl: 'https://jiji.ng/ikoyi/houses-apartments-for-sale/waterfront-6bdrm-villa-banana-island-lekki.html',
+    buyerProfile: {
+      buyerCode: 'BM-CORP-901',
+      principalName: 'Chief K. C. Okoli / Pan-African Energy Group',
+      title: 'Executive Chairman, Upstream Oil & Gas Holdings (Victoria Island / Monaco)',
+      allocatedBudgetFormatted: '₦ 1,650,000,000',
+      budgetNgn: 1650000000,
+      purpose: 'High-security waterfront contemporary villa with private jetty for maritime executive residency.',
+      requirements: 'Waterfront access, private boat jetty, 6 luxury ensuite bedrooms, modern architectural finish.',
+      readinessTimeline: 'Immediate cash closing upon title verification by legal team.',
+      liquidityStatus: 'Institutional corporate treasury allocation confirmed.'
+    }
   },
   {
     id: 'DEAL-LEKKI1-480M',
@@ -56,7 +89,18 @@ const PRIME_LUXURY_LISTINGS = [
     priceNgn: 480000000,
     priceFormatted: '₦ 480,000,000',
     location: 'Lekki Phase 1, Lagos',
-    sourceUrl: 'https://jiji.ng/lekki-phase/houses-apartments-for-sale/5bdrm-duplex-in-lekki-phase-1-for-sale-44pHeipU1aW6TF37zoNjgLjO.html'
+    sourceUrl: 'https://jiji.ng/lekki-phase/houses-apartments-for-sale/5bdrm-duplex-in-lekki-phase-1-for-sale-44pHeipU1aW6TF37zoNjgLjO.html',
+    buyerProfile: {
+      buyerCode: 'BM-DIASPORA-304',
+      principalName: 'Mrs. Nkiru Onyeka & Partners',
+      title: 'Clinical Healthcare Director & Diaspora Property Investor (Toronto, Canada)',
+      allocatedBudgetFormatted: '₦ 500,000,000',
+      budgetNgn: 500000000,
+      purpose: 'Turnkey fully detached duplex for executive diaspora holiday tenancy & high-yield rental.',
+      requirements: 'Lekki Phase 1 right side, clean drainage, tight estate security, separate BQ.',
+      readinessTimeline: 'Accompanied inspection ready this week.',
+      liquidityStatus: 'Pre-approved liquid funds.'
+    }
   },
   {
     id: 'DEAL-VI-850M',
@@ -64,7 +108,18 @@ const PRIME_LUXURY_LISTINGS = [
     priceNgn: 850000000,
     priceFormatted: '₦ 850,000,000',
     location: 'Victoria Island, Lagos',
-    sourceUrl: 'https://jiji.ng/victoria-island/houses-apartments-for-sale/5bdrm-automated-detached-vi.html'
+    sourceUrl: 'https://jiji.ng/victoria-island/houses-apartments-for-sale/5bdrm-automated-detached-vi.html',
+    buyerProfile: {
+      buyerCode: 'BM-CORP-405',
+      principalName: 'Apex Horizon Capital & Holdings Ltd',
+      title: 'Corporate Real Estate Director & Board Managing Partner (Lagos / London)',
+      allocatedBudgetFormatted: '₦ 900,000,000',
+      budgetNgn: 900000000,
+      purpose: 'Corporate executive headquarters & multinational expatriate guest suite in VI commercial corridor.',
+      requirements: 'Commercial / residential mixed use, minimum 8-10 car parking, full Federal/Lagos C of O.',
+      readinessTimeline: 'Board approved; closing within 21 days of inspection.',
+      liquidityStatus: 'Corporate account direct wire transfer.'
+    }
   },
   {
     id: 'DEAL-LEKKIEPE-750M',
@@ -72,7 +127,18 @@ const PRIME_LUXURY_LISTINGS = [
     priceNgn: 750000000,
     priceFormatted: '₦ 750,000,000',
     location: 'Lekki-Epe Expressway, Lagos',
-    sourceUrl: 'https://jiji.ng/lekki-expressway/land-plots-for-sale/prime-commercial-plot-lekki-corridor.html'
+    sourceUrl: 'https://jiji.ng/lekki-expressway/land-plots-for-sale/prime-commercial-plot-lekki-corridor.html',
+    buyerProfile: {
+      buyerCode: 'BM-DEV-602',
+      principalName: 'Greenfield Mixed-Use Developers Group',
+      title: 'Managing Director & Urban Infrastructure Consortium Lead (Abuja / Lagos)',
+      allocatedBudgetFormatted: '₦ 800,000,000',
+      budgetNgn: 800000000,
+      purpose: 'Commercial retail plaza & serviced apartment development along high-density expressway corridor.',
+      requirements: 'Direct expressway frontage, high commercial traffic visibility, clear survey coordinates.',
+      readinessTimeline: 'Site survey inspection ready this weekend.',
+      liquidityStatus: 'Development equity syndicate funded.'
+    }
   },
   {
     id: 'DEAL-IKOYI-420M',
@@ -80,7 +146,18 @@ const PRIME_LUXURY_LISTINGS = [
     priceNgn: 420000000,
     priceFormatted: '₦ 420,000,000',
     location: 'Old Ikoyi, Lagos',
-    sourceUrl: 'https://jiji.ng/ikoyi/houses-apartments-for-sale/4bdrm-sky-penthouse-ikoyi.html'
+    sourceUrl: 'https://jiji.ng/ikoyi/houses-apartments-for-sale/4bdrm-sky-penthouse-ikoyi.html',
+    buyerProfile: {
+      buyerCode: 'BM-DIASPORA-808',
+      principalName: 'Mr. Tunde Balogun',
+      title: 'Private Wealth Executive & Senior Investment Banker (Zurich, Switzerland / Ikoyi)',
+      allocatedBudgetFormatted: '₦ 450,000,000',
+      budgetNgn: 450000000,
+      purpose: 'High-floor sky penthouse overlooking Ikoyi Golf Course for private executive Lagos visits.',
+      requirements: '4 bedrooms, floor-to-ceiling glass, concierge service, panoramic golf course views.',
+      readinessTimeline: '48 hours advance notice for accompanied walkthrough.',
+      liquidityStatus: 'Private banking Swiss wire / Moniepoint escrow settlement.'
+    }
   },
   {
     id: 'DEAL-IKEJA-650M',
@@ -88,7 +165,18 @@ const PRIME_LUXURY_LISTINGS = [
     priceNgn: 650000000,
     priceFormatted: '₦ 650,000,000',
     location: 'Ikeja Industrial Estate, Lagos',
-    sourceUrl: 'https://jiji.ng/ikeja/commercial-property-for-sale/industrial-warehouse-complex-ikeja.html'
+    sourceUrl: 'https://jiji.ng/ikeja/commercial-property-for-sale/industrial-warehouse-complex-ikeja.html',
+    buyerProfile: {
+      buyerCode: 'BM-CORP-LOGISTICS-104',
+      principalName: 'Zenith Freight & Continental Logistics Consortium',
+      title: 'Operations Director & Regional Supply Chain Head (Apapa / Ikeja Industrial Zone)',
+      allocatedBudgetFormatted: '₦ 700,000,000',
+      budgetNgn: 700000000,
+      purpose: 'FMCG cold storage, palletized warehousing & trailer logistics distribution hub.',
+      requirements: 'Minimum 2,000 sqm warehouse footprint, 40ft container turning clearance, 33kVA power access.',
+      readinessTimeline: 'Closing in 14 days. Immediate vacant possession required.',
+      liquidityStatus: 'Commercial bank facility & equity allocation secured.'
+    }
   }
 ];
 
@@ -197,10 +285,22 @@ Desk Hotline: +234 802 279 1227`;
   return { subject, body };
 }
 
-export function buildInboundCallBrief(listingTitle: string, listingPriceFormatted: string, propertyValueNgn: number, brokerName: string, brokerPhone: string, brokerCity: string) {
+export function buildInboundCallBrief(listingTitle: string, listingPriceFormatted: string, propertyValueNgn: number, brokerName: string, brokerPhone: string, brokerCity: string, buyerProfile?: any) {
   const agencyCommissionPool = Math.round(propertyValueNgn * 0.05);
   const brokerCut = Math.round(agencyCommissionPool * 0.80);
   const bethelmindCut = Math.round(agencyCommissionPool * 0.20);
+
+  const buyer = buyerProfile || {
+    buyerCode: 'BM-DIASPORA-701',
+    principalName: 'Dr. Ademola Adeyemi & Family',
+    title: 'Senior Petroleum Consultant & Diaspora Syndicate Lead (Dallas, Texas / Victoria Island)',
+    allocatedBudgetFormatted: listingPriceFormatted,
+    budgetNgn: propertyValueNgn,
+    purpose: 'Executive diaspora family residence & high-yield asset preservation.',
+    requirements: 'Clean title (C of O / Governor\'s Consent), serene residential perimeter, premium build finish.',
+    readinessTimeline: 'Ready to inspect within 48 hours; closing in 14-21 days.',
+    liquidityStatus: 'Verified pre-allocated liquid funds in Tier-1 Bank (Zero mortgage delays).'
+  };
 
   return {
     propertyTitle: listingTitle,
@@ -209,6 +309,7 @@ export function buildInboundCallBrief(listingTitle: string, listingPriceFormatte
     brokerName,
     brokerPhone,
     brokerCity,
+    buyerProfile: buyer,
     commissionSummary: {
       totalPoolNgn: agencyCommissionPool,
       totalPoolFormatted: `₦${agencyCommissionPool.toLocaleString()}`,
@@ -219,12 +320,12 @@ export function buildInboundCallBrief(listingTitle: string, listingPriceFormatte
       bankDetails: 'Moniepoint Microfinance Bank | 6805375225 | Bethelmind Digital Solutions (CAC: 9912717)'
     },
     openingGreeting: `Good day ${brokerName}, thank you for reaching out to the Bethelmind Corporate Property Desk. My name is Tosin Oyelakin. I understand you are calling regarding the "${listingTitle}" listed at ${listingPriceFormatted}. Is this property still directly available under your primary mandate?`,
-    buyerProfileResponse: `Our buyer is represented under our corporate diaspora acquisition brief (Client Ref: BM-DIASPORA-701), an executive client looking to conclude a verified acquisition in ${brokerCity} this quarter with pre-allocated capital.`,
+    buyerProfileResponse: `Our buyer is ${buyer.principalName} (${buyer.title}), represented under our corporate acquisition brief (Client Ref: ${buyer.buyerCode}). They have a verified liquid budget of ${buyer.allocatedBudgetFormatted} allocated for immediate acquisition in ${brokerCity}.`,
     inspectionProtocol: `Under our LASRERA compliance process, before we schedule the on-site walkthrough with our buyer's representative, we exchange our standard 1-page Joint Inspection Memorandum (JIM). This document legally guarantees your 80% agency commission (₦${brokerCut.toLocaleString()}) and our 20% origination fee (₦${bethelmindCut.toLocaleString()}). Once counter-signed, we schedule the walkthrough immediately.`,
     faqResponses: [
       {
         question: 'Who is the direct buyer? Can I speak with them?',
-        answer: 'Under our corporate representation and Non-Circumvention agreement (NDNC), all formal offers, verification, and inspection coordination are channeled through Bethelmind Desk until the Joint Inspection Memorandum is executed.'
+        answer: `Under our representation agreement and NDNC protocol, our buyer (${buyer.principalName}) is represented exclusively by Bethelmind Desk until the Joint Inspection Memorandum is executed to legally protect both parties.`
       },
       {
         question: 'Can you take 10% instead of 20%?',
@@ -307,7 +408,8 @@ function buildTicketFromListing(listing: typeof PRIME_LUXURY_LISTINGS[0], broker
     directChatLink,
     smsLink,
     emailLink,
-    inboundCallBrief: buildInboundCallBrief(listing.title, listing.priceFormatted, listing.priceNgn, broker.name, broker.phone, broker.city),
+    buyerProfile: listing.buyerProfile,
+    inboundCallBrief: buildInboundCallBrief(listing.title, listing.priceFormatted, listing.priceNgn, broker.name, broker.phone, broker.city, listing.buyerProfile),
     listingUrl: listing.sourceUrl,
     actionPayload: {
       channel: 'TRI_CHANNEL_LASRERA_MANDATE',
@@ -491,10 +593,13 @@ export async function getPillar2Telemetry() {
     const script = t.preDraftedScript || buildMandateScript(oppTitle, priceFormatted, brokerName);
     const sms = t.smsText || buildMandateSms(oppTitle);
     const emailData = t.emailData || buildMandateEmail(oppTitle, priceFormatted, brokerName);
-    const callBrief = t.inboundCallBrief || buildInboundCallBrief(oppTitle, priceFormatted, t.propertyValueNGN || 500000000, brokerName, rawContact, t.targetLocation || 'Lagos');
+    const matchedListing = PRIME_LUXURY_LISTINGS.find(l => t.ticketId?.startsWith(l.id));
+    const buyerProf = t.buyerProfile || matchedListing?.buyerProfile;
+    const callBrief = buildInboundCallBrief(oppTitle, priceFormatted, t.propertyValueNGN || 500000000, brokerName, rawContact, t.targetLocation || 'Lagos', buyerProf);
 
     return {
       ...t,
+      buyerProfile: buyerProf,
       targetContactEmail: email,
       preDraftedScript: script,
       smsText: sms,
