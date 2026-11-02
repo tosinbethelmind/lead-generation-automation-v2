@@ -398,8 +398,10 @@ Reply here to claim and launch for *${leadInfo.businessName}*!`;
     // ── ACTION C: Test Inbound AI Response Engine (Pillar 1) ─────────────────
     if (action === 'test_ai_closer' || action === 'test_ai_query') {
       const { message, businessName, category, area } = body;
+      const cleanMessage = typeof message === 'string' ? message.replace(/<[^>]*>?/gm, '').trim() : '';
+      const cleanBizName = typeof businessName === 'string' ? businessName.replace(/<[^>]*>?/gm, '').trim() : '';
       const testLead = {
-        businessName: businessName || 'Lagos Commercial Enterprise',
+        businessName: cleanBizName || 'Lagos Commercial Enterprise',
         category: category || 'Solar Energy Enterprise',
         area: area || 'Victoria Island',
         phone: '2348000000000',
@@ -407,10 +409,10 @@ Reply here to claim and launch for *${leadInfo.businessName}*!`;
         previewUrl: `${APP_ORIGIN}/preview/test-client`
       };
 
-      const aiReply = handlePostContactInquiry(message || 'How much is the website?', testLead);
+      const aiReply = handlePostContactInquiry(cleanMessage || 'How much is the website?', testLead);
       return NextResponse.json({
         success: true,
-        userPrompt: message,
+        userPrompt: cleanMessage,
         aiResponse: aiReply,
         intent: aiReply?.intent || 'GENERAL_INQUIRY',
         suggestedAction: aiReply?.suggestedAction || 'SEND_PROTOTYPE',
