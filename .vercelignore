@@ -7,7 +7,7 @@
 node_modules
 .netlify
 local_db
-tools
+/tools/
 data/dossiers
 data/traffic-queue
 scripts/*
