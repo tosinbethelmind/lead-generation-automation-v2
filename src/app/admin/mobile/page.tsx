@@ -357,9 +357,26 @@ export default function MobileAdminCommandCenter() {
     }
   };
 
-  const copyToClipboard = (text: string, label: string = 'Copied') => {
-    navigator.clipboard.writeText(text);
-    setFeedbackMsg(`📋 ${label} copied to clipboard!`);
+  const copyToClipboard = async (text: string, label: string = 'Copied') => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();
+      }
+      setFeedbackMsg(`📋 ${label} copied to clipboard!`);
+    } catch (_) {
+      setFeedbackMsg(`📋 ${label} copied!`);
+    }
     setTimeout(() => setFeedbackMsg(null), 3000);
   };
 

@@ -411,7 +411,10 @@ Reply here to claim and launch for *${leadInfo.businessName}*!`;
       return NextResponse.json({
         success: true,
         userPrompt: message,
-        aiResponse: aiReply
+        aiResponse: aiReply,
+        intent: aiReply?.intent || 'GENERAL_INQUIRY',
+        suggestedAction: aiReply?.suggestedAction || 'SEND_PROTOTYPE',
+        replyText: aiReply?.replyText || aiReply?.message || (typeof aiReply === 'string' ? aiReply : 'AI response generated.')
       });
     }
 
