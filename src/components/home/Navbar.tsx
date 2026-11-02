@@ -256,6 +256,14 @@ export default function Navbar() {
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
 
+        {/* Direct Link to Dual-Pillar Command Desk */}
+        <Link
+          href="/app"
+          className="inline-flex py-1.5 px-2.5 rounded-lg bg-gradient-to-r from-[#d97706]/25 to-[#0284c7]/25 border border-[#f59e0b]/60 text-[#fbbf24] font-extrabold text-xs items-center gap-1 hover:brightness-110 transition-all shadow-sm"
+        >
+          <span>⚡ Pillars Desk</span>
+        </Link>
+
         {/* Mobile Hamburger Toggle */}
         <button
           id="mobile-menu-toggle"
@@ -278,8 +286,24 @@ export default function Navbar() {
           className="absolute top-20 left-0 right-0 bg-[#090d16]/98 border border-white/[0.1] rounded-2xl p-5 shadow-2xl backdrop-blur-2xl flex flex-col gap-4 text-xs text-[#c9c4bc] max-h-[80vh] overflow-y-auto animate-in fade-in slide-in-from-top-4 duration-200"
         >
           <div className="space-y-1">
+            {/* Dual-Pillar Command Center Direct Card */}
+            <Link
+              href="/app"
+              onClick={() => setMenuOpen(false)}
+              className="p-3 mb-3 rounded-xl bg-gradient-to-r from-[#d97706]/20 via-[#0284c7]/20 to-[#10b981]/20 border border-[#fbbf24]/50 text-[#ffffff] font-bold flex items-center justify-between shadow-lg"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="text-lg">⚡</span>
+                <div>
+                  <div className="font-extrabold text-sm text-[#fbbf24]">Launch Command Center</div>
+                  <div className="text-[10px] text-[#94a3b8]">🏢 Pillar 1: SME Engine · 🏛️ Pillar 2: Deal Wire</div>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-[#fbbf24]" />
+            </Link>
+
             <span className="text-[10px] uppercase tracking-widest text-[#d4af37] font-semibold block px-2 mb-2">
-              Navigation
+              Public Navigation
             </span>
             <Link
               href="/tools"

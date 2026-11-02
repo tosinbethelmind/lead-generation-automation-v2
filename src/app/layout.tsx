@@ -219,6 +219,11 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSchema) }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;var p=window.location.pathname;if(s&&!p.startsWith('/admin')&&!p.startsWith('/api')&&!p.startsWith('/preview')&&!p.startsWith('/calc')){window.location.replace('/app');}}catch(e){}})();`
+          }}
+        />
       </head>
       <body suppressHydrationWarning>
         <MicrosoftClarity />

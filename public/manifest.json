@@ -1,0 +1,31 @@
+{
+  "name": "Bethelmind Digital Solutions - Mobile Admin Desk",
+  "short_name": "Bethelmind",
+  "description": "Manage B2B Leads, Generate Instant Live Websites, and Dispatch WhatsApp Claim Pitches directly from your phone.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#070a12",
+  "theme_color": "#0b121e",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
