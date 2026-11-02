@@ -635,6 +635,7 @@ export default function PreviewPage() {
                   <li>• 24/7 AI WhatsApp Sales &amp; Quoting Assistant</li>
                   <li>• Moniepoint / OPay Bank Transfer Shield (Zero fake alerts)</li>
                   <li>• 48-Hour Live Delivery SLA &amp; Handover Guarantee</li>
+                  <li>• 📱 Installable Android App (.APK) package &amp; Mobile PWA included</li>
                 </ul>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -742,6 +743,7 @@ export default function PreviewPage() {
                   <li>• Interactive sector software tool (BOQ, Booking, or Ledger)</li>
                   <li>• Google Search #1 SEO setup &amp; Business Profile integration</li>
                   <li>• 100% Full Code &amp; Domain Ownership + 60-Day VIP Priority Support</li>
+                  <li>• 📱 Native Android App (.APK) compiled &amp; ready for customer WhatsApp sharing</li>
                 </ul>
               </div>
               <a

@@ -34,7 +34,8 @@ import {
   GraduationCap,
   Scale,
   Hotel,
-  Factory
+  Factory,
+  Smartphone
 } from 'lucide-react';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
@@ -242,7 +243,18 @@ const TOOLS: ToolItem[] = [
     href: '/tools/starlink-installation-sizer',
     upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
-  {
+    {
+    id: 'website-to-android-app',
+    title: 'Instant Website-to-Android App (.APK) & PWA Generator',
+    badge: '24h Mobile App Wrapper',
+    category: 'b2b',
+    description: 'Converts any existing business website or ecommerce catalog into an installable Android APK with custom splash screen, push notifications, offline fallback, and direct WhatsApp bio link.',
+    icon: Smartphone,
+    color: 'text-[#06b6d4]',
+    href: '/tools/website-to-android-app',
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
+  },
+{
     id: 'cleaning-fumigation-sizer',
     title: 'Residential Deep Cleaning & Post-Construction Fumigation Sizer',
     badge: 'Per-Sqm Estimator',

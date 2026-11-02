@@ -255,6 +255,17 @@ interface SectorProfile {
 function getSectorProfile(rawSlug: string): SectorProfile {
   const slug = (rawSlug || 'solar').toLowerCase().replace(/\.html$/i, '');
 
+  if (/app|apk|wrapper|android|mobile/.test(slug)) {
+    return {
+      title: 'Instant Website-to-Android App (.APK) & PWA Generator',
+      category: 'Mobile Applications & Software',
+      tag: '24h Native Mobile App Wrapper',
+      summary: 'Converts any existing commercial website or ecommerce catalog into an installable Android APK with custom splash screen, push notifications, offline fallback, and direct WhatsApp bio link.',
+      highlightPills: ['Native Android APK (.apk)', 'Direct WhatsApp & Instagram Bio Download', 'Zero Google Play $25 Fee / 20-Tester Wait'],
+      sectorTab: 'retail',
+    };
+  }
+
   if (/starlink|satellite|mesh|dish/.test(slug)) {
     return {
       title: 'Starlink Satellite Internet Installation & Estate Mesh Sizer',
