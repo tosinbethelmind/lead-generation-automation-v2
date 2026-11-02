@@ -197,6 +197,51 @@ Desk Hotline: +234 802 279 1227`;
   return { subject, body };
 }
 
+export function buildInboundCallBrief(listingTitle: string, listingPriceFormatted: string, propertyValueNgn: number, brokerName: string, brokerPhone: string, brokerCity: string) {
+  const agencyCommissionPool = Math.round(propertyValueNgn * 0.05);
+  const brokerCut = Math.round(agencyCommissionPool * 0.80);
+  const bethelmindCut = Math.round(agencyCommissionPool * 0.20);
+
+  return {
+    propertyTitle: listingTitle,
+    listingPriceFormatted,
+    propertyValueNgn,
+    brokerName,
+    brokerPhone,
+    brokerCity,
+    commissionSummary: {
+      totalPoolNgn: agencyCommissionPool,
+      totalPoolFormatted: `₦${agencyCommissionPool.toLocaleString()}`,
+      brokerCutNgn: brokerCut,
+      brokerCutFormatted: `₦${brokerCut.toLocaleString()} (80%)`,
+      bethelmindCutNgn: bethelmindCut,
+      bethelmindCutFormatted: `₦${bethelmindCut.toLocaleString()} (20%)`,
+      bankDetails: 'Moniepoint Microfinance Bank | 6805375225 | Bethelmind Digital Solutions (CAC: 9912717)'
+    },
+    openingGreeting: `Good day ${brokerName}, thank you for reaching out to the Bethelmind Corporate Property Desk. My name is Tosin Oyelakin. I understand you are calling regarding the "${listingTitle}" listed at ${listingPriceFormatted}. Is this property still directly available under your primary mandate?`,
+    buyerProfileResponse: `Our buyer is represented under our corporate diaspora acquisition brief (Client Ref: BM-DIASPORA-701), an executive client looking to conclude a verified acquisition in ${brokerCity} this quarter with pre-allocated capital.`,
+    inspectionProtocol: `Under our LASRERA compliance process, before we schedule the on-site walkthrough with our buyer's representative, we exchange our standard 1-page Joint Inspection Memorandum (JIM). This document legally guarantees your 80% agency commission (₦${brokerCut.toLocaleString()}) and our 20% origination fee (₦${bethelmindCut.toLocaleString()}). Once counter-signed, we schedule the walkthrough immediately.`,
+    faqResponses: [
+      {
+        question: 'Who is the direct buyer? Can I speak with them?',
+        answer: 'Under our corporate representation and Non-Circumvention agreement (NDNC), all formal offers, verification, and inspection coordination are channeled through Bethelmind Desk until the Joint Inspection Memorandum is executed.'
+      },
+      {
+        question: 'Can you take 10% instead of 20%?',
+        answer: `Our 20% origination fee is our fixed institutional standard under LASRERA guidelines. You retain the vast majority (80% / ₦${brokerCut.toLocaleString()}), which is far more generous than the usual 50/50 co-brokerage demand in Lagos.`
+      },
+      {
+        question: 'Is the price negotiable?',
+        answer: 'Our client is prepared to make a formal bankable offer close to the ask for clean title and immediate vacant possession upon inspection.'
+      },
+      {
+        question: 'How is payment settled upon closing?',
+        answer: 'Funds are transferred via official commercial bank wire directly to the seller, with agency fees deducted and split at closing: 80% to your account and 20% to Bethelmind Digital Solutions (Moniepoint MFB: 6805375225).'
+      }
+    ]
+  };
+}
+
 async function attemptEmailDispatch(to: string, subject: string, body: string) {
   try {
     const { sendSmtpMessage } = await import('@/lib/email');
@@ -262,6 +307,7 @@ function buildTicketFromListing(listing: typeof PRIME_LUXURY_LISTINGS[0], broker
     directChatLink,
     smsLink,
     emailLink,
+    inboundCallBrief: buildInboundCallBrief(listing.title, listing.priceFormatted, listing.priceNgn, broker.name, broker.phone, broker.city),
     listingUrl: listing.sourceUrl,
     actionPayload: {
       channel: 'TRI_CHANNEL_LASRERA_MANDATE',
@@ -445,6 +491,7 @@ export async function getPillar2Telemetry() {
     const script = t.preDraftedScript || buildMandateScript(oppTitle, priceFormatted, brokerName);
     const sms = t.smsText || buildMandateSms(oppTitle);
     const emailData = t.emailData || buildMandateEmail(oppTitle, priceFormatted, brokerName);
+    const callBrief = t.inboundCallBrief || buildInboundCallBrief(oppTitle, priceFormatted, t.propertyValueNGN || 500000000, brokerName, rawContact, t.targetLocation || 'Lagos');
 
     return {
       ...t,
@@ -453,6 +500,7 @@ export async function getPillar2Telemetry() {
       smsText: sms,
       emailSubject: emailData.subject,
       emailBody: emailData.body,
+      inboundCallBrief: callBrief,
       directChatLink: t.directChatLink || `https://wa.me/${e164}?text=${encodeURIComponent(script)}`,
       smsLink: t.smsLink || `sms:+${e164}?body=${encodeURIComponent(sms)}`,
       emailLink: t.emailLink || `mailto:${email}?subject=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`

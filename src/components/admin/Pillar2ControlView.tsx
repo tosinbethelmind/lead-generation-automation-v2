@@ -31,7 +31,8 @@ import {
   Building, 
   ArrowUpRight,
   TrendingUp,
-  ChevronRight
+  ChevronRight,
+  PhoneCall
 } from 'lucide-react';
 
 interface Pillar2ControlViewProps {
@@ -58,6 +59,7 @@ export default function Pillar2ControlView({
   const [subTab, setSubTab] = useState<'pending' | 'queue' | 'dispatched'>('pending');
   const [scriptModalTicket, setScriptModalTicket] = useState<any | null>(null);
   const [scriptModalTab, setScriptModalTab] = useState<'whatsapp' | 'sms' | 'email'>('whatsapp');
+  const [callBriefModalTicket, setCallBriefModalTicket] = useState<any | null>(null);
 
   const handleApproveAndSwitch = async (ticketId: string) => {
     await onApproveTicket(ticketId);
@@ -525,6 +527,29 @@ export default function Pillar2ControlView({
                     </button>
                   </div>
 
+                  {/* Inbound Call Crib Sheet Trigger */}
+                  <button
+                    onClick={() => setCallBriefModalTicket(ticket)}
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(217, 119, 6, 0.2) 0%, rgba(180, 83, 9, 0.1) 100%)',
+                      border: '1px solid rgba(245, 158, 11, 0.4)',
+                      color: '#fbbf24',
+                      borderRadius: '8px',
+                      padding: '9px 10px',
+                      fontSize: '11px',
+                      fontWeight: 800,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      cursor: 'pointer',
+                      width: '100%'
+                    }}
+                  >
+                    <PhoneCall size={13} />
+                    <span>📞 Inbound Call Crib Sheet (If Partner Calls You)</span>
+                  </button>
+
                   {/* Secondary Line: Dismiss and Listing link */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '4px' }}>
                     {ticket.listingUrl && (
@@ -725,6 +750,37 @@ export default function Pillar2ControlView({
                     </a>
                   </div>
                 </div>
+
+                {/* Quick Call Crib Sheet for Outbound Queue */}
+                <button
+                  onClick={() => setCallBriefModalTicket({
+                    ticketId: item.ticketId,
+                    title: item.opportunityTitle,
+                    targetBusinessName: item.recipientName,
+                    targetContactPhone: item.recipientPhone,
+                    propertyValueNGN: item.projectedSettlementNGN ? Math.round(item.projectedSettlementNGN / 0.01) : 500000000,
+                    actionPayload: { listingPrice: `₦${((item.projectedSettlementNGN ? Math.round(item.projectedSettlementNGN / 0.01) : 500000000)).toLocaleString()}` }
+                  })}
+                  style={{
+                    background: '#1e293b',
+                    border: '1px solid #334155',
+                    color: '#fbbf24',
+                    borderRadius: '6px',
+                    padding: '6px 8px',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px',
+                    cursor: 'pointer',
+                    marginTop: '6px',
+                    width: '100%'
+                  }}
+                >
+                  <PhoneCall size={11} />
+                  <span>📞 Open Inbound Call Crib Sheet</span>
+                </button>
               </div>
             ))
           )}
@@ -969,6 +1025,223 @@ export default function Pillar2ControlView({
                 </>
               );
             })()}
+          </div>
+        </div>
+      )}
+
+      {/* ── FLOATING INBOUND CALL BRIEF & NEGOTIATION MODAL ────────────────── */}
+      {callBriefModalTicket && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.88)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '14px'
+        }}>
+          <div style={{
+            background: '#0b1120',
+            border: '1px solid #d97706',
+            borderRadius: '14px',
+            padding: '16px',
+            width: '100%',
+            maxWidth: '500px',
+            maxHeight: '92vh',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            overflowY: 'auto'
+          }}>
+            {/* Modal Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <PhoneCall size={16} color="#fbbf24" />
+                <h3 style={{ fontSize: '14px', fontWeight: 900, margin: 0, color: '#ffffff' }}>
+                  Inbound Call Crib Sheet & Negotiation Brief
+                </h3>
+              </div>
+              <button
+                onClick={() => setCallBriefModalTicket(null)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  padding: '4px'
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Property & Partner Banner */}
+            <div style={{
+              background: '#070a12',
+              border: '1px solid #1e293b',
+              borderRadius: '10px',
+              padding: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px'
+            }}>
+              <div style={{ fontSize: '10px', color: '#fbbf24', fontWeight: 800, textTransform: 'uppercase' }}>
+                Target Mandate: #{callBriefModalTicket.ticketId}
+              </div>
+              <div style={{ fontSize: '13px', fontWeight: 800, color: '#ffffff', lineHeight: '1.3' }}>
+                {callBriefModalTicket.title?.replace('Pillar 2 Mandate: ', '')}
+              </div>
+              <div style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '2px' }}>
+                <span>Caller: <b>{callBriefModalTicket.targetBusinessName}</b></span>
+                <span>·</span>
+                <span>📞 {callBriefModalTicket.targetContactPhone}</span>
+                <span>·</span>
+                <span>💰 <b>{callBriefModalTicket.actionPayload?.listingPrice || `₦${(callBriefModalTicket.propertyValueNGN || 0).toLocaleString()}`}</b></span>
+              </div>
+            </div>
+
+            {/* Financial Numbers Card (Remind them of the 80% split immediately) */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(6, 78, 59, 0.2) 100%)',
+              border: '1px solid rgba(16, 185, 129, 0.4)',
+              borderRadius: '10px',
+              padding: '12px',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '10px'
+            }}>
+              <div>
+                <div style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>Their 80% Commission</div>
+                <div style={{ fontSize: '16px', fontWeight: 900, color: '#10b981' }}>
+                  ₦{Math.round((callBriefModalTicket.propertyValueNGN || 500000000) * 0.05 * 0.8).toLocaleString()}
+                </div>
+                <div style={{ fontSize: '8px', color: '#64748b' }}>Retained by Partner Firm</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>Bethelmind 20% Cut</div>
+                <div style={{ fontSize: '16px', fontWeight: 900, color: '#38bdf8' }}>
+                  ₦{Math.round((callBriefModalTicket.propertyValueNGN || 500000000) * 0.05 * 0.2).toLocaleString()}
+                </div>
+                <div style={{ fontSize: '8px', color: '#64748b' }}>Moniepoint 6805375225</div>
+              </div>
+            </div>
+
+            {/* Word-for-Word Phone Talking Points */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 800, color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                🗣️ Word-for-Word Telephone Scripts
+              </div>
+
+              {/* Script 1: Opening Greeting */}
+              <div style={{ background: '#090e1a', border: '1px solid #1e293b', borderRadius: '8px', padding: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 800, color: '#38bdf8' }}>1. How to Open the Call</span>
+                  <button
+                    onClick={() => onCopyText(
+                      `Good day, thank you for returning our call/message. My name is Tosin Oyelakin from the Bethelmind Property Desk (CAC: 9912717). I understand you are calling regarding the ${callBriefModalTicket.title?.replace('Pillar 2 Mandate: ', '')}. Is this property still directly available under your primary mandate?`,
+                      'Opening Greeting Script'
+                    )}
+                    style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                  >
+                    <Copy size={10} />
+                    <span>Copy</span>
+                  </button>
+                </div>
+                <p style={{ fontSize: '11px', color: '#cbd5e1', margin: 0, lineHeight: '1.5' }}>
+                  "Good day, thank you for returning our call/message. My name is Tosin Oyelakin from the Bethelmind Property Desk (CAC: 9912717). I understand you are calling regarding the <b>{callBriefModalTicket.title?.replace('Pillar 2 Mandate: ', '')}</b>. Is this property still directly available under your primary mandate?"
+                </p>
+              </div>
+
+              {/* Script 2: When They Ask "Who is your buyer?" */}
+              <div style={{ background: '#090e1a', border: '1px solid #1e293b', borderRadius: '8px', padding: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 800, color: '#f59e0b' }}>2. When Asked: "Who is your buyer?"</span>
+                  <button
+                    onClick={() => onCopyText(
+                      `Our buyer is represented under our corporate diaspora acquisition brief (Client Ref: BM-DIASPORA-701), an executive client looking to conclude a verified acquisition in Lagos this quarter with pre-allocated capital. Under our corporate Non-Circumvention protocol, all inspections and documentation are coordinated through Bethelmind Desk.`,
+                      'Buyer Profile Script'
+                    )}
+                    style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                  >
+                    <Copy size={10} />
+                    <span>Copy</span>
+                  </button>
+                </div>
+                <p style={{ fontSize: '11px', color: '#cbd5e1', margin: 0, lineHeight: '1.5' }}>
+                  "Our buyer is represented under our corporate diaspora acquisition brief (<b>Client Ref: BM-DIASPORA-701</b>), an executive client looking to conclude a verified acquisition in Lagos this quarter with pre-allocated capital. Under our corporate Non-Circumvention protocol, all inspections and documentation are coordinated through Bethelmind Desk."
+                </p>
+              </div>
+
+              {/* Script 3: Inspection Protocol & Locking the 80/20 Fee */}
+              <div style={{ background: '#090e1a', border: '1px solid #1e293b', borderRadius: '8px', padding: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 800, color: '#10b981' }}>3. How to Lock Inspection & 80/20 Fee</span>
+                  <button
+                    onClick={() => onCopyText(
+                      `Under our LASRERA compliance process, before we schedule the on-site walkthrough with our buyer's representative, we exchange our standard 1-page Joint Inspection Memorandum (JIM). This document legally guarantees your 80% agency commission and our 20% origination fee. Once counter-signed, we schedule the walkthrough immediately.`,
+                      'Inspection Protocol Script'
+                    )}
+                    style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                  >
+                    <Copy size={10} />
+                    <span>Copy</span>
+                  </button>
+                </div>
+                <p style={{ fontSize: '11px', color: '#cbd5e1', margin: 0, lineHeight: '1.5' }}>
+                  "Under our LASRERA compliance process, before we schedule the on-site walkthrough with our buyer's representative, we exchange our standard 1-page Joint Inspection Memorandum (JIM). This document legally guarantees your 80% agency commission and our 20% origination fee. Once counter-signed, we schedule the walkthrough immediately."
+                </p>
+              </div>
+            </div>
+
+            {/* Top 3 Objections Cheat-Sheet */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 800, color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                🛡️ Handling Top Objections
+              </div>
+
+              <div style={{ background: '#070a12', border: '1px solid #1e293b', borderRadius: '8px', padding: '8px' }}>
+                <div style={{ fontSize: '10px', fontWeight: 800, color: '#ef4444' }}>• "Can you take 10% instead of 20%?"</div>
+                <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px', lineHeight: '1.4' }}>
+                  <b>Answer:</b> "Our 20% origination fee is our fixed institutional standard under LASRERA guidelines. You retain 80%, which is significantly higher than the usual 50/50 co-brokerage demand in Lagos."
+                </div>
+              </div>
+
+              <div style={{ background: '#070a12', border: '1px solid #1e293b', borderRadius: '8px', padding: '8px' }}>
+                <div style={{ fontSize: '10px', fontWeight: 800, color: '#ef4444' }}>• "Can I speak directly with your buyer?"</div>
+                <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px', lineHeight: '1.4' }}>
+                  <b>Answer:</b> "All communications are managed through Bethelmind Desk until the Joint Inspection Memorandum is executed to protect both parties under LASRERA guidelines."
+                </div>
+              </div>
+
+              <div style={{ background: '#070a12', border: '1px solid #1e293b', borderRadius: '8px', padding: '8px' }}>
+                <div style={{ fontSize: '10px', fontWeight: 800, color: '#ef4444' }}>• "How will closing payment be made?"</div>
+                <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px', lineHeight: '1.4' }}>
+                  <b>Answer:</b> "Official commercial bank wire directly to the seller, with agency fees deducted and split at closing: 80% to your account and 20% to Bethelmind Digital Solutions (Moniepoint MFB: 6805375225)."
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setCallBriefModalTicket(null)}
+              style={{
+                background: '#1e293b',
+                border: '1px solid #334155',
+                color: '#ffffff',
+                borderRadius: '8px',
+                padding: '10px',
+                fontSize: '11px',
+                fontWeight: 800,
+                cursor: 'pointer',
+                marginTop: '4px'
+              }}
+            >
+              Close Crib Sheet
+            </button>
           </div>
         </div>
       )}
