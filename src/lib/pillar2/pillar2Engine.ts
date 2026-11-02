@@ -94,14 +94,14 @@ const PRIME_LUXURY_LISTINGS = [
 
 // ── VERIFIED NIGERIAN REAL ESTATE BROKERS (EXCLUDES ADMIN 08022791227) ──────
 const VERIFIED_NIGERIAN_BROKERS = [
-  { name: 'Ora Egbunike & Associates', phone: '08021061457', city: 'Victoria Island, Lagos' },
-  { name: 'Deep-Delve Concepts', phone: '08033008985', city: 'Lekki Phase 1, Lagos' },
-  { name: 'Jide Taiwo & Co', phone: '07052090118', city: 'Ikeja / VI, Lagos' },
-  { name: 'Broll Property Services Nigeria', phone: '08033214589', city: 'Victoria Island, Lagos' },
-  { name: 'Diya Fatimilehin & Co', phone: '08023456781', city: 'Lekki / Ikoyi, Lagos' },
-  { name: 'Knight Frank Nigeria', phone: '08035678912', city: 'Victoria Island, Lagos' },
-  { name: 'Ubosi Eleh & Co', phone: '08028765432', city: 'Lagos Island, Lagos' },
-  { name: 'Alpha Mead Real Estate Partners', phone: '08091124022', city: 'Victoria Island, Lagos' }
+  { name: 'Ora Egbunike & Associates', phone: '08021061457', email: 'info@oraegbunike.com', city: 'Victoria Island, Lagos' },
+  { name: 'Deep-Delve Concepts', phone: '08033008985', email: 'mandates@deepdelve.ng', city: 'Lekki Phase 1, Lagos' },
+  { name: 'Jide Taiwo & Co', phone: '07052090118', email: 'properties@jidetaiwoandco.com', city: 'Ikeja / VI, Lagos' },
+  { name: 'Broll Property Services Nigeria', phone: '08033214589', email: 'nigeria@broll.com', city: 'Victoria Island, Lagos' },
+  { name: 'Diya Fatimilehin & Co', phone: '08023456781', email: 'mandates@diyafatimilehin.com', city: 'Lekki / Ikoyi, Lagos' },
+  { name: 'Knight Frank Nigeria', phone: '08035678912', email: 'commercial@ng.knightfrank.com', city: 'Victoria Island, Lagos' },
+  { name: 'Ubosi Eleh & Co', phone: '08028765432', email: 'valuation@ubosielehandco.com', city: 'Lagos Island, Lagos' },
+  { name: 'Alpha Mead Real Estate Partners', phone: '08091124022', email: 'realestate@alphamead.com', city: 'Victoria Island, Lagos' }
 ];
 
 // In-Memory state for Vercel lambdas
@@ -148,6 +148,65 @@ Before logging your property into our active mandate book:
 Once confirmed, we issue our Joint Inspection Memorandum (JIM) so that whenever an inspection is scheduled with our buyer, your commission and our 20% origination fee are legally secured. Thank you.`;
 }
 
+function buildMandateSms(listingTitle: string): string {
+  const maxTitleLen = 42;
+  const shortTitle = listingTitle.length > maxTitleLen ? listingTitle.substring(0, maxTitleLen - 3) + '...' : listingTitle;
+  const sms = `LASRERA: Bethelmind (CAC 9912717) requests 80/20 co-brokerage for ${shortTitle}. Review brief / chat Desk: wa.me/2348022791227 or call.`;
+  return sms.length > 158 ? sms.substring(0, 158) : sms;
+}
+
+function buildMandateEmail(listingTitle: string, listingPriceFormatted: string, brokerName: string): { subject: string; body: string } {
+  const subject = `[LASRERA Co-Brokerage Mandate] Bethelmind Digital Solutions x ${brokerName} - ${listingTitle}`;
+  const body = `Dear ${brokerName} Management,
+
+Re: Official Co-Brokerage & Joint Mandate Inquiry — ${listingTitle} (${listingPriceFormatted})
+
+I hope this email finds you well.
+
+My name is Tosin Oyelakin, Principal at Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise: Reg 9912717).
+
+We operate the Bethelmind Corporate & Diaspora Property Desk, onboarding verified direct luxury mandates for our incoming Q4 diaspora investor brief and corporate executive allocations in Lagos.
+
+We have identified your verified listing for:
+• Property: ${listingTitle}
+• Listing Value: ${listingPriceFormatted}
+
+Under Lagos State Real Estate Regulatory Authority (LASRERA) co-brokerage guidelines:
+1. We request confirmation of primary mandate status for this property.
+2. We propose our standard 80/20 agency fee arrangement (your firm retains 80% of the agency commission; Bethelmind retains 20% origination fee).
+
+Upon mutual agreement, our corporate desk executes our formal Joint Inspection Memorandum (JIM) to legally safeguard both parties before buyer inspection.
+
+Corporate Settlement & Desk Verification:
+• Bank: Moniepoint Microfinance Bank
+• Account Number: 6805375225
+• Account Name: Bethelmind Digital Solutions (CAC Reg: 9912717)
+• Direct WhatsApp / Closer Hotline: +234 802 279 1227
+• Official Portal: https://www.bethelmindanalytics.com
+
+We look forward to a mutually prosperous transaction.
+
+Warm regards,
+
+Tosin Oyelakin
+Principal Partner, Commercial & Real Estate Desk
+Bethelmind Digital Solutions (CAC Certified: Reg 9912717)
+Email: tosin@bethelmindanalytics.com
+Desk Hotline: +234 802 279 1227`;
+
+  return { subject, body };
+}
+
+async function attemptEmailDispatch(to: string, subject: string, body: string) {
+  try {
+    const { sendSmtpMessage } = await import('@/lib/email');
+    await sendSmtpMessage(to, subject, body);
+    return { dispatched: true, gateway: 'Hostinger Direct SMTP (tosin@bethelmindanalytics.com)' };
+  } catch (err: any) {
+    return { dispatched: false, error: err?.message || 'SMTP fallback active' };
+  }
+}
+
 function buildTicketFromListing(listing: typeof PRIME_LUXURY_LISTINGS[0], broker: typeof VERIFIED_NIGERIAN_BROKERS[0], customId?: string) {
   const ticketId = customId || listing.id;
   const expiresAt = Date.now() + 48 * 3600 * 1000;
@@ -156,6 +215,15 @@ function buildTicketFromListing(listing: typeof PRIME_LUXURY_LISTINGS[0], broker
   const bethelmindOriginationCut = Math.round(agencyCommissionPool * 0.20); // 20% co-brokerage cut
   
   const preDraftedScript = buildMandateScript(listing.title, listing.priceFormatted, broker.name);
+  const smsText = buildMandateSms(listing.title);
+  const emailData = buildMandateEmail(listing.title, listing.priceFormatted, broker.name);
+
+  const cleanPhone = String(broker.phone).replace(/\D/g, '');
+  const e164 = cleanPhone.startsWith('0') ? '234' + cleanPhone.slice(1) : (cleanPhone.startsWith('234') ? cleanPhone : '234' + cleanPhone);
+  
+  const directChatLink = `https://wa.me/${e164}?text=${encodeURIComponent(preDraftedScript)}`;
+  const smsLink = `sms:+${e164}?body=${encodeURIComponent(smsText)}`;
+  const emailLink = `mailto:${broker.email}?subject=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`;
 
   const tokenPayload = {
     id: ticketId,
@@ -164,6 +232,7 @@ function buildTicketFromListing(listing: typeof PRIME_LUXURY_LISTINGS[0], broker
     target: broker.name,
     loc: broker.city,
     phone: broker.phone,
+    email: broker.email,
     rev: bethelmindOriginationCut,
     val: listing.priceNgn,
     script: preDraftedScript,
@@ -181,15 +250,23 @@ function buildTicketFromListing(listing: typeof PRIME_LUXURY_LISTINGS[0], broker
     targetBusinessName: broker.name,
     targetLocation: broker.city,
     targetContactPhone: broker.phone,
+    targetContactEmail: broker.email,
     propertyValueNGN: listing.priceNgn,
     projectedRevenueNGN: bethelmindOriginationCut,
     totalAgencyPoolNGN: agencyCommissionPool,
     dealSummary: `${listing.title} | Listed: ${listing.priceFormatted} | Estimated 20% Cut: ₦${bethelmindOriginationCut.toLocaleString()} NGN`,
     preDraftedScript,
+    smsText,
+    emailSubject: emailData.subject,
+    emailBody: emailData.body,
+    directChatLink,
+    smsLink,
+    emailLink,
     listingUrl: listing.sourceUrl,
     actionPayload: {
-      channel: 'WHATSAPP_LASRERA_MANDATE',
+      channel: 'TRI_CHANNEL_LASRERA_MANDATE',
       recipientPhone: broker.phone,
+      recipientEmail: broker.email,
       recipientName: broker.name,
       listingTitle: listing.title,
       listingPrice: listing.priceFormatted,
@@ -270,17 +347,36 @@ export async function getPillar2Telemetry() {
         const cloudQueue = data.map((row: any) => {
           try {
             const parsed = JSON.parse(row.message);
+            const script = parsed.script || parsed.scriptText || '';
+            const oppTitle = parsed.title || parsed.opportunityTitle || 'Luxury Mandate';
+            const sms = parsed.smsText || buildMandateSms(oppTitle);
+            const cleanPhone = String(parsed.recipientPhone || '').replace(/\D/g, '');
+            const e164 = cleanPhone.startsWith('0') ? '234' + cleanPhone.slice(1) : (cleanPhone.startsWith('234') ? cleanPhone : '234' + cleanPhone);
+            const email = parsed.recipientEmail || 'info@oraegbunike.com';
+            const waLink = parsed.directChatLink || `https://wa.me/${e164}?text=${encodeURIComponent(script)}`;
+            const sLink = parsed.smsLink || `sms:+${e164}?body=${encodeURIComponent(sms)}`;
+            const mLink = parsed.emailLink || `mailto:${email}`;
+
             return {
               enqueuedAt: row.created_at,
               ticketId: parsed.ticketId,
               recipientPhone: parsed.recipientPhone,
+              recipientEmail: email,
               recipientName: parsed.recipientName,
-              opportunityTitle: parsed.title || parsed.opportunityTitle,
-              scriptText: parsed.script || parsed.scriptText,
+              opportunityTitle: oppTitle,
+              scriptText: script,
+              smsText: sms,
               projectedSettlementNGN: parsed.projectedRevenueNGN || parsed.projectedSettlementNGN,
               status: parsed.status || 'QUEUED_FOR_OUTBOUND',
-              directChatLink: parsed.directChatLink || null,
-              gateway: parsed.gateway || 'Contabo VPS / Direct WhatsApp'
+              directChatLink: waLink,
+              smsLink: sLink,
+              emailLink: mLink,
+              gateway: parsed.gateway || 'Tri-Channel Relay (WhatsApp + GSM SMS + Email)',
+              channels: parsed.channels || {
+                whatsapp: { status: 'READY_1TAP', link: waLink },
+                sms: { status: 'READY_1TAP', link: sLink, text: sms },
+                email: { status: 'READY_1TAP', link: mLink, recipient: email }
+              }
             };
           } catch (_) {
             return null;
@@ -441,36 +537,50 @@ export async function approveTicket(ticketId: string) {
   // Build Queue Item
   const rawContact = ticket?.targetContactPhone || ticket?.actionPayload?.recipientPhone || '08021061457';
   const cleanPhone = String(rawContact).replace(/\D/g, '');
-  const scriptText = ticket?.preDraftedScript || buildMandateScript(
-    ticket?.title || 'Luxury Asset Mandate',
-    ticket?.propertyValueNGN ? `₦${Number(ticket.propertyValueNGN).toLocaleString()}` : '₦ 500,000,000',
-    ticket?.targetBusinessName || 'Verified Broker'
-  );
+  const recipientEmail = ticket?.targetContactEmail || ticket?.actionPayload?.recipientEmail || 'info@oraegbunike.com';
   const recipientName = ticket?.targetBusinessName || ticket?.actionPayload?.recipientName || 'Verified Broker';
   const opportunityTitle = ticket?.title || 'Luxury Mandate';
+  const priceFormatted = ticket?.actionPayload?.listingPrice || (ticket?.propertyValueNGN ? `₦${Number(ticket.propertyValueNGN).toLocaleString()}` : '₦ 500,000,000');
+  
+  const scriptText = ticket?.preDraftedScript || buildMandateScript(opportunityTitle, priceFormatted, recipientName);
+  const smsText = ticket?.smsText || buildMandateSms(opportunityTitle);
+  const emailData = ticket?.emailData || buildMandateEmail(opportunityTitle, priceFormatted, recipientName);
   const projectedSettlementNGN = ticket?.projectedRevenueNGN || 5000000;
 
-  // Build direct 1-tap WhatsApp link as bulletproof fallback
+  // Build direct 1-tap communication links
   const e164 = cleanPhone.startsWith('0') ? '234' + cleanPhone.slice(1) : (cleanPhone.startsWith('234') ? cleanPhone : '234' + cleanPhone);
   const directChatLink = `https://wa.me/${e164}?text=${encodeURIComponent(scriptText)}`;
+  const smsLink = `sms:+${e164}?body=${encodeURIComponent(smsText)}`;
+  const emailLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`;
 
   const queueItem: any = {
     enqueuedAt: new Date().toISOString(),
     ticketId,
     recipientPhone: e164,
+    recipientEmail,
     recipientName,
     opportunityTitle,
     scriptText,
+    smsText,
+    emailSubject: emailData.subject,
+    emailBody: emailData.body,
     projectedSettlementNGN,
     status: 'QUEUED_FOR_OUTBOUND',
     directChatLink,
-    gateway: 'Direct WhatsApp Gateway Link'
+    smsLink,
+    emailLink,
+    gateway: 'Tri-Channel Relay (WhatsApp + GSM SMS + Email)',
+    channels: {
+      whatsapp: { status: 'PENDING', link: directChatLink },
+      sms: { status: 'READY_1TAP', link: smsLink, text: smsText, len: smsText.length },
+      email: { status: 'PENDING', link: emailLink, recipient: recipientEmail, subject: emailData.subject }
+    }
   };
 
   inMemoryQueue.push(queueItem);
 
-  // Attempt real-time dispatch via Contabo VPS WhatsApp API (/send)
-  let dispatchResult = { dispatched: false, gateway: 'Direct WhatsApp Gateway Link' };
+  // 1. Attempt real-time WhatsApp dispatch via Contabo VPS WhatsApp API (/send)
+  let waResult = { dispatched: false, gateway: 'Direct WhatsApp Gateway Link' };
   if (e164 && e164 !== ADMIN_PHONE && e164 !== '2348022791227') {
     try {
       const controller = new AbortController();
@@ -494,22 +604,42 @@ export async function approveTicket(ticketId: string) {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok && (data.success || data.messageId)) {
-        queueItem.status = 'DISPATCHED_WHATSAPP';
-        queueItem.dispatchedAt = new Date().toISOString();
-        queueItem.gateway = `Contabo VPS WhatsApp (Line ${data.line || 1})`;
-        queueItem.messageId = data.messageId;
-        dispatchResult = { dispatched: true, gateway: queueItem.gateway };
-        inMemoryDispatched.push(queueItem);
+        queueItem.channels.whatsapp.status = 'DISPATCHED_VPS';
+        queueItem.channels.whatsapp.messageId = data.messageId;
+        waResult = { dispatched: true, gateway: `Contabo VPS WhatsApp (Line ${data.line || 1})` };
       } else {
-        queueItem.status = 'DIRECT_CHAT_READY';
-        queueItem.gateway = 'Direct WhatsApp Gateway Link';
-        dispatchResult = { dispatched: false, gateway: queueItem.gateway };
+        queueItem.channels.whatsapp.status = 'DIRECT_CHAT_READY';
       }
     } catch (_) {
-      queueItem.status = 'DIRECT_CHAT_READY';
-      queueItem.gateway = 'Direct WhatsApp Gateway Link';
-      dispatchResult = { dispatched: false, gateway: queueItem.gateway };
+      queueItem.channels.whatsapp.status = 'DIRECT_CHAT_READY';
     }
+  }
+
+  // 2. Attempt real-time Executive Email dispatch via Hostinger Direct SMTP
+  let emailResult = { dispatched: false, gateway: 'Direct mailto Link' };
+  if (recipientEmail && !recipientEmail.includes('@example.com')) {
+    const emailAttempt = await attemptEmailDispatch(recipientEmail, emailData.subject, emailData.body);
+    if (emailAttempt.dispatched) {
+      queueItem.channels.email.status = 'DISPATCHED_SMTP';
+      emailResult = { dispatched: true, gateway: emailAttempt.gateway };
+    } else {
+      queueItem.channels.email.status = 'DIRECT_MAILTO_READY';
+      queueItem.channels.email.note = emailAttempt.error;
+    }
+  }
+
+  // 3. Mark overall dispatch status
+  if (waResult.dispatched || emailResult.dispatched) {
+    queueItem.status = 'DISPATCHED_MULTI_CHANNEL';
+    queueItem.dispatchedAt = new Date().toISOString();
+    queueItem.gateway = [
+      waResult.dispatched ? waResult.gateway : null,
+      emailResult.dispatched ? emailResult.gateway : null
+    ].filter(Boolean).join(' + ') || 'Tri-Channel Dispatched';
+    inMemoryDispatched.push(queueItem);
+  } else {
+    queueItem.status = 'DIRECT_CHAT_READY';
+    queueItem.gateway = 'Direct Multi-Channel (1-Tap WhatsApp, SMS & Email)';
   }
 
   // Persist queue / dispatch item to Supabase logs table
@@ -517,7 +647,7 @@ export async function approveTicket(ticketId: string) {
     try {
       await supabase.from('logs').insert({
         run_id: 'pillar2_mandates',
-        step: queueItem.status === 'DISPATCHED_WHATSAPP' ? 'PILLAR2_DISPATCHED' : 'PILLAR2_MANDATE_OUTBOUND',
+        step: queueItem.status === 'DISPATCHED_MULTI_CHANNEL' ? 'PILLAR2_DISPATCHED' : 'PILLAR2_MANDATE_OUTBOUND',
         status: 'SUCCESS',
         message: JSON.stringify(queueItem),
         tenant_id: 'default'
@@ -528,12 +658,13 @@ export async function approveTicket(ticketId: string) {
   const updatedTelemetry = await getPillar2Telemetry();
   return {
     success: true,
-    message: queueItem.status === 'DISPATCHED_WHATSAPP' 
-      ? `Deal #${ticketId} approved & mandate delivered via Contabo VPS WhatsApp!` 
-      : `Deal #${ticketId} approved & queued! 1-Tap WhatsApp chat link generated.`,
+    message: queueItem.status === 'DISPATCHED_MULTI_CHANNEL' 
+      ? `Deal #${ticketId} approved & dispatched via ${queueItem.gateway}!` 
+      : `Deal #${ticketId} approved & queued! 1-Tap WhatsApp, SMS & Email ready.`,
     ticket,
     queueItem,
-    dispatchResult,
+    waResult,
+    emailResult,
     pillar2: updatedTelemetry
   };
 }

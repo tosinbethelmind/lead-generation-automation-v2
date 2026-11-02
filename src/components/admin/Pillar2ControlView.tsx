@@ -57,6 +57,7 @@ export default function Pillar2ControlView({
 }: Pillar2ControlViewProps) {
   const [subTab, setSubTab] = useState<'pending' | 'queue' | 'dispatched'>('pending');
   const [scriptModalTicket, setScriptModalTicket] = useState<any | null>(null);
+  const [scriptModalTab, setScriptModalTab] = useState<'whatsapp' | 'sms' | 'email'>('whatsapp');
 
   const handleApproveAndSwitch = async (ticketId: string) => {
     await onApproveTicket(ticketId);
@@ -369,10 +370,16 @@ export default function Pillar2ControlView({
                       {ticket.title?.replace('Pillar 2 Mandate: ', '') || 'Luxury Asset Mandate'}
                     </h3>
 
-                    <div style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px' }}>
                       <span>👤 Partner: <b>{ticket.targetBusinessName}</b></span>
                       <span>·</span>
-                      <span>📍 {ticket.targetLocation || 'Lagos'}</span>
+                      <span>📞 {ticket.targetContactPhone}</span>
+                      {ticket.targetContactEmail && (
+                        <>
+                          <span>·</span>
+                          <span style={{ color: '#c084fc' }}>✉️ {ticket.targetContactEmail}</span>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -395,8 +402,81 @@ export default function Pillar2ControlView({
                     </span>
                   </div>
 
-                  {/* Action Buttons: 1-Tap Approve, View Script, Reject */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                  {/* Tri-Channel Outbound Relay Bar */}
+                  <div>
+                    <div style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      ⚡ Tri-Channel Direct Outbound
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
+                      <a
+                        href={ticket.directChatLink || `https://wa.me/${String(ticket.targetContactPhone || '').replace(/\D/g, '')}?text=${encodeURIComponent(ticket.preDraftedScript || '')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          background: '#064e3b',
+                          border: '1px solid #059669',
+                          color: '#34d399',
+                          borderRadius: '6px',
+                          padding: '6px 2px',
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          textAlign: 'center',
+                          textDecoration: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '2px'
+                        }}
+                      >
+                        <span>💬 WhatsApp</span>
+                      </a>
+
+                      <a
+                        href={ticket.smsLink || `sms:+${String(ticket.targetContactPhone || '').replace(/\D/g, '')}?body=${encodeURIComponent(ticket.smsText || '')}`}
+                        style={{
+                          background: '#0c4a6e',
+                          border: '1px solid #0284c7',
+                          color: '#38bdf8',
+                          borderRadius: '6px',
+                          padding: '6px 2px',
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          textAlign: 'center',
+                          textDecoration: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '2px'
+                        }}
+                      >
+                        <span>📱 GSM SMS</span>
+                      </a>
+
+                      <a
+                        href={ticket.emailLink || `mailto:${ticket.targetContactEmail || ''}`}
+                        style={{
+                          background: '#4a044e',
+                          border: '1px solid #a21caf',
+                          color: '#e879f9',
+                          borderRadius: '6px',
+                          padding: '6px 2px',
+                          fontSize: '10px',
+                          fontWeight: 800,
+                          textAlign: 'center',
+                          textDecoration: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '2px'
+                        }}
+                      >
+                        <span>✉️ Email</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons: 1-Tap Approve, View Script */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '6px' }}>
                     <button
                       onClick={() => handleApproveAndSwitch(ticket.ticketId)}
                       disabled={isApproving}
@@ -421,7 +501,10 @@ export default function Pillar2ControlView({
                     </button>
 
                     <button
-                      onClick={() => setScriptModalTicket(ticket)}
+                      onClick={() => {
+                        setScriptModalTab('whatsapp');
+                        setScriptModalTicket(ticket);
+                      }}
                       style={{
                         background: '#1e293b',
                         border: '1px solid #334155',
@@ -438,7 +521,7 @@ export default function Pillar2ControlView({
                       }}
                     >
                       <FileText size={13} />
-                      <span>📜 View Script</span>
+                      <span>📜 View Brief</span>
                     </button>
                   </div>
 
@@ -550,33 +633,98 @@ export default function Pillar2ControlView({
                 <div style={{ fontSize: '12px', fontWeight: 700, color: '#f8fafc', marginBottom: '4px' }}>
                   {item.opportunityTitle || 'High-Ticket Mandate'}
                 </div>
-                <div style={{ fontSize: '10px', color: '#94a3b8' }}>
-                  Recipient: <b>{item.recipientName}</b> ({item.recipientPhone})
+                <div style={{ fontSize: '10px', color: '#94a3b8', display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px' }}>
+                  <span>Recipient: <b>{item.recipientName}</b></span>
+                  <span>·</span>
+                  <span>📞 {item.recipientPhone}</span>
+                  {item.recipientEmail && (
+                    <>
+                      <span>·</span>
+                      <span style={{ color: '#c084fc' }}>✉️ {item.recipientEmail}</span>
+                    </>
+                  )}
                 </div>
-                {item.directChatLink && (
-                  <div style={{ marginTop: '8px' }}>
+
+                {/* Tri-Channel Outbound Relay Bar */}
+                <div style={{
+                  background: '#070a12',
+                  border: '1px solid #1e293b',
+                  borderRadius: '8px',
+                  padding: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px'
+                }}>
+                  <div style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Multi-Channel Relay Gateways
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
                     <a
-                      href={item.directChatLink}
+                      href={item.directChatLink || `https://wa.me/${String(item.recipientPhone || '').replace(/\D/g, '')}?text=${encodeURIComponent(item.scriptText || '')}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{
-                        background: '#25D366',
-                        color: '#ffffff',
-                        padding: '6px 10px',
+                        background: '#064e3b',
+                        border: '1px solid #059669',
+                        color: '#34d399',
+                        padding: '6px 4px',
                         borderRadius: '6px',
                         fontSize: '10px',
                         fontWeight: 800,
                         textDecoration: 'none',
-                        display: 'inline-flex',
+                        textAlign: 'center',
+                        display: 'flex',
                         alignItems: 'center',
-                        gap: '4px'
+                        justifyContent: 'center',
+                        gap: '2px'
                       }}
                     >
-                      <span>Open WhatsApp Chat Directly</span>
-                      <ArrowUpRight size={10} />
+                      <span>💬 WhatsApp</span>
+                    </a>
+
+                    <a
+                      href={item.smsLink || `sms:+${String(item.recipientPhone || '').replace(/\D/g, '')}?body=${encodeURIComponent(item.smsText || '')}`}
+                      style={{
+                        background: '#0c4a6e',
+                        border: '1px solid #0284c7',
+                        color: '#38bdf8',
+                        padding: '6px 4px',
+                        borderRadius: '6px',
+                        fontSize: '10px',
+                        fontWeight: 800,
+                        textDecoration: 'none',
+                        textAlign: 'center',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '2px'
+                      }}
+                    >
+                      <span>📱 GSM SMS</span>
+                    </a>
+
+                    <a
+                      href={item.emailLink || `mailto:${item.recipientEmail || ''}`}
+                      style={{
+                        background: '#4a044e',
+                        border: '1px solid #a21caf',
+                        color: '#e879f9',
+                        padding: '6px 4px',
+                        borderRadius: '6px',
+                        fontSize: '10px',
+                        fontWeight: 800,
+                        textDecoration: 'none',
+                        textAlign: 'center',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '2px'
+                      }}
+                    >
+                      <span>✉️ Email</span>
                     </a>
                   </div>
-                )}
+                </div>
               </div>
             ))
           )}
@@ -669,7 +817,7 @@ export default function Pillar2ControlView({
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FileText size={16} color="#fbbf24" />
                 <h3 style={{ fontSize: '14px', fontWeight: 800, margin: 0, color: '#ffffff' }}>
-                  LASRERA Mandate Inquiry Script
+                  LASRERA Mandate Outbound Brief
                 </h3>
               </div>
               <button
@@ -686,66 +834,141 @@ export default function Pillar2ControlView({
               </button>
             </div>
 
-            <div style={{
-              background: '#070a12',
-              border: '1px solid #1e293b',
-              borderRadius: '8px',
-              padding: '12px',
-              fontSize: '11px',
-              color: '#cbd5e1',
-              lineHeight: '1.6',
-              whiteSpace: 'pre-wrap',
-              fontFamily: 'monospace'
-            }}>
-              {scriptModalTicket.preDraftedScript}
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '4px' }}>
+            {/* Tri-Channel Channel Selector */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
               <button
-                onClick={() => onCopyText(scriptModalTicket.preDraftedScript, 'Mandate Script')}
+                onClick={() => setScriptModalTab('whatsapp')}
                 style={{
-                  background: '#1e293b',
-                  border: '1px solid #334155',
-                  color: '#f8fafc',
-                  borderRadius: '8px',
-                  padding: '10px',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  cursor: 'pointer'
-                }}
-              >
-                <Copy size={13} />
-                <span>Copy Script</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  handleApproveAndSwitch(scriptModalTicket.ticketId);
-                  setScriptModalTicket(null);
-                }}
-                style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  border: 'none',
-                  color: '#ffffff',
-                  borderRadius: '8px',
-                  padding: '10px',
-                  fontSize: '11px',
+                  background: scriptModalTab === 'whatsapp' ? '#064e3b' : '#1e293b',
+                  border: `1px solid ${scriptModalTab === 'whatsapp' ? '#059669' : '#334155'}`,
+                  color: scriptModalTab === 'whatsapp' ? '#34d399' : '#94a3b8',
+                  padding: '7px 4px',
+                  borderRadius: '6px',
+                  fontSize: '10px',
                   fontWeight: 800,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
                   cursor: 'pointer'
                 }}
               >
-                <CheckCircle2 size={13} />
-                <span>Approve & Queue</span>
+                💬 WhatsApp
+              </button>
+              <button
+                onClick={() => setScriptModalTab('sms')}
+                style={{
+                  background: scriptModalTab === 'sms' ? '#0c4a6e' : '#1e293b',
+                  border: `1px solid ${scriptModalTab === 'sms' ? '#0284c7' : '#334155'}`,
+                  color: scriptModalTab === 'sms' ? '#38bdf8' : '#94a3b8',
+                  padding: '7px 4px',
+                  borderRadius: '6px',
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  cursor: 'pointer'
+                }}
+              >
+                📱 GSM SMS
+              </button>
+              <button
+                onClick={() => setScriptModalTab('email')}
+                style={{
+                  background: scriptModalTab === 'email' ? '#4a044e' : '#1e293b',
+                  border: `1px solid ${scriptModalTab === 'email' ? '#a21caf' : '#334155'}`,
+                  color: scriptModalTab === 'email' ? '#e879f9' : '#94a3b8',
+                  padding: '7px 4px',
+                  borderRadius: '6px',
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  cursor: 'pointer'
+                }}
+              >
+                ✉️ Email Memo
               </button>
             </div>
+
+            {/* Text Preview Display */}
+            {(() => {
+              const activeText = scriptModalTab === 'whatsapp'
+                ? scriptModalTicket.preDraftedScript
+                : (scriptModalTab === 'sms'
+                    ? (scriptModalTicket.smsText || `LASRERA: Bethelmind (CAC 9912717) requests 80/20 co-brokerage for ${scriptModalTicket.title?.replace('Pillar 2 Mandate: ', '').slice(0, 35)}. Review brief / chat Desk: wa.me/2348022791227 or call.`)
+                    : (scriptModalTicket.emailBody || scriptModalTicket.preDraftedScript));
+              const activeLabel = scriptModalTab === 'whatsapp' ? 'WhatsApp Script' : (scriptModalTab === 'sms' ? 'GSM SMS' : 'Email Memo');
+              const charCount = activeText.length;
+
+              return (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '10px', color: '#94a3b8' }}>
+                      Channel: <b style={{ color: '#ffffff' }}>{activeLabel}</b>
+                    </span>
+                    <span style={{ fontSize: '10px', color: scriptModalTab === 'sms' && charCount <= 158 ? '#10b981' : '#64748b' }}>
+                      {charCount} chars {scriptModalTab === 'sms' ? '(1 GSM credit)' : ''}
+                    </span>
+                  </div>
+
+                  <div style={{
+                    background: '#070a12',
+                    border: '1px solid #1e293b',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    fontSize: '11px',
+                    color: '#cbd5e1',
+                    lineHeight: '1.6',
+                    whiteSpace: 'pre-wrap',
+                    fontFamily: 'monospace',
+                    maxHeight: '260px',
+                    overflowY: 'auto'
+                  }}>
+                    {activeText}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '4px' }}>
+                    <button
+                      onClick={() => onCopyText(activeText, activeLabel)}
+                      style={{
+                        background: '#1e293b',
+                        border: '1px solid #334155',
+                        color: '#f8fafc',
+                        borderRadius: '8px',
+                        padding: '10px',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <Copy size={13} />
+                      <span>Copy {activeLabel}</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        handleApproveAndSwitch(scriptModalTicket.ticketId);
+                        setScriptModalTicket(null);
+                      }}
+                      style={{
+                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        border: 'none',
+                        color: '#ffffff',
+                        borderRadius: '8px',
+                        padding: '10px',
+                        fontSize: '11px',
+                        fontWeight: 800,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <CheckCircle2 size={13} />
+                      <span>Approve & Queue</span>
+                    </button>
+                  </div>
+                </>
+              );
+            })()}
           </div>
         </div>
       )}
