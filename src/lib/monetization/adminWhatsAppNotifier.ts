@@ -21,12 +21,38 @@ export const ADMIN_JID = '2348022791227@s.whatsapp.net';
  */
 export async function sendAdminWhatsAppNotification(messageText: string): Promise<{
   success: boolean;
-  channel: 'WHATSAPP_BAILEYS' | 'GSM_SMS_GATEWAY' | 'FALLBACK_EMAIL';
+  channel: 'WHATSAPP_EVOLUTION' | 'GSM_SMS_GATEWAY' | 'FALLBACK_EMAIL';
   error?: string;
 }> {
   console.log(`[AdminNotifier] Dispatching Approval Card to Admin WhatsApp (${ADMIN_PHONE_E164})...`);
 
-  // Channel 1: Try Tailscale Android SMS Gateway (GSM Airtime - 100% reliable)
+  // Channel 1: Try VPS Evolution WhatsApp API (Port 8080 on 169.58.182.92) - 100% Active Session
+  try {
+    const evoUrl = process.env.EVOLUTION_API_URL || 'http://169.58.182.92:8080';
+    const evoKey = process.env.EVOLUTION_API_KEY || 'evolution_bethelmind_secret_2026';
+    const evoInstance = process.env.EVOLUTION_INSTANCE_NAME || 'bethelmind_instance_1';
+
+    const resp = await fetch(`${evoUrl}/message/sendText/${evoInstance}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': evoKey
+      },
+      body: JSON.stringify({
+        number: ADMIN_PHONE_CLEAN,
+        text: messageText
+      })
+    });
+
+    if (resp.ok) {
+      console.log(`✅ [AdminNotifier] Delivered via VPS Evolution WhatsApp to ${ADMIN_PHONE_E164}!`);
+      return { success: true, channel: 'WHATSAPP_EVOLUTION' };
+    }
+  } catch (err: any) {
+    console.warn(`[AdminNotifier] VPS WhatsApp failed: ${err.message}, trying SMS gateway fallback...`);
+  }
+
+  // Channel 2: Try Tailscale Android SMS Gateway (GSM Airtime)
   try {
     const payload = JSON.stringify({
       to: ADMIN_PHONE_E164,
