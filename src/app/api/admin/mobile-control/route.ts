@@ -13,6 +13,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import {
+  getPillar2Telemetry,
+  discoverFreshDeals,
+  approveTicket as approvePillar2Ticket,
+  rejectTicket as rejectPillar2Ticket,
+  processOutboundQueue as processPillar2OutboundQueue,
+  CORPORATE_SETTLEMENT
+} from '@/lib/pillar2/pillar2Engine';
 
 const { 
   handlePostContactInquiry, 
@@ -49,51 +57,9 @@ function writeDbJson(filename: string, data: any): void {
 const SITES_DIR = path.join(process.cwd(), 'src/data/sites');
 const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
 
-function getPillar2Telemetry() {
-  const rawCopilotTickets = readDbJson('one_tap_copilot_tickets.json', {});
-  const copilotTicketsList: any[] = typeof rawCopilotTickets === 'object' && rawCopilotTickets !== null
-    ? Object.values(rawCopilotTickets)
-    : [];
-
-  // Sort newest first
-  copilotTicketsList.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
-
-  const pendingPillar2 = copilotTicketsList.filter(t => t.status === 'PENDING_APPROVAL');
-  const approvedPillar2 = copilotTicketsList.filter(t => t.status === 'APPROVED');
-  const rejectedPillar2 = copilotTicketsList.filter(t => t.status === 'REJECTED' || t.status === 'ARCHIVED');
-
-  const totalAssetPool = pendingPillar2.reduce((sum, t) => sum + (t.propertyValueNGN || 0), 0);
-  const totalOriginationPool = pendingPillar2.reduce((sum, t) => sum + (t.projectedRevenueNGN || 0), 0);
-
-  const outboundQueue = readDbJson('mandate_outbound_queue.json', []);
-  const dispatchedLedger = readDbJson('mandate_dispatched_ledger.json', []);
-
-  return {
-    stats: {
-      pendingCount: pendingPillar2.length,
-      approvedCount: approvedPillar2.length,
-      rejectedCount: rejectedPillar2.length,
-      totalAssetPoolNGN: totalAssetPool,
-      totalOriginationPoolNGN: totalOriginationPool,
-      queuedOutboundCount: Array.isArray(outboundQueue) ? outboundQueue.filter((q: any) => q.status === 'QUEUED_FOR_OUTBOUND').length : 0,
-      dispatchedCount: Array.isArray(dispatchedLedger) ? dispatchedLedger.length : 0,
-    },
-    pendingTickets: pendingPillar2.slice(0, 20),
-    allTickets: copilotTicketsList.slice(0, 30),
-    outboundQueue: Array.isArray(outboundQueue) ? outboundQueue.slice(-15).reverse() : [],
-    dispatchedLedger: Array.isArray(dispatchedLedger) ? dispatchedLedger.slice(-15).reverse() : [],
-    settlementAccount: {
-      bankName: 'Moniepoint Microfinance Bank',
-      accountNumber: '6805375225',
-      accountName: 'Bethelmind Digital Solutions',
-      cacReg: 'Reg 9912717'
-    }
-  };
-}
-
 export async function GET() {
   const todayStr = new Date().toISOString().split('T')[0];
-  const pillar2 = getPillar2Telemetry();
+  const pillar2 = await getPillar2Telemetry();
 
   // 1. Primary: Query Contabo VPS live telemetry server (24/7 PM2 Engine)
   try {
@@ -430,7 +396,7 @@ Reply here to claim and launch for *${leadInfo.businessName}*!`;
     }
 
     // ── ACTION C: Test Inbound AI Response Engine (Pillar 1) ─────────────────
-    if (action === 'test_ai_closer') {
+    if (action === 'test_ai_closer' || action === 'test_ai_query') {
       const { message, businessName, category, area } = body;
       const testLead = {
         businessName: businessName || 'Lagos Commercial Enterprise',
@@ -451,40 +417,14 @@ Reply here to claim and launch for *${leadInfo.businessName}*!`;
 
     // ── ACTION D: Discover Fresh Luxury Mandates (Pillar 2) ──────────────────
     if (action === 'run_pillar2_discovery') {
-      let stagedResult: any = [];
-      try {
-        const { runAutonomousPillar2CoPilot } = require('../../../../../scripts/autonomous_pillar2_approval_copilot');
-        stagedResult = runAutonomousPillar2CoPilot();
-      } catch (err: any) {
-        console.error('Pillar 2 Discovery error:', err.message);
-      }
-
-      const updatedPillar2 = getPillar2Telemetry();
-      return NextResponse.json({
-        success: true,
-        message: 'Discovered and staged high-ticket luxury mandates.',
-        stagedCount: stagedResult?.length || 0,
-        pillar2: updatedPillar2
-      });
+      const result = await discoverFreshDeals();
+      return NextResponse.json(result);
     }
 
     // ── ACTION E: Process Outbound Mandate Queue (Pillar 2) ───────────────────
     if (action === 'process_pillar2_queue') {
-      let workerRes: any = { processed: 0, dispatched: 0 };
-      try {
-        const { processMandateOutboundQueue } = require('../../../../../scripts/mandate_outbound_worker');
-        workerRes = await processMandateOutboundQueue();
-      } catch (err: any) {
-        console.error('Pillar 2 Worker error:', err.message);
-      }
-
-      const updatedPillar2 = getPillar2Telemetry();
-      return NextResponse.json({
-        success: true,
-        message: `Queue processed. Dispatched: ${workerRes?.dispatched || 0}`,
-        workerRes,
-        pillar2: updatedPillar2
-      });
+      const result = await processPillar2OutboundQueue();
+      return NextResponse.json(result);
     }
 
     // ── ACTION F: 1-Tap In-App Mandate Approval (Pillar 2) ───────────────────
@@ -493,50 +433,8 @@ Reply here to claim and launch for *${leadInfo.businessName}*!`;
       if (!ticketId) {
         return NextResponse.json({ success: false, error: 'ticketId is required' }, { status: 400 });
       }
-
-      const tickets = readDbJson('one_tap_copilot_tickets.json', {});
-      const ticket = tickets[ticketId];
-      if (!ticket) {
-        return NextResponse.json({ success: false, error: 'Ticket not found' }, { status: 404 });
-      }
-
-      ticket.status = 'APPROVED';
-      ticket.approvedAt = new Date().toISOString();
-      tickets[ticketId] = ticket;
-      writeDbJson('one_tap_copilot_tickets.json', tickets);
-
-      // Enqueue in mandate_outbound_queue
-      const queue = readDbJson('mandate_outbound_queue.json', []);
-      const queueItem = {
-        enqueuedAt: new Date().toISOString(),
-        ticketId: ticket.ticketId,
-        recipientPhone: ticket.actionPayload?.recipientPhone || ticket.targetContactPhone,
-        recipientName: ticket.actionPayload?.recipientName || ticket.targetBusinessName,
-        opportunityTitle: ticket.title,
-        scriptText: ticket.preDraftedScript,
-        projectedSettlementNGN: ticket.projectedRevenueNGN,
-        status: 'QUEUED_FOR_OUTBOUND'
-      };
-      queue.push(queueItem);
-      writeDbJson('mandate_outbound_queue.json', queue);
-
-      // Attempt immediate dispatch
-      let workerRes: any = null;
-      try {
-        const { processMandateOutboundQueue } = require('../../../../../scripts/mandate_outbound_worker');
-        workerRes = await processMandateOutboundQueue();
-      } catch (err: any) {
-        console.warn('Auto-dispatch error (item remains safely queued):', err.message);
-      }
-
-      const updatedPillar2 = getPillar2Telemetry();
-      return NextResponse.json({
-        success: true,
-        message: `Ticket #${ticketId} approved & queued for outbound dispatch!`,
-        ticket,
-        workerRes,
-        pillar2: updatedPillar2
-      });
+      const result = await approvePillar2Ticket(ticketId);
+      return NextResponse.json(result);
     }
 
     // ── ACTION G: Dismiss / Reject Mandate Ticket (Pillar 2) ──────────────────
@@ -545,20 +443,8 @@ Reply here to claim and launch for *${leadInfo.businessName}*!`;
       if (!ticketId) {
         return NextResponse.json({ success: false, error: 'ticketId is required' }, { status: 400 });
       }
-
-      const tickets = readDbJson('one_tap_copilot_tickets.json', {});
-      if (tickets[ticketId]) {
-        tickets[ticketId].status = 'REJECTED';
-        tickets[ticketId].rejectedAt = new Date().toISOString();
-        writeDbJson('one_tap_copilot_tickets.json', tickets);
-      }
-
-      const updatedPillar2 = getPillar2Telemetry();
-      return NextResponse.json({
-        success: true,
-        message: `Ticket #${ticketId} archived.`,
-        pillar2: updatedPillar2
-      });
+      const result = await rejectPillar2Ticket(ticketId);
+      return NextResponse.json(result);
     }
 
     return NextResponse.json({ success: false, error: 'Unknown action' }, { status: 400 });

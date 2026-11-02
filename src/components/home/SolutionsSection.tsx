@@ -20,7 +20,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: 'Instant WhatsApp Speed-to-Lead & Catalog Closer',
     sector: 'Retail & E-Commerce',
     desc: 'Sub-3s WhatsApp DM replies with natural Nigerian voice notes, instant catalog pricing, and automated Moniepoint/Paystack payment links.',
-    pricing: '₦35,000 Starter Activation (₦65k Total)',
+    pricing: '₦35,000 Setup + ₦7k/mo (or ₦80k Annual — 1 Year Free)',
     href: '/solutions',
   },
   {
@@ -30,7 +30,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: 'Solar & Inverter Instant Quotation Engine',
     sector: 'Solar & Renewable Energy',
     desc: 'Interactive appliance load picker generating instant WhatsApp BOQ proposals and diesel replacement fuel savings analysis.',
-    pricing: '₦35,000 Starter Activation (₦65k Total)',
+    pricing: '₦35,000 Setup + ₦7k/mo (or ₦80k Annual — 1 Year Free)',
     href: '/solar',
   },
   {
@@ -40,7 +40,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: '"Fake Alert Proof" Bank Transfer Reconciliation',
     sector: 'Supermarkets & Wholesale',
     desc: 'Validates payments strictly via Direct NIBSS/OPay/Moniepoint webhooks with cashier notifications. Zero fake alert fraud.',
-    pricing: '₦35,000 Starter Activation (₦65k Total)',
+    pricing: '₦35,000 Setup + ₦7k/mo (or ₦80k Annual — 1 Year Free)',
     href: '/solutions',
   },
   {
@@ -50,7 +50,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: 'Hyperlocal Dispatch & Waybill Tracker',
     sector: 'Logistics & Haulage',
     desc: 'Distance fee comparer, automated customer SMS/WhatsApp waybill tracking, and Pay-on-Delivery cash ledger.',
-    pricing: '₦35,000 Starter Activation (₦65k Total)',
+    pricing: '₦35,000 Setup + ₦7k/mo (or ₦80k Annual — 1 Year Free)',
     href: '/solutions',
   },
   {
@@ -60,7 +60,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: 'Tenant Service Charge & Rent Escrow Manager',
     sector: 'Real Estate & Landlords',
     desc: 'Automated rent countdowns, digital stamped receipts, and facility diesel maintenance breakdown per tenant unit.',
-    pricing: '₦35,000 Starter Activation (₦65k Total)',
+    pricing: '₦35,000 Setup + ₦7k/mo (or ₦80k Annual — 1 Year Free)',
     href: '/solutions',
   },
   {
@@ -70,7 +70,7 @@ const FLAGSHIP_SOLUTIONS = [
     title: 'Automated Service Booking & Deposit Lock',
     sector: 'Clinics, Spas & Salons',
     desc: '24/7 appointment calendar locking client slots with upfront bank transfer commitments to eliminate no-show losses.',
-    pricing: '₦35,000 Starter Activation (₦65k Total)',
+    pricing: '₦35,000 Setup + ₦7k/mo (or ₦80k Annual — 1 Year Free)',
     href: '/solutions',
   },
 ];

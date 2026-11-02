@@ -74,7 +74,7 @@ const TOOLS: ToolItem[] = [
     icon: Sun,
     color: 'text-[#d4af37]',
     href: '/tools/solar-boq',
-    upsell: '₦35,000 Starter Setup'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'tokunbo-duty',
@@ -85,7 +85,7 @@ const TOOLS: ToolItem[] = [
     icon: Car,
     color: 'text-[#d4af37]',
     href: '/tools/tokunbo-duty',
-    upsell: '₦35,000 Auto Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'salon-booking',
@@ -96,7 +96,7 @@ const TOOLS: ToolItem[] = [
     icon: Scissors,
     color: 'text-[#d4af37]',
     href: '/tools/salon-booking',
-    upsell: '₦35,000 Salon Setup'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'restaurant-order',
@@ -107,7 +107,7 @@ const TOOLS: ToolItem[] = [
     icon: UtensilsCrossed,
     color: 'text-[#d4af37]',
     href: '/tools/restaurant-order',
-    upsell: '₦35,000 Food Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'retail-catalog',
@@ -118,7 +118,7 @@ const TOOLS: ToolItem[] = [
     icon: ShoppingBag,
     color: 'text-[#d4af37]',
     href: '/tools/retail-catalog',
-    upsell: '₦35,000 Retail Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'mortgage-calculator',
@@ -129,7 +129,7 @@ const TOOLS: ToolItem[] = [
     icon: Building2,
     color: 'text-[#d4af37]',
     href: '/tools/mortgage-calculator',
-    upsell: '₦35,000 Property Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'clinic-hmo',
@@ -140,7 +140,7 @@ const TOOLS: ToolItem[] = [
     icon: Activity,
     color: 'text-[#d4af37]',
     href: '/tools/clinic-hmo',
-    upsell: '₦35,000 Clinic Setup'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'school-portal',
@@ -151,7 +151,7 @@ const TOOLS: ToolItem[] = [
     icon: GraduationCap,
     color: 'text-[#d4af37]',
     href: '/tools/school-portal',
-    upsell: '₦35,000 School Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'logistics-quote',
@@ -162,7 +162,7 @@ const TOOLS: ToolItem[] = [
     icon: Truck,
     color: 'text-[#d4af37]',
     href: '/tools/logistics-quote',
-    upsell: '₦35,000 Haulage Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'cac-filing',
@@ -173,7 +173,7 @@ const TOOLS: ToolItem[] = [
     icon: Scale,
     color: 'text-[#d4af37]',
     href: '/tools/cac-filing',
-    upsell: '₦35,000 Legal Retainer'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'shortlet-reconciler',
@@ -184,7 +184,7 @@ const TOOLS: ToolItem[] = [
     icon: Hotel,
     color: 'text-[#d4af37]',
     href: '/tools/shortlet-reconciler',
-    upsell: '₦35,000 Hospitality Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'fake-alert-shield',
@@ -195,7 +195,7 @@ const TOOLS: ToolItem[] = [
     icon: ShieldCheck,
     color: 'text-[#d4af37]',
     href: '/tools/fake-alert-shield',
-    upsell: '₦35,000 Fintech Shield'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
 
   {
@@ -207,7 +207,7 @@ const TOOLS: ToolItem[] = [
     icon: Scale,
     color: 'text-[#d4af37]',
     href: '/tools/cac-registration-sizer',
-    upsell: '₦35,000 Legal Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'shortlet-booking-escrow',
@@ -218,7 +218,7 @@ const TOOLS: ToolItem[] = [
     icon: Hotel,
     color: 'text-[#d4af37]',
     href: '/tools/shortlet-booking-escrow',
-    upsell: '₦35,000 Hospitality Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'gps-tracker-fuel-audit',
@@ -229,7 +229,7 @@ const TOOLS: ToolItem[] = [
     icon: Truck,
     color: 'text-[#d4af37]',
     href: '/tools/gps-tracker-fuel-audit',
-    upsell: '₦35,000 Haulage Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'starlink-installation-sizer',
@@ -240,7 +240,7 @@ const TOOLS: ToolItem[] = [
     icon: Zap,
     color: 'text-[#d4af37]',
     href: '/tools/starlink-installation-sizer',
-    upsell: '₦35,000 Starlink Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
   {
     id: 'cleaning-fumigation-sizer',
@@ -251,7 +251,7 @@ const TOOLS: ToolItem[] = [
     icon: Sparkles,
     color: 'text-[#d4af37]',
     href: '/tools/cleaning-fumigation-sizer',
-    upsell: '₦35,000 Cleaning Suite'
+    upsell: '₦35k Setup + ₦7k/mo (or ₦80k Annual)'
   },
 
   // --- Lifestyle & Wealth Utility Engines ---

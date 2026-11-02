@@ -624,7 +624,7 @@ export default function PreviewPage() {
                   ₦70,000 <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>1-Year All-Inclusive Flat</span>
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#fde047', fontWeight: 800, marginBottom: '6px' }}>
-                  Milestone Option: ₦35,000 Deposit to Start · ₦35,000 Balance When Live!
+                  Option A: ₦35,000 Setup + ₦7,000/mo · Option B: ₦80,000 Annual Pass (1 Year Free!)
                 </div>
                 <div style={{ fontSize: '0.80rem', color: '#34d399', fontWeight: 800, marginBottom: '14px', background: 'rgba(16, 185, 129, 0.15)', padding: '5px 10px', borderRadius: '6px', display: 'block', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
                   ✅ Zero monthly bills for 12 full months. Setup, hosting, security &amp; domain all covered.
@@ -679,7 +679,7 @@ export default function PreviewPage() {
                       textAlign: 'center'
                     }}
                   >
-                    <span>₦35k Deposit (50% Plan)</span>
+                    <span>₦35k Setup (+ ₦7k/mo or ₦80k Annual)</span>
                   </a>
 
                   <a

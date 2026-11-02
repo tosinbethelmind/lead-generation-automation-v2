@@ -15,7 +15,7 @@ export const TurnkeySmeSetupBanner: React.FC<TurnkeySmeSetupBannerProps> = ({
   adminPhone = '2348022791227',
 }) => {
   const whatsAppSetupUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(
-    `Hello Bethelmind Digital Solutions! I am reviewing the *${toolName}* on your website. I want to deploy this exact branded interactive calculator + 24/7 AI WhatsApp closer for my own business (₦35,000 SME Starter Package). How do we begin?`
+    `Hello Bethelmind Digital Solutions! I am reviewing the *${toolName}* on your website. I want to deploy this exact branded interactive calculator + 24/7 AI WhatsApp closer for my own business (₦35,000 Setup + ₦7,000/mo or ₦80,000 Annual Pass). How do we begin?`
   )}`;
 
   return (
@@ -60,11 +60,8 @@ export const TurnkeySmeSetupBanner: React.FC<TurnkeySmeSetupBannerProps> = ({
           </div>
           
           <div className="text-3xl font-serif text-[#d4af37]">
-            ₦35,000
-          </div>
-          
-          <div className="text-[11px] text-[#8e887e] font-light">
-            One-time activation &bull; Moniepoint Escrow
+            ₦35,000 Setup + ₦7k/mo</div>
+          <div className="text-[11px] text-emerald-400 font-semibold">or ₦80,000 Annual (1 Year Free) &bull; Moniepoint Escrow
           </div>
 
           <a

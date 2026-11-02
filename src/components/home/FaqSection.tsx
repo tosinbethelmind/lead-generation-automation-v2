@@ -23,7 +23,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'How does the 50% commitment deposit work?',
-    a: 'You can initiate onboarding with a 50% commitment deposit (₦35,000 for Starter or ₦75,000 for Turnkey). Our engineering team builds your bespoke 24/7 AI assistant, website prototype, and sector calculators immediately. You pay the remaining balance strictly upon live testing and final approval within 48 hours.',
+    a: 'We provide clear, transparent pricing: Plan A (Monthly Flex) is ₦35,000 setup + ₦7,000/month maintenance; Plan B (Annual Smart-Saver) is ₦80,000 all-inclusive with 1 FULL YEAR FREE maintenance (saving you ₦39,000); and Plan C (Full Custom .com Domain Suite) is ₦75,000 milestone deposit (₦150,000 total). You can test your working prototype free before paying.',
   },
   {
     q: 'What if I already have a website (WordPress, Wix, Shopify, custom)?',

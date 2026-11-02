@@ -37,7 +37,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
   8. *Construction & Interior Finishing Material Estimator* (₦20k–₦40k/mo): Instant cement, tile, paint & POP quantity calculator for contractors.
   9. *Private School Term Fee Portal with Result Gating* (₦50k–₦100k/term): Student term fee payment portal that auto-gates digital report cards until fees clear.
   10. *Bulk Agribusiness Feed & Input Order Consolidator* (₦30k–₦70k/mo): Farm collective portal aggregating feed/fertilizer orders to secure wholesale discounts.
-- **Done-For-You Commercial Website Prototypes (`https://www.bethelmindanalytics.com/preview/[lead_id]`)**: Turnkey deployments (₦35k Starter Go-Live / ₦25k monthly or ₦75k deposit / ₦150k Full Custom Domain Suite).
+- **Done-For-You Commercial Website Prototypes (`https://www.bethelmindanalytics.com/preview/[lead_id]`)**: Turnkey deployments (₦35k Setup + ₦7k/mo (or ₦80k Annual with 1 Year Free) or ₦75k deposit / ₦150k Full Custom Domain Suite).
 - **MANDATORY VOICE NOTE INTEGRATION ACROSS ALL CHANNELS (EXCEPT GSM SMS)**:
   - **WhatsApp DMs**: 15-second `.opus` voice note audio bubbles (`en-NG-EzinneNeural`).
   - **B2B Executive Email**: Personalized `.mp3` voice note attachment + clickable audio player banner via Hostinger SMTP.
