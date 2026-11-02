@@ -428,7 +428,36 @@ export async function getPillar2Telemetry() {
     } catch (_) {}
   }
 
-  const allTickets = Object.values(ticketsMap);
+  const allTickets = Object.values(ticketsMap).map((t: any) => {
+    const rawContact = t.targetContactPhone || t.actionPayload?.recipientPhone || '08021061457';
+    const cleanPhone = String(rawContact).replace(/\D/g, '');
+    const e164 = cleanPhone.startsWith('0') ? '234' + cleanPhone.slice(1) : (cleanPhone.startsWith('234') ? cleanPhone : '234' + cleanPhone);
+    const oppTitle = t.title?.replace('Pillar 2 Mandate: ', '') || 'Luxury Asset Mandate';
+    const brokerName = t.targetBusinessName || 'Verified Broker';
+    const priceFormatted = t.actionPayload?.listingPrice || (t.propertyValueNGN ? `₦${Number(t.propertyValueNGN).toLocaleString()}` : '₦ 500,000,000');
+    
+    let email = t.targetContactEmail || t.actionPayload?.recipientEmail;
+    if (!email) {
+      const matchedBroker = VERIFIED_NIGERIAN_BROKERS.find(b => b.name === brokerName);
+      email = matchedBroker?.email || 'info@oraegbunike.com';
+    }
+
+    const script = t.preDraftedScript || buildMandateScript(oppTitle, priceFormatted, brokerName);
+    const sms = t.smsText || buildMandateSms(oppTitle);
+    const emailData = t.emailData || buildMandateEmail(oppTitle, priceFormatted, brokerName);
+
+    return {
+      ...t,
+      targetContactEmail: email,
+      preDraftedScript: script,
+      smsText: sms,
+      emailSubject: emailData.subject,
+      emailBody: emailData.body,
+      directChatLink: t.directChatLink || `https://wa.me/${e164}?text=${encodeURIComponent(script)}`,
+      smsLink: t.smsLink || `sms:+${e164}?body=${encodeURIComponent(sms)}`,
+      emailLink: t.emailLink || `mailto:${email}?subject=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`
+    };
+  });
   allTickets.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
   const pendingTickets = allTickets.filter(t => t.status === 'PENDING_APPROVAL');
