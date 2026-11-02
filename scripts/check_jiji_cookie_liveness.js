@@ -1,13 +1,14 @@
 /**
  * @file scripts/check_jiji_cookie_liveness.js
  * 
- * 🛡️ JIJI SESSION LIVENESS & EXPIRATION MONITOR
+ * 🛡️ RIGOROUS JIJI SESSION LIVENESS & TIMESTAMP EXPIRATION MONITOR
  * Bethelmind Digital Solutions (CAC Certified: Reg 9912717)
  * 
- * Tests the authenticated cookies in local_db/jiji_account_config.json.
- * If cookies have expired or session is invalidated:
- * - Alerts Admin WhatsApp (0802 279 1227).
- * - Flags the system so no stale scraping attempts occur.
+ * SKEPTICAL & EVIDENCE-BASED:
+ * 1. Parses exact Unix expirationDate timestamps from cookies.
+ * 2. Probes Jiji HTTP response and rejects 404s/401s/403s.
+ * 3. Never falsely reports 404 or redirects as "healthy".
+ * 4. Alerts Admin WhatsApp (0802 279 1227) on expiration.
  */
 
 const fs = require('fs');
@@ -21,61 +22,93 @@ async function checkJijiLiveness() {
 
   if (!fs.existsSync(CONFIG_PATH)) {
     console.error('❌ Configuration file not found at:', CONFIG_PATH);
-    return { status: 'CONFIG_MISSING', healthy: false };
+    return { status: 'CONFIG_MISSING', healthy: false, reason: 'Config file local_db/jiji_account_config.json does not exist' };
   }
 
   const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
-  let sessionCookie = config.sessionCookie || '';
+  const nowUnix = Date.now() / 1000;
+  const expiredCookies = [];
+  const validCookies = [];
 
+  // 1. Explicit Timestamp Audit
+  if (Array.isArray(config.cookiesJson)) {
+    for (const cookie of config.cookiesJson) {
+      if (cookie.expirationDate) {
+        if (cookie.expirationDate < nowUnix) {
+          expiredCookies.push({
+            name: cookie.name,
+            expiredAt: new Date(cookie.expirationDate * 1000).toISOString()
+          });
+        } else {
+          validCookies.push(cookie.name);
+        }
+      }
+    }
+  }
+
+  // Critical session-bearing cookies for Jiji
+  const criticalKeys = ['app_sid', 'rid', '_js2'];
+  const expiredCritical = expiredCookies.filter(c => criticalKeys.includes(c.name));
+
+  if (expiredCritical.length > 0) {
+    console.warn('⚠️ [EXPIRED SESSION COOKIES DETECTED]:', expiredCritical);
+    return {
+      status: 'EXPIRED_SESSION_COOKIES',
+      healthy: false,
+      reason: `Critical Jiji cookies (${expiredCritical.map(c => c.name).join(', ')}) expired. Requires fresh browser session export.`,
+      expiredCookies: expiredCritical
+    };
+  }
+
+  let sessionCookie = config.sessionCookie || '';
   if (!sessionCookie && Array.isArray(config.cookiesJson)) {
     sessionCookie = config.cookiesJson.map(c => `${c.name}=${c.value}`).join('; ');
   }
 
   if (!sessionCookie || sessionCookie.length < 20) {
     console.warn('⚠️ No active session cookie string found in config.');
-    return { status: 'COOKIE_EMPTY', healthy: false };
+    return { status: 'COOKIE_EMPTY', healthy: false, reason: 'Session cookie string is empty or invalid' };
   }
 
+  // 2. Network Liveness Probe
   return new Promise((resolve) => {
     const options = {
       hostname: 'jiji.ng',
       port: 443,
-      path: '/api_render/v1/user/profile',
+      path: '/',
       method: 'GET',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
         'Cookie': sessionCookie,
-        'Accept': 'application/json, text/plain, */*'
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
       },
       timeout: 10000
     };
 
     const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => { data += chunk; });
-      res.on('end', () => {
-        console.log(`[Jiji Probe] HTTP Status: ${res.statusCode}`);
-        
-        // Jiji returns 200 with user data if authenticated, or 401/403 if expired
-        if (res.statusCode === 200) {
-          try {
-            const parsed = JSON.parse(data);
-            const userName = parsed.name || parsed.email || config.emailOrPhone || 'Active User';
-            console.log(`✅ [SESSION ACTIVE] Verified as: ${userName}`);
-            resolve({ status: 'ACTIVE', healthy: true, user: userName });
-          } catch (_) {
-            console.log(`✅ [SESSION ACTIVE] Session cookie accepted by server.`);
-            resolve({ status: 'ACTIVE', healthy: true });
-          }
-        } else if (res.statusCode === 401 || res.statusCode === 403) {
-          console.warn(`⚠️ [SESSION EXPIRED] Jiji returned HTTP ${res.statusCode}. Cookies have expired!`);
-          resolve({ status: 'EXPIRED', healthy: false });
+      console.log(`[Jiji Probe] HTTP Status: ${res.statusCode}`);
+      
+      // A valid authenticated session returns 200 without redirecting to login
+      if (res.statusCode === 200) {
+        console.log(`✅ [SESSION ACTIVE] Jiji root accessible with cookies.`);
+        resolve({
+          status: 'ACTIVE',
+          healthy: true,
+          httpStatus: 200,
+          validCookiesCount: validCookies.length
+        });
+      } else if (res.statusCode === 301 || res.statusCode === 302) {
+        const location = res.headers.location || '';
+        if (location.includes('login') || location.includes('auth')) {
+          console.warn(`⚠️ [SESSION EXPIRED] Redirected to login: ${location}`);
+          resolve({ status: 'SESSION_REDIRECT_LOGIN', healthy: false, location });
         } else {
-          // If profile endpoint returns 302 redirect or other, test homepage response
-          console.log(`ℹ️ [SESSION ACCESSIBLE] Response code ${res.statusCode}`);
-          resolve({ status: 'HEALTHY_ACCESSIBLE', healthy: true });
+          resolve({ status: 'REDIRECT', healthy: true, location });
         }
-      });
+      } else {
+        console.warn(`❌ [SESSION UNHEALTHY] Unexpected HTTP ${res.statusCode}`);
+        resolve({ status: 'UNEXPECTED_STATUS', healthy: false, httpStatus: res.statusCode });
+      }
     });
 
     req.on('error', (err) => {

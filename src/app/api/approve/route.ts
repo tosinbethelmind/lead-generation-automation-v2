@@ -228,7 +228,7 @@ export async function GET(req: NextRequest) {
               Projected Origination Settlement: ₦${ticket.projectedRevenueNGN.toLocaleString()} NGN
             </div>
             <div style="font-size: 12px; color: #6ee7b7; margin-top: 4px;">
-              Corporate Settlement: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digital Solutions)
+              Settlement: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digital Solutions) upon verified closing
             </div>
           </div>
 
