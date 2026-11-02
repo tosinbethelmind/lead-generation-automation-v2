@@ -185,12 +185,12 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/app',
-        destination: '/home',
+        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
         permanent: false,
       },
       {
         source: '/mobile',
-        destination: '/home',
+        destination: '/api/admin/login?token=bethelmind_admin_2026&redirect=/admin/mobile',
         permanent: false,
       },
       {
