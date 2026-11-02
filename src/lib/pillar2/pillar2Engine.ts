@@ -10,15 +10,12 @@
  */
 
 import * as crypto from 'crypto';
-import fs from 'fs';
-import path from 'path';
 
 const HMAC_SECRET = process.env.APPROVAL_HMAC_SECRET || 'bethelmind_copilot_secret_2026_lagos';
 const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
 const ADMIN_PHONE = '08022791227';
-const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || 'http://169.58.182.92:8080';
-const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || 'bethelmind_evo_secret_2026';
-const INSTANCE_NAME = process.env.EVOLUTION_INSTANCE_NAME || 'bethelmind_instance_1';
+const VPS_SEND_URL = process.env.EVOLUTION_SEND_URL || 'http://169.58.182.92:8080/send';
+const VPS_API_KEY = process.env.EVOLUTION_API_KEY || 'evolution_bethelmind_secret_2026';
 
 export const CORPORATE_SETTLEMENT = {
   bankName: 'Moniepoint Microfinance Bank',
@@ -30,6 +27,7 @@ export const CORPORATE_SETTLEMENT = {
 // ── VERIFIED LUXURY ASSETS POOL (₦300M - ₦1.5B) ─────────────────────────────
 const PRIME_LUXURY_LISTINGS = [
   {
+    id: 'DEAL-LEKKI1-1100M',
     title: '5bdrm Luxury Smart Duplex with Private Pool in Lekki Phase 1 for sale',
     priceNgn: 1100000000,
     priceFormatted: '₦ 1,100,000,000',
@@ -37,6 +35,7 @@ const PRIME_LUXURY_LISTINGS = [
     sourceUrl: 'https://jiji.ng/lekki-phase/houses-apartments-for-sale/5bdrm-duplex-in-lekki-phase-1-for-sale-tvFPL8keSF6G7oIc9lI7iYRi.html'
   },
   {
+    id: 'DEAL-AMEN-500M',
     title: '7bdrm Sovereign Mansion in Amen Estate, Lekki Expressway for sale',
     priceNgn: 500000000,
     priceFormatted: '₦ 500,000,000',
@@ -44,6 +43,7 @@ const PRIME_LUXURY_LISTINGS = [
     sourceUrl: 'https://jiji.ng/lekki-expressway/houses-apartments-for-sale/7bdrm-mansion-in-amen-estate-lekki-expressway-for-sale-5pZP9pB51LCZ8R19tr3cNEAD.html'
   },
   {
+    id: 'DEAL-BANANA-1500M',
     title: 'Waterfront 6-Bedroom Contemporary Villa in Banana Island, Ikoyi',
     priceNgn: 1500000000,
     priceFormatted: '₦ 1,500,000,000',
@@ -51,6 +51,7 @@ const PRIME_LUXURY_LISTINGS = [
     sourceUrl: 'https://jiji.ng/ikoyi/houses-apartments-for-sale/waterfront-6bdrm-villa-banana-island-lekki.html'
   },
   {
+    id: 'DEAL-LEKKI1-480M',
     title: '5bdrm Contemporary Detached Duplex in Lekki Phase 1 for sale',
     priceNgn: 480000000,
     priceFormatted: '₦ 480,000,000',
@@ -58,6 +59,7 @@ const PRIME_LUXURY_LISTINGS = [
     sourceUrl: 'https://jiji.ng/lekki-phase/houses-apartments-for-sale/5bdrm-duplex-in-lekki-phase-1-for-sale-44pHeipU1aW6TF37zoNjgLjO.html'
   },
   {
+    id: 'DEAL-VI-850M',
     title: '5-Bedroom Fully Automated Detached House in Victoria Island Commercial Corridor',
     priceNgn: 850000000,
     priceFormatted: '₦ 850,000,000',
@@ -65,6 +67,7 @@ const PRIME_LUXURY_LISTINGS = [
     sourceUrl: 'https://jiji.ng/victoria-island/houses-apartments-for-sale/5bdrm-automated-detached-vi.html'
   },
   {
+    id: 'DEAL-LEKKIEPE-750M',
     title: 'Commercial High-Rise Development Plot along Lekki-Epe Expressway Corridor',
     priceNgn: 750000000,
     priceFormatted: '₦ 750,000,000',
@@ -72,6 +75,7 @@ const PRIME_LUXURY_LISTINGS = [
     sourceUrl: 'https://jiji.ng/lekki-expressway/land-plots-for-sale/prime-commercial-plot-lekki-corridor.html'
   },
   {
+    id: 'DEAL-IKOYI-420M',
     title: '4-Bedroom Luxury Sky Penthouse overlooking Ikoyi Golf Course',
     priceNgn: 420000000,
     priceFormatted: '₦ 420,000,000',
@@ -79,6 +83,7 @@ const PRIME_LUXURY_LISTINGS = [
     sourceUrl: 'https://jiji.ng/ikoyi/houses-apartments-for-sale/4bdrm-sky-penthouse-ikoyi.html'
   },
   {
+    id: 'DEAL-IKEJA-650M',
     title: 'Prime Logistics & Industrial Warehouse Complex in Ikeja Industrial Estate',
     priceNgn: 650000000,
     priceFormatted: '₦ 650,000,000',
@@ -144,7 +149,7 @@ Once confirmed, we issue our Joint Inspection Memorandum (JIM) so that whenever 
 }
 
 function buildTicketFromListing(listing: typeof PRIME_LUXURY_LISTINGS[0], broker: typeof VERIFIED_NIGERIAN_BROKERS[0], customId?: string) {
-  const ticketId = customId || `DEAL-${Date.now().toString().slice(-6)}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+  const ticketId = customId || listing.id;
   const expiresAt = Date.now() + 48 * 3600 * 1000;
   
   const agencyCommissionPool = Math.round(listing.priceNgn * 0.05); // Standard 5%
@@ -200,12 +205,12 @@ function buildTicketFromListing(listing: typeof PRIME_LUXURY_LISTINGS[0], broker
   };
 }
 
-// Ensure initial baseline of staged deals always exists
+// Ensure initial baseline of staged deals always exists with deterministic IDs
 function ensureBaselineTickets() {
   if (Object.keys(inMemoryTickets).length === 0) {
-    PRIME_LUXURY_LISTINGS.slice(0, 6).forEach((listing, idx) => {
+    PRIME_LUXURY_LISTINGS.forEach((listing, idx) => {
       const broker = VERIFIED_NIGERIAN_BROKERS[idx % VERIFIED_NIGERIAN_BROKERS.length];
-      const ticket = buildTicketFromListing(listing, broker);
+      const ticket = buildTicketFromListing(listing, broker, listing.id);
       inMemoryTickets[ticket.ticketId] = ticket;
     });
   }
@@ -217,7 +222,7 @@ export async function getPillar2Telemetry() {
 
   let ticketsMap: Record<string, any> = { ...inMemoryTickets };
 
-  // Fetch persisted tickets from Supabase if available
+  // Fetch persisted tickets and status overrides from Supabase
   if (supabase) {
     try {
       const { data, error } = await supabase
@@ -225,14 +230,24 @@ export async function getPillar2Telemetry() {
         .select('*')
         .eq('step', 'PILLAR2_TICKET')
         .order('created_at', { ascending: false })
-        .limit(50);
+        .limit(100);
 
       if (!error && data && data.length > 0) {
         data.forEach((row: any) => {
           try {
-            const ticket = JSON.parse(row.message);
-            if (ticket && ticket.ticketId) {
-              ticketsMap[ticket.ticketId] = ticket;
+            const parsed = JSON.parse(row.message);
+            if (parsed && parsed.ticketId) {
+              if (ticketsMap[parsed.ticketId]) {
+                // Merge status override
+                ticketsMap[parsed.ticketId] = {
+                  ...ticketsMap[parsed.ticketId],
+                  status: parsed.status || ticketsMap[parsed.ticketId].status,
+                  approvedAt: parsed.approvedAt || ticketsMap[parsed.ticketId].approvedAt,
+                  rejectedAt: parsed.rejectedAt || ticketsMap[parsed.ticketId].rejectedAt,
+                };
+              } else if (parsed.title) {
+                ticketsMap[parsed.ticketId] = parsed;
+              }
             }
           } catch (_) {}
         });
@@ -240,7 +255,7 @@ export async function getPillar2Telemetry() {
     } catch (_) {}
   }
 
-  // Fetch persisted queue items
+  // Fetch persisted outbound queue items
   let queueList: any[] = [...inMemoryQueue];
   if (supabase) {
     try {
@@ -249,7 +264,7 @@ export async function getPillar2Telemetry() {
         .select('*')
         .eq('step', 'PILLAR2_MANDATE_OUTBOUND')
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(50);
 
       if (!error && data && data.length > 0) {
         const cloudQueue = data.map((row: any) => {
@@ -264,7 +279,8 @@ export async function getPillar2Telemetry() {
               scriptText: parsed.script || parsed.scriptText,
               projectedSettlementNGN: parsed.projectedRevenueNGN || parsed.projectedSettlementNGN,
               status: parsed.status || 'QUEUED_FOR_OUTBOUND',
-              directChatLink: parsed.directChatLink || null
+              directChatLink: parsed.directChatLink || null,
+              gateway: parsed.gateway || 'Contabo VPS / Direct WhatsApp'
             };
           } catch (_) {
             return null;
@@ -290,20 +306,25 @@ export async function getPillar2Telemetry() {
         .select('*')
         .eq('step', 'PILLAR2_DISPATCHED')
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(50);
 
       if (!error && data && data.length > 0) {
         const cloudDispatched = data.map((row: any) => {
           try {
-            return JSON.parse(row.message);
+            const parsed = JSON.parse(row.message);
+            return {
+              ...parsed,
+              dispatchedAt: parsed.dispatchedAt || row.created_at
+            };
           } catch (_) {
             return null;
           }
         }).filter(Boolean);
 
-        const seenIds = new Set(dispatchedList.map(d => d.ticketId));
+        const seenIds = new Set(dispatchedList.map(d => d.ticketId + (d.dispatchedAt || '')));
         cloudDispatched.forEach((item: any) => {
-          if (!seenIds.has(item.ticketId)) {
+          const key = item.ticketId + (item.dispatchedAt || '');
+          if (!seenIds.has(key)) {
             dispatchedList.push(item);
           }
         });
@@ -328,13 +349,13 @@ export async function getPillar2Telemetry() {
       rejectedCount: rejectedTickets.length,
       totalAssetPoolNGN,
       totalOriginationPoolNGN,
-      queuedOutboundCount: queueList.filter(q => q.status === 'QUEUED_FOR_OUTBOUND').length,
+      queuedOutboundCount: queueList.filter(q => q.status === 'QUEUED_FOR_OUTBOUND' || q.status === 'DIRECT_CHAT_READY').length,
       dispatchedCount: dispatchedList.length
     },
-    pendingTickets: pendingTickets.slice(0, 20),
-    allTickets: allTickets.slice(0, 30),
-    outboundQueue: queueList.slice(-15).reverse(),
-    dispatchedLedger: dispatchedList.slice(-15).reverse(),
+    pendingTickets: pendingTickets.slice(0, 30),
+    allTickets: allTickets.slice(0, 50),
+    outboundQueue: queueList.slice(-25).reverse(),
+    dispatchedLedger: dispatchedList.slice(-25).reverse(),
     settlementAccount: CORPORATE_SETTLEMENT
   };
 }
@@ -344,23 +365,26 @@ export async function discoverFreshDeals() {
   const supabase = getSupabaseClient();
   const newlyStaged: any[] = [];
 
-  // Pick 3 fresh luxury assets from the registry
+  const timeSuffix = Date.now().toString().slice(-4);
   const startIndex = Math.floor(Math.random() * PRIME_LUXURY_LISTINGS.length);
   for (let i = 0; i < 3; i++) {
     const listing = PRIME_LUXURY_LISTINGS[(startIndex + i) % PRIME_LUXURY_LISTINGS.length];
     const broker = VERIFIED_NIGERIAN_BROKERS[(startIndex + i) % VERIFIED_NIGERIAN_BROKERS.length];
-    const ticket = buildTicketFromListing(listing, broker);
+    const dynamicId = `${listing.id}-${timeSuffix}`;
+    const ticket = buildTicketFromListing(listing, broker, dynamicId);
 
     inMemoryTickets[ticket.ticketId] = ticket;
     newlyStaged.push(ticket);
 
-    // Persist to Supabase if available
+    // Persist to Supabase logs table with valid schema columns
     if (supabase) {
       try {
         await supabase.from('logs').insert({
+          run_id: 'pillar2_mandates',
           step: 'PILLAR2_TICKET',
-          level: 'info',
-          message: JSON.stringify(ticket)
+          status: 'SUCCESS',
+          message: JSON.stringify(ticket),
+          tenant_id: 'default'
         });
       } catch (_) {}
     }
@@ -379,30 +403,52 @@ export async function approveTicket(ticketId: string) {
   ensureBaselineTickets();
   const supabase = getSupabaseClient();
 
-  const ticket = inMemoryTickets[ticketId];
+  let ticket = inMemoryTickets[ticketId];
+  
+  // If not found in current memory instance, reconstruct from baseline or Supabase
+  if (!ticket) {
+    const matchedListing = PRIME_LUXURY_LISTINGS.find(l => ticketId.startsWith(l.id));
+    if (matchedListing) {
+      const broker = VERIFIED_NIGERIAN_BROKERS[0];
+      ticket = buildTicketFromListing(matchedListing, broker, ticketId);
+      inMemoryTickets[ticketId] = ticket;
+    }
+  }
+
   if (ticket) {
     ticket.status = 'APPROVED';
     ticket.approvedAt = new Date().toISOString();
   }
 
-  // Update in Supabase
+  // Update in Supabase logs table
   if (supabase) {
     try {
       await supabase.from('logs').insert({
+        run_id: 'pillar2_mandates',
         step: 'PILLAR2_TICKET',
-        level: 'info',
-        message: JSON.stringify({ ticketId, status: 'APPROVED', approvedAt: new Date().toISOString() })
+        status: 'SUCCESS',
+        message: JSON.stringify({
+          ticketId,
+          ...(ticket || {}),
+          status: 'APPROVED',
+          approvedAt: new Date().toISOString()
+        }),
+        tenant_id: 'default'
       });
     } catch (_) {}
   }
 
   // Build Queue Item
-  const rawContact = ticket?.targetContactPhone || ticket?.actionPayload?.recipientPhone || '';
+  const rawContact = ticket?.targetContactPhone || ticket?.actionPayload?.recipientPhone || '08021061457';
   const cleanPhone = String(rawContact).replace(/\D/g, '');
-  const scriptText = ticket?.preDraftedScript || '';
+  const scriptText = ticket?.preDraftedScript || buildMandateScript(
+    ticket?.title || 'Luxury Asset Mandate',
+    ticket?.propertyValueNGN ? `₦${Number(ticket.propertyValueNGN).toLocaleString()}` : '₦ 500,000,000',
+    ticket?.targetBusinessName || 'Verified Broker'
+  );
   const recipientName = ticket?.targetBusinessName || ticket?.actionPayload?.recipientName || 'Verified Broker';
   const opportunityTitle = ticket?.title || 'Luxury Mandate';
-  const projectedSettlementNGN = ticket?.projectedRevenueNGN || 0;
+  const projectedSettlementNGN = ticket?.projectedRevenueNGN || 5000000;
 
   // Build direct 1-tap WhatsApp link as bulletproof fallback
   const e164 = cleanPhone.startsWith('0') ? '234' + cleanPhone.slice(1) : (cleanPhone.startsWith('234') ? cleanPhone : '234' + cleanPhone);
@@ -417,36 +463,41 @@ export async function approveTicket(ticketId: string) {
     scriptText,
     projectedSettlementNGN,
     status: 'QUEUED_FOR_OUTBOUND',
-    directChatLink
+    directChatLink,
+    gateway: 'Direct WhatsApp Gateway Link'
   };
 
   inMemoryQueue.push(queueItem);
 
-  // Attempt real-time dispatch via Contabo VPS WhatsApp API
-  let dispatchResult = { dispatched: false, gateway: 'NONE' };
+  // Attempt real-time dispatch via Contabo VPS WhatsApp API (/send)
+  let dispatchResult = { dispatched: false, gateway: 'Direct WhatsApp Gateway Link' };
   if (e164 && e164 !== ADMIN_PHONE && e164 !== '2348022791227') {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-      const res = await fetch(`${EVOLUTION_API_URL}/message/sendText/${INSTANCE_NAME}`, {
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(VPS_SEND_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': EVOLUTION_API_KEY
+          'apikey': VPS_API_KEY
         },
         body: JSON.stringify({
-          number: e164,
-          options: { delay: 1200, presence: 'composing' },
-          textMessage: { text: scriptText }
+          phone: e164,
+          message: scriptText,
+          isColdOutreach: false,
+          lineId: 1
         }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
 
-      if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && (data.success || data.messageId)) {
         queueItem.status = 'DISPATCHED_WHATSAPP';
         queueItem.dispatchedAt = new Date().toISOString();
-        queueItem.gateway = 'Contabo VPS Evolution API (Instance 1)';
+        queueItem.gateway = `Contabo VPS WhatsApp (Line ${data.line || 1})`;
+        queueItem.messageId = data.messageId;
         dispatchResult = { dispatched: true, gateway: queueItem.gateway };
         inMemoryDispatched.push(queueItem);
       } else {
@@ -461,13 +512,15 @@ export async function approveTicket(ticketId: string) {
     }
   }
 
-  // Persist queue / dispatch to Supabase
+  // Persist queue / dispatch item to Supabase logs table
   if (supabase) {
     try {
       await supabase.from('logs').insert({
+        run_id: 'pillar2_mandates',
         step: queueItem.status === 'DISPATCHED_WHATSAPP' ? 'PILLAR2_DISPATCHED' : 'PILLAR2_MANDATE_OUTBOUND',
-        level: 'info',
-        message: JSON.stringify(queueItem)
+        status: 'SUCCESS',
+        message: JSON.stringify(queueItem),
+        tenant_id: 'default'
       });
     } catch (_) {}
   }
@@ -477,7 +530,7 @@ export async function approveTicket(ticketId: string) {
     success: true,
     message: queueItem.status === 'DISPATCHED_WHATSAPP' 
       ? `Deal #${ticketId} approved & mandate delivered via Contabo VPS WhatsApp!` 
-      : `Deal #${ticketId} approved & queued (Direct 1-tap chat link generated).`,
+      : `Deal #${ticketId} approved & queued! 1-Tap WhatsApp chat link generated.`,
     ticket,
     queueItem,
     dispatchResult,
@@ -497,9 +550,11 @@ export async function rejectTicket(ticketId: string) {
   if (supabase) {
     try {
       await supabase.from('logs').insert({
+        run_id: 'pillar2_mandates',
         step: 'PILLAR2_TICKET',
-        level: 'info',
-        message: JSON.stringify({ ticketId, status: 'REJECTED', rejectedAt: new Date().toISOString() })
+        status: 'SUCCESS',
+        message: JSON.stringify({ ticketId, status: 'REJECTED', rejectedAt: new Date().toISOString() }),
+        tenant_id: 'default'
       });
     } catch (_) {}
   }
@@ -514,6 +569,7 @@ export async function rejectTicket(ticketId: string) {
 
 export async function processOutboundQueue() {
   ensureBaselineTickets();
+  const supabase = getSupabaseClient();
   let dispatchedCount = 0;
 
   for (const item of inMemoryQueue) {
@@ -522,28 +578,43 @@ export async function processOutboundQueue() {
       if (e164 && e164 !== ADMIN_PHONE && e164 !== '2348022791227') {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 4000);
-          const res = await fetch(`${EVOLUTION_API_URL}/message/sendText/${INSTANCE_NAME}`, {
+          const timeoutId = setTimeout(() => controller.abort(), 6000);
+          const res = await fetch(VPS_SEND_URL, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'apikey': EVOLUTION_API_KEY
+              'apikey': VPS_API_KEY
             },
             body: JSON.stringify({
-              number: e164,
-              options: { delay: 1000 },
-              textMessage: { text: item.scriptText }
+              phone: e164,
+              message: item.scriptText,
+              isColdOutreach: false,
+              lineId: 1
             }),
             signal: controller.signal
           });
           clearTimeout(timeoutId);
 
-          if (res.ok) {
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok && (data.success || data.messageId)) {
             item.status = 'DISPATCHED_WHATSAPP';
             item.dispatchedAt = new Date().toISOString();
-            item.gateway = 'Contabo VPS Evolution API';
+            item.gateway = `Contabo VPS WhatsApp (Line ${data.line || 1})`;
             inMemoryDispatched.push({ ...item });
             dispatchedCount++;
+
+            if (supabase) {
+              try {
+                await supabase.from('logs').insert({
+                  run_id: 'pillar2_mandates',
+                  step: 'PILLAR2_DISPATCHED',
+                  status: 'SUCCESS',
+                  message: JSON.stringify(item),
+                  tenant_id: 'default'
+                });
+              } catch (_) {}
+            }
           }
         } catch (_) {}
       }
@@ -553,7 +624,7 @@ export async function processOutboundQueue() {
   const updatedTelemetry = await getPillar2Telemetry();
   return {
     success: true,
-    message: `Queue processed: ${dispatchedCount} mandates dispatched.`,
+    message: `Queue processed: ${dispatchedCount} mandates dispatched via VPS.`,
     dispatchedCount,
     pillar2: updatedTelemetry
   };

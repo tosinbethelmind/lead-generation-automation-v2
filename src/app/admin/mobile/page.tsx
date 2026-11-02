@@ -236,7 +236,7 @@ export default function MobileAdminCommandCenter() {
       });
       const data = await res.json();
       if (data.success) {
-        setFeedbackMsg(`✅ Deal #${ticketId} approved & queued for outbound dispatch!`);
+        setFeedbackMsg(`✅ Deal #${ticketId} approved! View in Outbound Queue or Dispatched Ledger.`);
         if (data.pillar2) setPillar2Data(data.pillar2);
         fetchTelemetry();
       } else {

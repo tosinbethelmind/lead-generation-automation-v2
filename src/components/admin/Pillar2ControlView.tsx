@@ -58,6 +58,12 @@ export default function Pillar2ControlView({
   const [subTab, setSubTab] = useState<'pending' | 'queue' | 'dispatched'>('pending');
   const [scriptModalTicket, setScriptModalTicket] = useState<any | null>(null);
 
+  const handleApproveAndSwitch = async (ticketId: string) => {
+    await onApproveTicket(ticketId);
+    // Automatically switch to Outbound Queue / Dispatched tab so the user sees their deal immediately
+    setSubTab('queue');
+  };
+
   const stats = pillar2Data?.stats || {
     pendingCount: 0,
     approvedCount: 0,
@@ -392,7 +398,7 @@ export default function Pillar2ControlView({
                   {/* Action Buttons: 1-Tap Approve, View Script, Reject */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                     <button
-                      onClick={() => onApproveTicket(ticket.ticketId)}
+                      onClick={() => handleApproveAndSwitch(ticket.ticketId)}
                       disabled={isApproving}
                       style={{
                         background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -718,7 +724,7 @@ export default function Pillar2ControlView({
 
               <button
                 onClick={() => {
-                  onApproveTicket(scriptModalTicket.ticketId);
+                  handleApproveAndSwitch(scriptModalTicket.ticketId);
                   setScriptModalTicket(null);
                 }}
                 style={{
