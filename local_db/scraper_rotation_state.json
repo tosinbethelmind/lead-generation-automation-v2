@@ -1,16 +1,16 @@
 {
-  "cat_idx": 17,
+  "cat_idx": 10,
   "page_offsets": {
-    "solar-energy": 143,
-    "construction-services": 143,
-    "estate-agents": 143,
-    "doctors-and-clinics": 143,
-    "vehicle-services": 143,
-    "architects": 143,
-    "schools": 143,
-    "hotels": 143,
-    "lawyers": 143,
-    "restaurants": 143,
+    "solar-energy": 144,
+    "construction-services": 144,
+    "estate-agents": 144,
+    "doctors-and-clinics": 144,
+    "vehicle-services": 144,
+    "architects": 144,
+    "schools": 144,
+    "hotels": 144,
+    "lawyers": 144,
+    "restaurants": 144,
     "beauty-salons": 143,
     "supermarkets": 143,
     "pharmacies": 143,
@@ -18,10 +18,10 @@
     "cleaning-services": 142,
     "bakeries": 142,
     "furniture": 142,
-    "security-services": 141,
-    "printing-services": 141,
-    "courier-services": 141,
-    "travel-agencies": 142,
-    "computer-dealers": 142
+    "security-services": 142,
+    "printing-services": 142,
+    "courier-services": 142,
+    "travel-agencies": 143,
+    "computer-dealers": 143
   }
 }
