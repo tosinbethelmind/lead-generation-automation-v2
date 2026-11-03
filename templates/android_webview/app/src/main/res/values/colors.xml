@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">{{COLOR_PRIMARY}}</color>
+    <color name="colorPrimaryDark">{{COLOR_PRIMARY_DARK}}</color>
+    <color name="colorAccent">{{COLOR_ACCENT}}</color>
+    <color name="colorBackground">{{COLOR_BACKGROUND}}</color>
+</resources>

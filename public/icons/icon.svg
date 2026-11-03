@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#070a12" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- App Background -->
+  <rect width="512" height="512" rx="112" fill="#070a12"/>
+  <rect width="512" height="512" fill="url(#glow)"/>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="url(#bmGrad)" stroke-width="8" opacity="0.6"/>
+
+  <!-- Center Hex/Circle Badge -->
+  <circle cx="256" cy="256" r="160" fill="url(#bmGrad)"/>
+  <circle cx="256" cy="256" r="148" fill="#0b1324"/>
+
+  <!-- Logo Typography -->
+  <text x="256" y="295" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="124" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="-2">BM</text>
+
+  <!-- Accent Badges -->
+  <circle cx="360" cy="150" r="18" fill="#10b981"/>
+  <circle cx="152" cy="362" r="14" fill="#38bdf8"/>
+  <circle cx="360" cy="362" r="10" fill="#f59e0b"/>
+</svg>

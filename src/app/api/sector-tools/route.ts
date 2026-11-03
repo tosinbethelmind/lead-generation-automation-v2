@@ -104,7 +104,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { action } = body;
+    const action = (body.action === 'calculate' && body.tool) ? body.tool : (body.action || body.tool);
 
     if (action === 'solar_boq') {
       const { kva, batteryType, backupHours } = body;

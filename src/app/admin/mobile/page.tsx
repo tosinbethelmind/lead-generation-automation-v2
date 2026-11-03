@@ -58,6 +58,19 @@ export default function MobileAdminCommandCenter() {
   const [triggerLoading, setTriggerLoading] = useState<string | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
+  // Pillar Mode Switcher with Persistent URL & localStorage Memory
+  const changePillarMode = (mode: 'pillar1' | 'pillar2') => {
+    setPillarMode(mode);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('bm_admin_pillar_mode', mode);
+        const url = new URL(window.location.href);
+        url.searchParams.set('pillar', mode);
+        window.history.replaceState({}, '', url.toString());
+      } catch (_) {}
+    }
+  };
+
   // Claim Lead Form States
   const [claimName, setClaimName] = useState('');
   const [claimPhone, setClaimPhone] = useState('');
@@ -85,6 +98,20 @@ export default function MobileAdminCommandCenter() {
   const [showInstallModal, setShowInstallModal] = useState(false);
 
   useEffect(() => {
+    // Restore persistent Pillar Mode from URL (?pillar=pillar2) or localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const pParam = urlParams.get('pillar');
+        if (pParam === 'pillar2' || pParam === '2' || pParam === 'deal_wire') {
+          setPillarMode('pillar2');
+        } else {
+          const saved = localStorage.getItem('bm_admin_pillar_mode');
+          if (saved === 'pillar2') setPillarMode('pillar2');
+        }
+      } catch (_) {}
+    }
+
     fetchTelemetry();
     const interval = setInterval(fetchTelemetry, 15000); // 15s auto-sync
 
@@ -553,7 +580,7 @@ export default function MobileAdminCommandCenter() {
         gap: '8px'
       }}>
         <button
-          onClick={() => setPillarMode('pillar1')}
+          onClick={() => changePillarMode('pillar1')}
           style={{
             padding: '10px 12px',
             borderRadius: '10px',
@@ -575,7 +602,7 @@ export default function MobileAdminCommandCenter() {
         </button>
 
         <button
-          onClick={() => setPillarMode('pillar2')}
+          onClick={() => changePillarMode('pillar2')}
           style={{
             padding: '10px 12px',
             borderRadius: '10px',
@@ -1798,7 +1825,7 @@ export default function MobileAdminCommandCenter() {
         {pillarMode === 'pillar2' ? (
           <>
             <button
-              onClick={() => setPillarMode('pillar1')}
+              onClick={() => changePillarMode('pillar1')}
               style={{
                 background: 'transparent',
                 border: 'none',
@@ -1875,7 +1902,7 @@ export default function MobileAdminCommandCenter() {
             { key: 'claim', label: 'Claim', icon: PlusCircle },
             { key: 'onboard', label: 'Domains', icon: Globe },
             { key: 'ai_tester', label: 'AI Test', icon: Bot },
-            { key: 'deal_wire', label: 'Deal Wire', icon: Briefcase, onClick: () => setPillarMode('pillar2') }
+            { key: 'deal_wire', label: 'Deal Wire', icon: Briefcase, onClick: () => changePillarMode('pillar2') }
           ].map((item: any) => {
             const Icon = item.icon;
             const isActive = activeTab === item.key;

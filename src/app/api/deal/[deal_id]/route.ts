@@ -12,6 +12,8 @@ function synthesizeBriefFromLuxuryListing(listing: any): any {
     title: listing.title,
     description: `Verified Direct Mandate: ${listing.title} in ${listing.location}. Matched Buyer: ${listing.buyerProfile?.principalName || 'Corporate Principal'} (${listing.buyerProfile?.title || 'Investor'}) with verified budget of ${listing.buyerProfile?.allocatedBudgetFormatted || listing.priceFormatted}. Purpose: ${listing.buyerProfile?.purpose || 'Executive acquisition'}`,
     location: { state: 'Lagos', city: 'Lagos', area: listing.location },
+    property_price_ngn: listing.priceNgn,
+    property_price_formatted: listing.priceFormatted,
     budget_amount_ngn: listing.buyerProfile?.budgetNgn || listing.priceNgn,
     formatted_budget: listing.buyerProfile?.allocatedBudgetFormatted || listing.priceFormatted,
     estimated_commission_pool_ngn: commPool,

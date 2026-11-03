@@ -1,0 +1,107 @@
+[
+  {
+    "deal_id": "bm_deal_lekki_duplex_01",
+    "source": "NIGERIA_PROPERTY_CENTRE",
+    "category": "PRIME_REAL_ESTATE_SALE",
+    "title": "5-Bedroom Fully Detached Luxury Duplex with BQ & Swimming Pool | Lekki Phase 1",
+    "description": "Direct cash buyer (Diaspora Tech Executive returning to Lagos) seeking brand new 5-bedroom detached duplex in Lekki Phase 1 (Admiralty Way / Fola Osibo corridor). Proof of funds verified. Title must have Governor's Consent or C of O.",
+    "location": {
+      "state": "Lagos",
+      "city": "Lagos",
+      "area": "Lekki Phase 1"
+    },
+    "budget_amount_ngn": 650000000,
+    "formatted_budget": "₦650,000,000",
+    "estimated_commission_pool_ngn": 32500000,
+    "bethelmind_origination_fee_ngn": 6500000,
+    "buyer_concierge_fee_ngn": 10000,
+    "buyer_contact": {
+      "name": "Engr. Babatunde Alabi (UK Diaspora Returnee)",
+      "phone": "+2348022791227",
+      "carrier": "MTN Nigeria",
+      "is_carrier_valid": true
+    },
+    "qualification_status": "VERIFIED_CASH_READY",
+    "digital_mandate": {
+      "mandate_ref": "BM-MANDATE-LEKKI-650M",
+      "cac_registration": "Reg: 9912717",
+      "settlement_bank": "Moniepoint Microfinance Bank",
+      "settlement_account": "6805375225",
+      "settlement_account_name": "Bethelmind Digital Solutions",
+      "mandate_text": "🏛️ BETHELMIND DIGITAL SOLUTIONS (CAC Certified Reg: 9912717)\nOFFICIAL CO-BROKERAGE ORIGINATION & NCNDA MANDATE\n• Ref: BM-MANDATE-LEKKI-650M\n• Prime Territory: Lekki Phase 1 Corridor\n• Origination Cut: ₦6,500,000 (20% of 5% Agency Commission Pool)\n• Settlement: Moniepoint MFB (6805375225)\n• Governing Law: Lagos State LASRERA Framework & Evidence Act 2011"
+    },
+    "timestamps": {
+      "harvested_at": "2026-10-31T21:27:23.866Z"
+    }
+  },
+  {
+    "deal_id": "bm_deal_solar_ikeja_02",
+    "source": "DIRECT_INTENT_PORTAL",
+    "category": "COMMERCIAL_SOLAR",
+    "title": "30kVA Hybrid Commercial Solar Mini-Grid for Agro-Food Factory | Ikeja Industrial",
+    "description": "Food manufacturing plant on Band A tariff burning ₦2.4M monthly on diesel power seeks immediate EPC proposal for 30kVA 3-phase hybrid inverter, 60kWh LiFePO4 battery bank, and 36kWp Tier-1 monocrystalline panels. Ready for site audit.",
+    "location": {
+      "state": "Lagos",
+      "city": "Lagos",
+      "area": "Ikeja Industrial Estate"
+    },
+    "budget_amount_ngn": 28500000,
+    "formatted_budget": "₦28,500,000",
+    "estimated_commission_pool_ngn": 4275000,
+    "bethelmind_origination_fee_ngn": 855000,
+    "buyer_concierge_fee_ngn": 10000,
+    "buyer_contact": {
+      "name": "Alhaji Musa Danjuma (MD, Crown Agro Packaging)",
+      "phone": "+2348022791227",
+      "carrier": "Airtel Nigeria",
+      "is_carrier_valid": true
+    },
+    "qualification_status": "VERIFIED_CASH_READY",
+    "digital_mandate": {
+      "mandate_ref": "BM-MANDATE-SOLAR-28M",
+      "cac_registration": "Reg: 9912717",
+      "settlement_bank": "Moniepoint Microfinance Bank",
+      "settlement_account": "6805375225",
+      "settlement_account_name": "Bethelmind Digital Solutions",
+      "mandate_text": "🏛️ BETHELMIND DIGITAL SOLUTIONS (CAC Certified Reg: 9912717)\nOFFICIAL EPC CONTRACT ORIGINATION MANDATE\n• Ref: BM-MANDATE-SOLAR-28M\n• Installation Site: Ikeja Industrial Estate\n• Origination Cut: ₦855,000 (Due within 48h of 1st EPC Milestone Disbursement)\n• Settlement: Moniepoint MFB (6805375225)"
+    },
+    "timestamps": {
+      "harvested_at": "2026-10-31T21:27:23.867Z"
+    }
+  },
+  {
+    "deal_id": "bm_deal_vi_office_03",
+    "source": "PROPERTYPRO",
+    "category": "PRIME_RENTAL",
+    "title": "500 SQM Open-Plan Grade-A Commercial Office Floor | Victoria Island",
+    "description": "Fintech compliance company relocating regional headquarters. Needs 500 sqm open floor with dedicated 250kVA standby generator, 2 passenger elevators, and minimum 18 parking slots. 2-year upfront rent deposit ready.",
+    "location": {
+      "state": "Lagos",
+      "city": "Lagos",
+      "area": "Victoria Island"
+    },
+    "budget_amount_ngn": 85000000,
+    "formatted_budget": "₦85,000,000/yr",
+    "estimated_commission_pool_ngn": 8500000,
+    "bethelmind_origination_fee_ngn": 1700000,
+    "buyer_concierge_fee_ngn": 10000,
+    "buyer_contact": {
+      "name": "Mrs. Folake Adeyemi (Chief Financial Officer)",
+      "phone": "+2348022791227",
+      "carrier": "MTN Nigeria",
+      "is_carrier_valid": true
+    },
+    "qualification_status": "VERIFIED_CASH_READY",
+    "digital_mandate": {
+      "mandate_ref": "BM-MANDATE-VI-OFFICE-85M",
+      "cac_registration": "Reg: 9912717",
+      "settlement_bank": "Moniepoint Microfinance Bank",
+      "settlement_account": "6805375225",
+      "settlement_account_name": "Bethelmind Digital Solutions",
+      "mandate_text": "🏛️ BETHELMIND DIGITAL SOLUTIONS (CAC Certified Reg: 9912717)\nOFFICIAL COMMERCIAL LEASE CO-BROKERAGE MANDATE\n• Ref: BM-MANDATE-VI-OFFICE-85M\n• Prime Territory: Victoria Island Commercial Hub\n• Origination Cut: ₦1,700,000 (20% of 10% Agency Fee)\n• Settlement: Moniepoint MFB (6805375225)"
+    },
+    "timestamps": {
+      "harvested_at": "2026-10-31T21:27:23.867Z"
+    }
+  }
+]

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Connection Interrupted</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #070b14;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .icon-box {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .icon-box svg {
+      width: 36px;
+      height: 36px;
+      stroke: #d4af37;
+    }
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+    p {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.6;
+      max-width: 320px;
+      margin-bottom: 32px;
+    }
+    .btn-retry {
+      background: linear-gradient(135deg, #d4af37 0%, #aa8620 100%);
+      color: #070b14;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 14px 36px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: transform 0.1s;
+    }
+    .btn-retry:active {
+      transform: scale(0.96);
+    }
+    .brand-footer {
+      position: absolute;
+      bottom: 24px;
+      font-size: 11px;
+      color: #64748b;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="icon-box">
+    <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+    </svg>
+  </div>
+  <h2>Connection Interrupted</h2>
+  <p>Please check your mobile data or Wi-Fi connection and tap below to reload the app.</p>
+  <button class="btn-retry" onclick="window.location.reload()">Tap to Reconnect</button>
+  <div class="brand-footer">Powered by Bethelmind Digital Solutions</div>
+</body>
+</html>

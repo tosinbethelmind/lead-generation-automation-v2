@@ -40,6 +40,7 @@ import { SectorToolsWidget, SectorToolTab } from '@/components/SectorToolsWidget
 import { RecruitmentEngineWidget } from '@/components/RecruitmentEngineWidget';
 import CustomerAiAgentWidget from '@/components/CustomerAiAgentWidget';
 import IntegrationBlueprintDashboard from '@/components/IntegrationBlueprintDashboard';
+import WaterFactoryErpDashboard from '@/app/factory/page';
 import { ViralToolShareBar } from '@/components/ViralToolShareBar';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
@@ -448,6 +449,11 @@ export default function StandaloneToolPage({ params }: ToolPageProps) {
 
   if (cleanSlug === 'integrations') {
     return <IntegrationBlueprintDashboard />;
+  }
+
+  // Unconditional Instant Water Factory ERP Renderer
+  if (/water|factory|fmcg|pure-water|table-water|sachet|bottling/.test(cleanSlug)) {
+    return <WaterFactoryErpDashboard />;
   }
 
   // Check if this slug matches one of our 12 Viral Interactive Tools
