@@ -40,6 +40,18 @@ import {
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
 import { TurnkeySmeSetupBanner } from '@/components/TurnkeySmeSetupBanner';
+const toolToServiceMap: Record<string, string> = {
+  'solar-boq': 'solar_boq',
+  'tokunbo-duty': 'vin_checker',
+  'salon-booking': 'salon_booking',
+  'shortlet-booking-escrow': 'shortlet_escrow',
+  'website-to-android-app': 'website_to_app',
+  'school-fee-sizer': 'school_fee',
+  'real-estate-manager': 'estate_rent',
+  'fmcg-dispatch': 'retail_inventory',
+  'gps-tracker-fuel-audit': 'dispatch_tracker',
+};
+
 
 interface ToolItem {
   id: string;
@@ -514,13 +526,22 @@ export default function ToolsHubPage() {
                     {tool.upsell}
                   </span>
                   
-                  <Link
-                    href={tool.href}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-[#d4af37] hover:underline group-hover:translate-x-1 transition-all"
-                  >
-                    <span>Open Engine</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={tool.href}
+                      className="inline-flex items-center gap-1 text-xs font-medium text-slate-300 hover:text-white transition"
+                    >
+                      <span>Demo</span>
+                      <ArrowRight className="w-3 h-3 text-[#d4af37]" />
+                    </Link>
+
+                    <Link
+                      href={`/onboard?service=${toolToServiceMap[tool.id] || 'website_ai'}`}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-[#d4af37] to-[#b38f22] text-[#070b14] font-extrabold text-[11px] hover:brightness-110 shadow-sm transition"
+                    >
+                      <span>Deploy</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
             );

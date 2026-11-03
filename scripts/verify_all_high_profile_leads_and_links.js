@@ -141,6 +141,27 @@ function validateEmail(email) {
       assert(Boolean(buyer.requirements), `[#${id}] Specific Property Requirements Defined`);
       assert(Boolean(buyer.readinessTimeline), `[#${id}] Acquisition Timeline Defined`, buyer.readinessTimeline);
       assert(Boolean(buyer.liquidityStatus), `[#${id}] Liquidity / POF Status Verified`, buyer.liquidityStatus);
+
+      // F2. Representative Contact Verification
+      const rep = buyer.representativeContact;
+      assert(Boolean(rep), `[#${id}] Buyer Representative Contact Attached`);
+      if (rep) {
+        assert(Boolean(rep.name), `[#${id}] Representative Name Defined`, rep.name);
+        const repPhoneCheck = validateNigerianPhone(rep.phone);
+        assert(repPhoneCheck.valid, `[#${id}] Representative Phone Valid`, rep.phone);
+        const repEmailCheck = validateEmail(rep.email);
+        assert(repEmailCheck.valid, `[#${id}] Representative Email Valid`, rep.email);
+        assert(Boolean(rep.officeAddress), `[#${id}] Representative Lagos Office Address Defined`);
+      }
+
+      // F3. Source Attribution & Cross-Check Verification
+      const source = buyer.sourceAttribution;
+      assert(Boolean(source), `[#${id}] Source Attribution Record Attached`);
+      if (source) {
+        assert(Boolean(source.sourceName), `[#${id}] Source Registry Name Defined`, source.sourceName);
+        assert(Boolean(source.sourceUrl && source.sourceUrl.startsWith('https://')), `[#${id}] Source Cross-Check URL Format`);
+        assert(Boolean(source.proofOfFundsRef), `[#${id}] Proof of Funds Reference Attached`, source.proofOfFundsRef);
+      }
     }
 
     // G. Inbound Call Crib Sheet
@@ -152,6 +173,7 @@ function validateEmail(email) {
       assert(Boolean(brief.inspectionProtocol), `[#${id}] Inspection & 80/20 Fee Lock Script Attached`);
       assert(Boolean(brief.commissionSummary?.brokerCutFormatted), `[#${id}] 80% Partner Split Math Pre-Calculated`, brief.commissionSummary?.brokerCutFormatted);
       assert(Boolean(brief.commissionSummary?.bethelmindCutFormatted), `[#${id}] 20% Bethelmind Cut Math Pre-Calculated`, brief.commissionSummary?.bethelmindCutFormatted);
+      assert(Boolean(brief.processMap && brief.processMap.length >= 6), `[#${id}] 6-Stage Process Map Attached in Brief`);
     }
   }
 

@@ -1,0 +1,119 @@
+{
+  "executedAt": "2026-10-31T22:03:56.706Z",
+  "pillar": "PILLAR 2: COMMERCIAL SOLAR & HYBRID INVERTER SYSTEMS",
+  "accountProfile": "Oyelakin Tosin",
+  "findings": [
+    {
+      "target": "COMMERCIAL_SOLAR_INSTALLATION_PACKAGES",
+      "label": "Complete Commercial Solar Packages (10kVA - 30kVA Turnkey)",
+      "url": "https://jiji.ng/search?query=commercial%20solar%20system%20installation",
+      "totalAdsFound": 14,
+      "items": [
+        {
+          "title": "Solar Installation Services – Residential and Commercial in Kaduna",
+          "price": "Contact for price",
+          "location": "Nigeria",
+          "description": "",
+          "url": "https://jiji.ng/kaduna-north/building-and-trades-services/solar-installation-services-residential-and-commercial-in-kaduna-52szbgbAlTRZMxBqOiZkZ7T4.html?page=1&pos=1&cur_pos=1&ads_per_page=14&ads_count=972&lid=aCMa709pmfYia5Gx&indexPosition=0"
+        },
+        {
+          "title": "Inverter Solar System Installation – Professional Service",
+          "price": "₦ 50,000\nper service",
+          "location": "Nigeria",
+          "description": "",
+          "url": "https://jiji.ng/surulere/building-and-trades-services/inverter-solar-system-installation-professional-service-hcyUf16zosvJpEn2tjHRsr47.html?page=1&pos=4&cur_pos=4&ads_per_page=14&ads_count=972&lid=aCMa709pmfYia5Gx&indexPosition=3"
+        },
+        {
+          "title": "30kva Solar Inverter System Installation –Power From The Sun",
+          "price": "₦ 33,000,000",
+          "location": "Nigeria",
+          "description": "",
+          "url": "https://jiji.ng/lekki/power-equipments/30kva-solar-inverter-system-installation-power-from-the-sun-p7XUPMYFd0MdjfaQqK5hWsGr.html?page=1&pos=7&cur_pos=7&ads_per_page=14&ads_count=972&lid=aCMa709pmfYia5Gx&indexPosition=6"
+        },
+        {
+          "title": "4KVA Inverter Solar Installation System",
+          "price": "₦ 7,000,000",
+          "location": "Nigeria",
+          "description": "",
+          "url": "https://jiji.ng/ikeja/power-equipments/4kva-inverter-solar-installation-system-aa0YxCJEYK78m4RExu20BeXe.html?page=1&pos=10&cur_pos=10&ads_per_page=14&ads_count=972&lid=aCMa709pmfYia5Gx&indexPosition=9"
+        },
+        {
+          "title": "10kva Solar System Installation With Lithium Ion Battery",
+          "price": "₦ 6,700,000",
+          "location": "Nigeria",
+          "description": "",
+          "url": "https://jiji.ng/ajah/power-equipments/10kva-solar-system-installation-with-lithium-ion-battery-433X3K0wLcOrSfdoO364Xb8m.html?page=1&pos=13&cur_pos=13&ads_per_page=14&ads_count=972&lid=aCMa709pmfYia5Gx&indexPosition=12"
+        },
+        {
+          "title": "Professional Solar Installation | Inverter Solar Systems",
+          "price": "Contact for price",
+          "location": "Nigeria",
+          "description": "",
+          "url": "https://jiji.ng/lagos-abule-egba/building-and-trades-services/professional-solar-installation-inverter-solar-systems-d0QCZDK86ZrUVo2XybLLkURE.html?page=1&pos=2&cur_pos=2&ads_per_page=14&ads_count=972&lid=aCMa709pmfYia5Gx&indexPosition=1"
+        }
+      ]
+    },
+    {
+      "target": "SOLAR_EPC_INSTALLERS",
+      "label": "Solar Installation Companies & EPC Engineers in Lagos",
+      "error": "page.goto: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - navigating to \"https://jiji.ng/services?query=solar%20installation%20company\", waiting until \"domcontentloaded\"\u001b[22m\n"
+    },
+    {
+      "target": "COMMERCIAL_LITHIUM_BATTERIES",
+      "label": "Commercial High-Capacity Lithium Batteries (Felicity / Deye / Pylontech 10kWh - 30kWh)",
+      "error": "page.goto: Target page, context or browser has been closed"
+    },
+    {
+      "target": "HIGH_CAPACITY_INVERTERS_15KVA_PLUS",
+      "label": "High Capacity 3-Phase Commercial Inverters (15kVA - 50kVA)",
+      "error": "page.goto: Target page, context or browser has been closed"
+    },
+    {
+      "target": "COMMERCIAL_LITHIUM_BATTERIES",
+      "label": "Felicity / Deye Lithium Batteries",
+      "totalAdsFound": 20,
+      "items": [
+        {
+          "title": "17.5kwh Felicity Lithium Battery FLA",
+          "price": "₦ 1,950,000",
+          "location": "Lagos"
+        },
+        {
+          "title": "5kwh Felicity Lithium Battery",
+          "price": "₦ 1,000,000",
+          "location": "Lagos"
+        },
+        {
+          "title": "10kwh Felicity Lithium Battery",
+          "price": "₦ 1,500,000",
+          "location": "Lagos"
+        },
+        {
+          "title": "17.5kwh-48v FLA Felicity Lithium Battery",
+          "price": "₦ 2,200,000",
+          "location": "Lagos"
+        },
+        {
+          "title": "17.5kwh Felicity Lithium Battery",
+          "price": "₦ 2,000,000",
+          "location": "Lagos"
+        },
+        {
+          "title": "2.5kwh 24v Felicity Lithium Battery",
+          "price": "₦ 530,000",
+          "location": "Lagos"
+        },
+        {
+          "title": "5kwh 48v Felicity Lithium Battery",
+          "price": "₦ 1,200,000",
+          "location": "Lagos"
+        },
+        {
+          "title": "17.5kwh 51.2v Felicity Lithium Battery",
+          "price": "₦ 1,820,000",
+          "location": "Lagos"
+        }
+      ]
+    }
+  ]
+}

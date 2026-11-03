@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { PILLAR_ONE_SERVICES, getPillarOneService } from '@/lib/pillarOneCatalog';
 import {
   getPillar2Telemetry,
   discoverFreshDeals,
@@ -306,7 +307,7 @@ export async function POST(req: NextRequest) {
 
     // ── ACTION A: Claim & Generate Website On The Fly (Pillar 1) ─────────────
     if (action === 'claim_lead_site') {
-      const { businessName, phone, category, area } = body;
+      const { businessName, phone, category, area, serviceId, customUrl } = body;
       if (!businessName) {
         return NextResponse.json({ success: false, error: 'Business name is required' }, { status: 400 });
       }
@@ -330,30 +331,16 @@ export async function POST(req: NextRequest) {
       });
 
       const previewUrl = `${APP_ORIGIN}/preview/${slug}`;
-      const pitchText = 
-`Good day Boss! 👋 This is Bethelmind Digital Solutions (Plot 12 Commercial Corridor, Victoria Island).
-
-When customers search for *${leadInfo.businessName}* on Google, they only see third-party directories alongside your competitors because you don't have an official mobile website yet.
-
-We already pre-built your live Official Mobile Website + 24/7 WhatsApp Quoting Assistant for *${leadInfo.businessName}*:
-👉 Test drive free on your phone:
-${previewUrl}
-
-⚡ 1-Year All-Inclusive Go-Live: ₦70,000 Flat
-• Includes official .com.ng domain + 12 months hosting
-• 24/7 AI WhatsApp Sales & Quoting Assistant
-• Moniepoint/OPay Transfer Shield (zero fake alerts)
-• 48-Hour Live Delivery Guarantee (Zero monthly maintenance bills!)
-(Or Milestone Plan: ₦35,000 deposit to start · ₦35,000 balance after going live)
-
-Corporate Settlement: Moniepoint Microfinance Bank | 6805375225 | Bethelmind Digital Solutions
-
-Reply here to claim and launch for *${leadInfo.businessName}*!`;
+      const selectedService = getPillarOneService(serviceId || 'website_ai');
+      const onboardUrl = `${APP_ORIGIN}/onboard?service=${selectedService.id}&biz=${encodeURIComponent(leadInfo.businessName)}&phone=${cleanPhone}`;
+      
+      const pitchText = selectedService.whatsappPitchTemplate(leadInfo.businessName, previewUrl);
 
       return NextResponse.json({
         success: true,
         slug,
         previewUrl,
+        onboardUrl,
         liveSiteUrl: `${APP_ORIGIN}/sites/${slug}`,
         handoverUrl: `${APP_ORIGIN}/handover/${slug}`,
         pitchText,

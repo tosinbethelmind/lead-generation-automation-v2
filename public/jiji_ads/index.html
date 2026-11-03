@@ -1,418 +1,428 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jiji 15 Ad Automation Suite • Bethelmind Digital Solutions</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: #070b14;
-    color: #f5f3ef;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    padding: 30px 20px;
-  }
-  .container {
-    max-width: 1280px;
-    margin: 0 auto;
-  }
-  header {
-    text-align: center;
-    margin-bottom: 35px;
-  }
-  .badge {
-    display: inline-block;
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    color: #d4af37;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding: 6px 14px;
-    border-radius: 100px;
-    margin-bottom: 12px;
-  }
-  h1 {
-    font-size: 30px;
-    font-weight: 800;
-    margin-bottom: 8px;
-    color: #ffffff;
-    letter-spacing: -0.02em;
-  }
-  p.sub {
-    color: #94a3b8;
-    font-size: 14.5px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  .folder-callout {
-    margin: 22px auto 0;
-    max-width: 820px;
-    background: #0a0e17;
-    border: 1px solid rgba(16, 185, 129, 0.35);
-    border-radius: 16px;
-    padding: 14px 20px;
-    font-size: 13.5px;
-    color: #34d399;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  }
-  .folder-callout strong {
-    color: #ffffff;
-  }
-  .notice-pill {
-    display: inline-block;
-    background: rgba(56, 189, 248, 0.12);
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    color: #38bdf8;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 5px 14px;
-    border-radius: 100px;
-    margin-top: 12px;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
-    gap: 24px;
-    margin-top: 30px;
-  }
-  @media (max-width: 650px) {
-    .grid { grid-template-columns: 1fr; }
-  }
-  .ad-card {
-    background: #0a0e17;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    transition: transform 0.2s, border-color 0.2s;
-  }
-  .ad-card:hover {
-    border-color: rgba(212, 175, 55, 0.4);
-    transform: translateY(-2px);
-  }
-  .ad-top {
-    display: flex;
-    gap: 16px;
-    padding: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(255, 255, 255, 0.015);
-  }
-  .ad-img-thumb {
-    width: 140px;
-    height: 140px;
-    border-radius: 12px;
-    object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    flex-shrink: 0;
-    background: #020617;
-  }
-  .ad-meta {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .ad-category {
-    font-size: 11px;
-    color: #94a3b8;
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-  }
-  .ad-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.35;
-    margin: 6px 0;
-  }
-  .ad-price {
-    font-size: 18px;
-    font-weight: 800;
-    color: #d4af37;
-  }
-  .ad-body {
-    padding: 16px 20px;
-    flex: 1;
-  }
-  .desc-box {
-    background: #070b14;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-size: 12.5px;
-    color: #cbd5e1;
-    line-height: 1.5;
-    max-height: 150px;
-    overflow-y: auto;
-    white-space: pre-line;
-    font-family: inherit;
-  }
-  .char-count {
-    font-size: 11px;
-    color: #64748b;
-    margin-top: 8px;
-    display: flex;
-    justify-content: space-between;
-  }
-  .ad-actions {
-    display: flex;
-    gap: 8px;
-    padding: 16px 20px;
-    background: rgba(255, 255, 255, 0.02);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-  }
-  .btn {
-    flex: 1;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: all 0.15s;
-    text-align: center;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
-  .btn-gold {
-    background: linear-gradient(135deg, #d4af37 0%, #aa8620 100%);
-    color: #070b14;
-  }
-  .btn-gold:hover {
-    filter: brightness(1.1);
-  }
-  .btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #f5f3ef;
-  }
-  .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: #10b981;
-    color: #070b14;
-    padding: 12px 24px;
-    border-radius: 100px;
-    font-weight: 800;
-    font-size: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    display: none;
-    z-index: 100;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Bethelmind Digital Solutions — 13 Grand-Slam Jiji Offers Launcher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070b14;
+      --card-bg: #0d1322;
+      --gold: #d4af37;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #10b981;
+      --border: rgba(212, 175, 55, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 24px;
+      line-height: 1.6;
+    }
+    .header {
+      max-width: 1200px;
+      margin: 0 auto 32px auto;
+      text-align: center;
+      padding: 32px 20px;
+      background: radial-gradient(circle at center, #151d33 0%, #070b14 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+    }
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .header .subtitle {
+      color: var(--gold);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .meta-box {
+      margin-top: 16px;
+      display: inline-flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: rgba(0,0,0,0.4);
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 13px;
+    }
+    .meta-box strong { color: var(--gold); }
+    .grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+    }
+    .ad-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .ad-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .price-tag {
+      font-size: 24px;
+      font-weight: 800;
+      color: #38bdf8;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      flex-grow: 1;
+      max-height: 120px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.2);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    button, a.btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .btn-copy {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--gold);
+      border: 1px solid var(--border);
+    }
+    .btn-copy:hover {
+      background: var(--gold);
+      color: #000;
+    }
+    .btn-post {
+      background: #10b981;
+      color: #fff;
+    }
+    .btn-post:hover {
+      background: #059669;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      display: none;
+      z-index: 999;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <div class="badge">Bethelmind Software Solutions • Enterprise Suite</div>
-    <h1>Pure Enterprise Software Solutions Suite</h1>
-    <p class="sub">Ultra-luxurious 3D retina flyers generated with ZERO prices, ZERO physical addresses, and ZERO phone numbers on the graphics for maximum compliance and negotiation flexibility.</p>
-    <div><span class="notice-pill">✓ Clean Flyers Ready in Desktop Folder • Tested Real Functionality • Zero Fake Promises</span></div>
+  <div class="header">
+    <div class="subtitle">CAC Certified Nigerian Enterprise (Reg: 9912717)</div>
+    <h1>💎 13 Grand-Slam Jiji Offers Launcher</h1>
+    <p style="color: var(--muted); font-size: 14px; max-width: 700px; margin: 8px auto;">
+      Deploy, copy, or autofill any of the 13 high-conversion Nigerian SME adverts into Jiji in 1 click.
+    </p>
+    <div class="meta-box">
+      <div>Account: <strong>Moniepoint MFB (6805375225)</strong></div>
+      <div>Closer Hotline: <strong>0802 279 1227</strong></div>
+      <div>Photos: <strong>C:\Users\HomePC\Desktop\JIJI_ADS_PICTURES</strong></div>
+    </div>
+  </div>
 
-    <div class="folder-callout">
-      <span>📁 15 Retina Pictures Ready in: <strong>C:\Users\HomePC\Desktop\JIJI_ADS_PICTURES</strong></span>
-      <div style="display: flex; gap: 8px;">
-        <a href="/onboard" target="_blank" class="btn btn-secondary" style="flex:0; white-space:nowrap; padding: 7px 16px; border-color: rgba(16,185,129,0.5); color:#10b981;">🏛️ Client Admission Portal</a>
-        <button onclick="copyConsoleScript(this)" class="btn btn-secondary" style="flex:0; white-space:nowrap; padding: 7px 16px; border-color: rgba(212,175,55,0.4); color:#d4af37;">⚡ Copy Auto-Post Script</button>
-        <a href="https://jiji.ng" target="_blank" class="btn btn-gold" style="flex:0; white-space:nowrap; padding: 7px 16px;">Open Jiji &rarr;</a>
+  <div class="grid">
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #1 • Vehicle Inspection</span>
+          <div class="price-tag">₦12,500</div>
+          <div class="card-title">Tokunbo Car VIN Check & Customs Duty Report • US Auction Photos in 10 Mins</div>
+          <div class="card-desc">Buying a Tokunbo car in Lagos, Abuja, or Berger? NEVER transfer money to any car dealer until you run a verified chassis number (VIN) audit!
+
+Over 48% of Tokunbo cars imported into...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(1)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(1)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
       </div>
-    </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #2 • Web Design</span>
+          <div class="price-tag">₦35,000</div>
+          <div class="card-title">24-Hour Express Business Website Design, Google SEO & 24/7 WhatsApp AI Closer</div>
+          <div class="card-desc">Stop losing paying customers when they search for your business on Google!
 
-    <div style="margin: 16px auto 0; max-width: 820px; background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 12px 18px; font-size: 13px; color: #94a3b8; text-align: left;">
-      <strong style="color: #38bdf8;">💡 Why Jiji requires 2 fast clicks:</strong>
-      On Jiji's form, the <strong>Description</strong> and <strong>Price</strong> fields only appear AFTER you click <strong>Category</strong> (<em style="color:#fff;">Services &gt; Automotive Services</em>) and <strong>Location</strong> (<em style="color:#fff;">Lagos &gt; Ikeja</em>). Our Auto-Post script detects this and fills them automatically the second you pick them!
-    </div>
-  </header>
+When customers search your business name on Google and see only directory or social media pages, they as...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(2)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(2)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #3 • Software</span>
+          <div class="price-tag">₦35,000</div>
+          <div class="card-title">Solar & Inverter WhatsApp Quoting Tool & Load Calculator for Solar Installers</div>
+          <div class="card-desc">ATTENTION SOLAR INSTALLERS & INVERTER DEALERS:
 
-  <div class="grid" id="adsGrid"></div>
-</div>
+Stop wasting hours doing manual load calculations for prospective clients who end up ghosting you or bargaining down your profit!
 
-<div class="toast" id="toast">Copied to Clipboard!</div>
+W...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(3)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(3)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #4 • Software</span>
+          <div class="price-tag">₦35,000</div>
+          <div class="card-title">Stop Fake Bank Alerts & Cashier Theft • Moniepoint & OPay Transfer Shield</div>
+          <div class="card-desc">Stop falling victim to fake bank transfer alerts, photoshopped receipts, and sales attendants stealing cash!
 
-<script>
-const ADS = [
-  {
-    "id": 1,
-    "title": "Tokunbo Car VIN Check & Customs Duty Report • US Auction Photos in 10 Mins",
-    "price": 10000,
-    "desc": "Buying a Tokunbo car in Lagos, Abuja, or Berger? Never transfer money to any car dealer until you run a verified chassis number (VIN) audit!\n\nOver 45% of Tokunbo cars imported into Nigeria were bought from US Copart/IAAI salvage auctions with severe flood damage, deployed airbags, or rolled-back mileage.\n\nWHAT IS INCLUDED IN YOUR 10-MINUTE VERIFICATION BUNDLE:\n1. Original US Copart & IAAI Salvage Crash Photos (See the exact car before repairs) [Value: ₦15,000]\n2. Genuine Odometer Mileage & Illegal Rollback Audit [Value: ₦10,000]\n3. Hurricane Flood, Saltwater Immersion & Frame Damage History [Value: ₦10,000]\n4. Nigeria Customs Service (NCS) Import Duty & C-Number Paper Check [Value: ₦15,000]\n5. Fair Lagos Market Price Valuation so you do not overpay [Value: ₦10,000]\n6. FREE BONUS: Top 10 Red Flags Car Dealers Hide Inspection Checklist [Value: ₦5,000]\n\nTOTAL VALUE: ₦65,000\nYOUR SPECIAL FEE TODAY: ONLY ₦10,000 ALL-INCLUSIVE!\n\n100% ACCURACY GUARANTEE: Delivered directly to your WhatsApp in 10 minutes or 100% money back.\n\n⚡ CALL OR WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp with the VIN now for your report!",
-    "priceStr": "₦10,000",
-    "category": "Services > Automotive Services > Vehicle Inspection",
-    "img": "ad_1_vin_checker.png"
-  },
-  {
-    "id": 2,
-    "title": "24-Hour Express Business Website Design, Google SEO & WhatsApp Closer",
-    "price": 35000,
-    "desc": "Stop losing paying customers when they search for your business on Google!\n\nWhen customers search your business name on Google and see only directory or social media pages, they assume you are an unverified vendor and refuse to pay before delivery.\n\nWe build and launch your complete, ultra-fast mobile website + 24/7 WhatsApp AI Closer in exactly 24 HOURS.\n\nTHE \"JIJI SELLER DOMINANCE\" 24-HOUR BUNDLE:\n1. Official Mobile Business Website (Android, iPhone & Laptops) [Value: ₦120,000]\n2. 24/7 AI WhatsApp Sales Closer (Replies & sends prices in 3 seconds) [Value: ₦50,000]\n3. Google Search Map & Business Profile Ranking Setup [Value: ₦30,000]\n4. Automated Moniepoint / OPay Transfer Verification Shield (Anti-Fake Alert) [Value: ₦35,000]\n5. 36-State Interstate Park & Waybill Delivery Fee Sizer [Value: ₦25,000]\n6. FREE BONUS: Jiji Page 1 Ad SEO Keywords (Save ₦45,000 in Jiji Boosts) [Value: ₦45,000]\n\nTOTAL VALUE: ₦305,000\nSPECIAL GO-LIVE ACTIVATION TODAY:\n👉 Starter Go-Live: Only ₦35,000 one-time (or ₦25,000/month Pay-Small-Small)\n👉 Full Turnkey Custom Domain Suite: ₦75,000 50% deposit (₦150,000 total)\n\n100% RISK-FREE GUARANTEE: Test your live working website prototype free on your phone before paying 1 Kobo.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji to see a live sample for your shop right now!",
-    "priceStr": "₦35,000",
-    "category": "Services > Computer & IT Services > Web Design",
-    "img": "ad_2_website_ai_closer.png"
-  },
-  {
-    "id": 3,
-    "title": "Solar Inverter WhatsApp Quoting Calculator for Solar Installers",
-    "price": 35000,
-    "desc": "ATTENTION SOLAR INSTALLERS & INVERTER DEALERS:\n\nStop wasting hours doing manual load calculations for prospective clients who end up ghosting you or bargaining down your profit!\n\nWe deploy an automated Solar & Inverter BOQ Load Sizing Calculator branded with your company name, logo, and direct WhatsApp hotline.\n\nTHE \"SOLAR CLOSER SUITE\" BUNDLE:\n1. Interactive Appliance Load Calculator (ACs, fridges, pumps, lighting) [Value: ₦80,000]\n2. Instant WhatsApp BOQ Quotation Generator sent in 60 seconds [Value: ₦50,000]\n3. Motor Inrush Surge Protection Sizer (Stops inverters blowing up) [Value: ₦30,000]\n4. NEPA Band A Tariff vs Generator Fuel Payback ROI Clock [Value: ₦35,000]\n5. 1-Tap Bankable PDF Engineering Proposal Generator with your logo [Value: ₦40,000]\n6. FREE BONUS: 5-Year Lithium LiFePO4 vs Gel Battery Cost Comparison Sheet [Value: ₦20,000]\n\nTOTAL VALUE: ₦255,000\nSPECIAL ACTIVATION TODAY: ONLY ₦35,000 ONE-TIME SETUP!\n\nClose 3x more solar projects on autopilot with zero paperwork stress.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to test the interactive demo now!",
-    "priceStr": "₦35,000",
-    "category": "Services > Computer & IT Services > Software",
-    "img": "ad_3_solar_boq_sizer.png"
-  },
-  {
-    "id": 4,
-    "title": "Stop Fake Bank Alerts & Cashier Theft • Instant Moniepoint POS Shield",
-    "price": 35000,
-    "desc": "Stop falling victim to fake bank transfer alerts, photoshopped receipts, and sales attendants stealing cash!\n\nIn today's Nigeria, cashiers and store owners lose hundreds of thousands of Naira monthly to fake NIP bank transfer screenshots generated by scammers.\n\nWe deploy an automated Bank Transfer Shield for boutiques, supermarkets, gadget stores, pharmacies, and clinics.\n\nTHE \"STORE REVENUE SHIELD\" BUNDLE:\n1. Real-Time Moniepoint & Paystack Bank Webhook Verification [Value: ₦80,000]\n2. Instant Cryptographic Green Pass sent to cashier's phone when real money clears [Value: ₦40,000]\n3. Multi-Branch Cashier Shift Audit (Stops sales girls pocketing cash) [Value: ₦45,000]\n4. Automated WhatsApp Digital Receipts sent to verified buyers [Value: ₦30,000]\n5. End-of-Day POS vs Cash Drawer Reconciliation in 60 seconds [Value: ₦25,000]\n6. FREE BONUS: \"Zero Fake Alert\" Window & Counter Anti-Scam Security Stickers [Value: ₦10,000]\n\nTOTAL VALUE: ₦230,000\nSPECIAL ACTIVATION TODAY: ONLY ₦35,000 ONE-TIME SETUP!\n\nProtect your daily business revenue 100%. One-time setup, zero monthly stress.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to protect your store today!",
-    "priceStr": "₦35,000",
-    "category": "Services > Computer & IT Services > Software",
-    "img": "ad_4_fake_alert_shield.png"
-  },
-  {
-    "id": 5,
-    "title": "Salon & Clinic Appointment Booking with Deposit Lock • Stop No-Shows",
-    "price": 35000,
-    "desc": "Eliminate empty salon chairs and missed appointments with automated 24/7 booking!\n\nWhen clients book appointments and fail to show up, you lose valuable hours and turn away paying walk-in customers.\n\nWe build online appointment scheduling systems for hair salons, aesthetic clinics, spas, and makeup artists that lock client time slots with upfront bank deposits.\n\nTHE \"SALON REVENUE LOCK\" BUNDLE:\n1. 24/7 Automated Mobile Booking Calendar connected to WhatsApp [Value: ₦75,000]\n2. Mandatory 25%–50% Upfront Reservation Deposit Lock via Moniepoint [Value: ₦45,000]\n3. Automated SMS & WhatsApp Appointment Reminders (Cuts no-shows by 90%) [Value: ₦30,000]\n4. Stylist / Doctor Commission Split & Daily Revenue Tracking [Value: ₦35,000]\n5. Customer Treatment History & Birthday Promo Messenger [Value: ₦25,000]\n6. FREE BONUS: Fast 24-Hour Turnkey Deployment Guarantee [Value: ₦20,000]\n\nTOTAL VALUE: ₦230,000\nSPECIAL ACTIVATION TODAY: ONLY ₦35,000 ONE-TIME SETUP!\n\nGuarantee your booking revenue upfront before you touch a single client.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to test the live booking engine free!",
-    "priceStr": "₦35,000",
-    "category": "Services > Health & Beauty Services",
-    "img": "ad_5_salon_deposit_booking.png"
-  },
-  {
-    "id": 6,
-    "title": "Private School Term Fee Portal & Result PIN Gateway • Stop Fee Defaulters",
-    "price": 50000,
-    "desc": "Stop tracking school fee defaulters manually on messy exercise books and Excel sheets!\n\nRecover unpaid school fees on schedule and modernize your school administration with our automated Term Fee Recovery & Digital Result Portal.\n\nTHE \"SCHOOL REVENUE RECOVERY\" BUNDLE:\n1. Automated Digital Result Gating (Report cards locked until fees clear 100%) [Value: ₦120,000]\n2. Scratch-Card & Electronic Result Checker PIN Generator [Value: ₦45,000]\n3. 3-Stage Installment Debt Aging Matrix (Resumption, Mid-Term, Exam Week) [Value: ₦50,000]\n4. Instant Moniepoint & Paystack Term Fee Bank Reconciliation [Value: ₦40,000]\n5. Termly Broadsheet Exam Scoring & Printable PDF Report Cards [Value: ₦50,000]\n6. FREE BONUS: Automated Polite WhatsApp Balance Reminders for Parents [Value: ₦30,000]\n\nTOTAL VALUE: ₦335,000\nSPECIAL ACTIVATION TODAY: ONLY ₦50,000 ACTIVATION DEPOSIT!\n\nRecover school fees on time and eliminate bursar cash leakage this session.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nSend a message on Jiji or WhatsApp for a live portal demonstration for your school today!",
-    "priceStr": "₦50,000",
-    "category": "Services > Computer & IT Services > Software",
-    "img": "ad_6_school_fee_portal.png"
-  },
-  {
-    "id": 7,
-    "title": "Estate Service Charge & Tenant Rent Portal • Automated SMS Reminders",
-    "price": 50000,
-    "desc": "Manage residential estate facility service charges and tenant rent collections with ZERO disputes!\n\nWe deploy cloud-based property management portals for landlords, estate executives, and facility management firms across Nigeria.\n\nTHE \"ESTATE RECONCILIATION\" BUNDLE:\n1. Automated Rent Renewal Reminders sent via SMS & WhatsApp (30, 14, 7 days) [Value: ₦90,000]\n2. Itemized Facility Utility Billing (Generator diesel, security, waste, water) [Value: ₦60,000]\n3. Instant Digital Rent Receipts & Unalterable Payment Ledger [Value: ₦45,000]\n4. Landlord Disbursement Ledger & Monthly Diesel Consumption Audit [Value: ₦40,000]\n5. Transparent Tenant Maintenance Ticket & Defect Tracking Dashboard [Value: ₦35,000]\n6. FREE BONUS: Visitor Gate Pass QR Access Generator for Security Guards [Value: ₦30,000]\n\nTOTAL VALUE: ₦300,000\nSPECIAL ACTIVATION TODAY: ONLY ₦50,000 SETUP!\n\nEliminate rent arguments and keep your estate property accounts 100% reconciled.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp for your live estate demo today!",
-    "priceStr": "₦50,000",
-    "category": "Services > Real Estate Services",
-    "img": "ad_7_tenant_rent_portal.png"
-  },
-  {
-    "id": 8,
-    "title": "Interstate Dispatch Waybill Tracker • Stop 'Where Is My Parcel' Calls",
-    "price": 35000,
-    "desc": "Stop answering 50+ repeated \"Where is my package?\" phone calls every single day!\n\nWe deploy automated dispatch and waybill tracking engines for Nigerian courier businesses, haulage contractors, and interstate delivery hubs.\n\nTHE \"DISPATCH AUTOMATION\" BUNDLE:\n1. Automated SMS & WhatsApp Tracking Links sent to shippers upon package intake [Value: ₦80,000]\n2. Real-Time Milestone Status Updates (Intake, In Transit, Arrived Hub, Delivered) [Value: ₦50,000]\n3. Digital Proof-of-Delivery (POD) Signature & Recipient Photo Verification [Value: ₦45,000]\n4. Highway Driver Interstate Diesel Mileage Auditor (Flags fuel siphoning) [Value: ₦40,000]\n5. GIG, Gokada & Local Dispatch Cost Comparison Calculator [Value: ₦25,000]\n6. FREE BONUS: 36-State Interstate Park Delivery Fee Schedule Generator [Value: ₦25,000]\n\nTOTAL VALUE: ₦265,000\nSPECIAL ACTIVATION TODAY: ONLY ₦35,000 ONE-TIME SETUP!\n\nCut dispatch customer service calls by 85% and build massive trust with shippers.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to test a live tracking link now!",
-    "priceStr": "₦35,000",
-    "category": "Services > Chauffeur & Logistics Services",
-    "img": "ad_8_dispatch_waybill_tracker.png"
-  },
-  {
-    "id": 9,
-    "title": "Multi-Location Retail Inventory & Stock Theft Prevention App • Mobile Ledger",
-    "price": 35000,
-    "desc": "Running 2 or more shop branches in Lagos or Nigeria? Stop losing millions to employee inventory theft and unrecorded stock shrinkage!\n\nWhen you cannot be in all your shop locations at the same time, dishonest sales attendants take advantage: selling goods off-the-books, faking inter-branch transfer records, and pocketing daily cash.\n\nTHE \"MULTI-STORE THEFT PREVENTION\" BUNDLE:\n1. Multi-Branch Real-Time Stock Sync across Branch A, Branch B, and Warehouse [Value: ₦120,000]\n2. Inter-Branch Transfer Reconciliation with Dual-Signoff Gate Pass [Value: ₦60,000]\n3. Staff Permission Gating (Cashiers cannot edit prices or delete sales) [Value: ₦45,000]\n4. Instant WhatsApp Theft Alerts sent to owner for suspicious adjustments [Value: ₦40,000]\n5. End-of-Day Shift Cash vs POS Bank Credit Reconciliation in 60s [Value: ₦30,000]\n6. Daily Gross Profit Audit per product variant and branch [Value: ₦30,000]\n7. FREE BONUS: Barcode Scanner & Thermal Receipt Printer Integration Guide [Value: ₦20,000]\n\nTOTAL VALUE: ₦345,000\nSPECIAL ACTIVATION TODAY:\n👉 Single Branch Rapid Go-Live: ₦35,000 setup (or ₦25,000/mo Pay-Small-Small)\n👉 Multi-Branch Master Suite (2 to 5 Locations): ₦70,000 setup (or ₦45,000/mo)\n\nKnow your exact stock levels and daily profit from your phone anywhere in the world.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nSend a message on Jiji or WhatsApp for a live interactive multi-store demo right now!",
-    "priceStr": "₦35,000",
-    "category": "Services > Computer & IT Services > Software",
-    "img": "ad_9_stock_theft_ledger.png"
-  },
-  {
-    "id": 10,
-    "title": "Building Material Estimator & BOQ Calculator • Cement, Tile & Paint Sizer",
-    "price": 35000,
-    "desc": "Eliminate building material waste and contractor over-budgeting on your construction sites!\n\nWe deploy instant computerized construction quantity estimators for Nigerian builders, site engineers, interior designers, and property owners.\n\nTHE \"SITE MATERIAL SHIELD\" BUNDLE:\n1. Precision Cement, Sand Tonnage & Granite Mix Calculator for Decking & Foundations [Value: ₦75,000]\n2. Floor Tile Square-Meter, Adhesive & Grout Packaging Sizer with 12% Cut Buffer [Value: ₦45,000]\n3. Emulsion & Gloss Paint Bucket Wall Coverage Calculator [Value: ₦35,000]\n4. POP Ceiling Sheets, Drywall Screws & Perimeter Track Estimator [Value: ₦35,000]\n5. Artisan Inflation Reality Check (Flags over-ordered materials) [Value: ₦40,000]\n6. FREE BONUS: 1-Tap Professional Itemized BOQ PDF Generator with current Lagos prices [Value: ₦30,000]\n\nTOTAL VALUE: ₦260,000\nSPECIAL ACTIVATION TODAY: ONLY ₦35,000 ONE-TIME SETUP!\n\nProtect your construction budget from contractor inflation and stolen site materials.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to test the site material estimator now!",
-    "priceStr": "₦35,000",
-    "category": "Services > Building & Construction > Building Services",
-    "img": "ad_10_construction_estimator.png"
-  },
-  {
-    "id": 11,
-    "title": "Fast CAC Business Name & Company Registration • Corporate Bank Ready",
-    "price": 35000,
-    "desc": "Register your Business Name or Private Limited Company (LTD) with the Corporate Affairs Commission (CAC) in 3 to 5 working days without delay or agent overcharging!\n\nDon't let the Central Bank or fintechs freeze your personal account. Upgrade to a certified corporate account today.\n\nTHE \"FAST-TRACK CORPORATE COMPLIANCE\" BUNDLE:\n1. Official CAC Name Availability Search & Instant Reservation [Value: ₦15,000]\n2. Certified CAC Digital Registration Certificate with official QR Verification [Value: ₦35,000]\n3. Certified Status Report / Memorandum & Articles of Association (MEMART) [Value: ₦25,000]\n4. Corporate Tax Identification Number (TIN) for immediate business banking [Value: ₦15,000]\n5. Free Corporate Bank Account Opening Facilitation (Moniepoint, OPay, Wema) [Value: ₦20,000]\n6. FREE BONUS: Corporate Seal & Digital Stamp Design Pack [Value: ₦15,000]\n\nTOTAL VALUE: ₦125,000\nTRANSPARENT ALL-INCLUSIVE PRICING:\n👉 Business Name Registration: ₦35,000 all-inclusive\n👉 Private Limited Company (LTD, 1M Share Capital): ₦75,000 all-inclusive\n\n100% Guaranteed Approval or Full Refund. \n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji to check your proposed business name availability free now!",
-    "priceStr": "₦35,000",
-    "category": "Services > Legal Services > Corporate Law",
-    "img": "ad_11_cac_registration.png"
-  },
-  {
-    "id": 12,
-    "title": "Shortlet Direct Booking Engine & Caution Fee Lock • Stop 20% Airbnb Fees",
-    "price": 35000,
-    "desc": "Stop paying 15% to 20% Airbnb and Booking.com commissions on your shortlet apartments!\n\nWe build direct guest booking portals with automated caution deposit locks for Nigerian shortlet hosts and apartment managers.\n\nTHE \"SHORTLET PROFIT MAXIMIZER\" BUNDLE:\n1. Direct Mobile Guest Booking Portal with Date & Night Sizer [Value: ₦85,000]\n2. Automated Caution Deposit Hold with Automated Refund Release upon check-out [Value: ₦50,000]\n3. Fair-Usage DisCo Electricity Token Calculator (Auto-deducts excess AC usage) [Value: ₦45,000]\n4. Guest Digital ID & Driver's License KYC Verification [Value: ₦35,000]\n5. Automated Check-in Instructions & Keycard/Passcode Messenger [Value: ₦30,000]\n6. FREE BONUS: Instant Moniepoint & Paystack Payment Settlement to your bank [Value: ₦25,000]\n\nTOTAL VALUE: ₦270,000\nSPECIAL ACTIVATION TODAY: ONLY ₦35,000 ONE-TIME SETUP!\n\nKeep 100% of your rental profits and build your own loyal direct guest database.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to test our live shortlet portal today!",
-    "priceStr": "₦35,000",
-    "category": "Services > Real Estate Services",
-    "img": "ad_12_shortlet_booking_escrow.png"
-  },
-  {
-    "id": 13,
-    "title": "Hidden GPS Car & Fleet Tracker • Remote Phone Engine Cut & Fuel Audit",
-    "price": 45000,
-    "desc": "Protect your car, truck, or commercial bus from vehicle theft and driver fuel fraud!\n\nOur hidden GPS tracking systems give you 24/7 live control of your vehicle right from your smartphone anywhere in Nigeria.\n\nTHE \"ULTIMATE VEHICLE SECURITY\" BUNDLE:\n1. 24/7 Real-Time Live Vehicle Location Tracking via Mobile App (Android & iPhone) [Value: ₦60,000]\n2. Remote Engine Cut-Off (Kill vehicle engine from your phone anywhere in Nigeria) [Value: ₦35,000]\n3. Geo-Fencing (Instant WhatsApp alert if vehicle leaves designated route/city) [Value: ₦25,000]\n4. Fuel Consumption vs Mileage Audit (Flags diesel siphoning and fake receipts) [Value: ₦35,000]\n5. In-Cabin Voice Monitoring Microphone (Listen to in-car conversations clearly) [Value: ₦25,000]\n6. 90-Day Trip History & Mileage Playback [Value: ₦20,000]\n7. FREE BONUS: Professional Clean Installation with Zero Wire-Cutting [Value: ₦15,000]\n\nTOTAL VALUE: ₦215,000\nSPECIAL ALL-INCLUSIVE PRICE TODAY: ONLY ₦45,000 (HARDWARE + INSTALLATION)!\n\nSame-day installation across Lagos and Abuja. 100% anti-theft guarantee.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp with your car model to book installation today!",
-    "priceStr": "₦45,000",
-    "category": "Services > Automotive Services > Tracking Services",
-    "img": "ad_13_gps_fuel_mileage_tracker.png"
-  }
-];
+In today's Nigeria, cashiers and store owners lose hundreds of thousan...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(4)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(4)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #5 • Health & Beauty Services</span>
+          <div class="price-tag">₦35,000</div>
+          <div class="card-title">Salon & Spa Appointment Booking App with Deposit Lock • Stop Client No-Shows</div>
+          <div class="card-desc">Eliminate empty salon chairs and missed appointments with automated 24/7 booking!
 
-function copyText(text, btn) {
-  navigator.clipboard.writeText(text).then(() => {
-    const toast = document.getElementById('toast');
-    toast.innerText = 'Copied to Clipboard!';
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 2000);
-    if (btn) {
-      const orig = btn.innerText;
-      btn.innerText = '✓ Copied!';
-      setTimeout(() => { btn.innerText = orig; }, 1500);
+When clients book appointments and fail to show up, you lose valuable hours and turn away paying ...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(5)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(5)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #6 • Software</span>
+          <div class="price-tag">₦45,000</div>
+          <div class="card-title">Private School Term Fee Portal & Online Result Checker • Stop Fee Defaulters</div>
+          <div class="card-desc">Stop tracking school fee defaulters manually on messy exercise books and Excel sheets!
+
+Recover unpaid school fees on schedule and modernize your school administration with our aut...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(6)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(6)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #7 • Real Estate Services</span>
+          <div class="price-tag">₦45,000</div>
+          <div class="card-title">Estate Service Charge & Tenant Rent Portal • Generator Diesel & Utility Ledger</div>
+          <div class="card-desc">Manage residential estate facility service charges and tenant rent collections with ZERO disputes!
+
+We deploy cloud-based property management portals for landlords, estate executiv...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(7)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(7)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #8 • Chauffeur & Logistics Services</span>
+          <div class="price-tag">₦35,000</div>
+          <div class="card-title">Interstate Dispatch Waybill Tracker • Automated SMS & Delivery Status System</div>
+          <div class="card-desc">Stop answering 50+ repeated "Where is my package?" phone calls every single day!
+
+We deploy automated dispatch and waybill tracking engines for Nigerian courier businesses, haulage...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(8)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(8)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #9 • Software</span>
+          <div class="price-tag">₦35,000</div>
+          <div class="card-title">Multi-Store Retail Inventory & Water Factory Route Reconciliation App • Stop Theft</div>
+          <div class="card-desc">Running 2 or more retail shop branches or a Sachet/Bottle Water Factory? Stop losing millions to inventory theft, unrecorded stock shrinkage, and driver cash fraud!
+
+Dishonest sale...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(9)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(9)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #10 • Building Services</span>
+          <div class="price-tag">₦35,000</div>
+          <div class="card-title">Building Material Estimator & BOQ Calculator • Cement, Tile & Paint Sizer</div>
+          <div class="card-desc">Eliminate building material waste and contractor over-budgeting on your construction sites!
+
+We deploy instant computerized construction quantity estimators for Nigerian builders, ...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(10)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(10)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #11 • Corporate Law</span>
+          <div class="price-tag">₦38,500</div>
+          <div class="card-title">Fast CAC Business Name & Company Registration (LTD) • Approved in 3 to 5 Days</div>
+          <div class="card-desc">Register your Business Name or Private Limited Company (LTD) with the Corporate Affairs Commission (CAC) in 3 to 5 working days without delay or agent overcharging!
+
+Don't let the ...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(11)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(11)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #12 • Real Estate Services</span>
+          <div class="price-tag">₦35,000</div>
+          <div class="card-title">Shortlet Direct Booking Website & Caution Deposit Lock • Stop 20% Airbnb Fees</div>
+          <div class="card-desc">Stop paying 15% to 20% Airbnb and Booking.com commissions on your shortlet apartments!
+
+We build direct guest booking portals with automated caution deposit locks for Nigerian shor...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(12)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(12)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+      <div class="ad-card">
+        <div>
+          <span class="badge">Ad #13 • Tracking Services</span>
+          <div class="price-tag">₦55,000</div>
+          <div class="card-title">Hidden GPS Car Tracker & Fleet System • Phone Remote Engine Cut & Fuel Siphon Alert</div>
+          <div class="card-desc">Protect your car, truck, or commercial bus from vehicle theft and driver fuel fraud!
+
+Our hidden GPS tracking systems give you 24/7 live control of your vehicle right from your sma...</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyAdText(13)">📋 Copy Text</button>
+          <button class="btn-copy" onclick="copyConsoleScript(13)">⚡ Copy Script</button>
+          <a class="btn btn-post" href="https://jiji.ng/post-ad" target="_blank" rel="noopener">Post on Jiji ↗</a>
+        </div>
+      </div>
+    
+  </div>
+
+  <div id="toast" class="toast">Copied to clipboard!</div>
+
+  <script>
+    const ADS = [{"id":1,"title":"Tokunbo Car VIN Check & Customs Duty Report • US Auction Photos in 10 Mins","price":12500,"priceStr":"₦12,500","imgFile":"ad_1_vin_checker.png","category":"Services > Automotive Services > Vehicle Inspection","desc":"Buying a Tokunbo car in Lagos, Abuja, or Berger? NEVER transfer money to any car dealer until you run a verified chassis number (VIN) audit!\n\nOver 48% of Tokunbo cars imported into Nigeria were bought from US Copart and IAAI salvage auctions with severe flood damage, saltwater immersion, deployed airbags, or rolled-back mileage.\n\nWHAT IS INCLUDED IN YOUR 10-MINUTE VERIFICATION BUNDLE:\n1. Original US Copart & IAAI Salvage Crash Photos (See the exact car before it was panel-beaten) [Value: ₦15,000]\n2. Genuine Odometer Mileage & Illegal Rollback Audit [Value: ₦10,000]\n3. Hurricane Flood, Saltwater Immersion & Structural Frame Damage Check [Value: ₦10,000]\n4. Nigeria Customs Service (NCS) Import Duty & C-Number Paper Verification [Value: ₦15,000]\n5. Fair Nigerian Market Price Valuation so you don't overpay the dealer [Value: ₦10,000]\n6. FREE BONUS: Top 10 Red Flags Car Dealers Hide Inspection Checklist [Value: ₦5,000]\n\nTOTAL VALUE: ₦65,000\nPRICING OPTIONS:\n👉 Single Car Audit: Only ₦12,500 all-inclusive!\n👉 Car Dealer 3-Car Bundle: ₦25,000 (Save ₦12,500 on 3 inspections)\n\n100% ACCURACY GUARANTEE: Full PDF report + auction photos delivered directly to your WhatsApp in 10 minutes or 100% money back!\n\n⚡ CALL OR WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp with the 17-digit VIN now!\n\nSEARCH TAGS: carfax nigeria, vin checker lagos, tokunbo car inspection, customs duty paper check, copart salvage auction photos, autocheck report, berger car inspection, buy tokunbo car abuja."},{"id":2,"title":"24-Hour Express Business Website Design, Google SEO & 24/7 WhatsApp AI Closer","price":35000,"priceStr":"₦35,000","imgFile":"ad_2_website_ai_closer.png","category":"Services > Computer & IT Services > Web Design","desc":"Stop losing paying customers when they search for your business on Google!\n\nWhen customers search your business name on Google and see only directory or social media pages, they assume you are an unverified vendor and refuse to pay before delivery.\n\nWe build and launch your complete, ultra-fast mobile business website + 24/7 WhatsApp AI Closer in exactly 24 HOURS.\n\nTHE \"JIJI SELLER DOMINANCE\" 24-HOUR BUNDLE:\n1. Official Mobile Business Website (Fast-loading on Android, iPhone & Laptops) [Value: ₦120,000]\n2. 24/7 AI WhatsApp Sales Closer (Replies to customer inquiries and sends prices in 3 seconds) [Value: ₦50,000]\n3. Google Search Map & Business Profile SEO Ranking Setup [Value: ₦30,000]\n4. Automated Moniepoint / OPay Bank Transfer Verification Shield (Anti-Fake Alert) [Value: ₦35,000]\n5. 36-State Interstate Delivery Fee Sizer [Value: ₦25,000]\n6. FREE BONUS: Jiji Page 1 Ad SEO Keywords (Save ₦45,000 in monthly Jiji Boosts) [Value: ₦45,000]\n\nTOTAL VALUE: ₦305,000\nPRICING & ACTIVATION PLANS:\n👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance (Keep it running for just ₦230/day!)\n👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE HOSTING & MAINTENANCE — Save ₦39,000!)\n👉 PLAN C (Full Custom .com Suite): ₦75,000 deposit (₦150,000 total) for dedicated .com domain & 100% code handover\n\n100% RISK-FREE GUARANTEE: Test your live working website prototype free on your phone before paying 1 Kobo!\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji to see a live working demo for your business right now!\n\nSEARCH TAGS: website design lagos, web designer abuja, ecommerce website nigeria, business website developer, cheap website design, company profile website, online store setup, google seo ranking."},{"id":3,"title":"Solar & Inverter WhatsApp Quoting Tool & Load Calculator for Solar Installers","price":35000,"priceStr":"₦35,000","imgFile":"ad_3_solar_boq_sizer.png","category":"Services > Computer & IT Services > Software","desc":"ATTENTION SOLAR INSTALLERS & INVERTER DEALERS:\n\nStop wasting hours doing manual load calculations for prospective clients who end up ghosting you or bargaining down your profit!\n\nWe deploy an automated Solar & Inverter BOQ Load Sizing Calculator branded with your company name, logo, and direct WhatsApp hotline.\n\nTHE \"SOLAR CLOSER SUITE\" BUNDLE:\n1. Interactive Appliance Load Calculator (ACs, fridges, pumping machines, lighting) [Value: ₦80,000]\n2. Instant WhatsApp BOQ Quotation Generator sent to client in 60 seconds [Value: ₦50,000]\n3. Motor Inrush Surge Protection Sizer (Prevents inverters tripping or blowing up) [Value: ₦30,000]\n4. NEPA Band A Tariff (₦209/kWh) vs Generator Fuel Payback ROI Clock [Value: ₦35,000]\n5. 1-Tap Bankable PDF Engineering Proposal Generator with your logo [Value: ₦40,000]\n6. FREE BONUS: 5-Year Lithium LiFePO4 vs Tubular Gel Battery Cost Comparison Sheet [Value: ₦20,000]\n\nTOTAL VALUE: ₦255,000\nPRICING & ACTIVATION PLANS:\n👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance\n👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)\n👉 PLAN C (Full Custom Suite): ₦75,000 deposit (₦150,000 total)\n\nClose 3x more solar projects on autopilot with zero paperwork stress.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to test the interactive demo now!\n\nSEARCH TAGS: solar installation nigeria, 5kva inverter price, 3.5kva solar system, felicity lithium battery, solar load calculator, luminous inverter lagos, solar boq generator, tubular battery price."},{"id":4,"title":"Stop Fake Bank Alerts & Cashier Theft • Moniepoint & OPay Transfer Shield","price":35000,"priceStr":"₦35,000","imgFile":"ad_4_fake_alert_shield.png","category":"Services > Computer & IT Services > Software","desc":"Stop falling victim to fake bank transfer alerts, photoshopped receipts, and sales attendants stealing cash!\n\nIn today's Nigeria, cashiers and store owners lose hundreds of thousands of Naira monthly to fake NIP bank transfer screenshots generated by scammers.\n\nWe deploy an automated Bank Transfer Shield for boutiques, supermarkets, gadget stores, pharmacies, and clinics.\n\nTHE \"STORE REVENUE SHIELD\" BUNDLE:\n1. Real-Time Moniepoint & Paystack Bank Webhook Verification [Value: ₦80,000]\n2. Instant Cryptographic Green Pass sent to cashier's phone when real money clears [Value: ₦40,000]\n3. Multi-Branch Cashier Shift Audit (Stops sales attendants pocketing cash) [Value: ₦45,000]\n4. Automated WhatsApp Digital Receipts sent to verified buyers [Value: ₦30,000]\n5. End-of-Day POS vs Cash Drawer Reconciliation in 60 seconds [Value: ₦25,000]\n6. FREE BONUS: \"Zero Fake Alert\" Window & Counter Anti-Scam Security Decals [Value: ₦10,000]\n\nTOTAL VALUE: ₦230,000\nPRICING & ACTIVATION PLANS:\n👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance\n👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)\n\nProtect your daily business revenue 100%. One-time setup, zero monthly stress.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to protect your store today!\n\nSEARCH TAGS: pos machine lagos, moniepoint pos terminal, opay pos machine, fake alert software, receipt printer, supermarket cashier software, retail billing software, stop fake transfer."},{"id":5,"title":"Salon & Spa Appointment Booking App with Deposit Lock • Stop Client No-Shows","price":35000,"priceStr":"₦35,000","imgFile":"ad_5_salon_deposit_booking.png","category":"Services > Health & Beauty Services","desc":"Eliminate empty salon chairs and missed appointments with automated 24/7 booking!\n\nWhen clients book appointments and fail to show up, you lose valuable hours and turn away paying walk-in customers.\n\nWe build online appointment scheduling systems for hair salons, aesthetic clinics, spas, and makeup artists that lock client time slots with upfront bank deposits.\n\nTHE \"SALON REVENUE LOCK\" BUNDLE:\n1. 24/7 Automated Mobile Booking Calendar connected to WhatsApp [Value: ₦75,000]\n2. Mandatory 25%–50% Upfront Reservation Deposit Lock via Moniepoint [Value: ₦45,000]\n3. Automated SMS & WhatsApp Appointment Reminders (Cuts no-shows by 90%) [Value: ₦30,000]\n4. Stylist / Doctor Commission Split & Daily Revenue Tracking [Value: ₦35,000]\n5. Customer Treatment History & Birthday Promo Messenger [Value: ₦25,000]\n6. FREE BONUS: Fast 24-Hour Turnkey Deployment Guarantee [Value: ₦20,000]\n\nTOTAL VALUE: ₦230,000\nPRICING & ACTIVATION PLANS:\n👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance\n👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)\n\nGuarantee your booking revenue upfront before you touch a single client.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to test the live booking engine free!\n\nSEARCH TAGS: beauty salon website, spa booking app, barbershop software, dental clinic appointment system, makeup artist website, lash technician booking, salon management software lagos."},{"id":6,"title":"Private School Term Fee Portal & Online Result Checker • Stop Fee Defaulters","price":45000,"priceStr":"₦45,000","imgFile":"ad_6_school_fee_portal.png","category":"Services > Computer & IT Services > Software","desc":"Stop tracking school fee defaulters manually on messy exercise books and Excel sheets!\n\nRecover unpaid school fees on schedule and modernize your school administration with our automated Term Fee Recovery & Digital Result Portal.\n\nTHE \"SCHOOL REVENUE RECOVERY\" BUNDLE:\n1. Automated Digital Result Gating (Report cards locked until fees clear 100%) [Value: ₦120,000]\n2. Scratch-Card & Electronic Result Checker PIN Generator [Value: ₦45,000]\n3. 3-Stage Installment Debt Aging Matrix (Resumption, Mid-Term, Exam Week) [Value: ₦50,000]\n4. Instant Moniepoint & Paystack Term Fee Bank Reconciliation [Value: ₦40,000]\n5. Termly Broadsheet Exam Scoring & Printable PDF Report Cards [Value: ₦50,000]\n6. FREE BONUS: Automated Polite WhatsApp Balance Reminders for Parents [Value: ₦30,000]\n\nTOTAL VALUE: ₦335,000\nPRICING & ACTIVATION PLANS:\n👉 PLAN A (Termly Flex): ₦45,000 Setup + ₦10,000/month (or ₦25,000/term)\n👉 PLAN B (Annual Academic Session Pass): ₦95,000 All-Inclusive (Covers all 3 terms — 1 Full Year Free Maintenance!)\n\nRecover school fees on time and eliminate bursar cash leakage this session.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nSend a message on Jiji or WhatsApp for a live portal demonstration for your school today!\n\nSEARCH TAGS: school portal nigeria, school management software, online result checker, report card printing software, school fees payment portal, private school website, secondary school portal lagos."},{"id":7,"title":"Estate Service Charge & Tenant Rent Portal • Generator Diesel & Utility Ledger","price":45000,"priceStr":"₦45,000","imgFile":"ad_7_tenant_rent_portal.png","category":"Services > Real Estate Services","desc":"Manage residential estate facility service charges and tenant rent collections with ZERO disputes!\n\nWe deploy cloud-based property management portals for landlords, estate executive associations, and facility management firms across Nigeria.\n\nTHE \"ESTATE RECONCILIATION\" BUNDLE:\n1. Automated Rent Renewal Reminders sent via SMS & WhatsApp (30, 14, 7 days) [Value: ₦90,000]\n2. Itemized Facility Utility Billing (Generator diesel, security, waste, water) [Value: ₦60,000]\n3. Instant Digital Rent Receipts & Unalterable Payment Ledger [Value: ₦45,000]\n4. Landlord Disbursement Ledger & Monthly Diesel Consumption Audit [Value: ₦40,000]\n5. Transparent Tenant Maintenance Ticket & Defect Tracking Dashboard [Value: ₦35,000]\n6. FREE BONUS: Visitor Gate Pass QR Access Generator for Estate Security Guards [Value: ₦30,000]\n\nTOTAL VALUE: ₦300,000\nPRICING & ACTIVATION PLANS:\n👉 PLAN A (Monthly Flex): ₦45,000 Setup + ₦10,000/month\n👉 PLAN B (Annual Estate Pass — Best Value): ₦95,000 All-Inclusive (1 FULL YEAR FREE MAINTENANCE — Save ₦45,000!)\n\nEliminate rent arguments and keep your estate property accounts 100% reconciled.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp for your live estate demo today!\n\nSEARCH TAGS: estate management software, property management portal lagos, service charge receipt, tenant rent collection app, estate security gate pass, facility management software abuja."},{"id":8,"title":"Interstate Dispatch Waybill Tracker • Automated SMS & Delivery Status System","price":35000,"priceStr":"₦35,000","imgFile":"ad_8_dispatch_waybill_tracker.png","category":"Services > Chauffeur & Logistics Services","desc":"Stop answering 50+ repeated \"Where is my package?\" phone calls every single day!\n\nWe deploy automated dispatch and waybill tracking engines for Nigerian courier businesses, haulage contractors, and interstate delivery hubs.\n\nTHE \"DISPATCH AUTOMATION\" BUNDLE:\n1. Automated SMS & WhatsApp Tracking Links sent to shippers upon package intake [Value: ₦80,000]\n2. Real-Time Milestone Status Updates (Intake, In Transit, Arrived Hub, Delivered) [Value: ₦50,000]\n3. Digital Proof-of-Delivery (POD) Signature & Recipient Photo Verification [Value: ₦45,000]\n4. Highway Driver Interstate Diesel Mileage Auditor (Flags fuel siphoning) [Value: ₦40,000]\n5. GIG, Gokada & Local Dispatch Cost Comparison Calculator [Value: ₦25,000]\n6. FREE BONUS: 36-State Interstate Park Delivery Fee Schedule Generator [Value: ₦25,000]\n\nTOTAL VALUE: ₦265,000\nPRICING & ACTIVATION PLANS:\n👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance\n👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)\n\nCut dispatch customer service calls by 85% and build massive trust with shippers.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to test a live tracking link now!\n\nSEARCH TAGS: dispatch rider service lagos, waybill tracking software, courier logistics app, delivery rider app, haulage tracking, interstate parcel delivery, gig logistics tracker."},{"id":9,"title":"Multi-Store Retail Inventory & Water Factory Route Reconciliation App • Stop Theft","price":35000,"priceStr":"₦35,000","imgFile":"ad_9_stock_theft_ledger.png","category":"Services > Computer & IT Services > Software","desc":"Running 2 or more retail shop branches or a Sachet/Bottle Water Factory? Stop losing millions to inventory theft, unrecorded stock shrinkage, and driver cash fraud!\n\nDishonest sales attendants and delivery drivers take advantage when you're not physically watching: selling goods off-the-books, claiming burst sachet bags, faking inter-branch transfers, and pocketing daily sales cash.\n\nTHE \"MULTI-STORE & FACTORY THEFT PREVENTION\" BUNDLE:\n1. Multi-Branch Real-Time Stock Sync across Shop 1, Shop 2, and Central Warehouse [Value: ₦120,000]\n2. Sachet & Bottle Water Route Reconciliation (Bags loaded vs Cash returned vs Verified Burst Allowance) [Value: ₦75,000]\n3. Inter-Branch Transfer Reconciliation with Dual-Signoff Digital Gate Pass [Value: ₦60,000]\n4. Staff Permission Gating (Attendants cannot edit prices, delete receipts, or clear sales) [Value: ₦45,000]\n5. Instant WhatsApp Theft Alerts sent to owner for suspicious manual stock deductions [Value: ₦40,000]\n6. End-of-Day Shift Cash vs POS Bank Credit Reconciliation in 60s [Value: ₦30,000]\n7. FREE BONUS: Barcode Scanner & Thermal Receipt Printer Setup Guide [Value: ₦20,000]\n\nTOTAL VALUE: ₦390,000\nPRICING & ACTIVATION PLANS:\n👉 Single Branch / Shop: ₦35,000 Setup + ₦7,000/mo (OR ₦80,000 Annual Pass — 1 Full Year Free)\n👉 Multi-Branch / Factory Master Suite: ₦65,000 Setup + ₦12,000/mo (OR ₦140,000 Annual Pass — 1 Full Year Free)\n\nKnow your exact stock levels and daily profit from your phone anywhere in the world.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nSend a message on Jiji or WhatsApp for a live interactive multi-store demo right now!\n\nSEARCH TAGS: inventory software lagos, supermarket pos software, pure water accounting software, stock keeping app, retail pos machine, sachet water factory manager, multi branch inventory."},{"id":10,"title":"Building Material Estimator & BOQ Calculator • Cement, Tile & Paint Sizer","price":35000,"priceStr":"₦35,000","imgFile":"ad_10_construction_estimator.png","category":"Services > Building & Construction > Building Services","desc":"Eliminate building material waste and contractor over-budgeting on your construction sites!\n\nWe deploy instant computerized construction quantity estimators for Nigerian builders, site engineers, interior designers, and property owners.\n\nTHE \"SITE MATERIAL SHIELD\" BUNDLE:\n1. Precision Cement, Sand Tonnage & Granite Mix Calculator for Decking & Foundations [Value: ₦75,000]\n2. Floor Tile Square-Meter, Adhesive & Grout Packaging Sizer with 12% Cut Buffer [Value: ₦45,000]\n3. Emulsion & Gloss Paint Bucket Wall Coverage Calculator [Value: ₦35,000]\n4. POP Ceiling Sheets, Drywall Screws & Perimeter Track Estimator [Value: ₦35,000]\n5. Artisan Inflation Reality Check (Flags over-ordered materials instantly) [Value: ₦40,000]\n6. FREE BONUS: 1-Tap Professional Itemized BOQ PDF Generator with current Lagos prices [Value: ₦30,000]\n\nTOTAL VALUE: ₦260,000\nPRICING & ACTIVATION PLANS:\n👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance\n👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)\n\nProtect your construction budget from contractor inflation and stolen site materials.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to test the site material estimator now!\n\nSEARCH TAGS: building contractor lagos, boq bill of quantities, dangote cement price today, floor tiles calculation, pop ceiling design, building material estimator, quantity surveying software."},{"id":11,"title":"Fast CAC Business Name & Company Registration (LTD) • Approved in 3 to 5 Days","price":38500,"priceStr":"₦38,500","imgFile":"ad_11_cac_registration.png","category":"Services > Legal Services > Corporate Law","desc":"Register your Business Name or Private Limited Company (LTD) with the Corporate Affairs Commission (CAC) in 3 to 5 working days without delay or agent overcharging!\n\nDon't let the Central Bank or commercial banks freeze your personal accounts for business transactions. Upgrade to a certified corporate account today.\n\nTHE \"FAST-TRACK CORPORATE COMPLIANCE\" BUNDLE:\n1. Official CAC Name Availability Search & Instant Reservation [Value: ₦15,000]\n2. Certified CAC Digital Registration Certificate with official QR Verification [Value: ₦35,000]\n3. Certified Status Report / Memorandum & Articles of Association (MEMART) [Value: ₦25,000]\n4. Corporate Tax Identification Number (TIN) for immediate business banking [Value: ₦15,000]\n5. Free Corporate Bank Account Opening Facilitation (Moniepoint, OPay, Wema) [Value: ₦20,000]\n6. FREE BONUS: Corporate Seal & Digital Stamp Design Pack [Value: ₦15,000]\n\nTOTAL VALUE: ₦125,000\nTRANSPARENT ALL-INCLUSIVE PRICING:\n👉 Business Name Registration: ₦38,500 all-inclusive\n👉 Private Limited Company (LTD, 1M Share Capital): ₦85,000 all-inclusive\n\n100% Guaranteed Approval or Full Refund. \n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji to check your proposed business name availability free now!\n\nSEARCH TAGS: cac registration lagos, business name registration, registered limited company ltd, cac certificate, firs tin number, open corporate bank account, business registration agent abuja."},{"id":12,"title":"Shortlet Direct Booking Website & Caution Deposit Lock • Stop 20% Airbnb Fees","price":35000,"priceStr":"₦35,000","imgFile":"ad_12_shortlet_booking_escrow.png","category":"Services > Real Estate Services","desc":"Stop paying 15% to 20% Airbnb and Booking.com commissions on your shortlet apartments!\n\nWe build direct guest booking portals with automated caution deposit locks for Nigerian shortlet hosts and serviced apartment managers.\n\nTHE \"SHORTLET PROFIT MAXIMIZER\" BUNDLE:\n1. Direct Mobile Guest Booking Portal with Date & Night Sizer [Value: ₦85,000]\n2. Automated Caution Deposit Hold with Automated Refund Release upon check-out [Value: ₦50,000]\n3. Fair-Usage DisCo Electricity Token Calculator (Auto-deducts excess AC power usage) [Value: ₦45,000]\n4. Guest Digital ID & NIN / Driver's License KYC Verification [Value: ₦35,000]\n5. Automated Check-in Instructions & Smart Door Lock Passcode Messenger [Value: ₦30,000]\n6. FREE BONUS: Instant Moniepoint & Paystack Payment Settlement to your bank [Value: ₦25,000]\n\nTOTAL VALUE: ₦270,000\nPRICING & ACTIVATION PLANS:\n👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance\n👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)\n\nKeep 100% of your rental profits and build your own loyal direct guest database.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp to test our live shortlet portal today!\n\nSEARCH TAGS: shortlet apartment lekki, airbnb management lagos, serviced apartments ikoyi, shortlet booking website, caution fee management, luxury shortlet vi, holiday apartments abuja."},{"id":13,"title":"Hidden GPS Car Tracker & Fleet System • Phone Remote Engine Cut & Fuel Siphon Alert","price":55000,"priceStr":"₦55,000","imgFile":"ad_13_gps_fuel_mileage_tracker.png","category":"Services > Automotive Services > Tracking Services","desc":"Protect your car, truck, or commercial bus from vehicle theft and driver fuel fraud!\n\nOur hidden GPS tracking systems give you 24/7 live control of your vehicle right from your smartphone anywhere in Nigeria.\n\nTHE \"ULTIMATE VEHICLE SECURITY\" BUNDLE:\n1. 24/7 Real-Time Live Vehicle Location Tracking via Mobile App (Android & iPhone) [Value: ₦60,000]\n2. Remote Engine Cut-Off (Kill vehicle engine from your phone anywhere in Nigeria) [Value: ₦35,000]\n3. Geo-Fencing (Instant WhatsApp alert if vehicle leaves designated route/city) [Value: ₦25,000]\n4. Fuel Consumption vs Mileage Audit (Flags diesel siphoning and fake driver receipts) [Value: ₦35,000]\n5. In-Cabin Voice Monitoring Microphone (Listen to in-car conversations clearly) [Value: ₦25,000]\n6. 90-Day Trip History & Mileage Playback [Value: ₦20,000]\n7. FREE BONUS: Professional Clean Installation with Zero Wire-Cutting [Value: ₦15,000]\n\nTOTAL VALUE: ₦215,000\nSPECIAL ALL-INCLUSIVE PRICE TODAY: ONLY ₦55,000 (HARDWARE + INSTALLATION + 1 YEAR APP ACCESS)!\n\nSame-day installation across Lagos and Abuja. 100% anti-theft guarantee.\n\n⚡ CALL / WHATSAPP: 0802 279 1227\nBethelmind Digital Solutions (CAC Certified Nigerian Enterprise • Reg: 9912717)\nTap \"Start Chat\" on Jiji or message us on WhatsApp with your car model to book installation today!\n\nSEARCH TAGS: car tracker lagos, hidden gps tracker nigeria, vehicle tracking installation, remote engine cut tracker, fuel monitoring device, fleet tracker abuja, anti car theft device."}];
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2500);
     }
-  });
-}
 
-function renderAds() {
-  const container = document.getElementById('adsGrid');
-  container.innerHTML = ADS.map((ad, idx) => `
-    <div class="ad-card">
-      <div class="ad-top">
-        <img src="${ad.img}" class="ad-img-thumb" alt="${ad.title}">
-        <div class="ad-meta">
-          <div>
-            <div class="ad-category">${ad.category}</div>
-            <div class="ad-title">#${ad.id}. ${ad.title}</div>
-          </div>
-          <div class="ad-price">Listing Price: ${ad.priceStr}</div>
-        </div>
-      </div>
-      <div class="ad-body">
-        <div class="desc-box">${ad.desc}</div>
-        <div class="char-count">
-          <span>Title: ${ad.title.length}/70 chars</span>
-          <span>Desc: ${ad.desc.length} chars (Under 840 Limit)</span>
-        </div>
-      </div>
-      <div class="ad-actions">
-        <button class="btn btn-secondary" onclick="copyText(ADS[${idx}].title, this)">Copy Title</button>
-        <button class="btn btn-secondary" onclick="copyText(ADS[${idx}].desc, this)">Copy Desc</button>
-        <button class="btn btn-gold" onclick="copyText(String(ADS[${idx}].price), this)">Copy Price (${ad.priceStr})</button>
-      </div>
-    </div>
-  `).join('');
-}
+    function copyAdText(id) {
+      const ad = ADS.find(a => a.id === id);
+      const fullText = ad.title + "\n\nPrice: " + ad.priceStr + "\nCategory: " + ad.category + "\n\n" + ad.desc;
+      navigator.clipboard.writeText(fullText).then(() => {
+        showToast("Ad #" + id + " Full Text Copied!");
+      });
+    }
 
-renderAds();
-</script>
-
+    function copyConsoleScript(id) {
+      const scriptUrl = "autofill_ad_" + id + ".js";
+      fetch(scriptUrl).then(res => res.text()).then(code => {
+        navigator.clipboard.writeText(code).then(() => {
+          showToast("Ad #" + id + " Autofill Script Copied! Paste in F12 Console on Jiji.");
+        });
+      }).catch(() => {
+        showToast("Error loading script file.");
+      });
+    }
+  </script>
 </body>
 </html>

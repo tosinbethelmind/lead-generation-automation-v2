@@ -145,6 +145,13 @@ export default function Navbar() {
         className="hidden lg:flex items-center gap-1 text-xs font-light text-[#c9c4bc]"
       >
         <Link
+          href="/services"
+          className="px-3.5 py-2 rounded-xl text-[#d4af37] font-semibold hover:bg-white/[0.04] transition-colors"
+        >
+          13 Sector Solutions
+        </Link>
+
+        <Link
           href="/tools"
           className="px-3.5 py-2 rounded-xl hover:text-[#f5f3ef] hover:bg-white/[0.04] transition-colors"
         >
@@ -305,6 +312,15 @@ export default function Navbar() {
             <span className="text-[10px] uppercase tracking-widest text-[#d4af37] font-semibold block px-2 mb-2">
               Public Navigation
             </span>
+            <Link
+              href="/services"
+              onClick={() => setMenuOpen(false)}
+              className="p-3 rounded-xl bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] font-bold flex items-center justify-between"
+            >
+              <span>⚡ 13 Sector Solutions &amp; Prototypes</span>
+              <ArrowRight className="w-4 h-4 text-[#d4af37]" />
+            </Link>
+
             <Link
               href="/tools"
               onClick={() => setMenuOpen(false)}

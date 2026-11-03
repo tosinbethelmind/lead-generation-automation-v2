@@ -38,7 +38,13 @@ import {
   Building,
   Briefcase
 } from 'lucide-react';
-import Pillar2ControlView from '../../../components/admin/Pillar2ControlView';
+import dynamic from 'next/dynamic';
+
+const Pillar2ControlView = dynamic(
+  () => import('../../../components/admin/Pillar2ControlView'),
+  { ssr: false, loading: () => <div style={{ color: '#94a3b8', padding: '24px', textAlign: 'center' }}>Loading Desk...</div> }
+);
+import { PILLAR_ONE_SERVICES, getPillarOneService } from '@/lib/pillarOneCatalog';
 
 export default function MobileAdminCommandCenter() {
   const [pillarMode, setPillarMode] = useState<'pillar1' | 'pillar2'>('pillar1');
@@ -56,6 +62,8 @@ export default function MobileAdminCommandCenter() {
   const [claimName, setClaimName] = useState('');
   const [claimPhone, setClaimPhone] = useState('');
   const [claimCategory, setClaimCategory] = useState('Commercial Business');
+  const [claimServiceId, setClaimServiceId] = useState('website_ai');
+  const [claimWebsiteUrl, setClaimWebsiteUrl] = useState('');
   const [claimArea, setClaimArea] = useState('Lagos');
   const [claimResult, setClaimResult] = useState<any>(null);
   const [claimLoading, setClaimLoading] = useState(false);
@@ -167,7 +175,9 @@ export default function MobileAdminCommandCenter() {
           businessName: claimName,
           phone: claimPhone,
           category: claimCategory,
-          area: claimArea
+          area: claimArea,
+          serviceId: claimServiceId,
+          customUrl: claimWebsiteUrl
         })
       });
       const data = await res.json();
@@ -614,7 +624,7 @@ export default function MobileAdminCommandCenter() {
         {[
           { key: 'radar', label: '⚡ Radar', count: `${telemetry?.emails?.sentToday || 0}/600` },
           { key: 'closer', label: '💬 Inbound Closer', count: crmLeads.length },
-          { key: 'claim', label: '🌐 Claim Site', count: activeProspects.length },
+          { key: 'claim', label: '⚡ 1-Tap Quoter & Claim', count: '13 Tools' },
           { key: 'onboard', label: '🔑 Custom Domain', count: provisionedSites.length },
           { key: 'ai_tester', label: '🧠 AI Brain Test', count: 'Live' },
           { key: 'hubs', label: '🏛️ All Hubs', count: '8 Desks' }
@@ -970,10 +980,10 @@ export default function MobileAdminCommandCenter() {
         {activeTab === 'claim' && (
           <div>
             <div style={{ marginBottom: '14px' }}>
-              <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 700, textTransform: 'uppercase' }}>Zero-Touch Builder</div>
-              <h2 style={{ fontSize: '18px', fontWeight: 800, margin: '2px 0 0 0' }}>Instant Website Generator &amp; Claim</h2>
+              <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 700, textTransform: 'uppercase' }}>Pillar 1 Commercial Engine</div>
+              <h2 style={{ fontSize: '18px', fontWeight: 800, margin: '2px 0 0 0' }}>⚡ 1-Tap Quoter &amp; Instant Generator</h2>
               <p style={{ fontSize: '11px', color: '#94a3b8', margin: '2px 0 0 0' }}>
-                Enter any Nigerian business to generate their live preview link &amp; WhatsApp pitch in seconds.
+                Generate instant branded preview links, bankable invoice cards &amp; WhatsApp pitches across all 13 Pillar 1 solutions.
               </p>
             </div>
 
@@ -1056,33 +1066,61 @@ export default function MobileAdminCommandCenter() {
               </div>
 
               <div>
-                <label style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700 }}>INDUSTRY / SECTOR</label>
+                <label style={{ fontSize: '11px', color: '#d4af37', fontWeight: 800 }}>⚡ SELECT PILLAR 1 SOLUTION TO OFFER *</label>
                 <select
-                  value={claimCategory}
-                  onChange={e => setClaimCategory(e.target.value)}
+                  value={claimServiceId}
+                  onChange={e => {
+                    const sid = e.target.value;
+                    setClaimServiceId(sid);
+                    const s = PILLAR_ONE_SERVICES.find(item => item.id === sid);
+                    if (s) setClaimCategory(s.category);
+                  }}
                   style={{
                     width: '100%',
                     background: '#1e293b',
-                    border: '1px solid #334155',
+                    border: '1px solid #d4af37',
                     borderRadius: '8px',
-                    padding: '8px 10px',
+                    padding: '9px 10px',
                     color: '#ffffff',
                     fontSize: '13px',
+                    fontWeight: 600,
                     marginTop: '4px',
                     boxSizing: 'border-box'
                   }}
                 >
-                  <option value="Solar & Inverter Engineering">Solar &amp; Inverter Engineering</option>
-                  <option value="Fashion, Boutique & Retail">Fashion, Boutique &amp; Retail</option>
-                  <option value="Beauty, Hair & Spa Salon">Beauty, Hair &amp; Spa Salon</option>
-                  <option value="Real Estate & Facility Management">Real Estate &amp; Facility Management</option>
-                  <option value="Automotive, Spare Parts & Mechanics">Automotive, Spare Parts &amp; Mechanics</option>
-                  <option value="Private School & Education">Private School &amp; Education</option>
-                  <option value="Restaurant, Food & Bakery">Restaurant, Food &amp; Bakery</option>
-                  <option value="Logistics & Dispatch Aggregator">Logistics &amp; Dispatch</option>
-                  <option value="Commercial Business">General Commercial Business</option>
+                  {PILLAR_ONE_SERVICES.map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.title} ({s.pricing.isPortal ? '₦45k Setup / ₦95k Annual' : '₦35k Setup / ₦80k Annual'})
+                    </option>
+                  ))}
                 </select>
               </div>
+
+              {claimServiceId === 'website_to_app' && (
+                <div style={{ background: 'rgba(6, 182, 212, 0.1)', border: '1px solid #06b6d4', borderRadius: '8px', padding: '10px' }}>
+                  <label style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 700 }}>EXISTING WEBSITE URL TO WRAP (.APK) *</label>
+                  <input
+                    type="url"
+                    value={claimWebsiteUrl}
+                    onChange={e => setClaimWebsiteUrl(e.target.value)}
+                    placeholder="e.g. https://www.clientbusiness.com"
+                    style={{
+                      width: '100%',
+                      background: '#0f172a',
+                      border: '1px solid #0284c7',
+                      borderRadius: '6px',
+                      padding: '8px 10px',
+                      color: '#ffffff',
+                      fontSize: '12px',
+                      marginTop: '4px',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                  <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px' }}>
+                    Wraps this existing website into a native Android APK in 24 hours.
+                  </div>
+                </div>
+              )}
 
               <button
                 type="submit"
@@ -1128,6 +1166,15 @@ export default function MobileAdminCommandCenter() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {claimResult.onboardUrl && (
+                    <div style={{ fontSize: '11px', color: '#cbd5e1', marginBottom: '2px' }}>
+                      <b>Client Admission &amp; Invoice Link:</b><br />
+                      <a href={claimResult.onboardUrl} target="_blank" rel="noreferrer" style={{ color: '#d4af37', textDecoration: 'underline' }}>
+                        {claimResult.onboardUrl}
+                      </a>
+                    </div>
+                  )}
+
                   <a
                     href={claimResult.waLink}
                     target="_blank"
@@ -1171,6 +1218,30 @@ export default function MobileAdminCommandCenter() {
                     <Copy size={13} />
                     <span>Copy Full WhatsApp Pitch Text</span>
                   </button>
+
+                  {claimResult.onboardUrl && (
+                    <button
+                      type="button"
+                      onClick={() => copyToClipboard(claimResult.onboardUrl, 'Admission Link')}
+                      style={{
+                        background: '#1e293b',
+                        border: '1px solid #d4af37',
+                        color: '#d4af37',
+                        borderRadius: '8px',
+                        padding: '8px 12px',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Copy size={13} />
+                      <span>Copy Client Admission &amp; Invoice URL</span>
+                    </button>
+                  )}
                 </div>
               </div>
             )}
@@ -1200,7 +1271,7 @@ export default function MobileAdminCommandCenter() {
                   </div>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <a
-                      href={`https://wa.me/${p.phone}?text=${encodeURIComponent(`Good day Boss at *${p.name}*! 👋 Bethelmind Digital Solutions here.\n\nWe noticed you do not have an official mobile website on Google yet, so we pre-built an official mobile website + 24/7 WhatsApp AI Sales Assistant for *${p.name}*:\n👉 Test drive free on your phone: ${p.previewUrl}\n\nLaunch today for ₦70,000 flat (1-Year All-Inclusive, Zero Monthly Bills).\nMoniepoint Bank: 6805375225 - Bethelmind Digital Solutions.\n\nReply here to claim!`)}`}
+                      href={`https://wa.me/${p.phone}?text=${encodeURIComponent(`Good day Boss at *${p.name}*! 👋 Bethelmind Digital Solutions here.\n\nWe noticed you do not have an official mobile website on Google yet, so we pre-built an official mobile website + 24/7 WhatsApp AI Sales Assistant for *${p.name}*:\n👉 Test drive free on your phone: ${p.previewUrl}\n\nLaunch today: ₦35,000 Setup + ₦7,000/mo (OR ₦80,000 Annual Pass with 1 Full Year Free Maintenance).\nMoniepoint Bank: 6805375225 - Bethelmind Digital Solutions.\n\nReply here to claim!`)}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{
@@ -1331,9 +1402,10 @@ export default function MobileAdminCommandCenter() {
                     boxSizing: 'border-box'
                   }}
                 >
-                  <option value="Starter Official Website (.com.ng)">Option 1: Starter Go-Live 1-Year All-Inclusive (₦70,000 Flat)</option>
-                  <option value="Corporate Growth Suite (.com)">Option 2: Full Turnkey Custom Domain Suite (₦150,000 Total)</option>
-                  <option value="School / Estate Result & Escrow Portal">Option 3: School / Estate Automated Portal (₦85,000)</option>
+                  <option value="Starter Go-Live (₦35,000 Setup + ₦7,000/mo)">Option 1: Starter Go-Live (₦35,000 Setup + ₦7,000/mo)</option>
+                  <option value="Annual Value Pass (₦80,000 Flat — 1 Year Free)">Option 2: Annual Value Pass (₦80,000 Flat — 1 Year Free Maintenance)</option>
+                  <option value="School / Estate / Shortlet Portal (₦45,000 Setup / ₦95,000 Annual)">Option 3: School / Estate / Shortlet Portal (₦45,000 / ₦95,000 Annual)</option>
+                  <option value="Full Turnkey Custom Domain Suite (₦75,000 Deposit / ₦150,000 Total)">Option 4: Full Turnkey Custom Domain Suite (₦75,000 Deposit / ₦150,000 Total)</option>
                 </select>
               </div>
 

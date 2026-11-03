@@ -1,0 +1,98 @@
+[
+  {
+    "scenarioName": "1. BASELINE EXECUTION (Standard Market Friction, Normal Closing Cycles)",
+    "metrics": {
+      "p1SetupsSold": 30,
+      "p1ActiveRetainers": 34,
+      "p1TotalRevenueNgn": 1832000,
+      "p2DealsClosed": {
+        "rentals": 2,
+        "solarProjects": 1,
+        "duplexSales": 0,
+        "total": 3
+      },
+      "p2RealizedCommissionNgn": 1148140,
+      "p2TerritoryWireAgencies": 3,
+      "p2TerritoryWireRevenueNgn": 105000,
+      "bypassRiskMetrics": {
+        "bypassAttemptedNgn": 212400,
+        "retainedViaTriangulationNgn": 180540,
+        "delayedOrUnsettledNgn": 31860
+      },
+      "totalGrossRevenueNgn": 3085140,
+      "totalGrossRevenueUsd": 2085
+    }
+  },
+  {
+    "scenarioName": "2. ADVERSARIAL BROKER SQUEEZE (High Circumvention & Aggressive Haggling)",
+    "metrics": {
+      "p1SetupsSold": 30,
+      "p1ActiveRetainers": 30,
+      "p1TotalRevenueNgn": 1740000,
+      "p2DealsClosed": {
+        "rentals": 1,
+        "solarProjects": 0,
+        "duplexSales": 0,
+        "total": 1
+      },
+      "p2RealizedCommissionNgn": 142125,
+      "p2TerritoryWireAgencies": 0,
+      "p2TerritoryWireRevenueNgn": 0,
+      "bypassRiskMetrics": {
+        "bypassAttemptedNgn": 52500,
+        "retainedViaTriangulationNgn": 44625,
+        "delayedOrUnsettledNgn": 7875
+      },
+      "totalGrossRevenueNgn": 1882125,
+      "totalGrossRevenueUsd": 1272
+    }
+  },
+  {
+    "scenarioName": "3. SEVERE MACRO CONTRACTION (High FX Turmoil, Property Sales Frozen)",
+    "metrics": {
+      "p1SetupsSold": 30,
+      "p1ActiveRetainers": 30,
+      "p1TotalRevenueNgn": 1740000,
+      "p2DealsClosed": {
+        "rentals": 1,
+        "solarProjects": 0,
+        "duplexSales": 0,
+        "total": 1
+      },
+      "p2RealizedCommissionNgn": 146625,
+      "p2TerritoryWireAgencies": 0,
+      "p2TerritoryWireRevenueNgn": 0,
+      "bypassRiskMetrics": {
+        "bypassAttemptedNgn": 22500,
+        "retainedViaTriangulationNgn": 19125,
+        "delayedOrUnsettledNgn": 3375
+      },
+      "totalGrossRevenueNgn": 1886625,
+      "totalGrossRevenueUsd": 1275
+    }
+  },
+  {
+    "scenarioName": "4. DIASPORA & BAND A SOLAR BOOM (High Adoption, Blue-Sky Quarter)",
+    "metrics": {
+      "p1SetupsSold": 60,
+      "p1ActiveRetainers": 60,
+      "p1TotalRevenueNgn": 3480000,
+      "p2DealsClosed": {
+        "rentals": 4,
+        "solarProjects": 2,
+        "duplexSales": 0,
+        "total": 6
+      },
+      "p2RealizedCommissionNgn": 2324600,
+      "p2TerritoryWireAgencies": 9,
+      "p2TerritoryWireRevenueNgn": 315000,
+      "bypassRiskMetrics": {
+        "bypassAttemptedNgn": 236000,
+        "retainedViaTriangulationNgn": 200600,
+        "delayedOrUnsettledNgn": 35400
+      },
+      "totalGrossRevenueNgn": 6119600,
+      "totalGrossRevenueUsd": 4135
+    }
+  }
+]
