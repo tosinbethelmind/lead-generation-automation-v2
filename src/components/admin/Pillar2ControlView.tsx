@@ -251,8 +251,18 @@ export default function Pillar2ControlView({
       setApprovalProgressModal(prev => {
         if (!prev) return null;
         const steps = [...prev.steps];
-        steps[4].status = 'success';
-        steps[4].detail = 'Recorded in Dispatched Ledger • Moniepoint MFB 6805375225 lock confirmed.';
+        const actualSends = [];
+        if (waDispatched) actualSends.push('WhatsApp');
+        if (smsDispatched) actualSends.push('SMS');
+        if (emailDispatched) actualSends.push('Email');
+
+        if (actualSends.length > 0) {
+          steps[4].status = 'success';
+          steps[4].detail = `Verified sent via ${actualSends.join(' + ')}. Moniepoint MFB 6805375225 locked.`;
+        } else {
+          steps[4].status = 'fallback';
+          steps[4].detail = 'Approved & held in Outbound Queue (0 direct API sends delivered yet. Paced / 1-Tap Ready).';
+        }
         return { ...prev, step: 5, isDone: true, result: res, steps };
       });
 
@@ -337,16 +347,16 @@ export default function Pillar2ControlView({
                 #{ticket.ticketId}
               </span>
               {isDispatched ? (
-                <span style={{ background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800 }}>
-                  ✓ Dispatched
+                <span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800 }}>
+                  ✅ Verified Sent
                 </span>
               ) : isApprovedOrQueued ? (
-                <span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800 }}>
-                  ✓ In Outbound Queue
+                <span style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800 }}>
+                  ⏳ Approved (Queued / Unsent)
                 </span>
               ) : (
-                <span style={{ background: 'rgba(217, 119, 6, 0.2)', color: '#fbbf24', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800 }}>
-                  ⏳ Pending Review
+                <span style={{ background: 'rgba(100, 116, 139, 0.2)', color: '#94a3b8', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800 }}>
+                  📋 Staged (Pending Review)
                 </span>
               )}
             </div>

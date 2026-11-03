@@ -291,7 +291,22 @@ export default function MobileAdminCommandCenter() {
       });
       const data = await res.json();
       if (data.success) {
-        setFeedbackMsg(`✅ Deal #${ticketId} automated & dispatched across all 3 platforms!`);
+        const waOk = data.waResult?.dispatched;
+        const emailOk = data.emailResult?.dispatched;
+        const smsOk = data.smsResult?.dispatched;
+        const sentList: string[] = [];
+        if (waOk) sentList.push('WhatsApp');
+        if (emailOk) sentList.push('Email');
+        if (smsOk) sentList.push('SMS');
+
+        if (sentList.length === 3) {
+          setFeedbackMsg(`✅ Deal #${ticketId}: Confirmed delivered on all 3 platforms!`);
+        } else if (sentList.length > 0) {
+          setFeedbackMsg(`⚡ Deal #${ticketId}: Confirmed sent via ${sentList.join(' + ')}. Remaining channels queued for Pacer / 1-Tap.`);
+        } else {
+          setFeedbackMsg(`📋 Deal #${ticketId}: Approved & placed in Outbound Queue. (Paced / 1-Tap Ready - 0 sent via API yet).`);
+        }
+
         if (data.pillar2) setPillar2Data(data.pillar2);
         fetchTelemetry();
         return data;

@@ -259,12 +259,20 @@ export function buildInboundCallBrief(listingTitle: string, listingPriceFormatte
 }
 
 async function attemptEmailDispatch(to: string, subject: string, body: string) {
+  // Primary Gateway: Hostinger Direct SMTP (smtp.hostinger.com:587)
   try {
     const { sendSmtpMessage } = await import('@/lib/email');
     await sendSmtpMessage(to, subject, body);
     return { dispatched: true, gateway: 'Hostinger Direct SMTP (tosin@bethelmindanalytics.com)' };
   } catch (err: any) {
-    return { dispatched: false, error: err?.message || 'SMTP fallback active' };
+    // Secondary Failover: Brevo Cloud API v3 (tosin@bethelmindanalytics.com)
+    try {
+      const { sendBrevoMessage } = await import('@/lib/email');
+      await sendBrevoMessage(to, subject, body, {});
+      return { dispatched: true, gateway: 'Brevo Cloud API v3 Failover (tosin@bethelmindanalytics.com)' };
+    } catch (brevoErr: any) {
+      return { dispatched: false, error: `Hostinger SMTP: ${err?.message} | Brevo: ${brevoErr?.message}` };
+    }
   }
 }
 
