@@ -10,6 +10,14 @@
  */
 
 import * as crypto from 'crypto';
+import {
+  checkPillar2PacingEligibility,
+  recordPillar2Dispatch,
+  MAX_DAILY_PILLAR2_MESSAGES,
+  MIN_SPACING_MINUTES,
+  getWatTimeString,
+  checkLagosBusinessHours
+} from './pillar2Pacer';
 
 const HMAC_SECRET = process.env.APPROVAL_HMAC_SECRET || 'bethelmind_copilot_secret_2026_lagos';
 const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com';
@@ -567,6 +575,9 @@ export async function getPillar2Telemetry() {
   const totalAssetPoolNGN = pendingTickets.reduce((sum, t) => sum + (t.propertyValueNGN || 0), 0);
   const totalOriginationPoolNGN = pendingTickets.reduce((sum, t) => sum + (t.projectedRevenueNGN || 0), 0);
 
+  // Retrieve current real-time outreach pacing & daily quota status (Max 15/day, well-spaced)
+  const pacer = await checkPillar2PacingEligibility();
+
   return {
     stats: {
       pendingCount: pendingTickets.length,
@@ -575,8 +586,19 @@ export async function getPillar2Telemetry() {
       totalAssetPoolNGN,
       totalOriginationPoolNGN,
       queuedOutboundCount: queueList.filter(q => q.status === 'QUEUED_FOR_OUTBOUND' || q.status === 'DIRECT_CHAT_READY').length,
-      dispatchedCount: dispatchedList.length
+      dispatchedCount: dispatchedList.length,
+      // Paced Outreach Metrics (Max 15/day, 30m spacing)
+      dailyOutreachSent: pacer.sentToday,
+      dailyOutreachMax: pacer.maxDaily,
+      dailyOutreachRemaining: pacer.remainingToday,
+      isPacingActive: !pacer.allowed,
+      pacingReason: pacer.reason,
+      nextEligibleAt: pacer.nextEligibleAt,
+      minutesUntilNext: pacer.minutesUntilNextEligible,
+      isBusinessHours: pacer.isBusinessHours,
+      currentWatTime: pacer.currentWatTime
     },
+    pacer,
     pendingTickets: pendingTickets.slice(0, 30),
     allTickets: allTickets.slice(0, 50),
     outboundQueue: queueList.slice(-25).reverse(),
@@ -781,6 +803,13 @@ export async function approveTicket(ticketId: string) {
     queueItem.dispatchedAt = new Date().toISOString();
     queueItem.gateway = activeGateways.join(' + ');
     inMemoryDispatched.push(queueItem);
+    try {
+      await recordPillar2Dispatch({
+        ticketId,
+        recipient: recipientEmail || e164,
+        channel: activeGateways.join(' + ')
+      });
+    } catch (_) {}
   } else {
     queueItem.status = 'DIRECT_CHAT_READY';
     queueItem.gateway = 'Direct Multi-Channel (1-Tap WhatsApp, SMS & Email)';
@@ -842,7 +871,7 @@ export async function rejectTicket(ticketId: string) {
   };
 }
 
-export async function processOutboundQueue() {
+export async function processOutboundQueue(options?: { forceSingleSend?: boolean }) {
   ensureBaselineTickets();
   const supabase = getSupabaseClient();
   let dispatchedCount = 0;
@@ -850,7 +879,61 @@ export async function processOutboundQueue() {
   let smsCount = 0;
   let emailCount = 0;
 
-  for (const item of inMemoryQueue) {
+  // 1. Enforce Outreach Pacer (Max 15 messages/day, >= 30m spacing during Lagos business hours)
+  const force = !!options?.forceSingleSend;
+  const pacer = await checkPillar2PacingEligibility(force);
+  if (!pacer.allowed && !force) {
+    const updatedTelemetry = await getPillar2Telemetry();
+    return {
+      success: true,
+      paced: true,
+      message: pacer.reason,
+      pacer,
+      stats: { dispatchedCount: 0, waCount: 0, smsCount: 0, emailCount: 0 },
+      pillar2: updatedTelemetry
+    };
+  }
+
+  // 2. Fetch queued items from Supabase if in-memory queue is empty (serverless fallback)
+  if (inMemoryQueue.length === 0 && supabase) {
+    try {
+      const { data } = await supabase
+        .from('logs')
+        .select('*')
+        .eq('step', 'PILLAR2_MANDATE_OUTBOUND')
+        .order('created_at', { ascending: true })
+        .limit(10);
+      if (data && data.length > 0) {
+        data.forEach((row: any) => {
+          try {
+            const parsed = JSON.parse(row.message);
+            if (parsed && (parsed.status === 'QUEUED_FOR_OUTBOUND' || parsed.status === 'DIRECT_CHAT_READY')) {
+              inMemoryQueue.push(parsed);
+            }
+          } catch (_) {}
+        });
+      }
+    } catch (_) {}
+  }
+
+  // 3. Process exactly ONE queued mandate to maintain strict well-spaced delivery (30m apart)
+  const candidateIndex = inMemoryQueue.findIndex(
+    item => item.status === 'QUEUED_FOR_OUTBOUND' || item.status === 'DIRECT_CHAT_READY'
+  );
+
+  if (candidateIndex === -1) {
+    const updatedTelemetry = await getPillar2Telemetry();
+    return {
+      success: true,
+      message: 'Outbound queue is clear. No pending mandates awaiting dispatch.',
+      stats: { dispatchedCount: 0, waCount: 0, smsCount: 0, emailCount: 0 },
+      pillar2: updatedTelemetry
+    };
+  }
+
+  const itemsToProcess = [inMemoryQueue[candidateIndex]];
+
+  for (const item of itemsToProcess) {
     if (item.status === 'QUEUED_FOR_OUTBOUND' || item.status === 'DIRECT_CHAT_READY') {
       const e164 = item.recipientPhone;
       item.channels = item.channels || {
@@ -935,6 +1018,14 @@ export async function processOutboundQueue() {
         item.gateway = activeGateways.join(' + ');
         inMemoryDispatched.push({ ...item });
         dispatchedCount++;
+
+        try {
+          await recordPillar2Dispatch({
+            ticketId: item.ticketId,
+            recipient: item.recipientEmail || item.recipientPhone,
+            channel: activeGateways.join(' + ')
+          });
+        } catch (_) {}
 
         if (supabase) {
           try {

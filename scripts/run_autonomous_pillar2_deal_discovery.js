@@ -88,6 +88,12 @@ async function main() {
     console.log(`   • Confirmed Dispatched       : ${telemetry.stats.dispatchedCount}`);
     console.log(`   • Total Asset Value Pool     : ₦${(telemetry.stats.totalAssetPoolNGN || 0).toLocaleString()}`);
     console.log(`   • 20% Co-Brokerage Pool      : ₦${(telemetry.stats.totalOriginationPoolNGN || 0).toLocaleString()}`);
+    console.log('\n🎯 Paced Outreach Engine (Max 15/Day · Well-Spaced 30m):');
+    console.log(`   • Messages Sent Today        : ${telemetry.stats.dailyOutreachSent || 0} / ${telemetry.stats.dailyOutreachMax || 15}`);
+    console.log(`   • Remaining Daily Allowance  : ${telemetry.stats.dailyOutreachRemaining || 0}`);
+    console.log(`   • Pacing Status              : ${telemetry.stats.isPacingActive ? '⏳ WAITING (Paced)' : '✅ READY'}`);
+    console.log(`   • Pacing Note                : ${telemetry.stats.pacingReason}`);
+    console.log(`   • Lagos Time & Business Hours: ${telemetry.stats.currentWatTime} (${telemetry.stats.isBusinessHours ? 'Active' : 'Closed'})`);
 
     console.log('\n🎉 Autonomous discovery & dispatch cycle complete!');
   } catch (err) {
