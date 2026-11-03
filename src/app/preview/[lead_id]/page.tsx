@@ -18,7 +18,7 @@ const LiveSocialProofTicker = dynamic(() => import('@/components/LiveSocialProof
 const SectorCaseStudyCallout = dynamic(() => import('@/components/blog/SectorCaseStudyCallout'), { ssr: false });
 const ScrollWorld = dynamic(() => import('@/components/three/ScrollWorld'), { ssr: false });
 const ShaderGradientLiquidLogo = dynamic(() => import('@/components/three/ShaderGradientLiquidLogo'), { ssr: false });
-const WaterFactoryErpDashboard = dynamic(() => import('@/app/factory/page'), { ssr: false });
+import WaterFactoryErpDashboard from '@/app/factory/page';
 
 function resolveSectorPalette(cat: string = ''): 'solar' | 'luxury' | 'healthcare' | 'automotive' | 'bethelmind' {
   const lower = cat.toLowerCase();
