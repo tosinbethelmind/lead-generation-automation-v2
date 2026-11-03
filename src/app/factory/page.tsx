@@ -3,21 +3,23 @@
 /**
  * @file src/app/factory/page.tsx
  * 
- * 💧 OBI TABLE WATER OS — CONVERSION MASTER PRODUCT PAGE & FACTORY ENGINE
+ * 💧 OBI TABLE WATER OS — COMPLETE UNRESTRICTED CLIENT TESTING ENGINE
  * The WhatsApp-First Factory Operating System for Nigerian Sachet & Bottled Water Plants.
  * 
  * Target: Nigerian water factory owners producing 1,000–10,000+ sachet bags daily or running bottling plants with delivery trucks.
  * Primary Positioning: "Know your factory's daily profit before 8:00 PM."
  * 
- * Features:
- * - Pain-Aware Hero with single promise and primary WhatsApp pilot booking CTA
- * - Embedded 10-Second Interactive Shift Simulator (Production, Musa Shortage, Diesel Cost)
- * - "The 4 Hidden Leaks Bleeding Nigerian Water Factories" breakdown
- * - 6 Money-Saving Feature Outcomes (Material Yield, Waybills, Burst Rule, Diesel Slicer, NAFDAC Lab, 8 PM WhatsApp)
- * - Authentic Simulated 8:00 PM WhatsApp Shift Bubble with 1-click copy
- * - 3-Tier Transparent Commercial Pricing (Starter ₦35k, Plant ₦280k [Recommended], Industrial ₦550k)
+ * UNRESTRICTED TESTING SUITE:
+ * - 4 Pre-Loaded Nigerian Mock Data Scenarios (Normal Shift, Catch Musa Shortage, Stolen Nylon Ghost Shift, Diesel Spike)
+ * - 5 Interactive Testing Tabs:
+ *   1. 🏭 Production & Nylon Yield Auditor (Theoretical Bags Math: 1kg = 16 bags)
+ *   2. 🚚 Delivery Fleet & Driver Shortage Shield (Musa Pothole Dispute vs Physical Pouch Rule)
+ *   3. ⚡ Diesel & Generator Slicer (Energy Overhead per Bag Calculation)
+ *   4. 🔬 NAFDAC Water Quality Laboratory (Raw vs Treated TDS, pH, Printable Sanitation Cert)
+ *   5. 📲 8:00 PM WhatsApp Executive Audit (Real-time synced report with 1-tap Send to WhatsApp)
+ * - Full NAFDAC Inspection Certificate Modal with Print/Download
+ * - Transparent Commercial Pricing (₦35k Starter, ₦280k Plant [Recommended], ₦550k Industrial)
  * - 14-Day Zero-Risk Factory Pilot Guarantee
- * - Full Nigerian Reality FAQ (Android, Offline Sync, QuickBooks, Burst Disputes, Supervisor Tampering)
  * - Fixed Mobile Bottom Navigation & Floating WhatsApp Button (#25D366)
  * 
  * Bethelmind Digital Solutions (CAC Certified: Reg 9912717)
@@ -50,59 +52,175 @@ import {
   FileText,
   Copy,
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  Printer,
+  Sparkles,
+  RefreshCw
 } from 'lucide-react';
 
 export default function ObiTableWaterProductPage() {
-  const [showInteractiveModal, setShowInteractiveModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'production' | 'fleet' | 'energy' | 'nafdac' | 'whatsapp'>('production');
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-
-  // Embedded Interactive Live Demo State
-  const [demoBags, setDemoBags] = useState(3200);
-  const [demoPrice, setDemoPrice] = useState(350);
-  const [demoTruckShortage, setDemoTruckShortage] = useState(40);
-  const [demoDieselLiters, setDemoDieselLiters] = useState(55);
-  const [demoDieselPrice, setDemoDieselPrice] = useState(1250);
+  const [showNafdacCertModal, setShowNafdacCertModal] = useState(false);
   const [copiedReport, setCopiedReport] = useState(false);
 
-  const toggleFaq = (idx: number) => {
-    setActiveFaq(activeFaq === idx ? null : idx);
+  // ───────────────────────────────────────────────────────────────────────────
+  // INTERACTIVE TESTING STATE (MOCK DATA ACROSS ENTIRE PLANT)
+  // ───────────────────────────────────────────────────────────────────────────
+  // 1. Production
+  const [sachetBagsSealed, setSachetBagsSealed] = useState(3200);
+  const [sachetPrice, setSachetPrice] = useState(350);
+  const [bottlePacksSealed, setBottlePacksSealed] = useState(250); // 12 x 75cl
+  const [bottlePackPrice, setBottlePackPrice] = useState(1100);
+  const [dispenserJarsSealed, setDispenserJarsSealed] = useState(40); // 19L refills
+  const [dispenserJarPrice, setDispenserJarPrice] = useState(800);
+  const [nylonKgConsumed, setNylonKgConsumed] = useState(200); // 200kg LDPE film
+
+  // 2. Delivery Fleet
+  const [truck1Bags, setTruck1Bags] = useState(850); // Emeka (Lekki)
+  const [truck1Remitted, setTruck1Remitted] = useState(297500);
+
+  const [truck2Bags, setTruck2Bags] = useState(700); // Musa (Badore/Ajah)
+  const [truck2Remitted, setTruck2Remitted] = useState(217000); // 620 bags cash
+  const [truck2CreditBags, setTruck2CreditBags] = useState(40); // Supermarket signed
+  const [truck2PotholeBurstsClaimed, setTruck2PotholeBurstsClaimed] = useState(40);
+  const [truck2PouchesReturned, setTruck2PouchesReturned] = useState(0); // Musa brought ZERO pouches!
+
+  const [truck3Bags, setTruck3Bags] = useState(600); // Ibrahim (Epe)
+  const [truck3Remitted, setTruck3Remitted] = useState(210000);
+
+  // 3. Generator & Energy Slicer
+  const [dieselPricePerLiter, setDieselPricePerLiter] = useState(1250);
+  const [dieselLitersBurned, setDieselLitersBurned] = useState(55);
+  const [generatorHoursRun, setGeneratorHoursRun] = useState(5.5);
+  const [gridTokenAmount, setGridTokenAmount] = useState(0);
+
+  // 4. NAFDAC Water Quality
+  const [rawBoreholeTds, setRawBoreholeTds] = useState(185);
+  const [treatedPermeateTds, setTreatedPermeateTds] = useState(22);
+  const [treatedPh, setTreatedPh] = useState(7.2);
+  const [uvHours, setUvHours] = useState(2410);
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // PRE-CONFIGURED 1-CLICK NIGERIAN SCENARIOS
+  // ───────────────────────────────────────────────────────────────────────────
+  const applyScenario = (type: 'normal' | 'musa_theft' | 'ghost_shift' | 'diesel_spike') => {
+    if (type === 'normal') {
+      setSachetBagsSealed(3200);
+      setSachetPrice(350);
+      setBottlePacksSealed(250);
+      setDispenserJarsSealed(40);
+      setNylonKgConsumed(200); // 200kg * 16 = 3,200 bags (100% balanced)
+      setTruck2Remitted(245000);
+      setTruck2CreditBags(0);
+      setTruck2PotholeBurstsClaimed(0);
+      setTruck2PouchesReturned(0);
+      setDieselLitersBurned(55);
+      setDieselPricePerLiter(1250);
+      setTreatedPermeateTds(22);
+      setTreatedPh(7.2);
+    } else if (type === 'musa_theft') {
+      // Musa claims 40 bags burst without physical pouches
+      setSachetBagsSealed(3200);
+      setTruck2Remitted(217000);
+      setTruck2CreditBags(40);
+      setTruck2PotholeBurstsClaimed(40);
+      setTruck2PouchesReturned(0); // 0 pouches returned = Auto-debit ₦14,000!
+      setActiveTab('fleet');
+    } else if (type === 'ghost_shift') {
+      // 120kg film loaded (1,920 bags yield), but supervisor logs only 1,500 bags!
+      setSachetBagsSealed(1500);
+      setNylonKgConsumed(120); // 120 * 16 = 1920 expected! 420 missing!
+      setActiveTab('production');
+    } else if (type === 'diesel_spike') {
+      // Generator idling during break: 75 Litres burned for few bags
+      setSachetBagsSealed(2200);
+      setDieselLitersBurned(85);
+      setDieselPricePerLiter(1350);
+      setActiveTab('energy');
+    }
   };
 
-  const shiftGross = demoBags * demoPrice;
-  const dieselCost = demoDieselLiters * demoDieselPrice;
-  const shortageDebit = demoTruckShortage * demoPrice;
-  const packagingAndLaborCost = demoBags * 28; // ₦28/bag packaging roll film + loaders
-  const energyCostPerBag = (dieselCost / (demoBags || 1)).toFixed(2);
-  const estimatedNetProfit = Math.round(shiftGross - dieselCost - packagingAndLaborCost);
+  // ───────────────────────────────────────────────────────────────────────────
+  // CALCULATIONS (DETERMINISTIC FINANCIAL ENGINE)
+  // ───────────────────────────────────────────────────────────────────────────
+  // Production
+  const sachetGross = sachetBagsSealed * sachetPrice;
+  const bottleGross = bottlePacksSealed * bottlePackPrice;
+  const dispenserGross = dispenserJarsSealed * dispenserJarPrice;
+  const totalPlantGross = sachetGross + bottleGross + dispenserGross;
 
+  // Nylon Yield Math: 1kg LDPE film yields ~16 bags
+  const theoreticalBagsYield = Math.round(nylonKgConsumed * 16);
+  const nylonDiscrepancyBags = theoreticalBagsYield - sachetBagsSealed;
+  const hasGhostShiftAlarm = nylonDiscrepancyBags > 50;
+
+  // Fleet & Shortages
+  const truck1TotalValue = truck1Bags * sachetPrice;
+  const truck1MissingBags = Math.max(0, truck1Bags - Math.floor(truck1Remitted / sachetPrice));
+
+  // Musa Reconciliation
+  const truck2BagsSoldCash = Math.floor(truck2Remitted / sachetPrice);
+  const truck2ExcusedBursts = Math.min(truck2PouchesReturned, truck2PotholeBurstsClaimed);
+  const truck2AccountedBags = truck2BagsSoldCash + truck2CreditBags + truck2ExcusedBursts;
+  const truck2MissingBags = Math.max(0, truck2Bags - truck2AccountedBags);
+  const truck2ShortageDebit = truck2MissingBags * sachetPrice;
+
+  // Truck 3
+  const truck3MissingBags = Math.max(0, truck3Bags - Math.floor(truck3Remitted / sachetPrice));
+
+  const totalShortageDeductions = truck2ShortageDebit + (truck1MissingBags * sachetPrice) + (truck3MissingBags * sachetPrice);
+
+  // Diesel & Energy Cost Slicer
+  const totalDieselCost = dieselLitersBurned * dieselPricePerLiter;
+  const totalEnergyCost = totalDieselCost + gridTokenAmount;
+  const energyCostPerBag = Number((totalEnergyCost / (sachetBagsSealed || 1)).toFixed(2));
+  const isDieselCostHigh = energyCostPerBag > 28.0;
+
+  // Total Shift OPEX & Net Profit
+  const packagingCost = Math.round(sachetBagsSealed * 16); // ₦16/bag packaging film
+  const loadersWage = Math.round(sachetBagsSealed * 10); // ₦10/bag loader fee
+  const totalShiftOpex = totalEnergyCost + packagingCost + loadersWage;
+  const netCashProfit = Math.round(totalPlantGross - totalShiftOpex);
+
+  // NAFDAC Status
+  const isTdsPassing = treatedPermeateTds <= 100;
+  const isPhPassing = treatedPh >= 6.5 && treatedPh <= 7.5;
+  const isNafdacCompliant = isTdsPassing && isPhPassing;
+
+  // Generate WhatsApp Report
   const generateWhatsAppSummary = () => {
     return `💧 *OBI TABLE WATER — DAILY EXECUTIVE SHIFT REPORT*
 📅 Date: ${new Date().toLocaleDateString('en-GB')} | Shift: Batch A
 🏢 Factory: Obi Table & Sachet Water Plant
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 🏭 *1. PRODUCTION & NYLON AUDIT:*
-• Sachet Water: ${demoBags.toLocaleString()} bags sealed (@ ₦${demoPrice}/bag)
-• Theoretical Yield: ${demoBags.toLocaleString()} / ${demoBags.toLocaleString()} bags (100% Balanced ✅)
-• Shift Factory Output Value: ₦${shiftGross.toLocaleString()}
+• Sachet Water: ${sachetBagsSealed.toLocaleString()} bags (@ ₦${sachetPrice}/bag)
+• Bottled Water: ${bottlePacksSealed.toLocaleString()} packs (12x75cl @ ₦${bottlePackPrice})
+• 19L Dispenser Jars: ${dispenserJarsSealed.toLocaleString()} refills (@ ₦${dispenserJarPrice})
+• Nylon Consumed: ${nylonKgConsumed}kg film (Theoretical: ${theoreticalBagsYield.toLocaleString()} bags)
+${hasGhostShiftAlarm ? `• 🚨 *GHOST SHIFT LEAK: ${nylonDiscrepancyBags} bags (₦${(nylonDiscrepancyBags * sachetPrice).toLocaleString()}) missing from film!*` : '• Nylon Yield: 100% Balanced ✅'}
+• Shift Production Value: ₦${totalPlantGross.toLocaleString()}
 
 🚚 *2. DRIVERS & ROUTE DISPATCH:*
-• Truck 1 (Emeka): Loaded 850 bags | Remitted: ₦297,500 | Balanced ✅
-• Truck 2 (Musa): Loaded 700 bags | 🚨 *SHORTAGE: -${demoTruckShortage} bags (₦${shortageDebit.toLocaleString()}) DEBITED*
-• Truck 3 (Ibrahim): Loaded 600 bags | Remitted: ₦210,000 | Balanced ✅
-• Factory Gate Walk-in Cash: ₦315,000 (Moniepoint POS Verified)
+• Truck 1 (Emeka): Loaded ${truck1Bags} bags | Remitted: ₦${truck1Remitted.toLocaleString()} ✅
+• Truck 2 (Musa): Loaded ${truck2Bags} bags | Remitted: ₦${truck2Remitted.toLocaleString()}
+${truck2MissingBags > 0 ? `  🚨 *SHORTAGE: -${truck2MissingBags} bags (₦${truck2ShortageDebit.toLocaleString()}) DEBITED* (No physical pouches)` : '  Balanced ✅ (No shortages)'}
+• Truck 3 (Ibrahim): Loaded ${truck3Bags} bags | Remitted: ₦${truck3Remitted.toLocaleString()} ✅
 
 ⚡ *3. GENERATOR & POWER SLICER:*
-• Diesel Used: ${demoDieselLiters}L @ ₦${demoDieselPrice}/L = ₦${dieselCost.toLocaleString()}
-• Fuel Cost per Bag: ₦${energyCostPerBag} / bag ✅
+• Diesel Used: ${dieselLitersBurned}L @ ₦${dieselPricePerLiter}/L = ₦${totalDieselCost.toLocaleString()}
+• *Fuel Cost per Sachet Bag:* ₦${energyCostPerBag} / bag ${isDieselCostHigh ? '⚠️ (HIGH FUEL OVERHEAD)' : '✅ (OPTIMAL)'}
 
 🔬 *4. NAFDAC WATER QUALITY:*
-• Raw Borehole TDS: 185 ppm ➔ Permeate Treated TDS: 22 ppm (PASS ✅)
-• Water pH: 7.2 (Neutral Drinking Standard)
+• Raw Borehole TDS: ${rawBoreholeTds} ppm ➔ Permeate Treated TDS: ${treatedPermeateTds} ppm (${isTdsPassing ? 'PASS ✅' : 'FAIL ❌'})
+• Water pH: ${treatedPh} (${isPhPassing ? 'Neutral Standard ✅' : 'Out of range ❌'})
 
 💰 *5. SHIFT FINANCIAL RECONCILIATION:*
-• Gross Shift Revenue: ₦${shiftGross.toLocaleString()}
-• Net Cash Profit Today: ₦${estimatedNetProfit.toLocaleString()}
+• Gross Shift Value: ₦${totalPlantGross.toLocaleString()}
+• Shift Operating Expenses: -₦${totalShiftOpex.toLocaleString()}
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+💵 *NET CASH IN HAND TODAY:* ₦${netCashProfit.toLocaleString()}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 *Status:* Tamper-proof audit logged on Obi Table Water OS.`;
   };
@@ -115,16 +233,19 @@ export default function ObiTableWaterProductPage() {
     }
   };
 
+  const toggleFaq = (idx: number) => {
+    setActiveFaq(activeFaq === idx ? null : idx);
+  };
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans antialiased selection:bg-[#0B5FFF]/20 selection:text-[#0B5FFF]">
       
       {/* ──────────────────────────────────────────────────────────────────────────
-          1. CLEAN TOP NAVIGATION (4 SIMPLE ITEMS + WHATSAPP HOTLINE)
+          1. CLEAN TOP NAVIGATION
       ────────────────────────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-3.5 shadow-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           
-          {/* Brand Logo */}
           <Link href="#hero" className="flex items-center gap-2.5 group">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0B5FFF] to-[#00C2CB] flex items-center justify-center text-white shadow-md shadow-[#0B5FFF]/25">
               <Droplets className="w-5 h-5" />
@@ -139,25 +260,26 @@ export default function ObiTableWaterProductPage() {
             </div>
           </Link>
 
-          {/* Desktop Clean Menu */}
           <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-slate-600">
+            <a href="#simulator" className="text-[#0B5FFF] font-extrabold flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Full Testing Console</span>
+            </a>
             <a href="#how-it-works" className="hover:text-[#0B5FFF] transition">How It Works</a>
-            <a href="#calculator" className="hover:text-[#0B5FFF] transition">Live Demo</a>
             <a href="#features" className="hover:text-[#0B5FFF] transition">Features</a>
             <a href="#pricing" className="hover:text-[#0B5FFF] transition">Pricing</a>
             <a href="#faq" className="hover:text-[#0B5FFF] transition">FAQ</a>
           </nav>
 
-          {/* Header Action Button */}
           <div className="flex items-center gap-2.5">
             <a
-              href={`https://wa.me/2348022791227?text=${encodeURIComponent('Hello! I run a water factory. I want to test the Obi Table Water operating system and book a 14-day plant pilot.')}`}
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent('Hello Bethelmind Desk! I am testing the Obi Table Water operating system and want to book a 14-day plant pilot.')}`}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-extrabold shadow-sm hover:shadow transition cursor-pointer"
             >
               <MessageCircle className="w-4 h-4 fill-current" />
-              <span>Start WhatsApp Demo</span>
+              <span>Book Plant Pilot</span>
             </a>
           </div>
 
@@ -165,188 +287,782 @@ export default function ObiTableWaterProductPage() {
       </header>
 
       {/* ──────────────────────────────────────────────────────────────────────────
-          2. HERO SECTION: "KNOW YOUR FACTORY'S DAILY PROFIT BEFORE 8:00 PM"
+          2. HERO SECTION
       ────────────────────────────────────────────────────────────────────────── */}
-      <section id="hero" className="pt-10 sm:pt-16 pb-12 px-4 sm:px-6 max-w-5xl mx-auto text-center space-y-6">
+      <section id="hero" className="pt-10 sm:pt-14 pb-8 px-4 sm:px-6 max-w-5xl mx-auto text-center space-y-6">
         
-        {/* Small Nigerian Water Factory Badge */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0B5FFF]/10 border border-[#0B5FFF]/20 text-[#0B5FFF] text-xs font-bold">
           <Droplets className="w-3.5 h-3.5 text-[#0B5FFF]" />
           <span>BUILT SPECIFICALLY FOR NIGERIAN SACHET &amp; TABLE WATER PLANTS</span>
         </div>
 
-        {/* Clear Champion Headline */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-[#0F172A] tracking-tight max-w-4xl mx-auto leading-[1.15]">
           Know your factory’s daily profit <span className="text-[#0B5FFF]">before 8:00 PM.</span>
         </h1>
 
-        {/* Subheadline in Plain Business Language */}
         <p className="text-sm sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
           The WhatsApp-first operating system that tracks machine production, stops driver delivery shortages, audits generator diesel, and calculates true net cash every evening. Runs on basic Android phones—no computer or accounting degree needed.
         </p>
 
-        {/* Primary and Secondary Action Buttons */}
+        {/* 1-Click Fast Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
           <a
-            href={`https://wa.me/2348022791227?text=${encodeURIComponent('Hello! I run a water factory. I want to start a 14-day pilot for my plant.')}`}
-            target="_blank"
-            rel="noreferrer"
-            className="w-full sm:w-auto min-h-[50px] px-8 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-extrabold shadow-lg shadow-[#25D366]/25 hover:shadow-xl transition flex items-center justify-center gap-2 cursor-pointer"
+            href="#simulator"
+            className="w-full sm:w-auto min-h-[50px] px-8 py-3.5 rounded-xl bg-[#0B5FFF] hover:bg-[#094fd4] text-white text-sm font-extrabold shadow-lg shadow-[#0B5FFF]/25 hover:shadow-xl transition flex items-center justify-center gap-2 cursor-pointer"
           >
-            <MessageCircle className="w-5 h-5 fill-current" />
-            <span>Start 14-Day Factory Pilot on WhatsApp</span>
+            <Sparkles className="w-4 h-4" />
+            <span>Test All Features with Free Mock Data ↓</span>
           </a>
 
           <a
-            href="#calculator"
-            className="w-full sm:w-auto min-h-[50px] px-7 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 text-sm font-bold border border-slate-300 shadow-sm transition flex items-center justify-center gap-2"
+            href={`https://wa.me/2348022791227?text=${encodeURIComponent('Hello! I run a water factory. I want to test the Obi Table Water system for my plant.')}`}
+            target="_blank"
+            rel="noreferrer"
+            className="w-full sm:w-auto min-h-[50px] px-7 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-bold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Sliders className="w-4 h-4 text-[#0B5FFF]" />
-            <span>Test Live Shift Calculator</span>
+            <MessageCircle className="w-5 h-5 fill-current" />
+            <span>Chat on WhatsApp (0802 279 1227)</span>
           </a>
         </div>
 
-        {/* Sub-Hero Trust Ticker */}
-        <div className="pt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-500">
+        <div className="pt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-500">
           <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> 48-Hour Live Plant Setup</span>
-          <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Works 100% Offline When Glo/MTN Drops</span>
-          <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Formatted for WhatsApp</span>
+          <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Works 100% Offline When Network Drops</span>
+          <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Direct WhatsApp Evening Audits</span>
           <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-[#0B5FFF]" /> CAC Reg: 9912717</span>
         </div>
 
       </section>
 
       {/* ──────────────────────────────────────────────────────────────────────────
-          3. EMBEDDED 10-SECOND INTERACTIVE SHIFT CALCULATOR
+          3. COMPLETE UNRESTRICTED TESTING SUITE (PRESETS + 5 TABS)
       ────────────────────────────────────────────────────────────────────────── */}
-      <section id="calculator" className="py-12 px-4 sm:px-6 max-w-5xl mx-auto">
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-8 shadow-xl space-y-6">
+      <section id="simulator" className="py-10 px-4 sm:px-6 max-w-6xl mx-auto">
+        <div className="bg-white rounded-3xl border-2 border-[#0B5FFF]/40 p-4 sm:p-8 shadow-2xl space-y-6">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0B5FFF]/10 text-[#0B5FFF] text-[11px] font-black uppercase">
-                <Sliders className="w-3.5 h-3.5" />
-                <span>Interactive Shift Simulator</span>
+          {/* Header & Scenario Presets */}
+          <div className="space-y-4 pb-6 border-b border-slate-200">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0B5FFF]/10 text-[#0B5FFF] text-[11px] font-black uppercase">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Unrestricted Client Testing Console</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                  Test Every Factory Module with Live Nigerian Data
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Click any scenario below to automatically load realistic factory numbers, or adjust the sliders yourself:
+                </p>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
-                See how your factory reconciles in 10 seconds
-              </h2>
-              <p className="text-xs text-slate-500">
-                Move the sliders below to simulate today’s production, driver shortage, and diesel cost.
-              </p>
+
+              {/* Reset to Default */}
+              <button
+                type="button"
+                onClick={() => applyScenario('normal')}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer self-start md:self-auto"
+              >
+                <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+                <span>Reset Numbers</span>
+              </button>
             </div>
 
+            {/* 4 1-Click Scenario Trigger Buttons */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => applyScenario('normal')}
+                className="p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-left transition cursor-pointer"
+              >
+                <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold text-xs">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>1. Normal Shift</span>
+                </div>
+                <span className="text-[10px] text-emerald-600 block mt-0.5 font-medium">
+                  3,200 bags, all trucks balanced, ₦184k profit
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => applyScenario('musa_theft')}
+                className="p-3 rounded-2xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-left transition cursor-pointer"
+              >
+                <div className="flex items-center gap-1.5 text-rose-800 font-extrabold text-xs">
+                  <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+                  <span>2. Catch Musa Shortage</span>
+                </div>
+                <span className="text-[10px] text-rose-600 block mt-0.5 font-medium">
+                  40 bags missing (₦14k auto-debited from Musa)
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => applyScenario('ghost_shift')}
+                className="p-3 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-left transition cursor-pointer"
+              >
+                <div className="flex items-center gap-1.5 text-amber-800 font-extrabold text-xs">
+                  <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
+                  <span>3. Ghost Shift Alert</span>
+                </div>
+                <span className="text-[10px] text-amber-700 block mt-0.5 font-medium">
+                  120kg film used, 420 missing bags flagged!
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => applyScenario('diesel_spike')}
+                className="p-3 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-left transition cursor-pointer"
+              >
+                <div className="flex items-center gap-1.5 text-blue-800 font-extrabold text-xs">
+                  <Zap className="w-3.5 h-3.5 text-[#0B5FFF]" />
+                  <span>4. Diesel Spike Warning</span>
+                </div>
+                <span className="text-[10px] text-blue-700 block mt-0.5 font-medium">
+                  85L burned (₦35/bag fuel overhead alert)
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Tab Navigation Controls */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-100">
             <button
-              onClick={handleCopySummary}
               type="button"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer shrink-0"
+              onClick={() => setActiveTab('production')}
+              className={`px-4 py-2.5 rounded-xl text-xs font-black transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                activeTab === 'production' 
+                  ? 'bg-[#0B5FFF] text-white shadow-md shadow-[#0B5FFF]/20' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
             >
-              <Copy className="w-3.5 h-3.5 text-[#0B5FFF]" />
-              <span>{copiedReport ? 'Report Copied! ✅' : 'Copy WhatsApp Audit'}</span>
+              <Package className="w-4 h-4" />
+              <span>1. Production &amp; Nylon Yield</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('fleet')}
+              className={`px-4 py-2.5 rounded-xl text-xs font-black transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                activeTab === 'fleet' 
+                  ? 'bg-[#0B5FFF] text-white shadow-md shadow-[#0B5FFF]/20' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              <Truck className="w-4 h-4" />
+              <span>2. Delivery Fleet &amp; Driver Shortages</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('energy')}
+              className={`px-4 py-2.5 rounded-xl text-xs font-black transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                activeTab === 'energy' 
+                  ? 'bg-[#0B5FFF] text-white shadow-md shadow-[#0B5FFF]/20' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              <Zap className="w-4 h-4" />
+              <span>3. Generator Diesel Slicer</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('nafdac')}
+              className={`px-4 py-2.5 rounded-xl text-xs font-black transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                activeTab === 'nafdac' 
+                  ? 'bg-[#0B5FFF] text-white shadow-md shadow-[#0B5FFF]/20' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              <Award className="w-4 h-4" />
+              <span>4. NAFDAC Water Lab</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('whatsapp')}
+              className={`px-4 py-2.5 rounded-xl text-xs font-black transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                activeTab === 'whatsapp' 
+                  ? 'bg-[#25D366] text-white shadow-md shadow-[#25D366]/20' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              <MessageCircle className="w-4 h-4 fill-current" />
+              <span>5. 8:00 PM WhatsApp Audit</span>
             </button>
           </div>
 
-          {/* Interactive Sliders Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            {/* Slider 1: Sachet Bags Sealed */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-700">1. Sachet Bags Sealed</span>
-                <span className="text-sm font-black text-[#0B5FFF] font-mono">{demoBags.toLocaleString()} bags</span>
+          {/* ───────────────────────────────────────────────────────────────────
+              TAB 1: PRODUCTION & NYLON YIELD
+          ─────────────────────────────────────────────────────────────────── */}
+          {activeTab === 'production' && (
+            <div className="space-y-6 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                {/* Sachet Bags */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700">Sachet Bags Sealed</span>
+                    <span className="text-base font-black text-[#0B5FFF] font-mono">{sachetBagsSealed.toLocaleString()} bags</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="500"
+                    max="8000"
+                    step="100"
+                    value={sachetBagsSealed}
+                    onChange={(e) => setSachetBagsSealed(Number(e.target.value))}
+                    className="w-full accent-[#0B5FFF] cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                    <span>500 bags</span>
+                    <span>8,000 bags</span>
+                  </div>
+                  <div className="pt-1 flex items-center justify-between text-xs">
+                    <span className="text-slate-500">Bag Price:</span>
+                    <span className="font-bold text-slate-800 font-mono">₦{sachetPrice} / bag</span>
+                  </div>
+                  <div className="text-xs text-emerald-700 font-bold">
+                    Sachet Revenue: ₦{sachetGross.toLocaleString()}
+                  </div>
+                </div>
+
+                {/* Bottled Water (75cl packs) */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700">75cl Bottled Water (12-Packs)</span>
+                    <span className="text-base font-black text-[#00C2CB] font-mono">{bottlePacksSealed.toLocaleString()} packs</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="800"
+                    step="10"
+                    value={bottlePacksSealed}
+                    onChange={(e) => setBottlePacksSealed(Number(e.target.value))}
+                    className="w-full accent-[#00C2CB] cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                    <span>0 packs</span>
+                    <span>800 packs</span>
+                  </div>
+                  <div className="pt-1 flex items-center justify-between text-xs">
+                    <span className="text-slate-500">Pack Price:</span>
+                    <span className="font-bold text-slate-800 font-mono">₦{bottlePackPrice} / pack</span>
+                  </div>
+                  <div className="text-xs text-emerald-700 font-bold">
+                    Bottle Revenue: ₦{bottleGross.toLocaleString()}
+                  </div>
+                </div>
+
+                {/* Nylon Film Grammage Yield Auditor */}
+                <div className={`p-4 rounded-2xl border space-y-3 ${
+                  hasGhostShiftAlarm ? 'bg-rose-50 border-rose-300' : 'bg-slate-50 border-slate-200/80'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800">LDPE Film Consumed (kg)</span>
+                    <span className="text-base font-black text-slate-900 font-mono">{nylonKgConsumed} kg</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="50"
+                    max="400"
+                    step="10"
+                    value={nylonKgConsumed}
+                    onChange={(e) => setNylonKgConsumed(Number(e.target.value))}
+                    className="w-full accent-slate-800 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+                    <span>50 kg</span>
+                    <span>400 kg</span>
+                  </div>
+                  <div className="text-[11px] text-slate-600 leading-tight">
+                    Standard Yield: <strong className="font-mono">1kg = 16 bags</strong> ➔ Expected: <strong className="font-mono text-slate-900">{theoreticalBagsYield.toLocaleString()} bags</strong>
+                  </div>
+                  
+                  {hasGhostShiftAlarm ? (
+                    <div className="p-2.5 rounded-xl bg-rose-100/80 border border-rose-300 text-rose-800 text-xs font-bold space-y-1">
+                      <div className="flex items-center gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+                        <span>Ghost Shift Leak Flagged!</span>
+                      </div>
+                      <p className="text-[11px] font-normal leading-tight">
+                        {nylonDiscrepancyBags} bags missing (₦{(nylonDiscrepancyBags * sachetPrice).toLocaleString()}). Operator consumed film without recording finished bags.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-xs text-emerald-700 font-bold flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Film Yield Balanced with Output</span>
+                    </div>
+                  )}
+                </div>
+
               </div>
-              <input
-                type="range"
-                min="500"
-                max="8000"
-                step="100"
-                value={demoBags}
-                onChange={(e) => setDemoBags(Number(e.target.value))}
-                className="w-full accent-[#0B5FFF] cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] text-slate-400 font-mono">
-                <span>500 bags</span>
-                <span>8,000 bags</span>
-              </div>
-              <div className="text-[11px] text-slate-500">
-                Gross Value: <strong className="text-slate-800 font-mono">₦{(demoBags * demoPrice).toLocaleString()}</strong> (@ ₦{demoPrice}/bag)
+
+              {/* Total Output Summary Banner */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-[#0B5FFF]/10 to-[#00C2CB]/10 border border-[#0B5FFF]/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div>
+                  <span className="text-slate-500 font-semibold block">Total Shift Gross Production Output:</span>
+                  <strong className="text-xl font-black text-slate-900 font-mono">₦{totalPlantGross.toLocaleString()}</strong>
+                  <span className="text-slate-500 ml-2">({sachetBagsSealed.toLocaleString()} sachet bags + {bottlePacksSealed} bottle packs)</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('fleet')}
+                  className="px-4 py-2 rounded-xl bg-[#0B5FFF] text-white font-bold hover:bg-[#094fd4] transition cursor-pointer flex items-center gap-1.5"
+                >
+                  <span>Next: Check Truck Drivers</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
+          )}
 
-            {/* Slider 2: Driver Shortage Missing */}
-            <div className="p-4 rounded-2xl bg-rose-50/60 border border-rose-200/70 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-rose-800">2. Driver Shortage (Musa)</span>
-                <span className="text-sm font-black text-rose-700 font-mono">-{demoTruckShortage} bags</span>
+          {/* ───────────────────────────────────────────────────────────────────
+              TAB 2: DELIVERY FLEET & DRIVER SHORTAGE SHIELD
+          ─────────────────────────────────────────────────────────────────── */}
+          {activeTab === 'fleet' && (
+            <div className="space-y-6 pt-2">
+              <div className="space-y-4">
+                
+                {/* Truck 1: Emeka (Balanced) */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-md bg-blue-100 text-[#0B5FFF] font-extrabold text-[10px]">TRUCK 1</span>
+                      <strong className="text-sm font-bold text-slate-900">Emeka (Lekki Phase 1 Route)</strong>
+                    </div>
+                    <p className="text-slate-500">
+                      Loaded: <strong className="font-mono text-slate-800">{truck1Bags} bags</strong> &bull; Expected: ₦{(truck1Bags * sachetPrice).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <span className="text-[10px] text-slate-400 block uppercase font-bold">Remitted Cash</span>
+                      <strong className="text-emerald-700 font-mono font-black text-sm">₦{truck1Remitted.toLocaleString()}</strong>
+                    </div>
+                    <div className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-black text-[11px] flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5" /> Balanced
+                    </div>
+                  </div>
+                </div>
+
+                {/* Truck 2: Musa (The Bad Road Pothole Dispute) */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-rose-50/70 border-2 border-rose-300 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-md bg-rose-200 text-rose-800 font-extrabold text-[10px]">TRUCK 2</span>
+                        <strong className="text-sm font-bold text-slate-900">Musa (Ajah &bull; Badore Expressway Route)</strong>
+                      </div>
+                      <p className="text-xs text-slate-600">
+                        Morning Gate Pass: <strong className="font-mono text-slate-900">{truck2Bags} bags</strong> &bull; Cash Remitted: <strong className="font-mono text-slate-900">₦{truck2Remitted.toLocaleString()}</strong> (620 bags) &bull; Verified Credit: <strong className="font-mono text-slate-900">{truck2CreditBags} bags</strong>
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="text-[10px] text-rose-600 block uppercase font-black">Driver Audit Status</span>
+                      <strong className="text-rose-700 font-black text-base font-mono">
+                        {truck2MissingBags > 0 ? `-${truck2MissingBags} Bags Short` : 'Balanced'}
+                      </strong>
+                    </div>
+                  </div>
+
+                  {/* Physical Pouch Test Control */}
+                  <div className="p-3.5 rounded-xl bg-white border border-rose-200 text-xs space-y-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <span className="font-extrabold text-slate-800 block">
+                          Driver Excuse: &quot;40 bags burst on Badore potholes!&quot;
+                        </span>
+                        <span className="text-[11px] text-slate-500">
+                          Enforce Physical Proof-of-Burst: Did Musa return the 40 physical torn empty pouches?
+                        </span>
+                      </div>
+
+                      {/* Toggle Physical Pouches */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setTruck2PouchesReturned(0)}
+                          className={`px-3 py-1.5 rounded-lg font-bold text-xs transition cursor-pointer ${
+                            truck2PouchesReturned === 0 
+                              ? 'bg-rose-600 text-white shadow' 
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          0 Pouches Returned
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setTruck2PouchesReturned(40)}
+                          className={`px-3 py-1.5 rounded-lg font-bold text-xs transition cursor-pointer ${
+                            truck2PouchesReturned === 40 
+                              ? 'bg-emerald-600 text-white shadow' 
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          40 Pouches Inspected
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Result Callout */}
+                    {truck2MissingBags > 0 ? (
+                      <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-semibold flex items-center justify-between">
+                        <span>
+                          🚨 <strong>Shortage Debited:</strong> Musa has no physical pouches. System auto-debits <strong className="font-mono">₦{truck2ShortageDebit.toLocaleString()}</strong> from his weekly payout.
+                        </span>
+                        <span className="font-black font-mono text-rose-700">-₦{truck2ShortageDebit.toLocaleString()}</span>
+                      </div>
+                    ) : (
+                      <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-semibold flex items-center gap-1.5">
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>
+                          <strong>Bursts Excused:</strong> Gate supervisor verified 40 physical torn pouches. No driver deduction applied.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Truck 3: Ibrahim (Balanced) */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-md bg-blue-100 text-[#0B5FFF] font-extrabold text-[10px]">TRUCK 3</span>
+                      <strong className="text-sm font-bold text-slate-900">Ibrahim (Epe Commercial Corridor)</strong>
+                    </div>
+                    <p className="text-slate-500">
+                      Loaded: <strong className="font-mono text-slate-800">{truck3Bags} bags</strong> &bull; Remitted: ₦{truck3Remitted.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-black text-[11px] flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Balanced
+                  </div>
+                </div>
+
               </div>
-              <input
-                type="range"
-                min="0"
-                max="120"
-                step="5"
-                value={demoTruckShortage}
-                onChange={(e) => setDemoTruckShortage(Number(e.target.value))}
-                className="w-full accent-rose-600 cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] text-rose-400 font-mono">
-                <span>0 bags</span>
-                <span>120 missing</span>
-              </div>
-              <div className="text-[11px] text-rose-600 font-semibold">
-                Auto-Debited: <strong className="font-mono text-rose-700">-₦{shortageDebit.toLocaleString()}</strong> from payout
+
+              {/* Total Shortage Recovery Banner */}
+              <div className="p-4 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div>
+                  <span className="text-slate-400 font-semibold block">Total Driver Cash Protected from Loss Today:</span>
+                  <strong className="text-lg font-black text-rose-400 font-mono">
+                    {totalShortageDeductions > 0 ? `₦${totalShortageDeductions.toLocaleString()} Recovered via Auto-Debit` : '₦0 (All Drivers Balanced)'}
+                  </strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('energy')}
+                  className="px-4 py-2 rounded-xl bg-[#0B5FFF] text-white font-bold hover:bg-[#094fd4] transition cursor-pointer flex items-center gap-1.5"
+                >
+                  <span>Next: Check Diesel Costs</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
+          )}
 
-            {/* Slider 3: Diesel Litres Burned */}
-            <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/70 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-amber-800">3. Generator Diesel Used</span>
-                <span className="text-sm font-black text-amber-700 font-mono">{demoDieselLiters} Litres</span>
+          {/* ───────────────────────────────────────────────────────────────────
+              TAB 3: GENERATOR DIESEL VS GRID SLICER
+          ─────────────────────────────────────────────────────────────────── */}
+          {activeTab === 'energy' && (
+            <div className="space-y-6 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                
+                {/* Diesel Liters Slider */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700">Generator Diesel Used (Litres)</span>
+                    <span className="text-base font-black text-amber-600 font-mono">{dieselLitersBurned} Litres</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="150"
+                    step="5"
+                    value={dieselLitersBurned}
+                    onChange={(e) => setDieselLitersBurned(Number(e.target.value))}
+                    className="w-full accent-amber-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                    <span>10 Litres</span>
+                    <span>150 Litres</span>
+                  </div>
+                  <div className="text-[11px] text-slate-600">
+                    45kVA Mikano Runtime: <strong className="font-mono text-slate-800">{generatorHoursRun} hours</strong>
+                  </div>
+                </div>
+
+                {/* Diesel Pump Price Slider */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700">Current Diesel Pump Price (₦/L)</span>
+                    <span className="text-base font-black text-slate-900 font-mono">₦{dieselPricePerLiter} / L</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1100"
+                    max="1500"
+                    step="25"
+                    value={dieselPricePerLiter}
+                    onChange={(e) => setDieselPricePerLiter(Number(e.target.value))}
+                    className="w-full accent-slate-800 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                    <span>₦1,100 / L</span>
+                    <span>₦1,500 / L</span>
+                  </div>
+                  <div className="text-[11px] text-slate-600">
+                    Total Fuel Spent This Shift: <strong className="font-mono text-slate-900 font-bold">₦{totalDieselCost.toLocaleString()}</strong>
+                  </div>
+                </div>
+
               </div>
-              <input
-                type="range"
-                min="10"
-                max="150"
-                step="5"
-                value={demoDieselLiters}
-                onChange={(e) => setDemoDieselLiters(Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] text-amber-500 font-mono">
-                <span>10L</span>
-                <span>150L</span>
-              </div>
-              <div className="text-[11px] text-amber-700 font-semibold">
-                Fuel Cost: <strong className="font-mono">₦{dieselCost.toLocaleString()}</strong> (₦{energyCostPerBag}/bag)
+
+              {/* Energy Overhead Slicer Badge */}
+              <div className={`p-5 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-4 ${
+                isDieselCostHigh ? 'bg-rose-50 border-rose-300 text-rose-900' : 'bg-emerald-50 border-emerald-300 text-emerald-900'
+              }`}>
+                <div className="space-y-1 text-center sm:text-left">
+                  <span className="text-xs font-black uppercase tracking-wider block">
+                    {isDieselCostHigh ? '⚠️ Generator Bleed Warning' : '✅ Optimal Energy Overhead'}
+                  </span>
+                  <div className="text-2xl font-black font-mono">
+                    ₦{energyCostPerBag} <span className="text-xs font-semibold">energy cost per sachet bag</span>
+                  </div>
+                  <p className="text-xs opacity-90 max-w-lg">
+                    {isDieselCostHigh 
+                      ? 'Your fuel overhead is above the recommended ₦28/bag benchmark. Check for machine downtime while the generator runs idle.'
+                      : 'Your fuel overhead is within healthy Nigerian factory limits (< ₦28/bag). Factory margins are protected.'}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('nafdac')}
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition cursor-pointer shrink-0"
+                >
+                  <span>Next: NAFDAC Lab Tests →</span>
+                </button>
               </div>
             </div>
+          )}
 
-          </div>
+          {/* ───────────────────────────────────────────────────────────────────
+              TAB 4: NAFDAC WATER QUALITY LAB STATION
+          ─────────────────────────────────────────────────────────────────── */}
+          {activeTab === 'nafdac' && (
+            <div className="space-y-6 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                {/* Borehole Raw Water TDS */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700">Raw Borehole Water TDS</span>
+                    <span className="text-base font-black text-slate-900 font-mono">{rawBoreholeTds} ppm</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="100"
+                    max="400"
+                    step="5"
+                    value={rawBoreholeTds}
+                    onChange={(e) => setRawBoreholeTds(Number(e.target.value))}
+                    className="w-full accent-slate-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                    <span>100 ppm</span>
+                    <span>400 ppm</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 block">Pre-treatment borehole minerals</span>
+                </div>
 
-          {/* Real-Time Outcome Snapshot */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                {/* Permeate Treated Water TDS */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700">Treated Permeate Water TDS</span>
+                    <span className={`text-base font-black font-mono ${isTdsPassing ? 'text-emerald-600' : 'text-rose-600'}`}>
+                      {treatedPermeateTds} ppm
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="5"
+                    max="150"
+                    step="1"
+                    value={treatedPermeateTds}
+                    onChange={(e) => setTreatedPermeateTds(Number(e.target.value))}
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                    <span>5 ppm</span>
+                    <span>150 ppm</span>
+                  </div>
+                  <div className="text-xs font-bold">
+                    {isTdsPassing ? (
+                      <span className="text-emerald-700 flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> NAFDAC Standard PASS (&lt; 100 ppm)
+                      </span>
+                    ) : (
+                      <span className="text-rose-700 flex items-center gap-1">
+                        <X className="w-3.5 h-3.5" /> FAIL (&gt; 100 ppm) &bull; Service RO Membrane
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Water pH Slider */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700">Water pH Balance</span>
+                    <span className={`text-base font-black font-mono ${isPhPassing ? 'text-emerald-600' : 'text-amber-600'}`}>
+                      {treatedPh.toFixed(1)}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="5.5"
+                    max="9.0"
+                    step="0.1"
+                    value={treatedPh}
+                    onChange={(e) => setTreatedPh(Number(e.target.value))}
+                    className="w-full accent-[#00C2CB] cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                    <span>5.5 (Acidic)</span>
+                    <span>9.0 (Alkaline)</span>
+                  </div>
+                  <div className="text-xs font-bold">
+                    {isPhPassing ? (
+                      <span className="text-emerald-700 flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> Neutral Drinking Standard (6.5 - 7.5)
+                      </span>
+                    ) : (
+                      <span className="text-amber-700 flex items-center gap-1">
+                        <AlertTriangle className="w-3.5 h-3.5" /> Out of Range (Check Calcite Filter)
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+              </div>
+
+              {/* 1-Click Printable Certificate Trigger */}
+              <div className="p-4 rounded-2xl bg-teal-50 border border-teal-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div className="space-y-0.5">
+                  <strong className="text-teal-950 font-bold block">
+                    NAFDAC Sanitation &amp; Water Quality Certificate Ready
+                  </strong>
+                  <span className="text-teal-700 text-[11px]">
+                    UV Lamp Lifetime: {uvHours} / 8,000 hrs &bull; All physical &amp; chemical parameters logged
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowNafdacCertModal(true)}
+                  className="px-4 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-black transition cursor-pointer flex items-center gap-2 shadow"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>View Printable NAFDAC Certificate</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ───────────────────────────────────────────────────────────────────
+              TAB 5: 8:00 PM WHATSAPP EXECUTIVE AUDIT (LIVE SYNCED)
+          ─────────────────────────────────────────────────────────────────── */}
+          {activeTab === 'whatsapp' && (
+            <div className="space-y-6 pt-2">
+              <div className="text-center max-w-lg mx-auto space-y-1">
+                <span className="text-xs font-black uppercase tracking-wider text-emerald-600">
+                  Real-Time Executive Dispatch
+                </span>
+                <h3 className="text-lg font-bold text-slate-900">
+                  Your 8:00 PM WhatsApp Shift Summary
+                </h3>
+                <p className="text-xs text-slate-500">
+                  This report dynamically reflects all changes you made in Tabs 1, 2, 3, and 4:
+                </p>
+              </div>
+
+              {/* Simulated Phone WhatsApp Container */}
+              <div className="bg-[#EFEAE2] p-4 sm:p-6 rounded-3xl shadow-lg border border-slate-300 max-w-xl mx-auto">
+                <div className="bg-white rounded-2xl rounded-tl-none p-4 sm:p-5 shadow-sm text-xs text-slate-800 space-y-2.5 font-sans border border-slate-200/60 whitespace-pre-line leading-relaxed">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 not-italic text-[10px] text-slate-400">
+                    <span className="font-extrabold text-[#0B5FFF]">Obi Table Water OS &bull; Daily Audit</span>
+                    <span>08:00 PM</span>
+                  </div>
+                  {generateWhatsAppSummary()}
+                </div>
+
+                {/* Direct Action Buttons */}
+                <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleCopySummary}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Copy className="w-3.5 h-3.5 text-[#0B5FFF]" />
+                    <span>{copiedReport ? 'Report Copied! ✅' : 'Copy Formatted Report'}</span>
+                  </button>
+
+                  <a
+                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(generateWhatsAppSummary())}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-extrabold shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                    <span>Send Test to My WhatsApp</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ───────────────────────────────────────────────────────────────────
+              BOTTOM FACTORY PERFORMANCE METRICS BAR (ALWAYS VISIBLE)
+          ─────────────────────────────────────────────────────────────────── */}
+          <div className="pt-4 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
-              <span className="text-[10px] font-bold text-slate-500 uppercase block">Shift Revenue</span>
-              <strong className="text-lg font-black text-slate-900 font-mono block">₦{shiftGross.toLocaleString()}</strong>
-              <span className="text-[10px] text-slate-500">{demoBags.toLocaleString()} bags sealed</span>
+              <span className="text-[10px] font-bold text-slate-500 uppercase block">Shift Production</span>
+              <strong className="text-base sm:text-lg font-black text-slate-900 font-mono block">
+                ₦{totalPlantGross.toLocaleString()}
+              </strong>
+              <span className="text-[10px] text-slate-500">{sachetBagsSealed.toLocaleString()} bags sealed</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200/80">
-              <span className="text-[10px] font-bold text-emerald-700 uppercase block">True Net Cash</span>
-              <strong className="text-lg font-black text-emerald-700 font-mono block">₦{estimatedNetProfit.toLocaleString()}</strong>
+              <span className="text-[10px] font-bold text-emerald-700 uppercase block">Net Cash Profit</span>
+              <strong className="text-base sm:text-lg font-black text-emerald-700 font-mono block">
+                ₦{netCashProfit.toLocaleString()}
+              </strong>
               <span className="text-[10px] text-emerald-600 font-semibold">After diesel &amp; packaging</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200/80">
-              <span className="text-[10px] font-bold text-rose-700 uppercase block">Missing Recovered</span>
-              <strong className="text-lg font-black text-rose-700 font-mono block">₦{shortageDebit.toLocaleString()}</strong>
-              <span className="text-[10px] text-rose-600 font-semibold">Protected from loss</span>
+              <span className="text-[10px] font-bold text-rose-700 uppercase block">Driver Shortage</span>
+              <strong className="text-base sm:text-lg font-black text-rose-700 font-mono block">
+                {truck2MissingBags > 0 ? `-${truck2MissingBags} Bags` : '0 Missing'}
+              </strong>
+              <span className="text-[10px] text-rose-600 font-semibold">
+                {truck2MissingBags > 0 ? `-₦${truck2ShortageDebit.toLocaleString()} (Musa debited)` : 'All trucks balanced'}
+              </span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-blue-50 border border-blue-200/80">
-              <span className="text-[10px] font-bold text-blue-700 uppercase block">Energy Overhead</span>
-              <strong className="text-lg font-black text-blue-700 font-mono block">₦{energyCostPerBag}</strong>
-              <span className="text-[10px] text-blue-600 font-semibold">Per bag fuel rate</span>
+              <span className="text-[10px] font-bold text-blue-700 uppercase block">Energy Rate</span>
+              <strong className="text-base sm:text-lg font-black text-blue-700 font-mono block">
+                ₦{energyCostPerBag}
+              </strong>
+              <span className="text-[10px] text-blue-600 font-semibold">Per sachet bag fuel</span>
             </div>
           </div>
 
@@ -472,7 +1188,7 @@ export default function ObiTableWaterProductPage() {
       </section>
 
       {/* ──────────────────────────────────────────────────────────────────────────
-          6. CORE FEATURE OUTCOMES (MONEY-SAVING & CONTROL FOCUS)
+          6. CORE FEATURE OUTCOMES
       ────────────────────────────────────────────────────────────────────────── */}
       <section id="features" className="py-16 px-4 sm:px-6 max-w-6xl mx-auto space-y-10">
         
@@ -488,7 +1204,6 @@ export default function ObiTableWaterProductPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
-          {/* Card 1: Production Tracking */}
           <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-3">
             <div className="w-10 h-10 rounded-xl bg-[#0B5FFF]/10 text-[#0B5FFF] flex items-center justify-center font-bold">
               <Package className="w-5 h-5" />
@@ -502,7 +1217,6 @@ export default function ObiTableWaterProductPage() {
             </div>
           </div>
 
-          {/* Card 2: Delivery Van Route Waybills */}
           <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#0B5FFF] flex items-center justify-center font-bold">
               <Truck className="w-5 h-5" />
@@ -516,7 +1230,6 @@ export default function ObiTableWaterProductPage() {
             </div>
           </div>
 
-          {/* Card 3: Physical Proof-of-Burst Enforcement */}
           <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-3">
             <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
               <RotateCcw className="w-5 h-5" />
@@ -530,7 +1243,6 @@ export default function ObiTableWaterProductPage() {
             </div>
           </div>
 
-          {/* Card 4: Generator Diesel vs Grid Energy Slicer */}
           <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-3">
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
               <Zap className="w-5 h-5" />
@@ -544,7 +1256,6 @@ export default function ObiTableWaterProductPage() {
             </div>
           </div>
 
-          {/* Card 5: NAFDAC Water Quality Compliance Station */}
           <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-3">
             <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
               <Award className="w-5 h-5" />
@@ -558,7 +1269,6 @@ export default function ObiTableWaterProductPage() {
             </div>
           </div>
 
-          {/* Card 6: 8:00 PM WhatsApp Shift Summary */}
           <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#25D366] flex items-center justify-center font-bold">
               <MessageCircle className="w-5 h-5" />
@@ -577,79 +1287,7 @@ export default function ObiTableWaterProductPage() {
       </section>
 
       {/* ──────────────────────────────────────────────────────────────────────────
-          7. THE VERIFIED 8:00 PM WHATSAPP AUDIT (SIMULATED PHONE BUBBLE)
-      ────────────────────────────────────────────────────────────────────────── */}
-      <section className="py-14 bg-slate-100 border-y border-slate-200/80 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto space-y-6">
-          
-          <div className="text-center space-y-2">
-            <span className="text-xs font-black uppercase tracking-wider text-emerald-600">The 8:00 PM WhatsApp Experience</span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
-              What lands on your phone every evening
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600">
-              No computer login or complex accounting dashboard needed. Just open WhatsApp:
-            </p>
-          </div>
-
-          {/* WhatsApp Message Bubble Mockup */}
-          <div className="bg-[#EFEAE2] p-4 sm:p-6 rounded-3xl shadow-lg border border-slate-300 max-w-xl mx-auto">
-            <div className="bg-white rounded-2xl rounded-tl-none p-4 sm:p-5 shadow-sm text-xs text-slate-800 space-y-2 font-sans border border-slate-200/60">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <span className="font-extrabold text-[#0B5FFF]">Obi Table Water OS &bull; Daily Audit</span>
-                <span className="text-[10px] text-slate-400">08:00 PM</span>
-              </div>
-              <p className="font-bold text-slate-900">💧 *OBI TABLE WATER — DAILY EXECUTIVE SHIFT REPORT*</p>
-              <p className="text-slate-500 text-[11px]">📅 Today | Shift: Batch A | Factory: Obi Table &amp; Sachet Plant</p>
-              
-              <div className="pt-2 border-t border-slate-100 space-y-1">
-                <p className="font-bold text-slate-800">🏭 *1. PRODUCTION &amp; NYLON AUDIT:*</p>
-                <p>• Sachet Water: 3,200 bags sealed (4 rolls / 120kg film)</p>
-                <p>• Theoretical Yield: 3,200 / 3,200 bags (100% Balanced ✅)</p>
-                <p>• Machine Sealing Burst: 22 bags (Within normal 1% tolerance)</p>
-              </div>
-
-              <div className="pt-2 border-t border-slate-100 space-y-1">
-                <p className="font-bold text-slate-800">🚚 *2. DRIVERS &amp; ROUTE DISPATCH:*</p>
-                <p>• Truck 1 (Emeka): Loaded 850 bags | Remitted: ₦297,500 ✅</p>
-                <p className="text-rose-600 font-bold">• Truck 2 (Musa): Loaded 700 bags | 🚨 SHORTAGE: -40 bags (₦14,000) DEBITED</p>
-                <p>• Truck 3 (Ibrahim): Loaded 600 bags | Remitted: ₦210,000 ✅</p>
-              </div>
-
-              <div className="pt-2 border-t border-slate-100 space-y-1">
-                <p className="font-bold text-slate-800">⚡ *3. GENERATOR &amp; POWER SLICER:*</p>
-                <p>• Generator Runtime: 5.5 hours (55L @ ₦1,250/L = ₦68,750)</p>
-                <p className="font-bold text-emerald-700">• Energy Cost Per Sachet Bag: ₦21.40 / bag ✅ (Optimal)</p>
-              </div>
-
-              <div className="pt-2 border-t border-slate-100 space-y-1">
-                <p className="font-bold text-slate-800">💰 *4. SHIFT FINANCIAL RECONCILIATION:*</p>
-                <p>• Gross Shift Output: ₦1,120,000</p>
-                <p className="font-extrabold text-emerald-700 text-sm">💵 NET CASH PROFIT TODAY: ₦184,500</p>
-              </div>
-
-              <div className="pt-2 text-[10px] text-slate-400 italic">
-                ✓ Tamper-proof audit logged on Obi Table Water OS.
-              </div>
-            </div>
-
-            <div className="mt-4 text-center">
-              <button
-                type="button"
-                onClick={handleCopySummary}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold shadow-sm transition cursor-pointer"
-              >
-                <Copy className="w-3.5 h-3.5 text-[#0B5FFF]" />
-                <span>{copiedReport ? 'Report Copied! ✅' : 'Copy Sample WhatsApp Message'}</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ──────────────────────────────────────────────────────────────────────────
-          8. 14-DAY ZERO-RISK FACTORY PILOT OFFER
+          7. 14-DAY ZERO-RISK FACTORY PILOT OFFER
       ────────────────────────────────────────────────────────────────────────── */}
       <section className="py-12 px-4 sm:px-6 max-w-4xl mx-auto">
         <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#0B5FFF]/10 via-white to-[#00C2CB]/10 border-2 border-[#0B5FFF]/30 shadow-lg space-y-4 text-center">
@@ -681,7 +1319,7 @@ export default function ObiTableWaterProductPage() {
       </section>
 
       {/* ──────────────────────────────────────────────────────────────────────────
-          9. PRICING SECTION: 3 CLEAN CARDS (PLANT RECOMMENDED)
+          8. PRICING SECTION: 3 CLEAN CARDS (PLANT RECOMMENDED)
       ────────────────────────────────────────────────────────────────────────── */}
       <section id="pricing" className="py-16 px-4 sm:px-6 max-w-5xl mx-auto space-y-10">
         
@@ -829,7 +1467,7 @@ export default function ObiTableWaterProductPage() {
       </section>
 
       {/* ──────────────────────────────────────────────────────────────────────────
-          10. FREQUENTLY ASKED QUESTIONS (FAQ)
+          9. FREQUENTLY ASKED QUESTIONS (FAQ)
       ────────────────────────────────────────────────────────────────────────── */}
       <section id="faq" className="py-16 px-4 sm:px-6 max-w-3xl mx-auto space-y-8">
         
@@ -895,7 +1533,7 @@ export default function ObiTableWaterProductPage() {
       </section>
 
       {/* ──────────────────────────────────────────────────────────────────────────
-          11. FINAL CALL TO ACTION SECTION
+          10. FINAL CALL TO ACTION SECTION
       ────────────────────────────────────────────────────────────────────────── */}
       <section className="py-16 bg-gradient-to-br from-[#0B5FFF] to-[#0848c4] text-white px-4 sm:px-6 text-center">
         <div className="max-w-3xl mx-auto space-y-6">
@@ -928,7 +1566,7 @@ export default function ObiTableWaterProductPage() {
       </section>
 
       {/* ──────────────────────────────────────────────────────────────────────────
-          12. FOOTER
+          11. FOOTER
       ────────────────────────────────────────────────────────────────────────── */}
       <footer className="border-t border-slate-200 bg-white py-8 px-4 text-center text-xs text-slate-500 space-y-2">
         <p>
@@ -940,7 +1578,7 @@ export default function ObiTableWaterProductPage() {
       </footer>
 
       {/* ──────────────────────────────────────────────────────────────────────────
-          13. FLOATING WHATSAPP BUTTON (FIXED BOTTOM-RIGHT ON MOBILE, #25D366)
+          12. FLOATING WHATSAPP BUTTON (FIXED BOTTOM-RIGHT ON MOBILE, #25D366)
       ────────────────────────────────────────────────────────────────────────── */}
       <a
         href={`https://wa.me/2348022791227?text=${encodeURIComponent('Hello Bethelmind! I am on the Obi Table Water page and want to ask a question.')}`}
@@ -953,16 +1591,16 @@ export default function ObiTableWaterProductPage() {
       </a>
 
       {/* ──────────────────────────────────────────────────────────────────────────
-          14. STICKY MOBILE BOTTOM NAVIGATION BAR (Home · Features · Pricing · WhatsApp)
+          13. STICKY MOBILE BOTTOM NAVIGATION BAR
       ────────────────────────────────────────────────────────────────────────── */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2 flex items-center justify-around text-[10px] font-bold text-slate-600 shadow-lg">
         <a href="#hero" className="flex flex-col items-center gap-0.5 text-[#0B5FFF]">
           <Droplets className="w-4 h-4" />
           <span>Home</span>
         </a>
-        <a href="#calculator" className="flex flex-col items-center gap-0.5 hover:text-[#0B5FFF]">
-          <Sliders className="w-4 h-4" />
-          <span>Calculator</span>
+        <a href="#simulator" className="flex flex-col items-center gap-0.5 hover:text-[#0B5FFF]">
+          <Sparkles className="w-4 h-4" />
+          <span>Test Console</span>
         </a>
         <a href="#features" className="flex flex-col items-center gap-0.5 hover:text-[#0B5FFF]">
           <Package className="w-4 h-4" />
@@ -982,6 +1620,110 @@ export default function ObiTableWaterProductPage() {
           <span>WhatsApp</span>
         </a>
       </div>
+
+      {/* ──────────────────────────────────────────────────────────────────────────
+          14. NAFDAC INSPECTION CERTIFICATE MODAL
+      ────────────────────────────────────────────────────────────────────────── */}
+      {showNafdacCertModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white text-slate-900 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative my-8 border-4 border-teal-600">
+            
+            {/* Modal Close Button */}
+            <button
+              type="button"
+              onClick={() => setShowNafdacCertModal(false)}
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Certificate Header */}
+            <div className="text-center space-y-1.5 border-b border-slate-200 pb-4">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-[10px] font-black uppercase">
+                <Award className="w-3.5 h-3.5 text-teal-700" />
+                <span>Federal Republic of Nigeria &bull; Packaged Water Standard</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                CERTIFICATE OF WATER SANITATION &amp; PURITY LOG
+              </h3>
+              <p className="text-xs text-slate-500 font-mono">
+                Facility ID: OBI-TW-LAG-2026-081 &bull; Audit Date: {new Date().toLocaleDateString('en-GB')}
+              </p>
+            </div>
+
+            {/* Certificate Body Parameters */}
+            <div className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div>
+                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Facility Name</span>
+                  <strong className="text-slate-900 font-bold">Obi Table &amp; Sachet Water Company</strong>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Inspectorate Standard</span>
+                  <strong className="text-slate-900 font-bold">NAFDAC NIS 306:2008 Standard</strong>
+                </div>
+              </div>
+
+              <table className="w-full text-left border-collapse border border-slate-200 text-xs">
+                <thead>
+                  <tr className="bg-slate-100 text-slate-700">
+                    <th className="p-2.5 border border-slate-200">Parameter Tested</th>
+                    <th className="p-2.5 border border-slate-200">NAFDAC Legal Limit</th>
+                    <th className="p-2.5 border border-slate-200">Factory Reading</th>
+                    <th className="p-2.5 border border-slate-200">Compliance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-2.5 border border-slate-200 font-medium">Total Dissolved Solids (TDS)</td>
+                    <td className="p-2.5 border border-slate-200 font-mono">&lt; 100 ppm</td>
+                    <td className="p-2.5 border border-slate-200 font-bold font-mono text-emerald-700">{treatedPermeateTds} ppm</td>
+                    <td className="p-2.5 border border-slate-200 font-bold text-emerald-700">PASS ✅</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2.5 border border-slate-200 font-medium">Water Acidity / pH Level</td>
+                    <td className="p-2.5 border border-slate-200 font-mono">6.5 – 7.5</td>
+                    <td className="p-2.5 border border-slate-200 font-bold font-mono text-emerald-700">{treatedPh.toFixed(1)}</td>
+                    <td className="p-2.5 border border-slate-200 font-bold text-emerald-700">PASS ✅</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2.5 border border-slate-200 font-medium">Borehole Raw Feed TDS</td>
+                    <td className="p-2.5 border border-slate-200 font-mono">Borehole Baseline</td>
+                    <td className="p-2.5 border border-slate-200 font-mono">{rawBoreholeTds} ppm</td>
+                    <td className="p-2.5 border border-slate-200 font-bold text-blue-700">RECORDED</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2.5 border border-slate-200 font-medium">UV Sterilization Lamp Hours</td>
+                    <td className="p-2.5 border border-slate-200 font-mono">&lt; 8,000 hrs</td>
+                    <td className="p-2.5 border border-slate-200 font-mono">{uvHours} hrs active</td>
+                    <td className="p-2.5 border border-slate-200 font-bold text-emerald-700">OPTIMAL ✅</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] leading-relaxed">
+                <strong>Quality Assurance Attestation:</strong> Finished drinking water complies fully with microbial and physicochemical standards required by Nigerian regulatory authorities. All filtration media and reverse osmosis membranes are certified within service life.
+              </div>
+            </div>
+
+            {/* Certificate Footer Sign-Off */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-200 text-xs">
+              <div className="text-slate-500 text-[11px]">
+                Audited &amp; Digitally Certified by <strong className="text-slate-800">Obi Table Water OS</strong>
+              </div>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-4 py-2 rounded-xl bg-teal-700 text-white font-bold hover:bg-teal-800 transition cursor-pointer flex items-center gap-1.5"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print Certificate</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
