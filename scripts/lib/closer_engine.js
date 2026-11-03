@@ -17,6 +17,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const { cleanBusinessName, getShortBrand, isGarbageOrId } = require('./nameSanitizer');
+const { isPillar2Conversation, handlePillar2Inquiry } = require('./pillar2_closer');
 
 const CORPORATE_BANK = {
   bankName: 'Moniepoint Microfinance Bank',
@@ -44,6 +45,23 @@ function toSafeSlug(text, fallback = 'business') {
  */
 function lookupLeadForWhatsApp(senderPhone, incomingText = '') {
   const cleanPhone = String(senderPhone || '').replace(/\D/g, '');
+
+  // 🏛️ PILLAR 2 CHECK: Route luxury real estate brokers immediately
+  const p2Check = isPillar2Conversation(senderPhone, incomingText, {});
+  if (p2Check.isPillar2) {
+    const b = p2Check.broker;
+    return {
+      isPillar2: true,
+      businessName: b ? b.name : 'Real Estate Partner',
+      category: 'Real Estate & Properties',
+      area: b ? b.city : 'Lagos',
+      phone: senderPhone,
+      broker: b,
+      propertyListing: b ? b.defaultListing : 'Prime Luxury Lagos Mandate',
+      ticketId: b ? b.defaultTicketId : 'DEAL-MANDATE-DESK',
+      previewUrl: 'https://www.bethelmindanalytics.com/mandate'
+    };
+  }
   const phoneTail = cleanPhone.length >= 10 ? cleanPhone.slice(-10) : cleanPhone;
 
   let customerName = '';
@@ -268,6 +286,15 @@ function autoProvisionSiteFromWhatsApp(leadInfo, updates = {}) {
 function handlePostContactInquiry(clientMessage, leadData = {}) {
   const rawMsg = String(clientMessage || '').trim();
   const msg = rawMsg.toLowerCase();
+
+  // 🏛️ PILLAR 2 CHECK: Luxury Real Estate Co-Brokerage Gate
+  const p2Check = isPillar2Conversation(leadData.phone, rawMsg, leadData);
+  if (p2Check.isPillar2) {
+    return handlePillar2Inquiry(rawMsg, {
+      ...leadData,
+      broker: p2Check.broker
+    });
+  }
 
   // Resolve full lead context automatically if not already populated
   const resolved = lookupLeadForWhatsApp(leadData.phone || '', rawMsg);
@@ -866,6 +893,51 @@ const { generateGeminiReply } = require('./gemini_closer');
  * 3. Falls back gracefully to deterministic matrix on any network hiccup or timeout (> 2.8s).
  */
 async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
+  const rawMsg = String(clientMessage || '').trim();
+
+  // 🏛️ PILLAR 2 CHECK: High-Ticket Real Estate Mandate Intelligence
+  const p2Check = isPillar2Conversation(leadData.phone, rawMsg, leadData);
+  if (p2Check.isPillar2) {
+    const p2Decision = handlePillar2Inquiry(rawMsg, {
+      ...leadData,
+      broker: p2Check.broker
+    });
+
+    const SPECIFIC_P2_INTENTS = [
+      'PILLAR2_MANDATE_UNAVAILABLE',
+      'PILLAR2_BUYER_IDENTITY_PROTOCOL',
+      'PILLAR2_COMMISSION_ASSERTION',
+      'PILLAR2_DISPATCH_JIM',
+      'PILLAR2_AVAILABILITY_CONFIRMED',
+      'PILLAR2_INSPECTION_SCHEDULING',
+      'PILLAR2_CORPORATE_CREDENTIALS',
+      'PILLAR2_CALL_REQUEST'
+    ];
+
+    if (SPECIFIC_P2_INTENTS.includes(p2Decision.intent)) {
+      return p2Decision;
+    }
+
+    // Try Gemini with Pillar 2 Real Estate context for open-ended queries
+    try {
+      const geminiText = await generateGeminiReply(rawMsg, {
+        isPillar2: true,
+        businessName: p2Check.broker ? p2Check.broker.name : (leadData.businessName || 'Partner Firm'),
+        propertyListing: p2Check.broker ? p2Check.broker.defaultListing : 'Prime Luxury Lagos Listing'
+      });
+      if (geminiText) {
+        return {
+          intent: 'PILLAR2_GEMINI_DYNAMIC_CLOSER',
+          isOptOut: false,
+          messageText: geminiText,
+          suggestedAction: 'ENGAGE_PILLAR2_GEMINI'
+        };
+      }
+    } catch (_) {}
+
+    return p2Decision;
+  }
+
   // 1. Run deterministic matrix first
   const deterministicDecision = handlePostContactInquiry(clientMessage, leadData);
 
@@ -884,7 +956,6 @@ async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
   }
 
   // If client sent a simple short greeting, keep fast deterministic copy
-  const rawMsg = String(clientMessage || '').trim();
   if (rawMsg.length < 15 && deterministicDecision.intent === 'CASUAL_GREETING') {
     return deterministicDecision;
   }
