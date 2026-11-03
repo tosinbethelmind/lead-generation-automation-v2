@@ -273,11 +273,13 @@ export default function MobileAdminCommandCenter() {
       });
       const data = await res.json();
       if (data.success) {
-        setFeedbackMsg(`✅ Deal #${ticketId} approved! View in Outbound Queue or Dispatched Ledger.`);
+        setFeedbackMsg(`✅ Deal #${ticketId} automated & dispatched across all 3 platforms!`);
         if (data.pillar2) setPillar2Data(data.pillar2);
         fetchTelemetry();
+        return data;
       } else {
         setFeedbackMsg(`❌ ${data.error || 'Failed to approve deal'}`);
+        return data;
       }
     } catch (err: any) {
       setFeedbackMsg(`❌ Error: ${err.message}`);

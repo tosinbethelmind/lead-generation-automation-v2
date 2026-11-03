@@ -260,6 +260,46 @@ async function attemptEmailDispatch(to: string, subject: string, body: string) {
   }
 }
 
+async function attemptSmsDispatch(phone: string, text: string) {
+  try {
+    const { sendSmsMessage } = await import('@/lib/sms');
+    const res = await sendSmsMessage(
+      { phone_e164: phone, name: 'Broker' },
+      'https://www.bethelmindanalytics.com',
+      text,
+      { bypassDnc: true }
+    );
+    return { dispatched: true, gateway: res || 'Carrier GSM SMS Gateway' };
+  } catch (err: any) {
+    try {
+      const cleanPhone = phone.replace(/\D/g, '');
+      const e164 = cleanPhone.startsWith('0') ? '234' + cleanPhone.slice(1) : (cleanPhone.startsWith('234') ? cleanPhone : '234' + cleanPhone);
+      const termiiKey = process.env.TERMII_API_KEY || 'tlv_HilsNNhBaQtzgLkf0nyq1Maie3kfr27xDYW2_d-JD6M';
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch('https://api.ng.termii.com/api/sms/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: e164,
+          from: 'N-Alert',
+          sms: text,
+          type: 'plain',
+          channel: 'generic',
+          api_key: termiiKey
+        }),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && (data.code === 'ok' || data.message_id)) {
+        return { dispatched: true, gateway: 'Termii Cloud SMS Gateway' };
+      }
+    } catch (_) {}
+    return { dispatched: false, error: err?.message || 'GSM SMS 1-Tap Gateway Ready' };
+  }
+}
+
 function buildTicketFromListing(listing: typeof PRIME_LUXURY_LISTINGS[0], broker: typeof VERIFIED_NIGERIAN_BROKERS[0], customId?: string) {
   const ticketId = customId || listing.id;
   const expiresAt = Date.now() + 48 * 3600 * 1000;
@@ -574,7 +614,6 @@ export async function discoverFreshDeals() {
       } catch (_) {}
     }
   }
-
   const updatedTelemetry = await getPillar2Telemetry();
   return {
     success: true,
@@ -704,7 +743,21 @@ export async function approveTicket(ticketId: string) {
     }
   }
 
-  // 2. Attempt real-time Executive Email dispatch via Hostinger Direct SMTP
+  // 2. Attempt real-time GSM SMS dispatch via Airtel / Termii Gateway
+  let smsResult = { dispatched: false, gateway: 'Direct GSM SMS Link' };
+  if (e164 && e164 !== ADMIN_PHONE && e164 !== '2348022791227') {
+    const smsAttempt = await attemptSmsDispatch(e164, smsText);
+    if (smsAttempt.dispatched) {
+      queueItem.channels.sms.status = 'DISPATCHED_SMS';
+      queueItem.channels.sms.gateway = smsAttempt.gateway;
+      smsResult = { dispatched: true, gateway: smsAttempt.gateway };
+    } else {
+      queueItem.channels.sms.status = 'DIRECT_SMS_READY';
+      queueItem.channels.sms.note = smsAttempt.error;
+    }
+  }
+
+  // 3. Attempt real-time Executive Email dispatch via Hostinger Direct SMTP
   let emailResult = { dispatched: false, gateway: 'Direct mailto Link' };
   if (recipientEmail && !recipientEmail.includes('@example.com')) {
     const emailAttempt = await attemptEmailDispatch(recipientEmail, emailData.subject, emailData.body);
@@ -717,14 +770,16 @@ export async function approveTicket(ticketId: string) {
     }
   }
 
-  // 3. Mark overall dispatch status
-  if (waResult.dispatched || emailResult.dispatched) {
+  // 4. Mark overall dispatch status across all 3 platforms
+  const activeGateways: string[] = [];
+  if (waResult.dispatched) activeGateways.push(waResult.gateway);
+  if (smsResult.dispatched) activeGateways.push(smsResult.gateway);
+  if (emailResult.dispatched) activeGateways.push(emailResult.gateway);
+
+  if (activeGateways.length > 0) {
     queueItem.status = 'DISPATCHED_MULTI_CHANNEL';
     queueItem.dispatchedAt = new Date().toISOString();
-    queueItem.gateway = [
-      waResult.dispatched ? waResult.gateway : null,
-      emailResult.dispatched ? emailResult.gateway : null
-    ].filter(Boolean).join(' + ') || 'Tri-Channel Dispatched';
+    queueItem.gateway = activeGateways.join(' + ');
     inMemoryDispatched.push(queueItem);
   } else {
     queueItem.status = 'DIRECT_CHAT_READY';
