@@ -56,7 +56,8 @@ import {
   Calendar,
   CheckCheck,
   ChevronDown,
-  Printer
+  Printer,
+  Sliders
 } from 'lucide-react';
 
 export default function WaterFactoryErpDashboard() {
