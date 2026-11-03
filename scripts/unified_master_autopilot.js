@@ -516,6 +516,29 @@ function startNairalandWorker() {
   });
 }
 
+// ── WORKER 17: Autonomous Continuous Luxury Mandate Discovery & Queue Watchdog ──
+let pillar2Process = null;
+function startPillar2DiscoveryWorker() {
+  log('🏛️ [Worker 17: Luxury Mandate Engine] Launching Autonomous Deal Discovery & Tri-Channel Queue Drain...');
+  pillar2Process = spawn('node', ['--max-old-space-size=256', tsxCli, 'scripts/run_autonomous_pillar2_deal_discovery.js'], {
+    cwd: rootDir,
+    shell: false,
+    stdio: 'inherit',
+    windowsHide: true,
+    env: safeEnv
+  });
+
+  pillar2Process.on('exit', (code) => {
+    log(`ℹ️ [Worker 17: Luxury Mandate Engine] Discovery & drain cycle completed (Code: ${code}). Resting 20 minutes before next sweep...`);
+    setTimeout(startPillar2DiscoveryWorker, 20 * 60 * 1000);
+  });
+
+  pillar2Process.on('error', (err) => {
+    log(`❌ [Worker 17: Luxury Mandate Engine] Error: ${err.message}. Retrying in 10 minutes...`);
+    setTimeout(startPillar2DiscoveryWorker, 10 * 60 * 1000);
+  });
+}
+
 const workerManifest = [
   { name: 'Worker 1: Traffic Engine', start: startTrafficDaemon, delay: 0 },
   { name: 'Worker 2: Pipeline Runner', start: startQueueRunner, delay: 3000 },
@@ -531,7 +554,8 @@ const workerManifest = [
   { name: 'Worker 13: Smart Webform Submitter', start: startSmartWebformDaemon, delay: 33000 },
   { name: 'Worker 14: Crawlee + Katana Harvester', start: startCrawleeKatanaHarvester, delay: 36000 },
   { name: 'Worker 15: Scout Harvester', start: startScoutHarvester, delay: 39000 },
-  { name: 'Worker 16: Nairaland Traffic Engine', start: startNairalandWorker, delay: 42000 }
+  { name: 'Worker 16: Nairaland Traffic Engine', start: startNairalandWorker, delay: 42000 },
+  { name: 'Worker 17: Luxury Mandate Engine', start: startPillar2DiscoveryWorker, delay: 45000 }
 ];
 
 workerManifest.forEach((w) => {

@@ -115,13 +115,31 @@ export default function MobileAdminCommandCenter() {
     fetchTelemetry();
     const interval = setInterval(fetchTelemetry, 15000); // 15s auto-sync
 
+    // Autonomous continuous deal discovery (every 8 minutes)
+    const autonomousDiscoveryInterval = setInterval(async () => {
+      try {
+        await fetch('/api/admin/mobile-control', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': 'bethelmind_admin_2026'
+          },
+          body: JSON.stringify({ action: 'run_pillar2_discovery' })
+        });
+        fetchTelemetry();
+      } catch (_) {}
+    }, 8 * 60 * 1000);
+
     window.addEventListener('beforeinstallprompt', (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setIsInstallable(true);
     });
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearInterval(autonomousDiscoveryInterval);
+    };
   }, []);
 
   const fetchTelemetry = async () => {

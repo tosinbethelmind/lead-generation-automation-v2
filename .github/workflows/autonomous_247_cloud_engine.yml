@@ -56,6 +56,24 @@ jobs:
           npx tsx scripts/harvest_instagram_and_tiktok_leads.ts || true
           echo "✅ High-Speed Nationwide Harvester, Rotational Strict No-Website & 5-Engine Pass complete."
 
+      - name: Execute Autonomous Pillar 2 Luxury Mandate Discovery & Outbound Engine
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SMTP_HOST: 'smtp.hostinger.com'
+          SMTP_PORT: '465'
+          SMTP_SECURE: 'true'
+          SMTP_USER: 'tosin@bethelmindanalytics.com'
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EVOLUTION_SEND_URL: 'http://169.58.182.92:8080/send'
+          EVOLUTION_API_KEY: 'evolution_bethelmind_secret_2026'
+          NODE_ENV: 'production'
+        run: |
+          set +e
+          node --max-old-space-size=256 node_modules/tsx/dist/cli.mjs scripts/run_autonomous_pillar2_deal_discovery.js || true
+          echo "✅ Continuous 24/7 Pillar 2 Luxury Mandate Discovery & Outbound Engine complete."
+
       - name: Execute Daily B2B Email (600 Quota) & Webform Outreach Pass
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
