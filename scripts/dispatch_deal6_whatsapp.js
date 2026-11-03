@@ -8,7 +8,7 @@ async function dispatchDeal6WhatsApp() {
 
   const ticketId = 'DEAL-IKOYI-420M';
   const brokerName = 'Ubosi Eleh & Co';
-  const brokerPhone = '08028765432';
+  const brokerPhone = '08054797515';
   const brokerEmail = 'valuation@ubosielehandco.com';
   const propertyTitle = '4-Bedroom Luxury Sky Penthouse overlooking Ikoyi Golf Course';
   const propertyPrice = '₦ 420,000,000';
