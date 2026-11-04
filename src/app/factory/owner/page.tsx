@@ -231,10 +231,16 @@ export default function ObiOwnerExecutivePortal() {
           )}
 
           <Link
+            href="/factory/login"
+            className="text-[11px] text-blue-400 hover:text-blue-300 px-2 py-1 rounded bg-blue-500/10 border border-blue-500/30"
+          >
+            Staff Login
+          </Link>
+          <Link
             href="/factory"
             className="text-[11px] text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800/80 border border-slate-700"
           >
-            Full Product
+            All Features
           </Link>
         </div>
       </header>

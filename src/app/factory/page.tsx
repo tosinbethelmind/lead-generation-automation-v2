@@ -260,14 +260,18 @@ ${truck2MissingBags > 0 ? `  🚨 *SHORTAGE: -${truck2MissingBags} bags (₦${tr
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600">
+          <nav className="hidden md:flex items-center gap-5 text-xs font-semibold text-slate-600">
             <Link href="/factory/owner" className="text-amber-600 font-extrabold flex items-center gap-1.5 hover:text-amber-700 transition">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>🔑 Mr. Obi&apos;s Owner PIN Portal</span>
+              <span>🔑 Owner PIN</span>
+            </Link>
+            <Link href="/factory/login" className="text-blue-600 font-extrabold flex items-center gap-1 hover:text-blue-700 transition">
+              <Users className="w-3.5 h-3.5" />
+              <span>Staff Login</span>
             </Link>
             <a href="#simulator" className="text-[#0B5FFF] font-extrabold flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Full Testing Console</span>
+              <span>Testing Console</span>
             </a>
             <a href="#how-it-works" className="hover:text-[#0B5FFF] transition">How It Works</a>
             <a href="#features" className="hover:text-[#0B5FFF] transition">Features</a>
@@ -276,6 +280,12 @@ ${truck2MissingBags > 0 ? `  🚨 *SHORTAGE: -${truck2MissingBags} bags (₦${tr
           </nav>
 
           <div className="flex items-center gap-2">
+            <Link
+              href="/factory/login"
+              className="inline-flex sm:hidden items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-500/10 text-blue-700 text-xs font-extrabold border border-blue-300"
+            >
+              <span>Staff Login</span>
+            </Link>
             <Link
               href="/factory/owner"
               className="inline-flex sm:hidden items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-500/10 text-amber-700 text-xs font-extrabold border border-amber-300"
