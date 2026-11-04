@@ -260,7 +260,11 @@ ${truck2MissingBags > 0 ? `  🚨 *SHORTAGE: -${truck2MissingBags} bags (₦${tr
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-slate-600">
+          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600">
+            <Link href="/factory/owner" className="text-amber-600 font-extrabold flex items-center gap-1.5 hover:text-amber-700 transition">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>🔑 Mr. Obi&apos;s Owner PIN Portal</span>
+            </Link>
             <a href="#simulator" className="text-[#0B5FFF] font-extrabold flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Full Testing Console</span>
@@ -271,12 +275,18 @@ ${truck2MissingBags > 0 ? `  🚨 *SHORTAGE: -${truck2MissingBags} bags (₦${tr
             <a href="#faq" className="hover:text-[#0B5FFF] transition">FAQ</a>
           </nav>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/factory/owner"
+              className="inline-flex sm:hidden items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-500/10 text-amber-700 text-xs font-extrabold border border-amber-300"
+            >
+              <span>🔑 Owner PIN</span>
+            </Link>
             <a
               href={`https://wa.me/2348022791227?text=${encodeURIComponent('Hello Bethelmind Desk! I am testing the Obi Table Water operating system and want to book a 14-day plant pilot.')}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-extrabold shadow-sm hover:shadow transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-extrabold shadow-sm hover:shadow transition cursor-pointer"
             >
               <MessageCircle className="w-4 h-4 fill-current" />
               <span>Book Plant Pilot</span>
@@ -306,22 +316,30 @@ ${truck2MissingBags > 0 ? `  🚨 *SHORTAGE: -${truck2MissingBags} bags (₦${tr
 
         {/* 1-Click Fast Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <Link
+            href="/factory/owner"
+            className="w-full sm:w-auto min-h-[50px] px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-sm font-black shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-900 animate-pulse" />
+            <span>🔑 Mr. Obi&apos;s 4-Digit Owner Portal (Alternative 2)</span>
+          </Link>
+
           <a
             href="#simulator"
-            className="w-full sm:w-auto min-h-[50px] px-8 py-3.5 rounded-xl bg-[#0B5FFF] hover:bg-[#094fd4] text-white text-sm font-extrabold shadow-lg shadow-[#0B5FFF]/25 hover:shadow-xl transition flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full sm:w-auto min-h-[50px] px-7 py-3.5 rounded-xl bg-[#0B5FFF] hover:bg-[#094fd4] text-white text-sm font-extrabold shadow-lg shadow-[#0B5FFF]/25 hover:shadow-xl transition flex items-center justify-center gap-2 cursor-pointer"
           >
             <Sparkles className="w-4 h-4" />
-            <span>Test All Features with Free Mock Data ↓</span>
+            <span>Test All Features Free ↓</span>
           </a>
 
           <a
             href={`https://wa.me/2348022791227?text=${encodeURIComponent('Hello! I run a water factory. I want to test the Obi Table Water system for my plant.')}`}
             target="_blank"
             rel="noreferrer"
-            className="w-full sm:w-auto min-h-[50px] px-7 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-bold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full sm:w-auto min-h-[50px] px-6 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-bold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer"
           >
             <MessageCircle className="w-5 h-5 fill-current" />
-            <span>Chat on WhatsApp (0802 279 1227)</span>
+            <span>WhatsApp (0802 279 1227)</span>
           </a>
         </div>
 
