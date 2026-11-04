@@ -694,7 +694,18 @@ export async function approveTicket(ticketId: string) {
   }
 
   // Build Queue Item
-  const rawContact = ticket?.targetContactPhone || ticket?.actionPayload?.recipientPhone || '08021061457';
+  let rawContact = ticket?.targetContactPhone || ticket?.actionPayload?.recipientPhone;
+  const targetBrokerName = ticket?.targetBusinessName || ticket?.actionPayload?.recipientName || '';
+  if (!rawContact || rawContact.includes('8021061457') || rawContact.includes('7052090118') || rawContact.includes('8023456781')) {
+    if (targetBrokerName.includes('Ora Egbunike')) rawContact = '08038774238';
+    else if (targetBrokerName.includes('Jide Taiwo')) rawContact = '07052090092';
+    else if (targetBrokerName.includes('Diya Fatimilehin')) rawContact = '09053964068';
+    else {
+      const listingIdx = PRIME_LUXURY_LISTINGS.findIndex(l => ticketId.startsWith(l.id));
+      const fallbackBroker = VERIFIED_NIGERIAN_BROKERS[(listingIdx >= 0 ? listingIdx : 0) % VERIFIED_NIGERIAN_BROKERS.length];
+      rawContact = fallbackBroker.phone;
+    }
+  }
   const cleanPhone = String(rawContact).replace(/\D/g, '');
   const recipientEmail = ticket?.targetContactEmail || ticket?.actionPayload?.recipientEmail || 'info@oraegbunike.com';
   const recipientName = ticket?.targetBusinessName || ticket?.actionPayload?.recipientName || 'Verified Broker';
@@ -807,7 +818,8 @@ export async function approveTicket(ticketId: string) {
   if (smsResult.dispatched) activeGateways.push(smsResult.gateway);
   if (emailResult.dispatched) activeGateways.push(emailResult.gateway);
 
-  if (activeGateways.length > 0) {
+  // 🛡️ STRICT REAL-ACTION REPORTING: WhatsApp delivery must be genuine
+  if (waResult.dispatched) {
     queueItem.status = 'DISPATCHED_MULTI_CHANNEL';
     queueItem.dispatchedAt = new Date().toISOString();
     queueItem.gateway = activeGateways.join(' + ');
@@ -819,6 +831,12 @@ export async function approveTicket(ticketId: string) {
         channel: activeGateways.join(' + ')
       });
     } catch (_) {}
+  } else if (activeGateways.length > 0) {
+    // Email or SMS went through, but WhatsApp did not
+    queueItem.status = 'DISPATCHED_EMAIL_ONLY';
+    queueItem.dispatchedAt = new Date().toISOString();
+    queueItem.gateway = activeGateways.join(' + ') + ' (WhatsApp: PENDING/FAILED)';
+    inMemoryDispatched.push(queueItem);
   } else {
     queueItem.status = 'DIRECT_CHAT_READY';
     queueItem.gateway = 'Direct Multi-Channel (1-Tap WhatsApp, SMS & Email)';

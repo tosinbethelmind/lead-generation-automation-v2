@@ -289,10 +289,10 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
 
   // 🏛️ PILLAR 2 CHECK: Luxury Real Estate Co-Brokerage Gate
   const p2Check = isPillar2Conversation(leadData.phone, rawMsg, leadData);
-  if (p2Check.isPillar2) {
+  if (p2Check.isPillar2 || leadData.isPillar2) {
     return handlePillar2Inquiry(rawMsg, {
       ...leadData,
-      broker: p2Check.broker
+      broker: p2Check.broker || leadData.broker
     });
   }
 
@@ -897,18 +897,23 @@ async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
 
   // 🏛️ PILLAR 2 CHECK: High-Ticket Real Estate Mandate Intelligence
   const p2Check = isPillar2Conversation(leadData.phone, rawMsg, leadData);
-  if (p2Check.isPillar2) {
+  const isPillar2Active = Boolean(p2Check.isPillar2 || leadData.isPillar2);
+
+  if (isPillar2Active) {
+    const brokerObj = p2Check.broker || leadData.broker || null;
     const p2Decision = handlePillar2Inquiry(rawMsg, {
       ...leadData,
-      broker: p2Check.broker
+      broker: brokerObj
     });
 
     const SPECIFIC_P2_INTENTS = [
       'PILLAR2_MANDATE_UNAVAILABLE',
+      'PILLAR2_CORPORATE_IDENTITY',
+      'PILLAR2_EXECUTIVE_GREETING',
+      'PILLAR2_AVAILABILITY_CONFIRMED',
       'PILLAR2_BUYER_IDENTITY_PROTOCOL',
       'PILLAR2_COMMISSION_ASSERTION',
       'PILLAR2_DISPATCH_JIM',
-      'PILLAR2_AVAILABILITY_CONFIRMED',
       'PILLAR2_INSPECTION_SCHEDULING',
       'PILLAR2_CORPORATE_CREDENTIALS',
       'PILLAR2_CALL_REQUEST'
@@ -920,10 +925,11 @@ async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
 
     // Try Gemini with Pillar 2 Real Estate context for open-ended queries
     try {
+      const brokerDisplayName = brokerObj ? (brokerObj.brokerName || brokerObj.name) : (leadData.businessName || 'Partner Firm');
       const geminiText = await generateGeminiReply(rawMsg, {
         isPillar2: true,
-        businessName: p2Check.broker ? p2Check.broker.name : (leadData.businessName || 'Partner Firm'),
-        propertyListing: p2Check.broker ? p2Check.broker.defaultListing : 'Prime Luxury Lagos Listing'
+        businessName: brokerDisplayName,
+        propertyListing: brokerObj ? (brokerObj.defaultListing || 'Prime Luxury Lagos Listing') : 'Prime Luxury Lagos Listing'
       });
       if (geminiText) {
         return {
@@ -935,6 +941,7 @@ async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
       }
     } catch (_) {}
 
+    // 🛡️ STRICT INVARIANT: If Pillar 2, NEVER EVER fall back to Pillar 1 SME copy!
     return p2Decision;
   }
 

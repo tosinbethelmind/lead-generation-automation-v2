@@ -1,18 +1,18 @@
 /**
  * @file scripts/lib/gemini_closer.js
  *
- * 🤖 ULTRA-FAST GEMINI 3.5 FLASH DYNAMIC REASONER FOR WHATSAPP ASSISTANT
+ * 🤖 ULTRA-FAST GEMINI DYNAMIC REASONER FOR WHATSAPP ASSISTANT
  *
  * Provides intelligent, product-specific reasoning for unique customer questions
- * with multi-key pool failover, 2.8s timeout guard, and authentic Nigerian sales closing.
+ * with multi-key pool failover, 4.5s timeout guard, and authentic Nigerian sales closing.
  */
 
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-// Active Gemini models
-const PRIMARY_MODEL = 'gemini-3.5-flash';
+// Production Gemini models
+const PRIMARY_MODEL = 'gemini-flash-lite-latest';
 const FALLBACK_MODEL = 'gemini-3.1-flash-lite';
 
 // Read keys from env or parse directly from .env.local
@@ -47,7 +47,7 @@ function getGeminiKeys() {
 let keyIndex = 0;
 
 /**
- * Calls Gemini with pool failover and 2.8s strict timeout
+ * Calls Gemini with pool failover and 4.5s strict timeout
  */
 async function generateGeminiReply(userMessage, context = {}) {
   const keys = getGeminiKeys();
@@ -113,13 +113,10 @@ STRICT OPERATING RULES:
       }
     } catch (err) {
       console.warn(`[Gemini Reasoner] Primary attempt ${attempt + 1} failed: ${err.message}. Trying next key...`);
-      // Try fallback model if model error
-      if (err.message && err.message.includes('404')) {
-        try {
-          const fallbackResp = await callGeminiSingleKey(currentKey, userMessage, systemInstruction, FALLBACK_MODEL);
-          if (fallbackResp && fallbackResp.trim().length > 10) return fallbackResp.trim();
-        } catch (_) {}
-      }
+      try {
+        const fallbackResp = await callGeminiSingleKey(currentKey, userMessage, systemInstruction, FALLBACK_MODEL);
+        if (fallbackResp && fallbackResp.trim().length > 10) return fallbackResp.trim();
+      } catch (_) {}
     }
   }
 
@@ -139,7 +136,6 @@ function callGeminiSingleKey(apiKey, userMessage, systemInstruction, modelName =
         parts: [{ text: systemInstruction }]
       },
       generationConfig: {
-        thinkingConfig: { thinkingBudget: 0 },
         temperature: 0.35,
         maxOutputTokens: 350,
         topP: 0.8
@@ -157,7 +153,7 @@ function callGeminiSingleKey(apiKey, userMessage, systemInstruction, modelName =
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(payload)
       },
-      timeout: 2800 // 2.8 second strict timeout
+      timeout: 4500 // 4.5 second timeout
     };
 
     const req = https.request(options, (res) => {
@@ -184,7 +180,7 @@ function callGeminiSingleKey(apiKey, userMessage, systemInstruction, modelName =
 
     req.on('timeout', () => {
       req.destroy();
-      reject(new Error('Gemini request timed out (> 2.8s)'));
+      reject(new Error('Gemini request timed out (> 4.5s)'));
     });
 
     req.on('error', (err) => {
