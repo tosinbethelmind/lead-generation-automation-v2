@@ -23,6 +23,7 @@ public/jiji_ads
 *.wav
 *.mp4
 *.webm
+!public/videos/obi_table_water_os_walkthrough.webm
 *.tar.gz
 *.exe
 *.xlsx
