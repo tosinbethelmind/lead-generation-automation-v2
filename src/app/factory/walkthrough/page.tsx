@@ -64,15 +64,15 @@ const CHAPTERS: Chapter[] = [
   {
     id: 1,
     time: '00:00 - 00:25',
-    title: 'Introduction: Why Everything Runs on Mobile Phones',
+    title: 'Introduction: Why Dual-Line Operations Run on Mobile Phones',
     role: 'Mr. Obi (Owner)',
     badge: '👑 Executive Overview',
     badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-    summary: 'No computers, no complex accounting software, and zero monthly internet burden.',
-    noviceExplanation: 'Water factories are dusty, wet, and fast-paced. You do not need an office computer or an IT technician. As the owner, your phone is connected directly to your plant. It works even when public power (NEPA) drops or mobile network fluctuates.',
+    summary: 'Managing both Sachet Water (thin margin, high volume) and Bottled Water / Jars (high margin, high inventory risk) without computers.',
+    noviceExplanation: 'Water factories in Nigeria run two distinct operations: the high-speed Sachet Line (bags of 20) and the Bottled Water Line (50cl, 75cl, and 19L dispenser jars). As the owner, you do not need expensive office computers. Your smartphone connects directly to both lines, tracking daily gross revenue (₦1,971,000) and net cash profit (₦524,200) even when NEPA drops or data fluctuates.',
     liveLink: '/factory/owner',
-    actionText: 'View Owner Screen',
-    keyRule: 'Rule: The factory owner should know their exact cash profit before 8:00 PM every evening.'
+    actionText: 'View Owner Dual-Line Screen',
+    keyRule: 'Rule: The factory owner should know their exact cash profit from both sachets and bottles before 8:00 PM every evening.'
   },
   {
     id: 2,
@@ -82,7 +82,7 @@ const CHAPTERS: Chapter[] = [
     badge: '👥 No Password Login',
     badgeBg: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
     summary: 'Four large picture cards with 4-digit PINs. No email addresses or complicated passwords.',
-    noviceExplanation: 'Nigerian factory workers forget passwords within hours. On this system, nobody types an email. Staff see four large picture cards: Mr. Obi, Kenneth the supervisor, Blessing the cashier, and Musa the driver. Kenneth just taps his picture, types 1-1-1-1, and he is inside.',
+    noviceExplanation: 'Nigerian factory workers forget passwords within hours. On this system, nobody types an email. Staff see four large picture cards: Mr. Obi, Kenneth the supervisor, Blessing the cashier, and Musa the driver. Kenneth just taps his picture, types 1-1-1-1, and immediately switches between the Sachet Line and Bottled Line tabs.',
     liveLink: '/factory/login',
     actionText: 'Try Staff Login Screen',
     keyRule: 'Rule: Never give factory workers complex email logins. Use simple 4-digit PINs.'
@@ -90,54 +90,54 @@ const CHAPTERS: Chapter[] = [
   {
     id: 3,
     time: '00:55 - 01:30',
-    title: 'Supervisor Shift Console (+1 Roll Used & Anti-Ghost Shift)',
+    title: 'Dual-Line Production Console (+1 Roll Used & Bottle Preforms)',
     role: 'Kenneth (Supervisor)',
-    badge: '📋 Shift Production',
+    badge: '📋 Sachet + Bottling Console',
     badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-    summary: 'Tap "+1 Roll Used" whenever nylon finishes. Automatically calculates 300 bags per roll.',
-    noviceExplanation: 'Machine operators can no longer steal bags or run "ghost shifts". When a roll of nylon finishes on the sealing machine, Kenneth taps the big green button: "+1 Roll Used". The system counts 300 bags. If 14 rolls were used, 4,200 bags MUST be accounted for in the loading bay.',
+    summary: 'Tap "+1 Roll Used" for sachets (300 bags) or tap "+10 Packs 75cl", "+10 Packs 50cl", "+5 Jars Refilled".',
+    noviceExplanation: 'For sachets, Kenneth taps "+1 Roll Used" whenever nylon film finishes (300 bags counted). For the bottling line, he logs PET preforms issued (e.g. 3,000 preforms) and blow-molding rejects (e.g. 24 defective bottles). The system ensures machine operators do not sell unrecorded packs out the back door.',
     liveLink: '/factory/login',
-    actionText: 'Test +1 Roll Button',
-    keyRule: 'Rule: 1kg of pure water nylon film must yield 16 bags. Any discrepancy is flagged immediately.'
+    actionText: 'Test Production Buttons',
+    keyRule: 'Rule: 1kg of sachet nylon must yield 16 bags, and blow-molding reject rate must remain below 1.2%.'
   },
   {
     id: 4,
     time: '01:30 - 02:05',
-    title: 'Gate Sales POS (Physical Cash vs. Fake Bank Alerts)',
+    title: 'Gate POS: Multi-Product Sales & Fake Alert Shield',
     role: 'Blessing (Cashier)',
-    badge: '💰 Gate POS & Fraud Shield',
+    badge: '💰 Multi-Product POS Shield',
     badgeBg: 'bg-teal-500/20 text-teal-300 border-teal-500/30',
-    summary: 'Distinguish between cash in hand and Moniepoint/OPay bank transfers with terminal verification.',
-    noviceExplanation: 'Walk-in depot buyers buy directly at the gate. Blessing records the customer name, number of bags, and selects Cash or Transfer. If it is a transfer, she verifies the credit on the Moniepoint terminal before opening the gate. At 6:00 PM, physical cash in her drawer must match the software.',
+    summary: 'Sell Sachet bags (₦350), 75cl packs (₦1,200), 50cl packs (₦1,100), and 19L refills (₦900).',
+    noviceExplanation: 'Walk-in customers and distributors buy different products. Blessing selects the product, quantity, and Cash vs. Transfer. For Moniepoint/OPay transfers, she verifies credit on the physical POS terminal before opening the gate. Cash in her drawer must match the software to the exact Naira at 6:00 PM.',
     liveLink: '/factory/login',
     actionText: 'Test Cashier Gate POS',
-    keyRule: 'Rule: Never release water for bank transfers until confirmed on the Moniepoint POS terminal.'
+    keyRule: 'Rule: Never release sachets, bottle packs, or dispenser jars until payment is verified on Moniepoint POS.'
   },
   {
     id: 5,
     time: '02:05 - 02:45',
-    title: 'Stopping Driver Shortages & The Physical Pouch Rule',
+    title: 'Driver Shortages: Burst Pouch Rule & Empty Jar Deposits',
     role: 'Musa (Delivery Driver)',
-    badge: '🚚 Driver Shortage Shield',
+    badge: '🚚 Driver & Jar Shield',
     badgeBg: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
-    summary: 'Musa loaded 700 bags. He remitted cash for 620 bags. The system auto-debits ₦14,000 for 40 missing bags.',
-    noviceExplanation: 'This is where factory owners lose ₦20,000–₦50,000 every day. Drivers claim water burst on potholes, pocket the cash, and blame the road. Our rule is strict: if a bag bursts, Musa must bring back the physical empty plastic pouch. Because Musa brought back 0 pouches, the system auto-debits ₦14,000 from his pay. Zero arguments.',
+    summary: 'Auto-debit ₦14,000 for 40 missing sachet bags + Track ₦4,500 deposit for unreturned 19L dispenser jars.',
+    noviceExplanation: 'Drivers often claim bags burst or that customers promised to return empty 19L jars. Our rule is strict: if a sachet burst on the road, Musa must bring back the physical plastic pouch. For 19L dispenser jars (which cost ₦4,500 each), Musa must either bring back the empty jar or collect a ₦4,500 deposit from the customer. Zero excuses.',
     liveLink: '/factory/owner',
-    actionText: 'See Musa Shortage Debit',
-    keyRule: 'Rule: 0 physical burst pouches returned = 0 excuse. Full retail price auto-debited from driver pay.'
+    actionText: 'See Driver Reconciliation',
+    keyRule: 'Rule: 0 physical burst pouches = auto-debit; Unreturned 19L jars without deposit = driver liability.'
   },
   {
     id: 6,
     time: '02:45 - 03:25',
-    title: 'Mr. Obi\'s 4-Digit Owner PIN Portal & Live Net Cash Profit',
+    title: 'Mr. Obi\'s Owner Portal: Dual-Line Profit & Diesel Slicer',
     role: 'Mr. Obi (Managing Director)',
     badge: '🔑 4-Digit Owner PIN',
     badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-    summary: 'Enter PIN 2026 to see today\'s net cash profit (₦384,200), diesel cost per bag, and NAFDAC purity.',
-    noviceExplanation: 'You do not have to wait until midnight. At 1:00 PM or 5:00 PM, open your phone, enter your PIN (2026), and see your real profit. You see diesel burned (28 Liters = ₦9.00/bag), total bags loaded, driver shortages debited, and your NAFDAC water test results (TDS 24 ppm, pH 7.2).',
+    summary: 'Enter PIN 2026 to see today\'s net profit (₦524,200), generator fuel overhead, and preform audit.',
+    noviceExplanation: 'Enter PIN 2026 anytime during the day. See real-time sachet sales (₦1,470,000) plus bottled/jar sales (₦501,000) = ₦1,971,000 total gross. See diesel burned (32 Liters @ ₦1,350 = ₦43,200), nylon film cost (₦280,000), PET preforms/caps (₦95,600), and net cash profit of ₦524,200.',
     liveLink: '/factory/owner',
     actionText: 'Unlock Mr. Obi\'s Screen',
-    keyRule: 'Rule: Keep generator diesel overhead below ₦12.00 per sachet bag to protect factory profit.'
+    keyRule: 'Rule: Maintain generator diesel overhead below ₦12/sachet bag and monitor PET preform reject rate.'
   },
   {
     id: 7,
@@ -146,8 +146,8 @@ const CHAPTERS: Chapter[] = [
     role: 'Kenneth & Mr. Obi',
     badge: '📲 1-Tap WhatsApp Sync',
     badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-    summary: 'Supervisor taps one button to dispatch the complete evening audit straight to Mr. Obi\'s WhatsApp.',
-    noviceExplanation: 'At 6:00 PM, Kenneth closes the shift and taps "Send Shift Close to Mr. Obi on WhatsApp". At 8:00 PM, your personal WhatsApp rings with the complete daily summary. Finally, tap "Add to Home screen" in your mobile browser, and the Obi Water icon sits right on your phone screen beside WhatsApp.',
+    summary: 'Supervisor taps one button to dispatch the dual-line production & financial audit to Mr. Obi\'s WhatsApp.',
+    noviceExplanation: 'At 6:00 PM, Kenneth closes the shift and taps "Send Shift Close to Mr. Obi on WhatsApp". At 8:00 PM, Mr. Obi receives the complete daily digest broken down by Sachets, 75cl Bottles, 50cl Bottles, and 19L Dispenser Jars. Finally, save the app to your phone home screen for 1-tap instant access.',
     liveLink: '/factory',
     actionText: 'View Sample WhatsApp Report',
     keyRule: 'Rule: Zero WhatsApp API fees, zero Meta approvals, and zero risk of phone number bans.'
@@ -218,7 +218,7 @@ export default function ObiFactoryWalkthroughPage() {
         </div>
 
         <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-          How to Run Obi Table Water OS <span className="text-[#38BDF8]">Like a Pro</span>
+          Obi Table Water OS: <span className="text-[#38BDF8]">Sachet & Bottled Water Dual-Line Guide</span>
         </h1>
 
         <p className="text-xs sm:text-sm text-slate-400 max-w-2xl mx-auto leading-relaxed">
@@ -272,7 +272,7 @@ export default function ObiFactoryWalkthroughPage() {
               poster="/qa-screenshots/sim_2026_water_factory_erp_mobile.png"
               className="w-full h-full object-contain"
             >
-              <source src="/videos/obi_table_water_os_walkthrough.webm" type="video/webm" />
+              <source src="/videos/obi_table_water_os_walkthrough.mp4" type="video/mp4" />
               <source src="/videos/obi_table_water_os_walkthrough.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
@@ -286,13 +286,21 @@ export default function ObiFactoryWalkthroughPage() {
               <span>Duration: ~3 Minutes</span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <a
-                href="/videos/obi_table_water_os_walkthrough.webm"
+                href="/videos/obi_table_water_os_walkthrough.mp4"
                 download
-                className="text-[11px] text-[#38BDF8] hover:underline font-bold flex items-center gap-1"
+                className="text-[11px] bg-[#0B5FFF]/20 text-[#38BDF8] hover:bg-[#0B5FFF]/30 px-3 py-1 rounded-lg border border-[#0B5FFF]/40 font-bold flex items-center gap-1.5 transition"
               >
-                <span>Download Video (4.6 MB)</span>
+                <span>🎬 Download Video (MP4 - 8.3 MB)</span>
+              </a>
+              <a
+                href="/downloads/obi_table_water_complete_handbook.pdf"
+                download
+                className="text-[11px] bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 px-3 py-1 rounded-lg border border-emerald-500/40 font-bold flex items-center gap-1.5 transition"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>📄 Download Complete PDF Manual (605 KB)</span>
               </a>
             </div>
           </div>
