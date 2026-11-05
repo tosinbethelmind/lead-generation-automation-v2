@@ -292,7 +292,7 @@ export default function ObiFactoryWalkthroughPage() {
                 download
                 className="text-[11px] bg-[#0B5FFF]/20 text-[#38BDF8] hover:bg-[#0B5FFF]/30 px-3 py-1 rounded-lg border border-[#0B5FFF]/40 font-bold flex items-center gap-1.5 transition"
               >
-                <span>🎬 Download Video (MP4 - 8.3 MB)</span>
+                <span>🎬 Download Video (MP4 - 6.6 MB)</span>
               </a>
               <a
                 href="/downloads/obi_table_water_complete_handbook.pdf"
@@ -300,7 +300,7 @@ export default function ObiFactoryWalkthroughPage() {
                 className="text-[11px] bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 px-3 py-1 rounded-lg border border-emerald-500/40 font-bold flex items-center gap-1.5 transition"
               >
                 <FileText className="w-3.5 h-3.5" />
-                <span>📄 Download Complete PDF Manual (605 KB)</span>
+                <span>📄 Download Complete PDF Manual (431 KB)</span>
               </a>
             </div>
           </div>
