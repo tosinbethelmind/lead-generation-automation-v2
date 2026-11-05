@@ -261,6 +261,10 @@ ${truck2MissingBags > 0 ? `  🚨 *SHORTAGE: -${truck2MissingBags} bags (₦${tr
           </Link>
 
           <nav className="hidden md:flex items-center gap-5 text-xs font-semibold text-slate-600">
+            <Link href="/factory/admin" className="text-amber-700 font-extrabold flex items-center gap-1 hover:text-amber-800 transition">
+              <Sliders className="w-3.5 h-3.5 text-amber-600" />
+              <span>⚙️ Admin</span>
+            </Link>
             <Link href="/factory/owner" className="text-amber-600 font-extrabold flex items-center gap-1.5 hover:text-amber-700 transition">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>🔑 Owner PIN</span>

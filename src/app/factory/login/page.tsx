@@ -57,6 +57,7 @@ import {
   HardDrive
 } from 'lucide-react';
 import { offlineLedger, GateSaleTransaction } from '@/lib/factory/offlineLedger';
+import { factoryConfigManager } from '@/lib/factory/factoryConfig';
 
 type FactoryRole = 'owner' | 'supervisor' | 'cashier' | 'driver' | null;
 
@@ -117,6 +118,7 @@ const STAFF_PROFILES: StaffProfile[] = [
 export default function FactorySimpleLoginPage() {
   const router = useRouter();
 
+  const [staffList, setStaffList] = useState<StaffProfile[]>(STAFF_PROFILES);
   const [selectedStaff, setSelectedStaff] = useState<StaffProfile | null>(null);
   const [enteredPin, setEnteredPin] = useState('');
   const [pinError, setPinError] = useState(false);
@@ -124,6 +126,15 @@ export default function FactorySimpleLoginPage() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [activeUser, setActiveUser] = useState<StaffProfile | null>(null);
   const [offlineSavedNotice, setOfflineSavedNotice] = useState(false);
+
+  // Dynamic pricing loaded from Admin config
+  const [productPrices, setProductPrices] = useState({
+    sachet: { name: 'Sachet Water (Bag of 20)', price: 350 },
+    bottle_75cl: { name: '75cl Bottled Water (Pack of 12)', price: 1200 },
+    bottle_50cl: { name: '50cl Bottled Water (Pack of 20)', price: 1100 },
+    dispenser: { name: '19L Dispenser Jar Refill', price: 900 }
+  });
+  const [batteredJarPenaltyRate, setBatteredJarPenaltyRate] = useState(4500);
 
   // ───────────────────────────────────────────────────────────────────────────
   // SUPERVISOR CONSOLE STATE (DUAL-LINE PRODUCTION)
@@ -156,12 +167,7 @@ export default function FactorySimpleLoginPage() {
   const [cashCollected, setCashCollected] = useState(145000);
   const [transferConfirmed, setTransferConfirmed] = useState(115000);
 
-  const PRODUCT_PRICES = {
-    sachet: { name: 'Sachet Water (Bag of 20)', price: 350 },
-    bottle_75cl: { name: '75cl Bottled Water (Pack of 12)', price: 1200 },
-    bottle_50cl: { name: '50cl Bottled Water (Pack of 20)', price: 1100 },
-    dispenser: { name: '19L Dispenser Jar Refill', price: 900 }
-  };
+  const PRODUCT_PRICES = productPrices;
 
   const [recentSales, setRecentSales] = useState<GateSaleTransaction[]>([
     { id: 1, customerName: 'Iya Moria Supermarket', product: '75cl Bottled Water (Pack of 12)', qty: 30, amount: 36000, paymentType: 'transfer', moniepointRrn: '8492', gatePassCode: 'GP-842', timestamp: '14:20' },
@@ -180,13 +186,47 @@ export default function FactorySimpleLoginPage() {
   const [driverBatteredJars, setDriverBatteredJars] = useState(0); // 0 damaged/third-party
   const [driverPouchesReturned, setDriverPouchesReturned] = useState(0);
 
-  const jarReplacementPenalty = driverBatteredJars * 4500; // N4,500 replacement penalty per battered jar
-  const totalDriverRemittanceExpected = (driverSachetBags * 350) + (driverBottlePacks * 1200) + (driverDispenserJars * 900);
+  const jarReplacementPenalty = driverBatteredJars * batteredJarPenaltyRate;
+  const totalDriverRemittanceExpected = (driverSachetBags * productPrices.sachet.price) + (driverBottlePacks * productPrices.bottle_75cl.price) + (driverDispenserJars * productPrices.dispenser.price);
 
   // ───────────────────────────────────────────────────────────────────────────
-  // OFFLINE LEDGER HYDRATION & AUTO-SAVE
+  // OFFLINE LEDGER & ADMIN CONFIG HYDRATION
   // ───────────────────────────────────────────────────────────────────────────
   useEffect(() => {
+    // 0. Hydrate dynamic config from factoryConfigManager
+    try {
+      const cfg = factoryConfigManager.load();
+      if (cfg && cfg.staff && cfg.staff.length > 0) {
+        const dynamicProfiles: StaffProfile[] = cfg.staff.map((s) => ({
+          id: s.id,
+          role: (s.role === 'owner' || s.role === 'supervisor' || s.role === 'cashier' || s.role === 'driver') ? s.role : 'driver',
+          name: s.name,
+          title: s.title,
+          avatarBg: s.avatarBg || 'from-blue-600 to-cyan-600',
+          badge: s.role === 'owner' ? '👑 Executive Owner' : s.role === 'supervisor' ? '📋 Shift Supervisor' : s.role === 'cashier' ? '💰 Gate POS & Cashier' : '🚚 Mixed Delivery Fleet',
+          pin: s.pin,
+          description: s.role === 'owner' 
+            ? 'Audits daily profit across sachet & bottle lines, monitors diesel, and stops driver shortages.' 
+            : s.role === 'supervisor' 
+            ? 'Logs sachet rolls, bottle packaging (50cl/75cl/19L jars), and sends 8:00 PM WhatsApp closing report.' 
+            : s.role === 'cashier' 
+            ? 'Sells sachet bags, 75cl/50cl bottle packs, dispenser refills, and verifies bank transfers.' 
+            : `Route: ${s.deliveryRoute || 'Mixed Truck Delivery'} • Enforces empty jar returns.`
+        }));
+        setStaffList(dynamicProfiles);
+      }
+      if (cfg && cfg.pricing) {
+        setProductPrices({
+          sachet: { name: 'Sachet Water (Bag of 20)', price: cfg.pricing.sachetBagWholesale },
+          bottle_75cl: { name: '75cl Bottled Water (Pack of 12)', price: cfg.pricing.bottle75clPackWholesale },
+          bottle_50cl: { name: '50cl Bottled Water (Pack of 20)', price: cfg.pricing.bottle50clPackWholesale },
+          dispenser: { name: '19L Dispenser Jar Refill', price: cfg.pricing.dispenserJarRefill }
+        });
+        setBatteredJarPenaltyRate(cfg.pricing.batteredJarPenalty);
+      }
+    } catch (e) {
+      console.warn('Config hydration fallback:', e);
+    }
     // 1. Hydrate sachet state
     const sachetState = offlineLedger.loadSachetState({
       rollsUsed: 14,
@@ -400,6 +440,14 @@ export default function FactorySimpleLoginPage() {
           )}
 
           <Link
+            href="/factory/admin"
+            className="text-[11px] text-amber-300 hover:text-amber-200 px-2 py-1 rounded bg-amber-500/10 border border-amber-500/30 flex items-center gap-1 font-bold"
+          >
+            <Sliders className="w-3 h-3" />
+            <span>⚙️ Admin</span>
+          </Link>
+
+          <Link
             href="/factory"
             className="text-[11px] text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800/80 border border-slate-700"
           >
@@ -418,7 +466,7 @@ export default function FactorySimpleLoginPage() {
               Active: <strong className="text-white">{activeUser.name}</strong>
             </span>
             <div className="flex items-center gap-1.5 shrink-0">
-              {STAFF_PROFILES.map((p) => (
+              {staffList.map((p) => (
                 <button
                   key={p.id}
                   onClick={() => quickLoginAs(p)}
@@ -454,9 +502,9 @@ export default function FactorySimpleLoginPage() {
             </p>
           </div>
 
-          {/* 4 Big Visual Staff Cards */}
+          {/* Big Visual Staff Cards (Dynamic from Factory Admin) */}
           <div className="space-y-3">
-            {STAFF_PROFILES.map((profile) => (
+            {staffList.map((profile) => (
               <div
                 key={profile.id}
                 className="p-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 hover:border-slate-700 transition flex items-center justify-between gap-3 shadow-lg"
@@ -466,10 +514,11 @@ export default function FactorySimpleLoginPage() {
                   className="flex items-center gap-3.5 flex-1 cursor-pointer"
                 >
                   <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${profile.avatarBg} flex items-center justify-center text-white font-black text-lg shadow-md shrink-0`}>
-                    {profile.id === 'owner' && '👑'}
-                    {profile.id === 'supervisor' && '📋'}
-                    {profile.id === 'cashier' && '💰'}
-                    {profile.id === 'driver' && '🚚'}
+                    {profile.role === 'owner' && '👑'}
+                    {profile.role === 'supervisor' && '📋'}
+                    {profile.role === 'cashier' && '💰'}
+                    {profile.role === 'driver' && '🚚'}
+                    {!['owner', 'supervisor', 'cashier', 'driver'].includes(profile.role || '') && '👤'}
                   </div>
 
                   <div>

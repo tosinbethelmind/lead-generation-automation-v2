@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { readServerConfig } from '../config/route';
 
 /**
  * @file src/app/api/factory/auth/route.ts
  * 
  * 🔒 SECURE SERVER-SIDE FACTORY AUTHENTICATION API
  * 
- * Protects Mr. Obi's plant financial records and staff consoles from
- * client-side PIN tampering, devtools inspection, and brute-force attacks.
+ * Dynamically checks staff PINs against configured staff roster in factoryConfig
+ * with fallback to standard environment/role defaults.
+ * Uses constant-time byte comparisons and in-memory rate limiting.
  * 
  * Bethelmind Digital Solutions (CAC Certified: Reg 9912717)
  */
 
-// Hashed PIN table (SHA-256) with role definitions
-// Owner: 2026, Supervisor: 1111, Cashier: 2222, Driver: 3333
-const ROLE_PINS: Record<string, string> = {
+// Fallback hardcoded PINs
+const DEFAULT_ROLE_PINS: Record<string, string> = {
   owner: process.env.FACTORY_OWNER_PIN || '2026',
   supervisor: process.env.FACTORY_SUPERVISOR_PIN || '1111',
   cashier: process.env.FACTORY_CASHIER_PIN || '2222',
@@ -23,10 +24,6 @@ const ROLE_PINS: Record<string, string> = {
 
 // In-memory rate limiting map: ip -> { attempts, lockedUntil }
 const rateLimitMap = new Map<string, { attempts: number; lockedUntil: number }>();
-
-function hashPin(pin: string): string {
-  return crypto.createHash('sha256').update(pin.trim()).digest('hex');
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -44,19 +41,29 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { role, pin } = body;
+    const { role, pin, staffId } = body;
 
-    if (!role || !pin || typeof pin !== 'string') {
+    if ((!role && !staffId) || !pin || typeof pin !== 'string') {
       return NextResponse.json(
-        { error: 'Role and 4-digit numeric PIN are required.' },
+        { error: 'Staff role/ID and 4-digit numeric PIN are required.' },
         { status: 400 }
       );
     }
 
-    const expectedPin = ROLE_PINS[role.toLowerCase()];
+    // 1. Look up in dynamic server config
+    const serverConfig = readServerConfig();
+    const matchingStaff = serverConfig.staff.find(
+      s => (staffId && s.id === staffId) || (role && s.role.toLowerCase() === role.toLowerCase())
+    );
+
+    let expectedPin = matchingStaff ? matchingStaff.pin : null;
+    if (!expectedPin && role) {
+      expectedPin = DEFAULT_ROLE_PINS[role.toLowerCase()] || null;
+    }
+
     if (!expectedPin) {
       return NextResponse.json(
-        { error: 'Invalid factory role specified.' },
+        { error: 'Staff member or factory role not found.' },
         { status: 400 }
       );
     }
@@ -72,7 +79,7 @@ export async function POST(req: NextRequest) {
     if (!isMatch) {
       // Record failed attempt
       const attempts = (clientLimit?.attempts || 0) + 1;
-      const lockedUntil = attempts >= 5 ? now + 15 * 60 * 1000 : 0; // Lock for 15 mins after 5 failures
+      const lockedUntil = attempts >= 5 ? now + 15 * 60 * 1000 : 0;
       rateLimitMap.set(ip, { attempts, lockedUntil });
 
       return NextResponse.json(
@@ -90,31 +97,29 @@ export async function POST(req: NextRequest) {
 
     // Generate signed session token
     const sessionToken = crypto.randomBytes(32).toString('hex');
-    const expiresAt = now + 12 * 60 * 60 * 1000; // 12-hour factory shift validity
+    const expiresAt = now + 12 * 60 * 60 * 1000;
 
     const response = NextResponse.json({
       authenticated: true,
-      role: role.toLowerCase(),
+      role: role ? role.toLowerCase() : matchingStaff?.role || 'staff',
+      staffName: matchingStaff?.name || role,
       token: sessionToken,
       expiresAt,
-      message: `Access granted to ${role.toUpperCase()} console.`
+      message: `Access granted to ${matchingStaff?.name || role} console.`
     });
 
-    // Set secure HTTP-only cookie
-    response.cookies.set('obi_factory_session', `${role}:${sessionToken}`, {
+    response.cookies.set('factory_session', sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/',
-      maxAge: 12 * 3600 // 12 hours
+      maxAge: 12 * 60 * 60,
+      path: '/'
     });
 
     return response;
-
-  } catch (error: any) {
-    console.error('[Factory Auth Error]:', error);
+  } catch (err: any) {
     return NextResponse.json(
-      { error: 'Authentication service encountered an unexpected error.' },
+      { error: 'Authentication internal server error.' },
       { status: 500 }
     );
   }

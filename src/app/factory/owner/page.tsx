@@ -17,8 +17,9 @@
  * Hotline: 0802 279 1227 (wa.me/2348022791227)
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { factoryConfigManager } from '@/lib/factory/factoryConfig';
 import {
   ShieldCheck,
   Lock,
@@ -114,6 +115,22 @@ export default function ObiOwnerExecutivePortal() {
   // NAFDAC
   const [treatedTds, setTreatedTds] = useState(24);
   const [treatedPh, setTreatedPh] = useState(7.2);
+
+  // Hydrate dynamic pricing from Admin config
+  useEffect(() => {
+    try {
+      const cfg = factoryConfigManager.load();
+      if (cfg && cfg.pricing) {
+        if (cfg.pricing.sachetBagWholesale) setSachetPrice(cfg.pricing.sachetBagWholesale);
+        if (cfg.pricing.bottle75clPackWholesale) setBottle75clPrice(cfg.pricing.bottle75clPackWholesale);
+        if (cfg.pricing.bottle50clPackWholesale) setBottle50clPrice(cfg.pricing.bottle50clPackWholesale);
+        if (cfg.pricing.dispenserJarRefill) setDispenserJarPrice(cfg.pricing.dispenserJarRefill);
+        if (cfg.pricing.dieselPricePerLiter) setDieselPrice(cfg.pricing.dieselPricePerLiter);
+      }
+    } catch (err) {
+      console.warn('Failed to load factory config for owner portal:', err);
+    }
+  }, []);
 
   // ───────────────────────────────────────────────────────────────────────────
   // FINANCIAL CALCULATIONS
@@ -288,6 +305,14 @@ export default function ObiOwnerExecutivePortal() {
           )}
 
           <Link
+            href="/factory/admin"
+            className="text-[11px] text-amber-300 hover:text-amber-200 px-2 py-1 rounded bg-amber-500/10 border border-amber-500/30 flex items-center gap-1 font-bold"
+          >
+            <Sliders className="w-3 h-3" />
+            <span>⚙️ Admin</span>
+          </Link>
+
+          <Link
             href="/factory/login"
             className="text-[11px] text-blue-400 hover:text-blue-300 px-2 py-1 rounded bg-blue-500/10 border border-blue-500/30"
           >
@@ -411,6 +436,26 @@ export default function ObiOwnerExecutivePortal() {
               </div>
             </div>
           )}
+
+          {/* Plant Admin & Variables Manager Shortcut */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-slate-900 to-slate-900 border border-amber-500/30 flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                <Sliders className="w-4 h-4" />
+              </div>
+              <div>
+                <strong className="text-white block font-black text-xs">Plant Variables &amp; Staff Manager</strong>
+                <span className="text-[11px] text-slate-300">Adjust wholesale prices, shift timetable, or add/edit staff members.</span>
+              </div>
+            </div>
+            <Link
+              href="/factory/admin"
+              className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shrink-0 shadow flex items-center gap-1 transition"
+            >
+              <span>Manage</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
 
           {/* ────────────────────────────────────────────────────────────────────────
               A. HERO CARD: TODAY'S TOTAL NET CASH PROFIT (DUAL-LINE)
