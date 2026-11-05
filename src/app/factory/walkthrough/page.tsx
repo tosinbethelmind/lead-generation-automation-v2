@@ -300,7 +300,7 @@ export default function ObiFactoryWalkthroughPage() {
                 className="text-[11px] bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 px-3 py-1 rounded-lg border border-emerald-500/40 font-bold flex items-center gap-1.5 transition"
               >
                 <FileText className="w-3.5 h-3.5" />
-                <span>📄 Download Complete PDF Manual (431 KB)</span>
+                <span>📄 Download Complete PDF Manual (1.35 MB)</span>
               </a>
             </div>
           </div>
