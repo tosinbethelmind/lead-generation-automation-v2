@@ -15,19 +15,21 @@ const audioPath = path.join(__dirname, '..', 'public', 'videos', 'obi_walkthroug
 const outputVideoPublic = path.join(__dirname, '..', 'public', 'videos', 'obi_table_water_os_walkthrough.mp4');
 const outputVideoDelivery = path.join(__dirname, '..', 'factory_delivery_pack', 'OBI_TABLE_WATER_WALKTHROUGH_VIDEO.mp4');
 
-// 11 Scenes perfectly mapped to the 193.87s voiceover narrative
+// 13 Scenes covering complete dual-line operations + Plant Admin Variables Manager
 const SCENES = [
-  { file: 'scene_01_owner_pin_empty.png', duration: 12 },
-  { file: 'scene_02_owner_dashboard_top.png', duration: 22 },
-  { file: 'scene_03_owner_preforms_and_jars.png', duration: 20 },
-  { file: 'scene_04_owner_driver_shortage.png', duration: 20 },
-  { file: 'scene_05_staff_login_cards.png', duration: 18 },
-  { file: 'scene_06_kenneth_sachet_console.png', duration: 18 },
-  { file: 'scene_07_kenneth_bottles_console.png', duration: 18 },
-  { file: 'scene_08_blessing_gate_pos.png', duration: 20 },
-  { file: 'scene_09_musa_driver_manifest.png', duration: 16 },
-  { file: 'scene_10_musa_pouch_and_jar_rules.png', duration: 16 },
-  { file: 'scene_11_whatsapp_evening_sync.png', duration: 14 }
+  { file: 'scene_01_owner_pin_empty.png', duration: 10 },
+  { file: 'scene_02_owner_dashboard_top.png', duration: 18 },
+  { file: 'scene_03_owner_preforms_and_jars.png', duration: 16 },
+  { file: 'scene_04_owner_driver_shortage.png', duration: 16 },
+  { file: 'scene_05_staff_login_cards.png', duration: 14 },
+  { file: 'scene_06_kenneth_sachet_console.png', duration: 16 },
+  { file: 'scene_07_kenneth_bottles_console.png', duration: 16 },
+  { file: 'scene_08_blessing_gate_pos.png', duration: 18 },
+  { file: 'scene_09_musa_driver_manifest.png', duration: 14 },
+  { file: 'scene_10_musa_pouch_and_jar_rules.png', duration: 14 },
+  { file: 'scene_11_whatsapp_evening_sync.png', duration: 14 },
+  { file: 'scene_12_nafdac_compliance_log.png', duration: 12 },
+  { file: 'scene_13_admin_variables_manager.png', duration: 16 }
 ];
 
 async function compileVideo() {
