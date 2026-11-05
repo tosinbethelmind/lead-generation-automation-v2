@@ -1825,13 +1825,32 @@ app.post('/send', async (req, res) => {
   try {
     const cleanDigits = phone.replace(/\D/g, '');
     const jid = `${cleanDigits.startsWith('0') ? '234' + cleanDigits.slice(1) : cleanDigits}@s.whatsapp.net`;
-    await inst.socket.presenceSubscribe(jid);
-    await inst.socket.sendPresenceUpdate('composing', jid);
-    await new Promise(r => setTimeout(r, 600));
+    // Non-blocking presence updates (cannot abort message send)
+    try { await inst.socket.presenceSubscribe(jid); } catch (_) {}
+    try { await inst.socket.sendPresenceUpdate('composing', jid); } catch (_) {}
+    await new Promise(r => setTimeout(r, 400));
+
+    // Verify recipient WhatsApp existence
+    let isRegistered = true;
+    try {
+      if (typeof inst.socket.onWhatsApp === 'function') {
+        const [check] = await inst.socket.onWhatsApp(jid);
+        if (check && check.exists === false) {
+          isRegistered = false;
+        }
+      }
+    } catch (_) {}
+
+    if (!isRegistered) {
+      console.log('[Evolution API] ❌ Phone ' + cleanDigits + ' is not registered on WhatsApp.');
+      return res.status(404).json({ success: false, error: 'NOT_ON_WHATSAPP', message: 'Phone ' + cleanDigits + ' is not on WhatsApp.' });
+    }
 
     const sent = await inst.socket.sendMessage(jid, { text: message });
+    console.log('[Evolution API] ✅ Successfully sent WhatsApp message to ' + jid + ' (MsgId: ' + (sent?.key?.id || 'ok') + ')');
     res.json({ success: true, messageId: sent?.key?.id, line: inst.id, phone: inst.phone });
   } catch (err) {
+    console.error('[Evolution API] ❌ Error in /send for ' + phone + ':', err.message);
     res.status(500).json({ error: err.message });
   }
 });
