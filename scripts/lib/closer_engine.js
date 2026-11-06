@@ -18,6 +18,7 @@ const path = require('path');
 const https = require('https');
 const { cleanBusinessName, getShortBrand, isGarbageOrId } = require('./nameSanitizer');
 const { isPillar2Conversation, handlePillar2Inquiry } = require('./pillar2_closer');
+const { createOrGetCommercialInvoice, OFFICIAL_CORPORATE_SETTLEMENT } = require('./bankable_invoice');
 
 const CORPORATE_BANK = {
   bankName: 'Moniepoint Microfinance Bank',
@@ -285,7 +286,7 @@ function autoProvisionSiteFromWhatsApp(leadInfo, updates = {}) {
  */
 function handlePostContactInquiry(clientMessage, leadData = {}) {
   const rawMsg = String(clientMessage || '').trim();
-  const msg = rawMsg.toLowerCase();
+  const msg = rawMsg.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').toLowerCase().trim();
 
   // 🏛️ PILLAR 2 CHECK: Luxury Real Estate Co-Brokerage Gate
   const p2Check = isPillar2Conversation(leadData.phone, rawMsg, leadData);
@@ -349,6 +350,65 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
         `Takes ₦0 upfront to test. Let me know what you think!`,
       suggestedAction: 'ENGAGE_AFTER_AUTO_REPLY',
       directPaymentEligible: true
+    };
+  }
+
+  // ── 1C-1. ACTIVE BUYING SIGNAL / EXPLICIT INTEREST / INVOICE REQUEST ─────────
+  const isExplicitInterest = 
+    /\b(we are interested|i am interested|i'm interested|we're interested|very interested|interested in|ready to start|want to start|ready to launch|send invoice|how to pay|how do i pay|payment details|account details|account number|send account|let's do this|let's start|i want to pay|send the account|where do i pay|how much deposit)\b/i.test(msg) ||
+    (/\binterested\b/i.test(msg) && msg.length < 120);
+
+  if (isExplicitInterest) {
+    let detectedPackage = 'SME_TURNKEY_WEBSITE';
+    if (/logistics|dispatch|waybill|delivery|haulage|cargo|courier/i.test(msg)) {
+      detectedPackage = 'LOGISTICS_WAYBILL_PORTAL';
+    } else if (/estate|service charge|tenant|rent|diesel|facility/i.test(msg)) {
+      detectedPackage = 'ESTATE_SERVICE_CHARGE_PORTAL';
+    } else if (/solar|inverter|boq|load|sizing|battery/i.test(msg)) {
+      detectedPackage = 'SOLAR_BOQ_ENGINE';
+    } else if (/app|android|apk/i.test(msg)) {
+      detectedPackage = 'ANDROID_APP_CONVERSION';
+    } else if (/corporate|option 2|\.com\b/i.test(msg)) {
+      detectedPackage = 'CORPORATE_SUITE';
+    } else if (/logistics|delivery|transport/i.test(category)) {
+      detectedPackage = 'LOGISTICS_WAYBILL_PORTAL';
+    } else if (/solar|energy|inverter/i.test(category)) {
+      detectedPackage = 'SOLAR_BOQ_ENGINE';
+    } else if (/estate|real estate|property/i.test(category)) {
+      detectedPackage = 'ESTATE_SERVICE_CHARGE_PORTAL';
+    }
+
+    const invoice = createOrGetCommercialInvoice({
+      clientName: name !== 'Your Business' ? name : (resolved.businessName || 'Valued Business Client'),
+      clientPhone: leadData.phone || resolved.phone || '',
+      clientEmail: leadData.email || resolved.email || '',
+      category: category,
+      packageType: detectedPackage
+    });
+
+    return {
+      intent: 'ACTIVE_BUYING_INTEREST_INVOICE_GENERATED',
+      isOptOut: false,
+      messageText:
+        `Salute Boss at *${name}*! 🤝 Fantastic decision to move forward.\n\n` +
+        `We have prepared your Official Commercial Proforma Invoice & 48-Hour SLA Deployment Agreement:\n` +
+        `📄 *Invoice Ref:* *${invoice.invoiceId}*\n` +
+        `🔗 *Live Agreement & Itemized Scope:* ${invoice.invoiceUrl}\n\n` +
+        `📦 *Package:* *${invoice.packageName}*\n` +
+        `💰 *Standard Setup:* *₦${invoice.totalNgn.toLocaleString()}*\n` +
+        `⚡ *50% Commitment Deposit:* *₦${invoice.depositNgn.toLocaleString()}* (or *₦25,000/month* Pay-Small-Small)\n` +
+        `*(Balance of ₦${invoice.balanceNgn.toLocaleString()} is payable ONLY after your system is live and verified on Google!)*\n` +
+        `⏱️ *Guaranteed Go-Live Date:* *${invoice.guaranteedDeliveryDate}* (48-Hour Legal SLA)\n\n` +
+        `🏛️ *Official Corporate Settlement Account:*\n` +
+        `• *Bank:* Moniepoint Microfinance Bank\n` +
+        `• *Account Number:* *6805375225*\n` +
+        `• *Account Name:* Bethelmind Digital Solutions\n` +
+        `• *CAC Registration:* Reg: 9912717\n\n` +
+        `Drop your transfer receipt here once sent to lock in your live deployment slot today!`,
+      suggestedAction: 'AWAIT_DEPOSIT_PAYMENT',
+      directPaymentEligible: true,
+      invoiceId: invoice.invoiceId,
+      invoiceUrl: invoice.invoiceUrl
     };
   }
 
