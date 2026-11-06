@@ -171,7 +171,7 @@ function handlePillar2Inquiry(clientMessage, context = {}) {
         `👉 https://www.bethelmindanalytics.com/mandate\n` +
         `*(Safeguards your firm's 80% agency commission and Bethelmind Desk's 20% origination fee under Section 84 Evidence Act 2011 & LASRERA Law 2022).*\n\n` +
         `2️⃣ *Buyer Inspection Window Alignment:*\n` +
-        `Our buyer's legal proxy (Barrister Babatunde Alabi & family liaison) is prepared for accompanied physical inspection within 24 to 48 hours of endorsement.\n\n` +
+        `Our buyer syndicate's accredited legal counsel and inspection liaison is prepared for accompanied physical inspection within 24 to 48 hours of endorsement.\n\n` +
         `3️⃣ *Direct Desk Counter-Signature & Call:*\n` +
         `Upon your signature, Desk Principal (Tosin Oyelakin) will immediately countersign and connect with your team to align on gate access & timing.\n\n` +
         `🏛️ *Bethelmind Corporate & Diaspora Property Desk*\n` +
@@ -207,7 +207,7 @@ function handlePillar2Inquiry(clientMessage, context = {}) {
         `Good day Management at *${brokerName}*,\n\n` +
         `Under our client representation mandate and LASRERA NDNC guidelines, our buyer principal (North America & UK Diaspora Real Estate Syndicate) is represented exclusively by Bethelmind Desk until the Joint Inspection Memorandum (JIM) is executed.\n\n` +
         `• *Liquidity Status:* 100% pre-allocated liquid funds in Tier-1 Private Banking (Zero mortgage delay).\n` +
-        `• *Inspection Protocol:* Accompanied physical inspection by legal counsel (Barrister Babatunde Alabi & family liaison).\n\n` +
+        `• *Inspection Protocol:* Accompanied physical inspection by accredited legal counsel & desk inspection liaison.\n\n` +
         `To execute the JIM and lock commission splits before physical viewing:\n` +
         `👉 https://www.bethelmindanalytics.com/mandate`,
       suggestedAction: 'EXECUTE_JIM'

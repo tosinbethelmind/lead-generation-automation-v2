@@ -51,7 +51,7 @@ const CASE_STUDIES: CaseStudy[] = [
       { label: 'Monthly Revenue', value: '₦18.4M', change: 'First 30 days' },
     ],
     quote: 'Before Bethelmind, our engineers spent all day punching calculators instead of doing installations. Now a customer gets their complete 5kVA solar BOQ on WhatsApp before they even put their phone down. It transformed our close rate.',
-    author: 'Engr. Babatunde Alabi',
+    author: 'Engr. Babatunde O.',
     authorRole: 'Managing Director, PowerMax Renewable Solutions',
     timeframe: '48-Hour Onboarding &bull; 30-Day Evaluation',
     toolUsed: 'Solar Load & BOQ Quotation Engine',

@@ -12,7 +12,7 @@ const PREVIEW_CASES = [
     challenge: 'Band A tariff surge led to 70+ daily WhatsApp queries. Engineers spent 5 hours on manual quotes; 60% of prospective clients left.',
     solution: 'Automated Solar BOQ sizer generated 5kVA–15kVA quotes with LiFePO4 batteries on WhatsApp in < 3s.',
     outcome: '14 closed deals in first 30 days &bull; ₦18.4M in new installations &bull; 0% lost leads.',
-    author: 'Engr. Babatunde Alabi, Managing Director'
+    author: 'Engr. Babatunde O., Managing Director'
   },
   {
     client: 'Velvet Touch Luxury Salon & Spa',

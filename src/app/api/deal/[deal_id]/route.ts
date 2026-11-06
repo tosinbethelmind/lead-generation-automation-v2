@@ -21,7 +21,7 @@ function synthesizeBriefFromLuxuryListing(listing: any): any {
     buyer_concierge_fee_ngn: Math.round(listing.priceNgn * 0.01),
     buyer_contact: {
       name: listing.buyerProfile?.principalName || 'Corporate Principal',
-      phone: listing.buyerProfile?.representativeContact?.phone || '08034128901',
+      phone: listing.buyerProfile?.representativeContact?.phone || '08022791227',
       carrier: 'MTN Nigeria',
       is_carrier_valid: true
     },

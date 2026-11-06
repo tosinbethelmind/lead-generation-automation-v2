@@ -87,11 +87,11 @@ export const PRIME_LUXURY_LISTINGS: LuxuryListing[] = [
       readinessTimeline: 'Ready to inspect via Lagos family representative within 48 hours; closing in 14 days.',
       liquidityStatus: 'Liquid diaspora wire pre-allocated in Tier-1 Bank (Zero mortgage delays).',
       representativeContact: {
-        name: 'Barrister Babatunde Alabi (SAN Nominee)',
-        role: 'Principal Legal Counsel & Power-of-Attorney Proxy',
-        phone: '08034128901',
-        email: 'b.alabi@adeyemipartners-law.ng',
-        officeAddress: 'Plot 14, Commercial Avenue, Victoria Island, Lagos'
+        name: 'Bethelmind Corporate Property Desk',
+        role: 'Diaspora Client Liaison & Transaction Desk',
+        phone: '08022791227',
+        email: 'bethelmindrecruit@gmail.com',
+        officeAddress: 'Victoria Island / Ikoyi Commercial Corridor, Lagos'
       },
       sourceAttribution: {
         sourceName: 'North America Diaspora Real Estate Allocation Desk (#US-TX-701)',

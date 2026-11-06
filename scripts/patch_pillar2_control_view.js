@@ -24,7 +24,7 @@ const buyerDossierNew = `🎯 VERIFIED INTERESTED BUYER DOSSIER:
 • Specific Requirements: \${scriptModalTicket.buyerProfile?.requirements || 'Clean title, serene perimeter'}
 • Inspection Readiness: \${scriptModalTicket.buyerProfile?.readinessTimeline || 'Ready to inspect within 48 hours'}
 • Liquidity / POF Verification: \${scriptModalTicket.buyerProfile?.liquidityStatus || 'Pre-verified Tier-1 Bank wire'}
-• Lagos Representative / Counsel: \${scriptModalTicket.buyerProfile?.representativeContact?.name || 'Barrister Babatunde Alabi'} (\${scriptModalTicket.buyerProfile?.representativeContact?.phone || '08034128901'}) - \${scriptModalTicket.buyerProfile?.representativeContact?.officeAddress || 'Victoria Island, Lagos'}
+• Lagos Representative / Counsel: \${scriptModalTicket.buyerProfile?.representativeContact?.name || 'Bethelmind Corporate Property Desk'} (\${scriptModalTicket.buyerProfile?.representativeContact?.phone || '08022791227'}) - \${scriptModalTicket.buyerProfile?.representativeContact?.officeAddress || 'Victoria Island, Lagos'}
 • Source Registry & Cross-Check URL: \${scriptModalTicket.buyerProfile?.sourceAttribution?.sourceName || 'Diaspora Direct Mandate Registry'} (\${scriptModalTicket.buyerProfile?.sourceAttribution?.sourceUrl || 'https://www.bethelmindanalytics.com'})
 • Statutory Proof of Funds Ref: \${scriptModalTicket.buyerProfile?.sourceAttribution?.proofOfFundsRef || 'Tier-1 Bank Liquidity Attestation'} (Sec 84 Evidence Act 2011 Verified)`;
 

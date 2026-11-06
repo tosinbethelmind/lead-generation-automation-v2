@@ -17,7 +17,7 @@ Kindly review and electronically execute our 1-page LASRERA 80/20 Co-Brokerage M
 *(Safeguards your firm's 80% agency commission and Bethelmind Desk's 20% origination fee under Section 84 Evidence Act 2011 & LASRERA Law 2022).*
 
 2️⃣ *Accompanied Physical Inspection:*
-Our buyer's legal counsel (Barrister Babatunde Alabi & family liaison) is prepared for accompanied physical inspection within 24 to 48 hours of your electronic endorsement.
+Our buyer syndicate's accredited legal counsel and inspection liaison is prepared for accompanied physical inspection within 24 to 48 hours of your electronic endorsement.
 
 3️⃣ *Direct Desk Counter-Signature & Call:*
 Upon your signature, Desk Principal (Tosin Oyelakin) will immediately countersign and align with your team on gate access & inspection timing.
@@ -45,7 +45,7 @@ Kindly review and electronically execute our 1-page LASRERA 80/20 Co-Brokerage M
 *(Safeguards your firm's 80% agency commission and Bethelmind Desk's 20% origination fee under Section 84 Evidence Act 2011 & LASRERA Law 2022).*
 
 2️⃣ *Accompanied Physical Inspection:*
-Our buyer's legal counsel (Barrister Babatunde Alabi & family liaison) is prepared for accompanied physical inspection within 24 to 48 hours of your electronic endorsement.
+Our buyer syndicate's accredited legal counsel and inspection liaison is prepared for accompanied physical inspection within 24 to 48 hours of your electronic endorsement.
 
 3️⃣ *Direct Desk Counter-Signature & Call:*
 Upon your signature, Desk Principal (Tosin Oyelakin) will immediately countersign and align with your team on gate access & inspection timing.

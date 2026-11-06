@@ -635,7 +635,7 @@ export default function DealTeaserPage() {
                     required
                     value={contactPerson}
                     onChange={e => setContactPerson(e.target.value)}
-                    placeholder="e.g., Arc. Babatunde Alabi"
+                    placeholder="e.g., Managing Partner / Principal Broker"
                     className="w-full bg-black/50 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors"
                   />
                 </div>

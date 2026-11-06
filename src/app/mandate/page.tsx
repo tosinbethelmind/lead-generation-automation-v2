@@ -38,7 +38,7 @@ export default function MandatePortalPage() {
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               <span style={{ color: '#10b981', fontWeight: 800 }}>3.</span>
-              <span><b>Accompanied Walkthrough:</b> Conducted by legal counsel (Barrister Babatunde Alabi & family liaison) within 24–48 hours upon counter-signature.</span>
+              <span><b>Accompanied Walkthrough:</b> Conducted by accredited legal counsel & desk inspection liaison within 24–48 hours upon counter-signature.</span>
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               <span style={{ color: '#10b981', fontWeight: 800 }}>4.</span>

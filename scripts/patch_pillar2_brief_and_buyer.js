@@ -25,10 +25,10 @@ const PRIME_LUXURY_LISTINGS = [
       readinessTimeline: 'Ready to inspect via Lagos family representative within 48 hours; closing in 14 days.',
       liquidityStatus: 'Liquid diaspora wire pre-allocated in Tier-1 Bank (Zero mortgage delays).',
       representativeContact: {
-        name: 'Barrister Babatunde Alabi (SAN Nominee)',
+        name: 'Bethelmind Corporate Property Desk',
         role: 'Principal Legal Counsel & Power-of-Attorney Proxy',
-        phone: '08034128901',
-        email: 'b.alabi@adeyemipartners-law.ng',
+        phone: '08022791227',
+        email: 'bethelmindrecruit@gmail.com',
         officeAddress: 'Plot 14, Commercial Avenue, Victoria Island, Lagos'
       },
       sourceAttribution: {
@@ -298,10 +298,10 @@ const updatedCallBriefFunc = `export function buildInboundCallBrief(listingTitle
     readinessTimeline: 'Ready to inspect within 48 hours; closing in 14-21 days.',
     liquidityStatus: 'Verified pre-allocated liquid funds in Tier-1 Bank (Zero mortgage delays).',
     representativeContact: {
-      name: 'Barrister Babatunde Alabi (SAN Nominee)',
+      name: 'Bethelmind Corporate Property Desk',
       role: 'Principal Legal Counsel & Power-of-Attorney Proxy',
-      phone: '08034128901',
-      email: 'b.alabi@adeyemipartners-law.ng',
+      phone: '08022791227',
+      email: 'bethelmindrecruit@gmail.com',
       officeAddress: 'Plot 14, Commercial Avenue, Victoria Island, Lagos'
     },
     sourceAttribution: {
