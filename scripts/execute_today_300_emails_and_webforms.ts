@@ -33,6 +33,12 @@ import { katanaCrawlerBridge } from '../src/lib/scraping/katanaCrawlerBridge';
 import { getSectorCaseStudy } from '../src/lib/blog/sectorCaseStudies';
 import { leadsSqliteStore } from '../src/lib/leadsSqliteStore';
 
+const PAUSE_PILLAR_ONE_OUTREACH = true;
+if (PAUSE_PILLAR_ONE_OUTREACH) {
+  console.log('⏸️ [PAUSE] Pillar 1 messaging (Emails & Webforms) is PAUSED by Product Owner instruction.');
+  process.exit(0);
+}
+
 const LOCAL_DB = path.join(process.cwd(), 'local_db');
 if (!fs.existsSync(LOCAL_DB)) fs.mkdirSync(LOCAL_DB, { recursive: true });
 

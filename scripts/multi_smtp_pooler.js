@@ -278,6 +278,14 @@ WhatsApp / Direct Desk: +234 802 279 1227`;
   }
 
   async dispatch(lead) {
+    // ⏸️ GLOBAL PAUSE: Pillar 1 email messaging is paused per product owner instruction
+    return {
+      success: false,
+      provider: 'paused',
+      messageId: '',
+      error: 'Pillar 1 email messaging is PAUSED by Product Owner instruction.',
+      durationMs: 0
+    };
     const start = Date.now();
     this.resetHourlyLimits();
 

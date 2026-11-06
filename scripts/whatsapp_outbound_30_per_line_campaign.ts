@@ -21,6 +21,12 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 
+const PAUSE_PILLAR_ONE_OUTREACH = true;
+if (PAUSE_PILLAR_ONE_OUTREACH) {
+  console.log('⏸️ [PAUSE] Pillar 1 WhatsApp Outbound Outreach is PAUSED by Product Owner instruction.');
+  process.exit(0);
+}
+
 const LOCAL_DB = path.join(process.cwd(), 'local_db');
 const LEADS_DB_PATH = path.join(LOCAL_DB, 'leads_db.json');
 const WA_LOG_PATH = path.join(LOCAL_DB, 'whatsapp_daily_outreach_log.json');

@@ -74,23 +74,9 @@ jobs:
           node --max-old-space-size=256 node_modules/tsx/dist/cli.mjs scripts/run_autonomous_pillar2_deal_discovery.js || true
           echo "✅ Continuous 24/7 Pillar 2 Luxury Mandate Discovery & Outbound Engine complete."
 
-      - name: Execute Daily B2B Email (600 Quota) & Webform Outreach Pass
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
-          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
-          BREVO_SENDER_EMAIL: 'tosin@bethelmindanalytics.com'
-          SMTP_HOST: 'smtp.hostinger.com'
-          SMTP_PORT: '465'
-          SMTP_SECURE: 'true'
-          SMTP_USER: 'tosin@bethelmindanalytics.com'
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          NODE_ENV: 'production'
+      - name: Execute Daily B2B Email & Webform Outreach Pass (PAUSED)
         run: |
-          set +e
-          npx tsx scripts/execute_today_300_emails_and_webforms.ts || true
-          echo "✅ Daily Email & Webform Outreach Pass finished successfully in the cloud."
+          echo "⏸️ Pillar 1 B2B Email & Webform Outreach is PAUSED by Product Owner instruction."
 
       - name: Commit & Sync Harvested Leads & Telemetry Back to Repository
         if: always()
