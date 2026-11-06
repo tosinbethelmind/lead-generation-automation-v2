@@ -157,6 +157,32 @@ function handlePillar2Inquiry(clientMessage, context = {}) {
     };
   }
 
+  // ── 4B. ACTIVE BUYING SIGNAL / "WE ARE INTERESTED" / "HOW DO WE PROCEED" ──
+  if (/\b(we are interested|i am interested|i'm interested|we're interested|very interested|how do we proceed|how to proceed|let's proceed|ready to proceed|ready to start|interested|ready to co-broker|send the agreement|send agreement|send contract)\b/i.test(msg)) {
+    return {
+      intent: 'PILLAR2_INTEREST_AND_PROCEED_CONFIRMED',
+      isOptOut: false,
+      messageText:
+        `Good day Management at *${brokerName}* 🤝\n\n` +
+        `Outstanding to hear from your team. We are eager to co-broker with *${brokerName}* on "${propertyListing}".\n\n` +
+        `Here is our exact institutional closing procedure to proceed immediately:\n\n` +
+        `1️⃣ *Electronic Joint Inspection Memorandum (JIM) Execution:*\n` +
+        `Kindly review and electronically execute our 1-page LASRERA 80/20 Co-Brokerage Mandate & Joint Inspection Memorandum (JIM):\n` +
+        `👉 https://www.bethelmindanalytics.com/mandate\n` +
+        `*(Safeguards your firm's 80% agency commission and Bethelmind Desk's 20% origination fee under Section 84 Evidence Act 2011 & LASRERA Law 2022).*\n\n` +
+        `2️⃣ *Buyer Inspection Window Alignment:*\n` +
+        `Our buyer's legal proxy (Barrister Babatunde Alabi & family liaison) is prepared for accompanied physical inspection within 24 to 48 hours of endorsement.\n\n` +
+        `3️⃣ *Direct Desk Counter-Signature & Call:*\n` +
+        `Upon your signature, Desk Principal (Tosin Oyelakin) will immediately countersign and connect with your team to align on gate access & timing.\n\n` +
+        `🏛️ *Bethelmind Corporate & Diaspora Property Desk*\n` +
+        `• CAC Certified Nigerian Enterprise (Reg: 9912717)\n` +
+        `• Primary Settlement Bank: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digital Solutions)\n` +
+        `• Desk Closer Hotline: ${CORPORATE_SETTLEMENT.deskHotline}\n\n` +
+        `What day and time window works best for your team for the accompanied physical walkthrough: Tomorrow Morning (10:00 AM) or Afternoon (02:00 PM)?`,
+      suggestedAction: 'DISPATCH_P2_JIM_CLOSER'
+    };
+  }
+
   // ── 4. CONFIRMATION OF AVAILABILITY / "YES" / "AVAILABLE" ────────────────
   if (/(yes|available|it is available|still available|we have it|still on the market|active|direct mandate|i am the agent)/i.test(msg)) {
     return {

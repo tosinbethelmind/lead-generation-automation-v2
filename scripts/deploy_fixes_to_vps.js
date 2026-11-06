@@ -20,6 +20,7 @@ const FILES_TO_SYNC = [
   { local: 'scripts/lib/bankable_invoice.js', remote: '/root/lead-generation-automation-v2/scripts/lib/bankable_invoice.js' },
   { local: 'scripts/lib/closer_engine.js', remote: '/root/lead-generation-automation-v2/scripts/lib/closer_engine.js' },
   { local: 'local_db/commercial_invoices.json', remote: '/root/lead-generation-automation-v2/local_db/commercial_invoices.json' },
+  { local: 'local_db/pillar2_contacts_registry.json', remote: '/root/lead-generation-automation-v2/local_db/pillar2_contacts_registry.json' },
   { local: 'scripts/evolution_api_server.js', remote: '/root/lead-generation-automation-v2/scripts/evolution_api_server.js' },
   { local: 'scripts/lib/pillar2_closer.js', remote: '/root/lead-generation-automation-v2/scripts/lib/pillar2_closer.js' },
   { local: 'scripts/lib/pillar2_contacts_registry.js', remote: '/root/lead-generation-automation-v2/scripts/lib/pillar2_contacts_registry.js' },
