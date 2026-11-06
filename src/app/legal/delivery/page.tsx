@@ -71,7 +71,7 @@ export default function DeliverySlaPage() {
 
       <h3>Tier 1: Starter Activation (Pay-Small-Small / Fast Go-Live)</h3>
       <ul>
-        <li><strong>Total Setup Fee:</strong> ₦35,000 one-time (or ₦25,000/month on the Pay-Small-Small plan).</li>
+        <li><strong>Total Investment:</strong> ₦80,000 complete one-time flat (50% milestone deposit: ₦40,000). 100% One-Time, ₦0 monthly subscriptions.</li>
         <li><strong>Inclusions:</strong> Full mobile business website hosted on Bethelmind secure high-speed subdomain, interactive sector calculator, automated 24/7 WhatsApp closer, and OPay/Moniepoint transfer verification.</li>
         <li><strong>Settlement Terms:</strong> 100% due upon project activation.</li>
       </ul>

@@ -627,13 +627,13 @@ export default function PreviewPage() {
                   Official .COM.NG Website + 24/7 AI Closer
                 </h3>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', margin: '10px 0 4px 0' }}>
-                  ₦70,000 <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>1-Year All-Inclusive Flat</span>
+                  ₦80,000 <span style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>100% One-Time Flat (₦0 Monthly Bills)</span>
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#fde047', fontWeight: 800, marginBottom: '6px' }}>
-                  Option A: ₦35,000 Setup + ₦7,000/mo · Option B: ₦80,000 Annual Pass (1 Year Free!)
+                  50% Milestone Deposit: ₦40,000 · Pay ₦40,000 Balance ONLY After Live Approval
                 </div>
                 <div style={{ fontSize: '0.80rem', color: '#34d399', fontWeight: 800, marginBottom: '14px', background: 'rgba(16, 185, 129, 0.15)', padding: '5px 10px', borderRadius: '6px', display: 'block', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                  ✅ Zero monthly bills for 12 full months. Setup, hosting, security &amp; domain all covered.
+                  ✅ 100% One-Time Lifetime Ownership. Zero monthly subscriptions forever. 1 Full Year Free Domain &amp; Cloud Hosting Included.
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.75 }}>
                   <li>• Free 1-Year .com.ng domain &amp; SSL cloud hosting</li>
@@ -663,12 +663,12 @@ export default function PreviewPage() {
                     textAlign: 'center'
                   }}
                 >
-                  <span>Claim &amp; Launch Website (₦70,000 Flat) →</span>
+                  <span>Claim &amp; Launch Website (₦80,000 Flat · ₦40k Deposit) →</span>
                 </a>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <a
-                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want the ₦35,000 milestone deposit option for the Starter Website. Please send invoice.`)}`}
+                    href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello Bethelmind Digital Solutions! I just reviewed the sample website for *${data.lead.name}* and want the ₦40,000 milestone deposit option (₦80,000 total) for the Starter Website. Please send invoice.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -686,7 +686,7 @@ export default function PreviewPage() {
                       textAlign: 'center'
                     }}
                   >
-                    <span>₦35k Setup (+ ₦7k/mo or ₦80k Annual)</span>
+                    <span>Start with ₦40k Deposit (50%)</span>
                   </a>
 
                   <a

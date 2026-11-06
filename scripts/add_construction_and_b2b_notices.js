@@ -39,7 +39,7 @@ To audit your plot layout, deed fees, and structural material requirements befor
 [quote]
 [b]⚡ Enterprise Deployment Notice for Building Contractors, Engineers & Developers:[/b]
 If you run a construction or civil engineering firm and want this automated material estimator + 24/7 AI WhatsApp site quoting engine deployed under your company brand in 24 hours:
-• [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month Pay-Small-Small) — Live in 24 Hours.
+• [b]Tier 1 (Starter Turnkey):[/b] ₦45,000 one-time flat (or ₦35,000 deposit) — ₦0 Monthly Fees — Live in 24 Hours.
 • [b]Tier 2 (Turnkey Custom Domain Suite):[/b] ₦75,000 Milestone Deposit (₦150,000 Total) — Dedicated .com.ng domain, Google SEO, 100% code ownership in 48 hours.
 Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
 WhatsApp Closer Desk: [b]0802 279 1227[/b]
@@ -61,7 +61,7 @@ const b2bSchoolNotice = `
 [quote]
 [b]⚡ Enterprise Deployment Notice for School Proprietors & Principals:[/b]
 Deploy this automated term tuition portal + Scratch-PIN broadsheet result gating suite under your school's dedicated domain in 24 hours:
-• [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month) — Active in 24 Hours.
+• [b]Tier 1 (Starter Turnkey):[/b] ₦45,000 one-time flat (or ₦35,000 deposit) — ₦0 Monthly Fees — Active in 24 Hours.
 • [b]Tier 2 (Full Turnkey School Suite):[/b] ₦75,000 Milestone Deposit (₦150,000 Total) — Custom domain + full PIN batch accounting.
 Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
 WhatsApp Closer Desk: [b]0802 279 1227[/b]
@@ -82,7 +82,7 @@ const b2bRestaurantNotice = `
 [quote]
 [b]⚡ Enterprise Deployment Notice for Restaurant & Lounge Operators:[/b]
 Stop losing 25% of your food ticket to delivery aggregators. Deploy your own 0% commission direct WhatsApp menu & kitchen order ticket (KOT) system in 24 hours:
-• [b]Tier 1 (Starter Go-Live):[/b] ₦35,000 one-time (or ₦25,000/month) — Active in 24 Hours.
+• [b]Tier 1 (Starter Turnkey):[/b] ₦45,000 one-time flat (or ₦35,000 deposit) — ₦0 Monthly Fees — Active in 24 Hours.
 • [b]Tier 2 (Full Custom Suite):[/b] ₦75,000 Milestone Deposit (₦150,000 Total) — Dedicated .com.ng domain + digital ordering dashboard.
 Settlement via Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions, CAC RC 7034297).
 WhatsApp Closer Desk: [b]0802 279 1227[/b]

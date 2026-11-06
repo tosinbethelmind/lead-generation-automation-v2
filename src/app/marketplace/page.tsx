@@ -152,7 +152,7 @@ const FAQS = [
   { q: 'Is my data safe?', a: 'Each client gets a completely isolated tenant with their own data partition. No other client can access your leads, AI agent settings, or chat history.' },
   { q: 'Can I try before buying?', a: 'Yes — we offer a free demo session where we show you the platform live with real Lagos leads. Book via WhatsApp.' },
   { q: 'What payment methods do you accept?', a: 'We accept Paystack (card & bank transfer), OPay bank transfer, and Moniepoint. All payments are secured and receipted.' },
-  { q: 'What\'s the difference between Standalone and Subscription?', a: 'Standalone is a one-time setup fee with no monthly charge — your platform runs for life. Subscription is a lower upfront cost with a monthly renewal fee for continued access to live data syncs, AI model updates, and hosting.' },
+  { q: 'Are there any recurring monthly charges?', a: 'No. All our web and software packages are 100% one-time purchases with zero monthly subscriptions. You own your platform for life, and your first full year of domain registration and high-speed cloud hosting is completely included.' },
   { q: 'Can I upgrade my plan later?', a: 'Yes, you can upgrade anytime. We prorate the difference and unlock new features instantly.' },
   { q: 'Do you work with businesses outside Lagos?', a: 'Yes — while our lead database specialises in Lagos, the AI agent, WhatsApp tools, and website builder work for any Nigerian business. We are expanding to Abuja and Port Harcourt.' },
 ];

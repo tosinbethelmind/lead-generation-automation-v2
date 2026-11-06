@@ -12,8 +12,14 @@ async function dumpActiveAds() {
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
     viewport: { width: 1280, height: 900 }
   });
-  await context.addInitScript(() => {
-    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+  await context.route('**/*', (route) => {
+    const req = route.request();
+    const type = req.resourceType();
+    const url = req.url();
+    if (['image', 'media', 'font'].includes(type) || url.includes('google-analytics') || url.includes('facebook') || url.includes('clarity') || url.includes('criteo')) {
+      return route.abort();
+    }
+    return route.continue();
   });
 
   const validCookies = (config.cookiesJson || []).map(c => {
@@ -24,50 +30,28 @@ async function dumpActiveAds() {
   await context.addCookies(validCookies);
 
   const page = await context.newPage();
-  await page.goto('https://jiji.ng/profile/adverts', { waitUntil: 'networkidle', timeout: 35000 });
+  console.log('Navigating to https://jiji.ng/profile/adverts...');
+  await page.goto('https://jiji.ng/profile/adverts', { waitUntil: 'domcontentloaded', timeout: 45000 });
   await page.waitForTimeout(4000);
 
-  const data = await page.evaluate(() => {
+  const ads = await page.evaluate(() => {
     const items = [];
-    // Let's query all elements that look like an advert row or card
-    const adEls = document.querySelectorAll('div.b-user-adverts-item, div.qa-user-advert-item, div[class*="adverts-item"]');
-    
-    adEls.forEach((el, index) => {
-      const titleEl = el.querySelector('a[href*="/advert/"], a[href*="/item/"], .b-user-adverts-item__title, a.qa-advert-title') || el.querySelector('a');
-      const priceEl = el.querySelector('.qa-user-advert-price, [class*="price"]');
-      const statusEl = el.querySelector('.qa-user-advert-status, [class*="status"]');
-      const editBtn = el.querySelector('a[href*="/edit"], button[class*="edit"]');
-      
-      items.push({
-        index: index + 1,
-        title: titleEl ? titleEl.innerText.trim() : 'Unknown Title',
-        url: titleEl ? titleEl.href : null,
-        price: priceEl ? priceEl.innerText.trim() : null,
-        status: statusEl ? statusEl.innerText.trim() : null,
-        editHref: editBtn ? (editBtn.href || editBtn.getAttribute('href')) : null
-      });
+    const rows = document.querySelectorAll('.b-user-adverts-item, .qa-user-advert-item, div[class*="user-adverts-item"]');
+    rows.forEach((el, index) => {
+      const title = el.querySelector('.b-user-adverts-item__title, a.qa-advert-title, a')?.innerText?.trim();
+      const price = el.querySelector('.b-user-adverts-item__price, [class*="price"]')?.innerText?.trim();
+      const status = el.querySelector('.b-user-adverts-item__status, [class*="status"]')?.innerText?.trim();
+      const editLink = el.querySelector('a[href*="edit"]')?.getAttribute('href');
+      const href = el.querySelector('a')?.getAttribute('href');
+      items.push({ index: index + 1, title, price, status, editLink, href });
     });
-
-    // Also get all links on page that have /edit/ or /advert/
-    const allLinks = Array.from(document.querySelectorAll('a'))
-      .map(a => ({ text: a.innerText.trim(), href: a.href }))
-      .filter(a => a.href.includes('/edit') || a.href.includes('/manage') || (a.href.includes('/item') && a.text.length > 5));
-
-    return { items, allLinks };
+    return items;
   });
 
-  console.log('--- FOUND ADVERTS ---');
-  console.log(JSON.stringify(data, null, 2));
+  console.log('Found adverts on profile:\n', JSON.stringify(ads, null, 2));
+  fs.writeFileSync('local_db/jiji_profile_live_dump.json', JSON.stringify(ads, null, 2), 'utf8');
 
-  fs.writeFileSync('local_db/jiji_user_active_ads.json', JSON.stringify(data, null, 2), 'utf8');
-
-  // Let's also grab the DOM structure around an advert item to understand the edit buttons
-  const sampleItemHtml = await page.evaluate(() => {
-    const item = document.querySelector('div.b-user-adverts-item, div.qa-user-advert-item, div[class*="adverts-item"]');
-    return item ? item.outerHTML : 'No item found';
-  });
-  fs.writeFileSync('local_db/jiji_sample_advert_item.html', sampleItemHtml, 'utf8');
-
+  await page.screenshot({ path: 'local_db/profile_adverts_dump.png' });
   await browser.close();
 }
 

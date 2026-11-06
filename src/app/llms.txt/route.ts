@@ -32,7 +32,7 @@ export async function GET() {
 10. **Instant WhatsApp Speed-to-Lead & Catalog Closer** (Retail): Sub-3s WhatsApp catalog & FAQ assistant for commercial vendors.
 
 ## Commercial Turnkey Pricing (Zero First-Contact Friction)
-- **Option 1 — Starter Go-Live ("Pay-Small-Small")**: ₦35,000 one-time activation (or ₦25,000/month) for official mobile portal + 24/7 AI WhatsApp bot.
+- **Option 1 — Starter Turnkey (100% One-Time, ₦0 Monthly)**: ₦80,000 flat (50% milestone deposit: ₦40,000) for official mobile portal + 24/7 AI WhatsApp closer (1 Year Free Hosting & Domain Included).
 - **Option 2 — Full Turnkey Custom Domain Suite**: ₦75,000 50% milestone deposit (₦150,000 total) for dedicated .com/.com.ng domain, full sector calculator + WhatsApp ledger, Google Maps SEO ranking, and 48-hour delivery guarantee.
 
 ## Verified Commercial Intelligence Blog (${posts.length} Active Playbooks)

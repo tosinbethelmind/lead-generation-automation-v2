@@ -20,7 +20,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     badge: 'Starter Tier',
     priceNGN: 75000,
     originalPriceNGN: 150000,
-    monthlyRenewalNGN: 15000,
+    monthlyRenewalNGN: 0,
     simplicityHighlights: [
       '⚡ 0 Setup Complexity (Instant Launch)',
       '📲 Orders & inquiries drop straight to your personal WhatsApp',
@@ -33,7 +33,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
       'Multi-Channel Autoresponders (WhatsApp, Email, Web Chat)',
       'Express Customer AI Assistant Widget',
       'Basic Admin Control Panel',
-      'Monthly Renewal: ₦15,000/mo (Hosting + WhatsApp Maintenance)',
+      '₦0 Monthly Subscriptions (1 Full Year Free Hosting & Maintenance Included)',
     ],
     recommendedFor: 'Small Instagram vendors, artisans, single technicians, local shops',
   },
@@ -43,7 +43,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     badge: 'Most Popular (70% Choice)',
     priceNGN: 185000,
     originalPriceNGN: 370000,
-    monthlyRenewalNGN: 35000,
+    monthlyRenewalNGN: 0,
     popular: true,
     simplicityHighlights: [
       '🎯 Mass Lagos B2B Lead Harvester & Verified WhatsApp Exporter (27 Districts)',
@@ -65,7 +65,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
       'Moniepoint Dedicated Virtual Account Transfer Box',
       'Customer Guarantee & Trust Shield Badge',
       'Custom .com.ng Domain + Free SSL',
-      'Monthly Renewal: ₦35,000/mo (Lead Harvester Sync + AI Engine + Hosting)',
+      '₦0 Monthly Subscriptions (1 Full Year Free Hosting & Maintenance Included)',
     ],
     recommendedFor: 'Solar installers, car dealers, law firms, clinics, boutique stores, realtors',
   },
@@ -75,7 +75,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     badge: '100% Hands-Free AI',
     priceNGN: 480000,
     originalPriceNGN: 950000,
-    monthlyRenewalNGN: 75000,
+    monthlyRenewalNGN: 0,
     simplicityHighlights: [
       '🎯 Unlimited Lagos B2B Lead Harvester & Automated Pipeline Sync',
       '🤖 24/7 Intelligent Customer AI Agent with WhatsApp Critical Sign-Off',
@@ -95,7 +95,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
       'Conversational Voice AI Phone Calling Agent (150 Mins/mo Included)',
       'Google Review 5-Star Tap Card Auto-Requester',
       'Custom Domain (yourbusiness.com) + Enterprise Hosting',
-      'Monthly Renewal: ₦75,000/mo (Unlimited Lead Sync + AI Voice Calling + Cloud Server)',
+      '₦0 Monthly Subscriptions (1 Full Year Free Hosting & Maintenance Included)',
     ],
     recommendedFor: 'High-ticket B2B contractors, commercial solar installers, multi-branch clinics, property developers',
   },
@@ -105,7 +105,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
     badge: '👑 Top 1% High-Ticket Enterprise',
     priceNGN: 850000,
     originalPriceNGN: 1800000,
-    monthlyRenewalNGN: 120000,
+    monthlyRenewalNGN: 0,
     simplicityHighlights: [
       '👑 100% White-Glove VIP Setup & Dedicated Account Director',
       '⚡ 24-Hour Instant AI Recruitment & Vetted Talent Hiring Engine Included',
@@ -126,7 +126,7 @@ export const NIGERIAN_MARKET_TIERS: MarketPackageTier[] = [
       'NDPR-Compliant Encrypted Field-Level Storage',
       'Custom Premium .com Domain + Dedicated High-Speed CDN Routing',
       'Quarterly Strategy & Conversion Audit Sessions',
-      'Monthly Renewal: ₦120,000/mo (Dedicated CDN + Full AI Suite Maintenance)',
+      '₦0 Monthly Subscriptions (1 Full Year Free Hosting & Maintenance Included)',
     ],
     recommendedFor: 'Eko Atlantic & Lekki developers, Commercial Solar EPC contractors, Luxury Auto Importers, SAN Law Firms',
   },
@@ -444,7 +444,7 @@ export const PAYMENT_MODE_OPTIONS: PaymentModeOption[] = [
     badge: 'Flexible Choice',
     marketPopularityPercent: 20,
     description: 'Low entry cost. Pay monthly via manual Moniepoint bank transfer link sent to WhatsApp. Pause anytime without card auto-debit.',
-    billingStructureText: 'Low monthly fee (₦8,000/mo to ₦25,000/mo). Manual transfer link sent on the 1st of every month.',
+    billingStructureText: '100% One-Time Flat Investment (₦80,000 with ₦40,000 50% deposit). ₦0 Monthly Fees Forever. 1 Full Year Free Domain & Hosting.',
     recommendedForNigeria: true,
   },
   {
@@ -467,7 +467,7 @@ export function getPaymentModeRecommendation(): {
     primaryRecommendation: PAYMENT_MODE_OPTIONS[0],
     allModes: PAYMENT_MODE_OPTIONS,
     expertAdviceText:
-      'Make BOTH One-Time Ownership and Monthly Pay-As-You-Go available. Lead with One-Time Lifetime Ownership as the primary default (75% of Nigerian SMEs choose this because they hate recurring card debits). Offer Monthly Pay-As-You-Go via manual WhatsApp transfer link as a low-friction fallback.',
+      'Enforce 100% One-Time Lifetime Ownership as the sole model across all offerings. 100% of Nigerian SMEs prefer paying once and owning their website permanently with zero monthly subscription anxiety.',
   };
 }
 

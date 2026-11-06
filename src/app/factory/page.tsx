@@ -1377,8 +1377,8 @@ ${truck2MissingBags > 0 ? `  🚨 *SHORTAGE: -${truck2MissingBags} bags (₦${tr
               </div>
 
               <div className="pt-2 border-t border-slate-100">
-                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">₦35,000</div>
-                <span className="text-xs text-slate-500">+ ₦7,000 / month</span>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">₦80,000</div>
+                <span className="text-xs text-emerald-600 font-bold">100% One-Time (₦40k Deposit) · ₦0 Monthly</span>
               </div>
 
               <p className="text-xs text-slate-600 leading-relaxed">

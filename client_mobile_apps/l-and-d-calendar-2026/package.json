@@ -1,0 +1,10 @@
+{
+  "name": "app-l-and-d-calendar-2026",
+  "version": "1.0.0",
+  "description": "Native Android application for L AND D Calendar 2026",
+  "private": true,
+  "scripts": {
+    "build": "echo Web assets ready in www/",
+    "open:android": "npx cap open android"
+  }
+}

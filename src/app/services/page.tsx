@@ -118,7 +118,7 @@ export default function ServicesDirectoryPage() {
           <div className="mt-6 max-w-2xl mx-auto p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-[#d4af37]/10 to-sky-500/10 border border-white/10 text-xs text-slate-300 flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
             <div>
               <span className="font-bold text-white block">✨ Transparent 2-Option Pricing:</span>
-              <span><strong>Starter:</strong> ₦35,000 Setup + ₦7,000/mo &bull; <strong>Annual Pass:</strong> ₦80,000 Flat (1 Full Year Free Maintenance — Save ₦39k)</span>
+              <span><strong>Starter:</strong> ₦45,000 Flat One-Time &bull; <strong>Custom Suite:</strong> ₦150,000 (₦75k Deposit) &bull; ₦0 Monthly Subscriptions Forever</span>
             </div>
             <Link
               href="/onboard"

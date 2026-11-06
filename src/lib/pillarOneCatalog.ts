@@ -7,9 +7,8 @@
  * Admin Desk WhatsApp: +234 802 279 1227
  * 
  * Harmonized 2026 Commercial Pricing:
- * - Option 1: Starter Go-Live ("Pay-Small-Small") -> ₦35,000 Setup + ₦7,000/month (or ₦45,000 for portals)
- * - Option 2: Annual Value Pass (1 Year Free Maintenance) -> ₦80,000 / Year (or ₦95,000 for portals)
- * - Option 3: Full Turnkey Custom Domain Suite -> ₦75,000 Milestone Deposit (₦150,000 Total)
+ * - Option 1: Starter Turnkey (100% One-Time, ₦0 Monthly) -> ₦80,000 Flat (50% Milestone Deposit: ₦40,000; ₦95,000 for portals)
+ * - Option 2: Full Turnkey Custom Domain Suite -> ₦75,000 Milestone Deposit (₦150,000 Total)
  */
 
 export interface PillarOneService {
@@ -55,10 +54,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       'OPay & Moniepoint verified transfer checkout'
     ],
     pricing: {
-      starterSetup: 35000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 80000,
-      annualSavings: 39000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -70,7 +69,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `Instead of waiting weeks for developers, we already built your live Official Mobile Website + 24/7 WhatsApp Sales Assistant for *${biz}*:\n` +
       `👉 Test drive free on your phone: ${url || 'https://www.bethelmindanalytics.com/preview/' + encodeURIComponent(biz.toLowerCase().replace(/[^a-z0-9]/g, ''))}\n\n` +
       `📦 *Pricing Options:*\n` +
-      `1️⃣ Starter Go-Live: ₦35,000 Setup + ₦7,000/mo (Pay-Small-Small)\n` +
+      `1️⃣ Starter Go-Live: ₦80,000 One-Time Flat (₦40k Deposit) (₦0 Monthly Fees) (Pay-Small-Small)\n` +
       `2️⃣ Annual Value Pass: ₦80,000 Flat (1 Full Year Free Maintenance — Save ₦39,000!)\n` +
       `3️⃣ Full Custom Domain Suite: ₦75,000 Deposit (₦150k Total)\n\n` +
       `🏛️ Moniepoint MFB: 6805375225 — Bethelmind Digital Solutions.\n` +
@@ -95,10 +94,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       'Offline network loss screen with your contact numbers always accessible'
     ],
     pricing: {
-      starterSetup: 35000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 80000,
-      annualSavings: 39000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -113,7 +112,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `💬 1-Tap direct WhatsApp button built right into the app\n` +
       `📥 Easy 1-tap download link for your Instagram bio & WhatsApp bio\n\n` +
       `📦 *Pricing:*\n` +
-      `• Starter Go-Live: ₦35,000 Setup + ₦7,000/mo\n` +
+      `• Starter Go-Live: ₦80,000 One-Time Flat (₦40k Deposit) (₦0 Monthly Fees)\n` +
       `• Annual Value Pass: ₦80,000 Flat (1 Full Year Free Maintenance)\n\n` +
       `👉 See details & claim your APK build: ${url || 'https://www.bethelmindanalytics.com/onboard?service=website_to_app&biz=' + encodeURIComponent(biz)}`
   },
@@ -136,10 +135,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       'Paystack/Moniepoint deposit collection for site audit inspections'
     ],
     pricing: {
-      starterSetup: 35000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 80000,
-      annualSavings: 39000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -153,7 +152,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `⚡ Sizes inverter, lithium batteries & solar panels automatically\n` +
       `📄 Generates instant WhatsApp quote with your company bank details in 3 seconds!\n\n` +
       `👉 Test drive live demo: ${url || 'https://www.bethelmindanalytics.com/tools/solar-boq'}\n\n` +
-      `Launch for *${biz}* today for ₦35,000 Setup + ₦7,000/mo (or ₦80,000 Annual Pass with 1 Year Free). Moniepoint MFB: 6805375225.`
+      `Launch for *${biz}* today for ₦80,000 One-Time Flat (₦40k Deposit) (₦0 Monthly Fees) (or ₦80,000 Annual Pass with 1 Year Free). Moniepoint MFB: 6805375225.`
   },
 
   {
@@ -174,10 +173,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       'Multi-cashier theft prevention audit trail'
     ],
     pricing: {
-      starterSetup: 35000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 80000,
-      annualSavings: 39000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -191,7 +190,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `🛡️ Your cashier's screen verifies incoming Moniepoint/OPay credits via real-time bank ledger webhooks\n` +
       `🔊 Sounds an instant audio voice alert the exact second money hits your account\n` +
       `📊 Sends you an 8:00 PM WhatsApp audit summary every evening\n\n` +
-      `👉 Setup today for ₦35,000 + ₦7,000/mo (or ₦80,000 Annual Pass): ${url || 'https://www.bethelmindanalytics.com/onboard?service=fake_alert&biz=' + encodeURIComponent(biz)}`
+      `👉 Setup today for ₦80,000 One-Time Flat (₦40k Deposit) (₦0 Monthly Fees): ${url || 'https://www.bethelmindanalytics.com/onboard?service=fake_alert&biz=' + encodeURIComponent(biz)}`
   },
 
   {
@@ -212,10 +211,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       'Staff schedule manager'
     ],
     pricing: {
-      starterSetup: 35000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 80000,
-      annualSavings: 39000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -229,7 +228,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `🔒 Locks the appointment with an instant deposit (₦3k-₦5k) straight to your bank\n` +
       `📱 Sends automatic WhatsApp reminders to eliminate no-shows completely!\n\n` +
       `👉 Test drive demo: ${url || 'https://www.bethelmindanalytics.com/tools/salon-booking'}\n\n` +
-      `Setup for ₦35,000 Setup + ₦7,000/mo (or ₦80,000 Annual Pass). Reply here to go live in 48 hours!`
+      `Setup for ₦80,000 One-Time Flat (₦40k Deposit) (₦0 Monthly Fees, 1 Year Free Hosting). Reply here to go live in 48 hours!`
   },
 
   {
@@ -250,10 +249,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       'Offline-capable tablet & mobile phone interface'
     ],
     pricing: {
-      starterSetup: 35000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 80000,
-      annualSavings: 39000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -266,7 +265,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `📦 Real-time tracking of every item sold across branches\n` +
       `🚫 Cashiers cannot alter prices or delete recorded transactions\n` +
       `📱 Instant WhatsApp notification if stock counts don't balance at closing time\n\n` +
-      `👉 Deploy today for ₦35,000 Setup + ₦7,000/mo (or ₦80k Annual): ${url || 'https://www.bethelmindanalytics.com/onboard?service=retail_inventory&biz=' + encodeURIComponent(biz)}`
+      `👉 Deploy today for ₦80,000 One-Time Flat (₦40k Deposit) (₦0 Monthly Fees): ${url || 'https://www.bethelmindanalytics.com/onboard?service=retail_inventory&biz=' + encodeURIComponent(biz)}`
   },
 
   {
@@ -288,10 +287,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
     ],
     pricing: {
       isPortal: true,
-      starterSetup: 45000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 95000,
-      annualSavings: 34000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -305,7 +304,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `🔒 Automates caution fee deposits and check-out damage inspection receipts\n` +
       `⚡ Reconciles electricity token usage & sends gate access codes automatically\n\n` +
       `👉 Test drive demo: ${url || 'https://www.bethelmindanalytics.com/tools/shortlet-booking-escrow'}\n\n` +
-      `Launch for ₦45,000 Setup + ₦7,000/mo (or ₦95,000 Annual Pass with 1 Year Free). Moniepoint MFB: 6805375225.`
+      `Launch for ₦55,000 One-Time Flat (₦0 Monthly Fees) (or ₦95,000 Annual Pass with 1 Year Free). Moniepoint MFB: 6805375225.`
   },
 
   {
@@ -326,10 +325,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       'Instant WhatsApp dispatch button to client'
     ],
     pricing: {
-      starterSetup: 35000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 80000,
-      annualSavings: 39000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -342,7 +341,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `🧱 Instant calculation of cement bags, block counts, sand & granite\n` +
       `🎨 Paint coverage & POP ceiling material sizer\n` +
       `📄 1-Tap professional BOQ quote sent to your client's WhatsApp in seconds\n\n` +
-      `👉 Setup today for ₦35,000 Setup + ₦7,000/mo (or ₦80,000 Annual Pass): ${url || 'https://www.bethelmindanalytics.com/onboard?service=construction_boq&biz=' + encodeURIComponent(biz)}`
+      `👉 Setup today for ₦80,000 One-Time Flat (₦40k Deposit) (₦0 Monthly Fees, 1 Year Free Hosting): ${url || 'https://www.bethelmindanalytics.com/onboard?service=construction_boq&biz=' + encodeURIComponent(biz)}`
   },
 
   {
@@ -364,10 +363,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
     ],
     pricing: {
       isPortal: true,
-      starterSetup: 45000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 95000,
-      annualSavings: 34000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -381,7 +380,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `🔒 Digital report cards are automatically locked until fees are 100% verified\n` +
       `📊 Eliminates bursar fake alert scams and gives you real-time revenue collection dashboards\n\n` +
       `👉 Deploy for *${biz}*: ${url || 'https://www.bethelmindanalytics.com/onboard?service=school_fee&biz=' + encodeURIComponent(biz)}\n\n` +
-      `₦45,000 Setup + ₦7,000/mo (or ₦95,000 Annual Pass). CAC Certified • Moniepoint MFB: 6805375225.`
+      `₦55,000 One-Time Flat (₦0 Monthly Fees, 1 Year Free Hosting). CAC Certified • Moniepoint MFB: 6805375225.`
   },
 
   {
@@ -403,10 +402,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
     ],
     pricing: {
       isPortal: true,
-      starterSetup: 45000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 95000,
-      annualSavings: 34000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -420,7 +419,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `⛽ Complete transparency on monthly diesel generator expenditure\n` +
       `🎫 Digital gate clearance passes issued automatically to paid residents\n\n` +
       `👉 Test drive & deploy: ${url || 'https://www.bethelmindanalytics.com/onboard?service=estate_rent&biz=' + encodeURIComponent(biz)}\n\n` +
-      `₦45,000 Setup + ₦7,000/mo (or ₦95,000 Annual Pass). Moniepoint MFB: 6805375225.`
+      `₦55,000 One-Time Flat (₦0 Monthly Fees, 1 Year Free Hosting). Moniepoint MFB: 6805375225.`
   },
 
   {
@@ -440,10 +439,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       'Cash-on-delivery (COD) reconciliation ledger'
     ],
     pricing: {
-      starterSetup: 35000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 80000,
-      annualSavings: 39000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -456,7 +455,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `📦 Instant waybill lookup for customers on your branded link\n` +
       `📱 Automatic WhatsApp alerts sent when packages arrive in state\n` +
       `💰 Tracks Cash-on-Delivery (COD) driver collections accurately\n\n` +
-      `👉 Setup for ₦35,000 Setup + ₦7,000/mo (or ₦80k Annual): ${url || 'https://www.bethelmindanalytics.com/onboard?service=dispatch_tracker&biz=' + encodeURIComponent(biz)}`
+      `👉 Setup for ₦80,000 One-Time Flat (₦40k Deposit) (₦0 Monthly Fees): ${url || 'https://www.bethelmindanalytics.com/onboard?service=dispatch_tracker&biz=' + encodeURIComponent(biz)}`
   },
 
   {
@@ -476,10 +475,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       'Cluster distribution point dispatch SMS manager'
     ],
     pricing: {
-      starterSetup: 35000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 80000,
-      annualSavings: 39000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -492,7 +491,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `🌾 Farmers order feed and inputs through a simple WhatsApp/mobile portal\n` +
       `📈 Aggregates orders automatically to meet factory minimums\n` +
       `🏦 Tracks member payments and reconciles cluster distribution\n\n` +
-      `👉 Deploy today for ₦35,000 Setup + ₦7,000/mo (or ₦80k Annual): ${url || 'https://www.bethelmindanalytics.com/onboard?service=agri_consolidator&biz=' + encodeURIComponent(biz)}`
+      `👉 Deploy today for ₦80,000 One-Time Flat (₦40k Deposit) (₦0 Monthly Fees): ${url || 'https://www.bethelmindanalytics.com/onboard?service=agri_consolidator&biz=' + encodeURIComponent(biz)}`
   },
 
   {
@@ -512,10 +511,10 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       'Automated PDF & WhatsApp landing cost breakdown for buyers'
     ],
     pricing: {
-      starterSetup: 35000,
-      starterMonthly: 7000,
+      starterSetup: 80000,
+      starterMonthly: 0,
       annualPass: 80000,
-      annualSavings: 39000,
+      annualSavings: 0,
       turnkeyDeposit: 75000,
       turnkeyTotal: 150000
     },
@@ -529,7 +528,7 @@ export const PILLAR_ONE_SERVICES: PillarOneService[] = [
       `📋 Calculates statutory NCS duty, NAC levy & terminal landing costs\n` +
       `📱 Sends your client a branded WhatsApp estimate with your dealership details\n\n` +
       `👉 Test drive demo: ${url || 'https://www.bethelmindanalytics.com/tools/tokunbo-duty'}\n\n` +
-      `Deploy for *${biz}* for ₦35,000 Setup + ₦7,000/mo (or ₦80k Annual). Moniepoint MFB: 6805375225.`
+      `Deploy for *${biz}* for ₦80,000 One-Time Flat (₦40k Deposit) (₦0 Monthly Fees). Moniepoint MFB: 6805375225.`
   }
 ];
 

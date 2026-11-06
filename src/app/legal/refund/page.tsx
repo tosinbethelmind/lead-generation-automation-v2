@@ -70,10 +70,10 @@ export default function RefundPolicyPage() {
 
       <h2>4. Monthly Managed Subscriptions &amp; Cancellation</h2>
       <p>
-        For clients operating on monthly hosting and managed AI retainer plans (e.g., ₦25,000/month):
+        For turnkey website and tool deployments (100% One-Time Ownership, ₦0 Monthly Subscriptions):
       </p>
       <ul>
-        <li><strong>Cancel Anytime:</strong> You may cancel your monthly subscription at any time without long-term lock-in or cancellation penalties.</li>
+        <li><strong>Zero Recurring Charges:</strong> All packages are 100% one-time investments with zero monthly subscriptions or automated card debits.</li>
         <li><strong>Notice Period:</strong> Cancellation requests must be submitted via WhatsApp or email at least three (3) business days prior to your next monthly renewal date.</li>
         <li><strong>Service Access:</strong> Upon cancellation, your services remain fully active until the conclusion of the paid monthly billing cycle.</li>
         <li><strong>Pre-paid Cycles:</strong> Monthly subscription fees already billed are non-refundable once the billing month commences.</li>

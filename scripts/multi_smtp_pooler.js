@@ -299,10 +299,8 @@ WhatsApp / Direct Desk: +234 802 279 1227`;
 
     // 4-provider dual-mailbox zero-failure cascade:
     // Brevo -> Hostinger Tosin -> Hostinger Matthew -> Hostinger 587
-    let providers = ['brevo', 'hostinger_465', 'hostinger_465_matthew', 'hostinger_587'];
-    if (this.currentProviderIdx % 2 === 1) {
-      providers = ['hostinger_465_matthew', 'brevo', 'hostinger_465', 'hostinger_587'];
-    }
+    // HOSTINGER SMTP DISABLED: Routed 100% via Brevo API v3 to protect Hostinger domain
+    let providers = ['brevo'];
     this.currentProviderIdx++;
 
     let lastErr = '';

@@ -1679,7 +1679,7 @@ export default function MobileAdminCommandCenter() {
                   </div>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <a
-                      href={`https://wa.me/${p.phone}?text=${encodeURIComponent(`Good day Boss at *${p.name}*! 👋 Bethelmind Digital Solutions here.\n\nWe noticed you do not have an official mobile website on Google yet, so we pre-built an official mobile website + 24/7 WhatsApp AI Sales Assistant for *${p.name}*:\n👉 Test drive free on your phone: ${p.previewUrl}\n\nLaunch today: ₦35,000 Setup + ₦7,000/mo (OR ₦80,000 Annual Pass with 1 Full Year Free Maintenance).\nMoniepoint Bank: 6805375225 - Bethelmind Digital Solutions.\n\nReply here to claim!`)}`}
+                      href={`https://wa.me/${p.phone}?text=${encodeURIComponent(`Good day Boss at *${p.name}*! 👋 Bethelmind Digital Solutions here.\n\nWe noticed you do not have an official mobile website on Google yet, so we pre-built an official mobile website + 24/7 WhatsApp AI Sales Assistant for *${p.name}*:\n👉 Test drive free on your phone: ${p.previewUrl}\n\nLaunch today: ₦80,000 Complete One-Time Flat (50% Milestone Deposit: ₦40,000) — 100% One-Time, ₦0 Monthly Subscriptions, 1 Full Year Free Hosting & Domain Included.\nMoniepoint Bank: 6805375225 - Bethelmind Digital Solutions.\n\nReply here to claim!`)}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{
@@ -1810,7 +1810,7 @@ export default function MobileAdminCommandCenter() {
                     boxSizing: 'border-box'
                   }}
                 >
-                  <option value="Starter Go-Live (₦35,000 Setup + ₦7,000/mo)">Option 1: Starter Go-Live (₦35,000 Setup + ₦7,000/mo)</option>
+                  <option value="Starter Turnkey (₦80,000 Flat · ₦40k Deposit — ₦0 Monthly)">Option 1: Starter Turnkey (₦80,000 Flat · ₦40,000 Deposit — ₦0 Monthly)</option>
                   <option value="Annual Value Pass (₦80,000 Flat — 1 Year Free)">Option 2: Annual Value Pass (₦80,000 Flat — 1 Year Free Maintenance)</option>
                   <option value="School / Estate / Shortlet Portal (₦45,000 Setup / ₦95,000 Annual)">Option 3: School / Estate / Shortlet Portal (₦45,000 / ₦95,000 Annual)</option>
                   <option value="Full Turnkey Custom Domain Suite (₦75,000 Deposit / ₦150,000 Total)">Option 4: Full Turnkey Custom Domain Suite (₦75,000 Deposit / ₦150,000 Total)</option>

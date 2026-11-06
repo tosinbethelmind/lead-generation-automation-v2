@@ -912,21 +912,40 @@ export default function LandingPage({ data, leadId, isPreview = false }: Landing
 
     if (checkoutStep === 'paystack') {
       return (
-        <div style={{ textAlign: 'center', padding: '20px 0' }}>
-          <div style={{ display: 'inline-flex', padding: '8px 16px', background: '#ecfdf5', color: '#047857', borderRadius: '99px', fontSize: '0.8rem', fontWeight: 600, gap: '6px', alignItems: 'center', marginBottom: '16px' }}>
-            <ShieldCheck size={16} /> Paystack Secure Checkout Simulation
+        <div style={{ textAlign: 'center', padding: '16px 0' }}>
+          <div style={{ display: 'inline-flex', padding: '6px 14px', background: '#ecfdf5', color: '#047857', borderRadius: '99px', fontSize: '0.78rem', fontWeight: 700, gap: '6px', alignItems: 'center', marginBottom: '14px' }}>
+            <ShieldCheck size={16} /> Instant Moniepoint &amp; Paystack Bank Settlement
           </div>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#1f2937', marginBottom: '8px' }}>Simulate Paystack Payment</h3>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '24px' }}>
-            You are checking out for <strong>₦{total.toLocaleString()}</strong>. In production, this launches the official Paystack popup window. Click below to simulate success.
+          <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', marginBottom: '6px' }}>Complete Your Order (₦{total.toLocaleString()})</h3>
+          <p style={{ color: '#64748b', fontSize: '0.86rem', marginBottom: '18px', maxWidth: '420px', margin: '0 auto 18px auto' }}>
+            Pay directly into the merchant account below, or tap WhatsApp to confirm item availability before dispatch.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '320px', margin: '0 auto' }}>
-            <button type="button" onClick={handleMockPayment} style={{ background: '#10b981', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
-              Simulate Successful Payment
+          <div style={{ background: '#f8fafc', border: '1.5px solid #10b981', borderRadius: '14px', padding: '16px', maxWidth: '360px', margin: '0 auto 18px auto', textAlign: 'left', fontSize: '0.85rem' }}>
+            <div style={{ color: '#047857', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.74rem', marginBottom: '6px' }}>🏦 Corporate Settlement Account:</div>
+            <div style={{ fontWeight: 700, color: '#0f172a' }}>Moniepoint Microfinance Bank</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#047857', fontFamily: 'monospace', letterSpacing: '0.05em', margin: '4px 0' }}>6805375225</div>
+            <div style={{ color: '#475569', fontSize: '0.8rem' }}>Name: <strong>{data.lead.name || 'Bethelmind Digital Solutions'}</strong></div>
+            <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px dashed #cbd5e1', display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
+              <span>Amount Due:</span>
+              <span style={{ color: '#047857' }}>₦{total.toLocaleString()}</span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '360px', margin: '0 auto' }}>
+            <button type="button" onClick={handleMockPayment} style={{ background: '#10b981', color: '#fff', border: 'none', padding: '12px 18px', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', fontSize: '0.88rem', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)' }}>
+              Confirm Payment &amp; Generate Official Invoice →
             </button>
-            <button type="button" onClick={() => setCheckoutStep('cart')} style={{ background: '#e2e8f0', color: '#4b5563', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
-              Cancel
+            <a 
+              href={`https://wa.me/2348022791227?text=${encodeURIComponent(`Hello *${data.lead.name}*! I want to complete my order for ${activeItems.length} items (Total: ₦${total.toLocaleString()}). Please confirm order dispatch.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ background: '#25d366', color: '#fff', padding: '10px 18px', borderRadius: '10px', fontWeight: 700, textDecoration: 'none', fontSize: '0.84rem' }}
+            >
+              💬 Complete Order on WhatsApp
+            </a>
+            <button type="button" onClick={() => setCheckoutStep('cart')} style={{ background: '#f1f5f9', color: '#64748b', border: 'none', padding: '8px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }}>
+              Back to Cart
             </button>
           </div>
         </div>

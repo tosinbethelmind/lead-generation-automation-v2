@@ -31,6 +31,7 @@ import { heavyNationwideB2BEmailHarvester } from '../src/lib/scraping/heavyNatio
 import { stealthMetascraperExtractor } from '../src/lib/scraping/stealthMetascraperExtractor';
 import { katanaCrawlerBridge } from '../src/lib/scraping/katanaCrawlerBridge';
 import { getSectorCaseStudy } from '../src/lib/blog/sectorCaseStudies';
+import { leadsSqliteStore } from '../src/lib/leadsSqliteStore';
 
 const LOCAL_DB = path.join(process.cwd(), 'local_db');
 if (!fs.existsSync(LOCAL_DB)) fs.mkdirSync(LOCAL_DB, { recursive: true });
@@ -298,38 +299,29 @@ Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise)`;
 
 function safePersistLeads(leads: any[]) {
   try {
-    if (!Array.isArray(leads) || leads.length < 100) return;
-    let diskLeads: any[] = [];
-    if (fs.existsSync(LEADS_DB_PATH)) {
-      try {
-        const parsed = JSON.parse(fs.readFileSync(LEADS_DB_PATH, 'utf8'));
-        if (Array.isArray(parsed)) diskLeads = parsed;
-      } catch (_) {}
-    }
-    const mergedMap = new Map<string, any>();
-    for (const dl of diskLeads) {
-      if (!isGenuineCommercialLead(dl)) continue;
-      const k = dl.id || dl.lead_id || (dl.phone || dl.phone_e164 || '').replace(/\D/g, '').slice(-10) || dl.email;
-      if (k) mergedMap.set(k, dl);
-    }
+    if (!Array.isArray(leads)) return;
     for (const l of leads) {
-      if (!isGenuineCommercialLead(l)) continue;
-      const k = l.id || l.lead_id || (l.phone || l.phone_e164 || '').replace(/\D/g, '').slice(-10) || l.email;
-      if (k) {
-        const prev = mergedMap.get(k) || {};
-        mergedMap.set(k, { ...prev, ...l, address: l.address || prev.address, carrier: l.carrier || prev.carrier });
+      if (l.email_sent && l.id) {
+        leadsSqliteStore.markEmailSent(l.id, l.email_provider || 'Hostinger SMTP', l.email_message_id || '');
       }
-    }
-    const finalArr = Array.from(mergedMap.values());
-    if (finalArr.length >= 100) {
-      const tmp = `${LEADS_DB_PATH}.tmp.${process.pid}`;
-      fs.writeFileSync(tmp, JSON.stringify(finalArr, null, 2), 'utf8');
-      fs.renameSync(tmp, LEADS_DB_PATH);
+      if (l.webform_submitted && l.id) {
+        leadsSqliteStore.markWebformSubmitted(l.id, true, l.webform_notes || '');
+      }
     }
   } catch (_) {}
 }
 
 export async function loadAndConsolidateLeads(): Promise<any[]> {
+  try {
+    const sqliteLeads = leadsSqliteStore.getUncontactedNonWebsiteEmailLeads(600);
+    if (sqliteLeads && sqliteLeads.length > 0) {
+      console.log("[loadAndConsolidateLeads] Loaded " + sqliteLeads.length + " unsent non-website leads instantly via Native SQLite.");
+      return sqliteLeads;
+    }
+  } catch (err: any) {
+    console.warn('⚠️ [loadAndConsolidateLeads] SQLite acceleration bypassed, using legacy load:', err.message);
+  }
+
   const leadMap = new Map<string, any>();
 
   const ingestLead = (l: any) => {

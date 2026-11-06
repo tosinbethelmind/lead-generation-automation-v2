@@ -1,0 +1,31 @@
+{
+  "appId": "com.bethelmind.landdcalendar2026",
+  "appName": "L AND D Calendar 2026",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://www.bethelmindanalytics.com/preview/l-and-d-calendar-2026",
+    "cleartext": true,
+    "allowNavigation": [
+      "*.bethelmindanalytics.com",
+      "wa.me",
+      "api.whatsapp.com",
+      "*.paystack.co",
+      "*.moniepoint.com"
+    ]
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
+    }
+  }
+}

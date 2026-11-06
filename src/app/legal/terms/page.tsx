@@ -48,7 +48,7 @@ export default function TermsOfServicePage() {
         All services are structured with low-friction, milestone-protected terms:
       </p>
       <ul>
-        <li><strong>Option 1 — Starter Activation (Fast Go-Live):</strong> ₦35,000 one-time setup (or ₦25,000/month on the Pay-Small-Small plan). Launches the business on a secure Bethelmind subdomain with full 24/7 WhatsApp closer and sector calculator.</li>
+        <li><strong>Option 1 — Starter Turnkey:</strong> ₦80,000 complete one-time flat (50% milestone deposit: ₦40,000). 100% One-Time Lifetime Asset with ₦0 monthly subscriptions.</li>
         <li><strong>Option 2 — Full Turnkey Custom Domain Suite:</strong> ₦150,000 total investment.
           <ul style={{ marginTop: 6 }}>
             <li><strong>Milestone 1 Deposit (50%):</strong> ₦75,000 required to commence custom `.com`/`.com.ng` domain registration, dedicated infrastructure staging, and engine configuration.</li>

@@ -183,7 +183,7 @@ export default function SovereignLuxuryCommandDeck() {
 Instead of waiting weeks for a developer, we already built your Official Mobile Website + 24/7 AI WhatsApp Closer for ${forgeName} to test free right now:
 ${previewUrl}
 
-Option 1: ₦35,000 Starter Go-Live (or ₦25k/mo Pay-Small-Small)
+Option 1: ₦80,000 Complete One-Time Flat (50% Milestone Deposit: ₦40,000 — ₦0 Monthly)
 Option 2: ₦75,000 Milestone Deposit (₦150k Full Custom Domain Suite)
 
 Settlement Vault: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digital Solutions, CAC Reg: 9912717).`;

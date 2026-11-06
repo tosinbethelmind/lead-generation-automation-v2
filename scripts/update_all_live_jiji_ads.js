@@ -6,8 +6,8 @@ const LIVE_ADS_UPDATE_DECK = [
   {
     adId: '55774340',
     editUrl: 'https://jiji.ng/edit-free-ad-55774340.html',
-    title: 'Website Design Lagos • 24h Express Delivery & WhatsApp Closer',
-    price: '35000',
+    title: 'Professional Business Website Design in 24 Hours • ₦40k Deposit',
+    price: '40000',
     imageFile: 'ad_2_website_ai_closer_luxury.png',
     desc: `Stop losing paying customers when they search for your business on Google!
 
@@ -25,8 +25,7 @@ THE "JIJI SELLER DOMINANCE" 24-HOUR BUNDLE:
 
 TOTAL VALUE: ₦305,000
 PRICING & ACTIVATION PLANS:
-👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance (Keep it running for just ₦230/day!)
-👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE HOSTING & MAINTENANCE — Save ₦39,000!)
+👉 100% ONE-TIME INVESTMENT: ₦80,000 Flat (50% Milestone Deposit: ₦40,000) — ₦0 Monthly Subscriptions Forever (1 Full Year Free Domain & Cloud Hosting Included)
 👉 PLAN C (Full Custom .com Suite): ₦75,000 deposit (₦150,000 total) for dedicated .com domain & 100% code handover
 
 100% RISK-FREE GUARANTEE: Test your live working website prototype free on your phone before paying 1 Kobo!
@@ -40,8 +39,8 @@ SEARCH TAGS: website design lagos, web designer abuja, ecommerce website nigeria
   {
     adId: '55776882',
     editUrl: 'https://jiji.ng/edit-free-ad-55776882.html',
-    title: 'Solar Inverter Load Calculator & 5kVA Instant WhatsApp Quoter',
-    price: '35000',
+    title: 'Solar Inverter Company Website Design & Instant WhatsApp Quoter',
+    price: '40000',
     imageFile: 'ad_3_solar_boq_sizer_luxury.png',
     desc: `ATTENTION SOLAR INSTALLERS & INVERTER DEALERS:
 
@@ -59,8 +58,7 @@ THE "SOLAR CLOSER SUITE" BUNDLE:
 
 TOTAL VALUE: ₦255,000
 PRICING & ACTIVATION PLANS:
-👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance
-👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)
+👉 100% ONE-TIME INVESTMENT: ₦80,000 Flat (50% Milestone Deposit: ₦40,000) — ₦0 Monthly Subscriptions Forever (1 Full Year Free Domain & Cloud Hosting Included)
 👉 PLAN C (Full Custom Suite): ₦75,000 deposit (₦150,000 total)
 
 Close 3x more solar projects on autopilot with zero paperwork stress.
@@ -74,8 +72,8 @@ SEARCH TAGS: solar installation nigeria, 5kva inverter price, 3.5kva solar syste
   {
     adId: '55777070',
     editUrl: 'https://jiji.ng/edit-free-ad-55777070.html',
-    title: 'Stop Fake Bank Alert & Cashier Theft • Moniepoint POS Shield',
-    price: '35000',
+    title: 'Online Store Website for Boutiques & Supermarkets • Paystack/OPay',
+    price: '40000',
     imageFile: 'ad_4_fake_alert_shield_luxury.png',
     desc: `Stop falling victim to fake bank transfer alerts, photoshopped receipts, and sales attendants stealing cash!
 
@@ -93,8 +91,7 @@ THE "STORE REVENUE SHIELD" BUNDLE:
 
 TOTAL VALUE: ₦230,000
 PRICING & ACTIVATION PLANS:
-👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance
-👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)
+👉 100% ONE-TIME INVESTMENT: ₦80,000 Flat (50% Milestone Deposit: ₦40,000) — ₦0 Monthly Subscriptions Forever (1 Full Year Free Domain & Cloud Hosting Included)
 
 Protect your daily business revenue 100%. One-time setup, zero monthly stress.
 
@@ -107,8 +104,8 @@ SEARCH TAGS: pos machine lagos, moniepoint pos terminal, opay pos machine, fake 
   {
     adId: '55777491',
     editUrl: 'https://jiji.ng/edit-free-ad-55777491.html',
-    title: 'Salon & Clinic Appointment Booking App with Deposit Lock • 24/7',
-    price: '35000',
+    title: 'Beauty Salon & Clinic Website with 24/7 WhatsApp Booking Engine',
+    price: '40000',
     imageFile: 'ad_5_salon_deposit_booking_luxury.png',
     desc: `Eliminate empty salon chairs and missed appointments with automated 24/7 booking!
 
@@ -126,8 +123,7 @@ THE "SALON REVENUE LOCK" BUNDLE:
 
 TOTAL VALUE: ₦230,000
 PRICING & ACTIVATION PLANS:
-👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance
-👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)
+👉 100% ONE-TIME INVESTMENT: ₦80,000 Flat (50% Milestone Deposit: ₦40,000) — ₦0 Monthly Subscriptions Forever (1 Full Year Free Domain & Cloud Hosting Included)
 
 Guarantee your booking revenue upfront before you touch a single client.
 
@@ -140,8 +136,8 @@ SEARCH TAGS: beauty salon website, spa booking app, barbershop software, dental 
   {
     adId: '55782977',
     editUrl: 'https://jiji.ng/edit-free-ad-55782977.html',
-    title: 'Private School Term Fee Portal & Online Result PIN Checker',
-    price: '45000',
+    title: 'Private School Website Design & Online Student Result PIN Portal',
+    price: '40000',
     imageFile: 'ad_6_school_fee_portal_luxury.png',
     desc: `Stop tracking school fee defaulters manually on messy exercise books and Excel sheets!
 
@@ -157,8 +153,7 @@ THE "SCHOOL REVENUE RECOVERY" BUNDLE:
 
 TOTAL VALUE: ₦335,000
 PRICING & ACTIVATION PLANS:
-👉 PLAN A (Termly Flex): ₦45,000 Setup + ₦10,000/month (or ₦25,000/term)
-👉 PLAN B (Annual Academic Session Pass): ₦95,000 All-Inclusive (Covers all 3 terms — 1 Full Year Free Maintenance!)
+👉 100% ONE-TIME INVESTMENT: ₦55,000 Flat (or start with ₦45,000 Deposit) — Covers Full Academic Session with ₦0 Monthly Fees
 
 Recover school fees on time and eliminate bursar cash leakage this session.
 
@@ -171,8 +166,8 @@ SEARCH TAGS: school portal nigeria, school management software, online result ch
   {
     adId: '55790165',
     editUrl: 'https://jiji.ng/edit-free-ad-55790165.html',
-    title: 'Estate Service Charge & Tenant Rent Portal • Diesel Ledger',
-    price: '45000',
+    title: 'Real Estate Agency & Property Management Website Design Lagos',
+    price: '40000',
     imageFile: 'ad_7_tenant_rent_portal_luxury.png',
     desc: `Manage residential estate facility service charges and tenant rent collections with ZERO disputes!
 
@@ -188,8 +183,7 @@ THE "ESTATE RECONCILIATION" BUNDLE:
 
 TOTAL VALUE: ₦300,000
 PRICING & ACTIVATION PLANS:
-👉 PLAN A (Monthly Flex): ₦45,000 Setup + ₦10,000/month
-👉 PLAN B (Annual Estate Pass — Best Value): ₦95,000 All-Inclusive (1 FULL YEAR FREE MAINTENANCE — Save ₦45,000!)
+👉 100% ONE-TIME INVESTMENT: ₦55,000 Flat (or start with ₦45,000 Deposit) — ₦0 Monthly Fees Forever
 
 Eliminate rent arguments and keep your estate property accounts 100% reconciled.
 
@@ -202,8 +196,8 @@ SEARCH TAGS: estate management software, property management portal lagos, servi
   {
     adId: '55790380',
     editUrl: 'https://jiji.ng/edit-free-ad-55790380.html',
-    title: 'Interstate Dispatch Waybill Tracker & Delivery SMS System',
-    price: '35000',
+    title: 'Logistics & Interstate Delivery Website with Waybill Tracker',
+    price: '40000',
     imageFile: 'ad_8_dispatch_waybill_tracker_luxury.png',
     desc: `Stop answering 50+ repeated "Where is my package?" phone calls every single day!
 
@@ -219,8 +213,7 @@ THE "DISPATCH AUTOMATION" BUNDLE:
 
 TOTAL VALUE: ₦265,000
 PRICING & ACTIVATION PLANS:
-👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance
-👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)
+👉 100% ONE-TIME INVESTMENT: ₦80,000 Flat (50% Milestone Deposit: ₦40,000) — ₦0 Monthly Subscriptions Forever (1 Full Year Free Domain & Cloud Hosting Included)
 
 Cut dispatch customer service calls by 85% and build massive trust with shippers.
 
@@ -233,8 +226,8 @@ SEARCH TAGS: dispatch rider service lagos, waybill tracking software, courier lo
   {
     adId: '55796997',
     editUrl: 'https://jiji.ng/edit-free-ad-55796997.html',
-    title: 'Multi-Store Retail Inventory & Pure Water Factory Stock App',
-    price: '35000',
+    title: 'Multi-Store Retail Inventory & Factory Stock Keeping Website',
+    price: '40000',
     imageFile: 'ad_9_stock_theft_ledger_luxury.png',
     desc: `Running 2 or more retail shop branches or a Sachet/Bottle Water Factory? Stop losing millions to inventory theft, unrecorded stock shrinkage, and driver cash fraud!
 
@@ -265,8 +258,8 @@ SEARCH TAGS: inventory software lagos, supermarket pos software, pure water acco
   {
     adId: '55797060',
     editUrl: 'https://jiji.ng/edit-free-ad-55797060.html',
-    title: 'Building Material Estimator & BOQ Calculator • Cement Sizer',
-    price: '35000',
+    title: 'Construction Contractor Website & Material BOQ Sizing Calculator',
+    price: '40000',
     imageFile: 'ad_10_construction_estimator_luxury.png',
     desc: `Eliminate building material waste and contractor over-budgeting on your construction sites!
 
@@ -282,8 +275,7 @@ THE "SITE MATERIAL SHIELD" BUNDLE:
 
 TOTAL VALUE: ₦260,000
 PRICING & ACTIVATION PLANS:
-👉 PLAN A (Monthly Flex): ₦35,000 Setup + ₦7,000/month maintenance
-👉 PLAN B (Annual Smart-Saver — Best Value): ₦80,000 All-Inclusive (1 FULL YEAR FREE — Save ₦39,000!)
+👉 100% ONE-TIME INVESTMENT: ₦80,000 Flat (50% Milestone Deposit: ₦40,000) — ₦0 Monthly Subscriptions Forever (1 Full Year Free Domain & Cloud Hosting Included)
 
 Protect your construction budget from contractor inflation and stolen site materials.
 

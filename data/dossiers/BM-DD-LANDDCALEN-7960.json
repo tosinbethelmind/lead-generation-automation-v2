@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "dossierId": "BM-DD-LANDDCALEN-7960",
+    "generatedAt": "2026-11-06T06:35:41.708Z",
+    "issuer": "Bethelmind Digital Solutions — Institutional Intelligence Desk",
+    "settlementAccount": "Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)",
+    "priceTierNGN": 150000,
+    "classification": "CONFIDENTIAL B2B COUNTERPARTY AUDIT"
+  },
+  "entity": {
+    "commercialName": "L AND D Calendar 2026",
+    "category": "Hotels & Shortlet Apartments",
+    "address": "Lagos Commercial Corridor",
+    "district": "Lekki",
+    "state": "Lagos State, Nigeria",
+    "primaryDirectorOrLead": "Managing Director / Principal",
+    "cacPublicVerificationVector": "https://search.cac.gov.ng/list?search=L%20AND%20D%20Calendar%202026"
+  },
+  "telecomIntelligence": {
+    "verifiedPhone": "08134601100",
+    "internationalE164": "+2348134601100",
+    "carrier": "MTN",
+    "lineType": "Mobile GSM",
+    "isWhatsAppEnabled": true,
+    "directWhatsAppLink": "https://wa.me/2348134601100"
+  },
+  "riskAssessment": {
+    "trustScore": 85,
+    "compositeGrade": "AA (High Reliability SME)",
+    "rule5AntiSyntheticPassed": true,
+    "auditFactors": [
+      "Verified valid Nigerian telecom line (MTN GSM)",
+      "Primary business contact is on Tier-1 enterprise carrier"
+    ]
+  },
+  "digitalFootprint": {
+    "linkedInSearch": "https://www.linkedin.com/search/results/companies/?keywords=L%20AND%20D%20Calendar%202026",
+    "googleMapsSearch": "https://www.google.com/maps/search/?api=1&query=L%20AND%20D%20Calendar%202026%20Lekki%20Nigeria",
+    "instagramQuery": "https://www.google.com/search?q=site:instagram.com+L%20AND%20D%20Calendar%202026+lagos"
+  }
+}

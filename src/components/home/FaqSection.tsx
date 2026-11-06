@@ -23,7 +23,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'How does the 50% commitment deposit work?',
-    a: 'We provide clear, transparent pricing: Plan A (Monthly Flex) is ₦35,000 setup + ₦7,000/month maintenance; Plan B (Annual Smart-Saver) is ₦80,000 all-inclusive with 1 FULL YEAR FREE maintenance (saving you ₦39,000); and Plan C (Full Custom .com Domain Suite) is ₦75,000 milestone deposit (₦150,000 total). You can test your working prototype free before paying.',
+    a: 'We provide clear, transparent pricing with 100% ONE-TIME INVESTMENT and ZERO MONTHLY SUBSCRIPTIONS. Starter Turnkey is ₦80,000 flat with a 50% milestone deposit of ₦40,000; Full Custom .com Suite is ₦150,000 total (₦75,000 milestone deposit). 1 Full Year of Domain and Cloud Hosting is included. You test your working prototype on your phone free before paying balance.',
   },
   {
     q: 'What if I already have a website (WordPress, Wix, Shopify, custom)?',

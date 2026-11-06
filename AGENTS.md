@@ -20,9 +20,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **THE "COMPETITORS ARE STEALING YOUR GOOGLE SEARCHES" HOOK**:
   - Every outreach message (Email, WhatsApp, GSM SMS) and every `/preview/[slug]` landing page leads with the acute visibility & revenue leak:
     *"When prospective customers search for [Business Name] on Google right now, only third-party directory pages show up alongside ads for your direct competitors because you do not have an official mobile website yet. Instead of asking you to wait weeks for a developer, we already built your live Official Mobile Website + 24/7 WhatsApp Booking & Quoting Assistant for [Business Name] to test free on your phone (`https://www.bethelmindanalytics.com/preview/[slug]`)."*
-- **2-TIER LOW-FRICTION COMMERCIAL PRICING (REMOVES FIRST-CONTACT PRICE RESISTANCE)**:
-  - **Option 1 — Starter Go-Live ("Pay-Small-Small" Fast Activation)**: **`₦35,000` one-time Starter Activation** *(or **`₦25,000/month`** Pay-Small-Small)* — Launches their pre-built Official Mobile Website + 24/7 WhatsApp AI Closer & OPay/Moniepoint Transfer Shield immediately.
-  - **Option 2 — Full Turnkey Custom Domain Suite**: **`₦75,000` 50% Milestone Deposit (`₦150,000` Total)** — Includes dedicated `.com` / `.com.ng` custom domain registration, full sector calculator + WhatsApp ledger, Google Search SEO ranking, and 100% code/domain ownership within 48 hours.
+- **2-TIER LOW-FRICTION COMMERCIAL PRICING (100% ONE-TIME ASSET • ₦0 MONTHLY SUBSCRIPTIONS)**:
+  - **Option 1 — Starter Turnkey (100% One-Time Lifetime Ownership)**: **`₦80,000` Complete One-Time Flat** *(or **`₦40,000`** 50% Milestone Deposit with ₦40,000 balance on live approval)* — Launches their pre-built Official Mobile Website + 24/7 WhatsApp AI Closer & OPay/Moniepoint Transfer Shield immediately with 1 Full Year Free Domain & Cloud Hosting included. **`₦0` Monthly Subscriptions Forever.**
+  - **Option 2 — Full Turnkey Custom Domain Suite**: **`₦75,000` 50% Milestone Deposit (`₦150,000` Total)** — Includes dedicated international `.com` custom domain registration, 3 official corporate staff emails, full sector calculator + WhatsApp ledger, Google Search SEO ranking, and 100% code/domain ownership within 48 hours. **`₦0` Monthly Fees.**
   - All settlements route 100% directly to our CAC Certified Corporate Account: **Moniepoint Microfinance Bank (`6805375225` — Bethelmind Digital Solutions)**.
 
 ## 2. B2B COMMERCIAL OUTREACH STRATEGY, VOICE NOTE INTEGRATION & 100% REAL-ACTION INVARIANT
@@ -37,7 +37,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
   8. *Construction & Interior Finishing Material Estimator* (₦20k–₦40k/mo): Instant cement, tile, paint & POP quantity calculator for contractors.
   9. *Private School Term Fee Portal with Result Gating* (₦50k–₦100k/term): Student term fee payment portal that auto-gates digital report cards until fees clear.
   10. *Bulk Agribusiness Feed & Input Order Consolidator* (₦30k–₦70k/mo): Farm collective portal aggregating feed/fertilizer orders to secure wholesale discounts.
-- **Done-For-You Commercial Website Prototypes (`https://www.bethelmindanalytics.com/preview/[lead_id]`)**: Turnkey deployments (₦35k Setup + ₦7k/mo (or ₦80k Annual with 1 Year Free) or ₦75k deposit / ₦150k Full Custom Domain Suite).
+- **Done-For-You Commercial Website Prototypes (`https://www.bethelmindanalytics.com/preview/[lead_id]`)**: Turnkey deployments (₦80k Complete One-Time Flat (50% Milestone Deposit: ₦40k) or ₦75k deposit / ₦150k Full Custom Domain Suite — 100% One-Time, ₦0 Monthly Subscriptions).
 - **MANDATORY VOICE NOTE INTEGRATION ACROSS ALL CHANNELS (EXCEPT GSM SMS)**:
   - **WhatsApp DMs**: 15-second `.opus` voice note audio bubbles (`en-NG-EzinneNeural`).
   - **B2B Executive Email**: Personalized `.mp3` voice note attachment + clickable audio player banner via Hostinger SMTP.

@@ -83,7 +83,7 @@ async function triggerWhatsAppCloser(phoneClean: string, text: string, leadName:
       `We received your text inquiry!\n` +
       `Your ready-made mobile website & 24/7 WhatsApp customer closer is live to test free on your phone:\n` +
       `👉 https://www.bethelmindanalytics.com/preview/${slug}\n\n` +
-      `• *Option 1 (Starter Promo):* ₦35,000 deposit to launch (or ₦25,000/month pay-small-small).\n` +
+      `• *Option 1 (Starter Turnkey):* ₦80,000 flat (50% milestone deposit: ₦40,000 — 100% One-Time, ₦0 monthly fees).\n` +
       `• Send 2 photos of your shop here make we add am FREE today before you pay shishi!`;
 
     // Non-blocking fire-and-forget: SMS listening must NEVER be interrupted or delayed by WhatsApp

@@ -157,7 +157,7 @@ We designed a complete mobile website + 24/7 WhatsApp sales assistant specifical
 
 When customers search for *${cleanName}* on Google right now, you don't have an official website yet, so other businesses show up instead.
 
-We already built a *free sample website + 24/7 WhatsApp Assistant* for *${cleanName}* so you can check how it looks on your phone first before paying a kobo (and if you like it, you can put it live with our ₦35,000 Starter Go-Live or ₦25k/month Pay-Small-Small).
+We already built a *free sample website + 24/7 WhatsApp Assistant* for *${cleanName}* so you can check how it looks on your phone first before paying a kobo (and if you like it, you can put it live with our ₦80,000 Complete One-Time Flat with 50% milestone deposit of ₦40,000 — 100% One-Time, ₦0 monthly subscriptions forever).
 
 Can I send your free sample website link here for you to check on your phone?
 
