@@ -1,8 +1,9 @@
-'use client';
-
-import React, { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React from 'react';
 import Link from 'next/link';
+import fs from 'fs';
+import path from 'path';
+import { createClient } from '@supabase/supabase-js';
+import PrintButton from './PrintButton';
 
 interface MandateData {
   mandate_ref: string;
@@ -35,52 +36,54 @@ interface MandateData {
   statutory_clause: string;
 }
 
-function MandatePrintContent() {
-  const searchParams = useSearchParams();
-  const ref = searchParams?.get('ref');
+const LOCAL_DB = path.join(process.cwd(), 'local_db');
+const SIGNED_MANDATES_PATH = path.join(LOCAL_DB, 'signed_mandates.json');
 
-  const [mandate, setMandate] = useState<MandateData | null>(null);
-  const [loading, setLoading] = useState(Boolean(ref));
-  const [error, setError] = useState<string | null>(null);
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://rcaamfaqkxvgbjlfuhki.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWFtZmFxa3h2Z2JqbGZ1aGtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzUyNDI0OCwiZXhwIjoyMTAzMTAwMjQ4fQ.9KKQ52VdE8b-jxy2QmOAAxuBMKpGyncwDDEyMGfe9fw';
 
-  useEffect(() => {
-    if (!ref) {
-      setLoading(false);
-      return;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: false }
+});
+
+async function getMandateByRef(ref: string): Promise<MandateData | null> {
+  if (!ref) return null;
+  const cleanRef = ref.trim();
+
+  // 1. Try local disk cache
+  try {
+    if (fs.existsSync(SIGNED_MANDATES_PATH)) {
+      const data: any[] = JSON.parse(fs.readFileSync(SIGNED_MANDATES_PATH, 'utf8'));
+      const found = data.find(m => m.mandate_ref.toLowerCase() === cleanRef.toLowerCase());
+      if (found) return found;
     }
+  } catch (_) {}
 
-    async function fetchMandate() {
-      try {
-        const res = await fetch(`/api/mandate/sign?ref=${encodeURIComponent(ref || '')}`);
-        const data = await res.json();
-        if (data.success && data.mandate) {
-          setMandate(data.mandate);
-        } else {
-          setError(data.error || 'Mandate record not found.');
-        }
-      } catch (e: any) {
-        setError(e.message || 'Error loading mandate document.');
-      } finally {
-        setLoading(false);
-      }
+  // 2. Try Supabase Cloud DB
+  try {
+    const { data: cloudRow } = await supabase
+      .from('leads')
+      .select('*')
+      .eq('lead_id', cleanRef)
+      .eq('category', 'SIGNED_MANDATE')
+      .single();
+
+    if (cloudRow && cloudRow.notes) {
+      return JSON.parse(cloudRow.notes);
     }
-    fetchMandate();
-  }, [ref]);
+  } catch (_) {}
 
-  const handlePrint = () => {
-    if (typeof window !== 'undefined') {
-      window.print();
-    }
-  };
+  return null;
+}
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4">
-        <div className="w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="font-mono text-sm text-slate-300">Retrieving Certified Mandate Instrument...</p>
-      </div>
-    );
-  }
+export default async function MandatePrintPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ref?: string }> | { ref?: string };
+}) {
+  const resolvedParams = searchParams instanceof Promise ? await searchParams : searchParams;
+  const ref = (resolvedParams?.ref || '').trim();
+  const mandate = ref ? await getMandateByRef(ref) : null;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-serif p-4 sm:p-8 print:p-0 print:bg-white">
@@ -99,18 +102,13 @@ function MandatePrintContent() {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={handlePrint}
-            className="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg transition"
-          >
-            <span>🖨️</span> Print / Save as PDF
-          </button>
+          <PrintButton />
         </div>
       </div>
 
-      {error && (
+      {ref && !mandate && (
         <div className="max-w-4xl mx-auto mb-4 p-4 bg-amber-50 border border-amber-300 text-amber-900 text-xs rounded-xl font-sans print:hidden">
-          <b>Notice:</b> {error} (Displaying official blank statutory pack for chambers execution).
+          <b>Notice:</b> Mandate record &quot;{ref}&quot; not found in active cloud ledger. Displaying official blank statutory pack for manual chambers execution.
         </div>
       )}
 
@@ -283,18 +281,5 @@ function MandatePrintContent() {
 
       </div>
     </div>
-  );
-}
-
-export default function MandatePrintPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4">
-        <div className="w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="font-mono text-sm text-slate-300">Loading Official Mandate Instrument...</p>
-      </div>
-    }>
-      <MandatePrintContent />
-    </Suspense>
   );
 }
