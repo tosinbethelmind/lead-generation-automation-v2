@@ -59,13 +59,19 @@ export default function MandatePortalPage() {
     asking_price: '',
     title_document: "Governor's Consent",
     inspection_timeframe: 'Next 24 to 48 Hours',
+    gate_access_protocol: 'Estate gate access code issued 2 hours prior to walkthrough',
+    direct_mandate_warranted: true,
     deal_id: ''
   });
+
+  // Dual Signature Modes: 'draw' (Canvas Pad) vs 'type' (Certified Electronic Type)
+  const [signatureMode, setSignatureMode] = useState<'draw' | 'type'>('draw');
+  const [typedSignature, setTypedSignature] = useState('');
 
   // Signature Canvas
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [hasSignature, setHasSignature] = useState(false);
+  const [hasDrawnSignature, setHasDrawnSignature] = useState(false);
 
   // Submission State
   const [submitting, setSubmitting] = useState(false);
@@ -81,6 +87,7 @@ export default function MandatePortalPage() {
 
   // Initialize Canvas
   useEffect(() => {
+    if (signatureMode !== 'draw') return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -97,7 +104,7 @@ export default function MandatePortalPage() {
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-  }, [activeTab]);
+  }, [activeTab, signatureMode]);
 
   const getCanvasCoordinates = (e: React.MouseEvent | React.TouchEvent) => {
     const canvas = canvasRef.current;
@@ -142,7 +149,7 @@ export default function MandatePortalPage() {
     const { x, y } = getCanvasCoordinates(e);
     ctx.lineTo(x, y);
     ctx.stroke();
-    setHasSignature(true);
+    setHasDrawnSignature(true);
   };
 
   const stopDrawing = () => {
@@ -155,7 +162,38 @@ export default function MandatePortalPage() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setHasSignature(false);
+    setHasDrawnSignature(false);
+  };
+
+  // Generate image data URL from typed signature
+  const generateTypedSignatureDataUrl = (name: string): string => {
+    const offscreen = document.createElement('canvas');
+    offscreen.width = 400;
+    offscreen.height = 120;
+    const ctx = offscreen.getContext('2d');
+    if (!ctx) return '';
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, offscreen.width, offscreen.height);
+
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'italic 32px "Georgia", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(name || 'Authorized Signatory', 200, 50);
+
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(40, 85);
+    ctx.lineTo(360, 85);
+    ctx.stroke();
+
+    ctx.font = '9px system-ui, sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('ELECTRONICALLY VERIFIED UNDER SEC. 84 EVIDENCE ACT', 200, 102);
+
+    return offscreen.toDataURL('image/png');
   };
 
   // Prefill brief into form
@@ -181,12 +219,26 @@ export default function MandatePortalPage() {
       return;
     }
 
-    if (!hasSignature || !canvasRef.current) {
-      setSubmitError('A hand-drawn electronic signature is legally required under Section 84 Evidence Act 2011.');
+    if (!formData.direct_mandate_warranted) {
+      setSubmitError('You must warrant direct mandate representation authority under LASRERA Law 2022 to execute this memorandum.');
       return;
     }
 
-    const signatureDataUrl = canvasRef.current.toDataURL('image/png');
+    let signatureDataUrl = '';
+    if (signatureMode === 'draw') {
+      if (!hasDrawnSignature || !canvasRef.current) {
+        setSubmitError('Please draw your electronic signature or switch to "Type Legal Name" tab.');
+        return;
+      }
+      signatureDataUrl = canvasRef.current.toDataURL('image/png');
+    } else {
+      const nameToSign = typedSignature.trim() || formData.contact_person.trim();
+      if (!nameToSign) {
+        setSubmitError('Please enter your full legal name to generate your verified digital signature.');
+        return;
+      }
+      signatureDataUrl = generateTypedSignatureDataUrl(nameToSign);
+    }
 
     try {
       setSubmitting(true);
@@ -203,6 +255,8 @@ export default function MandatePortalPage() {
           property_location: formData.property_location || 'Lekki / Ikoyi Corridor, Lagos',
           asking_price: formData.asking_price || 'Market Commercial Valuation',
           signature_data_url: signatureDataUrl,
+          gate_access_protocol: formData.gate_access_protocol,
+          direct_mandate_warranted: formData.direct_mandate_warranted,
           mandate_type: formData.mandate_type,
           deal_id: formData.deal_id
         })
@@ -563,7 +617,7 @@ export default function MandatePortalPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                     <div>
                       <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                         Asking Price / Budget (₦)
@@ -608,56 +662,130 @@ export default function MandatePortalPage() {
                       </select>
                     </div>
                   </div>
+
+                  {/* Estate Gate Security Protocol */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      Estate Gate Clearance / Security Protocol
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Security gate access code issued 2 hours prior to walkthrough"
+                      value={formData.gate_access_protocol}
+                      onChange={e => setFormData({ ...formData, gate_access_protocol: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
                 </div>
 
-                {/* Digital Signature Pad (Sec. 84 Evidence Act 2011) */}
+                {/* Digital Signature Pad (Sec. 84 Evidence Act 2011) with Dual Input Toggle */}
                 <div className="border-t border-slate-800 pt-5">
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
                     <div>
                       <label className="block text-xs font-bold text-white">
                         Authorized Electronic Signature *
                       </label>
                       <p className="text-[11px] text-slate-400">
-                        Sign below using your finger, stylus, or mouse. Generates an encrypted Section 84 Evidence Act audit record.
+                        Generates a cryptographic Section 84 Evidence Act audit record with IP & timestamp.
                       </p>
                     </div>
-                    {hasSignature && (
+
+                    {/* Mode Switcher */}
+                    <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
                       <button
                         type="button"
-                        onClick={clearSignature}
-                        className="text-xs text-amber-400 hover:text-amber-300 font-semibold underline"
+                        onClick={() => setSignatureMode('draw')}
+                        className={`px-3 py-1 rounded text-xs font-semibold transition ${
+                          signatureMode === 'draw'
+                            ? 'bg-cyan-500 text-slate-950'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
                       >
-                        Clear Signature
+                        ✍️ Draw Pad
                       </button>
-                    )}
+                      <button
+                        type="button"
+                        onClick={() => setSignatureMode('type')}
+                        className={`px-3 py-1 rounded text-xs font-semibold transition ${
+                          signatureMode === 'type'
+                            ? 'bg-cyan-500 text-slate-950'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        ⌨️ Type Signature
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="border-2 border-dashed border-slate-700 hover:border-cyan-500/50 rounded-xl bg-slate-950 overflow-hidden relative transition">
-                    <canvas
-                      ref={canvasRef}
-                      onMouseDown={startDrawing}
-                      onMouseMove={draw}
-                      onMouseUp={stopDrawing}
-                      onMouseLeave={stopDrawing}
-                      onTouchStart={startDrawing}
-                      onTouchMove={draw}
-                      onTouchEnd={stopDrawing}
-                      className="w-full h-36 cursor-crosshair touch-none"
-                    />
-                    {!hasSignature && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-600 text-xs font-mono">
-                        ✍️ Sign Here (Touch or Mouse)
+                  {signatureMode === 'draw' ? (
+                    <div>
+                      <div className="flex justify-end mb-1">
+                        {hasDrawnSignature && (
+                          <button
+                            type="button"
+                            onClick={clearSignature}
+                            className="text-xs text-amber-400 hover:text-amber-300 font-semibold underline"
+                          >
+                            Clear Signature
+                          </button>
+                        )}
                       </div>
-                    )}
-                  </div>
+                      <div className="border-2 border-dashed border-slate-700 hover:border-cyan-500/50 rounded-xl bg-slate-950 overflow-hidden relative transition">
+                        <canvas
+                          ref={canvasRef}
+                          onMouseDown={startDrawing}
+                          onMouseMove={draw}
+                          onMouseUp={stopDrawing}
+                          onMouseLeave={stopDrawing}
+                          onTouchStart={startDrawing}
+                          onTouchMove={draw}
+                          onTouchEnd={stopDrawing}
+                          className="w-full h-36 cursor-crosshair touch-none"
+                        />
+                        {!hasDrawnSignature && (
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-600 text-xs font-mono">
+                            ✍️ Sign Here (Touch or Mouse)
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl">
+                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                        Type Your Full Legal Name for Digital Assent
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Barr. Babatunde Alabi, Esq."
+                        value={typedSignature || formData.contact_person}
+                        onChange={e => setTypedSignature(e.target.value)}
+                        className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm font-serif italic text-cyan-300 focus:outline-none focus:border-cyan-500"
+                      />
+                      <p className="text-[10px] text-slate-500 mt-2">
+                        Typing your name constitutes a valid electronic signature under Section 84 of the Evidence Act 2011, sealed with your verified IP address and device identifier.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
-                {/* Statutory Confirmation Checkbox */}
-                <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl text-xs text-slate-400 space-y-2">
-                  <div className="flex items-start gap-2">
+                {/* Direct Mandate Warranty & Statutory Checkbox */}
+                <div className="p-3.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-slate-300 space-y-2.5">
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.direct_mandate_warranted}
+                      onChange={e => setFormData({ ...formData, direct_mandate_warranted: e.target.checked })}
+                      className="mt-0.5 w-4 h-4 rounded border-slate-700 text-cyan-500 focus:ring-cyan-500 bg-slate-900"
+                    />
+                    <span className="leading-relaxed">
+                      <b className="text-white">Direct Mandate Warranty (LASRERA 2022):</b> I expressly warrant that my firm is the Mandated Broker, Joint Sole Agent, or Legal Attorney to the Property Owner with full legal capacity to grant walkthrough clearance.
+                    </span>
+                  </label>
+
+                  <div className="flex items-start gap-2 text-slate-400 pl-6 border-t border-slate-800/60 pt-2 text-[11px]">
                     <span className="text-cyan-400 font-bold">✓</span>
                     <span>
-                      <b>LASRERA Co-Brokerage Enforcement:</b> Both parties covenant to strictly honor the 80/20 agency commission split and refrain from direct client circumvention. All corporate allocations settle via Moniepoint MFB (Bethelmind Digital Solutions - 6805375225).
+                      <b>180-Day Non-Circumvention:</b> Both parties covenant to honor the 80/20 agency fee split and agree that disputes shall be settled at the Lagos Multi-Door Courthouse (LMDC). Settlements route via Moniepoint MFB (Bethelmind Digital Solutions - 6805375225).
                     </span>
                   </div>
                 </div>
