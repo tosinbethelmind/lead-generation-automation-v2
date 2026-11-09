@@ -396,7 +396,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
         `🔗 *Live Agreement & Itemized Scope:* ${invoice.invoiceUrl}\n\n` +
         `📦 *Package:* *${invoice.packageName}*\n` +
         `💰 *Standard Setup:* *₦${invoice.totalNgn.toLocaleString()}*\n` +
-        `⚡ *50% Commitment Deposit:* *₦${invoice.depositNgn.toLocaleString()}* (or *₦25,000/month* Pay-Small-Small)\n` +
+        `⚡ *50% Commitment Deposit:* *₦${invoice.depositNgn.toLocaleString()}* (₦0 monthly subscriptions forever)\n` +
         `*(Balance of ₦${invoice.balanceNgn.toLocaleString()} is payable ONLY after your system is live and verified on Google!)*\n` +
         `⏱️ *Guaranteed Go-Live Date:* *${invoice.guaranteedDeliveryDate}* (48-Hour Legal SLA)\n\n` +
         `🏛️ *Official Corporate Settlement Account:*\n` +
@@ -424,7 +424,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
         `🔥 *Here is our 100% Risk-Free Guarantee:*\n` +
         `1. We customize it with your real shop photos and price list FREE today.\n` +
         `2. You test it live for 48 hours on your own phone.\n` +
-        `3. If you love it, you can launch your official setup for just ₦25,000/month (Pay-Small-Small) or a ₦35,000 one-time starter setup.\n` +
+        `3. If you love it, you can launch your official setup for just ₦25,000/month (Pay-Small-Small) or a ₦80,000 complete one-time flat (50% milestone: ₦40,000).\n` +
         `4. If you don't love it, you pay ₦0.00 shishi.\n\n` +
         `Drop 2 photos of your shop or your price list here right now make we load am free for you!`,
       suggestedAction: 'AWAIT_DEMO_FEEDBACK',
@@ -448,7 +448,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
         `Send 2 more photos or your price list here make we add am free!\n\n` +
         `Ready to register your official *.com.ng* domain today?\n` +
         `• Total: *₦65,000* for 1 full year\n` +
-        `• *100% Risk-Free 48h Pilot:* Test live on your phone first. Pay ₦35,000 only after you inspect and approve!\n` +
+        `• *100% Risk-Free 48h Pilot:* Test live on your phone first. Pay ₦40,000 only after you inspect and approve!\n` +
         `• *Bank:* Moniepoint MFB · *${CORPORATE_BANK.accountNumber}* · *${CORPORATE_BANK.accountName}*\n\n` +
         `Drop receipt here once sent to activate!`,
       suggestedAction: 'AWAIT_DOMAIN_OR_DEPOSIT',
@@ -485,9 +485,9 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
   if (domainOnlyMatch && !rawMsg.includes('bethelmindanalytics.com')) {
     const requestedDomain = domainOnlyMatch[1].toLowerCase();
     const isDotCom = requestedDomain.endsWith('.com') && !requestedDomain.endsWith('.com.ng');
-    const promoTotal = isDotCom ? '₦120,000' : '₦65,000';
-    const depositAmt = isDotCom ? '₦60,000' : '₦35,000';
-    const balanceAmt = isDotCom ? '₦60,000' : '₦30,000';
+    const promoTotal = isDotCom ? '₦150,000' : '₦80,000';
+    const depositAmt = isDotCom ? '₦75,000' : '₦40,000';
+    const balanceAmt = isDotCom ? '₦75,000' : '₦40,000';
 
     const prov = autoProvisionSiteFromWhatsApp(fullLeadContext, {
       preferredDomain: requestedDomain,
@@ -522,9 +522,9 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
     const pkgName = isOption2
       ? 'Corporate .COM Suite + 3 Staff Emails'
       : 'Starter Official .COM.NG Website + 24/7 WhatsApp AI';
-    const promoTotal = isOption2 ? '₦120,000' : '₦65,000';
-    const depositAmt = isOption2 ? '₦60,000' : '₦35,000';
-    const balanceAmt = isOption2 ? '₦60,000' : '₦30,000';
+    const promoTotal = isOption2 ? '₦150,000' : '₦80,000';
+    const depositAmt = isOption2 ? '₦75,000' : '₦40,000';
+    const balanceAmt = isOption2 ? '₦75,000' : '₦40,000';
     const suggestedDomain = `${slug.replace(/-/g, '')}${isOption2 ? '.com' : '.com.ng'}`;
 
     autoProvisionSiteFromWhatsApp(fullLeadContext, {
@@ -632,7 +632,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       isOptOut: false,
       messageText:
         `I hear you Boss! 🤝 But think of it: losing just 1 customer on Google costs more than ₦35k.\n\n` +
-        `Under our promo, you only pay *₦35,000 deposit* to launch today (or *₦25,000/month pay-small-small*). You pay the balance only when it's live on Google!\n\n` +
+        `Under our promo, you only pay *₦40,000 milestone deposit* to launch today (₦0 monthly fees forever). You pay the balance only when it's live on Google!\n\n` +
         `Send 2 pictures of your shop here right now — let's update it FREE first before you pay shishi. Deal?`,
       suggestedAction: 'DECONSTRUCT_PRICE_AND_CLOSE',
       directPaymentEligible: true
@@ -678,7 +678,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       isOptOut: false,
       messageText:
         `Yes Boss! We have 2 easy options for *${name}*:\n\n` +
-        `🅰️ *Option 1 (Most Popular):* *₦35,000 deposit* today. Balance of ₦30k payable ONLY after your site is live on Google!\n` +
+        `🅰️ *Option 1 (Most Popular):* *₦40,000 milestone deposit* today. Balance of ₦30k payable ONLY after your site is live on Google!\n` +
         `🅱️ *Option 2 (Pay-Small-Small):* *₦25,000 / month* — cancel anytime.\n\n` +
         `👉 Check your preview free first: ${previewUrl}\n\n` +
         `Which option works best for you: Option 1 (₦35k deposit) or Option 2 (₦25k/month)?`,
@@ -777,7 +777,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
         `• Shows them how much generator fuel they save monthly!\n` +
         `• Drops instant quote to your WhatsApp ready to close.\n\n` +
         `👉 Test your live solar site: ${previewUrl}\n\n` +
-        `Promo is *₦35,000 deposit* to launch. Reply *1* to activate!`,
+        `Promo is *₦40,000 milestone deposit* to launch. Reply *1* to activate!`,
       suggestedAction: 'CLOSE_SOLAR_ENGINE',
       directPaymentEligible: true
     };
@@ -889,7 +889,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
         `Stop answering "how much is delivery to Lekki/Ikeja" all day!\n` +
         `Your portal gives customers instant delivery fee quotes and 1-tap WhatsApp pickup requests.\n\n` +
         `👉 Test your delivery site: ${previewUrl}\n\n` +
-        `Reply *1* to activate under our 50% promo (*₦35,000 deposit*)!`,
+        `Reply *1* to activate under our 50% promo (*₦40,000 milestone deposit*)!`,
       suggestedAction: 'CLOSE_LOGISTICS',
       directPaymentEligible: true
     };
@@ -920,7 +920,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
         `Good day Boss at *${name}*! 🎙️ Got your voice note!\n\n` +
         `Here is the free sample website we built for *${name}* on your phone:\n` +
         `👉 ${previewUrl}\n\n` +
-        `Under our promo, launch your official *.com.ng* website for *₦35,000 deposit* (balance only after going live) — or send 2 shop photos here and we'll update it FREE first!\n\n` +
+        `Under our promo, launch your official *.com.ng* website for *₦40,000 milestone deposit* (balance only after going live) — or send 2 shop photos here and we'll update it FREE first!\n\n` +
         `Reply *1* to start or drop your shop photos here!`,
       suggestedAction: 'ACK_VOICE_NOTE',
       directPaymentEligible: true
@@ -937,7 +937,7 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
       `We already built your website in advance so you can test it free on your phone:\n` +
       `👉 ${previewUrl}\n\n` +
       `• Send 2 photos of your shop here — we will update it *FREE before you pay shishi*!\n` +
-      `• Or reply *1* to launch for *₦35,000 deposit* (or *₦25,000/month pay-small-small*).\n\n` +
+      `• Or reply *1* to launch for *₦40,000 milestone deposit* (₦0 monthly fees forever).\n\n` +
       `How does the layout look to you?`,
     suggestedAction: 'SEND_ADAPTIVE_PITCH',
     directPaymentEligible: true
@@ -954,102 +954,73 @@ const { generateGeminiReply } = require('./gemini_closer');
  */
 async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
   const rawMsg = String(clientMessage || '').trim();
+  const lower = rawMsg.toLowerCase();
 
-  // 🏛️ PILLAR 2 CHECK: High-Ticket Real Estate Mandate Intelligence
-  const p2Check = isPillar2Conversation(leadData.phone, rawMsg, leadData);
-  const isPillar2Active = Boolean(p2Check.isPillar2 || leadData.isPillar2);
-
-  if (isPillar2Active) {
-    const brokerObj = p2Check.broker || leadData.broker || null;
-    const p2Decision = handlePillar2Inquiry(rawMsg, {
-      ...leadData,
-      broker: brokerObj
-    });
-
-    const SPECIFIC_P2_INTENTS = [
-      'PILLAR2_MANDATE_UNAVAILABLE',
-      'PILLAR2_CORPORATE_IDENTITY',
-      'PILLAR2_EXECUTIVE_GREETING',
-      'PILLAR2_AVAILABILITY_CONFIRMED',
-      'PILLAR2_BUYER_IDENTITY_PROTOCOL',
-      'PILLAR2_COMMISSION_ASSERTION',
-      'PILLAR2_DISPATCH_JIM',
-      'PILLAR2_INSPECTION_SCHEDULING',
-      'PILLAR2_CORPORATE_CREDENTIALS',
-      'PILLAR2_CALL_REQUEST'
-    ];
-
-    if (SPECIFIC_P2_INTENTS.includes(p2Decision.intent)) {
-      return p2Decision;
-    }
-
-    // Try Gemini with Pillar 2 Real Estate context for open-ended queries
-    try {
-      const brokerDisplayName = brokerObj ? (brokerObj.brokerName || brokerObj.name) : (leadData.businessName || 'Partner Firm');
-      const geminiText = await generateGeminiReply(rawMsg, {
-        isPillar2: true,
-        businessName: brokerDisplayName,
-        propertyListing: brokerObj ? (brokerObj.defaultListing || 'Prime Luxury Lagos Listing') : 'Prime Luxury Lagos Listing'
-      });
-      if (geminiText) {
-        return {
-          intent: 'PILLAR2_GEMINI_DYNAMIC_CLOSER',
-          isOptOut: false,
-          messageText: geminiText,
-          suggestedAction: 'ENGAGE_PILLAR2_GEMINI'
-        };
-      }
-    } catch (_) {}
-
-    // 🛡️ STRICT INVARIANT: If Pillar 2, NEVER EVER fall back to Pillar 1 SME copy!
-    return p2Decision;
+  // ── 1. NON-NEGOTIABLE TRANSACTIONAL GUARDS (Zero Hallucination Risk) ──────────
+  // A. OPT-OUT / STOP INTERCEPT
+  if (/^(no|stop|cancel|unsubscribe|remove|not interested|dont message|don't message|leave me|opt out|optout)\b/i.test(lower) ||
+      /\b(stop messaging|remove my number|stop sending|dont contact|don't contact)\b/i.test(lower)) {
+    const resolved = lookupLeadForWhatsApp(leadData.phone || '', rawMsg);
+    const name = leadData.businessName || resolved.businessName || 'Business Owner';
+    return {
+      intent: 'OPT_OUT',
+      isOptOut: true,
+      messageText: `No problem at all Sir/Ma! Your number has been removed immediately. Wishing *${name}* continuous business success! — Bethelmind Digital Solutions`,
+      suggestedAction: 'DNC_SUPPRESS',
+      directPaymentEligible: false
+    };
   }
 
-  // 1. Run deterministic matrix first
-  const deterministicDecision = handlePostContactInquiry(clientMessage, leadData);
-
-  // If critical transactional intent, return immediately (zero hallucination risk)
-  const CRITICAL_TRANSACTIONAL_INTENTS = [
-    'OPT_OUT',
-    'PHOTO_RECEIVED_AUTO_UPDATED',
-    'PAYMENT_RECEIPT_PROVISIONED',
-    'CUSTOM_DOMAIN_LOCKED',
-    'READY_TO_PAY_INVOICE',
-    'HUMAN_ESCALATION_DESK'
-  ];
-
-  if (CRITICAL_TRANSACTIONAL_INTENTS.includes(deterministicDecision.intent)) {
-    return deterministicDecision;
+  // B. PAYMENT RECEIPT / TRANSFER PROOF
+  if (/\b(i have paid|i've paid|just paid|payment sent|transferred|transfer done|sent the deposit|i sent the money|receipt|paid 40|paid 80|paid 75|paid 150|payment confirmed|check your account)\b/i.test(lower)) {
+    return handlePostContactInquiry(clientMessage, leadData);
   }
 
-  // If client sent a simple short greeting, keep fast deterministic copy
-  if (rawMsg.length < 15 && deterministicDecision.intent === 'CASUAL_GREETING') {
-    return deterministicDecision;
+  // C. PHOTO / IMAGE ATTACHMENT
+  if (/\[photo received\]|\[image received\]/i.test(rawMsg) || leadData.hasMediaImage) {
+    return handlePostContactInquiry(clientMessage, leadData);
   }
 
-  // 2. For custom questions, unique product inquiries, or fallback cases, invoke Gemini 3.5 Flash
+  // D. EXPLICIT CUSTOM DOMAIN SENT (e.g. "mybusiness.com.ng")
+  const domainOnlyMatch = rawMsg.match(/\b([a-zA-Z0-9-]{3,40}\.(?:com\.ng|org\.ng|ng|com|net|org))\b/i);
+  if (domainOnlyMatch && !rawMsg.includes('bethelmindanalytics.com')) {
+    return handlePostContactInquiry(clientMessage, leadData);
+  }
+
+  // ── 2. DYNAMIC COGNITIVE REASONER (GEMINI FLASH-LITE MULTI-KEY POOL) ─────────
+  // Evaluates the request dynamically: Pillar 1, Pillar 2, Sector Tools, or Another Business
+  // Responds accurately based on what the client explains, without making assumptions!
   try {
-    const geminiText = await generateGeminiReply(rawMsg, {
-      businessName: leadData.businessName,
-      category: leadData.category,
-      area: leadData.area,
-      previewUrl: leadData.previewUrl
-    });
+    const resolved = lookupLeadForWhatsApp(leadData.phone || '', rawMsg);
+    const geminiContext = {
+      businessName: (leadData.businessName && !leadData.businessName.startsWith('Business Owner') && leadData.businessName !== 'Valued Business')
+        ? leadData.businessName
+        : resolved.businessName,
+      category: leadData.category || resolved.category,
+      area: leadData.area || resolved.area,
+      phone: leadData.phone || resolved.phone,
+      previewUrl: leadData.previewUrl || resolved.previewUrl,
+      isPillar2: Boolean(leadData.isPillar2 || resolved.isPillar2),
+      broker: leadData.broker || resolved.broker,
+      propertyListing: leadData.propertyListing || resolved.propertyListing
+    };
 
-    if (geminiText && geminiText.trim().length > 15) {
+    const aiReply = await generateGeminiReply(rawMsg, geminiContext);
+    if (aiReply && aiReply.trim().length > 15) {
       return {
-        ...deterministicDecision,
-        intent: 'GEMINI_DYNAMIC_PRODUCT_CLOSER',
-        messageText: geminiText.trim(),
-        isAiGenerated: true
+        intent: 'COGNITIVE_AI_INTELLIGENT_CLOSER',
+        isOptOut: false,
+        messageText: aiReply.trim(),
+        isAiGenerated: true,
+        directPaymentEligible: true
       };
     }
   } catch (err) {
-    console.warn('[Closer Engine] Gemini dynamic closer skipped, using deterministic fallback:', err.message);
+    console.warn('[Closer Engine] Gemini cognitive closer error, using deterministic matrix:', err.message);
   }
 
-  // 3. Fallback to deterministic decision
-  return deterministicDecision;
+  // ── 3. DETERMINISTIC MATRIX FALLBACK ─────────────────────────────────────────
+  return handlePostContactInquiry(clientMessage, leadData);
 }
 
 module.exports = {

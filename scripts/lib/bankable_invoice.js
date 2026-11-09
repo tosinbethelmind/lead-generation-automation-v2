@@ -50,9 +50,9 @@ function createOrGetCommercialInvoice(params) {
   const deliveryFormatted = delivery.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
   let packageName = 'Starter Official Business Website + 24/7 WhatsApp AI Closer';
-  let totalNgn = 65000;
-  let depositNgn = 35000;
-  let balanceNgn = 30000;
+  let totalNgn = 80000;
+  let depositNgn = 40000;
+  let balanceNgn = 40000;
   let deliverables = [
     'Official .COM.NG domain registration & high-speed cloud hosting',
     'Pre-built mobile-responsive commercial storefront',

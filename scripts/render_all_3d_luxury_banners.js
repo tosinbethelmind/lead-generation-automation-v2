@@ -228,10 +228,10 @@ async function renderAllLuxuryBanners() {
     await page.waitForTimeout(1000); // Allow fonts & CSS 3D transforms to settle
 
     const publicPath = path.join(publicDir, ad.filename);
-    await page.screenshot({ path: publicPath, quality: 95, type: 'png' });
+    await page.screenshot({ path: publicPath, type: 'png' });
 
     const desktopPath = path.join(desktopDir, ad.filename);
-    await page.screenshot({ path: desktopPath, quality: 95, type: 'png' });
+    await page.screenshot({ path: desktopPath, type: 'png' });
 
     // Also save copy for ad_14 alternate filename
     if (ad.id === 14) {

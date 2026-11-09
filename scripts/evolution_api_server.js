@@ -402,7 +402,7 @@ async function handleInboundMessage(inst, msg) {
     const text = extractMessageText(msg);
     if (!text || !text.trim()) return;
 
-    if (isSelfTest && (text.includes('Good day Boss') || text.includes('OFFICIAL SME INITIATIVE') || text.includes('TEST CONFIRMATION'))) {
+    if (isSelfTest && (text.includes('Bethelmind') || text.includes('Moniepoint') || text.includes('Good day Boss') || text.includes('Salute Boss') || text.includes('6805375225') || text.includes('OFFICIAL SME INITIATIVE') || text.includes('TEST CONFIRMATION') || text.includes('Tosin Oyelakin'))) {
       return; // prevent recursive bot reply loops with self
     }
 
@@ -449,17 +449,7 @@ async function handleInboundMessage(inst, msg) {
 
     const leadInfo = lookupLeadForWhatsApp(cleanSender, text);
 
-    // ⏸️ GLOBAL PAUSE FOR PILLAR 1: Stop all automated replies to Pillar 1 prospects
-    if (!leadInfo.isPillar2) {
-      console.log(`⏸️ [Inbound Closer] Pillar 1 auto-reply is PAUSED. Inbound from +${cleanSender} (${leadInfo.businessName}): "${text.trim()}". Not sending automated reply.`);
-      if (instances.instance_1?.socket && instances.instance_1?.state === 'open') {
-        try {
-          const pauseAlert = `🔔 *[PILLAR 1 MESSAGE RECEIVED (AUTO-REPLY PAUSED)]*\n• From: +${cleanSender} (${leadInfo.businessName || 'SME Business'})\n• Client Message: "${text.trim()}"\n• Status: Automated reply paused per owner instruction. Reply manually if desired.`;
-          await instances.instance_1.socket.sendMessage('2348022791227@s.whatsapp.net', { text: pauseAlert });
-        } catch (_) {}
-      }
-      return;
-    }
+    // 🟢 ALL PILLARS & BUSINESS INQUIRIES ACTIVATED (Pillar 1, Pillar 2, Sector Tools & Custom Business)
     const decision = await handlePostContactInquiryAsync(text, {
       businessName: leadInfo.businessName,
       category: leadInfo.category,
