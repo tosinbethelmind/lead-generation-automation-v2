@@ -193,7 +193,7 @@ function handlePillar2Inquiry(clientMessage, context = {}) {
         `We are logging *${brokerName}* as the primary mandated firm for this transaction in our buyer allocation book.\n\n` +
         `To legally lock both firms' commission allocations (80% to your firm, 20% origination fee to Bethelmind Desk under LASRERA standards), kindly execute our 1-page Joint Inspection Memorandum (JIM):\n` +
         `👉 https://www.bethelmindanalytics.com/mandate\n\n` +
-        `Once signed, our buyer's legal proxy is ready for accompanied physical inspection within 24 to 48 hours. What day suits your schedule?`,
+        `Once signed, our Desk logs your asset into our priority investor presentation portfolio and coordinates viewing protocol with your team.`,
       suggestedAction: 'DISPATCH_JIM'
     };
   }
