@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bethelmind Digital Solutions — Master Legal & Attorney Pack (A4 Printable)</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 15mm 18mm 15mm;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-family: "Times New Roman", Times, Georgia, serif;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+    .no-print-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: #090e1a;
+      color: #ffffff;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .no-print-bar h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+    .no-print-bar p {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .btn-print {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      color: #ffffff;
+      border: none;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+    }
+    .btn-print:hover {
+      background: #d97706;
+    }
+    .page-container {
+      max-width: 210mm;
+      margin: 24px auto;
+      background: #ffffff;
+      padding: 20mm 18mm;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #cbd5e1;
+    }
+    .page-break {
+      page-break-after: always;
+      break-after: page;
+      margin-bottom: 24px;
+    }
+    .doc-header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .doc-badge {
+      display: inline-block;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-bottom: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    h1 {
+      font-size: 18px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #020617;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #475569;
+      font-weight: 600;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 11px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #e2e8f0;
+      text-align: left;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .meta-grid div:last-child {
+      text-align: right;
+    }
+    h2.section-title {
+      font-size: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: #f1f5f9;
+      padding: 4px 8px;
+      border-left: 4px solid #0f172a;
+      margin: 14px 0 8px 0;
+    }
+    p {
+      margin-bottom: 8px;
+      text-align: justify;
+    }
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 10px;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+    .fill-line {
+      display: inline-block;
+      border-bottom: 1px solid #0f172a;
+      min-width: 180px;
+      margin: 0 4px;
+    }
+    .table-container {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 11px;
+    }
+    .table-container th, .table-container td {
+      border: 1px solid #cbd5e1;
+      padding: 6px 8px;
+      text-align: left;
+    }
+    .table-container th {
+      background: #f8fafc;
+      font-weight: bold;
+    }
+    .sig-box-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
+    }
+    .sig-card {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 12px;
+      background: #fcfcfc;
+    }
+    .sig-card h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+    }
+    .nba-seal-box {
+      border: 2px dashed #94a3b8;
+      border-radius: 6px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #64748b;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+    }
+
+    @media print {
+      body {
+        background-color: #ffffff;
+      }
+      .no-print-bar {
+        display: none !important;
+      }
+      .page-container {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Print Bar (Hidden on actual print) -->
+  <div class="no-print-bar">
+    <div>
+      <h2>BETHELMIND DIGITAL SOLUTIONS — LEGAL MASTER PACK</h2>
+      <p>A4 Formatted for Lawyer Consultation, Retainership, and Co-Brokerage Execution</p>
+    </div>
+    <button class="btn-print" onclick="window.print()">
+      🖨️ Print Entire Legal Pack (A4 / PDF)
+    </button>
+  </div>
+
+  <div class="page-container">
+
+    <!-- ==================================================================== -->
+    <!-- DOCUMENT 1: RETAINERSHIP PROPOSAL & COUNSEL AGREEMENT -->
+    <!-- ==================================================================== -->
+    <div class="page-break">
+      <div class="doc-header">
+        <span class="doc-badge">Statutory Document 1 of 4</span>
+        <h1>Transaction Counsel Retainership Agreement</h1>
+        <p class="subtitle">20% Origination Share Compensation Model &bull; LASRERA Law 2022 &bull; Evidence Act 2011</p>
+        <div class="meta-grid">
+          <div>
+            <strong>Client:</strong> Bethelmind Digital Solutions (CAC Reg: 9912717)<br>
+            <strong>Desk Principal:</strong> Tosin Oyelakin (+234 802 279 1227)
+          </div>
+          <div>
+            <strong>Settlement Bank:</strong> Moniepoint MFB (6805375225)<br>
+            <strong>Corridor:</strong> Victoria Island / Ikoyi, Lagos
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <strong>THIS TRANSACTION COUNSEL RETAINERSHIP AGREEMENT</strong> is made this <span class="fill-line" style="min-width: 40px;"></span> day of <span class="fill-line" style="min-width: 140px;"></span>, 2026.
+      </p>
+
+      <p>
+        <strong>BETWEEN:</strong><br>
+        <strong>BETHELMIND DIGITAL SOLUTIONS</strong> (CAC Registration No: <strong>9912717</strong>), having its operational desk at Commercial Corridor, Victoria Island, Lagos, Nigeria, represented by <strong>Tosin Oyelakin</strong>, Principal Partner (hereinafter referred to as the <strong>"Client"</strong>);
+      </p>
+      <p>
+        <strong>AND:</strong><br>
+        <span class="fill-line" style="min-width: 260px;"></span>, Legal Practitioner of the Supreme Court of Nigeria, practicing under the name and style of <span class="fill-line" style="min-width: 260px;"></span>, with registered chambers at <span class="fill-line" style="min-width: 320px;"></span> (hereinafter referred to as the <strong>"Transaction Counsel"</strong>).
+      </p>
+
+      <h2 class="section-title">1. Recitals & Nature of Business</h2>
+      <p>
+        The Client operates an institutional digital real estate deal desk curating high-value residential and commercial properties in prime Lagos corridors (Banana Island, Ikoyi, Victoria Island, and Lekki Phase 1) for verified diaspora investors and corporate wealth syndicates. Under the Lagos State Real Estate Regulatory Authority (LASRERA) Law 2022, the Client operates on a bilateral 80/20 co-brokerage model with mandated listing agencies.
+      </p>
+
+      <h2 class="section-title">2. Scope of Counsel's Duties</h2>
+      <p>The Client hereby retains and authorizes Transaction Counsel to perform the following statutory duties:</p>
+      <ul>
+        <li><strong>Accompanied Physical Walkthroughs:</strong> Act as accredited legal representative for the Client alongside partner brokerage firms during scheduled walkthroughs at gated corridors.</li>
+        <li><strong>Pre-Walkthrough Gate Protocol:</strong> Supervise the immediate execution of the Joint Inspection Memorandum (JIM) at the estate security gate prior to compound entry.</li>
+        <li><strong>Title Search & Diligence:</strong> Conduct search reports at the Lagos State Lands Bureau, Alausa, Ikeja (confirming C of O, Governor’s Consent, Gazette, and verifying freedom from court litigation or acquisition).</li>
+        <li><strong>Anti-Circumvention Enforcement:</strong> Issue demand notices and initiate summary proceedings in the High Court of Lagos State against any broker attempting to bypass the Client.</li>
+        <li><strong>Section 84 Evidence Act Certification:</strong> Validate and certify electronic audit trails for digital mandates executed via <em>bethelmindanalytics.com/mandate</em>.</li>
+      </ul>
+
+      <h2 class="section-title">3. Professional Remuneration (20% Origination Share Model)</h2>
+      <p>
+        3.1. In consideration of Counsel's professional services, the Client shall pay to Transaction Counsel a success fee equal to <strong>Twenty Percent (20%) of the Client's Net Origination Commission</strong> received on any successfully conveyed property.
+      </p>
+      <p>
+        3.2. Remuneration shall be wired directly to Counsel's nominated bank account within <strong>forty-eight (48) statutory hours</strong> of funds clearing into Client's Moniepoint Microfinance Bank account (<code>6805375225</code>).
+      </p>
+      <p>
+        3.3. <strong>Disbursements:</strong> Official registry search filing fees and receipts at Alausa shall be borne separately as client disbursements and shall not be deducted from Counsel's 20% success fee.
+      </p>
+
+      <!-- Remuneration Table -->
+      <table class="table-container">
+        <thead>
+          <tr>
+            <th>Sample Transaction Asset</th>
+            <th>Property Value</th>
+            <th>Gross 5% Agency Pool</th>
+            <th>Bethelmind 20% Cut</th>
+            <th>Counsel 20% Success Fee</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Smart Luxury Duplex (Lekki Phase 1)</td>
+            <td>₦450,000,000</td>
+            <td>₦22,500,000</td>
+            <td>₦4,500,000</td>
+            <td><strong>₦900,000</strong></td>
+          </tr>
+          <tr>
+            <td>Sovereign Mansion (Amen Estate)</td>
+            <td>₦500,000,000</td>
+            <td>₦25,000,000</td>
+            <td>₦5,000,000</td>
+            <td><strong>₦1,000,000</strong></td>
+          </tr>
+          <tr>
+            <td>Waterfront Detached (Lekki Phase 1)</td>
+            <td>₦1,100,000,000</td>
+            <td>₦55,000,000</td>
+            <td>₦11,000,000</td>
+            <td><strong>₦2,200,000</strong></td>
+          </tr>
+          <tr>
+            <td>Ambassadorial Villa (Banana Island)</td>
+            <td>₦1,500,000,000</td>
+            <td>₦75,000,000</td>
+            <td>₦15,000,000</td>
+            <td><strong>₦3,000,000</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Signatures -->
+      <div class="sig-box-grid">
+        <div class="sig-card">
+          <h4>Signed for the Client</h4>
+          <p><strong>Bethelmind Digital Solutions</strong></p>
+          <p style="margin-top: 14px;">Signature: _____________________________________</p>
+          <p>Name: <strong>Tosin Oyelakin</strong></p>
+          <p>Title: Principal Partner & Desk Head</p>
+          <p>CAC Registration No: <strong>9912717</strong></p>
+          <p>Date: _________________________________________</p>
+        </div>
+
+        <div class="sig-card">
+          <h4>Accepted by Transaction Counsel</h4>
+          <p>Signature: _____________________________________</p>
+          <p>Full Name: ____________________________________</p>
+          <p>Supreme Court Enrolment (SCN): _______________</p>
+          <p>Chambers: ____________________________________</p>
+          <p>Bank & Account: _______________________________</p>
+          <div class="nba-seal-box">
+            Affix Nigerian Bar Association (NBA) Seal Here
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==================================================================== -->
+    <!-- DOCUMENT 2: MASTER BILATERAL CO-BROKERAGE AGREEMENT -->
+    <!-- ==================================================================== -->
+    <div class="page-break">
+      <div class="doc-header">
+        <span class="doc-badge">Statutory Document 2 of 4</span>
+        <h1>Master Bilateral Co-Brokerage & NCND Agreement</h1>
+        <p class="subtitle">LASRERA Law 2022 &bull; 80/20 Commission Split &bull; 180-Day Non-Circumvention Covenant</p>
+        <div class="meta-grid">
+          <div>
+            <strong>Party A:</strong> Bethelmind Digital Solutions (CAC Reg: 9912717)<br>
+            <strong>Principal:</strong> Tosin Oyelakin (+234 802 279 1227)
+          </div>
+          <div>
+            <strong>Settlement Vault:</strong> Moniepoint MFB (6805375225)<br>
+            <strong>Enforcement:</strong> High Court of Lagos State / LMDC
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <strong>THIS BILATERAL CO-BROKERAGE & COMMISSION-SHARING AGREEMENT</strong> is made this <span class="fill-line" style="min-width: 40px;"></span> day of <span class="fill-line" style="min-width: 140px;"></span>, 2026.
+      </p>
+
+      <p>
+        <strong>BETWEEN:</strong><br>
+        <strong>BETHELMIND DIGITAL SOLUTIONS</strong> (CAC Registration No: <strong>9912717</strong>), having its operational desk at Commercial Corridor, Victoria Island, Lagos, Nigeria (hereinafter referred to as <strong>"Party A" / "Origination Desk"</strong>);<br>
+        <strong>AND:</strong><br>
+        <span class="fill-line" style="min-width: 260px;"></span> (RC / BN No: <span class="fill-line" style="min-width: 80px;"></span>), having its registered office at <span class="fill-line" style="min-width: 320px;"></span> (hereinafter referred to as <strong>"Party B" / "Servicing Broker"</strong>).
+      </p>
+
+      <h2 class="section-title">Clause 1: Commission Allocation (The 80/20 Standard)</h2>
+      <p>
+        1.1. In the event of a successful sale or conveyance of any property introduced or concluded under this Agreement, the total gross agency commission (standard 5% of gross transaction value) shall be apportioned strictly as follows:
+      </p>
+      <ul>
+        <li><strong>Eighty Percent (80%)</strong> shall be retained by Party B (the Servicing Broker).</li>
+        <li><strong>Twenty Percent (20%)</strong> shall be paid unconditionally to Party A (Bethelmind Digital Solutions) as its origination and client facilitation fee.</li>
+      </ul>
+      <p>
+        1.2. Payment shall be made via electronic wire transfer within forty-eight (48) statutory hours of escrow clearance to Party A’s corporate clearing account: <strong>Moniepoint Microfinance Bank, Account Number: 6805375225 (Bethelmind Digital Solutions)</strong>.
+      </p>
+
+      <h2 class="section-title">Clause 2: Strict 180-Day Non-Circumvention & Non-Disclosure (NCND)</h2>
+      <p>
+        2.1. Party B expressly covenants not to circumvent, contact, or deal directly with any buyer, syndicate, or legal liaison introduced by Party A for a binding period of <strong>One Hundred and Eighty (180) calendar days</strong> from the date of introduction.
+      </p>
+      <p>
+        2.2. <strong>Liquidated Damages:</strong> In the event of breach, Party B shall immediately pay to Party A Liquidated Damages equal to <strong>Two Hundred Percent (200%)</strong> of the anticipated commission fee. Party A reserves the right to petition LASRERA and initiate summary proceedings in the High Court of Lagos State.
+      </p>
+
+      <h2 class="section-title">Clause 3: Electronic Execution & Section 84 Evidence Act 2011</h2>
+      <p>
+        3.1. Hand-drawn digital signatures, typed signatures, and electronic transmissions completed on <em>bethelmindanalytics.com/mandate</em> shall be deemed original, binding, and admissible under Section 84 of the Evidence Act 2011.
+      </p>
+
+      <div class="sig-box-grid" style="margin-top: 30px;">
+        <div class="sig-card">
+          <h4>Signed for Party A (Origination Desk)</h4>
+          <p><strong>Bethelmind Digital Solutions</strong></p>
+          <p style="margin-top: 14px;">Signature: _____________________________________</p>
+          <p>Name: <strong>Tosin Oyelakin</strong></p>
+          <p>Title: Principal Partner (CAC Reg: 9912717)</p>
+          <p>Date: _________________________________________</p>
+        </div>
+
+        <div class="sig-card">
+          <h4>Signed for Party B (Servicing Broker)</h4>
+          <p>Signature: _____________________________________</p>
+          <p>Signatory Name: ________________________________</p>
+          <p>Firm Name: ___________________________________</p>
+          <p>Title / Designation: ____________________________</p>
+          <p>Date: _________________________________________</p>
+          <p style="margin-top: 6px; font-size: 10px; color: #64748b;">[Affix Official Agency Rubber Stamp]</p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==================================================================== -->
+    <!-- DOCUMENT 3: STATUTORY JOINT INSPECTION MEMORANDUM (JIM) -->
+    <!-- ==================================================================== -->
+    <div class="page-break">
+      <div class="doc-header">
+        <span class="doc-badge">Statutory Document 3 of 4</span>
+        <h1>Joint Inspection Memorandum (JIM)</h1>
+        <p class="subtitle">Section 84 Evidence Act 2011 &bull; LASRERA Pre-Walkthrough Statutory Gate Instrument</p>
+        <div class="meta-grid">
+          <div>
+            <strong>Instrument Ref:</strong> BM-LASRERA-JIM-________________<br>
+            <strong>Party A:</strong> Bethelmind Digital Solutions (CAC: 9912717)
+          </div>
+          <div>
+            <strong>Clearing Account:</strong> Moniepoint MFB (6805375225)<br>
+            <strong>Walkthrough Window:</strong> [ ] Morning   [ ] Afternoon
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">1. Property Particulars & Asset Specification</h2>
+      <p><strong>Property Title / Description:</strong> <span class="fill-line" style="min-width: 480px;"></span></p>
+      <p><strong>Exact Location / Corridor:</strong> <span class="fill-line" style="min-width: 480px;"></span></p>
+      <p><strong>Asking / Valuation Consideration:</strong> ₦ <span class="fill-line" style="min-width: 320px;"></span></p>
+      <p><strong>Title Disclosed:</strong> [ ] Governor's Consent &nbsp;&nbsp; [ ] C of O &nbsp;&nbsp; [ ] Gazette &nbsp;&nbsp; [ ] Registered Deed of Assignment</p>
+
+      <h2 class="section-title">2. Introducing Parties & Attendance</h2>
+      <p><strong>Party A (Origination Desk):</strong> Bethelmind Digital Solutions (Principal: Tosin Oyelakin &bull; +234 802 279 1227)</p>
+      <p><strong>Party A Legal Representative / Counsel In Attendance:</strong> <span class="fill-line" style="min-width: 380px;"></span></p>
+      <p><strong>Party B (Mandated Agency):</strong> <span class="fill-line" style="min-width: 380px;"></span></p>
+      <p><strong>Party B Lead Broker In Attendance:</strong> <span class="fill-line" style="min-width: 380px;"></span></p>
+
+      <h2 class="section-title">3. Accompanied Walkthrough Log & Gate Security Access</h2>
+      <p><strong>Date of Walkthrough:</strong> <span class="fill-line" style="min-width: 180px;"></span>, 2026 &nbsp;&nbsp;&nbsp;&nbsp; <strong>Time Window:</strong> [ ] 10:00 AM – 12:00 PM &nbsp;&nbsp; [ ] 02:00 PM – 04:00 PM</p>
+      <p><strong>Estate Security Access Code / Pass:</strong> <span class="fill-line" style="min-width: 320px;"></span></p>
+
+      <h2 class="section-title">4. Binding Affirmation & Commission Lock</h2>
+      <p>
+        By endorsing below, Party B certifies that Party A has officially introduced the prospective purchasing interest for this property. Party B reaffirms the <strong>80/20 agency fee allocation</strong> (80% to Party B, 20% to Bethelmind Digital Solutions) and covenants strictly to the <strong>180-day non-circumvention covenant</strong>.
+      </p>
+
+      <div class="sig-box-grid" style="margin-top: 30px;">
+        <div class="sig-card">
+          <h4>Party A Signatory (Bethelmind Desk)</h4>
+          <p style="margin-top: 10px;">Signature: _____________________________________</p>
+          <p>Name: <strong>Tosin Oyelakin / Designated Counsel</strong></p>
+          <p>CAC Reg: <strong>9912717</strong> &bull; Moniepoint: <strong>6805375225</strong></p>
+          <p>Date: _________________________________________</p>
+        </div>
+
+        <div class="sig-card">
+          <h4>Party B Signatory (Mandated Listing Broker)</h4>
+          <p style="margin-top: 10px;">Signature: _____________________________________</p>
+          <p>Full Name: ____________________________________</p>
+          <p>Agency Name: _________________________________</p>
+          <p>Date: _________________________________________</p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==================================================================== -->
+    <!-- DOCUMENT 4: DIASPORA & CORPORATE BUYER RETENTION MANDATE -->
+    <!-- ==================================================================== -->
+    <div>
+      <div class="doc-header">
+        <span class="doc-badge">Statutory Document 4 of 4</span>
+        <h1>Diaspora & Corporate Buyer Retention Mandate</h1>
+        <p class="subtitle">Exclusive Property Curation, Inspection & Due Diligence Mandate</p>
+        <div class="meta-grid">
+          <div>
+            <strong>Mandate Ref:</strong> BM-BUYER-2026-________________<br>
+            <strong>Desk:</strong> Bethelmind Digital Solutions (CAC: 9912717)
+          </div>
+          <div>
+            <strong>Principal:</strong> Tosin Oyelakin (+234 802 279 1227)<br>
+            <strong>Clearing Bank:</strong> Moniepoint MFB (6805375225)
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title">1. Client / Investor Particulars</h2>
+      <p><strong>Principal Investor / Syndicate Name:</strong> <span class="fill-line" style="min-width: 440px;"></span></p>
+      <p><strong>Overseas / Residential Address:</strong> <span class="fill-line" style="min-width: 480px;"></span></p>
+      <p><strong>Direct Telephone / WhatsApp:</strong> <span class="fill-line" style="min-width: 280px;"></span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Email:</strong> <span class="fill-line" style="min-width: 220px;"></span></p>
+      <p><strong>Nominated Local Family Liaison / Proxy (if any):</strong> <span class="fill-line" style="min-width: 380px;"></span></p>
+
+      <h2 class="section-title">2. Acquisition Parameters & Budget</h2>
+      <p><strong>Target Lagos Corridor:</strong> [ ] Banana Island &nbsp;&nbsp; [ ] Ikoyi &nbsp;&nbsp; [ ] Victoria Island &nbsp;&nbsp; [ ] Lekki Phase 1 &nbsp;&nbsp; [ ] Other: <span class="fill-line" style="min-width: 120px;"></span></p>
+      <p><strong>Property Category:</strong> [ ] Detached Mansion &nbsp;&nbsp; [ ] Smart Duplex &nbsp;&nbsp; [ ] Penthouse &nbsp;&nbsp; [ ] Commercial Asset</p>
+      <p><strong>Target Budget Allocation:</strong> ₦ <span class="fill-line" style="min-width: 320px;"></span></p>
+      <p><strong>Target Acquisition Timeline:</strong> [ ] 14 Days &nbsp;&nbsp; [ ] 30 Days &nbsp;&nbsp; [ ] 60 Days</p>
+
+      <h2 class="section-title">3. Undertakings & Obligations</h2>
+      <p>
+        1. Bethelmind Digital Solutions and its retained legal counsel shall curate verified on-market and off-market assets matching the Buyer's exact specifications, providing comprehensive video walkthroughs and legal search reports.
+      </p>
+      <p>
+        2. The Buyer covenants that all property introductions made by Bethelmind Desk shall be negotiated and acquired exclusively through Bethelmind Digital Solutions.
+      </p>
+
+      <div class="sig-box-grid" style="margin-top: 30px;">
+        <div class="sig-card">
+          <h4>Client / Investor Signatory</h4>
+          <p style="margin-top: 10px;">Signature: _____________________________________</p>
+          <p>Full Legal Name: ______________________________</p>
+          <p>Date: _________________________________________</p>
+        </div>
+
+        <div class="sig-card">
+          <h4>Accepted by Bethelmind Desk</h4>
+          <p style="margin-top: 10px;">Signature: _____________________________________</p>
+          <p>Name: <strong>Tosin Oyelakin</strong></p>
+          <p>Title: Principal Partner & Desk Head</p>
+          <p>Date: _________________________________________</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
