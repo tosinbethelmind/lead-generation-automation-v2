@@ -588,6 +588,27 @@ export default function MobileAdminCommandCenter() {
             <Smartphone size={13} />
             <span>📲 Install App</span>
           </button>
+          <a
+            href="/mandate"
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              background: '#0f172a',
+              border: '1px solid #d97706',
+              color: '#fbbf24',
+              borderRadius: '8px',
+              padding: '6px 10px',
+              fontSize: '11px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              textDecoration: 'none',
+              fontWeight: 800
+            }}
+          >
+            <ShieldCheck size={12} color="#fbbf24" />
+            <span>Mandates</span>
+          </a>
           <button
             onClick={fetchTelemetry}
             style={{
@@ -2199,7 +2220,7 @@ export default function MobileAdminCommandCenter() {
         backdropFilter: 'blur(20px)',
         borderTop: '1px solid #1e293b',
         display: 'grid',
-        gridTemplateColumns: pillarMode === 'pillar2' ? 'repeat(4, 1fr)' : 'repeat(6, 1fr)',
+        gridTemplateColumns: pillarMode === 'pillar2' ? 'repeat(5, 1fr)' : 'repeat(6, 1fr)',
         padding: '8px 2px 12px 2px',
         zIndex: 100
       }}>
@@ -2258,6 +2279,26 @@ export default function MobileAdminCommandCenter() {
               <Send size={18} color="#10b981" />
               <span style={{ fontSize: '10px', fontWeight: 800 }}>Queue ({pillar2Data?.stats?.queuedOutboundCount || 0})</span>
             </button>
+            <a
+              href="/mandate"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#fbbf24',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                padding: '4px 0'
+              }}
+            >
+              <ShieldCheck size={18} color="#fbbf24" />
+              <span style={{ fontSize: '10px', fontWeight: 800 }}>Mandates</span>
+            </a>
             <button
               onClick={fetchTelemetry}
               style={{

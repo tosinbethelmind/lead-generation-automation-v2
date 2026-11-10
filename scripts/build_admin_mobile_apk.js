@@ -1,13 +1,13 @@
 /**
  * @file scripts/build_admin_mobile_apk.js
  * 
- * 📱 ANDROID APK PACKAGER FOR BETHELMIND ADMIN MOBILE APP
- * Packages the mobile command center (/admin/mobile) into a standalone native Android APK.
+ * 📱 ANDROID APK PACKAGER FOR BETHELMIND ADMIN MOBILE APP & MANDATE DESK
+ * Packages the mobile command center (/admin/mobile) and live LASRERA Mandate Desk into a standalone native Android APK.
  * 
  * Features:
  * 1. Generates capacitor.config.json pointing directly to the live mobile command center.
- * 2. Pre-configures Android permissions (Internet, Network State, WakeLock).
- * 3. Provides 1-command build instructions for local or GitHub Actions Cloud runners.
+ * 2. Pre-configures Android permissions (Internet, Network State, Hardware Acceleration, Printing).
+ * 3. Supports instant deep links for /mandate and /mandate/print.
  */
 
 const fs = require('fs');
@@ -15,8 +15,8 @@ const path = require('path');
 
 const ROOT_DIR = process.cwd();
 const MOBILE_APP_ID = 'com.bethelmind.admincontrol';
-const MOBILE_APP_NAME = 'Bethelmind Admin';
-const TARGET_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindanalytics.com/admin/mobile';
+const MOBILE_APP_NAME = 'Bethelmind Admin & Mandates';
+const TARGET_URL = process.env.NEXT_PUBLIC_APP_URL ? `${process.env.NEXT_PUBLIC_APP_URL}/admin/mobile` : 'https://www.bethelmindanalytics.com/admin/mobile';
 
 function generateCapacitorConfig() {
   const config = {
@@ -29,14 +29,17 @@ function generateCapacitorConfig() {
       cleartext: true,
       allowNavigation: [
         '*.bethelmindanalytics.com',
+        'bethelmindanalytics.com',
         'wa.me',
-        'api.whatsapp.com'
+        'api.whatsapp.com',
+        '*.supabase.co'
       ]
     },
     android: {
       allowMixedContent: true,
       captureInput: true,
-      webContentsDebuggingEnabled: false
+      webContentsDebuggingEnabled: false,
+      backgroundColor: '#070b14'
     }
   };
 
@@ -56,16 +59,14 @@ function printInstructions() {
   console.log('METHOD 1: INSTANT ZERO-DOWNLOAD PWA (RECOMMENDED - 100% SEAMLESS)');
   console.log('------------------------------------------------------------------------');
   console.log('1. On your phone (Android or iPhone), open Chrome or Safari.');
-  console.log('2. Navigate to: https://www.bethelmindanalytics.com/admin/mobile');
-  console.log('3. Tap the "Install App" banner or browser menu (3 dots / Share) -> "Add to Home Screen".');
+  console.log('2. Navigate to: https://www.bethelmindanalytics.com/app?pillar=pillar2');
+  console.log('3. Tap the browser menu (3 dots / Share) -> "Add to Home Screen" or "Install App".');
   console.log('4. The Bethelmind Mobile app installs instantly onto your phone with full-screen');
-  console.log('   native app experience, zero browser address bars, and live prompt control!\n');
+  console.log('   native app experience, zero browser address bars, and live mandate control!\n');
   console.log('METHOD 2: NATIVE ANDROID APK COMPILATION');
   console.log('------------------------------------------------------------------------');
-  console.log('To compile an installable .apk file with Capacitor:');
-  console.log('1. Run: npx cap add android');
-  console.log('2. Run: npx cap copy');
-  console.log('3. Run: npx cap open android (or build with gradle: ./gradlew assembleDebug)');
+  console.log('To compile an installable .apk file:');
+  console.log('Open android_apps/bethelmind_business_os in Android Studio, or run ./gradlew assembleDebug');
   console.log('========================================================================\n');
 }
 

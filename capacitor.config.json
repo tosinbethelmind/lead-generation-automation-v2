@@ -1,0 +1,23 @@
+{
+  "appId": "com.bethelmind.admincontrol",
+  "appName": "Bethelmind Admin & Mandates",
+  "webDir": "public",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://www.bethelmindanalytics.com/admin/mobile",
+    "cleartext": true,
+    "allowNavigation": [
+      "*.bethelmindanalytics.com",
+      "bethelmindanalytics.com",
+      "wa.me",
+      "api.whatsapp.com",
+      "*.supabase.co"
+    ]
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false,
+    "backgroundColor": "#070b14"
+  }
+}

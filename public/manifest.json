@@ -1,13 +1,36 @@
 {
-  "name": "Bethelmind Digital Solutions - Mobile Admin Desk",
+  "name": "Bethelmind Digital Solutions - Mobile Admin Desk & Mandates",
   "short_name": "Bethelmind",
-  "description": "Manage B2B Leads, Generate Instant Live Websites, and Dispatch WhatsApp Claim Pitches directly from your phone.",
+  "description": "Bethelmind Mobile Business OS: Manage B2B Leads, Execute LASRERA 80/20 Co-Brokerage Mandates, and Dispatch WhatsApp Closers directly from your phone.",
   "start_url": "/app",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#070a12",
   "theme_color": "#0b121e",
+  "shortcuts": [
+    {
+      "name": "Pillar 2 Luxury Mandates",
+      "short_name": "Deal Wire",
+      "description": "High-Ticket LASRERA Brokerage Mandate & Deal Wire Desk",
+      "url": "/app?pillar=pillar2",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sign Mandate Portal",
+      "short_name": "Sign Mandate",
+      "description": "Electronic LASRERA 80/20 Joint Inspection Memorandum (JIM) Portal",
+      "url": "/mandate",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Print Statutory Certificate",
+      "short_name": "Print Mandate",
+      "description": "Statutory printable A4 mandate & evidence certificate",
+      "url": "/mandate/print",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     {
       "src": "/icons/icon.svg",

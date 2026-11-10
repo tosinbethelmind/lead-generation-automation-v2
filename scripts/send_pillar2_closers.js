@@ -70,7 +70,7 @@ function sendOne(p) {
 
     const req = http.request({
       hostname: '127.0.0.1',
-      port: 8080,
+      port: 8085,
       path: '/send',
       method: 'POST',
       headers: {
@@ -98,7 +98,7 @@ function sendOne(p) {
 }
 
 async function run() {
-  console.log('Dispatching Pillar 2 Senior Closer Joint Inspection Memorandum (JIM) packages via Line 1...');
+  console.log('Dispatching Pillar 2 Senior Closer Joint Inspection Memorandum (JIM) packages via Line 1 (Port 8085)...');
   for (const p of P2_CLOSING_DISPATCHES) {
     await sendOne(p);
     await new Promise(r => setTimeout(r, 2000));

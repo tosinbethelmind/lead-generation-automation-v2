@@ -2,13 +2,23 @@ package com.bethelmind.app;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintManager;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.DownloadListener;
+import android.webkit.JavascriptInterface;
+import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -47,8 +57,14 @@ public class MainActivity extends AppCompatActivity {
         configureWebSettings();
         setupWebViewClients();
         setupSwipeRefresh();
+        setupDownloadListener();
 
-        if (savedInstanceState != null) {
+        Intent intent = getIntent();
+        Uri intentData = (intent != null) ? intent.getData() : null;
+
+        if (intentData != null) {
+            mWebView.loadUrl(intentData.toString());
+        } else if (savedInstanceState != null) {
             mWebView.restoreState(savedInstanceState);
         } else {
             mWebView.loadUrl(TARGET_URL);
@@ -61,23 +77,26 @@ public class MainActivity extends AppCompatActivity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
-        settings.setAppCacheEnabled(true);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
-        settings.setSupportZoom(false);
-        settings.setBuiltInZoomControls(false);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         
-        // Mobile-first identification
+        mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+
         String userAgent = settings.getUserAgentString();
-        settings.setUserAgentString(userAgent + " BethelmindMobileApp/1.0");
+        settings.setUserAgentString(userAgent + " BethelmindMobileApp/2.0");
 
         mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         mWebView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        mWebView.addJavascriptInterface(new AndroidBridge(this), "AndroidApp");
     }
 
     private void setupWebViewClients() {
@@ -105,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
                 mProgressBar.setVisibility(View.GONE);
                 mSwipeRefresh.setRefreshing(false);
+
+                view.evaluateJavascript(
+                    "window.print = function() { if (window.AndroidApp && window.AndroidApp.printPage) { window.AndroidApp.printPage(document.title || 'Bethelmind_Document'); } };",
+                    null
+                );
             }
 
             @Override
@@ -128,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            // Support receipt / image uploads from phone gallery or camera
             @Override
             public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
                                             FileChooserParams fileChooserParams) {
@@ -150,18 +173,62 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Handles Nigerian-specific URL schemes:
-     * - WhatsApp (wa.me, api.whatsapp.com, whatsapp://)
-     * - Phone calls (tel:)
-     * - SMS (sms:)
-     * - Email (mailto:)
-     * - Bank fintech deep links (opay://, moniepoint://, paystack, etc.)
-     */
+    public class AndroidBridge {
+        Context mContext;
+
+        AndroidBridge(Context c) {
+            mContext = c;
+        }
+
+        @JavascriptInterface
+        public void printPage(final String docTitle) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                    if (printManager != null) {
+                        String cleanTitle = (docTitle != null && !docTitle.isEmpty()) ? docTitle.replaceAll("[^a-zA-Z0-9_-]", "_") : "Bethelmind_Document";
+                        PrintDocumentAdapter printAdapter = mWebView.createPrintDocumentAdapter(cleanTitle);
+                        printManager.print(cleanTitle, printAdapter, new PrintAttributes.Builder().build());
+                    }
+                }
+            });
+        }
+    }
+
+    private void setupDownloadListener() {
+        mWebView.setDownloadListener(new DownloadListener() {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimeType, long contentLength) {
+                try {
+                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                    request.setMimeType(mimeType);
+                    String cookies = CookieManager.getInstance().getCookie(url);
+                    request.addRequestHeader("cookie", cookies);
+                    request.addRequestHeader("User-Agent", userAgent);
+                    request.setDescription("Downloading file...");
+                    String fileName = URLUtil.guessFileName(url, contentDisposition, mimeType);
+                    request.setTitle(fileName);
+                    request.allowScanningByMediaScanner();
+                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
+                    
+                    DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                    if (dm != null) {
+                        dm.enqueue(request);
+                        Toast.makeText(getApplicationContext(), "Downloading " + fileName + "...", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
     private boolean handleNigerianIntents(String url, WebView view) {
         if (url == null) return false;
 
-        // WhatsApp Direct Link Handling
         if (url.startsWith("whatsapp://") || url.contains("wa.me") || url.contains("api.whatsapp.com")) {
             try {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -173,33 +240,32 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Phone call handling
         if (url.startsWith("tel:")) {
             Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
             startActivity(intent);
             return true;
         }
 
-        // SMS handling
         if (url.startsWith("sms:")) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
             return true;
         }
 
-        // Email handling
         if (url.startsWith("mailto:")) {
             Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(url));
             startActivity(intent);
             return true;
         }
 
-        // If the URL is on the same target domain or secure HTTPS, let WebView load it
+        if (url.contains("bethelmindanalytics.com") || url.contains("localhost:3006") || url.startsWith("/")) {
+            return false;
+        }
+
         if (url.startsWith("http://") || url.startsWith("https://")) {
             return false;
         }
 
-        // Custom application intents (OPay, Moniepoint, banking apps)
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);

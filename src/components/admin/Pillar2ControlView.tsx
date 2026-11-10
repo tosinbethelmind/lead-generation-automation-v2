@@ -57,7 +57,28 @@ export default function Pillar2ControlView({
   onRefresh,
   onCopyText
 }: Pillar2ControlViewProps) {
-  const [subTab, setSubTab] = useState<'all' | 'pending' | 'queue' | 'dispatched'>('all');
+  const [subTab, setSubTab] = useState<'all' | 'pending' | 'queue' | 'dispatched' | 'mandates'>('all');
+  const [signedMandates, setSignedMandates] = useState<any[]>([]);
+  const [loadingMandates, setLoadingMandates] = useState(false);
+
+  const fetchSignedMandates = async () => {
+    try {
+      setLoadingMandates(true);
+      const res = await fetch('/api/mandate/sign');
+      const data = await res.json();
+      if (data?.success && Array.isArray(data.mandates)) {
+        setSignedMandates(data.mandates);
+      }
+    } catch (e) {
+      console.error('Failed to load signed mandates:', e);
+    } finally {
+      setLoadingMandates(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchSignedMandates();
+  }, []);
 
   // Guaranteed all 8 luxury deals from backend OR pure fallback from PRIME_LUXURY_LISTINGS
   const allDisplayTickets: any[] = React.useMemo(() => {
@@ -76,7 +97,7 @@ export default function Pillar2ControlView({
       const brokerName = broker?.name || 'Verified Lagos Broker Partner';
       const brokerEmail = broker?.email || 'commercial@bethelmindanalytics.com';
       const locStr = typeof l.location === 'string' ? l.location : (l.location?.area ? `${l.location.area}, ${l.location.city}` : 'Lagos, Nigeria');
-      const script = `Good day ${brokerName}, my name is Tosin Oyelakin, Principal at Bethelmind Digital Solutions (CAC Certified: Reg 9912717). We are onboarding verified luxury mandates for our incoming Q4 diaspora investor brief and corporate executive allocations in Lagos.\n\nWe identified your verified listing for ${l.title} (${l.priceFormatted || '₦' + propertyVal.toLocaleString()}). Under LASRERA co-brokerage guidelines, we propose our standard 80/20 agency fee arrangement (your firm retains 80% of agency commission, Bethelmind retains 20% origination fee).\n\nReview certified buyer brief & 80/20 mandate: https://www.bethelmindanalytics.com/deal/${l.id}\n\n1. Is this property still directly available under your mandate?\n2. Do you confirm agreement to the standard 80/20 fee split?\n\nOnce confirmed, we issue our Joint Inspection Memorandum (JIM) before accompanied walkthrough.`;
+      const script = `Good day ${brokerName}, my name is Tosin Oyelakin, Principal at Bethelmind Digital Solutions (CAC Certified: Reg 9912717). We are onboarding verified luxury mandates for our incoming Q4 diaspora investor brief and corporate executive allocations in Lagos.\n\nWe identified your verified listing for ${l.title} (${l.priceFormatted || '₦' + propertyVal.toLocaleString()}). Under LASRERA co-brokerage guidelines, we propose our standard 80/20 agency fee arrangement (your firm retains 80% of agency commission, Bethelmind retains 20% origination fee).\n\nReview certified buyer brief & 80/20 mandate: https://www.bethelmindanalytics.com/mandate\n\n1. Is this property still directly available under your mandate?\n2. Do you confirm agreement to the standard 80/20 fee split?\n\nOnce confirmed, we issue our Joint Inspection Memorandum (JIM) before accompanied walkthrough.`;
       const sms = `LASRERA: Bethelmind (CAC 9912717) requests 80/20 co-brokerage for ${String(l.title || 'Mandate').slice(0, 35)}. Review brief / chat Desk: wa.me/2348022791227 or call.`;
 
       lookup.set(l.id, {
@@ -88,7 +109,7 @@ export default function Pillar2ControlView({
         targetContactPhone: brokerPhone,
         targetContactEmail: brokerEmail,
         targetLocation: locStr,
-        listingUrl: `https://www.bethelmindanalytics.com/deal/${l.id}`,
+        listingUrl: `https://www.bethelmindanalytics.com/mandate`,
         status: 'PENDING_APPROVAL',
         preDraftedScript: script,
         smsText: sms,
@@ -817,6 +838,128 @@ export default function Pillar2ControlView({
         </div>
       </div>
 
+      {/* ── 2A. LIVE MANDATE & JIM EXECUTION PORTAL HERO (PHONE SYNC) ──────── */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(217, 119, 6, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%)',
+        border: '1px solid rgba(217, 119, 6, 0.35)',
+        borderRadius: '12px',
+        padding: '14px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ShieldCheck size={16} color="#fbbf24" />
+            <span style={{ fontSize: '11px', fontWeight: 800, color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              LASRERA Mandate Portal Live
+            </span>
+          </div>
+          <span style={{ fontSize: '9px', background: '#064e3b', color: '#34d399', padding: '2px 8px', borderRadius: '999px', fontWeight: 800 }}>
+            Sec 84 Active
+          </span>
+        </div>
+
+        <div style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff', lineHeight: '1.4' }}>
+          Electronic 80/20 Joint Inspection Memorandum (JIM) & Statutory Instruments
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+          <a
+            href="/mandate"
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              background: '#1e293b',
+              border: '1px solid #334155',
+              color: '#f8fafc',
+              borderRadius: '8px',
+              padding: '8px 2px',
+              fontSize: '10px',
+              fontWeight: 800,
+              textAlign: 'center',
+              textDecoration: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <ExternalLink size={14} color="#38bdf8" />
+            <span>Open Portal</span>
+          </a>
+
+          <button
+            onClick={() => onCopyText('https://www.bethelmindanalytics.com/mandate', 'Mandate Portal Link')}
+            style={{
+              background: '#1e293b',
+              border: '1px solid #334155',
+              color: '#f8fafc',
+              borderRadius: '8px',
+              padding: '8px 2px',
+              fontSize: '10px',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <Copy size={14} color="#fbbf24" />
+            <span>Copy Link</span>
+          </button>
+
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent('Good day Management 🤝\n\nKindly review and electronically execute our 1-page LASRERA 80/20 Co-Brokerage Mandate & Joint Inspection Memorandum (JIM) to lock in co-brokerage terms before accompanied inspection:\n👉 https://www.bethelmindanalytics.com/mandate\n\nBethelmind Corporate & Diaspora Property Desk (CAC: 9912717)')}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              background: '#064e3b',
+              border: '1px solid #059669',
+              color: '#34d399',
+              borderRadius: '8px',
+              padding: '8px 2px',
+              fontSize: '10px',
+              fontWeight: 800,
+              textAlign: 'center',
+              textDecoration: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <Send size={14} color="#34d399" />
+            <span>WhatsApp</span>
+          </a>
+
+          <a
+            href="/mandate/print?ref=BLANK"
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              background: '#1e293b',
+              border: '1px solid #334155',
+              color: '#f8fafc',
+              borderRadius: '8px',
+              padding: '8px 2px',
+              fontSize: '10px',
+              fontWeight: 800,
+              textAlign: 'center',
+              textDecoration: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <FileText size={14} color="#c084fc" />
+            <span>Blank Pack</span>
+          </a>
+        </div>
+      </div>
+
       {/* ── 2. QUICK ACTION COMMAND TOOLBAR ───────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
         <button
@@ -880,7 +1023,8 @@ export default function Pillar2ControlView({
           { key: 'all', label: 'All Deals & Briefs', count: allDisplayTickets.length },
           { key: 'pending', label: 'Staged Deals', count: pendingTickets.length },
           { key: 'queue', label: 'Outbound Queue', count: stats.queuedOutboundCount },
-          { key: 'dispatched', label: 'Dispatched Ledger', count: stats.dispatchedCount }
+          { key: 'dispatched', label: 'Dispatched', count: stats.dispatchedCount },
+          { key: 'mandates', label: 'Signed Mandates', count: signedMandates.length }
         ].map(t => (
           <button
             key={t.key}
@@ -1363,6 +1507,226 @@ export default function Pillar2ControlView({
                 </div>
               </div>
             ))
+          )}
+        </div>
+      )}
+
+      {/* ── SUB-TAB 4: SIGNED MANDATES & EXECUTION LEDGER ─────────────────── */}
+      {subTab === 'mandates' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8' }}>
+              Executed LASRERA Mandates & JIMs ({signedMandates.length})
+            </span>
+            <button
+              onClick={fetchSignedMandates}
+              disabled={loadingMandates}
+              style={{
+                background: '#1e293b',
+                border: '1px solid #334155',
+                color: '#fbbf24',
+                borderRadius: '6px',
+                padding: '4px 8px',
+                fontSize: '10px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+            >
+              <RefreshCw size={12} className={loadingMandates ? 'animate-spin' : ''} />
+              <span>{loadingMandates ? 'Refreshing...' : 'Refresh Ledger'}</span>
+            </button>
+          </div>
+
+          {signedMandates.length === 0 ? (
+            <div style={{
+              background: '#090e1a',
+              border: '1px dashed #334155',
+              borderRadius: '12px',
+              padding: '24px 16px',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '10px'
+            }}>
+              <ShieldCheck size={28} color="#64748b" />
+              <div style={{ color: '#f8fafc', fontSize: '13px', fontWeight: 800 }}>No Signed Mandates Yet</div>
+              <div style={{ color: '#94a3b8', fontSize: '11px', maxWidth: '320px', lineHeight: '1.4' }}>
+                When luxury real estate brokers review and electronically execute their Joint Inspection Memorandum on <b>/mandate</b>, their Section 84 cryptographic certificates appear here in real time.
+              </div>
+              <a
+                href="/mandate"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+                  color: '#ffffff',
+                  fontWeight: 800,
+                  fontSize: '11px',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  marginTop: '6px'
+                }}
+              >
+                Test-Sign on Mandate Portal →
+              </a>
+            </div>
+          ) : (
+            signedMandates.map((m: any, idx: number) => {
+              const ref = m.mandate_ref || 'BM-LASRERA-JIM';
+              const cleanPhone = String(m.broker_phone || '').replace(/\D/g, '');
+              const waLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Good day ${m.broker_name || 'Partner'} 🤝\n\nWe have received and verified your signed LASRERA Joint Inspection Memorandum (Ref: ${ref}) for ${m.property_title || 'the luxury asset'}.\n\nDesk Principal (Tosin Oyelakin) is ready to align on gate pass clearance and accompanied walkthrough timing. Please confirm the security protocol for gate access.`)}`;
+
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    background: '#090e1a',
+                    border: '1px solid #1e293b',
+                    borderRadius: '12px',
+                    padding: '14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{
+                      background: 'rgba(16, 185, 129, 0.15)',
+                      color: '#10b981',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      fontWeight: 800
+                    }}>
+                      ✓ EXECUTED: {ref}
+                    </span>
+                    <span style={{ fontSize: '9px', color: '#64748b' }}>
+                      {m.signed_at ? new Date(m.signed_at).toLocaleDateString() : 'Active'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 style={{ fontSize: '13px', fontWeight: 800, color: '#ffffff', margin: '0 0 4px 0' }}>
+                      {m.property_title || 'Prime Lagos Luxury Mandate'}
+                    </h3>
+                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                      🏛️ <b>{m.firm_name}</b> · Managing Broker: <b>{m.broker_name}</b>
+                    </div>
+                    <div style={{ fontSize: '10px', color: '#64748b', marginTop: '2px' }}>
+                      📍 {m.property_location} · Price: <b style={{ color: '#38bdf8' }}>{m.property_price}</b>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    background: 'rgba(15, 23, 42, 0.8)',
+                    border: '1px solid #1e293b',
+                    borderRadius: '8px',
+                    padding: '8px 10px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    fontSize: '10px'
+                  }}>
+                    <div>
+                      <span style={{ color: '#94a3b8' }}>Split: </span>
+                      <b style={{ color: '#10b981' }}>80% Introducing / 20% Bethelmind</b>
+                    </div>
+                    <span style={{ color: '#fbbf24', fontSize: '9px' }}>
+                      {m.signature_type === 'DRAWN_CANVAS' ? '✍️ Drawn Signature' : '⌨️ Typed Legal Signature'}
+                    </span>
+                  </div>
+
+                  <div style={{
+                    fontSize: '9px',
+                    color: '#64748b',
+                    fontFamily: 'monospace',
+                    background: '#040711',
+                    padding: '4px 6px',
+                    borderRadius: '4px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    SHA-256: {m.evidence_act_hash || 'Sec 84 Hash Certified'}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px' }}>
+                    <a
+                      href={`/mandate/print?ref=${ref}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        background: '#0284c7',
+                        color: '#ffffff',
+                        borderRadius: '6px',
+                        padding: '6px 2px',
+                        fontSize: '10px',
+                        fontWeight: 800,
+                        textAlign: 'center',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <FileText size={12} />
+                      <span>View Cert</span>
+                    </a>
+
+                    <a
+                      href={waLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        background: '#064e3b',
+                        border: '1px solid #059669',
+                        color: '#34d399',
+                        borderRadius: '6px',
+                        padding: '6px 2px',
+                        fontSize: '10px',
+                        fontWeight: 800,
+                        textAlign: 'center',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Send size={12} />
+                      <span>WhatsApp</span>
+                    </a>
+
+                    <button
+                      onClick={() => onCopyText(`https://www.bethelmindanalytics.com/mandate/print?ref=${ref}`, 'Statutory Certificate Link')}
+                      style={{
+                        background: '#1e293b',
+                        border: '1px solid #334155',
+                        color: '#fbbf24',
+                        borderRadius: '6px',
+                        padding: '6px 2px',
+                        fontSize: '10px',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Copy size={12} />
+                      <span>Copy Link</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })
           )}
         </div>
       )}
