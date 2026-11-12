@@ -36,6 +36,8 @@
                 <data android:scheme="https" android:host="www.bethelmindanalytics.com" android:pathPrefix="/mandate" />
                 <data android:scheme="https" android:host="www.bethelmindanalytics.com" android:pathPrefix="/admin/mobile" />
                 <data android:scheme="https" android:host="www.bethelmindanalytics.com" android:pathPrefix="/app" />
+                <data android:scheme="https" android:host="www.bethelmindanalytics.com" android:pathPrefix="/deal" />
+                <data android:scheme="https" android:host="www.bethelmindanalytics.com" android:pathPrefix="/mandate/print" />
             </intent-filter>
         </activity>
     </application>

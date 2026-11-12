@@ -197,7 +197,7 @@ export default async function MandatePrintPage({
           </p>
 
           <p>
-            <b>3. Strict 180-Day Non-Circumvention (NCND):</b> Party B, its partners, directors, agents, sub-brokers, and affiliates expressly covenant not to circumvent, deal directly with, or transfer the particulars of the introduced buyer syndicate or legal liaison to any third-party broker or vendor for a binding period of <b>One Hundred and Eighty (180) calendar days</b> from the date of joint inspection, without the prior written counter-signature of Party A.
+            <b>3. Strict 12-Month Non-Circumvention (NCND):</b> Party B, its partners, directors, agents, sub-brokers, and affiliates expressly covenant not to circumvent, deal directly with, or transfer the particulars of the introduced buyer syndicate or legal liaison to any third-party broker or vendor for a binding period of <b>twelve (12) calendar months (365 days)</b> from the date of joint inspection, without the prior written counter-signature of Party A.
           </p>
 
           <p>

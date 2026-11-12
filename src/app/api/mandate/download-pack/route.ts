@@ -42,9 +42,9 @@ export async function GET(req: NextRequest) {
       brokerEmail: searchParams.get('email') || 'mandates@orangeislandng.com',
       buyerName: searchParams.get('buyer') || 'Dr. Ademola Adeyemi & Family (Dallas, TX / Lagos)',
       buyerPhone: searchParams.get('buyerPhone') || '08022791227',
-      lawyerChambersName: searchParams.get('chambers') || '[APPOINTED LEGAL CHAMBERS]',
-      lawyerLeadCounsel: searchParams.get('counsel') || '[LEAD COUNSEL]',
-      lawyerScn: searchParams.get('scn') || '[SCN NUMBER]',
+      lawyerChambersName: searchParams.get('chambers') || undefined,
+      lawyerLeadCounsel: searchParams.get('counsel') || undefined,
+      lawyerScn: searchParams.get('scn') || undefined,
       clientIp,
       userAgent,
       timestamp

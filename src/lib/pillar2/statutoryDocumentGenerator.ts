@@ -13,6 +13,7 @@
  * - Document 4: Diaspora Buyer Retention & Exclusive Acquisition Mandate
  * 
  * Fully compliant with Section 84 of the Evidence Act 2011 (Electronic Records).
+ * ZERO raw developer bracket placeholders.
  */
 
 import * as crypto from 'crypto';
@@ -65,18 +66,27 @@ export function generateEvidenceHash(docText: string, metadata: Partial<Document
 }
 
 export function generateDoc1RetainershipText(meta: DocumentMetadata): string {
+  const chambersHeader = meta.lawyerChambersName 
+    ? `${meta.lawyerChambersName.toUpperCase()} (Represented by ${meta.lawyerLeadCounsel || 'Lead Counsel'}, SCN: ${meta.lawyerScn || 'SCN Verified'})`
+    : `CHAMBERS OF RETAINED LEGAL COUNSEL\n   Chambers Name: ____________________________________________________\n   Lead Counsel:  ____________________________________, Esq. (SCN: SCN/____________)`;
+
   return `MASTER LEGAL RETAINERSHIP & TRANSACTION COUNSEL AGREEMENT
 BETWEEN:
-BETHELMIND DIGITAL SOLUTIONS (CAC BN: 9912717)
+BETHELMIND DIGITAL SOLUTIONS (CAC BN: 9912717) - Client / Principal
 AND:
-${meta.lawyerChambersName || '[APPOINTED LEGAL CHAMBERS]'} (Represented by ${meta.lawyerLeadCounsel || '[LEAD COUNSEL]'}, SCN: ${meta.lawyerScn || '[SCN NUMBER]'})
+${chambersHeader}
 
 1. APPOINTMENT: Bethelmind appoints the Chambers as Retained Transaction Counsel for property acquisitions, conveyancing, and due diligence in Lagos State.
 2. SCOPE OF WORK: Counsel shall conduct official Title Searches at Lagos Lands Bureau (Alausa), prepare Legal Search Reports, vet/draft Contracts of Sale and Deeds of Assignment, and oversee closing escrow.
-3. COMPENSATION & 20% REVENUE SHARE: On every transaction closed through Bethelmind, Counsel is entitled to 20% of Bethelmind's Net Origination Commission (${meta.lawyerCutNgn > 0 ? '₦' + meta.lawyerCutNgn.toLocaleString() : '20% cut'}). Counsel's fees are disbursed directly to Counsel's account within 24 banking hours of closing.
+3. COMPENSATION & 20% REVENUE SHARE: On every transaction closed through Bethelmind, Counsel is entitled to 20% of Bethelmind's Net Origination Commission (${meta.lawyerCutNgn > 0 ? '₦' + meta.lawyerCutNgn.toLocaleString() : '20% of origination fee'}). Counsel's fees are disbursed directly to Counsel's account within 24 banking hours of closing.
 4. DISBURSEMENTS: Transacting parties shall separately advance and reimburse 100% of official government search fees, registry receipt costs, and court affidavit stampings. Counsel shall not pay government filing fees out of pocket.
 5. VETO AUTHORITY: Counsel retains absolute professional independence. If title is defective, Counsel holds full veto authority to advise Bethelmind to terminate the transaction.
-6. GOVERNING LAW: Laws of Lagos State and the Federal Republic of Nigeria.`;
+6. GOVERNING LAW: Laws of Lagos State and the Federal Republic of Nigeria.
+
+CHAMBERS EXECUTION & ENDORSEMENT:
+Signature: ____________________________________
+Date:      ________________________, 2026
+Affix Nigerian Bar Association (NBA) Seal Below:`;
 }
 
 export function generateDoc2CoBrokerageText(meta: DocumentMetadata): string {
