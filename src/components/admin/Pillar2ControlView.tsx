@@ -15,6 +15,7 @@
  */
 
 import React, { useState } from 'react';
+import Pillar2DealRoomView from './Pillar2DealRoomView';
 import { PRIME_LUXURY_LISTINGS, VERIFIED_NIGERIAN_BROKERS } from '@/lib/pillar2/luxuryListings';
 import { 
   Briefcase, 
@@ -57,7 +58,7 @@ export default function Pillar2ControlView({
   onRefresh,
   onCopyText
 }: Pillar2ControlViewProps) {
-  const [subTab, setSubTab] = useState<'all' | 'pending' | 'queue' | 'dispatched' | 'mandates'>('all');
+  const [subTab, setSubTab] = useState<'all' | 'pending' | 'queue' | 'dispatched' | 'mandates' | 'dealroom'>('all');
   const [signedMandates, setSignedMandates] = useState<any[]>([]);
   const [loadingMandates, setLoadingMandates] = useState(false);
 
@@ -1024,7 +1025,8 @@ export default function Pillar2ControlView({
           { key: 'pending', label: 'Staged Deals', count: pendingTickets.length },
           { key: 'queue', label: 'Outbound Queue', count: stats.queuedOutboundCount },
           { key: 'dispatched', label: 'Dispatched', count: stats.dispatchedCount },
-          { key: 'mandates', label: 'Signed Mandates', count: signedMandates.length }
+          { key: 'mandates', label: 'Signed Mandates', count: signedMandates.length },
+          { key: 'dealroom', label: '🏛️ Deal Room', count: 5 }
         ].map(t => (
           <button
             key={t.key}
@@ -1512,6 +1514,13 @@ export default function Pillar2ControlView({
       )}
 
       {/* ── SUB-TAB 4: SIGNED MANDATES & EXECUTION LEDGER ─────────────────── */}
+            {/* ── SUB-TAB 5: TWENTY CRM DEAL ROOM ─────────────────────────────────── */}
+      {subTab === 'dealroom' && (
+        <div style={{ marginTop: '12px' }}>
+          <Pillar2DealRoomView />
+        </div>
+      )}
+
       {subTab === 'mandates' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
