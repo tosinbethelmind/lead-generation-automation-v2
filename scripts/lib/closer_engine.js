@@ -323,6 +323,21 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
     matchedLead: resolved.matchedLead
   };
 
+  // ── 0. PERSONAL / FAMILY / CASUAL SHIELD (SILENCE AI IF NO BUSINESS INTENT) ──
+  const BUSINESS_INTENT_REGEX = /\b(website|site|sample|preview|demo|catalog|software|fake alert|moniepoint|paystack|opay|reconcil|solar|booking|appointment|school fee|result gating|waybill|dispatch|price|pricing|cost|fee|pay|charges|amount|deposit|invoice|account number|transfer|bank|domain|com\.ng|\.com|turnkey|embed|prototype|bethelmind|prospect|proposal|contract|mandate|deed|inspection|alausa|c of o|governor|estate|property|duplex|ikoyi|lekki|banana island)\b/i;
+
+  const isCasualOrPersonal = !fullLeadContext.matchedLead && !leadData.matchedLead && !BUSINESS_INTENT_REGEX.test(msg);
+  if (isCasualOrPersonal) {
+    return {
+      intent: 'PERSONAL_OR_MANUAL_REVIEW',
+      isOptOut: false,
+      shouldAutoReply: false,
+      messageText: '',
+      suggestedAction: 'ALLOW_MANUAL_HUMAN_CHAT',
+      directPaymentEligible: false
+    };
+  }
+
   // ── 1. OPT-OUT / STOP INTERCEPT ───────────────────────────────────────────
   if (/^(no|stop|cancel|unsubscribe|remove|not interested|dont message|don't message|leave me|opt out|optout)\b/i.test(msg) ||
       /\b(stop messaging|remove my number|stop sending|dont contact|don't contact)\b/i.test(msg)) {

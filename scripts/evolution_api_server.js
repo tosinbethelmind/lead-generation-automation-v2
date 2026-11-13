@@ -464,6 +464,12 @@ async function handleInboundMessage(inst, msg) {
       ticketId: leadInfo.ticketId
     });
 
+    // 🛡️ PERSONAL / CASUAL / NO-AUTOREPLY SHIELD: Silence AI if sender is casual, family, or personal chat
+    if (decision.shouldAutoReply === false || !decision.messageText) {
+      console.log(`🛡️ [Inbound Closer] Message from +${cleanSender} classified as [${decision.intent || 'PERSONAL/CASUAL'}]. Auto-reply SILENCED for human conversation.`);
+      return;
+    }
+
     const replyText = decision.messageText;
 
     // Simulate natural typing delay (800ms - 1500ms)

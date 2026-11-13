@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendMetaCloudTextMessage } from '@/lib/whatsapp/metaCloudClient';
-import { handleInboundLeadMessage } from '@/lib/monetization/postContactCloserEngine';
+import { routeIncomingWhatsAppMessage } from '@/lib/unifiedMessageRouter';
 
 const VERIFY_TOKEN = process.env.META_WA_VERIFY_TOKEN || process.env.WHATSAPP_CLOUD_VERIFY_TOKEN || 'bethelmind_meta_webhook_2026';
 
@@ -57,19 +57,21 @@ export async function POST(req: NextRequest) {
       console.log(`[Meta WhatsApp Inbound] From: ${fromPhone} | Text: "${inboundText}"`);
 
       if (inboundText && fromPhone) {
-        // Trigger Inbound AI Closer Engine in background (<3s response)
-        handleInboundLeadMessage({
-          senderPhone: fromPhone,
-          messageBody: inboundText,
-          channel: 'WHATSAPP_META_CLOUD'
-        }).then(async (aiReply: any) => {
-          if (aiReply && aiReply.replyText) {
-            await sendMetaCloudTextMessage(fromPhone, aiReply.replyText);
-            console.log(`[Meta WhatsApp Inbound] AI Closer replied to ${fromPhone}`);
-          }
-        }).catch((err: any) => {
-          console.error(`[Meta WhatsApp Inbound] Error in AI closer reply:`, err);
-        });
+        // Trigger Unified Intent Router (Pillar 1 vs Pillar 2 vs Personal)
+        const routingResult = routeIncomingWhatsAppMessage(inboundText, fromPhone, changes?.contacts?.[0]?.profile?.name || 'Client');
+        console.log(`[Meta WhatsApp Inbound] Target: ${routingResult.targetEngine} | AutoReply: ${routingResult.shouldAutoReply}`);
+
+        if (routingResult.shouldAutoReply && routingResult.replyText) {
+          sendMetaCloudTextMessage(fromPhone, routingResult.replyText)
+            .then(() => {
+              console.log(`[Meta WhatsApp Inbound] Unified Closer replied to ${fromPhone} (${routingResult.targetEngine})`);
+            })
+            .catch((err: any) => {
+              console.error(`[Meta WhatsApp Inbound] Error sending reply:`, err);
+            });
+        } else {
+          console.log(`[Meta WhatsApp Inbound] Personal/Unclassified message shielded. No auto-reply.`);
+        }
       }
 
       return NextResponse.json({ status: 'ok', event: 'message_received', id: messageId });
