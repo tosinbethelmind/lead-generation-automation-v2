@@ -35,7 +35,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TARGET_URL = "https://www.bethelmindanalytics.com/app?pillar=pillar2";
+    private static final String TARGET_URL = "https://www.bethelmindanalytics.com/pillar2";
     private static final int FILE_CHOOSER_REQUEST_CODE = 1001;
 
     private WebView mWebView;

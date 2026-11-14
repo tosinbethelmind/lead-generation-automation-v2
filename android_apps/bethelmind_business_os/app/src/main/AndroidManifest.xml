@@ -34,6 +34,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" android:host="www.bethelmindanalytics.com" android:pathPrefix="/mandate" />
+                <data android:scheme="https" android:host="www.bethelmindanalytics.com" android:pathPrefix="/pillar2" />
                 <data android:scheme="https" android:host="www.bethelmindanalytics.com" android:pathPrefix="/admin/mobile" />
                 <data android:scheme="https" android:host="www.bethelmindanalytics.com" android:pathPrefix="/app" />
                 <data android:scheme="https" android:host="www.bethelmindanalytics.com" android:pathPrefix="/deal" />
