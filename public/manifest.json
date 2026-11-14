@@ -1,8 +1,8 @@
 {
-  "name": "Bethelmind Digital Solutions - Mobile Admin Desk & Mandates",
+  "name": "Bethelmind Digital Solutions - Mobile Business OS & Deal Desk",
   "short_name": "Bethelmind",
   "description": "Bethelmind Mobile Business OS: Manage B2B Leads, Execute LASRERA 80/20 Co-Brokerage Mandates, and Dispatch WhatsApp Closers directly from your phone.",
-  "start_url": "/app",
+  "start_url": "/pillar2",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -13,7 +13,7 @@
       "name": "Pillar 2 Luxury Mandates",
       "short_name": "Deal Wire",
       "description": "High-Ticket LASRERA Brokerage Mandate & Deal Wire Desk",
-      "url": "/app?pillar=pillar2",
+      "url": "/pillar2",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {

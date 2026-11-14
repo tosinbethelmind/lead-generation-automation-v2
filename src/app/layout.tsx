@@ -221,7 +221,7 @@ export default function RootLayout({
         />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;var p=window.location.pathname;if(s&&!p.startsWith('/admin')&&!p.startsWith('/api')&&!p.startsWith('/preview')&&!p.startsWith('/calc')){window.location.replace('/app');}}catch(e){}})();`
+            __html: `(function(){try{var s=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;var p=window.location.pathname;if(s&&!p.startsWith('/admin')&&!p.startsWith('/api')&&!p.startsWith('/preview')&&!p.startsWith('/calc')){window.location.replace('/pillar2');}}catch(e){}})();if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}`
           }}
         />
       </head>
