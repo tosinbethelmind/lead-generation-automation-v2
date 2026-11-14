@@ -409,24 +409,50 @@ export async function getPillar2Telemetry() {
   const supabase = getSupabaseClient();
 
   let ticketsMap: Record<string, any> = { ...inMemoryTickets };
+  let queueList: any[] = [...inMemoryQueue];
+  let dispatchedList: any[] = [...inMemoryDispatched];
 
-  // Fetch persisted tickets and status overrides from Supabase
+  // Parallel fetch persisted tickets, queue, and status overrides from Supabase (< 1200ms timeout)
   if (supabase) {
     try {
-      const { data, error } = await supabase
-        .from('logs')
-        .select('*')
-        .eq('step', 'PILLAR2_TICKET')
-        .order('created_at', { ascending: false })
-        .limit(100);
+      const fetchCloudData = async () => {
+        return await Promise.all([
+          supabase
+            .from('logs')
+            .select('message, created_at')
+            .eq('step', 'PILLAR2_TICKET')
+            .order('created_at', { ascending: false })
+            .limit(30),
+          supabase
+            .from('logs')
+            .select('message, created_at')
+            .eq('step', 'PILLAR2_MANDATE_OUTBOUND')
+            .order('created_at', { ascending: false })
+            .limit(30),
+          supabase
+            .from('logs')
+            .select('message, created_at')
+            .eq('step', 'PILLAR2_DISPATCHED')
+            .order('created_at', { ascending: false })
+            .limit(30)
+        ]);
+      };
 
-      if (!error && data && data.length > 0) {
-        data.forEach((row: any) => {
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Supabase telemetry timeout')), 1200)
+      );
+
+      const [ticketsResult, queueResult, dispatchedResult] = await Promise.race([
+        fetchCloudData(),
+        timeoutPromise
+      ]) as any;
+
+      if (ticketsResult?.data && ticketsResult.data.length > 0) {
+        ticketsResult.data.forEach((row: any) => {
           try {
             const parsed = JSON.parse(row.message);
             if (parsed && parsed.ticketId) {
               if (ticketsMap[parsed.ticketId]) {
-                // Merge status override
                 ticketsMap[parsed.ticketId] = {
                   ...ticketsMap[parsed.ticketId],
                   status: parsed.status || ticketsMap[parsed.ticketId].status,
@@ -440,22 +466,9 @@ export async function getPillar2Telemetry() {
           } catch (_) {}
         });
       }
-    } catch (_) {}
-  }
 
-  // Fetch persisted outbound queue items
-  let queueList: any[] = [...inMemoryQueue];
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('logs')
-        .select('*')
-        .eq('step', 'PILLAR2_MANDATE_OUTBOUND')
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (!error && data && data.length > 0) {
-        const cloudQueue = data.map((row: any) => {
+      if (queueResult?.data && queueResult.data.length > 0) {
+        const cloudQueue = queueResult.data.map((row: any) => {
           try {
             const parsed = JSON.parse(row.message);
             const script = parsed.script || parsed.scriptText || '';
@@ -501,22 +514,9 @@ export async function getPillar2Telemetry() {
           }
         });
       }
-    } catch (_) {}
-  }
 
-  // Fetch dispatched ledger
-  let dispatchedList: any[] = [...inMemoryDispatched];
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('logs')
-        .select('*')
-        .eq('step', 'PILLAR2_DISPATCHED')
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (!error && data && data.length > 0) {
-        const cloudDispatched = data.map((row: any) => {
+      if (dispatchedResult?.data && dispatchedResult.data.length > 0) {
+        const cloudDispatched = dispatchedResult.data.map((row: any) => {
           try {
             const parsed = JSON.parse(row.message);
             return {
@@ -536,7 +536,9 @@ export async function getPillar2Telemetry() {
           }
         });
       }
-    } catch (_) {}
+    } catch (_) {
+      // Graceful fallback to local/baseline cache
+    }
   }
 
   const allTickets = Object.values(ticketsMap).map((t: any) => {

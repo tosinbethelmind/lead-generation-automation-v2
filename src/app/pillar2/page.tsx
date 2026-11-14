@@ -277,37 +277,72 @@ export default function Pillar2AppPage() {
       {showInstallHelp && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-amber-500/40 rounded-2xl max-w-sm w-full p-5 shadow-2xl">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                <Smartphone className="w-5 h-5" />
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-extrabold text-white">Install on Android Phone</h3>
               </div>
-              <h3 className="text-base font-extrabold text-white">Install on Your Phone</h3>
+              <button
+                onClick={() => setShowInstallHelp(false)}
+                className="text-slate-400 hover:text-white text-lg leading-none p-1"
+              >
+                ✕
+              </button>
             </div>
             
-            <p className="text-xs text-slate-300 mb-4 leading-relaxed">
-              Install <strong>Bethelmind Business OS</strong> directly on your Android phone home screen for instant, full-screen hardware-accelerated access:
+            <p className="text-xs text-slate-300 mb-3 leading-relaxed">
+              Choose your preferred way to install <strong>Bethelmind Business OS</strong> on your phone:
             </p>
 
-            <div className="space-y-3 text-xs bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 mb-4">
-              <div className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center shrink-0">1</span>
-                <span>In <strong>Google Chrome</strong> on Android, tap the <strong>3 dots (⋮)</strong> in the top right.</span>
+            {/* Option 1: Chrome 1-Tap Home Screen */}
+            <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 mb-3">
+              <div className="flex items-center gap-1.5 font-bold text-xs text-amber-400 mb-2">
+                <Sparkles className="w-4 h-4" />
+                <span>Method 1: Instant Install (Google Chrome)</span>
               </div>
-              <div className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center shrink-0">2</span>
-                <span>Select <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>.</span>
+              <div className="space-y-2 text-[11px] text-slate-300">
+                <div className="flex items-start gap-2">
+                  <span className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center shrink-0 text-[10px]">1</span>
+                  <span>In Chrome on Android, tap the <strong>3 dots (⋮)</strong> top-right.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center shrink-0 text-[10px]">2</span>
+                  <span>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center shrink-0 text-[10px]">3</span>
+                  <span>The gold Bethelmind app icon is added to your phone screen!</span>
+                </div>
               </div>
-              <div className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center shrink-0">3</span>
-                <span>Tap <strong>Install</strong> — the gold Bethelmind icon will appear on your phone screen!</span>
+            </div>
+
+            {/* Option 2: Direct Standalone APK Download */}
+            <div className="bg-gradient-to-r from-emerald-950/40 to-teal-950/40 p-3.5 rounded-xl border border-emerald-500/30 mb-4">
+              <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-400 mb-1.5">
+                <Download className="w-4 h-4" />
+                <span>Method 2: Standalone Android App (.apk)</span>
               </div>
+              <p className="text-[11px] text-slate-300 mb-2.5">
+                Download the raw Android package installer directly if using Opera Mini, Phoenix Browser, or for offline installation:
+              </p>
+              <a
+                href="https://github.com/tosinbethelmind/lead-generation-automation-v2/releases/download/mobile-apk-v1.0/bethelmind_business_os-debug.apk"
+                target="_blank"
+                rel="noreferrer"
+                className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-emerald-600/30"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download Bethelmind_Business_OS.apk</span>
+              </a>
             </div>
 
             <button
               onClick={() => setShowInstallHelp(false)}
-              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all shadow-md shadow-amber-500/20"
+              className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition-all"
             >
-              Got It, Continue to App
+              Close
             </button>
           </div>
         </div>
