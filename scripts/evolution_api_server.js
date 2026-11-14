@@ -449,6 +449,11 @@ async function handleInboundMessage(inst, msg) {
 
     const leadInfo = lookupLeadForWhatsApp(cleanSender, text);
 
+    // 🟢 DUAL-PILLAR & MULTI-BUSINESS INTENT RECOGNITION (PILLAR 1 + PILLAR 2 + SECTOR TOOLS)
+    // - Pillar 2 (Luxury Real Estate / LASRERA Mandates): Handled via pillar2_closer with diaspora brief & 80/20 co-brokerage.
+    // - Pillar 1 (SME Business Automation / Tools / Websites): Handled via closer_engine with ₦80k / ₦40k turnkey packages.
+    // - Casual / Family / Personal Chats: Silenced automatically so human user chats freely without bot interruption.
+
     // 🟢 ALL PILLARS & BUSINESS INQUIRIES ACTIVATED (Pillar 1, Pillar 2, Sector Tools & Custom Business)
     const decision = await handlePostContactInquiryAsync(text, {
       businessName: leadInfo.businessName,

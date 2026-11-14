@@ -390,6 +390,12 @@ export default function MandatePortalPage() {
           >
             <span>💎</span> Active Briefs
           </button>
+          <Link
+            href="/mandate/brief"
+            className="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 text-amber-400 hover:text-white bg-amber-500/10 border border-amber-500/20"
+          >
+            <span>⚖️</span> Lawyer Brief
+          </Link>
         </div>
 
         {/* TAB 1: ONLINE E-SIGN MANDATE */}

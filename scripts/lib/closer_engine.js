@@ -53,7 +53,7 @@ function lookupLeadForWhatsApp(senderPhone, incomingText = '') {
     const b = p2Check.broker;
     return {
       isPillar2: true,
-      businessName: b ? b.name : 'Real Estate Partner',
+      businessName: b ? (b.name || b.brokerName || 'Real Estate Partner') : 'Real Estate Partner',
       category: 'Real Estate & Properties',
       area: b ? b.city : 'Lagos',
       phone: senderPhone,

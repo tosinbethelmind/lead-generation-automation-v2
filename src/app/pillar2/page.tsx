@@ -31,6 +31,7 @@ import {
   TrendingUp,
   Download,
   Smartphone,
+  Scale,
   Check
 } from 'lucide-react';
 
@@ -382,12 +383,11 @@ export default function Pillar2AppPage() {
           </Link>
 
           <Link
-            href="/api/mandate/download-pack"
-            target="_blank"
-            className="flex flex-col items-center py-1 rounded-lg text-slate-400 hover:text-white"
+            href="/mandate/brief"
+            className="flex flex-col items-center py-1 rounded-lg text-slate-400 hover:text-amber-400 transition"
           >
-            <Download className="w-4 h-4 mb-0.5" />
-            <span className="text-[10px]">Legal Pack</span>
+            <Scale className="w-4 h-4 mb-0.5" />
+            <span className="text-[10px]">Legal Brief</span>
           </Link>
 
           <Link

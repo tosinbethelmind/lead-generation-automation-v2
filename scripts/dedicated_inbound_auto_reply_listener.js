@@ -48,31 +48,53 @@ function extractMessageText(msg) {
 function formatNigerianAutoReply(text) {
   const lower = (text || '').toLowerCase().trim();
 
-  // Pricing inquiries
-  if (/price|cost|how much|fee|pay|pricing|expensive|cheap|charges|amount/i.test(lower)) {
-    return `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Digital Solutions* business tools.
+  // 🏛️ 1. PILLAR 2: LUXURY REAL ESTATE & LASRERA CO-BROKERAGE INQUIRIES
+  const isPillar2 = /\b(mandate|property|properties|listing|inspection|jim|co-brokerage|80\/20|lasrera|duplex|penthouse|mansion|detached|banana island|ikoyi|lekki|amen estate|victoria island|c of o|governor|title|diaspora|buyer|realtor|commission)\b/i.test(lower);
+  if (isPillar2) {
+    return `Good day Sir/Ma,
+Thank you for contacting the *Bethelmind Corporate & Diaspora Property Desk* (CAC Certified: Reg 9912717).
 
-We keep our rates completely transparent with ZERO hidden fees:
+Regarding your prime Lagos property / co-brokerage mandate:
+1️⃣ *Buyer Mandate Allocation:* Our acquisition briefs (including Dr. Ademola Adeyemi & Family diaspora mandate and corporate executive allocations) are verified with liquid proof of funds for 48-hour closure.
+2️⃣ *LASRERA 80/20 Commission Split:* You retain 80% of the agency commission; Bethelmind retains 20% origination fee.
+3️⃣ *Digital Signing & Inspection:* Review our statutory Joint Inspection Memorandum (JIM) and execute e-signatures in 60 seconds on your smartphone:
+👉 https://www.bethelmindanalytics.com/mandate
 
-1️⃣ *Option A: 1-Line Self-Install Embed* — *₦25,000* (one-time setup).
-   Ideal if you already have a website and just want the 24/7 quoting bot & calculator added in 5 minutes.
+Our retained legal counsel coordinates physical walkthroughs and Alausa Lands Bureau title verification upon counter-signing.
 
-2️⃣ *Option B: Full 100% Done-For-You (DFY) Turnkey* — *₦75,000* (Deposit: ₦35,000 to begin).
-   We deliver everything within 48 hours:
-   • Custom .com / .ng business domain
-   • 24/7 AI WhatsApp Sales Bot configured on your business line
-   • Automated Paystack & OPay bank transfer reconciliation (stops fake alerts)
-   • 30-day technical support & staff handover
-
-You can test drive the interactive demo on your phone right now:
-👉 https://www.bethelmindanalytics.com
-
-Which option fits your budget better (Self-Install ₦25k or Full DFY ₦75k)?
-You can also call or message our Head of Desk directly:
+To speak directly with the Principal Desk:
 👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`;
   }
 
-  // Positive interest
+  // 🏢 2. PILLAR 1: PRICING INQUIRIES (SME AUTOMATION & DFY WEBSITES)
+  if (/price|cost|how much|fee|pay|pricing|expensive|cheap|charges|amount/i.test(lower)) {
+    return `Good day Sir/Ma! Thank you for asking about pricing for *Bethelmind Digital Solutions* (CAC Certified: Reg 9912717).
+
+We operate a 100% ONE-TIME LIFETIME ASSET model with ₦0 MONTHLY SUBSCRIPTIONS FOREVER:
+
+1️⃣ *Option 1: Starter Turnkey (100% One-Time Lifetime Ownership)* — *₦80,000* Flat
+   *(Or ₦40,000 50% Milestone Deposit with ₦40,000 balance on live approval)*
+   • Official Mobile Website + 24/7 AI WhatsApp Closer configured
+   • Fake Alert Proof OPay/Moniepoint Bank Transfer Reconciliation
+   • 1 Full Year Free Domain & Cloud Hosting Included
+   • *₦0 Monthly Subscriptions Forever*
+
+2️⃣ *Option 2: Full Turnkey Custom Domain Suite* — *₦150,000* Total
+   *(50% Milestone Deposit: ₦75,000 to begin)*
+   • Dedicated .com / .ng international custom domain
+   • 3 official corporate staff emails
+   • Complete sector calculator + WhatsApp speed-to-lead ledger
+   • Google Search SEO ranking setup & full code ownership in 48 hours
+
+Test drive the interactive prototype on your phone right now (₦0 Upfront):
+👉 https://www.bethelmindanalytics.com
+
+Which option fits your business better (Option 1 ₦80k / ₦40k deposit, or Option 2 ₦150k)?
+Call or message our Head of Desk directly:
+👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`;
+  }
+
+  // 🏢 3. POSITIVE INTEREST / DEMO / LINK
   if (/yes|send|ok|sure|show me|interested|demo|proceed|details|link|share|go ahead|tell me more|how does it work/i.test(lower)) {
     return `Thank you so much Sir/Ma! We are excited to show you.
 
@@ -80,40 +102,41 @@ Here is the live interactive prototype (test it directly on your mobile device, 
 👉 https://www.bethelmindanalytics.com
 
 📌 *What to test when you open it:*
-1. Try the instant price calculator to see how fast it quotes.
-2. Tap the WhatsApp demo button to experience the sub-3s automated response.
-
-Once set up on your official business line, it captures paying customers day and night without your staff having to type repetitive replies.
+1. Try the instant sector calculator to see how fast it quotes.
+2. Experience the sub-3s automated WhatsApp response that closes clients day and night without staff fatigue.
 
 Would you like our technical team to schedule a quick 10-minute activation for your business today?
 Connect directly with our Lagos Desk Head:
 👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`;
   }
 
-  // Who are you / verification / location
+  // 🏢 4. WHO ARE YOU / CAC VERIFICATION / LOCATION
   if (/who|where|office|address|location|scam|real|legit|call|number/i.test(lower)) {
     return `Good afternoon Sir/Ma!
 
-We are *Bethelmind Digital Solutions*, a registered commercial technology enterprise based in Lagos, Nigeria.
+We are *Bethelmind Digital Solutions*, a CAC Certified Nigerian Enterprise (Reg: 9912717) based in Lagos, Nigeria.
 • Head of Desk: Tosin Oyelakin
 • Official Hotline / Direct WhatsApp: 0802 279 1227 (wa.me/2348022791227)
-• Corporate Website: https://www.bethelmindanalytics.com
-• Bank Settlement: Direct OPay Merchant Integration (Bethelmind Digital Solutions)
+• Corporate Settlement: Moniepoint Microfinance Bank (6805375225 — Bethelmind Digital Solutions)
+• Corporate Portal: https://www.bethelmindanalytics.com
 
-We help Nigerian SMEs eliminate after-hours sales loss by deploying automated 24/7 WhatsApp response tools.
+We operate two specialized desks:
+1. *Enterprise SME Automation:* High-conversion websites, 24/7 WhatsApp AI sales closers, and fake-alert-proof bank transfer reconcilers.
+2. *Corporate & Diaspora Property Desk:* High-ticket luxury co-brokerage mandates and LASRERA 80/20 joint ventures.
 
 You do NOT pay anything upfront to review your demo. Feel free to inspect our platform or call 0802 279 1227 to speak with Tosin directly.`;
   }
 
-  // General polite reply
-  return `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Digital Solutions*.
+  // 🏢 5. GENERAL POLITE GREETING
+  return `Good day Sir/Ma! Thank you for reaching out to *Bethelmind Digital Solutions* (CAC Reg: 9912717).
 
-Our senior technical consultant is reviewing your message right now.
+Our Principal Desk is reviewing your inquiry right now.
 
-In the meantime, you can test drive how our 24/7 automated quoting tool works on your phone:
-👉 https://www.bethelmindanalytics.com
+To help us route your request to the appropriate team:
+• If inquiring about *SME Website, WhatsApp AI Closer, or Sector Tools*: Please share your business name or tap https://www.bethelmindanalytics.com
+• If inquiring about *Prime Real Estate, Co-Brokerage Mandates, or Property Walkthroughs*: Please share property location or tap https://www.bethelmindanalytics.com/mandate
 
-To speak directly with our Head of Desk for immediate setup:
+To speak directly with our Head of Desk for immediate attention:
 👉 wa.me/2348022791227 (Tosin Oyelakin · 0802 279 1227).`;
 }
 
