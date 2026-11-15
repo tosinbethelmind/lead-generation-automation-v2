@@ -93,7 +93,7 @@ export default function DownloadCenterPage() {
           {/* Download Buttons */}
           <div className="space-y-3">
             <a
-              href="/downloads/bethelmind_business_os.apk"
+              href="/api/download/apk"
               download="bethelmind_business_os.apk"
               className="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:brightness-110 text-slate-950 font-extrabold rounded-2xl text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/30 transition transform active:scale-[0.98]"
             >
@@ -101,14 +101,23 @@ export default function DownloadCenterPage() {
               <span>Direct Fast Download (.APK) — 5.8 MB</span>
             </a>
 
-            <div className="text-center">
+            <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400">
+              <a
+                href="/downloads/bethelmind_business_os.apk"
+                download="bethelmind_business_os.apk"
+                className="hover:text-emerald-400 underline font-medium inline-flex items-center gap-1 transition"
+              >
+                <span>Direct File Server Link</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+              <span className="text-slate-600">•</span>
               <a
                 href="https://github.com/tosinbethelmind/lead-generation-automation-v2/releases/download/mobile-apk-v1.0/bethelmind_business_os-debug.apk"
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs text-slate-400 hover:text-emerald-400 underline font-medium inline-flex items-center gap-1 transition"
+                className="hover:text-emerald-400 underline font-medium inline-flex items-center gap-1 transition"
               >
-                <span>Alternate Cloud Mirror (GitHub Releases)</span>
+                <span>Alternate Cloud Mirror (GitHub)</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
@@ -119,22 +128,34 @@ export default function DownloadCenterPage() {
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
               How to Install on Your Android Phone:
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs mb-4">
               <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
                 <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center mb-1 text-[11px]">1</span>
                 <span className="font-semibold text-white block">Download File</span>
-                <span className="text-slate-400 text-[11px]">Tap the green download button above. If Chrome shows a warning, tap <b>"Download anyway"</b>.</span>
+                <span className="text-slate-400 text-[11px]">Tap the green button above. If Chrome warns "File might be harmful", tap <b>"Download anyway"</b>.</span>
               </div>
               <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
                 <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center mb-1 text-[11px]">2</span>
                 <span className="font-semibold text-white block">Tap Install</span>
-                <span className="text-slate-400 text-[11px]">Open your phone notification shade or Downloads folder and tap <b>bethelmind_business_os.apk</b> to install.</span>
+                <span className="text-slate-400 text-[11px]">Pull down your phone notification bar and tap <b>bethelmind_business_os.apk</b> to install.</span>
               </div>
               <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
                 <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center mb-1 text-[11px]">3</span>
                 <span className="font-semibold text-white block">Launch App</span>
                 <span className="text-slate-400 text-[11px]">The gold Bethelmind app icon is now on your home screen for instant 24/7 access!</span>
               </div>
+            </div>
+
+            {/* Android Security Notice Box */}
+            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-300 space-y-1.5">
+              <div className="font-bold flex items-center gap-1.5 text-amber-400">
+                <span>⚠️</span>
+                <span>If Your Android Phone Blocks the Installation:</span>
+              </div>
+              <ul className="list-disc list-inside space-y-1 text-slate-300 text-[11px]">
+                <li><b>"Install Unknown Apps" Prompt:</b> Tap <b>Settings</b> &rarr; toggle ON <b>"Allow from this source"</b> &rarr; tap Back &rarr; tap <b>Install</b>.</li>
+                <li><b>"Blocked by Play Protect" Prompt:</b> Tap <b>"More details"</b> &rarr; tap <b>"Install anyway"</b> (this appears because the app is direct-downloaded outside the Play Store).</li>
+              </ul>
             </div>
           </div>
         </div>

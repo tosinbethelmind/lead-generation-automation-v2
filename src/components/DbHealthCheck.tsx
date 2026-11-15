@@ -27,11 +27,16 @@ interface DbHealthResponse {
 
 export default function DbHealthCheck() {
   const [health, setHealth] = useState<DbHealthResponse | null>(null);
-  const [checking, setChecking] = useState(true);
+  const [checking, setChecking] = useState(false);
   const [copied, setCopied] = useState(false);
   const [visible, setVisible] = useState(false);
 
   const checkHealth = async () => {
+    if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/admin')) {
+      setVisible(false);
+      setChecking(false);
+      return;
+    }
     const hasBypass = typeof window !== 'undefined' && sessionStorage.getItem('bypass-db-check') === 'true';
     if (hasBypass) {
       setVisible(false);

@@ -6,7 +6,12 @@ import axios from 'axios';
 import { createClient } from '@supabase/supabase-js';
 
 const LOCAL_DB = path.join(process.cwd(), 'local_db');
-if (!fs.existsSync(LOCAL_DB)) fs.mkdirSync(LOCAL_DB, { recursive: true });
+
+function ensureLocalDb() {
+  try {
+    if (!fs.existsSync(LOCAL_DB)) fs.mkdirSync(LOCAL_DB, { recursive: true });
+  } catch (_) {}
+}
 
 const SIGNED_MANDATES_PATH = path.join(LOCAL_DB, 'signed_mandates.json');
 const VPS_SEND_URL = process.env.EVOLUTION_SEND_URL || 'http://169.58.182.92:8085/send';

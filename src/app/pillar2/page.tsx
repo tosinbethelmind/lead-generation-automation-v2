@@ -330,7 +330,7 @@ export default function Pillar2AppPage() {
               </p>
               <div className="flex flex-col gap-2">
                 <a
-                  href="/downloads/bethelmind_business_os.apk"
+                  href="/api/download/apk"
                   download="bethelmind_business_os.apk"
                   className="w-full py-2.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-emerald-600/30"
                 >
