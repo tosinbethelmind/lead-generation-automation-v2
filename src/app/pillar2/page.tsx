@@ -382,6 +382,64 @@ export default function Pillar2AppPage() {
 
       {/* Main App Body (Zero-wait Server-Side Hydration) */}
       <main className="flex-1 max-w-5xl w-full mx-auto p-4 pb-24">
+        {/* 📥 IN-APP STATUTORY DOCUMENT DOWNLOADS BANNER */}
+        <div className="mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-950 border border-amber-500/30 shadow-lg">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2.5">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-black">
+                <Download className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-xs sm:text-sm font-extrabold text-white flex items-center gap-2">
+                  <span>In-App Statutory Documents & Mandate Downloads</span>
+                  <span className="text-[9px] font-mono bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30">
+                    %PDF-1.7 Ready
+                  </span>
+                </h2>
+                <p className="text-[10px] text-slate-400">
+                  Evidence Act Section 84 Compliant • Verified Moniepoint Settlement (6805375225)
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/download"
+              className="text-[10px] font-bold text-amber-400 hover:text-amber-300 underline flex items-center gap-1 shrink-0"
+            >
+              <span>View All Documents</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <a
+              href="/downloads/Bethelmind_Statutory_Legal_Pack.pdf"
+              download="Bethelmind_Statutory_Legal_Pack.pdf"
+              className="py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-[11px] flex items-center justify-center gap-1.5 transition shadow-sm shadow-amber-500/20"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>4-in-1 Master Legal Pack (.PDF)</span>
+            </a>
+
+            <a
+              href="/downloads/Bethelmind_Printable_Mandate_Form.pdf"
+              download="Bethelmind_Printable_Mandate_Form.pdf"
+              className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-[11px] flex items-center justify-center gap-1.5 transition"
+            >
+              <FileText className="w-3.5 h-3.5 text-amber-400" />
+              <span>Blank Mandate Form (.PDF)</span>
+            </a>
+
+            <Link
+              href="/mandate/brief"
+              className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 font-bold text-[11px] flex items-center justify-center gap-1.5 transition"
+            >
+              <Scale className="w-3.5 h-3.5" />
+              <span>Chambers Legal Brief (A4)</span>
+            </Link>
+          </div>
+        </div>
+
         <Pillar2ControlView
           pillar2Data={telemetry}
           triggerLoading={triggerLoading}
@@ -396,7 +454,7 @@ export default function Pillar2AppPage() {
 
       {/* 📱 STICKY BOTTOM APP NAVIGATION DOCK */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-3 py-2 shadow-2xl">
-        <div className="max-w-md mx-auto grid grid-cols-4 gap-1 text-center">
+        <div className="max-w-md mx-auto grid grid-cols-5 gap-1 text-center">
           <Link
             href="/pillar2"
             className="flex flex-col items-center py-1 rounded-lg text-amber-400 bg-amber-500/10 font-bold"
@@ -419,6 +477,14 @@ export default function Pillar2AppPage() {
           >
             <Scale className="w-4 h-4 mb-0.5" />
             <span className="text-[10px]">Legal Brief</span>
+          </Link>
+
+          <Link
+            href="/download"
+            className="flex flex-col items-center py-1 rounded-lg text-emerald-400 hover:text-emerald-300 font-bold transition"
+          >
+            <Download className="w-4 h-4 mb-0.5" />
+            <span className="text-[10px]">Downloads</span>
           </Link>
 
           <Link

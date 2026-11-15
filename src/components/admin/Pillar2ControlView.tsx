@@ -625,6 +625,31 @@ export default function Pillar2ControlView({
           <span>📞 Inbound Call Crib Sheet (If Partner Calls You)</span>
         </button>
 
+        {/* 📥 1-Tap PDF Deal Legal Pack Download */}
+        <a
+          href={`/api/mandate/download-pack?dealId=${ticket.ticketId}&title=${encodeURIComponent(ticket.title || '')}&price=${ticket.propertyValueNGN || 500000000}&broker=${encodeURIComponent(ticket.targetBusinessName || '')}&location=${encodeURIComponent(ticket.targetLocation || '')}`}
+          target="_blank"
+          download={`Bethelmind_Mandate_${ticket.ticketId}.pdf`}
+          style={{
+            background: 'rgba(212, 175, 55, 0.12)',
+            border: '1px solid rgba(212, 175, 55, 0.35)',
+            color: '#fbbf24',
+            borderRadius: '8px',
+            padding: '8px 10px',
+            fontSize: '11px',
+            fontWeight: 800,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px',
+            textDecoration: 'none',
+            cursor: 'pointer',
+            width: '100%'
+          }}
+        >
+          <span>📥 Download Deal Legal Pack (.PDF)</span>
+        </a>
+
         {/* Secondary Line: Dismiss and Listing link */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '4px' }}>
           {ticket.listingUrl && (

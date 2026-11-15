@@ -233,6 +233,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+        @JavascriptInterface
+        public void downloadFile(final String url, final String docName) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    triggerNativeDownload(url);
+                }
+            });
+        }
     }
 
     /**
@@ -290,10 +300,19 @@ public class MainActivity extends AppCompatActivity {
             } else if (fullUrl.contains("Printable_Mandate")) {
                 mimeType = "application/pdf";
                 defaultFileName = "Bethelmind_Printable_Mandate_Form.pdf";
-            } else if (fullUrl.endsWith(".pdf") || fullUrl.contains("pdf") || fullUrl.contains("/download-pack")) {
+            } else if (fullUrl.contains("dealId=")) {
+                mimeType = "application/pdf";
+                try {
+                    Uri parsed = Uri.parse(fullUrl);
+                    String dealIdParam = parsed.getQueryParameter("dealId");
+                    defaultFileName = "Bethelmind_Mandate_" + (dealIdParam != null && !dealIdParam.isEmpty() ? dealIdParam : "Pack") + ".pdf";
+                } catch (Exception e) {
+                    defaultFileName = "Bethelmind_Statutory_Legal_Pack.pdf";
+                }
+            } else if (fullUrl.endsWith(".pdf") || fullUrl.contains(".pdf") || fullUrl.contains("/download-pack")) {
                 mimeType = "application/pdf";
                 defaultFileName = "Bethelmind_Statutory_Legal_Pack.pdf";
-            } else if (fullUrl.endsWith(".csv")) {
+            } else if (fullUrl.endsWith(".csv") || fullUrl.contains(".csv")) {
                 mimeType = "text/csv";
                 defaultFileName = "Bethelmind_Export.csv";
             }
@@ -307,7 +326,13 @@ public class MainActivity extends AppCompatActivity {
             request.setTitle(defaultFileName);
             request.allowScanningByMediaScanner();
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, defaultFileName);
+            
+            try {
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, defaultFileName);
+            } catch (Exception ex) {
+                // Fallback for scoped storage restrictions
+                request.setDestinationInExternalFilesDir(getApplicationContext(), Environment.DIRECTORY_DOWNLOADS, defaultFileName);
+            }
 
             DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             if (dm != null) {
@@ -367,10 +392,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Statutory downloads, legal instruments & offline APK packages (PDF, APK, DOCX, CSV)
-        if (url.endsWith(".apk") || url.endsWith(".pdf") || url.endsWith(".zip") || 
-            url.endsWith(".docx") || url.endsWith(".csv") ||
-            url.contains("/api/download") || url.contains("/downloads/") || 
-            url.contains("/download-pack") || url.contains("export=pdf")) {
+        String lowerUrl = url.toLowerCase();
+        if (lowerUrl.contains(".apk") || lowerUrl.contains(".pdf") || lowerUrl.contains(".zip") || 
+            lowerUrl.contains(".docx") || lowerUrl.contains(".csv") ||
+            lowerUrl.contains("/api/download") || lowerUrl.contains("/downloads/") || 
+            lowerUrl.contains("/download-pack") || lowerUrl.contains("export=pdf")) {
             triggerNativeDownload(url);
             return true;
         }
