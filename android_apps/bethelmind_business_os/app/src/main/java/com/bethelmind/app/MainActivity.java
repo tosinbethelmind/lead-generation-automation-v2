@@ -287,6 +287,9 @@ public class MainActivity extends AppCompatActivity {
             if (fullUrl.endsWith(".apk") || fullUrl.contains("/apk")) {
                 mimeType = "application/vnd.android.package-archive";
                 defaultFileName = "bethelmind_business_os.apk";
+            } else if (fullUrl.contains("Printable_Mandate")) {
+                mimeType = "application/pdf";
+                defaultFileName = "Bethelmind_Printable_Mandate_Form.pdf";
             } else if (fullUrl.endsWith(".pdf") || fullUrl.contains("pdf") || fullUrl.contains("/download-pack")) {
                 mimeType = "application/pdf";
                 defaultFileName = "Bethelmind_Statutory_Legal_Pack.pdf";
@@ -296,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             request.setMimeType(mimeType);
+            request.addRequestHeader("Accept", "application/pdf, application/vnd.android.package-archive, text/csv, */*");
             String cookies = CookieManager.getInstance().getCookie(fullUrl);
             if (cookies != null) request.addRequestHeader("cookie", cookies);
             request.addRequestHeader("User-Agent", mWebView.getSettings().getUserAgentString());

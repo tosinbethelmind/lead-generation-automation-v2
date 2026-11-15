@@ -9,6 +9,7 @@ import {
   generateSection84Certificate,
   DocumentMetadata
 } from '@/lib/pillar2/statutoryDocumentGenerator';
+import { buildStatutoryPdfPackBuffer } from '@/lib/pillar2/pdfPackBuilder';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,8 +77,9 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Default: Printable Master HTML view
-    const html = `<!DOCTYPE html>
+    // If html format is explicitly requested for web preview
+    if (searchParams.get('format') === 'html') {
+      const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -124,9 +126,25 @@ export async function GET(req: NextRequest) {
 </body>
 </html>`;
 
-    return new Response(html, {
+      return new Response(html, {
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8'
+        }
+      });
+    }
+
+    // DEFAULT: Standard, 100% compliant binary PDF file (%PDF-1.7)
+    const pdfBuffer = await buildStatutoryPdfPackBuffer(meta);
+    const filename = `Bethelmind_Statutory_Legal_Pack_${meta.dealId}.pdf`;
+
+    return new Response(Buffer.from(pdfBuffer), {
+      status: 200,
       headers: {
-        'Content-Type': 'text/html; charset=utf-8'
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Length': pdfBuffer.length.toString(),
+        'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+        'X-Content-Type-Options': 'nosniff'
       }
     });
   } catch (error: any) {

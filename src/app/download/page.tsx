@@ -201,17 +201,26 @@ export default function DownloadCenterPage() {
                   Master Statutory Legal Pack (4-in-1 Pack)
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Includes all 4 bilateral legal instruments: Retainership Agreement, LASRERA 80/20 Co-Brokerage, Statutory JIM, Diaspora Mandate, and Section 84 Certificate.
+                  Includes all 4 bilateral legal instruments: Retainership Agreement, LASRERA 80/20 Co-Brokerage, Statutory JIM, Diaspora Mandate, and Section 84 Certificate. Genuine binary PDF format viewable in all PDF viewers.
                 </p>
               </div>
-              <a
-                href="/api/mandate/download-pack"
-                target="_blank"
-                className="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-md shadow-amber-500/20"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Download 4-in-1 Legal Pack (PDF)</span>
-              </a>
+              <div className="space-y-2">
+                <a
+                  href="/downloads/Bethelmind_Statutory_Legal_Pack.pdf"
+                  download="Bethelmind_Statutory_Legal_Pack.pdf"
+                  className="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-md shadow-amber-500/20"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Master Legal Pack (.PDF)</span>
+                </a>
+                <a
+                  href="/api/mandate/download-pack?format=html"
+                  target="_blank"
+                  className="block text-[11px] text-amber-400/80 hover:text-amber-300 text-center underline font-medium"
+                >
+                  View Online Printable A4 Version
+                </a>
+              </div>
             </div>
 
             {/* Document 2: Lawyer & Legal Counsel Brief */}
@@ -255,14 +264,23 @@ export default function DownloadCenterPage() {
                   Clean A4 printable layout for physical company stamping, ink signatures, and official legal filing at the lands registry or court.
                 </p>
               </div>
-              <Link
-                href="/mandate/print"
-                target="_blank"
-                className="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-700 transition"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Open Printable A4 Mandate</span>
-              </Link>
+              <div className="space-y-2">
+                <a
+                  href="/downloads/Bethelmind_Printable_Mandate_Form.pdf"
+                  download="Bethelmind_Printable_Mandate_Form.pdf"
+                  className="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-700 transition"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Blank Mandate (.PDF)</span>
+                </a>
+                <Link
+                  href="/mandate/print"
+                  target="_blank"
+                  className="block text-[11px] text-slate-400 hover:text-slate-200 text-center underline font-medium"
+                >
+                  Open Live Browser Print Preview
+                </Link>
+              </div>
             </div>
 
             {/* Document 4: Online E-Sign Portal */}
