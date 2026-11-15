@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 let cachedTelemetry: any = null;
 let lastCacheTimestamp = 0;
-const CACHE_TTL_MS = 15000; // 15 seconds fast memory cache
+const CACHE_TTL_MS = 60000; // 60 seconds memory cache
 
 export async function GET() {
   try {
@@ -15,7 +15,7 @@ export async function GET() {
         { success: true, pillar2: cachedTelemetry, cached: true },
         {
           headers: {
-            'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=45',
+            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=180',
             'X-Telemetry-Cache': 'HIT'
           }
         }
@@ -30,7 +30,7 @@ export async function GET() {
       { success: true, pillar2: telemetry, cached: false },
       {
         headers: {
-          'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=45',
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=180',
           'X-Telemetry-Cache': 'MISS'
         }
       }

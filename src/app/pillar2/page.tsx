@@ -35,8 +35,34 @@ import {
   Check
 } from 'lucide-react';
 
+const BASELINE_TELEMETRY = {
+  stats: {
+    pendingCount: 8,
+    approvedCount: 1,
+    rejectedCount: 0,
+    totalAssetPoolNGN: 24960000000,
+    totalOriginationPoolNGN: 249600000,
+    queuedOutboundCount: 1,
+    dispatchedCount: 1,
+    dailyOutreachSent: 0,
+    dailyOutreachMax: 15,
+    dailyOutreachRemaining: 15,
+    isPacingActive: false,
+    pacingReason: 'Commercial Deal Desk Active',
+    isBusinessHours: true,
+    currentWatTime: '12:00 WAT'
+  },
+  allTickets: [],
+  settlementAccount: {
+    bankName: 'Moniepoint Microfinance Bank',
+    accountNumber: '6805375225',
+    accountName: 'Bethelmind Digital Solutions',
+    cacReg: 'Reg 9912717'
+  }
+};
+
 export default function Pillar2AppPage() {
-  const [telemetry, setTelemetry] = useState<any>(null);
+  const [telemetry, setTelemetry] = useState<any>(BASELINE_TELEMETRY);
   const [loading, setLoading] = useState(false);
   const [triggerLoading, setTriggerLoading] = useState<string | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
@@ -46,13 +72,11 @@ export default function Pillar2AppPage() {
   const [isInstallable, setIsInstallable] = useState(false);
   const [showInstallHelp, setShowInstallHelp] = useState(false);
 
-  // Micro-Telemetry Fetcher (< 15KB, sub-50ms)
+  // Micro-Telemetry Fetcher (Fast Edge Cache)
   const fetchTelemetry = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/pillar2/telemetry', {
-        headers: { 'Cache-Control': 'no-cache' }
-      });
+      const res = await fetch('/api/pillar2/telemetry');
       const data = await res.json();
       if (data?.success && data?.pillar2) {
         setTelemetry(data.pillar2);

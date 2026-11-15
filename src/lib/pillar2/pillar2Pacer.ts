@@ -151,20 +151,25 @@ export async function loadPacerState(): Promise<PacerState> {
     }
   } catch (_) {}
 
-  // 2. Try fetching from Supabase Cloud logs
+  // 2. Try fetching from Supabase Cloud logs (< 800ms timeout race)
   const supabase = getSupabaseClient();
   let cloudState: PacerState | null = null;
   if (supabase) {
     try {
-      const { data, error } = await supabase
+      const cloudPromise = supabase
         .from('logs')
         .select('*')
         .eq('step', 'PILLAR2_DAILY_PACER')
         .order('created_at', { ascending: false })
         .limit(1);
 
-      if (!error && data && data.length > 0) {
-        cloudState = JSON.parse(data[0].message);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Supabase pacer timeout')), 800)
+      );
+
+      const res: any = await Promise.race([cloudPromise, timeoutPromise]);
+      if (res?.data && res.data.length > 0) {
+        cloudState = JSON.parse(res.data[0].message);
       }
     } catch (_) {}
   }

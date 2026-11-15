@@ -439,7 +439,7 @@ export async function getPillar2Telemetry() {
       };
 
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Supabase telemetry timeout')), 1200)
+        setTimeout(() => reject(new Error('Supabase telemetry timeout')), 800)
       );
 
       const [ticketsResult, queueResult, dispatchedResult] = await Promise.race([

@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Message;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        settings.setSupportMultipleWindows(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         
         // Touch smoothing for HTML5 Signature Pad
@@ -147,6 +149,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mWebView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+                WebView.HitTestResult result = view.getHitTestResult();
+                String data = (result != null) ? result.getExtra() : null;
+                if (data != null) {
+                    if (handleNigerianIntents(data, view)) {
+                        return true;
+                    }
+                    view.loadUrl(data);
+                    return true;
+                }
+                return false;
+            }
+
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 mProgressBar.setProgress(newProgress);
@@ -240,6 +256,55 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Native Download Dispatcher for all Statutory Documents, PDFs, and APKs
+     */
+    public void triggerNativeDownload(String url) {
+        try {
+            Uri downloadUri = Uri.parse(url);
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                downloadUri = Uri.parse("https://www.bethelmindanalytics.com" + (url.startsWith("/") ? url : "/" + url));
+            }
+
+            DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+            String fullUrl = downloadUri.toString();
+            String mimeType = "application/octet-stream";
+            String defaultFileName = "bethelmind_document";
+
+            if (fullUrl.endsWith(".apk") || fullUrl.contains("/apk")) {
+                mimeType = "application/vnd.android.package-archive";
+                defaultFileName = "bethelmind_business_os.apk";
+            } else if (fullUrl.endsWith(".pdf") || fullUrl.contains("pdf") || fullUrl.contains("/download-pack")) {
+                mimeType = "application/pdf";
+                defaultFileName = "Bethelmind_Statutory_Legal_Pack.pdf";
+            } else if (fullUrl.endsWith(".csv")) {
+                mimeType = "text/csv";
+                defaultFileName = "Bethelmind_Export.csv";
+            }
+
+            request.setMimeType(mimeType);
+            String cookies = CookieManager.getInstance().getCookie(fullUrl);
+            if (cookies != null) request.addRequestHeader("cookie", cookies);
+            request.addRequestHeader("User-Agent", mWebView.getSettings().getUserAgentString());
+            request.setDescription("Downloading Bethelmind official statutory document...");
+            request.setTitle(defaultFileName);
+            request.allowScanningByMediaScanner();
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, defaultFileName);
+
+            DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+            if (dm != null) {
+                dm.enqueue(request);
+                Toast.makeText(getApplicationContext(), "📥 Downloading " + defaultFileName + " to Downloads folder...", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
+            } catch (Exception ignored) {}
+        }
+    }
+
+    /**
      * Handles Nigerian-specific URL schemes:
      * - WhatsApp (wa.me, api.whatsapp.com, whatsapp://)
      * - Phone calls (tel:)
@@ -280,6 +345,15 @@ public class MainActivity extends AppCompatActivity {
         if (url.startsWith("mailto:")) {
             Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(url));
             startActivity(intent);
+            return true;
+        }
+
+        // Statutory downloads, legal instruments & offline APK packages (PDF, APK, DOCX, CSV)
+        if (url.endsWith(".apk") || url.endsWith(".pdf") || url.endsWith(".zip") || 
+            url.endsWith(".docx") || url.endsWith(".csv") ||
+            url.contains("/api/download") || url.contains("/downloads/") || 
+            url.contains("/download-pack") || url.contains("export=pdf")) {
+            triggerNativeDownload(url);
             return true;
         }
 

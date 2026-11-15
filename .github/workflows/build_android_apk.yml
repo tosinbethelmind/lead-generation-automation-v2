@@ -7,6 +7,9 @@ on:
         description: 'Directory slug of the app in android_apps/'
         required: true
         default: 'bethelmind_business_os'
+  push:
+    paths:
+      - 'android_apps/**'
 
 jobs:
   build:
@@ -37,18 +40,20 @@ jobs:
 
       - name: Build Debug APK
         run: |
-          cd android_apps/${{ github.event.inputs.app_slug }}
+          APP_NAME="${{ github.event.inputs.app_slug || 'bethelmind_business_os' }}"
+          cd android_apps/$APP_NAME
           gradle assembleDebug --stacktrace
 
       - name: Rename Output APK
         run: |
+          APP_NAME="${{ github.event.inputs.app_slug || 'bethelmind_business_os' }}"
           mkdir -p output_apk
-          cp android_apps/${{ github.event.inputs.app_slug }}/app/build/outputs/apk/debug/*.apk output_apk/${{ github.event.inputs.app_slug }}-debug.apk
+          cp android_apps/$APP_NAME/app/build/outputs/apk/debug/*.apk output_apk/$APP_NAME-debug.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.inputs.app_slug }}-debug-apk
+          name: bethelmind_business_os-debug-apk
           path: output_apk/*.apk
 
       - name: Publish to GitHub Releases (Direct Permanent Download Link)
