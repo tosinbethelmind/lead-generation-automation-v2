@@ -328,15 +328,22 @@ export default function Pillar2AppPage() {
               <p className="text-[11px] text-slate-300 mb-2.5">
                 Download the raw Android package installer directly if using Opera Mini, Phoenix Browser, or for offline installation:
               </p>
-              <a
-                href="https://github.com/tosinbethelmind/lead-generation-automation-v2/releases/download/mobile-apk-v1.0/bethelmind_business_os-debug.apk"
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-emerald-600/30"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Download Bethelmind_Business_OS.apk</span>
-              </a>
+              <div className="flex flex-col gap-2">
+                <a
+                  href="/downloads/bethelmind_business_os.apk"
+                  download="bethelmind_business_os.apk"
+                  className="w-full py-2.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-emerald-600/30"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Direct Download APK (5.84 MB)</span>
+                </a>
+                <Link
+                  href="/download"
+                  className="w-full py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-400 border border-amber-500/30 font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center"
+                >
+                  <span>Open Full Download Hub & Documents</span>
+                </Link>
+              </div>
             </div>
 
             <button
