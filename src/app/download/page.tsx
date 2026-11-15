@@ -93,7 +93,7 @@ export default function DownloadCenterPage() {
           {/* Download Buttons */}
           <div className="space-y-3">
             <a
-              href="/api/download/apk"
+              href="/downloads/bethelmind_business_os.apk"
               download="bethelmind_business_os.apk"
               className="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:brightness-110 text-slate-950 font-extrabold rounded-2xl text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/30 transition transform active:scale-[0.98]"
             >
@@ -103,23 +103,15 @@ export default function DownloadCenterPage() {
 
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400">
               <a
-                href="/downloads/bethelmind_business_os.apk"
+                href="/api/download/apk"
                 download="bethelmind_business_os.apk"
                 className="hover:text-emerald-400 underline font-medium inline-flex items-center gap-1 transition"
               >
-                <span>Direct File Server Link</span>
+                <span>Backup Edge Download Route</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
               <span className="text-slate-600">•</span>
-              <a
-                href="https://github.com/tosinbethelmind/lead-generation-automation-v2/releases/download/mobile-apk-v1.0/bethelmind_business_os-debug.apk"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-emerald-400 underline font-medium inline-flex items-center gap-1 transition"
-              >
-                <span>Alternate Cloud Mirror (GitHub)</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
+              <span className="text-emerald-400 font-medium">100% Direct Server Delivery • No Login Required</span>
             </div>
           </div>
 

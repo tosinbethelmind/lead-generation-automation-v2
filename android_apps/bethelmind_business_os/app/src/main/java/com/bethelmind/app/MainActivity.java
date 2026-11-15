@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private WebView mWebView;
     private SwipeRefreshLayout mSwipeRefresh;
     private ProgressBar mProgressBar;
+    private View mSplashOverlay;
     private ValueCallback<Uri[]> mFilePathCallback;
     private boolean isErrorPageLoaded = false;
 
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         mWebView = findViewById(R.id.webview);
         mSwipeRefresh = findViewById(R.id.swipe_refresh);
         mProgressBar = findViewById(R.id.progress_bar);
+        mSplashOverlay = findViewById(R.id.splash_overlay);
 
         configureWebSettings();
         setupWebViewClients();
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
         settings.setSupportZoom(true);
@@ -88,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        settings.setSupportMultipleWindows(true);
+        // Single window mode ensures links, tabs, and buttons route directly to handler without freezing
+        settings.setSupportMultipleWindows(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         
         // Touch smoothing for HTML5 Signature Pad
@@ -131,6 +135,19 @@ public class MainActivity extends AppCompatActivity {
                 mProgressBar.setVisibility(View.GONE);
                 mSwipeRefresh.setRefreshing(false);
 
+                // Smoothly dismiss native splash screen when webview finishes rendering
+                if (mSplashOverlay != null && mSplashOverlay.getVisibility() == View.VISIBLE) {
+                    mSplashOverlay.animate()
+                        .alpha(0f)
+                        .setDuration(250)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSplashOverlay.setVisibility(View.GONE);
+                            }
+                        });
+                }
+
                 // Auto-bridge window.print() to Android native print spooler
                 view.evaluateJavascript(
                     "window.print = function() { if (window.AndroidApp && window.AndroidApp.printPage) { window.AndroidApp.printPage(document.title || 'Bethelmind_Statutory_Instrument'); } };",
@@ -143,6 +160,9 @@ public class MainActivity extends AppCompatActivity {
                 super.onReceivedError(view, request, error);
                 if (request.isForMainFrame()) {
                     isErrorPageLoaded = true;
+                    if (mSplashOverlay != null) {
+                        mSplashOverlay.setVisibility(View.GONE);
+                    }
                     view.loadUrl("file:///android_asset/offline.html");
                 }
             }
@@ -150,24 +170,18 @@ public class MainActivity extends AppCompatActivity {
 
         mWebView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-                WebView.HitTestResult result = view.getHitTestResult();
-                String data = (result != null) ? result.getExtra() : null;
-                if (data != null) {
-                    if (handleNigerianIntents(data, view)) {
-                        return true;
-                    }
-                    view.loadUrl(data);
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 mProgressBar.setProgress(newProgress);
-                if (newProgress == 100) {
+                if (newProgress >= 90) {
                     mProgressBar.setVisibility(View.GONE);
+                    if (mSplashOverlay != null && mSplashOverlay.getVisibility() == View.VISIBLE) {
+                        mSplashOverlay.animate().alpha(0f).setDuration(200).withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSplashOverlay.setVisibility(View.GONE);
+                            }
+                        });
+                    }
                 } else {
                     mProgressBar.setVisibility(View.VISIBLE);
                 }
