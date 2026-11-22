@@ -39,3 +39,7 @@ diff_output_utf8.txt
 
 android_apps
 client_mobile_apps
+output_apk
+output_apk_latest
+data/dossiers/**
+data/traffic-queue/**

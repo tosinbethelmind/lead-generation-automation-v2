@@ -29,6 +29,7 @@ const NAV_LINKS = [
   { label: 'Bespoke Pricing & Packages', href: '/pricing' },
   { label: 'Commercial Settlement & Escrow', href: '/#payment' },
   { label: 'Frequently Asked Questions', href: '/#faq' },
+  { label: '50% Partner & Affiliate Program', href: '/affiliates' },
 ];
 
 export default function Footer() {

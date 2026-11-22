@@ -34,8 +34,10 @@ const cacheHeaders = [
   },
 ];
 
+const isVercel = !!process.env.VERCEL;
+
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  ...(isVercel ? {} : { output: 'standalone' }),
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
@@ -68,33 +70,35 @@ const nextConfig: NextConfig = {
     '@crawlee/core',
     'ws'
   ],
-  outputFileTracingExcludes: {
-    '*': [
-      './local_db/**/*.log',
-      './local_db/**/*.tmp*',
-      './local_db/baileys_auth*/**/*',
-      './local_db/evolution_auth*/**/*',
-      './local_db/jiji_browser_profile/**/*',
-      './data/raw_leads/**/*',
-      './data/cache/**/*',
-      './public/assets/audio/**/*',
-      './.git/**/*'
-    ]
-  },
-  outputFileTracingIncludes: {
-    '/**': [
-      './data/blog_posts/**/*',
-      './local_db/sms_dispatches.json',
-      './local_db/email_dispatches.json',
-      './local_db/email_daemon_state.json',
-      './local_db/activities.json',
-      './local_db/lead_journeys.json',
-      './local_db/crm_leads.json',
-      './local_db/leads_db.json',
-      './local_db/real_webform_submissions.json',
-      './local_db/retargeting_decisions.json'
-    ]
-  },
+  ...(isVercel ? {} : {
+    outputFileTracingExcludes: {
+      '*': [
+        './local_db/**/*.log',
+        './local_db/**/*.tmp*',
+        './local_db/baileys_auth*/**/*',
+        './local_db/evolution_auth*/**/*',
+        './local_db/jiji_browser_profile/**/*',
+        './data/raw_leads/**/*',
+        './data/cache/**/*',
+        './public/assets/audio/**/*',
+        './.git/**/*'
+      ]
+    },
+    outputFileTracingIncludes: {
+      '/**': [
+        './data/blog_posts/**/*',
+        './local_db/sms_dispatches.json',
+        './local_db/email_dispatches.json',
+        './local_db/email_daemon_state.json',
+        './local_db/activities.json',
+        './local_db/lead_journeys.json',
+        './local_db/crm_leads.json',
+        './local_db/leads_db.json',
+        './local_db/real_webform_submissions.json',
+        './local_db/retargeting_decisions.json'
+      ]
+    },
+  }),
   async headers() {
     return [
       {
@@ -145,6 +149,14 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
+      {
+        source: '/affiliates',
+        destination: '/affiliates.html',
+      },
+      {
+        source: '/affiliate',
+        destination: '/affiliates.html',
+      },
       {
         source: '/calc/:tool',
         destination: '/calc/:tool.html',

@@ -17,7 +17,13 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const { cleanBusinessName, getShortBrand, isGarbageOrId } = require('./nameSanitizer');
-const { isPillar2Conversation, handlePillar2Inquiry } = require('./pillar2_closer');
+let isPillar2Conversation = () => ({ isPillar2: false });
+let handlePillar2Inquiry = () => null;
+try {
+  const p2 = require('./pillar2_closer');
+  isPillar2Conversation = p2.isPillar2Conversation || isPillar2Conversation;
+  handlePillar2Inquiry = p2.handlePillar2Inquiry || handlePillar2Inquiry;
+} catch (_) {}
 const { createOrGetCommercialInvoice, OFFICIAL_CORPORATE_SETTLEMENT } = require('./bankable_invoice');
 
 const CORPORATE_BANK = {
@@ -561,20 +567,15 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
     };
   }
 
-  // ── 6. CASUAL GREETING ("Hello", "Hi", "Good morning", "Hey", "How far") ──
-  // Check this early so simple greetings don't get hit by complex regexes
-  if (/^(hi|hello|hey|good morning|good afternoon|good evening|how far|bro|boss|morning|afternoon|evening)\b/i.test(msg) && msg.length < 25) {
+    // ── 6. CASUAL GREETINGS & SHORT TEXTS SILENCED (Zero unsolicited pitches) ──
+  if (/^(hi|hello|hey|good morning|good afternoon|good evening|how far|bro|boss|morning|afternoon|evening|\?+|\.+)$/i.test(msg) || (msg.length < 25 && /^(hi|hello|hey|good morning)/i.test(msg))) {
     return {
-      intent: 'CASUAL_GREETING',
+      intent: 'CASUAL_GREETING_SILENCED',
       isOptOut: false,
-      messageText:
-        `Good day Boss at *${name}*! 👋\n\n` +
-        `Competitors on Google are currently taking orders meant for *${name}* because you don't have an official website yet in ${area}.\n\n` +
-        `So we already built a ready-made mobile website for you in advance to test free on your phone (₦0 upfront):\n` +
-        `👉 ${previewUrl}\n\n` +
-        `How does it look to you? Send 2 photos of your shop/work here make we add am FREE today before you pay shishi!`,
-      suggestedAction: 'ENGAGE_CONVERSATION',
-      directPaymentEligible: true
+      shouldAutoReply: false,
+      messageText: null,
+      suggestedAction: 'LEAVE_FOR_HUMAN',
+      directPaymentEligible: false
     };
   }
 
@@ -942,20 +943,14 @@ function handlePostContactInquiry(clientMessage, leadData = {}) {
     };
   }
 
-  // ── 22. DEFAULT ADAPTIVE INTELLIGENCE FALLBACK ────────────────────────────
+    // ── 22. DEFAULT FALLBACK SILENCED (Never pitch Pillar 1 unprovoked) ──────
   return {
-    intent: 'ADAPTIVE_CLOSER_FALLBACK',
+    intent: 'ADAPTIVE_CLOSER_FALLBACK_SILENCED',
     isOptOut: false,
-    messageText:
-      `Good day Boss at *${name}*! 👋\n\n` +
-      `When customers search Google for *"${category}"* in ${area}, competitors take your sales because *${name}* doesn't have an official website yet.\n\n` +
-      `We already built your website in advance so you can test it free on your phone:\n` +
-      `👉 ${previewUrl}\n\n` +
-      `• Send 2 photos of your shop here — we will update it *FREE before you pay shishi*!\n` +
-      `• Or reply *1* to launch for *₦40,000 milestone deposit* (₦0 monthly fees forever).\n\n` +
-      `How does the layout look to you?`,
-    suggestedAction: 'SEND_ADAPTIVE_PITCH',
-    directPaymentEligible: true
+    shouldAutoReply: false,
+    messageText: null,
+    suggestedAction: 'LEAVE_FOR_HUMAN',
+    directPaymentEligible: false
   };
 }
 
@@ -971,6 +966,31 @@ async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
   const rawMsg = String(clientMessage || '').trim();
   const lower = rawMsg.toLowerCase();
 
+  // ── 0. OTHER BUSINESS SHIELD: STARKTV / WHATSAPP TV / MEDIA / BROADCASTS ───
+  // The user operates another business (StarkTV / WhatsApp TV Platform).
+  // Under NO circumstances should any automated Bethelmind pitch be sent to other business contacts!
+  if (/starktv|stark\s*tv|whatsapp\s*tv|\bwa\s*tv\b|\btv\b|status\s*views|contact\s*gain|broadcast\s*list|shoutout|advert\s*placement|post\s*on\s*status|stark/i.test(lower)) {
+    console.log(`🛡️ [Closer Engine] Contact is discussing another business (StarkTV / WhatsApp TV / Media). Auto-reply SILENCED.`);
+    return {
+      intent: 'OTHER_BUSINESS_STARKTV_SILENCED',
+      shouldAutoReply: false,
+      messageText: null,
+      suggestedAction: 'SILENT_HUMAN_TAKEOVER'
+    };
+  }
+
+  // ── 0B. CASUAL GREETINGS & SHORT TEXTS ("Good morning", "Hello", "Hi", "??") ─────
+  // Never pitch Pillar 1 or any service to casual greetings!
+  if (/^(hi|hello|hey|good morning|good afternoon|good evening|how far|bro|boss|morning|afternoon|evening|\?+|\.+)$/i.test(lower) || 
+      (rawMsg.length <= 15 && /^(hi|hello|hey|good morning|morning|afternoon|evening)/i.test(lower))) {
+    return {
+      intent: 'CASUAL_GREETING_SILENCED',
+      shouldAutoReply: false,
+      messageText: null,
+      suggestedAction: 'LEAVE_FOR_HUMAN'
+    };
+  }
+
   // ── 1. NON-NEGOTIABLE TRANSACTIONAL GUARDS (Zero Hallucination Risk) ──────────
   // A. OPT-OUT / STOP INTERCEPT
   if (/^(no|stop|cancel|unsubscribe|remove|not interested|dont message|don't message|leave me|opt out|optout)\b/i.test(lower) ||
@@ -980,6 +1000,7 @@ async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
     return {
       intent: 'OPT_OUT',
       isOptOut: true,
+      shouldAutoReply: true,
       messageText: `No problem at all Sir/Ma! Your number has been removed immediately. Wishing *${name}* continuous business success! — Bethelmind Digital Solutions`,
       suggestedAction: 'DNC_SUPPRESS',
       directPaymentEligible: false
@@ -1003,8 +1024,6 @@ async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
   }
 
   // ── 2. DYNAMIC COGNITIVE REASONER (GEMINI FLASH-LITE MULTI-KEY POOL) ─────────
-  // Evaluates the request dynamically: Pillar 1, Pillar 2, Sector Tools, or Another Business
-  // Responds accurately based on what the client explains, without making assumptions!
   try {
     const resolved = lookupLeadForWhatsApp(leadData.phone || '', rawMsg);
     const geminiContext = {
@@ -1021,9 +1040,32 @@ async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
     };
 
     const aiReply = await generateGeminiReply(rawMsg, geminiContext);
-    if (aiReply && aiReply.trim().length > 15) {
+
+    // If Gemini instructed to stay silent (for casual greetings or other business)
+    if (!aiReply || aiReply === 'SILENT_PASS' || aiReply.includes('SILENT_PASS')) {
+      return {
+        intent: 'COGNITIVE_AI_SILENT_PASS',
+        shouldAutoReply: false,
+        messageText: null
+      };
+    }
+
+    // 🛡️ STRICT PILLAR 1 GUARD: If reply pitches a website, but client did NOT ask for a website, BLOCK IT!
+    const asksForWebsite = /\b(website|web design|storefront|online store|preview link|claim.*website|build.*site|domain)\b/i.test(lower);
+    const replyPitchesWebsite = /preview|storefront|mobile website|shop photos|₦80,000|80,000 flat/i.test(aiReply);
+    if (replyPitchesWebsite && !asksForWebsite) {
+      console.log(`🛡️ [Closer Engine] Suppressed unprovoked Pillar 1 website pitch for non-website message: "${rawMsg.substring(0, 50)}"`);
+      return {
+        intent: 'UNSOLICITED_PILLAR1_BLOCKED',
+        shouldAutoReply: false,
+        messageText: null
+      };
+    }
+
+    if (aiReply.trim().length > 15) {
       return {
         intent: 'COGNITIVE_AI_INTELLIGENT_CLOSER',
+        shouldAutoReply: true,
         isOptOut: false,
         messageText: aiReply.trim(),
         isAiGenerated: true,
@@ -1035,7 +1077,16 @@ async function handlePostContactInquiryAsync(clientMessage, leadData = {}) {
   }
 
   // ── 3. DETERMINISTIC MATRIX FALLBACK ─────────────────────────────────────────
-  return handlePostContactInquiry(clientMessage, leadData);
+  const fallback = handlePostContactInquiry(clientMessage, leadData);
+  if (fallback.shouldAutoReply === false || !fallback.messageText) {
+    return {
+      intent: fallback.intent || 'DETERMINISTIC_SILENCED',
+      shouldAutoReply: false,
+      messageText: null
+    };
+  }
+
+  return fallback;
 }
 
 module.exports = {
