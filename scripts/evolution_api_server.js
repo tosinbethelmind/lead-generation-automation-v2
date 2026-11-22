@@ -391,29 +391,19 @@ function extractMessageText(msg) {
   return '';
 }
 
+const inboundDebounceBuffers = new Map(); // cleanSender -> { timer, texts: [], inst, msg, senderJid }
+
 async function handleInboundMessage(inst, msg) {
   try {
     const senderJid = msg.key?.remoteJid || '';
     if (!senderJid.endsWith('@s.whatsapp.net') && !senderJid.endsWith('@lid')) return; // ignore groups, broadcasts, newsletters
 
-    // Check if message is a self-test message (sent from or to 0802 279 1227)
-    const isSelfTest = senderJid.includes('8022791227') && inst.id === 1;
-    // Only process self-test if it has user content and is not our own bot's template reply
+    const isSelfTest = (senderJid.includes('8022791227') || senderJid.includes(inst.phone || '')) && inst.id === 1;
     const text = extractMessageText(msg);
     if (!text || !text.trim()) return;
 
     if (isSelfTest && (text.includes('Bethelmind') || text.includes('Moniepoint') || text.includes('Good day Boss') || text.includes('Salute Boss') || text.includes('6805375225') || text.includes('OFFICIAL SME INITIATIVE') || text.includes('TEST CONFIRMATION') || text.includes('Tosin Oyelakin'))) {
       return; // prevent recursive bot reply loops with self
-    }
-
-    const msgId = msg.key?.id;
-    if (msgId) {
-      if (processedEvolutionMsgIds.has(msgId)) return;
-      processedEvolutionMsgIds.add(msgId);
-      if (processedEvolutionMsgIds.size > 2000) {
-        const first = processedEvolutionMsgIds.values().next().value;
-        processedEvolutionMsgIds.delete(first);
-      }
     }
 
     const cleanSender = senderJid.replace('@s.whatsapp.net', '').replace('@lid', '');
@@ -430,32 +420,44 @@ async function handleInboundMessage(inst, msg) {
       return;
     }
 
-    // Rapid spam filter: ignore identical burst packets within 3 seconds
-    const now = Date.now();
-    const lastTime = lastReplyTimestamps.get(cleanSender) || 0;
-    if (now - lastTime < 3000) {
-      console.log(`[Inbound Closer] Packet burst from +${cleanSender} within 3s. Skipping duplicate.`);
-      return;
+    // 🛡️ DEBOUNCE BUFFER: Merge multi-part incoming messages typed in rapid succession (e.g. "Good morning" + "This is starkTV")
+    let bufferEntry = inboundDebounceBuffers.get(cleanSender);
+    if (!bufferEntry) {
+      bufferEntry = { timer: null, texts: [], inst, msg, senderJid };
+      inboundDebounceBuffers.set(cleanSender, bufferEntry);
     }
-    lastReplyTimestamps.set(cleanSender, now);
+    bufferEntry.texts.push(text.trim());
+    bufferEntry.msg = msg;
+    bufferEntry.inst = inst;
+    bufferEntry.senderJid = senderJid;
 
-    console.log(`\n🎧 [Inbound Closer] Message received on ${inst.label} from +${cleanSender}: "${text.trim().substring(0, 80)}"`);
+    if (bufferEntry.timer) {
+      clearTimeout(bufferEntry.timer);
+    }
 
+    bufferEntry.timer = setTimeout(async () => {
+      inboundDebounceBuffers.delete(cleanSender);
+      const combinedText = bufferEntry.texts.join('\n');
+      console.log(`\n🎧 [Inbound Closer] Processing batched message on ${bufferEntry.inst.label} from +${cleanSender} (${bufferEntry.texts.length} packet(s)): "${combinedText.substring(0, 90)}"`);
+      await processInboundCloserLogic(bufferEntry.inst, bufferEntry.msg, cleanSender, bufferEntry.senderJid, combinedText, blacklist, blacklistPath, localDbDir);
+    }, 1500);
+
+  } catch (err) {
+    console.error(`❌ [Inbound Closer] Error in handleInboundMessage:`, err.message);
+  }
+}
+
+async function processInboundCloserLogic(inst, msg, cleanSender, senderJid, combinedText, blacklist, blacklistPath, localDbDir) {
+  try {
     // Dynamically load upgraded closer engine & dual-pillar registries
     delete require.cache[require.resolve('./lib/closer_engine')];
     try { delete require.cache[require.resolve('./lib/pillar2_closer')]; } catch (_) {}
     try { delete require.cache[require.resolve('./lib/pillar2_contacts_registry')]; } catch (_) {}
     const { handlePostContactInquiryAsync, lookupLeadForWhatsApp } = require('./lib/closer_engine');
 
-    const leadInfo = lookupLeadForWhatsApp(cleanSender, text);
+    const leadInfo = lookupLeadForWhatsApp(cleanSender, combinedText);
 
-    // 🟢 DUAL-PILLAR & MULTI-BUSINESS INTENT RECOGNITION (PILLAR 1 + PILLAR 2 + SECTOR TOOLS)
-    // - Pillar 2 (Luxury Real Estate / LASRERA Mandates): Handled via pillar2_closer with diaspora brief & 80/20 co-brokerage.
-    // - Pillar 1 (SME Business Automation / Tools / Websites): Handled via closer_engine with ₦80k / ₦40k turnkey packages.
-    // - Casual / Family / Personal Chats: Silenced automatically so human user chats freely without bot interruption.
-
-    // 🟢 ALL PILLARS & BUSINESS INQUIRIES ACTIVATED (Pillar 1, Pillar 2, Sector Tools & Custom Business)
-    const decision = await handlePostContactInquiryAsync(text, {
+    const decision = await handlePostContactInquiryAsync(combinedText, {
       businessName: leadInfo.businessName,
       category: leadInfo.category,
       area: leadInfo.area,
@@ -469,13 +471,23 @@ async function handleInboundMessage(inst, msg) {
       ticketId: leadInfo.ticketId
     });
 
-    // 🛡️ PERSONAL / CASUAL / NO-AUTOREPLY SHIELD: Silence AI if sender is casual, family, or personal chat
-    if (decision.shouldAutoReply === false || !decision.messageText) {
-      console.log(`🛡️ [Inbound Closer] Message from +${cleanSender} classified as [${decision.intent || 'PERSONAL/CASUAL'}]. Auto-reply SILENCED for human conversation.`);
+    // 🛡️ OTHER BUSINESS & CASUAL SHIELD: Silence AI if sender is discussing another business or casual greeting
+    if (decision.shouldAutoReply === false || !decision.messageText || decision.messageText === 'SILENT_PASS') {
+      console.log(`🛡️ [Inbound Closer] Message from +${cleanSender} classified as [${decision.intent || 'SILENCED'}]. Auto-reply SILENCED to protect other business / human chat.`);
       return;
     }
 
     const replyText = decision.messageText;
+
+    // 🛡️ LINE 1 ANTI-PILLAR-1 SHIELD: If this is the owner's Admin Line, NEVER pitch Pillar 1 unless explicitly asked
+    if (inst.id === 1) {
+      const isPillar1Pitch = /preview|storefront|mobile website|shop photos|₦80,000|80,000 flat/i.test(replyText);
+      const askedForWebsite = /\b(website|web design|storefront|online store|preview link|claim.*website|build.*site|domain)\b/i.test(combinedText);
+      if (isPillar1Pitch && !askedForWebsite) {
+        console.log(`🛡️ [Line 1 Safety Shield] Blocked unprompted Pillar 1 website pitch to +${cleanSender} on Line 1.`);
+        return;
+      }
+    }
 
     // Simulate natural typing delay (800ms - 1500ms)
     try {

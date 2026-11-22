@@ -38,17 +38,9 @@ import {
   Building,
   Briefcase
 } from 'lucide-react';
-import dynamic from 'next/dynamic';
-
-const Pillar2ControlView = dynamic(
-  () => import('../../../components/admin/Pillar2ControlView'),
-  { ssr: false, loading: () => <div style={{ color: '#94a3b8', padding: '24px', textAlign: 'center' }}>Loading Desk...</div> }
-);
 import { PILLAR_ONE_SERVICES, getPillarOneService } from '@/lib/pillarOneCatalog';
 
 export default function MobileAdminCommandCenter() {
-  const [pillarMode, setPillarMode] = useState<'pillar1' | 'pillar2'>('pillar1');
-  const [pillar2Data, setPillar2Data] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'radar' | 'closer' | 'claim' | 'onboard' | 'ai_tester' | 'hubs' | 'meta_wa'>('claim');
   const [telemetry, setTelemetry] = useState<any>(null);
   const [activeProspects, setActiveProspects] = useState<any[]>([]);
@@ -112,19 +104,6 @@ export default function MobileAdminCommandCenter() {
     }
   };
 
-  // Pillar Mode Switcher with Persistent URL & localStorage Memory
-  const changePillarMode = (mode: 'pillar1' | 'pillar2') => {
-    setPillarMode(mode);
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('bm_admin_pillar_mode', mode);
-        const url = new URL(window.location.href);
-        url.searchParams.set('pillar', mode);
-        window.history.replaceState({}, '', url.toString());
-      } catch (_) {}
-    }
-  };
-
   // Claim Lead Form States
   const [claimName, setClaimName] = useState('');
   const [claimPhone, setClaimPhone] = useState('');
@@ -152,37 +131,8 @@ export default function MobileAdminCommandCenter() {
   const [showInstallModal, setShowInstallModal] = useState(false);
 
   useEffect(() => {
-    // Restore persistent Pillar Mode from URL (?pillar=pillar2) or localStorage
-    if (typeof window !== 'undefined') {
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const pParam = urlParams.get('pillar');
-        if (pParam === 'pillar2' || pParam === '2' || pParam === 'deal_wire') {
-          setPillarMode('pillar2');
-        } else {
-          const saved = localStorage.getItem('bm_admin_pillar_mode');
-          if (saved === 'pillar2') setPillarMode('pillar2');
-        }
-      } catch (_) {}
-    }
-
     fetchTelemetry();
     const interval = setInterval(fetchTelemetry, 15000); // 15s auto-sync
-
-    // Autonomous continuous deal discovery (every 8 minutes)
-    const autonomousDiscoveryInterval = setInterval(async () => {
-      try {
-        await fetch('/api/admin/mobile-control', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-token': 'bethelmind_admin_2026'
-          },
-          body: JSON.stringify({ action: 'run_pillar2_discovery' })
-        });
-        fetchTelemetry();
-      } catch (_) {}
-    }, 8 * 60 * 1000);
 
     window.addEventListener('beforeinstallprompt', (e: any) => {
       e.preventDefault();
@@ -192,7 +142,6 @@ export default function MobileAdminCommandCenter() {
 
     return () => {
       clearInterval(interval);
-      clearInterval(autonomousDiscoveryInterval);
     };
   }, []);
 
@@ -209,9 +158,6 @@ export default function MobileAdminCommandCenter() {
         setActiveProspects(data.activeProspects || []);
         setCrmLeads(data.crmLeads || []);
         setProvisionedSites(data.provisionedSites || []);
-        if (data.pillar2) {
-          setPillar2Data(data.pillar2);
-        }
       }
     } catch (_) {
     } finally {
@@ -328,131 +274,6 @@ export default function MobileAdminCommandCenter() {
     }
   };
 
-  const handleApprovePillar2 = async (ticketId: string) => {
-    setTriggerLoading(ticketId);
-    setFeedbackMsg(null);
-    try {
-      const res = await fetch('/api/admin/mobile-control', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': 'bethelmind_admin_2026'
-        },
-        body: JSON.stringify({
-          action: 'approve_pillar2_ticket',
-          ticketId
-        })
-      });
-      const data = await res.json();
-      if (data.success) {
-        const waOk = data.waResult?.dispatched;
-        const emailOk = data.emailResult?.dispatched;
-        const smsOk = data.smsResult?.dispatched;
-        const sentList: string[] = [];
-        if (waOk) sentList.push('WhatsApp');
-        if (emailOk) sentList.push('Email');
-        if (smsOk) sentList.push('SMS');
-
-        if (sentList.length === 3) {
-          setFeedbackMsg(`✅ Deal #${ticketId}: Confirmed delivered on all 3 platforms!`);
-        } else if (sentList.length > 0) {
-          setFeedbackMsg(`⚡ Deal #${ticketId}: Confirmed sent via ${sentList.join(' + ')}. Remaining channels queued for Pacer / 1-Tap.`);
-        } else {
-          setFeedbackMsg(`📋 Deal #${ticketId}: Approved & placed in Outbound Queue. (Paced / 1-Tap Ready - 0 sent via API yet).`);
-        }
-
-        if (data.pillar2) setPillar2Data(data.pillar2);
-        fetchTelemetry();
-        return data;
-      } else {
-        setFeedbackMsg(`❌ ${data.error || 'Failed to approve deal'}`);
-        return data;
-      }
-    } catch (err: any) {
-      setFeedbackMsg(`❌ Error: ${err.message}`);
-    } finally {
-      setTriggerLoading(null);
-    }
-  };
-
-  const handleRejectPillar2 = async (ticketId: string) => {
-    setTriggerLoading(ticketId);
-    setFeedbackMsg(null);
-    try {
-      const res = await fetch('/api/admin/mobile-control', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': 'bethelmind_admin_2026'
-        },
-        body: JSON.stringify({
-          action: 'reject_pillar2_ticket',
-          ticketId
-        })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setFeedbackMsg(`🗑️ Deal #${ticketId} archived.`);
-        if (data.pillar2) setPillar2Data(data.pillar2);
-        fetchTelemetry();
-      }
-    } catch (err: any) {
-      setFeedbackMsg(`❌ Error: ${err.message}`);
-    } finally {
-      setTriggerLoading(null);
-    }
-  };
-
-  const handleRunPillar2Discovery = async () => {
-    setTriggerLoading('discovery');
-    setFeedbackMsg(null);
-    try {
-      const res = await fetch('/api/admin/mobile-control', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': 'bethelmind_admin_2026'
-        },
-        body: JSON.stringify({ action: 'run_pillar2_discovery' })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setFeedbackMsg(`🔍 Discovered & staged fresh luxury deals!`);
-        if (data.pillar2) setPillar2Data(data.pillar2);
-        fetchTelemetry();
-      }
-    } catch (err: any) {
-      setFeedbackMsg(`❌ Error: ${err.message}`);
-    } finally {
-      setTriggerLoading(null);
-    }
-  };
-
-  const handleProcessPillar2Queue = async () => {
-    setTriggerLoading('process_queue');
-    setFeedbackMsg(null);
-    try {
-      const res = await fetch('/api/admin/mobile-control', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': 'bethelmind_admin_2026'
-        },
-        body: JSON.stringify({ action: 'process_pillar2_queue' })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setFeedbackMsg(`⚡ Outbound queue processed: ${data.workerRes?.dispatched || 0} dispatched.`);
-        if (data.pillar2) setPillar2Data(data.pillar2);
-        fetchTelemetry();
-      }
-    } catch (err: any) {
-      setFeedbackMsg(`❌ Error: ${err.message}`);
-    } finally {
-      setTriggerLoading(null);
-    }
-  };
-
   const handleTestAi = async (promptToUse?: string) => {
     const q = promptToUse || testPrompt;
     if (!q) return;
@@ -551,24 +372,6 @@ export default function MobileAdminCommandCenter() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Link
-            href="/admin/luxury"
-            style={{
-              background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
-              border: '1px solid #f59e0b',
-              color: '#ffffff',
-              borderRadius: '8px',
-              padding: '6px 10px',
-              fontSize: '11px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              textDecoration: 'none',
-              fontWeight: 800
-            }}
-          >
-            <span>👑 Sovereign Deck</span>
-          </Link>
           <button
             onClick={handleInstallPwa}
             style={{
@@ -680,76 +483,7 @@ export default function MobileAdminCommandCenter() {
         </div>
       )}
 
-      {/* 🚀 DUAL-PILLAR MASTER MODE SWITCHER */}
-      <div style={{
-        background: '#090e1a',
-        borderBottom: '1px solid #1e293b',
-        padding: '10px 14px',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '8px'
-      }}>
-        <button
-          onClick={() => changePillarMode('pillar1')}
-          style={{
-            padding: '10px 12px',
-            borderRadius: '10px',
-            border: pillarMode === 'pillar1' ? '2px solid #0284c7' : '1px solid #1e293b',
-            background: pillarMode === 'pillar1' ? 'linear-gradient(135deg, rgba(2, 132, 199, 0.22) 0%, rgba(14, 165, 233, 0.1) 100%)' : '#0f172a',
-            color: pillarMode === 'pillar1' ? '#38bdf8' : '#94a3b8',
-            fontWeight: 800,
-            fontSize: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease'
-          }}
-        >
-          <Building size={15} />
-          <span>🏢 PILLAR 1: SME Engine</span>
-        </button>
-
-        <button
-          onClick={() => changePillarMode('pillar2')}
-          style={{
-            padding: '10px 12px',
-            borderRadius: '10px',
-            border: pillarMode === 'pillar2' ? '2px solid #d97706' : '1px solid #1e293b',
-            background: pillarMode === 'pillar2' ? 'linear-gradient(135deg, rgba(217, 119, 6, 0.25) 0%, rgba(180, 83, 9, 0.12) 100%)' : '#0f172a',
-            color: pillarMode === 'pillar2' ? '#fbbf24' : '#94a3b8',
-            fontWeight: 800,
-            fontSize: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px',
-            cursor: 'pointer',
-            position: 'relative',
-            transition: 'all 0.2s ease'
-          }}
-        >
-          <Briefcase size={15} />
-          <span>🏛️ PILLAR 2: Deal Wire</span>
-          {(pillar2Data?.stats?.pendingCount || 0) > 0 && (
-            <span style={{
-              background: '#ef4444',
-              color: '#ffffff',
-              borderRadius: '999px',
-              padding: '2px 6px',
-              fontSize: '10px',
-              fontWeight: 900,
-              marginLeft: '2px'
-            }}>
-              {pillar2Data?.stats?.pendingCount}
-            </span>
-          )}
-        </button>
-      </div>
-
-      {pillarMode === 'pillar1' && (
-      /* Main Tab Navigation Header */
+      {/* Main Tab Navigation Header */}
       <div style={{
         display: 'flex',
         overflowX: 'auto',
@@ -797,23 +531,9 @@ export default function MobileAdminCommandCenter() {
           </button>
         ))}
       </div>
-      )}
 
       {/* Main Content Area */}
       <main style={{ padding: '16px' }}>
-        {pillarMode === 'pillar2' ? (
-          <Pillar2ControlView
-            pillar2Data={pillar2Data}
-            triggerLoading={triggerLoading}
-            onApproveTicket={handleApprovePillar2}
-            onRejectTicket={handleRejectPillar2}
-            onRunDiscovery={handleRunPillar2Discovery}
-            onProcessQueue={handleProcessPillar2Queue}
-            onRefresh={fetchTelemetry}
-            onCopyText={copyToClipboard}
-          />
-        ) : (
-          <>
 
         {/* ── TAB 1: RADAR & OUTREACH ──────────────────────────────────────── */}
         {activeTab === 'radar' && (
@@ -2115,9 +1835,6 @@ export default function MobileAdminCommandCenter() {
             </div>
           </div>
         )}
-
-          </>
-        )}
       </main>
       {/* PWA Phone Installation Step-by-Step Modal */}
       {showInstallModal && (
@@ -2220,18 +1937,28 @@ export default function MobileAdminCommandCenter() {
         backdropFilter: 'blur(20px)',
         borderTop: '1px solid #1e293b',
         display: 'grid',
-        gridTemplateColumns: pillarMode === 'pillar2' ? 'repeat(5, 1fr)' : 'repeat(6, 1fr)',
+        gridTemplateColumns: 'repeat(6, 1fr)',
         padding: '8px 2px 12px 2px',
         zIndex: 100
       }}>
-        {pillarMode === 'pillar2' ? (
-          <>
+        {[
+          { key: 'radar', label: 'Radar', icon: Zap },
+          { key: 'closer', label: 'Closer', icon: MessageSquare },
+          { key: 'meta_wa', label: 'Meta WA', icon: ShieldCheck },
+          { key: 'claim', label: 'Claim', icon: PlusCircle },
+          { key: 'onboard', label: 'Domains', icon: Globe },
+          { key: 'ai_tester', label: 'AI Test', icon: Bot }
+        ].map((item: any) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.key;
+          return (
             <button
-              onClick={() => changePillarMode('pillar1')}
+              key={item.key}
+              onClick={() => setActiveTab(item.key as any)}
               style={{
                 background: 'transparent',
                 border: 'none',
-                color: '#38bdf8',
+                color: isActive ? '#38bdf8' : '#64748b',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -2240,117 +1967,11 @@ export default function MobileAdminCommandCenter() {
                 padding: '4px 0'
               }}
             >
-              <Building size={18} color="#38bdf8" />
-              <span style={{ fontSize: '10px', fontWeight: 800 }}>← Pillar 1</span>
+              <Icon size={18} color={isActive ? '#38bdf8' : '#64748b'} />
+              <span style={{ fontSize: '10px', fontWeight: isActive ? 800 : 600 }}>{item.label}</span>
             </button>
-            <button
-              onClick={handleRunPillar2Discovery}
-              disabled={triggerLoading === 'discovery'}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#fbbf24',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px',
-                cursor: 'pointer',
-                padding: '4px 0'
-              }}
-            >
-              <Search size={18} color="#fbbf24" />
-              <span style={{ fontSize: '10px', fontWeight: 800 }}>Discover</span>
-            </button>
-            <button
-              onClick={handleProcessPillar2Queue}
-              disabled={triggerLoading === 'process_queue'}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#10b981',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px',
-                cursor: 'pointer',
-                padding: '4px 0'
-              }}
-            >
-              <Send size={18} color="#10b981" />
-              <span style={{ fontSize: '10px', fontWeight: 800 }}>Queue ({pillar2Data?.stats?.queuedOutboundCount || 0})</span>
-            </button>
-            <a
-              href="/mandate"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#fbbf24',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px',
-                textDecoration: 'none',
-                cursor: 'pointer',
-                padding: '4px 0'
-              }}
-            >
-              <ShieldCheck size={18} color="#fbbf24" />
-              <span style={{ fontSize: '10px', fontWeight: 800 }}>Mandates</span>
-            </a>
-            <button
-              onClick={fetchTelemetry}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#94a3b8',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px',
-                cursor: 'pointer',
-                padding: '4px 0'
-              }}
-            >
-              <RefreshCw size={18} color="#94a3b8" />
-              <span style={{ fontSize: '10px', fontWeight: 800 }}>Refresh</span>
-            </button>
-          </>
-        ) : (
-          [
-            { key: 'radar', label: 'Radar', icon: Zap },
-            { key: 'closer', label: 'Closer', icon: MessageSquare },
-            { key: 'meta_wa', label: 'Meta WA', icon: ShieldCheck },
-            { key: 'claim', label: 'Claim', icon: PlusCircle },
-            { key: 'onboard', label: 'Domains', icon: Globe },
-            { key: 'ai_tester', label: 'AI Test', icon: Bot },
-            { key: 'deal_wire', label: 'Deal Wire', icon: Briefcase, onClick: () => changePillarMode('pillar2') }
-          ].map((item: any) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.key;
-            return (
-              <button
-                key={item.key}
-                onClick={item.onClick || (() => setActiveTab(item.key as any))}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: item.key === 'deal_wire' ? '#fbbf24' : (isActive ? '#38bdf8' : '#64748b'),
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                  cursor: 'pointer',
-                  padding: '4px 0'
-                }}
-              >
-                <Icon size={18} color={item.key === 'deal_wire' ? '#fbbf24' : (isActive ? '#38bdf8' : '#64748b')} />
-                <span style={{ fontSize: '10px', fontWeight: isActive || item.key === 'deal_wire' ? 800 : 600 }}>{item.label}</span>
-              </button>
-            );
-          })
-        )}
+          );
+        })}
       </nav>
     </div>
   );

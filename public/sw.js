@@ -37,7 +37,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Network-first for pages and API requests to ensure fresh live data
-  if (event.request.mode === 'navigate' || url.pathname.startsWith('/api/') || url.pathname.startsWith('/pillar2')) {
+  if (event.request.mode === 'navigate' || url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {

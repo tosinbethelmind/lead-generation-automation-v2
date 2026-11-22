@@ -5,17 +5,14 @@
  * Bethelmind Digital Solutions (CAC BN: 9912717)
  * Settlement: Moniepoint Microfinance Bank (6805375225)
  * 
- * Solves the Shared WhatsApp Problem:
- * Seamlessly routes incoming messages on a single phone line (0802 279 1227) between:
+ * Focus: 100% Zero-Crypto B2B Commercial Growth Engine (SME Automation & Sector Tools)
  * 1. Pillar 1: SME Automation & Sector Tools (Websites, Fake Alert Shields, WhatsApp Closers)
- * 2. Pillar 2: Luxury Real Estate Deal Wire (Ikoyi, Lekki, Banana Island, LASRERA 80/20, Alausa)
- * 3. Personal / Family / Unrelated: Automatically silences AI to allow normal personal conversation!
+ * 2. Personal / Family / Unrelated / Other Businesses (StarkTV): Automatically silences AI to allow normal human conversation!
  */
 
-import { processConversationalMessage, AIResponsePayload } from './pillar2/pillar2ConversationalAI';
 import { handlePostContactInquiry, CloserResponse } from './monetization/postContactCloserEngine';
 
-export type BusinessDomain = 'PILLAR_1_SME' | 'PILLAR_2_LUXURY_REAL_ESTATE' | 'PERSONAL_OR_UNKNOWN';
+export type BusinessDomain = 'PILLAR_1_SME' | 'PERSONAL_OR_UNKNOWN';
 
 export interface UnifiedRoutingResult {
   domain: BusinessDomain;
@@ -26,16 +23,6 @@ export interface UnifiedRoutingResult {
   intent: string;
   ctaLink?: string;
 }
-
-// Vocabulary Signatures
-const REAL_ESTATE_KEYWORDS = [
-  'property', 'estate', 'villa', 'duplex', 'penthouse', 'mansion', 'terrace',
-  'ikoyi', 'banana island', 'lekki', 'victoria island', 'epe', 'amen estate',
-  'governor', 'consent', 'c of o', 'certificate of occupancy', 'gazette', 'excision',
-  'alausa', 'lands bureau', 'survey plan', 'beacons', 'deed of assignment',
-  'lasrera', 'co-brokerage', '80/20', 'agency fee', 'jim', 'joint inspection',
-  'walkthrough', 'zoom inspection', 'lis pendens', 'buyer mandate', 'harv-', 'deal-'
-];
 
 const SME_KEYWORDS = [
   'website', 'mobile site', 'online store', 'catalog', 'software', 'prototype',
@@ -52,31 +39,7 @@ export function routeIncomingWhatsAppMessage(
 ): UnifiedRoutingResult {
   const text = (messageText || '').toLowerCase().trim();
 
-  // 1. Check for Pillar 2 (Luxury Real Estate) Signatures
-  const matchedRealEstate = REAL_ESTATE_KEYWORDS.filter(kw => text.includes(kw));
-  if (matchedRealEstate.length >= 1 || text.includes('harv-') || text.includes('deal-') || text.includes('lasrera')) {
-    const p2Response = processConversationalMessage({
-      senderPhone: senderPhone || '',
-      senderName: senderName || 'Valued Client',
-      messageText,
-      dealContext: {
-        propertyTitle: 'Prime Lagos Luxury Asset',
-        propertyPrice: 'Market Valuation'
-      }
-    });
-
-    return {
-      domain: 'PILLAR_2_LUXURY_REAL_ESTATE',
-      shouldAutoReply: true,
-      replyText: p2Response.replyText,
-      sourceModule: 'pillar2ConversationalAI',
-      detectedKeywords: matchedRealEstate,
-      intent: p2Response.intent,
-      ctaLink: p2Response.ctaLink
-    };
-  }
-
-  // 2. Check for Pillar 1 (SME Automation & Sector Tools) Signatures
+  // 1. Check for Pillar 1 (SME Automation & Sector Tools) Signatures
   const matchedSme = SME_KEYWORDS.filter(kw => text.includes(kw));
   if (matchedSme.length >= 1 || text.includes('bm-web') || text.includes('preview')) {
     const p1Response = handlePostContactInquiry(messageText, {
@@ -96,8 +59,8 @@ export function routeIncomingWhatsAppMessage(
     };
   }
 
-  // 3. Personal, Casual, or Unclassified Messages (SILENCE AI TO PREVENT CONFUSION)
-  // If a friend, family member, or unrelated contact texts "Hey bro how are you" or "Good morning"
+  // 2. Personal, Casual, StarkTV, or Unclassified Messages (SILENCE AI TO PREVENT CONFUSION)
+  // If a friend, family member, StarkTV client, or unrelated contact texts,
   // the AI will NOT reply with a business pitch!
   return {
     domain: 'PERSONAL_OR_UNKNOWN',

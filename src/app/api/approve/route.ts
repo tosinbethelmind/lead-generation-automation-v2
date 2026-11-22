@@ -54,7 +54,7 @@ async function syncToSupabaseCloud(ticket: any, action: string) {
     const supabase = createClient(url, key);
     await supabase.from('logs').insert([{
       run_id: `COPILOT_${ticket.ticketId}`,
-      step: 'PILLAR2_MANDATE_OUTBOUND',
+      step: 'TICKET_APPROVAL',
       status: 'INFO',
       message: JSON.stringify({
         action,

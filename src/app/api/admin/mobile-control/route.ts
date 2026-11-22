@@ -14,14 +14,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { PILLAR_ONE_SERVICES, getPillarOneService } from '@/lib/pillarOneCatalog';
-import {
-  getPillar2Telemetry,
-  discoverFreshDeals,
-  approveTicket as approvePillar2Ticket,
-  rejectTicket as rejectPillar2Ticket,
-  processOutboundQueue as processPillar2OutboundQueue,
-  CORPORATE_SETTLEMENT
-} from '@/lib/pillar2/pillar2Engine';
 
 const { 
   handlePostContactInquiry, 
@@ -60,7 +52,6 @@ const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL || 'https://www.bethelmindana
 
 export async function GET() {
   const todayStr = new Date().toISOString().split('T')[0];
-  const pillar2 = await getPillar2Telemetry();
 
   // 1. Primary: Query Contabo VPS live telemetry server (24/7 PM2 Engine)
   try {
@@ -77,7 +68,6 @@ export async function GET() {
       if (vpsData?.telemetry?.sms?.sentToday !== undefined) {
         return NextResponse.json({
           ...vpsData,
-          pillar2,
           corporateBank: CORPORATE_BANK
         }, {
           headers: {
@@ -295,8 +285,7 @@ export async function GET() {
     activeProspects,
     crmLeads,
     provisionedSites,
-    corporateBank: CORPORATE_BANK,
-    pillar2
+    corporateBank: CORPORATE_BANK
   });
 }
 
@@ -425,38 +414,6 @@ export async function POST(req: NextRequest) {
         suggestedAction: aiReply?.suggestedAction || 'SEND_PROTOTYPE',
         replyText: aiReply?.replyText || aiReply?.message || (typeof aiReply === 'string' ? aiReply : 'AI response generated.')
       });
-    }
-
-    // ── ACTION D: Discover Fresh Luxury Mandates (Pillar 2) ──────────────────
-    if (action === 'run_pillar2_discovery') {
-      const result = await discoverFreshDeals();
-      return NextResponse.json(result);
-    }
-
-    // ── ACTION E: Process Outbound Mandate Queue (Pillar 2) ───────────────────
-    if (action === 'process_pillar2_queue') {
-      const result = await processPillar2OutboundQueue();
-      return NextResponse.json(result);
-    }
-
-    // ── ACTION F: 1-Tap In-App Mandate Approval (Pillar 2) ───────────────────
-    if (action === 'approve_pillar2_ticket') {
-      const { ticketId } = body;
-      if (!ticketId) {
-        return NextResponse.json({ success: false, error: 'ticketId is required' }, { status: 400 });
-      }
-      const result = await approvePillar2Ticket(ticketId);
-      return NextResponse.json(result);
-    }
-
-    // ── ACTION G: Dismiss / Reject Mandate Ticket (Pillar 2) ──────────────────
-    if (action === 'reject_pillar2_ticket') {
-      const { ticketId } = body;
-      if (!ticketId) {
-        return NextResponse.json({ success: false, error: 'ticketId is required' }, { status: 400 });
-      }
-      const result = await rejectPillar2Ticket(ticketId);
-      return NextResponse.json(result);
     }
 
     return NextResponse.json({ success: false, error: 'Unknown action' }, { status: 400 });
