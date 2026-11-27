@@ -496,7 +496,11 @@ export default function FoodsLandingClient({
 
           {/* Hero Food Photography */}
           <div className="lg:col-span-5">
-            <div className="relative rounded-2xl overflow-hidden border-2 border-amber-400/40 shadow-2xl bg-emerald-950">
+            <div className="relative rounded-2xl overflow-hidden border-2 border-amber-400/50 shadow-2xl shadow-black/60 bg-emerald-950">
+              <div className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/90 border border-amber-400/40 text-amber-300 text-[11px] font-bold backdrop-blur">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Freshly Prepared to Order</span>
+              </div>
               <img
                 src="/foods/hero-feast.jpg"
                 alt="Freshly prepared Nigerian Jollof rice, fried rice, Egusi soup, grilled chicken and small chops by Bethelmind Foods"
@@ -532,7 +536,7 @@ export default function FoodsLandingClient({
           </div>
 
           {/* Category Filter Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+          <div className="flex items-center sm:justify-center gap-2 mb-8 overflow-x-auto pb-2 snap-x">
             {[
               { id: 'all', label: 'All Menu Items' },
               { id: 'soup', label: 'Nigerian Soups (Litres)' },
@@ -1277,12 +1281,18 @@ export default function FoodsLandingClient({
         <button
           type="button"
           onClick={cart.length > 0 ? scrollToCheckout : scrollToMenu}
-          className="flex-1 py-3 px-4 rounded-xl bg-red-600 text-white font-black text-sm shadow-lg flex items-center justify-center gap-2"
+          className="flex-1 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black text-xs sm:text-sm shadow-lg flex items-center justify-center gap-2"
         >
-          <ShoppingBag className="w-4 h-4" />
-          {cart.length > 0
-            ? `PLACE ORDER (${cart.length})`
-            : 'ORDER YOUR FOOD NOW'}
+          <ShoppingBag className="w-4 h-4 shrink-0" />
+          <span>
+            {cart.length > 0
+              ? `PLACE ORDER (${cart.length})${
+                  (calculated.totalPayable ?? calculated.subtotal) !== null
+                    ? ` • ${formatNaira((calculated.totalPayable ?? calculated.subtotal) as number)}`
+                    : ''
+                }`
+              : 'ORDER YOUR FOOD NOW'}
+          </span>
         </button>
       </div>
     </div>

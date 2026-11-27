@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
-import { BRAND_IDENTITY } from '@/lib/commerce/catalog';
+import { BRAND_IDENTITY } from '@/lib/commerce/brandIdentity';
 import { getStoredAttribution, trackConversionEvent } from '@/lib/commerce/googleTracking';
 import type { PortfolioEntry } from '@/lib/commerce/enquiries';
 
@@ -254,41 +254,49 @@ export default function BusinessSolutionsPage() {
   )}`;
 
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 font-sans pb-20 sm:pb-0">
+    <div className="min-h-screen bg-[#070b14] text-slate-100 font-sans pb-24 sm:pb-0 relative overflow-x-hidden">
+      {/* Subtle CSS-only radial glow (zero JS overhead) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-x-0 top-0 h-[520px] bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.12),transparent_65%)]"
+      />
       <Navbar />
 
-      <main className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-20">
+      <main className="relative pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-20">
         {/* SECTION 3 & 4: HERO + ABOVE-THE-FOLD CONSULTATION CARD */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] text-xs font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/35 text-[#d4af37] text-xs font-bold uppercase tracking-wider shadow-sm">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>CAC Registered Business ({BRAND_IDENTITY.cacReg})</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.12]">
-              Your Business Deserves a Professional Website That Wins Customer Trust.
+            <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.1]">
+              Your Business Deserves a Professional Website That{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] to-[#f6e6a5]">
+                Wins Customer Trust.
+              </span>
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl">
               Get a modern, mobile-friendly business website with WhatsApp integration, customer enquiry capture and Google visibility setup.
             </p>
-            <p className="text-sm sm:text-base text-[#d4af37] font-semibold leading-relaxed">
-              Transparent pricing. Pay 60% to get started and the remaining 40% after reviewing and approving your website.
-            </p>
+            <div className="p-3.5 rounded-xl bg-[#d4af37]/10 border border-[#d4af37]/30 text-sm text-[#f3e4b0] font-medium leading-relaxed">
+              Transparent pricing from <strong className="text-white">₦80,000</strong>. Pay <strong className="text-white">60%</strong> to get started and the remaining <strong className="text-white">40%</strong> after reviewing and approving your website.
+            </div>
 
-            <div className="flex flex-wrap gap-3 pt-1">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-1">
               <a
                 href="#consultation-form"
                 onClick={() => trackConversionEvent('click_whatsapp', { cta: 'hero_get_my_business_website' })}
-                className="px-6 py-3.5 rounded-xl bg-[#d4af37] hover:bg-[#e5c158] text-[#070b14] font-black text-sm transition inline-flex items-center gap-2"
+                className="px-6 py-4 rounded-xl bg-[#d4af37] hover:bg-[#e5c158] text-[#070b14] font-black text-sm shadow-lg shadow-[#d4af37]/20 transition inline-flex items-center justify-center gap-2"
               >
                 <span>GET MY BUSINESS WEBSITE</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
               <a
                 href="#packages"
-                className="px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 transition"
+                className="px-6 py-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white font-bold text-sm border border-slate-700 transition inline-flex items-center justify-center"
               >
                 VIEW WEBSITE PACKAGES
               </a>
@@ -303,7 +311,7 @@ export default function BusinessSolutionsPage() {
                 'Secure Paystack Checkout',
                 'Client Review Before Final Handover',
               ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2">
+                <div key={idx} className="flex items-center gap-2 bg-slate-900/50 border border-slate-800/80 rounded-lg px-3 py-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>{item}</span>
                 </div>
@@ -313,7 +321,12 @@ export default function BusinessSolutionsPage() {
 
           {/* Above-the-Fold Consultation Form */}
           <div ref={formRef} id="consultation-form" className="lg:col-span-5">
-            <div className="p-6 sm:p-7 rounded-2xl bg-slate-900 border border-[#d4af37]/40 shadow-2xl space-y-4">
+            <div className="p-6 sm:p-7 rounded-2xl bg-slate-900/95 border border-slate-700/80 border-t-2 border-t-[#d4af37] shadow-2xl shadow-black/60 space-y-4">
+              <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400 pb-2 border-b border-slate-800">
+                <span className="text-[#d4af37]">Step 1: Quick Details</span>
+                <span>&rarr;</span>
+                <span>Step 2: Direct WhatsApp Review</span>
+              </div>
               <div>
                 <h2 className="text-xl font-bold text-white">Request Your Website Consultation</h2>
                 <p className="text-xs text-slate-400 mt-1">
@@ -584,12 +597,16 @@ export default function BusinessSolutionsPage() {
           {/* 3-Step Process */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
             {[
-              '1. Select your package and discuss requirements.',
-              '2. Approve the scope and pay the initial deposit.',
-              '3. Review your website, approve it and complete payment before handover.',
-            ].map((step, i) => (
-              <div key={i} className="p-4 rounded-xl bg-slate-900 border border-[#d4af37]/25 text-sm font-semibold text-white">
-                {step}
+              { num: '01', title: 'Select & Discuss', text: 'Select your package and discuss your business requirements with our team.' },
+              { num: '02', title: 'Scope & 60% Deposit', text: 'Approve the documented scope and pay the 60% initial deposit to start.' },
+              { num: '03', title: 'Review & Handover', text: 'Review your website on staging, approve it, and complete the 40% balance before handover.' },
+            ].map((step) => (
+              <div key={step.num} className="p-5 rounded-2xl bg-slate-900 border border-[#d4af37]/30 space-y-2">
+                <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#d4af37]/15 text-[#d4af37] text-xs font-black">
+                  STEP {step.num}
+                </span>
+                <div className="text-sm font-bold text-white">{step.title}</div>
+                <p className="text-xs text-slate-300 leading-relaxed">{step.text}</p>
               </div>
             ))}
           </div>
