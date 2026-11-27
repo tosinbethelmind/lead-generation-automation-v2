@@ -1,5 +1,23 @@
 {
   "cleanUrls": false,
+  "rewrites": [
+    {
+      "source": "/redeem",
+      "destination": "/redeem.html"
+    },
+    {
+      "source": "/redeem/(.*)",
+      "destination": "/redeem.html"
+    },
+    {
+      "source": "/affiliates",
+      "destination": "/affiliates.html"
+    },
+    {
+      "source": "/affiliate",
+      "destination": "/affiliates.html"
+    }
+  ],
   "headers": [
     {
       "source": "/downloads/(.*)\\.apk",
