@@ -21,7 +21,7 @@ import {
   DEFAULT_COMMERCIAL_CATALOG,
   type CommercialDivision,
   type CommercialProduct,
-} from '@/lib/commerce/catalog';
+} from '@/lib/commerce/brandIdentity';
 
 export interface DivisionConfig {
   division: CommercialDivision;

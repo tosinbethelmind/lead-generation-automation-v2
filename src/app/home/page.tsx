@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
-import { BRAND_IDENTITY } from '@/lib/commerce/catalog';
+import { BRAND_IDENTITY } from '@/lib/commerce/brandIdentity';
 
 const DIVISIONS = [
   {

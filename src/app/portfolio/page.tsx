@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
 import { ArrowRight, Globe, MessageSquare, BarChart3, ShieldCheck } from 'lucide-react';
-import { BRAND_IDENTITY } from '@/lib/commerce/catalog';
+import { BRAND_IDENTITY } from '@/lib/commerce/brandIdentity';
 
 const PORTFOLIO_SHOWCASES = [
   {

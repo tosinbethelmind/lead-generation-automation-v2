@@ -10,7 +10,7 @@ import {
   DEFAULT_COMMERCIAL_CATALOG,
   type CommercialDivision,
   type CommercialProduct,
-} from '@/lib/commerce/catalog';
+} from '@/lib/commerce/brandIdentity';
 
 const DIVISION_TABS: { id: CommercialDivision; label: string; subtitle: string; href: string }[] = [
   {

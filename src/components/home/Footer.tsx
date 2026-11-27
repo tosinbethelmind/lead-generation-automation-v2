@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Sparkles, ShieldCheck } from 'lucide-react';
-import { BRAND_IDENTITY } from '@/lib/commerce/catalog';
+import { BRAND_IDENTITY } from '@/lib/commerce/brandIdentity';
 
 const LEGAL_LINKS = [
   { label: 'Terms of Service', href: '/legal/terms' },

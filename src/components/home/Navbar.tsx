@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MessageSquare, Menu, X } from 'lucide-react';
-import { BRAND_IDENTITY } from '@/lib/commerce/catalog';
+import { BRAND_IDENTITY } from '@/lib/commerce/brandIdentity';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/home' },
