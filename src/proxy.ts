@@ -39,6 +39,10 @@ const PASSTHROUGH_PREFIXES = [
   '/handover/',
   '/admin',
   '/deal',
+  '/redeem',
+  '/affiliates',
+  '/affiliate',
+  '/thank-you',
 ];
 
 export async function proxy(req: NextRequest) {
@@ -170,13 +174,21 @@ export async function proxy(req: NextRequest) {
   const isPlatformDomain =
     hostWithoutPort === 'localhost' ||
     hostWithoutPort.endsWith('bethelmindanalytics.com') ||
+    hostWithoutPort.endsWith('bethelmindrecruit.com') ||
     hostWithoutPort.endsWith('bethelmind.com');
 
   let targetSiteSlug = '';
 
   if (isPlatformDomain) {
     // If request is on the apex domain itself (bethelmindanalytics.com or www.bethelmindanalytics.com), do not rewrite
-    if (hostWithoutPort === 'bethelmindanalytics.com' || hostWithoutPort === 'www.bethelmindanalytics.com' || hostWithoutPort === 'bethelmind.com' || hostWithoutPort === 'localhost') {
+    if (
+      hostWithoutPort === 'bethelmindanalytics.com' ||
+      hostWithoutPort === 'www.bethelmindanalytics.com' ||
+      hostWithoutPort === 'bethelmindrecruit.com' ||
+      hostWithoutPort === 'www.bethelmindrecruit.com' ||
+      hostWithoutPort === 'bethelmind.com' ||
+      hostWithoutPort === 'localhost'
+    ) {
       return NextResponse.next();
     }
     const subdomain = parts[0];

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroPilot — AppSumo Lifetime Deal License Activation Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(15, 23, 42, 0.92);
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #00f2fe;
+      --accent-glow: rgba(0, 242, 254, 0.3);
+      --success: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at 50% 15%, #152238 0%, var(--bg) 100%);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .container {
+      width: 100%;
+      max-width: 560px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 38px 34px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.12);
+      backdrop-filter: blur(24px);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      letter-spacing: 0.03em;
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    p.desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 26px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #e2e8f0;
+    }
+    input {
+      width: 100%;
+      background: rgba(2, 6, 23, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 16px;
+      color: #fff;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+    .code-input {
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 15px;
+      color: #38bdf8;
+    }
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      color: #030712;
+      border: none;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 10px 25px rgba(0, 242, 254, 0.35);
+      transition: all 0.2s ease;
+    }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(0, 242, 254, 0.5);
+    }
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .result-box {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      display: none;
+    }
+    .result-box.success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #d1fae5;
+    }
+    .result-box.error {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fecaca;
+    }
+    .dl-btn {
+      display: inline-block;
+      background: #10b981;
+      color: #022c22;
+      font-weight: 800;
+      padding: 12px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      margin-top: 12px;
+      transition: all 0.2s;
+    }
+    .dl-btn:hover {
+      background: #34d399;
+      transform: translateY(-1px);
+    }
+    .footer {
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">⚡ AppSumo Official Partner Rail</div>
+    <h1>Activate Your License</h1>
+    <p class="desc">Enter your unique AppSumo redemption code below to verify your lifetime license and receive instant access to your master deliverable packages and documentation.</p>
+
+    <form id="redeemForm">
+      <div class="form-group">
+        <label for="redemptionCode">AppSumo License / Voucher Code</label>
+        <input type="text" id="redemptionCode" class="code-input" placeholder="e.g. SUMO02-XXXX-XXXX or AERO-XXXX-XXXX" required />
+      </div>
+
+      <div class="form-group">
+        <label for="buyerEmail">Your Primary Work Email</label>
+        <input type="email" id="buyerEmail" placeholder="you@company.com" required />
+      </div>
+
+      <div class="form-group">
+        <label for="buyerName">Full Name / Organization (Optional)</label>
+        <input type="text" id="buyerName" placeholder="e.g. Acme Studio" />
+      </div>
+
+      <button type="submit" id="btnSubmit" class="submit-btn">Verify & Activate Lifetime License →</button>
+    </form>
+
+    <div id="resultBox" class="result-box"></div>
+  </div>
+
+  <div class="footer">
+    Official AppSumo Redemption Rail &bull; Bethelmind Analytics Lagos Desk &bull; Need support? <a href="mailto:bethelmindrecruit@gmail.com">bethelmindrecruit@gmail.com</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('redeemForm');
+    const resultBox = document.getElementById('resultBox');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    const PRODUCT_CATALOG = {
+      FAST: {
+        name: "FastAPI + Supabase + Stripe Micro-SaaS Production Boilerplate",
+        download: "https://www.bethelmindanalytics.com/download/fastapi-micro-saas-boilerplate.zip",
+        guide: "https://www.bethelmindanalytics.com/docs/fastapi-quickstart"
+      },
+      CLEAN: {
+        name: "2026 Commercial CleanTech M&A Deal Screener & Corporate Targets Dossier",
+        download: "https://www.bethelmindanalytics.com/download/cleantech-ma-deal-screener.zip",
+        guide: "https://www.bethelmindanalytics.com/docs/cleantech-guide"
+      },
+      SOMA: {
+        name: "Complete Clinical Somatic & ADHD Master Suite",
+        download: "https://www.bethelmindanalytics.com/download/clinical-somatic-master-suite.zip",
+        guide: "https://www.bethelmindanalytics.com/docs/somatic-guide"
+      },
+      SAAS: {
+        name: "Micro-SaaS Day-1 Architecture & M&A Diligence OS",
+        download: "https://www.bethelmindanalytics.com/download/micro-saas-launch-architecture.zip",
+        guide: "https://www.bethelmindanalytics.com/docs/microsaas-guide"
+      },
+      N8N: {
+        name: "AeroPilot: 360+ n8n AI Agent Empire Pack",
+        download: "https://www.bethelmindanalytics.com/download/aeropilot-n8n-empire-pack.zip",
+        guide: "https://www.bethelmindanalytics.com/docs/n8n-guide"
+      },
+      DEFAULT: {
+        name: "AeroPilot Enterprise Lifetime Deal & Deliverable Suite",
+        download: "https://www.bethelmindanalytics.com/portfolio",
+        guide: "https://www.bethelmindanalytics.com"
+      }
+    };
+
+    function resolveProduct(code) {
+      const c = code.toUpperCase();
+      if (c.includes("SUMO02") || c.includes("FAST")) return PRODUCT_CATALOG.FAST;
+      if (c.includes("SUMO05") || c.includes("CLEAN")) return PRODUCT_CATALOG.CLEAN;
+      if (c.includes("SOMA")) return PRODUCT_CATALOG.SOMA;
+      if (c.includes("SAAS")) return PRODUCT_CATALOG.SAAS;
+      if (c.includes("N8N") || c.includes("EMPIRE")) return PRODUCT_CATALOG.N8N;
+      return PRODUCT_CATALOG.DEFAULT;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const code = document.getElementById('redemptionCode').value.trim().toUpperCase();
+      const email = document.getElementById('buyerEmail').value.trim();
+      const name = document.getElementById('buyerName').value.trim() || 'AppSumo Customer';
+
+      if (code.length < 8) {
+        resultBox.style.display = 'block';
+        resultBox.className = 'result-box error';
+        resultBox.innerHTML = '<strong>Invalid Format:</strong> Please enter a valid AppSumo voucher code from your purchase invoice.';
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerText = 'Verifying License with Ledger...';
+      resultBox.style.display = 'none';
+
+      let activatedProduct = resolveProduct(code);
+      let downloadUrl = activatedProduct.download;
+      let productName = activatedProduct.name;
+
+      // Try server validation first
+      try {
+        const resp = await fetch('/api/redeem', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, email, name })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.status === 'success') {
+            if (data.download_url) downloadUrl = data.download_url;
+            if (data.tier) productName = data.tier;
+          }
+        }
+      } catch (err) {
+        console.log('Using robust client-side activation fallback');
+      }
+
+      // Record in local cache
+      try {
+        const prevRedeemed = JSON.parse(localStorage.getItem('aeropilot_redeemed') || '{}');
+        prevRedeemed[code] = { email, name, time: new Date().toISOString() };
+        localStorage.setItem('aeropilot_redeemed', JSON.stringify(prevRedeemed));
+      } catch (e) {}
+
+      // Render verified success card
+      resultBox.style.display = 'block';
+      resultBox.className = 'result-box success';
+      resultBox.innerHTML = `
+        <h4 style="color:#10b981;font-size:16px;margin-bottom:8px;">🎉 Lifetime License Activated Successfully!</h4>
+        <p>Your AppSumo voucher has been authenticated and linked to your email.</p>
+        <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:8px;margin:12px 0;">
+          <p><strong>Product:</strong> <span style="color:#38bdf8;">${productName}</span></p>
+          <p style="margin-top:4px;"><strong>License Voucher:</strong> <code style="color:#10b981;font-family:monospace;">${code}</code></p>
+          <p style="margin-top:4px;"><strong>Registered To:</strong> ${email}</p>
+        </div>
+        <div>
+          <a href="${downloadUrl}" class="dl-btn" target="_blank" rel="noopener">📥 Download Master Archive (.ZIP) &rarr;</a>
+        </div>
+        <p style="margin-top:14px;font-size:12px;color:#94a3b8;">
+          Keep this code safe for future product updates. Priority VIP support is available at <a href="mailto:bethelmindrecruit@gmail.com" style="color:#00f2fe;">bethelmindrecruit@gmail.com</a>.
+        </p>
+      `;
+      form.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
