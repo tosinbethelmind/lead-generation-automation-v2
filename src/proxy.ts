@@ -75,10 +75,8 @@ export async function proxy(req: NextRequest) {
 
   // ── 1. Admin Route Protection ─────────────────────────────────────────────
   if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
-    console.log(`[Proxy Debug] Entering Admin protection for pathname: ${pathname}`);
-    // Allow login paths to bypass authentication
-    if (pathname === '/admin/login' || pathname === '/api/admin/login' || pathname.startsWith('/api/admin/nairaland') || pathname.startsWith('/api/admin/one-tap-approval')) {
-      console.log(`[Proxy Debug] Bypassing admin authentication for login path: ${pathname}`);
+    // Allow login paths only to bypass authentication
+    if (pathname === '/admin/login' || pathname === '/api/admin/login') {
       return NextResponse.next();
     }
 
@@ -88,8 +86,6 @@ export async function proxy(req: NextRequest) {
     const candidateToken = authHeader || tokenCookie;
 
     const rawValidTokens = [
-      'bethelmind_admin_2026',
-      'bethelmind_assistant_2026',
       process.env.ADMIN_TOKEN,
       process.env.ADMIN_PASSWORD,
       process.env.ASSISTANT_TOKEN

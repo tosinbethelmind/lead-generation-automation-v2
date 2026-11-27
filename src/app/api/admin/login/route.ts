@@ -66,34 +66,9 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
-  try {
-    const url = req.nextUrl.clone();
-    const token = url.searchParams.get('token');
-    const redirectPath = url.searchParams.get('redirect') || '/admin';
-
-    if (!token) {
-      return NextResponse.redirect(getPublicUrl('/admin/login?error=Token required', req));
-    }
-
-    const adminUser = getAdminUser(token);
-    if (!adminUser) {
-      return NextResponse.redirect(getPublicUrl('/admin/login?error=Invalid token', req));
-    }
-
-    const sessionValue = await createSessionToken(token, adminUser.role, adminUser.name);
-    const response = NextResponse.redirect(getPublicUrl(redirectPath, req));
-
-    response.cookies.set('admin-token', sessionValue, {
-      path: '/',
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    });
-
-    return response;
-  } catch (error: any) {
-    return NextResponse.redirect(getPublicUrl('/admin/login?error=Authentication error', req));
-  }
+export async function GET() {
+  return NextResponse.json(
+    { success: false, message: 'GET token login is disabled for security. Use POST /api/admin/login.' },
+    { status: 405 }
+  );
 }

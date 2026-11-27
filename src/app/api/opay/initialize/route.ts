@@ -1,113 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getRuntimeConfig } from '@/lib/localConfig';
-import { getActiveLeadRepository } from '@/lib/googleSheets';
-import { calculateLeadClaimFee } from '@/lib/pricing';
-import { initiateOPay } from '@/lib/payments/opay';
-import { findBundledLead, sanitizeDisplayName } from '@/lib/leadsBundle';
+import { NextResponse } from 'next/server';
 
-
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const {
-      leadId,
-      email,
-      name,
-      theme,
-      copy,
-      selectedFeatures,
-      customInstructions,
-      publicKey,
-      upgradeStrategy,
-    } = body;
-
-    if (!leadId || !email || !name) {
-      return NextResponse.json(
-        { error: 'Missing required fields: leadId, email, or name' },
-        { status: 400 }
-      );
-    }
-
-    const config = getRuntimeConfig();
-
-    const opayPublic = config.opayPublicKey || '';
-    const publicKeys = opayPublic.split(',').map((k) => k.trim()).filter(Boolean);
-    const opaySecret = config.opaySecretKey || '';
-    const secretKeys = opaySecret.split(',').map((k) => k.trim()).filter(Boolean);
-    const opayMerchant = config.opayMerchantId || '';
-    const merchantIds = opayMerchant.split(',').map((id) => id.trim()).filter(Boolean);
-
-    const index = publicKey === 'mock' ? -1 : publicKeys.indexOf(publicKey);
-    const secretKey = index !== -1 ? secretKeys[index] : (publicKey === 'mock' ? 'mock' : (secretKeys[0] || 'mock'));
-    const merchantId = index !== -1 ? merchantIds[index] : (publicKey === 'mock' ? 'mock' : (merchantIds[0] || 'mock'));
-
-    let lead: any = findBundledLead(leadId);
-    if (!lead) {
-      try {
-        const repo = getActiveLeadRepository();
-        lead = (await repo.getLeadById(leadId)) as any;
-      } catch (_) {}
-    }
-
-    if (!lead) {
-      const safeName = sanitizeDisplayName(leadId, 'Professional Services');
-      lead = {
-        id: leadId,
-        name: safeName,
-        email: email || 'admin@bethelmindanalytics.com',
-        phone: '+2348022791227',
-        category: 'Professional Services',
-        address: 'Lagos, Nigeria',
-        city: 'Lagos'
-      };
-    } else {
-      lead.name = sanitizeDisplayName(lead.name, lead.category);
-    }
-
-
-    // Assign chosen strategy and features in-memory for correct pricing
-    if (upgradeStrategy) {
-      lead.upgrade_strategy = upgradeStrategy;
-      lead.upgradeStrategy = upgradeStrategy;
-    }
-    if (selectedFeatures) {
-      lead.plugin_suggestions = selectedFeatures;
-      lead.pluginSuggestions = selectedFeatures;
-    }
-
-    const feeNGN = calculateLeadClaimFee(lead, config);
-
-    if (feeNGN <= 0) {
-      return NextResponse.json(
-        { error: 'Setup Claim Fee is set to 0 or not configured. Payment not required.' },
-        { status: 400 }
-      );
-    }
-
-    const origin = new URL(req.url).origin;
-    const reference = `OPAY-${Math.floor(100000 + Math.random() * 900000)}-${Date.now()}`;
-    const returnUrl = `${origin}/preview/${leadId}?payment=verifying&gateway=opay&reference=${reference}`;
-    const callbackUrl = returnUrl;
-
-    const opayResult = await initiateOPay({
-      publicKey: publicKey || 'mock',
-      merchantId,
-      amountNgn: feeNGN,
-      email,
-      name,
-      txRef: reference,
-      callbackUrl,
-      returnUrl,
-      leadId,
-    });
-
-    return NextResponse.json({
-      success: true,
-      authorization_url: opayResult.cashierUrl,
-      reference: opayResult.reference,
-    });
-  } catch (err: any) {
-    console.error('OPay initialization error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
-  }
+export async function POST() {
+  return NextResponse.json(
+    {
+      success: false,
+      frozen: true,
+      error: 'OPay checkout is frozen. Use Paystack or verified Moniepoint corporate bank transfer.',
+    },
+    { status: 503 }
+  );
 }

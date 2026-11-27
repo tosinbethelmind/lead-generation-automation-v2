@@ -95,6 +95,10 @@
     {
       "path": "/api/cron/autonomous-blog",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/commerce-automation",
+      "schedule": "0 8 * * *"
     }
   ]
 }

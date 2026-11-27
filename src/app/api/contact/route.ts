@@ -1,91 +1,96 @@
 import { NextResponse } from 'next/server';
+import { createEnquiry, validateNigerianPhone } from '@/lib/commerce/enquiries';
 
 export const dynamic = 'force-dynamic';
 
-/**
- * POST /api/contact
- * Web contact form endpoint.
- * Receives form data and forwards it to the Unified WhatsApp Command Center
- * which generates an AI draft and alerts the admin on WhatsApp for approval.
- */
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { name, email, phone, subject, message, source } = body;
+    const {
+      name,
+      email,
+      phone,
+      whatsapp,
+      businessName,
+      selectedService,
+      selectedPackage,
+      agreedPriceNgn,
+      subject,
+      message,
+      source,
+      gclid,
+      gbraid,
+      wbraid,
+      utmCampaign,
+    } = body;
 
-    if (!message || message.trim().length < 3) {
-      return NextResponse.json({ success: false, error: 'Message is required' }, { status: 400 });
+    const cleanName = String(name || '').trim();
+    if (cleanName.length < 2) {
+      return NextResponse.json({ success: false, error: 'Please enter your full name.' }, { status: 400 });
     }
 
-    if (!email && !phone) {
-      return NextResponse.json({ success: false, error: 'Either email or phone is required' }, { status: 400 });
+    const rawPhone = String(whatsapp || phone || '').trim();
+    if (rawPhone) {
+      const phoneCheck = validateNigerianPhone(rawPhone);
+      if (!phoneCheck.valid) {
+        return NextResponse.json({ success: false, error: phoneCheck.error }, { status: 400 });
+      }
+    } else if (!email) {
+      return NextResponse.json(
+        { success: false, error: 'Please provide your WhatsApp number or email address.' },
+        { status: 400 }
+      );
     }
 
-    // Forward to Unified WhatsApp Closer / Command Center (Check 3007 then 3008)
-    const targetUrls = [
-      process.env.COMMAND_CENTER_URL,
-      'http://127.0.0.1:3007',
-      'http://127.0.0.1:3008'
-    ].filter(Boolean) as string[];
+    const serviceLabel = String(selectedService || subject || 'Business Website Development');
+    const enquiry = await createEnquiry({
+      name: cleanName,
+      whatsapp: rawPhone,
+      businessName,
+      email,
+      selectedService: serviceLabel,
+      selectedPackage,
+      agreedPriceNgn: typeof agreedPriceNgn === 'number' ? agreedPriceNgn : undefined,
+      message: message || `Enquiry for ${serviceLabel}${selectedPackage ? ` (${selectedPackage})` : ''}`,
+      source: source || 'website_enquiry',
+      gclid,
+      gbraid,
+      wbraid,
+      utmCampaign,
+    });
 
-    let ticketId = `WEB-${Date.now().toString().slice(-4)}`;
-    let dispatched = false;
-
+    // Optional forward to local WhatsApp Command Center if running
+    const targetUrls = [process.env.COMMAND_CENTER_URL].filter(Boolean) as string[];
     for (const url of targetUrls) {
       try {
-        const resp = await fetch(`${url}/web-inquiry`, {
+        await fetch(`${url}/web-inquiry`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            name:    name    || 'Website Visitor',
-            email:   email   || '',
-            phone:   phone   || '',
-            subject: subject || `Website Inquiry — ${source || 'Contact Form'}`,
-            message: message.trim()
+            name: enquiry.name,
+            email: enquiry.email || '',
+            phone: enquiry.whatsapp,
+            subject: `${enquiry.selectedService}${enquiry.selectedPackage ? ` — ${enquiry.selectedPackage}` : ''}`,
+            message: enquiry.message || '',
           }),
-          signal: AbortSignal.timeout(2500)
+          signal: AbortSignal.timeout(2000),
         });
-
-        if (resp.ok) {
-          const data = await resp.json().catch(() => ({}));
-          ticketId = data.ticketId || ticketId;
-          dispatched = true;
-          break;
-        }
-      } catch (_) {}
+      } catch {}
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Your inquiry has been received! Our Lagos team will reply in < 2 seconds.',
-      ticketId,
-      dispatched
+      enquiryId: enquiry.id,
+      ticketId: enquiry.id,
+      enquiry,
+      message: 'Your enquiry has been recorded. Speak directly with our team on WhatsApp.',
     });
   } catch (error: any) {
     console.error('[Contact API] Unexpected error:', error.message);
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Unable to submit enquiry right now.' }, { status: 500 });
   }
 }
 
-/**
- * GET /api/contact
- * Health check for the contact API
- */
 export async function GET() {
-  const COMMAND_CENTER_URL = process.env.COMMAND_CENTER_URL || 'http://localhost:3008';
-  let commandCenterOnline = false;
-
-  try {
-    const resp = await fetch(`${COMMAND_CENTER_URL}/health`, {
-      signal: AbortSignal.timeout(3000)
-    });
-    commandCenterOnline = resp.ok;
-  } catch (_) {}
-
-  return NextResponse.json({
-    success: true,
-    service: 'Contact Form API',
-    commandCenterOnline,
-    commandCenterUrl: COMMAND_CENTER_URL
-  });
+  return NextResponse.json({ success: true, service: 'Bethelmind Enquiry & Contact API' });
 }

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 220" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgHoriz" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#070b14" />
+      <stop offset="50%" stop-color="#0a101d" />
+      <stop offset="100%" stop-color="#070b14" />
+    </linearGradient>
+
+    <!-- Luxury Gold Gradients -->
+    <linearGradient id="goldTextGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFF2B2" />
+      <stop offset="40%" stop-color="#E5C158" />
+      <stop offset="80%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#B88E28" />
+    </linearGradient>
+
+    <linearGradient id="goldMarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF7CD" />
+      <stop offset="45%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#805F0F" />
+    </linearGradient>
+
+    <linearGradient id="goldBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#D4AF37" stop-opacity="0.1" />
+    </linearGradient>
+
+    <filter id="subtleGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Clean Obsidian Container with Micro Border -->
+  <rect width="960" height="220" rx="28" fill="url(#bgHoriz)" stroke="url(#goldBorderGrad)" stroke-width="1.5" />
+
+  <!-- LEFT EMBLEM ICON (160x160 area) -->
+  <g transform="translate(40, 30)">
+    <!-- Shield / Badge Frame -->
+    <rect width="160" height="160" rx="36" fill="#0c1220" stroke="url(#goldMarkGrad)" stroke-width="2" />
+    
+    <!-- Outer Hex Accent -->
+    <polygon points="80,18 134,50 134,110 80,142 26,110 26,50" 
+             fill="none" 
+             stroke="#D4AF37" 
+             stroke-width="1.5" 
+             stroke-dasharray="6 4" 
+             opacity="0.4" />
+
+    <!-- BM Interlocking Monogram (Fitted inside 160x160) -->
+    <g transform="translate(32, 38) scale(0.38)">
+      <!-- 'B' Architecture -->
+      <path d="M40 20 L110 20 C150 20 178 40 178 76 C178 100 162 118 138 126 C170 135 190 160 190 200 C190 242 156 268 110 268 L40 268 Z M84 62 L84 120 L108 120 C126 120 138 110 138 92 C138 73 126 62 108 62 Z M84 164 L84 226 L112 226 C132 226 146 215 146 195 C146 174 132 164 112 164 Z" 
+            fill="url(#goldMarkGrad)" />
+
+      <!-- 'M' Architecture -->
+      <path d="M192 268 L232 268 L232 112 L268 188 L296 188 L332 112 L332 268 L370 268 L370 20 L322 20 L282 108 L242 20 L192 20 Z" 
+            fill="#FFF2B2" 
+            opacity="0.9" />
+    </g>
+  </g>
+
+  <!-- BRAND TYPOGRAPHY -->
+  <g transform="translate(230, 92)">
+    <!-- Main Logotype: BETHELMIND -->
+    <text x="0" y="24" 
+          font-family="system-ui, -apple-system, 'Cinzel', 'Playfair Display', Georgia, serif" 
+          font-size="46" 
+          font-weight="700" 
+          letter-spacing="4" 
+          fill="url(#goldTextGrad)">
+      BETHELMIND
+    </text>
+
+    <!-- Subtitle: DIGITAL SOLUTIONS -->
+    <text x="3" y="62" 
+          font-family="system-ui, -apple-system, 'Inter', 'Montserrat', sans-serif" 
+          font-size="16" 
+          font-weight="600" 
+          letter-spacing="9" 
+          fill="#c9c4bc">
+      DIGITAL SOLUTIONS
+    </text>
+
+    <!-- Accreditation & Authority Indicator -->
+    <g transform="translate(3, 90)">
+      <circle cx="5" cy="-4" r="3.5" fill="#D4AF37" />
+      <text x="18" y="0" 
+            font-family="system-ui, -apple-system, sans-serif" 
+            font-size="11" 
+            font-weight="500" 
+            letter-spacing="1.5" 
+            fill="#9b968c">
+        CAC CERTIFIED NIGERIAN ENTERPRISE &bull; REG: 9912717 &bull; LAGOS
+      </text>
+    </g>
+  </g>
+</svg>

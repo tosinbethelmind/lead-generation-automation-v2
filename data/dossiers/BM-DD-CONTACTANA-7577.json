@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "dossierId": "BM-DD-CONTACTANA-7577",
+    "generatedAt": "2026-11-26T17:04:44.591Z",
+    "issuer": "Bethelmind Digital Solutions — Institutional Intelligence Desk",
+    "settlementAccount": "Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)",
+    "priceTierNGN": 150000,
+    "classification": "CONFIDENTIAL B2B COUNTERPARTY AUDIT"
+  },
+  "entity": {
+    "commercialName": "Contact – ANAN Website",
+    "category": "Automotive & Tokunbo Importers",
+    "address": "Lagos Commercial Corridor",
+    "district": "Abuja",
+    "state": "Lagos State, Nigeria",
+    "primaryDirectorOrLead": "Managing Director / Principal",
+    "cacPublicVerificationVector": "https://search.cac.gov.ng/list?search=Contact%20%E2%80%93%20ANAN%20Website"
+  },
+  "telecomIntelligence": {
+    "verifiedPhone": "07038147508",
+    "internationalE164": "+2347038147508",
+    "carrier": "MTN",
+    "lineType": "Mobile GSM",
+    "isWhatsAppEnabled": true,
+    "directWhatsAppLink": "https://wa.me/2347038147508"
+  },
+  "riskAssessment": {
+    "trustScore": 85,
+    "compositeGrade": "AA (High Reliability SME)",
+    "rule5AntiSyntheticPassed": true,
+    "auditFactors": [
+      "Verified valid Nigerian telecom line (MTN GSM)",
+      "Primary business contact is on Tier-1 enterprise carrier"
+    ]
+  },
+  "digitalFootprint": {
+    "linkedInSearch": "https://www.linkedin.com/search/results/companies/?keywords=Contact%20%E2%80%93%20ANAN%20Website",
+    "googleMapsSearch": "https://www.google.com/maps/search/?api=1&query=Contact%20%E2%80%93%20ANAN%20Website%20Abuja%20Nigeria",
+    "instagramQuery": "https://www.google.com/search?q=site:instagram.com+Contact%20%E2%80%93%20ANAN%20Website+lagos"
+  }
+}

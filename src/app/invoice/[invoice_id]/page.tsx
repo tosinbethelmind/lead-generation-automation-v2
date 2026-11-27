@@ -51,10 +51,10 @@ export default async function CommercialInvoicePage({
                 🇳🇬 Official Commercial Proforma Invoice & SLA
               </div>
               <h1 className="text-2xl md:text-3xl font-extrabold text-white print:text-black">
-                Bethelmind Digital Solutions
+                Bethelmind Analytics &amp; Digital Solutions
               </h1>
               <p className="text-xs text-slate-300 mt-1 print:text-slate-600">
-                CAC Certified Enterprise ({bank.cacReg}) · Lagos & National B2B Technology Desk
+                CAC Certified Enterprise (Reg: 9912717) · Nigerian Digital Growth, Automation &amp; Intelligence Desk
               </p>
             </div>
             <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60 text-right print:bg-none print:border-none print:text-left">
@@ -114,12 +114,12 @@ export default async function CommercialInvoicePage({
               <span className="font-semibold text-slate-200 print:text-black">₦{invoice.totalNgn.toLocaleString()} NGN</span>
             </div>
             <div className="flex justify-between text-emerald-400 font-bold print:text-black border-t border-slate-800 pt-2 text-base">
-              <span>Required 50% Milestone Activation:</span>
-              <span>₦{invoice.depositNgn.toLocaleString()} NGN</span>
+              <span>Required 60% Initial Deposit:</span>
+              <span>₦{Math.round(invoice.totalNgn * 0.6).toLocaleString()} NGN</span>
             </div>
             <div className="flex justify-between text-xs text-slate-400 pt-1">
-              <span>Balance Due Only After Handover:</span>
-              <span className="text-slate-300 font-medium">₦{invoice.balanceNgn.toLocaleString()} NGN</span>
+              <span>40% Balance Due Before Final Handover:</span>
+              <span className="text-slate-300 font-medium">₦{Math.round(invoice.totalNgn * 0.4).toLocaleString()} NGN</span>
             </div>
           </div>
         </div>
