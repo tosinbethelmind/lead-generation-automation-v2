@@ -58,35 +58,6 @@
       ]
     }
   ],
-  "functions": {
-    "src/app/api/scrape/**/*.ts": {
-      "maxDuration": 60
-    },
-    "src/app/api/solarquotepro-pipeline/route.ts": {
-      "maxDuration": 60
-    },
-    "src/app/api/outreach/lagos10k/route.ts": {
-      "maxDuration": 60
-    },
-    "src/app/api/outreach/ibadan10k/route.ts": {
-      "maxDuration": 60
-    },
-    "src/app/api/jiji/route.ts": {
-      "maxDuration": 60
-    },
-    "src/app/api/webhooks/payment/route.ts": {
-      "maxDuration": 30
-    },
-    "src/app/api/outreach/solar-hybrid/route.ts": {
-      "maxDuration": 60
-    },
-    "src/app/api/outreach/regular-business/route.ts": {
-      "maxDuration": 60
-    },
-    "src/app/api/cron/autonomous-blog/route.ts": {
-      "maxDuration": 60
-    }
-  },
   "crons": [
     {
       "path": "/api/cron/autonomous-blog",
