@@ -2,8 +2,55 @@ import { NextRequest, NextResponse } from 'next/server';
 import * as fs from 'fs';
 import * as path from 'path';
 import { sendAdminWhatsAppNotification } from '@/lib/monetization/adminWhatsAppNotifier';
+import { getSupabaseClient } from '@/lib/supabaseClient';
+import { sendNotificationEmail } from '@/lib/email';
 
 const AFFILIATES_DB_PATH = path.join(process.cwd(), 'local_db', 'affiliate_applications.json');
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'bethelmindrecruit@gmail.com';
+
+async function saveToSupabase(record: {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  platform: string;
+  audience_size: string;
+  source: string;
+  submittedAt: string;
+}): Promise<boolean> {
+  try {
+    const supabase = getSupabaseClient();
+    if (!supabase) return false;
+
+    const { error: tableErr } = await supabase
+      .from('affiliate_applications')
+      .insert({
+        partner_id: record.id,
+        name: record.name,
+        email: record.email,
+        phone: record.phone,
+        platform: record.platform,
+        audience_size: record.audience_size,
+        source: record.source,
+        submitted_at: record.submittedAt,
+      });
+
+    if (!tableErr) return true;
+
+    // Fallback to existing `logs` table so no application is ever lost before migration
+    const { error: logErr } = await supabase.from('logs').insert({
+      run_id: record.id,
+      step: 'affiliate_application',
+      status: 'INFO',
+      message: JSON.stringify(record),
+    });
+
+    return !logErr;
+  } catch (err) {
+    console.warn('[AffiliateApply] Supabase persistence skipped:', err);
+    return false;
+  }
+}
 
 function saveApplication(appData: any) {
   try {
@@ -50,19 +97,43 @@ export async function POST(req: NextRequest) {
       submittedAt: new Date().toISOString()
     };
 
-    // 1. Save locally
+    // 1. Save locally (best-effort)
     saveApplication(applicationRecord);
 
-    // 2. Dispatch real-time Admin WhatsApp Alert
-    const adminMessage = 
+    // 2. Persist to Supabase Cloud (non-blocking if unavailable, awaited briefly for reliability)
+    const savedToCloud = await saveToSupabase(applicationRecord);
+
+    // 3. Send Email backup to Admin Desk (bethelmindrecruit@gmail.com)
+    const emailSubject = `New Selar Affiliate Request: ${applicationRecord.name} (${applicationRecord.email})`;
+    const emailBody = [
+      'NEW SELAR AFFILIATE PARTNER APPLICATION (PATH B)',
+      '',
+      `Partner ID: ${applicationRecord.id}`,
+      `Name: ${applicationRecord.name}`,
+      `Selar Account Email: ${applicationRecord.email}`,
+      `Phone / WhatsApp: ${applicationRecord.phone || 'Not provided'}`,
+      `Channel: ${applicationRecord.platform}`,
+      `Audience Size: ${applicationRecord.audience_size}`,
+      `Submitted At: ${applicationRecord.submittedAt}`,
+      '',
+      `Action Required: Add ${applicationRecord.email} in Selar Dashboard -> Affiliates (50%).`,
+      'Selar will email their custom affiliate links automatically.',
+    ].join('\n');
+
+    sendNotificationEmail(ADMIN_EMAIL, emailSubject, emailBody, true).catch(err => {
+      console.warn('[AffiliateApply] Admin email backup notice:', err?.message);
+    });
+
+    // 4. Dispatch real-time Admin WhatsApp Alert
+    const adminMessage =
       `💎 *NEW AFFILIATE PARTNER APPLICATION*\n\n` +
       `👤 *Partner Name:* ${applicationRecord.name}\n` +
       `📞 *Phone / WhatsApp:* ${applicationRecord.phone}\n` +
-      `✉️ *Email:* ${applicationRecord.email}\n` +
+      `✉️ *Selar Email:* ${applicationRecord.email}\n` +
       `📢 *Channel:* ${applicationRecord.platform}\n` +
       `📊 *Audience / Level:* ${applicationRecord.audience_size}\n` +
       `🕒 *Time:* ${new Date().toLocaleTimeString()} WAT\n\n` +
-      `⚡ *Action:* Send promo swipe kit & Selar partner onboarding to ${applicationRecord.phone}`;
+      `⚡ *Action:* Add ${applicationRecord.email} in Selar Dashboard → Affiliates (50%). Selar will email their link automatically (applicant was guided not to message you).`;
 
     // Non-blocking notification dispatch
     sendAdminWhatsAppNotification(adminMessage).catch(err => {
@@ -71,7 +142,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Application staged successfully. Our team will verify and activate your 50% link.',
+      savedToCloud,
+      message: 'Application staged successfully. Once added in Selar, your links will arrive by email.',
       partnerId: applicationRecord.id
     });
   } catch (err: any) {
