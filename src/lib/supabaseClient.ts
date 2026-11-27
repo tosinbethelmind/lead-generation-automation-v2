@@ -44,7 +44,7 @@ function getValidUrl(): string {
   return ACTIVE_SUPABASE_URL;
 }
 
-const ACTIVE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWFtZmFxa3h2Z2JqbGZ1aGtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzUyNDI0OCwiZXhwIjoyMTAzMTAwMjQ4fQ.9KKQ52VdE8b-jxy2QmOAAxuBMKpGyncwDDEyMGfe9fw';
+const ACTIVE_SUPABASE_KEY = '';
 
 function getValidKey(): string {
   const candidates = [
@@ -57,7 +57,7 @@ function getValidKey(): string {
       return c.trim();
     }
   }
-  return process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ACTIVE_SUPABASE_KEY;
+  return (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
 }
 
 let cachedClient: ReturnType<typeof createClient> | null = null;

@@ -150,6 +150,14 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: '/redeem',
+        destination: '/redeem.html',
+      },
+      {
+        source: '/redeem/:path*',
+        destination: '/redeem.html',
+      },
+      {
         source: '/affiliates',
         destination: '/affiliates.html',
       },

@@ -54,28 +54,25 @@ export function getAdminUser(token: string | undefined): AdminUser | null {
 
   const envMasterToken = (process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD || '').trim();
 
-  // Master admin token array restricted to bethelmind_admin_2026 exclusively
   const validMasterTokens = [
-    'bethelmind_admin_2026',
     envMasterToken,
   ].filter(Boolean);
 
-  const isMaster = validMasterTokens.some(vt => vt.toLowerCase() === cleanToken.toLowerCase());
+  const isMaster = validMasterTokens.some(vt => safeCompareStrings(vt, cleanToken));
 
   if (isMaster) {
     return {
       id: 'admin',
       name: 'Master Admin',
-      email: 'admin@bethelmind.com',
+      email: 'admin@bethelmindanalytics.com',
       role: 'super_admin',
       permissions: ['*']
     };
   }
 
-  // Check assistant token (cannot access /admin/* routes)
+  // Check assistant token from environment only (no hardcoded fallback)
   const assistantToken = (process.env.ASSISTANT_TOKEN || '').trim();
   const validAssistantTokens = [
-    'bethelmind_assistant_2026',
     assistantToken,
   ].filter(Boolean);
 

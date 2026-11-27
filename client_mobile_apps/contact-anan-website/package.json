@@ -1,0 +1,10 @@
+{
+  "name": "app-contact-anan-website",
+  "version": "1.0.0",
+  "description": "Native Android application for Contact – ANAN Website",
+  "private": true,
+  "scripts": {
+    "build": "echo Web assets ready in www/",
+    "open:android": "npx cap open android"
+  }
+}

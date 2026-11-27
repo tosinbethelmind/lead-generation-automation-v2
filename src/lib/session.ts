@@ -7,7 +7,11 @@ export interface SessionUser {
 }
 
 function getMasterSecret(): string {
-  return process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD || 'bethelmind_admin_2026';
+  const secret = (process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD || '').trim();
+  if (!secret) {
+    throw new Error('ADMIN_TOKEN or ADMIN_PASSWORD must be configured for session signing');
+  }
+  return secret;
 }
 
 /**
@@ -15,7 +19,7 @@ function getMasterSecret(): string {
  */
 async function computeSignature(message: string, secret: string): Promise<string> {
   const encoder = new TextEncoder();
-  const keyData = encoder.encode(secret || 'fallback_internal_secret_key');
+  const keyData = encoder.encode(secret);
   const messageData = encoder.encode(message);
 
   const cryptoKey = await crypto.subtle.importKey(

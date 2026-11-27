@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#141c2e" />
+      <stop offset="100%" stop-color="#070b14" />
+    </radialGradient>
+
+    <!-- Luxury Champagne Gold Gradients -->
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF2B2" />
+      <stop offset="35%" stop-color="#E5C158" />
+      <stop offset="70%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#997517" />
+    </linearGradient>
+
+    <linearGradient id="goldDark" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E5C158" />
+      <stop offset="50%" stop-color="#C59B27" />
+      <stop offset="100%" stop-color="#6E5108" />
+    </linearGradient>
+
+    <linearGradient id="goldStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF5C0" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#D4AF37" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#805F0F" stop-opacity="0.2" />
+    </linearGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Rounded Obsidian Base Shield -->
+  <rect width="512" height="512" rx="110" fill="url(#bgGlow)" />
+  <rect width="504" height="504" x="4" y="4" rx="106" fill="none" stroke="url(#goldStroke)" stroke-width="2" />
+
+  <!-- Outer Geometric Accent Hex-Ring -->
+  <polygon points="256,64 420,158 420,354 256,448 92,354 92,158" 
+           fill="none" 
+           stroke="url(#goldStroke)" 
+           stroke-width="3" 
+           stroke-dasharray="14 10" 
+           opacity="0.45" />
+
+  <!-- Core BM Geometric Nexus Insignia -->
+  <g filter="url(#goldGlow)" transform="translate(0, 0)">
+    <!-- 'B' Architecture Left Pillar & Upper Bow -->
+    <path d="M156 148 L220 148 C256 148 280 166 280 198 C280 220 266 238 244 246 C274 254 292 276 292 312 C292 350 262 372 220 372 L156 372 Z M198 186 L198 238 L218 238 C234 238 244 230 244 213 C244 196 234 186 218 186 Z M198 276 L198 334 L222 334 C240 334 252 324 252 305 C252 286 240 276 222 276 Z" 
+          fill="url(#goldLight)" />
+
+    <!-- 'M' Architecture Intersecting Precision Wings -->
+    <path d="M296 372 L332 372 L332 232 L364 300 L388 300 L420 232 L420 372 L454 372 L454 148 L412 148 L376 228 L340 148 L296 148 Z" 
+          fill="url(#goldDark)" 
+          opacity="0.95" />
+
+    <!-- Dynamic Central Energy Nexus Diamond -->
+    <polygon points="256,236 270,256 256,276 242,256" fill="#FFF8D6" />
+  </g>
+
+  <!-- Micro Brand Mark Accent -->
+  <circle cx="256" cy="418" r="4" fill="#D4AF37" />
+</svg>

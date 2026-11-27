@@ -1,59 +1,106 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getActiveLeadRepository, addLog } from '@/lib/googleSheets';
+import { getOrderByReference, updateOrder, upsertCustomer, createOrder } from '@/lib/commerce/ledger';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
+
+const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf', '.webp']);
+const MAX_BYTES = 5 * 1024 * 1024; // 5MB cap
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { leadId, paymentMethod, fileBase64, fileName, senderName, amountPaid } = body;
+    const { leadId, orderReference, paymentMethod, fileBase64, fileName, senderName, senderEmail, amountPaid } = body;
 
-    if (!leadId) {
-      return NextResponse.json({ error: 'Missing leadId' }, { status: 400 });
+    if (!leadId && !orderReference) {
+      return NextResponse.json({ error: 'Missing leadId or orderReference' }, { status: 400 });
     }
 
-    // Prepare uploads directory
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'receipts');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    let savedFilePath = '';
-    let publicUrl = '';
-
+    let storedFileRef = '';
     if (fileBase64) {
-      const matches = fileBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      const buffer = matches ? Buffer.from(matches[2], 'base64') : Buffer.from(fileBase64, 'base64');
-      const safeExt = (fileName && path.extname(fileName)) ? path.extname(fileName) : '.jpg';
-      const cleanFileName = `receipt_${leadId}_${Date.now()}${safeExt}`;
-      savedFilePath = path.join(uploadsDir, cleanFileName);
-      fs.writeFileSync(savedFilePath, buffer);
-      publicUrl = `/uploads/receipts/${cleanFileName}`;
+      const matches = String(fileBase64).match(/^data:([A-Za-z0-9-+\/]+);base64,(.+)$/);
+      const buffer = matches ? Buffer.from(matches[2], 'base64') : Buffer.from(String(fileBase64), 'base64');
+
+      if (buffer.length > MAX_BYTES) {
+        return NextResponse.json({ error: 'Receipt file exceeds 5MB limit' }, { status: 400 });
+      }
+
+      const ext = fileName ? path.extname(String(fileName)).toLowerCase() : '.jpg';
+      if (!ALLOWED_EXTENSIONS.has(ext)) {
+        return NextResponse.json({ error: 'Unsupported receipt file type. Allowed: JPG, PNG, WEBP, PDF' }, { status: 400 });
+      }
+
+      // Store outside public/ so receipts are never publicly browsable
+      const privateDir = path.join(process.cwd(), 'local_db', 'private_receipts');
+      if (!fs.existsSync(privateDir)) {
+        fs.mkdirSync(privateDir, { recursive: true });
+      }
+
+      const safeId = (orderReference || leadId).replace(/[^a-zA-Z0-9_-]/g, '');
+      const cleanFileName = `receipt_${safeId}_${Date.now()}_${crypto.randomBytes(3).toString('hex')}${ext}`;
+      fs.writeFileSync(path.join(privateDir, cleanFileName), buffer);
+      storedFileRef = cleanFileName;
     }
 
-    // Update lead status in active repository
-    try {
-      const { updateLeadStatus } = await import('@/lib/googleSheets');
-      await updateLeadStatus(
+    // Record/update order as pending_manual_verification — NEVER auto-fulfil on screenshot!
+    const ref = orderReference || `MANUAL-${leadId}-${Date.now()}`;
+    let order = await getOrderByReference(ref);
+    if (!order) {
+      const customer = await upsertCustomer({
+        name: senderName || 'Client',
+        email: senderEmail,
         leadId,
-        'MANUAL_REVISION',
-        `Receipt uploaded (${paymentMethod || 'opay'}). URL: ${publicUrl}`
-      );
-    } catch (e: any) {
-      console.warn('Repository update notice:', e.message);
+      });
+      const claimedAmount = Number(amountPaid) || 0;
+      order = await createOrder({
+        orderReference: ref,
+        customerId: customer.id,
+        leadId,
+        division: 'digital_business_solutions',
+        packageName: 'Bank Transfer Verification Pending',
+        totalAmountNgn: claimedAmount,
+        depositAmountNgn: claimedAmount,
+        balanceAmountNgn: 0,
+        amountPaidNgn: 0,
+        currency: 'NGN',
+        paymentStage: 'deposit',
+        paymentStatus: 'pending_manual_verification',
+        fulfilmentStatus: 'pending',
+        paymentProvider: paymentMethod || 'moniepoint',
+        transactionReference: ref,
+        metadata: { storedFileRef, senderName },
+      });
+    } else {
+      await updateOrder(order.id, {
+        paymentStatus: 'pending_manual_verification',
+        metadata: { ...order.metadata, storedFileRef, senderName },
+      });
     }
 
-    // Add activity log
+    if (leadId) {
+      try {
+        const repo = getActiveLeadRepository();
+        await repo.updateLeadStatus(
+          leadId,
+          'CONTACTED',
+          `[PENDING MANUAL VERIFICATION] Receipt submitted (${paymentMethod || 'Moniepoint'}). Ref: ${ref}. File: ${storedFileRef}`,
+          new Date().toISOString()
+        );
+      } catch {}
+    }
+
     await addLog(
       'Receipt Verification',
-      'RECEIPT_UPLOADED',
-      `🔔 [NEW RECEIPT UPLOADED] Lead ID: ${leadId}. Method: ${paymentMethod || 'OPay'}. Sender: ${senderName || 'Client'}. Amount: ₦${amountPaid || '50000'}. File: ${publicUrl}`
+      'INFO',
+      `Receipt queued for manual admin verification. Order: ${ref}, Sender: ${senderName || 'Client'}, File: ${storedFileRef}`
     );
 
     return NextResponse.json({
       success: true,
-      message: 'Receipt uploaded successfully! Verification in progress.',
-      receiptUrl: publicUrl
+      orderReference: ref,
+      paymentStatus: 'pending_manual_verification',
+      message: 'Receipt received and queued for manual bank confirmation. Fulfilment begins once an admin confirms the credit.',
     });
   } catch (err: any) {
     console.error('Receipt upload error:', err);

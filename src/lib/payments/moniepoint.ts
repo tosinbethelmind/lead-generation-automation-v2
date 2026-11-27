@@ -1,25 +1,17 @@
-// Moniepoint payment integration (placeholder implementation)
-import { getRuntimeConfig, getRotatedTwilioKeys } from '@/lib/localConfig'; // reuse rotation helper if needed
+import { BRAND_IDENTITY } from '@/lib/commerce/catalog';
 
 /**
- * Initiates a payment via Moniepoint.
- * In production replace this mock with actual Moniepoint SDK calls.
+ * Moniepoint corporate bank transfer fallback details.
+ * Manual transfers are NEVER auto-fulfilled; they require admin confirmation via /api/commerce/orders.
  */
-export async function initiateMoniepointPayment(amountNgn: number, email: string, secretKey?: string) {
-  const config = getRuntimeConfig();
-  // Example of rotating keys – assume moniepointSecretKey is a comma-separated list
-  const activeSecretKey = secretKey || (config.moniepointSecretKey ? config.moniepointSecretKey.split(',')[0].trim() : '');
-
-  if (!activeSecretKey) {
-    throw new Error('Moniepoint credentials are not configured');
-  }
-
-  // Mock response – replace with real API call
+export function getMoniepointFallbackDetails(orderReference: string, amountNgn: number) {
   return {
-    provider: 'moniepoint',
-    transactionId: `MONIEPOINT-${Date.now()}`,
-    status: 'succeeded',
+    provider: 'moniepoint' as const,
+    bankName: BRAND_IDENTITY.settlementBank,
+    accountNumber: BRAND_IDENTITY.settlementAccountNumber,
+    accountName: BRAND_IDENTITY.settlementAccountName,
+    narration: orderReference,
     amountNgn,
-    email,
+    requiresManualVerification: true,
   };
 }

@@ -4,6 +4,7 @@ import "../styles/glass.css";
 import "./globals.css";
 import DbHealthCheck from "@/components/DbHealthCheck";
 import MicrosoftClarity from "@/components/MicrosoftClarity";
+import GoogleTrackingProvider from "@/components/commerce/GoogleTrackingProvider";
 import { ThemeProvider } from "./ThemeContext";
 
 export const viewport: Viewport = {
@@ -211,11 +212,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18553825002" />
+        {/* Google Consent Mode v2 + Google Ads / GA4 / GTM */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'AW-18553825002');`
+            __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });`
+          }}
+        />
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || 'AW-18553825002'}`} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || 'AW-18553825002'}');${process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ? ` gtag('config', '${process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID}');` : ''}`
           }}
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -236,6 +242,7 @@ export default function RootLayout({
         <MicrosoftClarity />
         <ThemeProvider>
           <DbHealthCheck />
+          <GoogleTrackingProvider />
           {children}
         </ThemeProvider>
       </body>

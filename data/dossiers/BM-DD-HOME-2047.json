@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "dossierId": "BM-DD-HOME-2047",
+    "generatedAt": "2026-11-26T21:48:12.082Z",
+    "issuer": "Bethelmind Digital Solutions — Institutional Intelligence Desk",
+    "settlementAccount": "Moniepoint Microfinance Bank (6805375225 - Bethelmind Digital Solutions)",
+    "priceTierNGN": 150000,
+    "classification": "CONFIDENTIAL B2B COUNTERPARTY AUDIT"
+  },
+  "entity": {
+    "commercialName": "Home",
+    "category": "Hotels & Shortlet Apartments",
+    "address": "Lagos Commercial Corridor",
+    "district": "Lekki",
+    "state": "Lagos State, Nigeria",
+    "primaryDirectorOrLead": "Managing Director / Principal",
+    "cacPublicVerificationVector": "https://search.cac.gov.ng/list?search=Home"
+  },
+  "telecomIntelligence": {
+    "verifiedPhone": "08082022788",
+    "internationalE164": "+2348082022788",
+    "carrier": "Airtel",
+    "lineType": "Mobile GSM",
+    "isWhatsAppEnabled": true,
+    "directWhatsAppLink": "https://wa.me/2348082022788"
+  },
+  "riskAssessment": {
+    "trustScore": 85,
+    "compositeGrade": "AA (High Reliability SME)",
+    "rule5AntiSyntheticPassed": true,
+    "auditFactors": [
+      "Verified valid Nigerian telecom line (Airtel GSM)",
+      "Primary business contact is on Tier-1 enterprise carrier"
+    ]
+  },
+  "digitalFootprint": {
+    "linkedInSearch": "https://www.linkedin.com/search/results/companies/?keywords=Home",
+    "googleMapsSearch": "https://www.google.com/maps/search/?api=1&query=Home%20Lekki%20Nigeria",
+    "instagramQuery": "https://www.google.com/search?q=site:instagram.com+Home+lagos"
+  }
+}

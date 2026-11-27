@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <!-- Circular Path for Curved Text Top -->
+    <path id="textArcTop" d="M 90,300 A 210,210 0 1,1 510,300" fill="none" />
+    <path id="textArcBottom" d="M 510,300 A 210,210 0 0,1 90,300" fill="none" />
+
+    <!-- Gold Gradients -->
+    <linearGradient id="sealGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF5C0" />
+      <stop offset="30%" stop-color="#E5C158" />
+      <stop offset="70%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#805F0F" />
+    </linearGradient>
+
+    <radialGradient id="sealBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#141d2f" />
+      <stop offset="85%" stop-color="#070b14" />
+      <stop offset="100%" stop-color="#03060a" />
+    </radialGradient>
+  </defs>
+
+  <!-- Deep Obsidian Circular Background -->
+  <circle cx="300" cy="300" r="285" fill="url(#sealBg)" stroke="url(#sealGold)" stroke-width="3" />
+  
+  <!-- Outer Star & Beaded Ridge Ring -->
+  <circle cx="300" cy="300" r="268" fill="none" stroke="url(#sealGold)" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.6" />
+  <circle cx="300" cy="300" r="248" fill="none" stroke="url(#sealGold)" stroke-width="2" />
+  <circle cx="300" cy="300" r="176" fill="none" stroke="url(#sealGold)" stroke-width="2" />
+  <circle cx="300" cy="300" r="168" fill="none" stroke="url(#sealGold)" stroke-width="1" stroke-dasharray="6 4" opacity="0.5" />
+
+  <!-- Circular Outer Text: Top -->
+  <text font-family="system-ui, -apple-system, sans-serif" font-size="21" font-weight="700" letter-spacing="4.8" fill="url(#sealGold)">
+    <textPath href="#textArcTop" startOffset="50%" text-anchor="middle">
+      BETHELMIND DIGITAL SOLUTIONS
+    </textPath>
+  </text>
+
+  <!-- Circular Outer Text: Bottom -->
+  <text font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" letter-spacing="4.5" fill="#C59B27">
+    <textPath href="#textArcBottom" startOffset="50%" text-anchor="middle">
+      ★ CAC REG: 9912717 &bull; LAGOS NIGERIA ★
+    </textPath>
+  </text>
+
+  <!-- Central Crest Emblem: BM Monogram Shield -->
+  <g transform="translate(180, 195) scale(0.6)">
+    <!-- 'B' Architecture -->
+    <path d="M40 20 L130 20 C180 20 216 45 216 90 C216 120 196 142 165 152 C204 162 230 194 230 242 C230 294 188 326 130 326 L40 326 Z M96 72 L96 145 L128 145 C150 145 165 132 165 110 C165 86 150 72 128 72 Z M96 200 L96 274 L132 274 C156 274 174 260 174 236 C174 210 156 200 132 200 Z" 
+          fill="url(#sealGold)" />
+
+    <!-- 'M' Architecture -->
+    <path d="M234 326 L282 326 L282 136 L326 228 L360 228 L404 136 L404 326 L450 326 L450 20 L392 20 L344 128 L296 20 L234 20 Z" 
+          fill="#FFF2B2" 
+          opacity="0.95" />
+  </g>
+
+  <!-- Established Year Tag -->
+  <text x="300" y="420" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" letter-spacing="3" fill="#A67C1E">
+    EST. 2024 &bull; ENTERPRISE GRADE
+  </text>
+</svg>
