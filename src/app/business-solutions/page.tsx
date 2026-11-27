@@ -107,8 +107,10 @@ export default function BusinessSolutionsPage() {
   // Portfolio & Checkout State
   const [portfolio, setPortfolio] = useState<PortfolioEntry[]>([]);
   const [checkoutEmail, setCheckoutEmail] = useState('');
+  const [checkoutProvider, setCheckoutProvider] = useState<'moniepoint' | 'paystack'>('moniepoint');
   const [checkoutBusy, setCheckoutBusy] = useState(false);
   const [checkoutErr, setCheckoutErr] = useState<string | null>(null);
+  const [moniepointOrder, setMoniepointOrder] = useState<any>(null);
 
   const activePackage = WEBSITE_PACKAGES.find((p) => p.id === selectedPackageId) || WEBSITE_PACKAGES[0];
   const calculatedDepositNgn = Math.round(agreedPriceNgn * 0.6);
@@ -216,6 +218,7 @@ export default function BusinessSolutionsPage() {
   const handlePaystackDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
     setCheckoutErr(null);
+    setMoniepointOrder(null);
     setCheckoutBusy(true);
     try {
       trackConversionEvent('begin_checkout', {
@@ -233,15 +236,44 @@ export default function BusinessSolutionsPage() {
           customerEmail: checkoutEmail,
           customerWhatsapp: whatsappNumber,
           companyName: businessName,
-          paymentProvider: 'paystack',
+          paymentProvider: checkoutProvider,
           paymentStage: 'deposit',
         }),
       });
       const data = await res.json();
-      if (!res.ok || !data.success || !data.authorizationUrl) {
-        throw new Error(data.error || 'Paystack checkout could not be initialized.');
+
+      // If Paystack is not configured yet, seamlessly fall back to Moniepoint order reference
+      if ((!res.ok || !data.success) && checkoutProvider === 'paystack') {
+        const fbRes = await fetch('/api/commerce/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            productId: activePackage.id,
+            customerName: fullName || 'Website Client',
+            customerEmail: checkoutEmail,
+            customerWhatsapp: whatsappNumber,
+            companyName: businessName,
+            paymentProvider: 'moniepoint',
+            paymentStage: 'deposit',
+          }),
+        });
+        const fbData = await fbRes.json();
+        if (fbRes.ok && fbData.success) {
+          setMoniepointOrder(fbData);
+          return;
+        }
       }
-      window.location.href = data.authorizationUrl;
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Checkout could not be initialized.');
+      }
+
+      if (data.provider === 'paystack' && data.authorizationUrl) {
+        window.location.href = data.authorizationUrl;
+        return;
+      }
+
+      setMoniepointOrder(data);
     } catch (err: any) {
       setCheckoutErr(err.message);
     } finally {
@@ -527,33 +559,90 @@ export default function BusinessSolutionsPage() {
             <form onSubmit={handlePaystackDeposit} className="space-y-3 p-5 rounded-xl bg-slate-950 border border-slate-800">
               <div className="flex items-center gap-2 text-sm font-bold text-white">
                 <Lock className="w-4 h-4 text-[#d4af37]" />
-                <span>Ready to Start? Pay Deposit via Paystack</span>
+                <span>Ready to Start? Pay 60% Deposit</span>
               </div>
               <p className="text-xs text-slate-400">
-                Server-side verified Paystack checkout for <strong>{activePackage.name}</strong>.
+                Corporate Moniepoint transfer or Paystack checkout for <strong>{activePackage.name}</strong>.
               </p>
-              <input
-                type="email"
-                required
-                placeholder="Your Email Address for Receipt"
-                value={checkoutEmail}
-                onChange={(e) => setCheckoutEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white"
-              />
-              {checkoutErr && (
-                <div className="text-xs text-rose-300 bg-rose-500/10 p-2 rounded-lg">{checkoutErr}</div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCheckoutProvider('moniepoint')}
+                  className={`py-2 px-3 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 ${
+                    checkoutProvider === 'moniepoint'
+                      ? 'bg-[#d4af37]/15 border-[#d4af37] text-[#d4af37]'
+                      : 'bg-slate-900 border-slate-800 text-slate-400'
+                  }`}
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>Moniepoint</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCheckoutProvider('paystack')}
+                  className={`py-2 px-3 rounded-lg border text-xs font-bold flex items-center justify-center gap-1.5 ${
+                    checkoutProvider === 'paystack'
+                      ? 'bg-[#d4af37]/15 border-[#d4af37] text-[#d4af37]'
+                      : 'bg-slate-900 border-slate-800 text-slate-400'
+                  }`}
+                >
+                  <CreditCard className="w-3.5 h-3.5" />
+                  <span>Paystack</span>
+                </button>
+              </div>
+
+              {moniepointOrder ? (
+                <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2 text-xs">
+                  <div className="font-bold text-emerald-400">Order Ref: {moniepointOrder.orderReference}</div>
+                  <div className="space-y-0.5 text-slate-200">
+                    <div>Bank: <strong>{BRAND_IDENTITY.settlementBank}</strong></div>
+                    <div>Account: <strong>{BRAND_IDENTITY.settlementAccountNumber}</strong></div>
+                    <div>Name: <strong>{BRAND_IDENTITY.settlementAccountName}</strong> (verify name before transfer)</div>
+                    <div>Deposit: <strong>₦{moniepointOrder.amountDueNgn?.toLocaleString()}</strong></div>
+                  </div>
+                  <a
+                    href={`https://wa.me/${BRAND_IDENTITY.whatsappNumber}?text=${encodeURIComponent(
+                      `Hello Bethelmind! I transferred ₦${moniepointOrder.amountDueNgn?.toLocaleString()} for Order ${moniepointOrder.orderReference}. Here is my receipt for verification.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center justify-center gap-1.5"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>Send Receipt on WhatsApp</span>
+                  </a>
+                </div>
+              ) : (
+                <>
+                  <input
+                    type="email"
+                    required
+                    placeholder="Your Email Address for Receipt"
+                    value={checkoutEmail}
+                    onChange={(e) => setCheckoutEmail(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white"
+                  />
+                  {checkoutErr && (
+                    <div className="text-xs text-rose-300 bg-rose-500/10 p-2 rounded-lg">{checkoutErr}</div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={checkoutBusy}
+                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2"
+                  >
+                    {checkoutBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Building2 className="w-4 h-4" />}
+                    <span>
+                      {checkoutProvider === 'moniepoint'
+                        ? 'Get Moniepoint Transfer Details'
+                        : 'Pay 60% Deposit with Paystack'}
+                    </span>
+                  </button>
+                </>
               )}
-              <button
-                type="submit"
-                disabled={checkoutBusy}
-                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2"
-              >
-                {checkoutBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
-                <span>Pay 60% Deposit with Paystack</span>
-              </button>
               <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-[#d4af37]" />
-                <span>Or request an official Moniepoint corporate invoice via WhatsApp after consultation.</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-[#d4af37]" />
+                <span>Manual transfers are confirmed by our admin desk before onboarding starts.</span>
               </div>
             </form>
           </div>
