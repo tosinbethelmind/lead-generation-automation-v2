@@ -1057,10 +1057,16 @@ export default function AcademicResearchClient() {
             ))}
           </div>
 
-          <div className="mt-8 max-w-3xl mx-auto rounded-xl bg-slate-900/90 border border-white/10 p-4 sm:p-5 text-center">
+          <div className="mt-8 max-w-3xl mx-auto rounded-xl bg-slate-900/90 border border-white/10 p-4 sm:p-5 text-center space-y-3">
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               <strong className="text-amber-300">Quotation Note:</strong> Every research project is different. We provide a quotation after understanding your research topic, academic level, current progress and required services. MBA and PhD rates are determined after a free consultation.
             </p>
+            <div className="pt-3 border-t border-white/10 text-xs text-slate-300">
+              <strong className="text-emerald-400">Official Corporate Settlement:</strong> Moniepoint Microfinance Bank &bull;{' '}
+              <strong className="text-white">6805375225</strong> &bull;{' '}
+              <strong className="text-white">Bethelmind Digital Solutions</strong>{' '}
+              <span className="text-amber-300">(Official Parent Company Account &bull; CAC Reg: 9912717)</span>
+            </div>
           </div>
         </div>
       </section>

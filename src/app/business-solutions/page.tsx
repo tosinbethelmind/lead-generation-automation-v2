@@ -598,7 +598,7 @@ export default function BusinessSolutionsPage() {
                   <div className="space-y-0.5 text-slate-200">
                     <div>Bank: <strong>{BRAND_IDENTITY.settlementBank}</strong></div>
                     <div>Account: <strong>{BRAND_IDENTITY.settlementAccountNumber}</strong></div>
-                    <div>Name: <strong>{BRAND_IDENTITY.settlementAccountName}</strong> (verify name before transfer)</div>
+                    <div>Name: <strong>{BRAND_IDENTITY.settlementAccountName}</strong> <span className="text-amber-300">(Official Parent Company Account &bull; {BRAND_IDENTITY.cacReg})</span></div>
                     <div>Deposit: <strong>₦{moniepointOrder.amountDueNgn?.toLocaleString()}</strong></div>
                   </div>
                   <a

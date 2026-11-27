@@ -943,6 +943,17 @@ export default function FoodsLandingClient({
                       </span>
                     </div>
                   </div>
+                  <div className="mt-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 space-y-1">
+                    <div className="font-extrabold uppercase tracking-wide text-emerald-900">
+                      Official Payment Account (Parent Company)
+                    </div>
+                    <div>Bank: <strong>Moniepoint Microfinance Bank</strong></div>
+                    <div>Account Number: <strong>6805375225</strong></div>
+                    <div>Account Name: <strong>Bethelmind Digital Solutions</strong></div>
+                    <div className="text-[11px] text-emerald-800 pt-0.5">
+                      Bethelmind Digital Solutions is the official CAC-registered parent company (Reg: 9912717) for Bethelmind Foods.
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
