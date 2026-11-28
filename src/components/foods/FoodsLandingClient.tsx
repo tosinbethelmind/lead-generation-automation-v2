@@ -168,14 +168,40 @@ export default function FoodsLandingClient({
     settings.tracking,
   ]);
 
+  const deliveryZones = useMemo(() => {
+    const configured = (settings.deliveryZones || []).filter((z) => z.enabled);
+    if (configured.length > 0) {
+      return configured.map((z) => ({
+        id: z.id,
+        label: z.name,
+        feeNgn: z.isFreePromo ? 0 : z.requiresConfirmation ? null : z.feeNgn,
+        isFreePromo: Boolean(z.isFreePromo),
+        requiresConfirmation: Boolean(z.requiresConfirmation || z.feeNgn === null),
+        estimatedWindow: z.estimatedWindow || '',
+      }));
+    }
+    return DELIVERY_ZONES.map((z) => ({
+      id: z.id,
+      label: z.label,
+      feeNgn: z.feeNgn,
+      isFreePromo: false,
+      requiresConfirmation: z.feeNgn === null,
+      estimatedWindow: '',
+    }));
+  }, [settings.deliveryZones]);
+
   const selectedZone = useMemo(
-    () => DELIVERY_ZONES.find((z) => z.id === selectedZoneId) || DELIVERY_ZONES[2],
-    [selectedZoneId]
+    () => deliveryZones.find((z) => z.id === selectedZoneId) || deliveryZones[2] || deliveryZones[0],
+    [deliveryZones, selectedZoneId]
   );
 
   const calculated = useMemo(
-    () => calculateOrderTotals(cart, products, proteins, selectedZone.feeNgn),
-    [cart, products, proteins, selectedZone.feeNgn]
+    () =>
+      calculateOrderTotals(cart, products, proteins, selectedZone?.feeNgn ?? null, {
+        minimumOrderValueNgn: settings.minimumOrderValueNgn,
+        minimumSoupLitres: settings.minimumSoupLitres,
+      }),
+    [cart, products, proteins, selectedZone, settings.minimumOrderValueNgn, settings.minimumSoupLitres]
   );
 
   const filteredProducts = useMemo(() => {
@@ -301,6 +327,10 @@ export default function FoodsLandingClient({
     if (cart.length === 0) {
       setFormError('Please select at least one meal from the menu above.');
       scrollToMenu();
+      return;
+    }
+    if (!calculated.isOrderEligible) {
+      setFormError(calculated.minimumOrderMessage);
       return;
     }
     if (!customerName.trim() || customerName.trim().length < 2) {
@@ -642,10 +672,17 @@ export default function FoodsLandingClient({
                         <h3 className="text-lg font-extrabold text-emerald-950 leading-snug">
                           {product.name}
                         </h3>
-                        <span className="text-xs font-bold px-2 py-1 rounded-md bg-amber-50 text-amber-900 border border-amber-200 shrink-0">
-                          {product.pricePerUnit !== null
-                            ? `${formatNaira(product.pricePerUnit)} / ${product.unitType}`
-                            : 'Quote on WhatsApp'}
+                        <span className="text-xs font-bold px-2 py-1 rounded-md bg-amber-50 text-amber-900 border border-amber-200 shrink-0 text-right">
+                          {product.promoPrice !== null && product.promoPrice !== undefined ? (
+                            <>
+                              <span className="line-through text-slate-400 mr-1">{formatNaira(product.pricePerUnit)}</span>
+                              <span className="text-emerald-800">{formatNaira(product.promoPrice)} / {product.unitType}</span>
+                            </>
+                          ) : product.pricePerUnit !== null ? (
+                            `${formatNaira(product.pricePerUnit)} / ${product.unitType}`
+                          ) : (
+                            'Quote on WhatsApp'
+                          )}
                         </span>
                       </div>
                       <p className="text-sm text-slate-600 mt-1.5 leading-relaxed">
@@ -960,16 +997,28 @@ export default function FoodsLandingClient({
                       </label>
                       <select
                         id="foods-delivery-zone"
-                        value={selectedZoneId}
+                        value={selectedZone?.id || ''}
                         onChange={(e) => setSelectedZoneId(e.target.value)}
                         className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-800"
                       >
-                        {DELIVERY_ZONES.map((z) => (
+                        {deliveryZones.map((z) => (
                           <option key={z.id} value={z.id}>
-                            {z.label} — {z.feeNgn === 0 ? 'Free Pickup (₦0)' : formatNaira(z.feeNgn)}
+                            {z.label} —{' '}
+                            {z.isFreePromo
+                              ? 'FREE Promo Delivery (₦0)'
+                              : z.requiresConfirmation || z.feeNgn === null
+                              ? 'Confirm before payment'
+                              : z.feeNgn === 0
+                              ? 'Free Pickup (₦0)'
+                              : formatNaira(z.feeNgn)}
                           </option>
                         ))}
                       </select>
+                      {selectedZone?.estimatedWindow ? (
+                        <p className="text-[11px] text-slate-500 mt-1">
+                          Estimated window: {selectedZone.estimatedWindow}
+                        </p>
+                      ) : null}
                     </div>
                     {calculated.bulkDiscountPercent > 0 && (
                       <div className="flex justify-between text-emerald-700 font-semibold">
@@ -978,7 +1027,7 @@ export default function FoodsLandingClient({
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Subtotal</span>
+                      <span className="text-slate-600">Food Subtotal (excl. delivery)</span>
                       <span className="font-bold text-slate-900">
                         {calculated.subtotal !== null
                           ? formatNaira(calculated.subtotal)
@@ -986,11 +1035,11 @@ export default function FoodsLandingClient({
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Delivery Fee ({selectedZone.label.split('(')[0].trim()})</span>
+                      <span className="text-slate-600">Delivery Charge ({selectedZone?.label.split('(')[0].trim()})</span>
                       <span className="font-bold text-slate-900">
                         {calculated.deliveryFee !== null
                           ? formatNaira(calculated.deliveryFee)
-                          : 'Confirmed by location'}
+                          : 'Delivery fee will be confirmed before payment.'}
                       </span>
                     </div>
                     <div className="flex justify-between text-base border-t border-slate-200 pt-2">
@@ -1000,9 +1049,23 @@ export default function FoodsLandingClient({
                       <span className="font-black text-emerald-900">
                         {calculated.totalPayable !== null
                           ? formatNaira(calculated.totalPayable)
-                          : 'Confirmed on WhatsApp'}
+                          : 'Pending delivery fee confirmation'}
                       </span>
                     </div>
+                  </div>
+
+                  {/* Minimum Order Policy Box */}
+                  <div
+                    className={`mt-4 p-3.5 rounded-xl border text-xs leading-relaxed ${
+                      calculated.isOrderEligible
+                        ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                        : 'bg-amber-50 border-amber-300 text-amber-950'
+                    }`}
+                  >
+                    <div className="font-extrabold uppercase tracking-wide mb-1">
+                      Minimum Order Policy: ₦{(settings.minimumOrderValueNgn || 50000).toLocaleString()} (Min {settings.minimumSoupLitres || 3}L for Soups)
+                    </div>
+                    <p className="font-semibold">{calculated.minimumOrderMessage}</p>
                   </div>
                   <div className="mt-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 space-y-1">
                     <div className="font-extrabold uppercase tracking-wide text-emerald-900">
@@ -1138,11 +1201,15 @@ export default function FoodsLandingClient({
 
                 <button
                   type="submit"
-                  disabled={submitting}
-                  className="w-full py-4 px-6 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white font-black text-base shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
+                  disabled={submitting || !calculated.isOrderEligible}
+                  className="w-full py-4 px-6 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-base shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <MessageCircle className="w-5 h-5" />
-                  {submitting ? 'Preparing Your Order...' : 'PLACE MY ORDER ON WHATSAPP'}
+                  {submitting
+                    ? 'Preparing Your Order...'
+                    : !calculated.isOrderEligible
+                    ? `Add ₦${calculated.remainingToMinimumNgn.toLocaleString()} More to Reach ₦${(settings.minimumOrderValueNgn || 50000).toLocaleString()} Min`
+                    : 'PLACE MY ORDER ON WHATSAPP'}
                 </button>
 
                 <p className="text-xs text-center text-slate-500">

@@ -1,8 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import {
+  DeliveryZoneConfig,
   FoodOrder,
   FoodProduct,
+  FoodsAuditEntry,
   FoodsSettings,
   FoodsStoreData,
   ProteinOption,
@@ -240,13 +242,24 @@ export const DEFAULT_PRODUCTS: FoodProduct[] = [
 export const DEFAULT_PROTEINS: ProteinOption[] = [
   { id: 'chicken', name: 'Chicken', price: 2500, enabled: true },
   { id: 'beef', name: 'Beef', price: 2000, enabled: true },
+  { id: 'assorted-meat', name: 'Assorted Meat', price: 3000, enabled: true },
   { id: 'goat-meat', name: 'Goat Meat', price: 3500, enabled: true },
   { id: 'fish', name: 'Fish', price: 3000, enabled: true },
+  { id: 'stockfish', name: 'Stockfish', price: 3500, enabled: true },
   { id: 'prawns-shrimps', name: 'Prawns/Shrimps', price: 4500, enabled: true },
   { id: 'turkey', name: 'Turkey', price: 3500, enabled: true },
   { id: 'snails', name: 'Snails', price: 4500, enabled: true },
   { id: 'crayfish', name: 'Crayfish', price: 1500, enabled: true },
   { id: 'eggs', name: 'Eggs', price: 1000, enabled: true },
+];
+
+export const DEFAULT_DELIVERY_ZONES: DeliveryZoneConfig[] = [
+  { id: 'pickup', name: 'Self-Pickup (Denro-Ishasi Kitchen)', feeNgn: 0, isFreePromo: false, requiresConfirmation: false, estimatedWindow: 'Ready at scheduled time', enabled: true },
+  { id: 'ishasi-akute', name: 'Ishasi / Denro-Ishasi / Akute', feeNgn: 1500, isFreePromo: false, requiresConfirmation: false, estimatedWindow: '30–60 mins dispatch', enabled: true },
+  { id: 'berger-ikeja', name: 'Ojodu Berger / Ikeja / Ogba / Magodo', feeNgn: 2500, isFreePromo: false, requiresConfirmation: false, estimatedWindow: '45–90 mins dispatch', enabled: true },
+  { id: 'mainland-central', name: 'Surulere / Yaba / Gbagada / Maryland', feeNgn: 3500, isFreePromo: false, requiresConfirmation: false, estimatedWindow: '60–120 mins dispatch', enabled: true },
+  { id: 'island', name: 'Victoria Island / Ikoyi / Lekki / Ajah', feeNgn: 5000, isFreePromo: false, requiresConfirmation: false, estimatedWindow: '90–150 mins dispatch', enabled: true },
+  { id: 'outside-coverage', name: 'Outside Normal Coverage (Confirm Location)', feeNgn: null, isFreePromo: false, requiresConfirmation: true, estimatedWindow: 'Confirmed by dispatch desk', enabled: true },
 ];
 
 export const DEFAULT_SETTINGS: FoodsSettings = {
@@ -262,6 +275,9 @@ export const DEFAULT_SETTINGS: FoodsSettings = {
   deliveryFee: 2500,
   deliveryConfirmationNote:
     'Every pot is freshly sourced from the morning market and cooked to order (24-hour preparation guarantees zero frozen leftovers). Select your delivery zone above to see your complete cost before ordering.',
+  minimumOrderValueNgn: 50000,
+  minimumSoupLitres: 3,
+  deliveryZones: DEFAULT_DELIVERY_ZONES,
   tracking: {
     gtmContainerId: process.env.NEXT_PUBLIC_FOODS_GTM_CONTAINER_ID || '',
     ga4MeasurementId: process.env.NEXT_PUBLIC_FOODS_GA4_MEASUREMENT_ID || '',
@@ -277,6 +293,7 @@ function getDefaultStore(): FoodsStoreData {
     proteins: DEFAULT_PROTEINS,
     settings: DEFAULT_SETTINGS,
     orders: [],
+    auditLog: [],
   };
 }
 
@@ -325,6 +342,16 @@ export function readFoodsStore(): FoodsStoreData {
         price: pr.price === null && def ? def.price : pr.price,
       };
     });
+    for (const def of DEFAULT_PROTEINS) {
+      if (!mergedProteins.some((pr) => pr.id === def.id)) {
+        mergedProteins.push(def);
+      }
+    }
+
+    const deliveryZones =
+      Array.isArray(parsed.settings?.deliveryZones) && parsed.settings!.deliveryZones!.length > 0
+        ? parsed.settings!.deliveryZones!
+        : DEFAULT_DELIVERY_ZONES;
 
     return {
       products: mergedProducts,
@@ -333,6 +360,9 @@ export function readFoodsStore(): FoodsStoreData {
         ...DEFAULT_SETTINGS,
         ...(parsed.settings || {}),
         deliveryFee: parsed.settings?.deliveryFee ?? DEFAULT_SETTINGS.deliveryFee,
+        minimumOrderValueNgn: Math.max(50000, Number(parsed.settings?.minimumOrderValueNgn) || 50000),
+        minimumSoupLitres: Math.max(3, Number(parsed.settings?.minimumSoupLitres) || 3),
+        deliveryZones,
         tracking: {
           ...DEFAULT_SETTINGS.tracking,
           ...(parsed.settings?.tracking || {}),
@@ -342,11 +372,19 @@ export function readFoodsStore(): FoodsStoreData {
           : [],
       },
       orders: Array.isArray(parsed.orders) ? parsed.orders : [],
+      auditLog: Array.isArray(parsed.auditLog) ? parsed.auditLog : [],
     };
   } catch {
-    const fallback = getDefaultStore();
-    return fallback;
+    return getDefaultStore();
   }
+}
+
+export function sanitizeFoodsStoreForPublic(store: FoodsStoreData) {
+  return {
+    products: store.products.map(({ costBreakdown: _internal, ...publicProduct }) => publicProduct),
+    proteins: store.proteins,
+    settings: store.settings,
+  };
 }
 
 export function writeFoodsStore(data: FoodsStoreData): void {
@@ -364,4 +402,18 @@ export function appendFoodOrder(order: FoodOrder): FoodOrder {
   }
   writeFoodsStore(store);
   return order;
+}
+
+export function appendFoodsAuditEntries(entries: Array<Omit<FoodsAuditEntry, 'id' | 'timestamp'>>): void {
+  if (entries.length === 0) return;
+  const store = readFoodsStore();
+  const now = new Date().toISOString();
+  const existing = store.auditLog || [];
+  const added: FoodsAuditEntry[] = entries.map((e, idx) => ({
+    ...e,
+    id: `AUD-${Date.now()}-${idx}`,
+    timestamp: now,
+  }));
+  store.auditLog = [...added, ...existing].slice(0, 500);
+  writeFoodsStore(store);
 }

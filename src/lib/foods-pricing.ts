@@ -1,4 +1,10 @@
-import { AttributionData, FoodProduct, OrderItemInput, ProteinOption } from './foods-types';
+import {
+  AttributionData,
+  FoodProduct,
+  FoodUnitType,
+  OrderItemInput,
+  ProteinOption,
+} from './foods-types';
 
 export function formatNaira(amount: number | null | undefined): string {
   if (amount === null || amount === undefined || Number.isNaN(amount)) {
@@ -21,20 +27,38 @@ export function normalizeNigerianWhatsapp(phone: string): string {
   return digits || '2349026138101';
 }
 
-export function formatUnitLabel(unitType: 'litre' | 'serving' | 'pack', quantity: number): string {
+export function formatUnitLabel(unitType: FoodUnitType, quantity: number): string {
   if (unitType === 'litre') {
     return quantity === 1 ? '1 Litre' : `${quantity} Litres`;
   }
   if (unitType === 'serving') {
     return quantity === 1 ? '1 Serving' : `${quantity} Servings`;
   }
+  if (unitType === 'portion') {
+    return quantity === 1 ? '1 Portion' : `${quantity} Portions`;
+  }
+  if (unitType === 'tray') {
+    return quantity === 1 ? '1 Tray' : `${quantity} Trays`;
+  }
   return quantity === 1 ? '1 Pack' : `${quantity} Packs`;
+}
+
+export function getEffectiveUnitPrice(product: FoodProduct): number | null {
+  if (
+    product.promoPrice !== null &&
+    product.promoPrice !== undefined &&
+    !Number.isNaN(product.promoPrice) &&
+    product.promoPrice >= 0
+  ) {
+    return product.promoPrice;
+  }
+  return product.pricePerUnit;
 }
 
 export interface DeliveryZoneOption {
   id: string;
   label: string;
-  feeNgn: number;
+  feeNgn: number | null;
 }
 
 export const DELIVERY_ZONES: DeliveryZoneOption[] = [
@@ -43,7 +67,7 @@ export const DELIVERY_ZONES: DeliveryZoneOption[] = [
   { id: 'berger-ikeja', label: 'Ojodu Berger / Ikeja / Ogba / Magodo', feeNgn: 2500 },
   { id: 'mainland-central', label: 'Surulere / Yaba / Gbagada / Maryland', feeNgn: 3500 },
   { id: 'island', label: 'Victoria Island / Ikoyi / Lekki / Ajah', feeNgn: 5000 },
-  { id: 'other-lagos-ogun', label: 'Other Lagos / Ogun Locations', feeNgn: 4000 },
+  { id: 'outside-coverage', label: 'Outside Normal Coverage (Confirm Location)', feeNgn: null },
 ];
 
 export interface CartSelection {
@@ -60,17 +84,34 @@ export interface CalculatedOrder {
   deliveryFee: number | null;
   totalPayable: number | null;
   hasUnpricedItems: boolean;
+  soupLitresTotal: number;
+  minimumOrderValueNgn: number;
+  minimumSoupLitres: number;
+  meetsMinimumOrderValue: boolean;
+  meetsMinimumSoupLitres: boolean;
+  remainingToMinimumNgn: number;
+  isOrderEligible: boolean;
+  minimumOrderMessage: string;
+  estimatedCostNgn: number;
+  estimatedProfitNgn: number;
 }
 
 export function calculateOrderTotals(
   selections: CartSelection[],
   products: FoodProduct[],
   proteins: ProteinOption[],
-  deliveryFee: number | null
+  deliveryFee: number | null,
+  policy?: { minimumOrderValueNgn?: number; minimumSoupLitres?: number }
 ): CalculatedOrder {
+  const minimumOrderValueNgn = Math.max(50000, policy?.minimumOrderValueNgn || 50000);
+  const minimumSoupLitres = Math.max(3, policy?.minimumSoupLitres || 3);
+
   const items: OrderItemInput[] = [];
   let runningSubtotal = 0;
+  let runningCost = 0;
   let totalUnits = 0;
+  let soupLitresTotal = 0;
+  let hasSoupInCart = false;
   let hasUnpricedItems = false;
 
   for (const sel of selections) {
@@ -79,6 +120,11 @@ export function calculateOrderTotals(
 
     const qty = Math.max(product.minQuantity || 1, Math.floor(sel.quantity || 1));
     totalUnits += qty;
+    if (product.category === 'soup') {
+      hasSoupInCart = true;
+      soupLitresTotal += qty;
+    }
+
     const selectedProteins = product.supportsProteins
       ? sel.proteinIds
           .map((pid) => proteins.find((pr) => pr.id === pid && pr.enabled))
@@ -90,8 +136,9 @@ export function calculateOrderTotals(
           }))
       : [];
 
+    const effectivePrice = getEffectiveUnitPrice(product);
     let lineTotal: number | null = null;
-    if (product.pricePerUnit !== null && product.pricePerUnit >= 0) {
+    if (effectivePrice !== null && effectivePrice >= 0) {
       let proteinSum = 0;
       let proteinUnpriced = false;
       for (const pr of selectedProteins) {
@@ -102,7 +149,7 @@ export function calculateOrderTotals(
         }
       }
       if (!proteinUnpriced) {
-        lineTotal = product.pricePerUnit * qty + proteinSum;
+        lineTotal = effectivePrice * qty + proteinSum;
         runningSubtotal += lineTotal;
       } else {
         hasUnpricedItems = true;
@@ -111,13 +158,22 @@ export function calculateOrderTotals(
       hasUnpricedItems = true;
     }
 
+    if (product.costBreakdown) {
+      const unitCost =
+        (Number(product.costBreakdown.ingredientCost) || 0) +
+        (Number(product.costBreakdown.proteinCost) || 0) +
+        (Number(product.costBreakdown.packagingCost) || 0) +
+        (Number(product.costBreakdown.prepCost) || 0);
+      runningCost += unitCost * qty;
+    }
+
     items.push({
       productId: product.id,
       productName: product.name,
       category: product.category,
       unitType: product.unitType,
       quantity: qty,
-      unitPrice: product.pricePerUnit,
+      unitPrice: effectivePrice,
       lineTotal,
       proteins: selectedProteins,
     });
@@ -130,12 +186,34 @@ export function calculateOrderTotals(
       ? Math.round((rawSubtotal * bulkDiscountPercent) / 100)
       : 0;
   const discountedSubtotal = rawSubtotal !== null ? Math.max(0, rawSubtotal - bulkDiscountNgn) : null;
+
+  // Minimum order rule: strictly calculated using food subtotal (EXCLUDING delivery charges)
+  const foodSubtotalForMin = discountedSubtotal ?? 0;
+  const remainingToMinimumNgn = Math.max(0, minimumOrderValueNgn - foodSubtotalForMin);
+  const meetsMinimumOrderValue = discountedSubtotal !== null && foodSubtotalForMin >= minimumOrderValueNgn;
+  const meetsMinimumSoupLitres = !hasSoupInCart || soupLitresTotal >= minimumSoupLitres;
+  const isOrderEligible = items.length > 0 && meetsMinimumOrderValue && meetsMinimumSoupLitres;
+
+  let minimumOrderMessage = '';
+  if (items.length === 0) {
+    minimumOrderMessage = `Minimum order is ${formatNaira(minimumOrderValueNgn)} (excluding delivery).`;
+  } else if (!meetsMinimumSoupLitres) {
+    const neededLitres = minimumSoupLitres - soupLitresTotal;
+    minimumOrderMessage = `Minimum soup quantity is ${minimumSoupLitres} litres (you can combine different soup varieties). Please add ${neededLitres} more litre${neededLitres > 1 ? 's' : ''}.`;
+  } else if (!meetsMinimumOrderValue) {
+    minimumOrderMessage = `Your minimum order is ${formatNaira(minimumOrderValueNgn)}. Please add ${formatNaira(remainingToMinimumNgn)} worth of items to continue.`;
+  } else {
+    minimumOrderMessage = 'Your order meets our minimum order requirement. You can proceed to checkout.';
+  }
+
   const totalPayable =
     discountedSubtotal !== null && deliveryFee !== null
       ? discountedSubtotal + deliveryFee
-      : discountedSubtotal !== null && deliveryFee === 0
-      ? discountedSubtotal
       : null;
+
+  const estimatedCostNgn = Math.round(runningCost);
+  const estimatedProfitNgn =
+    discountedSubtotal !== null ? Math.round(discountedSubtotal - estimatedCostNgn) : 0;
 
   return {
     items,
@@ -145,6 +223,16 @@ export function calculateOrderTotals(
     deliveryFee,
     totalPayable,
     hasUnpricedItems,
+    soupLitresTotal,
+    minimumOrderValueNgn,
+    minimumSoupLitres,
+    meetsMinimumOrderValue,
+    meetsMinimumSoupLitres,
+    remainingToMinimumNgn,
+    isOrderEligible,
+    minimumOrderMessage,
+    estimatedCostNgn,
+    estimatedProfitNgn,
   };
 }
 
@@ -153,6 +241,7 @@ export function buildWhatsAppOrderMessage(params: {
   customerName: string;
   customerPhone: string;
   deliveryAddress: string;
+  deliveryZoneName?: string;
   deliveryDate: string;
   deliveryTime: string;
   additionalInstructions: string;
@@ -164,6 +253,7 @@ export function buildWhatsAppOrderMessage(params: {
     customerName,
     customerPhone,
     deliveryAddress,
+    deliveryZoneName,
     deliveryDate,
     deliveryTime,
     additionalInstructions,
@@ -177,6 +267,7 @@ export function buildWhatsAppOrderMessage(params: {
     `*Customer Details:*`,
     `• Name: ${customerName}`,
     `• Phone/WhatsApp: ${customerPhone}`,
+    `• Delivery Zone: ${deliveryZoneName || 'Selected Zone'}`,
     `• Delivery Address: ${deliveryAddress}`,
     `• Preferred Date: ${deliveryDate}`,
     `• Preferred Time: ${deliveryTime}`,
@@ -202,20 +293,22 @@ export function buildWhatsAppOrderMessage(params: {
 
   lines.push(``);
   if (calculated.subtotal !== null) {
-    lines.push(`Subtotal: *${formatNaira(calculated.subtotal)}*`);
+    lines.push(`Food Subtotal: *${formatNaira(calculated.subtotal)}*`);
     if (calculated.deliveryFee !== null) {
-      lines.push(`Delivery Fee: *${formatNaira(calculated.deliveryFee)}*`);
+      lines.push(`Delivery Charge: *${formatNaira(calculated.deliveryFee)}*`);
     } else {
-      lines.push(`Delivery Fee: To be confirmed based on location`);
+      lines.push(`Delivery Charge: *Delivery fee will be confirmed before payment.*`);
     }
     if (calculated.totalPayable !== null) {
       lines.push(`Total Payable: *${formatNaira(calculated.totalPayable)}*`);
+    } else {
+      lines.push(`Total Payable: *Pending delivery fee confirmation*`);
     }
   } else {
     lines.push(`Pricing: Please confirm total for selected items/litres & proteins.`);
   }
 
-  lines.push(``, `_Note: Placed in accordance with the 7-hour minimum advance order policy._`);
+  lines.push(``, `_Note: Freshly sourced & cooked to order (24-hour advance order policy)._`);
 
   return lines.join('\n');
 }

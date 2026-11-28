@@ -18,14 +18,16 @@ import {
   FoodCategory,
   FoodOrder,
   FoodProduct,
+  FoodsAuditEntry,
   FoodsSettings,
+  FoodUnitType,
   ORDER_STATUSES,
   OrderStatus,
   ProteinOption,
 } from '@/lib/foods-types';
-import { formatNaira, formatUnitLabel } from '@/lib/foods-pricing';
+import { formatNaira, formatUnitLabel, normalizeNigerianWhatsapp } from '@/lib/foods-pricing';
 
-type AdminTab = 'orders' | 'products' | 'proteins' | 'settings';
+type AdminTab = 'orders' | 'products' | 'proteins' | 'settings' | 'audit';
 
 export default function FoodsAdminClient() {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
@@ -38,6 +40,8 @@ export default function FoodsAdminClient() {
   const [products, setProducts] = useState<FoodProduct[]>([]);
   const [proteins, setProteins] = useState<ProteinOption[]>([]);
   const [settings, setSettings] = useState<FoodsSettings | null>(null);
+  const [auditLog, setAuditLog] = useState<FoodsAuditEntry[]>([]);
+  const [deliveryFeeDrafts, setDeliveryFeeDrafts] = useState<Record<string, string>>({});
   const [loadingData, setLoadingData] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveBanner, setSaveBanner] = useState('');
@@ -54,6 +58,7 @@ export default function FoodsAdminClient() {
         setProducts(cat.products || []);
         setProteins(cat.proteins || []);
         setSettings(cat.settings || null);
+        setAuditLog(cat.auditLog || []);
       }
       if (ordRes.ok) {
         const ord = await ordRes.json();
@@ -126,7 +131,8 @@ export default function FoodsAdminClient() {
         setProducts(updated.products);
         setProteins(updated.proteins);
         setSettings(updated.settings);
-        setSaveBanner('All product, pricing, and delivery changes saved.');
+        setAuditLog(updated.auditLog || []);
+        setSaveBanner('All product, pricing, cost, and delivery changes saved.');
         setTimeout(() => setSaveBanner(''), 3500);
       } else {
         setSaveBanner('Failed to save changes. Check your session.');
@@ -138,7 +144,12 @@ export default function FoodsAdminClient() {
 
   const handleUpdateOrder = async (
     orderId: string,
-    patch: { status?: OrderStatus; paymentVerified?: boolean }
+    patch: {
+      status?: OrderStatus;
+      paymentVerified?: boolean;
+      deliveryFee?: number | null;
+      deliveryConfirmed?: boolean;
+    }
   ) => {
     const res = await fetch('/api/foods/orders', {
       method: 'PATCH',
@@ -150,7 +161,55 @@ export default function FoodsAdminClient() {
       setOrders((prev) =>
         prev.map((o) => (o.id === orderId ? data.order : o))
       );
+      if (patch.deliveryFee !== undefined) {
+        loadAdminData();
+      }
+    } else {
+      const err = await res.json().catch(() => ({}));
+      if (err?.error) {
+        setSaveBanner(err.error);
+        setTimeout(() => setSaveBanner(''), 4000);
+      }
     }
+  };
+
+  const handleExportOrdersCsv = () => {
+    const headers = [
+      'Order ID',
+      'Date',
+      'Status',
+      'Payment Verified',
+      'Customer',
+      'Phone',
+      'Zone',
+      'Address',
+      'Food Subtotal (NGN)',
+      'Delivery Fee (NGN)',
+      'Total Payable (NGN)',
+      'Est Profit (NGN)',
+    ];
+    const rows = orders.map((o) => [
+      o.id,
+      o.createdAt,
+      o.status,
+      o.paymentVerified ? 'Yes' : 'No',
+      `"${(o.customerName || '').replace(/"/g, '""')}"`,
+      o.customerPhone,
+      `"${(o.deliveryZoneName || '').replace(/"/g, '""')}"`,
+      `"${(o.deliveryAddress || '').replace(/"/g, '""')}"`,
+      o.subtotal ?? '',
+      o.deliveryFee ?? 'Unconfirmed',
+      o.totalPayable ?? 'Pending',
+      o.estimatedProfitNgn ?? '',
+    ]);
+    const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bethelmind-foods-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleAddProduct = () => {
@@ -285,9 +344,10 @@ export default function FoodsAdminClient() {
           <div className="flex flex-wrap gap-2">
             {[
               { id: 'orders', label: `Orders (${orders.length})`, icon: ClipboardList },
-              { id: 'products', label: `Products & Litre Prices (${products.length})`, icon: Utensils },
+              { id: 'products', label: `Products, Pricing & Costs (${products.length})`, icon: Utensils },
               { id: 'proteins', label: `Proteins (${proteins.length})`, icon: ShieldCheck },
-              { id: 'settings', label: 'Delivery, WhatsApp & Tracking', icon: Settings },
+              { id: 'settings', label: 'Delivery Zones & Policy', icon: Settings },
+              { id: 'audit', label: `Audit Log (${auditLog.length})`, icon: ShieldCheck },
             ].map((item) => (
               <button
                 key={item.id}
@@ -305,7 +365,7 @@ export default function FoodsAdminClient() {
             ))}
           </div>
 
-          {tab !== 'orders' ? (
+          {tab !== 'orders' && tab !== 'audit' ? (
             <button
               type="button"
               onClick={handleSaveCatalog}
@@ -328,6 +388,35 @@ export default function FoodsAdminClient() {
         {/* ORDERS TAB */}
         {tab === 'orders' ? (
           <div className="space-y-4">
+            {/* Sales & Profit Summary + Export CSV */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div className="bg-white rounded-2xl border border-slate-200 p-4">
+                <div className="text-[11px] font-bold uppercase text-slate-500">Total Orders</div>
+                <div className="text-2xl font-black text-emerald-950">{orders.length}</div>
+              </div>
+              <div className="bg-white rounded-2xl border border-slate-200 p-4">
+                <div className="text-[11px] font-bold uppercase text-slate-500">Verified Sales Revenue</div>
+                <div className="text-2xl font-black text-emerald-800">
+                  {formatNaira(orders.filter((o) => o.paymentVerified).reduce((s, o) => s + (o.totalPayable || o.subtotal || 0), 0))}
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl border border-slate-200 p-4">
+                <div className="text-[11px] font-bold uppercase text-slate-500">Est. Gross Profit (All)</div>
+                <div className="text-2xl font-black text-amber-700">
+                  {formatNaira(orders.reduce((s, o) => s + (o.estimatedProfitNgn || 0), 0))}
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={handleExportOrdersCsv}
+                  className="w-full py-2.5 px-4 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-extrabold cursor-pointer"
+                >
+                  Export Order Records (CSV)
+                </button>
+              </div>
+            </div>
+
             {orders.length === 0 ? (
               <div className="bg-white rounded-2xl p-10 text-center border border-slate-200">
                 <p className="font-bold text-slate-800">No orders submitted yet.</p>
@@ -336,7 +425,13 @@ export default function FoodsAdminClient() {
                 </p>
               </div>
             ) : (
-              orders.map((order) => (
+              orders.map((order) => {
+                const draftFee = deliveryFeeDrafts[order.id] ?? (order.deliveryFee !== null ? String(order.deliveryFee) : '');
+                const custWa = normalizeNigerianWhatsapp(order.customerPhone);
+                const paymentRequestWa = `https://wa.me/${custWa}?text=${encodeURIComponent(
+                  `Hello ${order.customerName}, your Bethelmind Foods order (${order.id}) is confirmed!\nFood Subtotal: ${formatNaira(order.subtotal)}\nDelivery Charge: ${order.deliveryFee !== null ? formatNaira(order.deliveryFee) : 'Pending'}\nFinal Total Payable: ${formatNaira(order.totalPayable)}\n\nPlease pay into Moniepoint Microfinance Bank — 6805375225 (Bethelmind Digital Solutions) and send your receipt.`
+                )}`;
+                return (
                 <div
                   key={order.id}
                   className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4"
@@ -353,6 +448,11 @@ export default function FoodsAdminClient() {
                         {order.paymentVerified ? (
                           <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                             Payment Verified
+                          </span>
+                        ) : null}
+                        {!order.deliveryConfirmed ? (
+                          <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-red-100 text-red-800">
+                            Delivery Fee Unconfirmed
                           </span>
                         ) : null}
                         {order.attribution?.gclid ? (
@@ -407,6 +507,9 @@ export default function FoodsAdminClient() {
                         <strong>Phone/WhatsApp:</strong> {order.customerPhone}
                       </p>
                       <p>
+                        <strong>Zone:</strong> {order.deliveryZoneName || 'Custom'}
+                      </p>
+                      <p>
                         <strong>Address:</strong> {order.deliveryAddress}
                       </p>
                       <p>
@@ -418,6 +521,41 @@ export default function FoodsAdminClient() {
                           <strong>Instructions:</strong> {order.additionalInstructions}
                         </p>
                       ) : null}
+
+                      {/* Manual Delivery Fee Adjustment */}
+                      <div className="pt-2 flex flex-wrap items-center gap-2">
+                        <input
+                          type="number"
+                          placeholder="Delivery Fee (₦)"
+                          value={draftFee}
+                          onChange={(e) =>
+                            setDeliveryFeeDrafts((prev) => ({ ...prev, [order.id]: e.target.value }))
+                          }
+                          className="w-36 px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleUpdateOrder(order.id, {
+                              deliveryFee: draftFee === '' ? null : Number(draftFee),
+                              deliveryConfirmed: draftFee !== '',
+                            })
+                          }
+                          className="px-3 py-1.5 rounded-lg bg-emerald-900 text-white text-xs font-bold cursor-pointer"
+                        >
+                          Set &amp; Confirm Delivery
+                        </button>
+                        {order.deliveryConfirmed && order.totalPayable !== null ? (
+                          <a
+                            href={paymentRequestWa}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold"
+                          >
+                            Send Final Payment Request
+                          </a>
+                        ) : null}
+                      </div>
                     </div>
 
                     <div className="bg-slate-50 rounded-xl p-3 space-y-1.5">
@@ -437,16 +575,28 @@ export default function FoodsAdminClient() {
                             : ''}
                         </div>
                       ))}
-                      <p className="text-xs font-bold text-emerald-900 pt-1 border-t border-slate-200">
-                        Total:{' '}
-                        {order.totalPayable !== null
-                          ? formatNaira(order.totalPayable)
-                          : 'Quote / Confirm via WhatsApp'}
-                      </p>
+                      <div className="text-xs text-slate-600 pt-1 border-t border-slate-200 flex justify-between">
+                        <span>Food Subtotal:</span>
+                        <strong>{formatNaira(order.subtotal)}</strong>
+                      </div>
+                      <div className="text-xs text-slate-600 flex justify-between">
+                        <span>Delivery Charge:</span>
+                        <strong>
+                          {order.deliveryFee !== null ? formatNaira(order.deliveryFee) : 'Pending Confirmation'}
+                        </strong>
+                      </div>
+                      <div className="text-xs font-bold text-emerald-900 flex justify-between">
+                        <span>Final Total Payable:</span>
+                        <span>
+                          {order.totalPayable !== null
+                            ? formatNaira(order.totalPayable)
+                            : 'Confirm Delivery Fee First'}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              ))
+              )})
             )}
           </div>
         ) : null}
@@ -535,11 +685,12 @@ export default function FoodsAdminClient() {
                         <option value="soup">Soup</option>
                         <option value="rice">Rice</option>
                         <option value="small_chops">Small Chops</option>
+                        <option value="bundle">Bundle / Catering</option>
                       </select>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div>
                       <label className="block text-[11px] font-bold text-slate-600 mb-1">
                         Unit Type
@@ -550,20 +701,22 @@ export default function FoodsAdminClient() {
                           const next = [...products];
                           next[index] = {
                             ...product,
-                            unitType: e.target.value as 'litre' | 'serving' | 'pack',
+                            unitType: e.target.value as FoodUnitType,
                           };
                           setProducts(next);
                         }}
                         className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white"
                       >
                         <option value="litre">Litre</option>
+                        <option value="portion">Portion</option>
+                        <option value="tray">Tray</option>
                         <option value="serving">Serving</option>
                         <option value="pack">Pack</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                        Price per Unit (₦)
+                        Selling Price (₦)
                       </label>
                       <input
                         type="number"
@@ -574,6 +727,26 @@ export default function FoodsAdminClient() {
                           next[index] = {
                             ...product,
                             pricePerUnit:
+                              e.target.value === '' ? null : Number(e.target.value),
+                          };
+                          setProducts(next);
+                        }}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                        Promo Price (₦)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="Optional"
+                        value={product.promoPrice ?? ''}
+                        onChange={(e) => {
+                          const next = [...products];
+                          next[index] = {
+                            ...product,
+                            promoPrice:
                               e.target.value === '' ? null : Number(e.target.value),
                           };
                           setProducts(next);
@@ -601,6 +774,54 @@ export default function FoodsAdminClient() {
                       />
                     </div>
                   </div>
+
+                  {/* Internal Cost & Profit Management (Never visible to customers) */}
+                  {(() => {
+                    const cb = product.costBreakdown || { ingredientCost: 0, proteinCost: 0, packagingCost: 0, prepCost: 0 };
+                    const totalCost = cb.ingredientCost + cb.proteinCost + cb.packagingCost + cb.prepCost;
+                    const effectiveSell = product.promoPrice ?? product.pricePerUnit ?? 0;
+                    const estProfit = effectiveSell - totalCost;
+                    return (
+                      <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div className="flex items-center justify-between text-[11px] font-bold">
+                          <span className="text-slate-700 uppercase">Internal Cost &amp; Profit (Admin Only)</span>
+                          <span className={estProfit >= 0 ? 'text-emerald-700' : 'text-red-600'}>
+                            Est. Gross Profit: {formatNaira(estProfit)}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          {[
+                            { key: 'ingredientCost', label: 'Ingredient ₦' },
+                            { key: 'proteinCost', label: 'Protein ₦' },
+                            { key: 'packagingCost', label: 'Packaging ₦' },
+                            { key: 'prepCost', label: 'Prep/Ops ₦' },
+                          ].map((field) => (
+                            <div key={field.key}>
+                              <label className="block text-[10px] text-slate-500">{field.label}</label>
+                              <input
+                                type="number"
+                                min={0}
+                                value={(cb as any)[field.key] || ''}
+                                placeholder="0"
+                                onChange={(e) => {
+                                  const next = [...products];
+                                  next[index] = {
+                                    ...product,
+                                    costBreakdown: {
+                                      ...cb,
+                                      [field.key]: Math.max(0, Number(e.target.value) || 0),
+                                    },
+                                  };
+                                  setProducts(next);
+                                }}
+                                className="w-full px-2 py-1 rounded border border-slate-300 text-xs bg-white"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
@@ -783,6 +1004,180 @@ export default function FoodsAdminClient() {
                   className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm"
                 />
               </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">
+                    Minimum Order Value (₦, excl. delivery)
+                  </label>
+                  <input
+                    type="number"
+                    min={50000}
+                    step={1000}
+                    value={settings.minimumOrderValueNgn ?? 50000}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        minimumOrderValueNgn: Math.max(50000, Number(e.target.value) || 50000),
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">
+                    Minimum Soup Quantity (Litres)
+                  </label>
+                  <input
+                    type="number"
+                    min={3}
+                    value={settings.minimumSoupLitres ?? 3}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        minimumSoupLitres: Math.max(3, Number(e.target.value) || 3),
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Flexible Delivery Zones Manager */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-extrabold text-emerald-950 text-base">
+                    Delivery Zones &amp; Location Pricing
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Manage fees by distance, free promo delivery, or locations requiring manual confirmation.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSettings({
+                      ...settings,
+                      deliveryZones: [
+                        ...(settings.deliveryZones || []),
+                        {
+                          id: `zone-${Date.now()}`,
+                          name: 'New Lagos Zone',
+                          feeNgn: 3000,
+                          isFreePromo: false,
+                          requiresConfirmation: false,
+                          estimatedWindow: '60–90 mins',
+                          enabled: true,
+                        },
+                      ],
+                    })
+                  }
+                  className="px-3 py-2 rounded-xl bg-emerald-900 text-white text-xs font-bold inline-flex items-center gap-1 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Zone
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                {(settings.deliveryZones || []).map((zone, idx) => (
+                  <div key={zone.id} className="p-3 rounded-xl bg-slate-50 border border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-2 items-center text-xs">
+                    <div className="sm:col-span-4">
+                      <input
+                        type="text"
+                        value={zone.name}
+                        onChange={(e) => {
+                          const next = [...(settings.deliveryZones || [])];
+                          next[idx] = { ...zone, name: e.target.value };
+                          setSettings({ ...settings, deliveryZones: next });
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white font-semibold"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <input
+                        type="number"
+                        placeholder="Fee (₦)"
+                        disabled={Boolean(zone.isFreePromo || zone.requiresConfirmation)}
+                        value={zone.feeNgn ?? ''}
+                        onChange={(e) => {
+                          const next = [...(settings.deliveryZones || [])];
+                          next[idx] = {
+                            ...zone,
+                            feeNgn: e.target.value === '' ? null : Math.max(0, Number(e.target.value)),
+                          };
+                          setSettings({ ...settings, deliveryZones: next });
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white disabled:opacity-50"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <input
+                        type="text"
+                        placeholder="Window"
+                        value={zone.estimatedWindow || ''}
+                        onChange={(e) => {
+                          const next = [...(settings.deliveryZones || [])];
+                          next[idx] = { ...zone, estimatedWindow: e.target.value };
+                          setSettings({ ...settings, deliveryZones: next });
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white"
+                      />
+                    </div>
+                    <div className="sm:col-span-3 flex flex-wrap gap-2">
+                      <label className="inline-flex items-center gap-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(zone.isFreePromo)}
+                          onChange={(e) => {
+                            const next = [...(settings.deliveryZones || [])];
+                            next[idx] = { ...zone, isFreePromo: e.target.checked };
+                            setSettings({ ...settings, deliveryZones: next });
+                          }}
+                        />
+                        Free Promo
+                      </label>
+                      <label className="inline-flex items-center gap-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(zone.requiresConfirmation)}
+                          onChange={(e) => {
+                            const next = [...(settings.deliveryZones || [])];
+                            next[idx] = { ...zone, requiresConfirmation: e.target.checked };
+                            setSettings({ ...settings, deliveryZones: next });
+                          }}
+                        />
+                        Confirm Fee
+                      </label>
+                      <label className="inline-flex items-center gap-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={zone.enabled}
+                          onChange={(e) => {
+                            const next = [...(settings.deliveryZones || [])];
+                            next[idx] = { ...zone, enabled: e.target.checked };
+                            setSettings({ ...settings, deliveryZones: next });
+                          }}
+                        />
+                        Active
+                      </label>
+                    </div>
+                    <div className="sm:col-span-1 text-right">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = (settings.deliveryZones || []).filter((z) => z.id !== zone.id);
+                          setSettings({ ...settings, deliveryZones: next });
+                        }}
+                        className="text-red-600 hover:underline font-bold cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
@@ -886,6 +1281,47 @@ export default function FoodsAdminClient() {
                 </ul>
               </div>
             </div>
+          </div>
+        ) : null}
+
+        {/* AUDIT LOG TAB */}
+        {tab === 'audit' ? (
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+            <h2 className="font-extrabold text-emerald-950 text-base">
+              Admin Price &amp; Delivery-Fee Audit Log
+            </h2>
+            {auditLog.length === 0 ? (
+              <p className="text-xs text-slate-500">
+                No price or delivery-fee changes recorded yet. Changes saved in Products, Proteins, Delivery Zones, or Orders appear here automatically.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-500">
+                      <th className="py-2 pr-3">Timestamp</th>
+                      <th className="py-2 pr-3">Action</th>
+                      <th className="py-2 pr-3">Item / Order</th>
+                      <th className="py-2 pr-3">Previous</th>
+                      <th className="py-2">Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {auditLog.map((entry) => (
+                      <tr key={entry.id} className="border-b border-slate-100">
+                        <td className="py-2 pr-3 text-slate-500">
+                          {new Date(entry.timestamp).toLocaleString('en-NG')}
+                        </td>
+                        <td className="py-2 pr-3 font-mono text-[11px]">{entry.action}</td>
+                        <td className="py-2 pr-3 font-bold text-slate-800">{entry.entityName}</td>
+                        <td className="py-2 pr-3 text-slate-500">{entry.previousValue}</td>
+                        <td className="py-2 font-bold text-emerald-800">{entry.newValue}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         ) : null}
       </div>

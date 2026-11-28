@@ -1,17 +1,17 @@
 import React from 'react';
-import { readFoodsStore } from '@/lib/foods-store';
+import { readFoodsStore, sanitizeFoodsStoreForPublic } from '@/lib/foods-store';
 import FoodsLandingClient from '@/components/foods/FoodsLandingClient';
 
 export const dynamic = 'force-dynamic';
 
 export default function BethelmindFoodsPage() {
-  const store = readFoodsStore();
+  const publicStore = sanitizeFoodsStoreForPublic(readFoodsStore());
 
   return (
     <FoodsLandingClient
-      initialProducts={store.products}
-      initialProteins={store.proteins}
-      initialSettings={store.settings}
+      initialProducts={publicStore.products}
+      initialProteins={publicStore.proteins}
+      initialSettings={publicStore.settings}
     />
   );
 }
