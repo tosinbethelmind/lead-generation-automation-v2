@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * @file src/components/home/TrustSection.tsx
@@ -82,12 +82,12 @@ export default function TrustSection() {
             CAC Certified Corporate Technology Provider
           </h3>
           <p className="text-xs sm:text-sm text-[#c9c4bc] font-light max-w-2xl mx-auto leading-relaxed">
-            Bethelmind Digital Solutions operates as a legally registered Nigerian enterprise (CAC BN/RC: 7034297). All official engagements, invoices, and service level agreements route through verified corporate bank accounts at Moniepoint Microfinance Bank.
+            Bethelmind Digital Solutions operates as a legally registered Nigerian enterprise (CAC Reg: 9912717). All official engagements, invoices, and service level agreements route through verified corporate bank accounts at Moniepoint Microfinance Bank.
           </p>
           <div className="pt-2 flex flex-wrap justify-center items-center gap-6 text-xs text-[#d4af37]">
             <span className="inline-flex items-center gap-1.5 font-medium">
               <CheckCircle2 className="w-4 h-4 text-[#d4af37]" />
-              RC 7034297 Verified
+              CAC Reg: 9912717 Verified
             </span>
             <span className="inline-flex items-center gap-1.5 font-medium">
               <CheckCircle2 className="w-4 h-4 text-[#d4af37]" />

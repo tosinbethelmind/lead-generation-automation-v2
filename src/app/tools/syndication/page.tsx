@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -188,7 +188,7 @@ export default function SyndicationHubPage() {
             </div>
             <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/25">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Bethelmind Digital Solutions (RC 7034297)</span>
+              <span>Bethelmind Digital Solutions (CAC Reg: 9912717)</span>
             </div>
           </div>
 

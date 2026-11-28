@@ -68,6 +68,24 @@ const DEFAULT_PORTFOLIO: PortfolioEntry[] = [
     description: 'Demonstration patient-first landing page with service hours and appointment enquiry workflow.',
     createdAt: '2026-11-26T00:00:00.000Z',
   },
+  {
+    id: 'demo-foods-catering',
+    title: 'Nigerian Food & Bulk Catering Storefront',
+    category: 'Food & Catering',
+    projectType: 'demonstration',
+    liveUrl: '/foods',
+    description: 'Live interactive food ordering storefront with litre pricing, protein upgrades, delivery zones, and WhatsApp order dispatch.',
+    createdAt: '2026-11-26T00:00:00.000Z',
+  },
+  {
+    id: 'demo-academic-portal',
+    title: 'Academic Research & Consulting Portal',
+    category: 'Consulting & Education',
+    projectType: 'demonstration',
+    liveUrl: '/academic-research',
+    description: 'Structured multi-track consultation portal with work samples, enquiry capture, and milestone checkout.',
+    createdAt: '2026-11-26T00:00:00.000Z',
+  },
 ];
 
 function readJson<T>(filePath: string, fallback: T): T {

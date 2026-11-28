@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { 
@@ -64,7 +64,7 @@ export const DualCheckoutTrustCard: React.FC<DualCheckoutTrustCardProps> = ({
 
         <div className="flex items-center gap-3 text-xs text-slate-400">
           <span className="flex items-center gap-1 text-emerald-400 font-semibold">
-            <ShieldCheck className="w-4 h-4" /> CAC RC 7034297
+            <ShieldCheck className="w-4 h-4" /> CAC Reg: 9912717
           </span>
           <span className="hidden sm:inline text-slate-600">·</span>
           <span className="hidden sm:inline">256-Bit Encrypted Settlement</span>

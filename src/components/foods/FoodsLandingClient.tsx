@@ -28,6 +28,7 @@ import {
 import {
   calculateOrderTotals,
   CartSelection,
+  DELIVERY_ZONES,
   formatNaira,
   formatUnitLabel,
   normalizeNigerianWhatsapp,
@@ -73,6 +74,7 @@ export default function FoodsLandingClient({
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [selectedZoneId, setSelectedZoneId] = useState<string>('berger-ikeja');
   const [deliveryDate, setDeliveryDate] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
   const [additionalInstructions, setAdditionalInstructions] = useState('');
@@ -166,9 +168,14 @@ export default function FoodsLandingClient({
     settings.tracking,
   ]);
 
+  const selectedZone = useMemo(
+    () => DELIVERY_ZONES.find((z) => z.id === selectedZoneId) || DELIVERY_ZONES[2],
+    [selectedZoneId]
+  );
+
   const calculated = useMemo(
-    () => calculateOrderTotals(cart, products, proteins, settings.deliveryFee),
-    [cart, products, proteins, settings.deliveryFee]
+    () => calculateOrderTotals(cart, products, proteins, selectedZone.feeNgn),
+    [cart, products, proteins, selectedZone.feeNgn]
   );
 
   const filteredProducts = useMemo(() => {
@@ -324,6 +331,7 @@ export default function FoodsLandingClient({
           customerName,
           customerPhone,
           deliveryAddress,
+          deliveryZoneId: selectedZone.id,
           deliveryDate,
           deliveryTime,
           additionalInstructions,
@@ -566,6 +574,7 @@ export default function FoodsLandingClient({
           <div className="flex items-center sm:justify-center gap-2 mb-8 overflow-x-auto pb-2 snap-x">
             {[
               { id: 'all', label: 'All Menu Items' },
+              { id: 'bundle', label: 'Family, Weekend & Bulk Bundles' },
               { id: 'soup', label: 'Nigerian Soups (Litres)' },
               { id: 'rice', label: 'Jollof & Fried Rice' },
               { id: 'small_chops', label: 'Small Chops & Pastries' },
@@ -615,6 +624,8 @@ export default function FoodsLandingClient({
                         ? 'Soup • Litres'
                         : product.category === 'rice'
                         ? 'Rice • Litres'
+                        : product.category === 'bundle'
+                        ? 'Value Bundle'
                         : 'Small Chops'}
                     </span>
                     {isSelected ? (
@@ -942,7 +953,30 @@ export default function FoodsLandingClient({
                     ))}
                   </ul>
 
-                  <div className="border-t border-slate-200 pt-3 space-y-2 text-sm">
+                  <div className="border-t border-slate-200 pt-3 space-y-2.5 text-sm">
+                    <div>
+                      <label htmlFor="foods-delivery-zone" className="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1">
+                        Delivery Zone Calculator
+                      </label>
+                      <select
+                        id="foods-delivery-zone"
+                        value={selectedZoneId}
+                        onChange={(e) => setSelectedZoneId(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-800"
+                      >
+                        {DELIVERY_ZONES.map((z) => (
+                          <option key={z.id} value={z.id}>
+                            {z.label} — {z.feeNgn === 0 ? 'Free Pickup (₦0)' : formatNaira(z.feeNgn)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {calculated.bulkDiscountPercent > 0 && (
+                      <div className="flex justify-between text-emerald-700 font-semibold">
+                        <span>Bulk Order Discount ({calculated.bulkDiscountPercent}% off)</span>
+                        <span>-{formatNaira(calculated.bulkDiscountNgn)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="text-slate-600">Subtotal</span>
                       <span className="font-bold text-slate-900">
@@ -952,7 +986,7 @@ export default function FoodsLandingClient({
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Delivery Fee</span>
+                      <span className="text-slate-600">Delivery Fee ({selectedZone.label.split('(')[0].trim()})</span>
                       <span className="font-bold text-slate-900">
                         {calculated.deliveryFee !== null
                           ? formatNaira(calculated.deliveryFee)

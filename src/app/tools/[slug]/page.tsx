@@ -482,7 +482,7 @@ export default function StandaloneToolPage({ params }: ToolPageProps) {
               <div className="flex items-center gap-3 text-xs text-[#8e887e] font-light">
                 <span className="inline-flex items-center gap-1.5 text-[#d4af37]">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  CAC RC: 7034297
+                  CAC Reg: 9912717
                 </span>
                 <span>&bull;</span>
                 <span>Lagos Engineering Desk</span>
@@ -628,7 +628,7 @@ export default function StandaloneToolPage({ params }: ToolPageProps) {
                   Statutory Notice & Estimator Disclaimer
                 </span>
               </div>
-              <span className="text-[10px] text-[#8e887e] font-mono">RC: 7034297</span>
+              <span className="text-[10px] text-[#8e887e] font-mono">RC: 9912717</span>
             </div>
             <p className="leading-relaxed font-light">
               This calculation engine provides automated preliminary feasibility estimates for planning purposes only. Bethelmind Digital Solutions operates as a technology and automation provider, not a COREN-registered engineering consultant, licensed customs broker, surveying authority, or chartered tax practitioner. Formal structural projects, customs clearance declarations, and binding agreements require on-site professional verification.
@@ -679,7 +679,7 @@ export default function StandaloneToolPage({ params }: ToolPageProps) {
             <div className="flex items-center gap-3 text-xs text-[#8e887e] font-light">
               <span className="inline-flex items-center gap-1.5 text-[#d4af37]">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                CAC RC: 7034297
+                CAC Reg: 9912717
               </span>
               <span>&bull;</span>
               <span>Moniepoint NIP Settlement</span>
@@ -827,7 +827,7 @@ export default function StandaloneToolPage({ params }: ToolPageProps) {
                 Statutory Notice & Estimator Disclaimer
               </span>
             </div>
-            <span className="text-[10px] text-[#8e887e] font-mono">RC: 7034297</span>
+            <span className="text-[10px] text-[#8e887e] font-mono">RC: 9912717</span>
           </div>
           <p className="leading-relaxed font-light">
             This calculation engine provides automated preliminary feasibility estimates for planning purposes only. Bethelmind Digital Solutions operates as a technology and automation provider, not a COREN-registered engineering consultant, licensed customs broker, surveying authority, or chartered tax practitioner. Formal structural projects, customs clearance declarations, and binding agreements require on-site professional verification.

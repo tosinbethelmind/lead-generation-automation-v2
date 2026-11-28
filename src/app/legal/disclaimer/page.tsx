@@ -1,7 +1,7 @@
-/**
+﻿/**
  * @file src/app/legal/disclaimer/page.tsx
  * Comprehensive Sector Tools, Calculators & Algorithmic Estimator Disclaimer
- * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, RC 7034297)
+ * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, CAC Reg: 9912717)
  */
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -25,7 +25,7 @@ export default function CalculatorDisclaimerPage() {
         Sector Tools & Calculation Accuracy Policy
       </h1>
       <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: 28, lineHeight: 1.6 }}>
-        <strong>Entity:</strong> Bethelmind Digital Solutions (CAC Certified Enterprise · RC 7034297 · Federal Republic of Nigeria)<br />
+        <strong>Entity:</strong> Bethelmind Digital Solutions (CAC Certified Enterprise · CAC Reg: 9912717 · Federal Republic of Nigeria)<br />
         <strong>Last Updated & Enforced:</strong> Q4 2026
       </p>
 
@@ -151,7 +151,7 @@ export default function CalculatorDisclaimerPage() {
       </p>
       <p>
         <strong>Bethelmind Digital Solutions</strong><br />
-        CAC Certified Enterprise · RC 7034297<br />
+        CAC Certified Enterprise · CAC Reg: 9912717<br />
         Plot 12, Commercial Corridor, Lagos, Nigeria<br />
         Desk WhatsApp: <code>+234 802 279 1227</code><br />
         Corporate Settlement: Moniepoint Microfinance Bank (<code>6805375225</code>)

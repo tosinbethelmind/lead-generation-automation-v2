@@ -1,7 +1,7 @@
-/**
+﻿/**
  * @file src/app/legal/privacy/page.tsx
  * Comprehensive Data Privacy Policy under NDPA 2023 & NDPR
- * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, RC 7034297)
+ * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, CAC Reg: 9912717)
  */
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
         Privacy &amp; Data Protection Policy
       </h1>
       <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: 28, lineHeight: 1.6 }}>
-        <strong>Data Controller:</strong> Bethelmind Digital Solutions (CAC Certified Enterprise · RC 7034297 · Lagos, Nigeria)<br />
+        <strong>Data Controller:</strong> Bethelmind Digital Solutions (CAC Certified Enterprise · CAC Reg: 9912717 · Lagos, Nigeria)<br />
         <strong>Supervising Authority:</strong> Nigeria Data Protection Commission (NDPC)<br />
         <strong>Effective Date:</strong> Q4 2026
       </p>
@@ -123,7 +123,7 @@ export default function PrivacyPolicyPage() {
       </p>
       <p>
         <strong>Data Protection Officer (DPO)</strong><br />
-        Bethelmind Digital Solutions · CAC Certified Enterprise · RC 7034297<br />
+        Bethelmind Digital Solutions · CAC Certified Enterprise · CAC Reg: 9912717<br />
         Plot 12, Commercial Corridor, Lagos, Nigeria<br />
         Direct WhatsApp: <code>+234 802 279 1227</code><br />
         Email: <code>privacy@bethelmindanalytics.com</code> / <code>bethelmindrecruit@gmail.com</code>

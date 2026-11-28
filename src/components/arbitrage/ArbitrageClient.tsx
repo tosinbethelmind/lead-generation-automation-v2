@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -127,7 +127,7 @@ export function ArbitrageClient() {
   };
 
   const copyAccountNumber = () => {
-    navigator.clipboard.writeText('7034297995');
+    navigator.clipboard.writeText('9912717995');
     setCopiedAccount(true);
     setTimeout(() => setCopiedAccount(false), 2000);
   };
@@ -143,7 +143,7 @@ export function ArbitrageClient() {
   }, [capitalUsd, rates]);
 
   const whatsappInquiryUrl = `https://wa.me/2348022791227?text=${encodeURIComponent(
-    `Hello Bethelmind, I want to activate the VIP P2P Arbitrage Alert Desk (₦5,000/mo or ₦25,000 lifetime). Please confirm payment to Moniepoint/OPay 7034297995.`
+    `Hello Bethelmind, I want to activate the VIP P2P Arbitrage Alert Desk (₦5,000/mo or ₦25,000 lifetime). Please confirm payment to Moniepoint/OPay 9912717995.`
   )}`;
 
   return (
@@ -478,7 +478,7 @@ export function ArbitrageClient() {
                   onClick={copyAccountNumber}
                   className="inline-flex items-center gap-1.5 text-emerald-300 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-400/30 hover:bg-emerald-500/20 transition cursor-pointer"
                 >
-                  <span className="font-mono font-black">7034297995</span>
+                  <span className="font-mono font-black">9912717995</span>
                   {copiedAccount ? <Check className="w-3 h-3 text-emerald-300" /> : <Copy className="w-3 h-3 text-emerald-300" />}
                 </button>
               </div>

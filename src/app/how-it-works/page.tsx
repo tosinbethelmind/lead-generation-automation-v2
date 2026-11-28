@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * @file src/app/how-it-works/page.tsx
@@ -79,7 +79,7 @@ export default function HowItWorksPage() {
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2 text-xs text-[#8e887e] font-light">
             <span className="inline-flex items-center gap-1.5 text-[#d4af37]">
               <ShieldCheck className="w-4 h-4" />
-              CAC RC: 7034297 Certified
+              CAC Reg: 9912717 Certified
             </span>
             <span>&bull;</span>
             <span>50% Milestone Escrow Protection</span>
@@ -183,7 +183,7 @@ export default function HowItWorksPage() {
           <div className="flex items-center gap-4">
             <ShieldCheck className="w-8 h-8 text-[#d4af37] shrink-0" />
             <div>
-              <h4 className="font-serif text-base font-normal text-[#f5f3ef]">CAC Certified Nigerian Enterprise (RC: 7034297)</h4>
+              <h4 className="font-serif text-base font-normal text-[#f5f3ef]">CAC Certified Nigerian Enterprise (CAC Reg: 9912717)</h4>
               <p className="text-xs text-[#8e887e] font-light mt-0.5">
                 Corporate Settlements via Moniepoint Microfinance Bank (6805375225 &bull; Bethelmind Digital Solutions).
               </p>

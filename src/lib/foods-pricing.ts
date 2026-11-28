@@ -31,6 +31,21 @@ export function formatUnitLabel(unitType: 'litre' | 'serving' | 'pack', quantity
   return quantity === 1 ? '1 Pack' : `${quantity} Packs`;
 }
 
+export interface DeliveryZoneOption {
+  id: string;
+  label: string;
+  feeNgn: number;
+}
+
+export const DELIVERY_ZONES: DeliveryZoneOption[] = [
+  { id: 'pickup', label: 'Self-Pickup (Denro-Ishasi Kitchen)', feeNgn: 0 },
+  { id: 'ishasi-akute', label: 'Ishasi / Denro-Ishasi / Akute', feeNgn: 1500 },
+  { id: 'berger-ikeja', label: 'Ojodu Berger / Ikeja / Ogba / Magodo', feeNgn: 2500 },
+  { id: 'mainland-central', label: 'Surulere / Yaba / Gbagada / Maryland', feeNgn: 3500 },
+  { id: 'island', label: 'Victoria Island / Ikoyi / Lekki / Ajah', feeNgn: 5000 },
+  { id: 'other-lagos-ogun', label: 'Other Lagos / Ogun Locations', feeNgn: 4000 },
+];
+
 export interface CartSelection {
   productId: string;
   quantity: number;
@@ -40,6 +55,8 @@ export interface CartSelection {
 export interface CalculatedOrder {
   items: OrderItemInput[];
   subtotal: number | null;
+  bulkDiscountPercent: number;
+  bulkDiscountNgn: number;
   deliveryFee: number | null;
   totalPayable: number | null;
   hasUnpricedItems: boolean;
@@ -53,6 +70,7 @@ export function calculateOrderTotals(
 ): CalculatedOrder {
   const items: OrderItemInput[] = [];
   let runningSubtotal = 0;
+  let totalUnits = 0;
   let hasUnpricedItems = false;
 
   for (const sel of selections) {
@@ -60,6 +78,7 @@ export function calculateOrderTotals(
     if (!product) continue;
 
     const qty = Math.max(product.minQuantity || 1, Math.floor(sel.quantity || 1));
+    totalUnits += qty;
     const selectedProteins = product.supportsProteins
       ? sel.proteinIds
           .map((pid) => proteins.find((pr) => pr.id === pid && pr.enabled))
@@ -104,13 +123,25 @@ export function calculateOrderTotals(
     });
   }
 
-  const subtotal = items.length > 0 && !hasUnpricedItems ? runningSubtotal : null;
+  const bulkDiscountPercent = totalUnits >= 10 ? 10 : totalUnits >= 4 ? 5 : 0;
+  const rawSubtotal = items.length > 0 && !hasUnpricedItems ? runningSubtotal : null;
+  const bulkDiscountNgn =
+    rawSubtotal !== null && bulkDiscountPercent > 0
+      ? Math.round((rawSubtotal * bulkDiscountPercent) / 100)
+      : 0;
+  const discountedSubtotal = rawSubtotal !== null ? Math.max(0, rawSubtotal - bulkDiscountNgn) : null;
   const totalPayable =
-    subtotal !== null && deliveryFee !== null ? subtotal + deliveryFee : subtotal !== null && deliveryFee === 0 ? subtotal : null;
+    discountedSubtotal !== null && deliveryFee !== null
+      ? discountedSubtotal + deliveryFee
+      : discountedSubtotal !== null && deliveryFee === 0
+      ? discountedSubtotal
+      : null;
 
   return {
     items,
-    subtotal,
+    subtotal: discountedSubtotal,
+    bulkDiscountPercent,
+    bulkDiscountNgn,
     deliveryFee,
     totalPayable,
     hasUnpricedItems,

@@ -314,180 +314,108 @@ export default function BusinessSolutionsPage() {
           </Link>
         </div>
 
-        {/* SECTION 3 & 4: HERO + ABOVE-THE-FOLD CONSULTATION CARD */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/35 text-[#d4af37] text-xs font-bold uppercase tracking-wider shadow-sm">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>CAC Registered Business ({BRAND_IDENTITY.cacReg})</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.1]">
-              Your Business Deserves a Professional Website That{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] to-[#f6e6a5]">
-                Wins Customer Trust.
-              </span>
-            </h1>
-
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl">
-              Get a modern, mobile-friendly business website with WhatsApp integration, customer enquiry capture and Google visibility setup.
-            </p>
-            <div className="p-3.5 rounded-xl bg-[#d4af37]/10 border border-[#d4af37]/30 text-sm text-[#f3e4b0] font-medium leading-relaxed">
-              Transparent pricing from <strong className="text-white">₦80,000</strong>. Pay <strong className="text-white">60%</strong> to get started and the remaining <strong className="text-white">40%</strong> after reviewing and approving your website.
-            </div>
-
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-1">
-              <a
-                href="#consultation-form"
-                onClick={() => trackConversionEvent('click_whatsapp', { cta: 'hero_get_my_business_website' })}
-                className="px-6 py-4 rounded-xl bg-[#d4af37] hover:bg-[#e5c158] text-[#070b14] font-black text-sm shadow-lg shadow-[#d4af37]/20 transition inline-flex items-center justify-center gap-2"
-              >
-                <span>GET MY BUSINESS WEBSITE</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
-              <a
-                href="#packages"
-                className="px-6 py-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white font-bold text-sm border border-slate-700 transition inline-flex items-center justify-center"
-              >
-                VIEW WEBSITE PACKAGES
-              </a>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 text-xs text-slate-300">
-              {[
-                'CAC Registered Business (9912717)',
-                'Transparent Project Pricing (From ₦80,000)',
-                '60% Deposit / 40% Before Handover',
-                'Secure Paystack Checkout',
-                'Client Review Before Final Handover',
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2 bg-slate-900/50 border border-slate-800/80 rounded-lg px-3 py-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
+        {/* SECTION 3: HERO & MAIN VALUE PROPOSITION */}
+        <section className="space-y-6 max-w-4xl">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/35 text-[#d4af37] text-xs font-bold uppercase tracking-wider shadow-sm">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>{BRAND_IDENTITY.companyName} &bull; {BRAND_IDENTITY.cacReg}</span>
           </div>
 
-          {/* Above-the-Fold Consultation Form */}
-          <div ref={formRef} id="consultation-form" className="lg:col-span-5">
-            <div className="p-6 sm:p-7 rounded-2xl bg-slate-900/95 border border-slate-700/80 border-t-2 border-t-[#d4af37] shadow-2xl shadow-black/60 space-y-4">
-              <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400 pb-2 border-b border-slate-800">
-                <span className="text-[#d4af37]">Step 1: Quick Details</span>
-                <span>&rarr;</span>
-                <span>Step 2: Direct WhatsApp Review</span>
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.1]">
+            Launch a High-Trust Business Website That{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] to-[#f6e6a5]">
+              Turns Google &amp; Ad Visitors Into WhatsApp Enquiries.
+            </span>
+          </h1>
+
+          <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl">
+            Get a fast, mobile-first business website with direct WhatsApp order capture, structured service pricing, and Google Search visibility — built for Nigerian SMEs and growing companies.
+          </p>
+
+          <div className="p-4 rounded-xl bg-[#d4af37]/10 border border-[#d4af37]/30 text-sm text-[#f3e4b0] font-medium leading-relaxed max-w-2xl">
+            Transparent Naira packages from <strong className="text-white">₦80,000</strong>. Pay <strong className="text-white">60%</strong> to start and the remaining <strong className="text-white">40%</strong> only after you review and approve your website on staging.
+          </div>
+
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-1">
+            <a
+              href="#packages"
+              onClick={() => trackConversionEvent('view_package', { cta: 'hero_view_packages' })}
+              className="px-6 py-4 rounded-xl bg-[#d4af37] hover:bg-[#e5c158] text-[#070b14] font-black text-sm shadow-lg shadow-[#d4af37]/20 transition inline-flex items-center justify-center gap-2"
+            >
+              <span>CHOOSE YOUR WEBSITE PACKAGE</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
+            <a
+              href="#demos"
+              className="px-6 py-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white font-bold text-sm border border-slate-700 transition inline-flex items-center justify-center"
+            >
+              VIEW LIVE WEBSITE DEMOS
+            </a>
+            <a
+              href={directWaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackConversionEvent('click_whatsapp', { cta: 'hero_whatsapp_direct' })}
+              className="px-6 py-4 rounded-xl bg-emerald-600/90 hover:bg-emerald-500 text-white font-bold text-sm transition inline-flex items-center justify-center gap-2"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>CHAT ON WHATSAPP</span>
+            </a>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 text-xs text-slate-300">
+            {[
+              `${BRAND_IDENTITY.cacReg} Verified Business`,
+              'Transparent Pricing (From ₦80,000)',
+              '60% Deposit / 40% Before Handover',
+              'Moniepoint Corporate & Paystack Checkout',
+              'Staging Review Before Final Handover',
+              `Direct WhatsApp Desk (${BRAND_IDENTITY.whatsappDisplay})`,
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2 bg-slate-900/50 border border-slate-800/80 rounded-lg px-3 py-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{item}</span>
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">Request Your Website Consultation</h2>
-                <p className="text-xs text-slate-400 mt-1">
-                  Starting from ₦80,000 &bull; Selected: <strong className="text-[#d4af37]">{activePackage.name}</strong>
-                </p>
-              </div>
+            ))}
+          </div>
+        </section>
 
-              {submittedEnquiry ? (
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-3 text-sm">
-                  <div className="font-bold text-emerald-400">
-                    Enquiry Recorded (Ref: {submittedEnquiry.id})
-                  </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Thank you, <strong>{fullName}</strong>. Your details for <strong>{submittedEnquiry.packageName}</strong> are saved. If WhatsApp did not open automatically, tap below to continue directly with our team.
-                  </p>
-                  <a
-                    href={submittedEnquiry.whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => trackConversionEvent('click_whatsapp', { cta: 'enquiry_fallback' })}
-                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Open WhatsApp ({BRAND_IDENTITY.whatsappDisplay})</span>
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => setSubmittedEnquiry(null)}
-                    className="w-full text-xs text-slate-400 hover:text-white underline"
-                  >
-                    Edit or submit another enquiry
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleEnquirySubmit} onFocus={handleFormFocus} className="space-y-3">
-                  <div>
-                    <label htmlFor="fullName" className="block text-xs text-slate-400 mb-1">Full Name *</label>
-                    <input
-                      id="fullName"
-                      type="text"
-                      required
-                      placeholder="e.g. Adebayo Ogunleye"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="waNumber" className="block text-xs text-slate-400 mb-1">WhatsApp Number *</label>
-                    <input
-                      id="waNumber"
-                      type="tel"
-                      required
-                      placeholder="e.g. 0803 123 4567"
-                      value={whatsappNumber}
-                      onChange={(e) => setWhatsappNumber(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="bizName" className="block text-xs text-slate-400 mb-1">Business Name (Optional)</label>
-                    <input
-                      id="bizName"
-                      type="text"
-                      placeholder="e.g. Prime Solar Ikeja"
-                      value={businessName}
-                      onChange={(e) => setBusinessName(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="pkgSelect" className="block text-xs text-slate-400 mb-1">Service / Package Required *</label>
-                    <select
-                      id="pkgSelect"
-                      value={selectedPackageId}
-                      onChange={(e) => {
-                        const pkg = WEBSITE_PACKAGES.find((p) => p.id === e.target.value);
-                        setSelectedPackageId(e.target.value);
-                        if (pkg) setAgreedPriceNgn(pkg.startingPriceNgn);
-                      }}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white"
-                    >
-                      {WEBSITE_PACKAGES.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} ({p.priceRangeLabel})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {formError && (
-                    <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
-                      {formError}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full py-3.5 rounded-xl bg-[#d4af37] hover:bg-[#e5c158] text-[#070b14] font-black text-sm transition flex items-center justify-center gap-2 disabled:opacity-60"
-                  >
-                    {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                    <span>GET MY FREE CONSULTATION</span>
-                  </button>
-                  <p className="text-[11px] text-center text-slate-400">
-                    No obligation. No registration. Speak directly with our team.
-                  </p>
-                </form>
-              )}
+        {/* SECTION 4: GENUINE WEBSITE DEMONSTRATIONS & PORTFOLIO (ABOVE FORM) */}
+        <section id="demos" className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white">Live Website Demonstrations &amp; Portfolio</h2>
+              <p className="text-xs sm:text-sm text-slate-400">
+                Inspect real working pages before you book. Demonstration previews are clearly labelled separately from completed client builds.
+              </p>
             </div>
+            <Link href="/portfolio" className="text-xs font-bold text-[#d4af37] hover:underline">
+              View All Showcases &rarr;
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {portfolio.map((item) => (
+              <div key={item.id} className="p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-[#d4af37]/40 transition space-y-3">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="font-bold text-[#d4af37] uppercase">{item.category}</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                    {item.projectType === 'completed_client' ? 'Completed Client Project' : 'Demonstration Project'}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">{item.description}</p>
+                <Link
+                  href={item.liveUrl}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:underline"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Open Live Demonstration</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -667,7 +595,145 @@ export default function BusinessSolutionsPage() {
           </div>
         </section>
 
-        {/* SECTION 6: TRUST & OBJECTION-HANDLING */}
+        {/* SECTION 6: CONSULTATION REQUEST FORM (BELOW VALUE PROP, DEMOS & PACKAGES) */}
+        <section ref={formRef} id="consultation-form" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-5 space-y-4">
+            <span className="inline-block px-3 py-1 rounded-full bg-[#d4af37]/15 text-[#d4af37] text-xs font-bold uppercase tracking-wider">
+              Step 2 &bull; Book Your Project
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white">
+              Request Your Free Website Consultation &amp; Quotation
+            </h2>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              Your selected package (<strong className="text-[#d4af37]">{activePackage.name}</strong>) is pre-loaded with a{' '}
+              <strong className="text-white">₦{agreedPriceNgn.toLocaleString()}</strong> estimate (60% deposit:{' '}
+              <strong className="text-emerald-400">₦{calculatedDepositNgn.toLocaleString()}</strong>). Submit your details to get a documented quotation and payment reference on WhatsApp.
+            </p>
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5 text-xs text-slate-300">
+              <div className="font-bold text-white">Direct Corporate Settlement Details:</div>
+              <div>Bank: <strong className="text-white">{BRAND_IDENTITY.settlementBank}</strong></div>
+              <div>Account Number: <strong className="text-white">{BRAND_IDENTITY.settlementAccountNumber}</strong></div>
+              <div>Account Name: <strong className="text-white">{BRAND_IDENTITY.settlementAccountName}</strong> ({BRAND_IDENTITY.cacReg})</div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-7">
+            <div className="p-6 sm:p-7 rounded-2xl bg-slate-900/95 border border-slate-700/80 border-t-2 border-t-[#d4af37] shadow-2xl shadow-black/60 space-y-4">
+              <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400 pb-2 border-b border-slate-800">
+                <span className="text-[#d4af37]">Step 1: Confirm Package &amp; Details</span>
+                <span>&rarr;</span>
+                <span>Step 2: Receive Quote &amp; Reference</span>
+              </div>
+
+              {submittedEnquiry ? (
+                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-3 text-sm">
+                  <div className="font-bold text-emerald-400">
+                    Quotation &amp; Enquiry Recorded (Ref: {submittedEnquiry.id})
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Thank you, <strong>{fullName}</strong>. Your enquiry for <strong>{submittedEnquiry.packageName}</strong> (Estimated: ₦{agreedPriceNgn.toLocaleString()} | 60% Deposit: ₦{calculatedDepositNgn.toLocaleString()}) is saved. Tap below to continue on WhatsApp.
+                  </p>
+                  <a
+                    href={submittedEnquiry.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackConversionEvent('click_whatsapp', { cta: 'enquiry_fallback' })}
+                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Open WhatsApp ({BRAND_IDENTITY.whatsappDisplay})</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setSubmittedEnquiry(null)}
+                    className="w-full text-xs text-slate-400 hover:text-white underline"
+                  >
+                    Edit or submit another enquiry
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleEnquirySubmit} onFocus={handleFormFocus} className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label htmlFor="fullName" className="block text-xs text-slate-400 mb-1">Full Name *</label>
+                    <input
+                      id="fullName"
+                      type="text"
+                      required
+                      placeholder="e.g. Adebayo Ogunleye"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="waNumber" className="block text-xs text-slate-400 mb-1">WhatsApp Number *</label>
+                    <input
+                      id="waNumber"
+                      type="tel"
+                      required
+                      placeholder="e.g. 0803 123 4567"
+                      value={whatsappNumber}
+                      onChange={(e) => setWhatsappNumber(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="bizName" className="block text-xs text-slate-400 mb-1">Business Name (Optional)</label>
+                    <input
+                      id="bizName"
+                      type="text"
+                      placeholder="e.g. Prime Solar Ikeja"
+                      value={businessName}
+                      onChange={(e) => setBusinessName(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="pkgSelect" className="block text-xs text-slate-400 mb-1">Service / Package Required *</label>
+                    <select
+                      id="pkgSelect"
+                      value={selectedPackageId}
+                      onChange={(e) => {
+                        const pkg = WEBSITE_PACKAGES.find((p) => p.id === e.target.value);
+                        setSelectedPackageId(e.target.value);
+                        if (pkg) setAgreedPriceNgn(pkg.startingPriceNgn);
+                      }}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white"
+                    >
+                      {WEBSITE_PACKAGES.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} ({p.priceRangeLabel})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {formError && (
+                    <div className="sm:col-span-2 p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
+                      {formError}
+                    </div>
+                  )}
+
+                  <div className="sm:col-span-2 space-y-2">
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full py-3.5 rounded-xl bg-[#d4af37] hover:bg-[#e5c158] text-[#070b14] font-black text-sm transition flex items-center justify-center gap-2 disabled:opacity-60"
+                    >
+                      {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                      <span>GET MY FREE CONSULTATION &amp; QUOTE</span>
+                    </button>
+                    <p className="text-[11px] text-center text-slate-400">
+                      No obligation. Speak directly with our team on {BRAND_IDENTITY.whatsappDisplay}.
+                    </p>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 7: TRUST & OBJECTION-HANDLING */}
         <section className="space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <h2 className="text-2xl sm:text-3xl font-black text-white">
@@ -715,44 +781,6 @@ export default function BusinessSolutionsPage() {
                 </span>
                 <div className="text-sm font-bold text-white">{step.title}</div>
                 <p className="text-xs text-slate-300 leading-relaxed">{step.text}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* SECTION 10: REAL PORTFOLIO & DEMONSTRATION PROJECTS */}
-        <section className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-            <div>
-              <h2 className="text-2xl font-black text-white">Website Demonstrations &amp; Portfolio</h2>
-              <p className="text-xs text-slate-400">
-                Demonstration previews are clearly labelled separately from completed client projects.
-              </p>
-            </div>
-            <Link href="/portfolio" className="text-xs font-bold text-[#d4af37] hover:underline">
-              View All Showcases &rarr;
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {portfolio.map((item) => (
-              <div key={item.id} className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-[#d4af37] uppercase">{item.category}</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                    {item.projectType === 'completed_client' ? 'Completed Client Project' : 'Demonstration Project'}
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-white">{item.title}</h3>
-                <p className="text-xs text-slate-300">{item.description}</p>
-                <Link
-                  href={item.liveUrl}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:underline"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Open Live Preview</span>
-                  <ExternalLink className="w-3 h-3" />
-                </Link>
               </div>
             ))}
           </div>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useId } from 'react';
 import { X, Printer, CheckCircle, Copy, MessageSquare, ShieldCheck, Download, FileText } from 'lucide-react';
@@ -174,7 +174,7 @@ export default function InvoiceModal({
             </span>
             <p style={{ margin: '6px 0 0', fontSize: '0.8rem', color: '#64748b', lineHeight: 1.45 }}>
               Lagos Tech Hub, Ikeja / Lekki Phase 1, Lagos State<br />
-              CAC Certified Enterprise · RC 7034297 · NDPA Compliance Verified<br />
+              CAC Certified Enterprise · CAC Reg: 9912717 · NDPA Compliance Verified<br />
               Email: billing@bethelmindanalytics.com
             </p>
           </div>
@@ -323,7 +323,7 @@ export default function InvoiceModal({
         </div>
 
         <p style={{ margin: '12px 0 16px', fontSize: '0.72rem', color: '#64748b', borderTop: '1px solid #e2e8f0', paddingTop: '8px' }}>
-          Bethelmind Digital Solutions (RC 7034297) &bull; Corporate Settlement Account: Moniepoint Microfinance Bank (6805375225) &bull; Governed by Bethelmind Commercial Delivery SLA & Terms of Service (https://www.bethelmindanalytics.com/legal/delivery).
+          Bethelmind Digital Solutions (CAC Reg: 9912717) &bull; Corporate Settlement Account: Moniepoint Microfinance Bank (6805375225) &bull; Governed by Bethelmind Commercial Delivery SLA & Terms of Service (https://www.bethelmindanalytics.com/legal/delivery).
         </p>
 
         {/* Primary Action Button (Hidden in Print) */}

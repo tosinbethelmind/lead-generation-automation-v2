@@ -1,7 +1,7 @@
-/**
+﻿/**
  * @file src/app/legal/refund/page.tsx
  * Comprehensive Refund, Cancellation & Milestone Deposit Policy
- * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, RC 7034297)
+ * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, CAC Reg: 9912717)
  */
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -25,7 +25,7 @@ export default function RefundPolicyPage() {
         Refund &amp; Cancellation Policy
       </h1>
       <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: 28, lineHeight: 1.6 }}>
-        <strong>Entity:</strong> Bethelmind Digital Solutions (CAC Certified Enterprise · RC 7034297 · Lagos, Nigeria)<br />
+        <strong>Entity:</strong> Bethelmind Digital Solutions (CAC Certified Enterprise · CAC Reg: 9912717 · Lagos, Nigeria)<br />
         <strong>Official Corporate Settlement:</strong> Moniepoint Microfinance Bank (<code>6805375225</code>)<br />
         <strong>Effective Date:</strong> Q4 2026
       </p>

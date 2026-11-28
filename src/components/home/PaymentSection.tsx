@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * @file src/components/home/PaymentSection.tsx
@@ -303,7 +303,7 @@ export default function PaymentSection({
             <span>NDPA Data Compliance Verified</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span>CAC RC 7034297</span>
+            <span>CAC Reg: 9912717</span>
           </span>
         </div>
 

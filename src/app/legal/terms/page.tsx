@@ -1,7 +1,7 @@
-/**
+﻿/**
  * @file src/app/legal/terms/page.tsx
  * Comprehensive Commercial Terms of Service
- * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, RC 7034297)
+ * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, CAC Reg: 9912717)
  */
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -18,14 +18,14 @@ export default function TermsOfServicePage() {
       {/* Header Badge */}
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 999, background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.25)', color: '#d4af37', fontSize: '0.75rem', fontWeight: 700, marginBottom: 20 }}>
         <Scale style={{ width: 14, height: 14 }} />
-        <span>CAC Certified Enterprise · RC 7034297 · Commercial Agreement</span>
+        <span>CAC Certified Enterprise · CAC Reg: 9912717 · Commercial Agreement</span>
       </div>
 
       <h1 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.4rem)', fontWeight: 900, fontFamily: "'Outfit', sans-serif", color: '#ffffff', margin: '0 0 10px', lineHeight: 1.2 }}>
         Commercial Terms of Service
       </h1>
       <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: 28, lineHeight: 1.6 }}>
-        <strong>Corporate Entity:</strong> Bethelmind Digital Solutions (Registered with the Corporate Affairs Commission, Federal Republic of Nigeria · RC 7034297)<br />
+        <strong>Corporate Entity:</strong> Bethelmind Digital Solutions (Registered with the Corporate Affairs Commission, Federal Republic of Nigeria · CAC Reg: 9912717)<br />
         <strong>Official Corporate Settlement:</strong> Moniepoint Microfinance Bank (Account No: <code>6805375225</code>)<br />
         <strong>Effective Date:</strong> Q4 2026
       </p>

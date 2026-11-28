@@ -350,15 +350,71 @@ const FAQS = [
   },
 ];
 
-export default function AcademicResearchClient() {
+export type AcademicTrack = 'all' | 'spss' | 'msc' | 'phd';
+
+const TRACK_CONFIG: Record<
+  AcademicTrack,
+  {
+    badge: string;
+    headline: string;
+    subheadline: string;
+    startingPrice: string;
+    defaultLevel: string;
+    defaultSupport: string;
+  }
+> = {
+  all: {
+    badge: 'Elite Academic Research Support • MSc, MBA & PhD',
+    headline: 'Struggling With Your MSc, MBA or PhD Thesis?',
+    subheadline:
+      'Get Expert Support With Research Methodology, Thesis Development, Statistical Analysis and Academic Publication.',
+    startingPrice: 'Starting from ₦45,000 (Statistical Analysis) • ₦75,000 (MSc/MBA) • ₦150,000 (PhD)',
+    defaultLevel: 'MSc',
+    defaultSupport: 'Thesis support',
+  },
+  spss: {
+    badge: 'Track A • SPSS, STATA & NVivo Statistical Analysis',
+    headline: 'Need Clean, Supervisor-Ready SPSS, STATA or NVivo Data Analysis?',
+    subheadline:
+      'Get complete statistical modelling, diagnostic testing, APA Chapter 4 tables, and plain-English interpretation while preserving 100% student authorship.',
+    startingPrice: 'Statistical Analysis Starting from ₦45,000',
+    defaultLevel: 'MSc',
+    defaultSupport: 'SPSS / STATA / NVivo Data Analysis',
+  },
+  msc: {
+    badge: 'Track B • MSc & MBA Dissertation Consultation',
+    headline: 'Move Past MSc or MBA Supervisor Corrections With Structured Guidance.',
+    subheadline:
+      'Receive milestone-based consultation for topic refinement, literature synthesis, Chapter 3 methodology, data analysis, and APA/Harvard formatting.',
+    startingPrice: 'MSc / MBA Consultation Starting from ₦75,000',
+    defaultLevel: 'MSc',
+    defaultSupport: 'Thesis support',
+  },
+  phd: {
+    badge: 'Track C • PhD Research Methodology & Doctoral Consultation',
+    headline: 'Strengthen Your PhD Research Methodology, Conceptual Framework & Viva Readiness.',
+    subheadline:
+      'Specialist doctoral consultation covering philosophical stance, mixed-methods/econometric design, instrument validation, and rigorous statistical review.',
+    startingPrice: 'PhD Methodology Consultation Starting from ₦150,000',
+    defaultLevel: 'PhD',
+    defaultSupport: 'PhD Methodology Consultation',
+  },
+};
+
+export default function AcademicResearchClient({
+  initialTrack = 'all',
+}: {
+  initialTrack?: AcademicTrack;
+}) {
+  const track = TRACK_CONFIG[initialTrack] || TRACK_CONFIG.all;
   const [activeFilter, setActiveFilter] = useState('all');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const [fullName, setFullName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
-  const [academicLevel, setAcademicLevel] = useState('MSc');
-  const [supportNeeded, setSupportNeeded] = useState('Thesis support');
+  const [academicLevel, setAcademicLevel] = useState(track.defaultLevel);
+  const [supportNeeded, setSupportNeeded] = useState(track.defaultSupport);
   const [researchStage, setResearchStage] = useState('Working on Chapters 1–3');
   const [submissionDeadline, setSubmissionDeadline] = useState('');
   const [description, setDescription] = useState('');
@@ -505,18 +561,66 @@ export default function AcademicResearchClient() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 lg:py-20">
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             <div className="lg:col-span-7 space-y-5">
+              {/* Dedicated Track Switcher */}
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <a
+                  href="/academic-research"
+                  className={`px-3 py-1.5 rounded-lg font-bold border transition ${
+                    initialTrack === 'all'
+                      ? 'bg-amber-400 text-[#050b16] border-amber-400'
+                      : 'bg-slate-900/90 text-slate-300 border-white/10 hover:border-amber-400/50'
+                  }`}
+                >
+                  All Postgraduate Support
+                </a>
+                <a
+                  href="/academic-research/statistical-analysis"
+                  className={`px-3 py-1.5 rounded-lg font-bold border transition ${
+                    initialTrack === 'spss'
+                      ? 'bg-amber-400 text-[#050b16] border-amber-400'
+                      : 'bg-slate-900/90 text-slate-300 border-white/10 hover:border-amber-400/50'
+                  }`}
+                >
+                  SPSS / STATA / NVivo
+                </a>
+                <a
+                  href="/academic-research/msc-mba-dissertation"
+                  className={`px-3 py-1.5 rounded-lg font-bold border transition ${
+                    initialTrack === 'msc'
+                      ? 'bg-amber-400 text-[#050b16] border-amber-400'
+                      : 'bg-slate-900/90 text-slate-300 border-white/10 hover:border-amber-400/50'
+                  }`}
+                >
+                  MSc / MBA Dissertation
+                </a>
+                <a
+                  href="/academic-research/phd-methodology"
+                  className={`px-3 py-1.5 rounded-lg font-bold border transition ${
+                    initialTrack === 'phd'
+                      ? 'bg-amber-400 text-[#050b16] border-amber-400'
+                      : 'bg-slate-900/90 text-slate-300 border-white/10 hover:border-amber-400/50'
+                  }`}
+                >
+                  PhD Methodology
+                </a>
+              </div>
+
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-semibold tracking-wide">
                 <GraduationCap className="w-4 h-4 shrink-0" />
-                <span>Elite Academic Research Support • MSc, MBA &amp; PhD</span>
+                <span>{track.badge}</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-[3.1rem] font-extrabold tracking-tight text-white leading-[1.1]">
-                Struggling With Your MSc, MBA or PhD Thesis?
+                {track.headline}
               </h1>
 
               <p className="text-lg sm:text-xl font-semibold text-amber-200/95 leading-snug">
-                Get Expert Support With Research Methodology, Thesis Development, Statistical Analysis and Academic Publication.
+                {track.subheadline}
               </p>
+
+              <div className="inline-block px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-400/30 text-xs sm:text-sm font-bold text-emerald-300">
+                {track.startingPrice} &bull; Milestone Payment Workflow
+              </div>
 
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
                 Whether you are stuck choosing a research topic, struggling with data analysis, facing supervisor corrections or approaching a submission deadline, Bethelmind provides structured professional support to help you move forward with confidence.
@@ -1016,8 +1120,12 @@ export default function AcademicResearchClient() {
                   <h3 className="text-xl font-bold text-white mt-3">{pkg.name}</h3>
                   <p className="text-sm text-slate-400 mt-1">{pkg.audience}</p>
 
-                  <div className="mt-4 py-2.5 px-3 rounded-lg bg-slate-950/70 border border-white/10 text-xs text-slate-300">
-                    Custom quotation provided after free consultation
+                  <div className="mt-4 py-2.5 px-3 rounded-lg bg-slate-950/70 border border-amber-400/25 text-xs text-amber-200 font-semibold">
+                    {pkg.defaultSupport.toLowerCase().includes('analysis')
+                      ? 'Starting from ₦45,000 (Final quote after dataset review)'
+                      : pkg.defaultLevel === 'PhD'
+                      ? 'Starting from ₦150,000 (Final quote after milestone scope)'
+                      : 'Starting from ₦75,000 (Final quote after free consultation)'}
                   </div>
 
                   <ul className="mt-5 space-y-2.5 text-sm text-slate-200">

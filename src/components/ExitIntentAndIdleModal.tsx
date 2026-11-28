@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { MessageCircle, X, Zap, ShieldCheck, ArrowRight, CheckCircle2, Clock, Phone, Loader2, Sparkles } from 'lucide-react';
@@ -243,7 +243,7 @@ export default function ExitIntentAndIdleModal({
         {/* Trust Footer */}
         <div className="flex items-center justify-center gap-2 pt-2 border-t border-slate-800/80 text-[11px] text-slate-400">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-          <span>Bethelmind Digital Solutions &bull; CAC RC 7034297 &bull; Moniepoint 6805375225</span>
+          <span>Bethelmind Digital Solutions &bull; CAC Reg: 9912717 &bull; Moniepoint 6805375225</span>
         </div>
       </div>
     </div>

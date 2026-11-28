@@ -69,11 +69,15 @@ export async function POST(req: NextRequest) {
     }
 
     const store = readFoodsStore();
+    const { DELIVERY_ZONES } = await import('@/lib/foods-pricing');
+    const matchedZone = DELIVERY_ZONES.find((z) => z.id === String(body.deliveryZoneId || ''));
+    const resolvedDeliveryFee = matchedZone ? matchedZone.feeNgn : store.settings.deliveryFee;
+
     const calculated = calculateOrderTotals(
       selections,
       store.products,
       store.proteins,
-      store.settings.deliveryFee
+      resolvedDeliveryFee
     );
 
     if (calculated.items.length === 0) {

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -58,7 +58,7 @@ export default function FinalCtaSection() {
         <div className="pt-6 border-t border-white/[0.04] flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-[#8e887e] font-light">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-[#d4af37]" />
-            <span>CAC Certified Enterprise (RC 7034297)</span>
+            <span>CAC Certified Enterprise (CAC Reg: 9912717)</span>
           </span>
           <span className="hidden sm:inline text-white/20">&bull;</span>
           <span>Moniepoint MFB: 6805375225</span>

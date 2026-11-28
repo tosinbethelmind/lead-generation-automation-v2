@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -278,7 +278,7 @@ export default function ContactPage() {
               </div>
 
               <p className="font-light leading-relaxed">
-                Registered under the Corporate Affairs Commission of the Federal Republic of Nigeria (RC 7034297).
+                Registered under the Corporate Affairs Commission of the Federal Republic of Nigeria (CAC Reg: 9912717).
               </p>
 
               <div className="p-4 rounded-xl bg-[#0a0e17] border border-white/[0.06] space-y-1.5 font-mono text-[11px]">

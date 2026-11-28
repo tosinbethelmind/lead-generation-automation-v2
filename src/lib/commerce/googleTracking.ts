@@ -236,6 +236,27 @@ export function trackConversionEvent(
     } catch {}
   }
 
+  // 5. Meta Conversions API (server-side event relay for Lead, InitiateCheckout, Purchase)
+  if (['generate_lead', 'begin_checkout', 'purchase'].includes(eventName) && getConsentPreference() !== 'denied') {
+    try {
+      fetch('/api/tracking/meta-capi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          eventName,
+          eventId: options?.dedupeKey || params.transaction_id || `${eventName}_${Date.now()}`,
+          businessDivision: division,
+          valueNgn: Number(params.value || 0),
+          email: options?.userData?.email,
+          phone: options?.userData?.phone_number,
+          fbclid: attribution.fbclid,
+          eventSourceUrl: window.location.href,
+        }),
+      }).catch(() => {});
+    } catch {}
+  }
+
   if (options?.dedupeKey) {
     markEventFired(options.dedupeKey);
   }

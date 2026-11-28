@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -70,7 +70,7 @@ You can select your property type (Flat, Duplex, or Commercial Facility), enter 
 
 How much are you spending monthly on generator fuel or Band A tokens in your area right now? Share below and let us run the numbers.
 
-[i]Verified by Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise RC 7034297)[/i]`
+[i]Verified by Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise CAC Reg: 9912717)[/i]`
   },
   {
     id: 'tokunbo-duty',
@@ -104,7 +104,7 @@ To help everyone verify vehicle duty before committing funds or wiring money to 
 
 Input your vehicle valuation or VIN, select your discharge port (PTML or Tin Can), and get the full statutory sheet in 3 seconds.
 
-[i]Source: Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`
+[i]Source: Bethelmind Digital Solutions (CAC Certified Enterprise CAC Reg: 9912717)[/i]`
   },
   {
     id: 'salon-booking',
@@ -133,7 +133,7 @@ We built an interactive prototype showing how this works in real time:
 
 [url=https://www.bethelmindanalytics.com/tools/salon-booking][b]👉 Test The Free 24/7 Salon Booking & Deposit Lock Engine[/b][/url]
 
-[i]Developed by Bethelmind Digital Solutions (CAC Certified Enterprise RC 7034297)[/i]`
+[i]Developed by Bethelmind Digital Solutions (CAC Certified Enterprise CAC Reg: 9912717)[/i]`
   },
   {
     id: 'restaurant-order',
@@ -186,7 +186,7 @@ To avoid budgeting blind, our real estate tools suite lets you calculate full pl
 
 [url=https://www.bethelmindanalytics.com/tools/mortgage-calculator][b]👉 Calculate Plot Layout, Survey & Milestone Amortization Free[/b][/url]
 
-[i]Verified by Bethelmind Digital Solutions (CAC Certified RC 7034297)[/i]`
+[i]Verified by Bethelmind Digital Solutions (CAC Certified CAC Reg: 9912717)[/i]`
   },
   {
     id: 'school-portal',
@@ -212,7 +212,7 @@ Proprietors and administrators can test the interactive school tuition & PIN led
 
 [url=https://www.bethelmindanalytics.com/tools/school-portal][b]👉 Test The School Tuition & Result PIN Ledger Free[/b][/url]
 
-[i]Developed by Bethelmind Digital Solutions (CAC Certified RC 7034297)[/i]`
+[i]Developed by Bethelmind Digital Solutions (CAC Certified CAC Reg: 9912717)[/i]`
   }
 ];
 
@@ -443,7 +443,7 @@ export default function NairalandDistributionHub() {
             <span className="px-2.5 py-0.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 rounded-full font-bold">
               🇳🇬 Nairaland Fully Automated
             </span>
-            <span className="text-slate-400">CAC Certified RC 7034297</span>
+            <span className="text-slate-400">CAC Certified CAC Reg: 9912717</span>
           </div>
         </div>
 
@@ -805,7 +805,7 @@ export default function NairalandDistributionHub() {
         <footer className="text-center py-6 text-xs text-slate-500 border-t border-white/5 space-y-2">
           <p className="flex items-center justify-center gap-2 font-medium">
             <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
-            <span>Bethelmind Digital Solutions (RC 7034297) · Moniepoint MFB 6805375225</span>
+            <span>Bethelmind Digital Solutions (CAC Reg: 9912717) · Moniepoint MFB 6805375225</span>
           </p>
           <p>© 2026 Bethelmind Digital Solutions · Plot 12, Commercial Corridor, Lagos, Nigeria.</p>
         </footer>

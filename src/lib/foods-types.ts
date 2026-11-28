@@ -1,4 +1,4 @@
-export type FoodCategory = 'rice' | 'soup' | 'small_chops';
+export type FoodCategory = 'rice' | 'soup' | 'small_chops' | 'bundle';
 
 export type OrderStatus =
   | 'New Order'

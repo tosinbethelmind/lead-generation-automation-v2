@@ -1,7 +1,7 @@
-/**
+﻿/**
  * @file src/app/legal/layout.tsx
  * Ultra-Premium Shared Layout for Bethelmind Legal & Policy Pages
- * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, RC 7034297)
+ * Bethelmind Digital Solutions (CAC Certified Nigerian Enterprise, CAC Reg: 9912717)
  */
 import React from 'react';
 import Link from 'next/link';
@@ -51,7 +51,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 999, background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.25)', color: '#34d399', fontSize: '0.72rem', fontWeight: 700 }}>
               <ShieldCheck style={{ width: 13, height: 13 }} />
-              <span>CAC Certified Enterprise · RC 7034297</span>
+              <span>CAC Certified Enterprise · CAC Reg: 9912717</span>
             </span>
           </div>
 
@@ -94,7 +94,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
           © {new Date().getFullYear()} Bethelmind Digital Solutions · Plot 12, Commercial Corridor, Lagos, Nigeria
         </p>
         <p style={{ margin: '0 0 10px' }}>
-          CAC Certified Enterprise RC 7034297 · Moniepoint Microfinance Bank Settlement (6805375225) · Built for Nigerian Commercial Operations
+          CAC Certified Enterprise CAC Reg: 9912717 · Moniepoint Microfinance Bank Settlement (6805375225) · Built for Nigerian Commercial Operations
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 14, flexWrap: 'wrap', fontSize: '0.75rem', marginTop: 12 }}>
           <Link href="/legal/terms" style={{ color: '#94a3b8', textDecoration: 'none' }}>Terms of Service</Link>

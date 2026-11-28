@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * @file src/app/tools/page.tsx
@@ -446,7 +446,7 @@ export default function ToolsHubPage() {
           <div className="flex flex-wrap items-center justify-center gap-4 pt-1 text-xs text-[#8e887e] font-light">
             <span className="inline-flex items-center gap-1.5 text-[#d4af37]">
               <ShieldCheck className="w-4 h-4" />
-              CAC RC: 7034297 Certified
+              CAC Reg: 9912717 Certified
             </span>
             <span>&bull;</span>
             <span>Moniepoint NIP Reconciliation</span>
@@ -565,7 +565,7 @@ export default function ToolsHubPage() {
                 Statutory Notice &amp; Sector Tools Accuracy Policy
               </span>
             </div>
-            <span className="text-[10px] text-[#8e887e] font-mono">RC: 7034297</span>
+            <span className="text-[10px] text-[#8e887e] font-mono">CAC Reg: 9912717</span>
           </div>
           <p className="leading-relaxed font-light">
             Interactive calculation tools across this directory provide automated preliminary estimates for planning and feasibility assessment only. Bethelmind Digital Solutions operates as a technology and workflow automation provider, not a COREN-registered engineering consultant, licensed customs broker, surveying authority, or chartered tax practitioner. Formal structural projects, customs clearance declarations, and binding agreements require on-site professional verification.

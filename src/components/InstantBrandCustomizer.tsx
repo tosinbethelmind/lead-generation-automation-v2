@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { Sparkles, MessageCircle, ShieldCheck, CheckCircle2, ArrowRight, Building2, Smartphone, Zap } from 'lucide-react';
@@ -56,7 +56,7 @@ export const InstantBrandCustomizer: React.FC<InstantBrandCustomizerProps> = ({
 
         <div className="shrink-0 flex items-center gap-1 text-[11px] text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/20 font-bold">
           <ShieldCheck className="w-3.5 h-3.5" />
-          <span>CAC Certified RC 7034297</span>
+          <span>CAC Certified CAC Reg: 9912717</span>
         </div>
       </div>
 
@@ -190,7 +190,7 @@ export const InstantBrandCustomizer: React.FC<InstantBrandCustomizerProps> = ({
             Direct Corporate Settlement: <strong>Moniepoint Microfinance Bank (6805375225)</strong>
           </span>
           <span className="text-slate-500">
-            Bethelmind Digital Solutions · CAC RC 7034297
+            Bethelmind Digital Solutions · CAC Reg: 9912717
           </span>
         </div>
       </div>
