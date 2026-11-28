@@ -25,6 +25,13 @@ export default function AdminCommercePage() {
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Sales & Ad Spend Analytics state
+  const [salesMetrics, setSalesMetrics] = useState<any>(null);
+  const [divisionFilter, setDivisionFilter] = useState<string>('all');
+  const [campaignFilter, setCampaignFilter] = useState<string>('all');
+  const [adSpendCampaign, setAdSpendCampaign] = useState('untagged');
+  const [adSpendAmount, setAdSpendAmount] = useState('');
+
   // Portfolio form
   const [portTitle, setPortTitle] = useState('');
   const [portCat, setPortCat] = useState('');
@@ -36,11 +43,12 @@ export default function AdminCommercePage() {
     setLoading(true);
     try {
       const headers: Record<string, string> = adminToken ? { Authorization: `Bearer ${adminToken}` } : {};
-      const [prodRes, ordRes, enqRes, portRes] = await Promise.all([
+      const [prodRes, ordRes, enqRes, portRes, analyticsRes] = await Promise.all([
         fetch('/api/commerce/products?includeInactive=true'),
         fetch('/api/commerce/orders', { headers }),
         fetch('/api/commerce/enquiries', { headers }),
         fetch('/api/commerce/portfolio'),
+        fetch(`/api/commerce/analytics?businessDivision=${encodeURIComponent(divisionFilter)}&utmCampaign=${encodeURIComponent(campaignFilter)}`, { headers }),
       ]);
       const prodData = await prodRes.json();
       if (prodData?.success) setProducts(prodData.products);
@@ -50,6 +58,8 @@ export default function AdminCommercePage() {
       if (enqData?.success) setEnquiries(enqData.enquiries);
       const portData = await portRes.json();
       if (portData?.success) setPortfolio(portData.items);
+      const analyticsData = await analyticsRes.json();
+      if (analyticsData?.success) setSalesMetrics(analyticsData.metrics);
     } catch (err: any) {
       setStatusMsg(err.message);
     } finally {
@@ -59,7 +69,29 @@ export default function AdminCommercePage() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [divisionFilter, campaignFilter]);
+
+  const handleSaveAdSpend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await fetch('/api/commerce/analytics', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({
+        action: 'set_ad_spend',
+        businessDivision: divisionFilter === 'all' ? 'business_solutions' : divisionFilter,
+        utmCampaign: adSpendCampaign || 'untagged',
+        spendNgn: Number(adSpendAmount) || 0,
+      }),
+    });
+    const data = await res.json();
+    if (data?.success) {
+      setStatusMsg('Ad spend updated.');
+      setAdSpendAmount('');
+      loadData();
+    } else {
+      setStatusMsg(`Error: ${data?.error}`);
+    }
+  };
 
   const authHeaders = (): Record<string, string> => ({
     'Content-Type': 'application/json',
@@ -200,6 +232,89 @@ export default function AdminCommercePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Central Advertising & Sales Dashboard (Phase 4) */}
+      {salesMetrics && (
+        <section className="space-y-4 p-5 rounded-2xl bg-slate-900/80 border border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-bold text-white">Central Advertising &amp; Sales Dashboard</h2>
+              <p className="text-xs text-slate-400">Real tracked visitors, enquiries, orders, confirmed revenue, CPA &amp; ROAS</p>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs">
+              <select
+                value={divisionFilter}
+                onChange={(e) => setDivisionFilter(e.target.value)}
+                className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white"
+              >
+                <option value="all">All Businesses</option>
+                <option value="business_solutions">Business Solutions</option>
+                <option value="bethelmind_foods">Bethelmind Foods</option>
+                <option value="academic_research">Academic Research</option>
+              </select>
+              <select
+                value={campaignFilter}
+                onChange={(e) => setCampaignFilter(e.target.value)}
+                className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white"
+              >
+                <option value="all">All Campaigns</option>
+                {(salesMetrics.campaigns || []).map((c: string) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="text-slate-400">Visitors</div>
+              <div className="text-lg font-black text-white">{salesMetrics.visitors}</div>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="text-slate-400">WhatsApp Clicks</div>
+              <div className="text-lg font-black text-emerald-400">{salesMetrics.whatsappEnquiries}</div>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="text-slate-400">Form / Qualified Leads</div>
+              <div className="text-lg font-black text-white">{salesMetrics.formLeads} / {salesMetrics.qualifiedLeads}</div>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="text-slate-400">Confirmed Payments</div>
+              <div className="text-lg font-black text-emerald-400">{salesMetrics.confirmedPayments}</div>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="text-slate-400">Revenue / Ad Spend</div>
+              <div className="text-sm font-black text-[#d4af37]">
+                ₦{salesMetrics.revenueNgn?.toLocaleString()} / ₦{salesMetrics.adSpendNgn?.toLocaleString()}
+              </div>
+              <div className="text-[11px] text-slate-400 mt-0.5">
+                CPA: ₦{salesMetrics.costPerPayingCustomerNgn?.toLocaleString()} &bull; ROAS: {salesMetrics.roas}x
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSaveAdSpend} className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+            <input
+              type="text"
+              placeholder="Campaign (e.g. search_websites)"
+              value={adSpendCampaign}
+              onChange={(e) => setAdSpendCampaign(e.target.value)}
+              className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white"
+            />
+            <input
+              type="number"
+              min={0}
+              placeholder="Ad Spend (₦)"
+              value={adSpendAmount}
+              onChange={(e) => setAdSpendAmount(e.target.value)}
+              className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white w-36"
+            />
+            <button type="submit" className="px-3.5 py-1.5 rounded-lg bg-[#d4af37] text-slate-950 font-bold">
+              Log Ad Spend
+            </button>
+          </form>
+        </section>
       )}
 
       {/* Incoming Enquiries & Lead Pipeline */}

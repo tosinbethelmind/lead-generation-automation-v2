@@ -295,6 +295,25 @@ export default function BusinessSolutionsPage() {
       <Navbar />
 
       <main className="relative pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-20">
+        {/* Focused Business Solutions Sub-Offers Switcher */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="px-3.5 py-2 rounded-xl bg-[#d4af37] text-[#070b14] font-black">
+            1. Business Website &amp; Online Sales
+          </span>
+          <Link
+            href="/business-automation"
+            className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-[#d4af37]/50 text-slate-200 font-semibold transition"
+          >
+            2. WhatsApp AI Sales Assistant &rarr;
+          </Link>
+          <Link
+            href="/business-intelligence"
+            className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-[#d4af37]/50 text-slate-200 font-semibold transition"
+          >
+            3. Business Automation &amp; Intelligence &rarr;
+          </Link>
+        </div>
+
         {/* SECTION 3 & 4: HERO + ABOVE-THE-FOLD CONSULTATION CARD */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           <div className="lg:col-span-7 space-y-6">

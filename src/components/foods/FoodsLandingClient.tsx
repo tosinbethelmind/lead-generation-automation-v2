@@ -81,12 +81,20 @@ export default function FoodsLandingClient({
   const [submittedFallback, setSubmittedFallback] =
     useState<SubmittedOrderFallback | null>(null);
   const [copiedMsg, setCopiedMsg] = useState(false);
+  const [lastSavedOrder, setLastSavedOrder] = useState<CartSelection[]>([]);
 
   const checkoutRef = useRef<HTMLElement | null>(null);
   const menuRef = useRef<HTMLElement | null>(null);
 
-  // Set default date to today (or tomorrow if late) for convenience
+  // Set default date to today (or tomorrow if late) & load previous order for 1-tap reorder
   useEffect(() => {
+    try {
+      const saved = localStorage.getItem('bm_foods_last_order_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) setLastSavedOrder(parsed);
+      }
+    } catch {}
     const now = new Date();
     const minReady = new Date(now.getTime() + settings.deliveryLeadTimeHours * 60 * 60 * 1000);
     const yyyy = minReady.getFullYear();
@@ -355,6 +363,11 @@ export default function FoodsLandingClient({
         whatsappMessage: data.whatsappMessage,
       });
 
+      try {
+        localStorage.setItem('bm_foods_last_order_v1', JSON.stringify(cart));
+        setLastSavedOrder(cart);
+      } catch {}
+
       // Attempt to open WhatsApp cleanly; fallback card remains visible regardless!
       const opened = window.open(data.whatsappUrl, '_blank', 'noopener,noreferrer');
       if (!opened) {
@@ -533,6 +546,20 @@ export default function FoodsLandingClient({
               Select multiple soups, rice meals, or small chops in one order. Choose your
               exact litre volume and preferred proteins.
             </p>
+            {lastSavedOrder.length > 0 && cart.length === 0 && (
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCart(lastSavedOrder);
+                    scrollToCheckout();
+                  }}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-300 text-emerald-950 text-xs font-extrabold transition cursor-pointer"
+                >
+                  <span>Reorder Your Previous Meal ({lastSavedOrder.length} item{lastSavedOrder.length > 1 ? 's' : ''}) &rarr;</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Category Filter Tabs */}

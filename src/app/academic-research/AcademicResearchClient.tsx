@@ -1057,6 +1057,38 @@ export default function AcademicResearchClient() {
             ))}
           </div>
 
+          {/* Anonymised Work Samples */}
+          <div className="mt-10 space-y-4">
+            <div className="text-center">
+              <span className="text-xs font-bold uppercase tracking-widest text-amber-400">
+                Anonymised Work Samples
+              </span>
+              <h3 className="text-xl font-bold text-white mt-1">
+                Preview Our Academic &amp; Statistical Output Standards
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+                <div className="font-bold text-amber-300">Sample 01 • Methodology Structure</div>
+                <p className="text-slate-300 leading-relaxed">
+                  Anonymised MSc Chapter 3 framework: research design justification, Taro Yamane / Cochran sampling calculation, reliability (Cronbach&apos;s Alpha), and ethical clearance structure.
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+                <div className="font-bold text-amber-300">Sample 02 • SPSS / STATA Output</div>
+                <p className="text-slate-300 leading-relaxed">
+                  Anonymised quantitative analysis pack: descriptive tables, VIF multicollinearity diagnostics, regression coefficients (p-values &amp; R²), and plain-English Chapter 4 interpretation.
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+                <div className="font-bold text-amber-300">Sample 03 • APA 7th &amp; Editing</div>
+                <p className="text-slate-300 leading-relaxed">
+                  Anonymised reference audit: in-text citation alignment, DOI verification, table numbering, and supervisor correction checklist (preserving 100% student authorship).
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="mt-8 max-w-3xl mx-auto rounded-xl bg-slate-900/90 border border-white/10 p-4 sm:p-5 text-center space-y-3">
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               <strong className="text-amber-300">Quotation Note:</strong> Every research project is different. We provide a quotation after understanding your research topic, academic level, current progress and required services. MBA and PhD rates are determined after a free consultation.

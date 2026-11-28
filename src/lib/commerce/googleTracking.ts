@@ -1,3 +1,8 @@
+export type BusinessDivisionKey =
+  | 'business_solutions'
+  | 'bethelmind_foods'
+  | 'academic_research';
+
 export type TrackingEventName =
   | 'page_view'
   | 'view_service'
@@ -13,11 +18,13 @@ export interface AttributionData {
   gclid?: string;
   gbraid?: string;
   wbraid?: string;
+  fbclid?: string;
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
   utm_term?: string;
   utm_content?: string;
+  ab_variant?: string;
   landing_page?: string;
   captured_at?: string;
 }
@@ -30,7 +37,14 @@ declare global {
   interface Window {
     dataLayer?: any[];
     gtag?: (...args: any[]) => void;
+    fbq?: (...args: any[]) => void;
   }
+}
+
+export function resolveDivisionFromPath(pathname: string = ''): BusinessDivisionKey {
+  if (pathname.startsWith('/foods')) return 'bethelmind_foods';
+  if (pathname.startsWith('/academic-research')) return 'academic_research';
+  return 'business_solutions';
 }
 
 export function captureAdAttribution(): AttributionData {
@@ -45,11 +59,13 @@ export function captureAdAttribution(): AttributionData {
       ...(params.get('gclid') ? { gclid: params.get('gclid')! } : {}),
       ...(params.get('gbraid') ? { gbraid: params.get('gbraid')! } : {}),
       ...(params.get('wbraid') ? { wbraid: params.get('wbraid')! } : {}),
+      ...(params.get('fbclid') ? { fbclid: params.get('fbclid')! } : {}),
       ...(params.get('utm_source') ? { utm_source: params.get('utm_source')! } : {}),
       ...(params.get('utm_medium') ? { utm_medium: params.get('utm_medium')! } : {}),
       ...(params.get('utm_campaign') ? { utm_campaign: params.get('utm_campaign')! } : {}),
       ...(params.get('utm_term') ? { utm_term: params.get('utm_term')! } : {}),
       ...(params.get('utm_content') ? { utm_content: params.get('utm_content')! } : {}),
+      ...(params.get('variant') ? { ab_variant: params.get('variant')! } : {}),
       landing_page: existing.landing_page || window.location.pathname,
       captured_at: existing.captured_at || new Date().toISOString(),
     };
@@ -94,6 +110,9 @@ export function setConsentPreference(status: 'granted' | 'denied'): void {
         ad_personalization: status,
       });
     }
+    if (typeof window.fbq === 'function') {
+      window.fbq('consent', status === 'granted' ? 'grant' : 'revoke');
+    }
   } catch {}
 }
 
@@ -127,33 +146,38 @@ export function trackConversionEvent(
 ): boolean {
   if (typeof window === 'undefined') return false;
 
-  // Never fire duplicate conversions on refresh when dedupeKey is provided
   if (options?.dedupeKey && hasEventFired(options.dedupeKey)) {
     return false;
   }
 
   const attribution = getStoredAttribution();
+  const division: BusinessDivisionKey =
+    params.business_division || resolveDivisionFromPath(window.location.pathname);
+
   const payload = {
     ...params,
+    business_division: division,
     ...(attribution.gclid ? { gclid: attribution.gclid } : {}),
     ...(attribution.gbraid ? { gbraid: attribution.gbraid } : {}),
     ...(attribution.wbraid ? { wbraid: attribution.wbraid } : {}),
+    ...(attribution.fbclid ? { fbclid: attribution.fbclid } : {}),
+    ...(attribution.utm_source ? { utm_source: attribution.utm_source } : {}),
     ...(attribution.utm_campaign ? { campaign: attribution.utm_campaign } : {}),
+    ...(attribution.ab_variant ? { ab_variant: attribution.ab_variant } : {}),
   };
 
-  // Push to GTM dataLayer
+  // 1. GTM dataLayer
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: eventName, ...payload });
 
+  // 2. Google Ads / GA4 gtag
   if (typeof window.gtag === 'function') {
-    // Enhanced conversions user_data when consented
     if (options?.userData && getConsentPreference() === 'granted') {
       window.gtag('set', 'user_data', options.userData);
     }
 
     window.gtag('event', eventName, payload);
 
-    // Fire dedicated Google Ads conversion if configured
     const adsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || 'AW-18553825002';
     const leadLabel = process.env.NEXT_PUBLIC_GOOGLE_ADS_LEAD_CONVERSION_LABEL;
     const purchaseLabel = process.env.NEXT_PUBLIC_GOOGLE_ADS_PURCHASE_CONVERSION_LABEL;
@@ -175,6 +199,41 @@ export function trackConversionEvent(
         transaction_id: params.transaction_id || options?.dedupeKey || '',
       });
     }
+  }
+
+  // 3. Meta Pixel (never record WhatsApp click as Purchase)
+  if (typeof window.fbq === 'function') {
+    if (eventName === 'page_view') window.fbq('track', 'PageView');
+    else if (eventName === 'view_service' || eventName === 'view_package') {
+      window.fbq('track', 'ViewContent', { content_category: division, value: params.value || 0, currency: 'NGN' });
+    } else if (eventName === 'click_whatsapp') {
+      window.fbq('track', 'Contact', { content_category: division });
+    } else if (eventName === 'generate_lead') {
+      window.fbq('track', 'Lead', { content_category: division, value: params.value || 0, currency: 'NGN' });
+    } else if (eventName === 'begin_checkout') {
+      window.fbq('track', 'InitiateCheckout', { content_category: division, value: params.value || 0, currency: 'NGN' });
+    } else if (eventName === 'purchase') {
+      window.fbq('track', 'Purchase', { content_category: division, value: params.value || 0, currency: 'NGN' });
+    }
+  }
+
+  // 4. First-party Sales Dashboard Telemetry (real counts only, non-blocking)
+  if (['page_view', 'click_whatsapp', 'generate_lead', 'begin_checkout', 'purchase'].includes(eventName)) {
+    try {
+      fetch('/api/commerce/analytics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          eventName,
+          businessDivision: division,
+          utmSource: attribution.utm_source || (attribution.gclid ? 'google' : attribution.fbclid ? 'meta' : 'direct'),
+          utmCampaign: attribution.utm_campaign || 'untagged',
+          abVariant: attribution.ab_variant || 'control',
+          valueNgn: eventName === 'purchase' ? Number(params.value || 0) : 0,
+        }),
+      }).catch(() => {});
+    } catch {}
   }
 
   if (options?.dedupeKey) {
