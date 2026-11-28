@@ -153,13 +153,52 @@ export async function getSalesDashboardMetrics(filters?: {
     ])
   ).filter(Boolean);
 
+  const QUALIFIED_STATUSES = [
+    'QUALIFIED',
+    'PROPOSAL SENT',
+    'QUOTE SENT',
+    'AWAITING PAYMENT',
+    'PAID',
+    'IN PROGRESS',
+    'COMPLETED',
+    'WON',
+  ];
+
+  const allCampaigns = Array.from(
+    new Set([
+      ...state.events.map((e) => e.utmCampaign || 'untagged'),
+      ...state.adSpend.map((s) => s.utmCampaign || 'untagged'),
+      ...filteredEnquiries.map((e) => e.utmCampaign || 'untagged'),
+    ])
+  ).filter(Boolean);
+
+  const campaignBreakdown = allCampaigns.map((camp) => {
+    const campEnquiries = filteredEnquiries.filter((e) => (e.utmCampaign || 'untagged') === camp);
+    const campQualified = campEnquiries.filter((e) => QUALIFIED_STATUSES.includes(e.status)).length;
+    const campPaid = paidOrders.filter((o: any) => (o.metadata?.utmCampaign || 'untagged') === camp);
+    const campRevenue = campPaid.reduce((s: number, o: any) => s + Number(o.amountPaidNgn || 0), 0);
+    const campSpend = state.adSpend
+      .filter((s) => (!divFilter || s.businessDivision === divFilter) && (s.utmCampaign || 'untagged') === camp)
+      .reduce((sum, s) => sum + Number(s.spendNgn || 0), 0);
+    const campCac = campPaid.length > 0 && campSpend > 0 ? Math.round(campSpend / campPaid.length) : 0;
+    const campRoas = campSpend > 0 ? Number((campRevenue / campSpend).toFixed(2)) : 0;
+    return {
+      campaign: camp,
+      enquiries: campEnquiries.length,
+      qualifiedLeads: campQualified,
+      paidOrders: campPaid.length,
+      revenueNgn: campRevenue,
+      adSpendNgn: campSpend,
+      acquisitionCostNgn: campCac,
+      roas: campRoas,
+    };
+  });
+
   return {
     visitors: filteredEvents.filter((e) => e.eventName === 'page_view').length,
     whatsappEnquiries: filteredEvents.filter((e) => e.eventName === 'click_whatsapp').length,
     formLeads: filteredEnquiries.length,
-    qualifiedLeads: filteredEnquiries.filter((e) =>
-      ['QUOTE SENT', 'AWAITING PAYMENT', 'PAID', 'IN PROGRESS', 'COMPLETED'].includes(e.status)
-    ).length,
+    qualifiedLeads: filteredEnquiries.filter((e) => QUALIFIED_STATUSES.includes(e.status)).length,
     orders: filteredOrders.length,
     confirmedPayments: payingCustomersCount,
     revenueNgn: confirmedRevenueNgn,
@@ -167,6 +206,7 @@ export async function getSalesDashboardMetrics(filters?: {
     costPerPayingCustomerNgn,
     roas,
     campaigns,
+    campaignBreakdown,
     adSpendRecords: state.adSpend,
   };
 }

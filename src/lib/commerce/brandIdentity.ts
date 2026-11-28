@@ -4,6 +4,24 @@ export type CommercialDivision =
   | 'business_intelligence'
   | 'digital_asset';
 
+export type ServiceCategoryKey =
+  | 'website'
+  | 'whatsapp'
+  | 'gbp'
+  | 'lead_gen'
+  | 'bi_analytics'
+  | 'strategy';
+
+export type PricingMode = 'fixed' | 'starting_from' | 'custom_quote';
+
+export interface ProductAddOn {
+  id: string;
+  name: string;
+  priceNgn: number;
+  recurringMonthlyNgn?: number;
+  description?: string;
+}
+
 export type FulfilmentType =
   | 'website_project'
   | 'automation_project'
@@ -16,18 +34,41 @@ export interface CommercialProduct {
   slug: string;
   name: string;
   division: CommercialDivision;
+  serviceKey?: ServiceCategoryKey;
+  pricingMode?: PricingMode;
   priceNgn: number;
   priceMaxNgn?: number;
+  promoPriceNgn?: number;
+  promoLabel?: string;
   monthlyMaintenanceNgn: number;
+  recurringCostNotes?: string;
   depositPercent: number;
+  milestonesDescription?: string;
   description: string;
   deliverables: string[];
+  exclusions?: string[];
+  addOns?: ProductAddOn[];
+  leadVolume?: number;
+  targetIndustry?: string;
+  geoCoverage?: string;
   dataSources?: string;
   limitations?: string;
   turnaroundTime: string;
   fulfilmentType: FulfilmentType;
   active: boolean;
   sortOrder: number;
+}
+
+export function inferServiceKey(
+  product: Pick<CommercialProduct, 'id' | 'division' | 'serviceKey'>
+): ServiceCategoryKey {
+  if (product.serviceKey) return product.serviceKey;
+  if (product.id.startsWith('gbp-')) return 'gbp';
+  if (product.id.startsWith('lead-')) return 'lead_gen';
+  if (product.id.startsWith('strat-')) return 'strategy';
+  if (product.division === 'business_automation' || product.id.startsWith('ba-')) return 'whatsapp';
+  if (product.division === 'business_intelligence' || product.id.startsWith('bi-')) return 'bi_analytics';
+  return 'website';
 }
 
 export const BRAND_IDENTITY = {
@@ -247,5 +288,82 @@ export const DEFAULT_COMMERCIAL_CATALOG: CommercialProduct[] = [
     fulfilmentType: 'research_project',
     active: true,
     sortOrder: 9,
+  },
+  {
+    id: 'bs-revenue-management',
+    slug: 'revenue-management',
+    name: 'Product A: SME Revenue & Payment Management',
+    division: 'digital_business_solutions',
+    priceNgn: 150000,
+    priceMaxNgn: 250000,
+    monthlyMaintenanceNgn: 25000,
+    depositPercent: 60,
+    description:
+      'Connect customer records, quotations, invoices, Paystack payments, verified bank transfers, receipts, outstanding balances, and daily/monthly sales reports.',
+    deliverables: [
+      'Customer ledger & transaction history portal',
+      'Quotation builder with 1-click conversion to invoice/order',
+      'Paystack checkout + verified transfer & receipt upload workflow',
+      'Outstanding balance tracker & payment reminder templates',
+      'Daily & monthly sales reconciliation reports',
+      'Staff onboarding, role permissions & 60/40 milestone deployment',
+    ],
+    limitations:
+      'Uses authorised Paystack webhooks and verified transfer records; does not claim automatic direct polling of arbitrary third-party bank accounts.',
+    turnaroundTime: '5–7 business days',
+    fulfilmentType: 'automation_project',
+    active: true,
+    sortOrder: 10,
+  },
+  {
+    id: 'bs-operations-inventory',
+    slug: 'operations-inventory',
+    name: 'Product B: Business Operations & Inventory Control',
+    division: 'business_automation',
+    priceNgn: 220000,
+    priceMaxNgn: 380000,
+    monthlyMaintenanceNgn: 35000,
+    depositPercent: 60,
+    description:
+      'Configurable catalogue, multi-branch stock records, purchases, suppliers, sales, stock movement ledger, low-stock alerts, cost tracking, and estimated gross profit — built first for Nigerian distributors & wholesalers.',
+    deliverables: [
+      'Configurable SKU catalogue (cartons, bags, litres, packs, units)',
+      'Multi-branch stock balance & movement ledger (purchase, sale, adjustment, transfer)',
+      'Supplier directory & purchase order cost tracking',
+      'Automated low-stock alerts & daily gross-profit report',
+      'Role-based permissions (owner, manager, inventory clerk, accountant)',
+      'Hands-on staff training & operational handover',
+    ],
+    limitations:
+      'Requires initial opening stock count from client; excludes physical barcode hardware unless added separately.',
+    turnaroundTime: '7–10 business days',
+    fulfilmentType: 'automation_project',
+    active: true,
+    sortOrder: 11,
+  },
+  {
+    id: 'bs-sales-recovery',
+    slug: 'sales-recovery',
+    name: 'Product C: Customer Acquisition & Sales Recovery',
+    division: 'business_automation',
+    priceNgn: 140000,
+    priceMaxNgn: 240000,
+    monthlyMaintenanceNgn: 25000,
+    depositPercent: 60,
+    description:
+      'Connect web forms, authorised WhatsApp Business enquiries, lead qualification, sales-agent assignment, follow-up reminders, quotations, bookings, and lost-lead reporting.',
+    deliverables: [
+      'Website form & authorised WhatsApp enquiry capture with opt-in/opt-out logs',
+      'Lead qualification stages & sales-agent assignment',
+      'Automated follow-up reminders & booking workflow',
+      'Quotation handoff & conversion attribution tracking',
+      'Lost-lead reason reporting & recovery dashboard',
+    ],
+    limitations:
+      'Uses authorised WhatsApp Business Platform workflows with explicit consent; unsolicited bulk messaging is not supported.',
+    turnaroundTime: '5–7 business days',
+    fulfilmentType: 'automation_project',
+    active: true,
+    sortOrder: 12,
   },
 ];

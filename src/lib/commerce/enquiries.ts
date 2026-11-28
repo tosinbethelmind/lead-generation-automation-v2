@@ -7,15 +7,21 @@ import { getSupabaseClient } from '@/lib/supabaseClient';
 export type LeadPipelineStatus =
   | 'NEW'
   | 'CONTACTED'
+  | 'QUALIFIED'
+  | 'PROPOSAL SENT'
   | 'QUOTE SENT'
   | 'AWAITING PAYMENT'
   | 'PAID'
   | 'IN PROGRESS'
   | 'COMPLETED'
+  | 'WON'
   | 'LOST';
+
+export type PreferredContactMethod = 'WhatsApp' | 'Phone Call' | 'Email';
 
 export interface EnquiryRecord {
   id: string;
+  tenantId?: string;
   name: string;
   whatsapp: string;
   businessName?: string;
@@ -23,13 +29,21 @@ export interface EnquiryRecord {
   selectedService: string;
   selectedPackage?: string;
   agreedPriceNgn?: number;
+  estimatedBudget?: string;
+  preferredContactMethod?: PreferredContactMethod;
   message?: string;
   source: string;
   gclid?: string;
   gbraid?: string;
   wbraid?: string;
+  utmSource?: string;
+  utmMedium?: string;
   utmCampaign?: string;
   status: LeadPipelineStatus;
+  assignedAgent?: string;
+  qualificationStatus?: 'new' | 'qualified' | 'unqualified' | 'lost' | 'won';
+  lostReason?: string;
+  nextFollowUpAt?: string;
   followUpNotes?: string;
   createdAt: string;
   updatedAt: string;
@@ -123,11 +137,15 @@ export async function createEnquiry(input: {
   selectedService: string;
   selectedPackage?: string;
   agreedPriceNgn?: number;
+  estimatedBudget?: string;
+  preferredContactMethod?: PreferredContactMethod;
   message?: string;
   source?: string;
   gclid?: string;
   gbraid?: string;
   wbraid?: string;
+  utmSource?: string;
+  utmMedium?: string;
   utmCampaign?: string;
 }): Promise<EnquiryRecord> {
   const list = readJson<EnquiryRecord[]>(ENQUIRIES_PATH, []);
@@ -141,11 +159,15 @@ export async function createEnquiry(input: {
     selectedService: input.selectedService,
     selectedPackage: input.selectedPackage || undefined,
     agreedPriceNgn: input.agreedPriceNgn,
+    estimatedBudget: input.estimatedBudget?.trim() || undefined,
+    preferredContactMethod: input.preferredContactMethod || 'WhatsApp',
     message: input.message?.trim() || undefined,
     source: input.source || 'website',
     gclid: input.gclid || undefined,
     gbraid: input.gbraid || undefined,
     wbraid: input.wbraid || undefined,
+    utmSource: input.utmSource || undefined,
+    utmMedium: input.utmMedium || undefined,
     utmCampaign: input.utmCampaign || undefined,
     status: 'NEW',
     createdAt: now,
@@ -227,7 +249,13 @@ export async function listEnquiries(): Promise<EnquiryRecord[]> {
 export async function updateEnquiryStatus(
   id: string,
   status: LeadPipelineStatus,
-  followUpNotes?: string
+  followUpNotes?: string,
+  extra?: {
+    assignedAgent?: string;
+    qualificationStatus?: 'new' | 'qualified' | 'unqualified' | 'lost' | 'won';
+    lostReason?: string;
+    nextFollowUpAt?: string;
+  }
 ): Promise<EnquiryRecord | null> {
   const now = new Date().toISOString();
   const list = readJson<EnquiryRecord[]>(ENQUIRIES_PATH, []);
@@ -239,6 +267,10 @@ export async function updateEnquiryStatus(
       ...list[idx],
       status,
       ...(followUpNotes !== undefined ? { followUpNotes } : {}),
+      ...(extra?.assignedAgent !== undefined ? { assignedAgent: extra.assignedAgent } : {}),
+      ...(extra?.qualificationStatus !== undefined ? { qualificationStatus: extra.qualificationStatus } : {}),
+      ...(extra?.lostReason !== undefined ? { lostReason: extra.lostReason } : {}),
+      ...(extra?.nextFollowUpAt !== undefined ? { nextFollowUpAt: extra.nextFollowUpAt } : {}),
       updatedAt: now,
     };
     writeJson(ENQUIRIES_PATH, list);
@@ -251,6 +283,10 @@ export async function updateEnquiryStatus(
       .update({
         status,
         ...(followUpNotes !== undefined ? { follow_up_notes: followUpNotes } : {}),
+        ...(extra?.assignedAgent !== undefined ? { assigned_agent: extra.assignedAgent } : {}),
+        ...(extra?.qualificationStatus !== undefined ? { qualification_status: extra.qualificationStatus } : {}),
+        ...(extra?.lostReason !== undefined ? { lost_reason: extra.lostReason } : {}),
+        ...(extra?.nextFollowUpAt !== undefined ? { next_follow_up_at: extra.nextFollowUpAt } : {}),
         updated_at: now,
       })
       .eq('id', id)

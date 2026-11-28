@@ -33,6 +33,7 @@ export interface CheckoutInitInput {
   leadId?: string;
   paymentStage?: 'deposit' | 'balance' | 'full';
   paymentProvider?: 'paystack' | 'moniepoint';
+  selectedAddOnIds?: string[];
   affiliateCode?: string;
   callbackOrigin: string;
   publicKey?: string;
@@ -79,8 +80,12 @@ export async function initializeCheckout(input: CheckoutInitInput) {
     throw new Error(`Product "${input.productId}" not found or inactive`);
   }
 
+  if (product.pricingMode === 'custom_quote') {
+    throw new Error('This service requires an assessment and custom quotation. Please submit an enquiry first.');
+  }
+
   const stage = input.paymentStage || (product.depositPercent === 100 ? 'full' : 'deposit');
-  const amounts = calculateOrderAmounts(product, stage);
+  const amounts = calculateOrderAmounts(product, stage, input.selectedAddOnIds || []);
 
   if (amounts.dueNowNgn <= 0) {
     throw new Error('Calculated payment amount must be greater than ₦0');
@@ -121,6 +126,8 @@ export async function initializeCheckout(input: CheckoutInitInput) {
       customerWhatsapp: customer.whatsappNumber,
       companyName: customer.companyName,
       fulfilmentType: product.fulfilmentType,
+      selectedAddOns: amounts.selectedAddOns.map((a) => a.name),
+      recurringMonthlyNgn: amounts.recurringMonthlyNgn,
       ...(input.metadata || {}),
     },
   });
@@ -130,7 +137,15 @@ export async function initializeCheckout(input: CheckoutInitInput) {
       success: true,
       provider: 'moniepoint' as const,
       orderReference: order.orderReference,
+      packageName: product.name,
+      totalAmountNgn: amounts.totalAmountNgn,
       amountDueNgn: amounts.dueNowNgn,
+      balanceAmountNgn: amounts.balanceAmountNgn,
+      recurringMonthlyNgn: amounts.recurringMonthlyNgn,
+      recurringCostNotes: product.recurringCostNotes,
+      turnaroundTime: product.turnaroundTime,
+      deliverables: product.deliverables,
+      exclusions: product.exclusions || [],
       bankDetails: {
         bankName: BRAND_IDENTITY.settlementBank,
         accountNumber: BRAND_IDENTITY.settlementAccountNumber,

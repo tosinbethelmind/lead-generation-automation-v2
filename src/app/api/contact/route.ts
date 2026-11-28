@@ -15,12 +15,16 @@ export async function POST(req: Request) {
       selectedService,
       selectedPackage,
       agreedPriceNgn,
+      estimatedBudget,
+      preferredContactMethod,
       subject,
       message,
       source,
       gclid,
       gbraid,
       wbraid,
+      utmSource,
+      utmMedium,
       utmCampaign,
     } = body;
 
@@ -51,13 +55,40 @@ export async function POST(req: Request) {
       selectedService: serviceLabel,
       selectedPackage,
       agreedPriceNgn: typeof agreedPriceNgn === 'number' ? agreedPriceNgn : undefined,
+      estimatedBudget,
+      preferredContactMethod:
+        preferredContactMethod === 'Phone Call' || preferredContactMethod === 'Email'
+          ? preferredContactMethod
+          : 'WhatsApp',
       message: message || `Enquiry for ${serviceLabel}${selectedPackage ? ` (${selectedPackage})` : ''}`,
       source: source || 'website_enquiry',
       gclid,
       gbraid,
       wbraid,
+      utmSource,
+      utmMedium,
       utmCampaign,
     });
+
+    // Notify admin via Telegram if configured (non-blocking)
+    const tgToken = process.env.TELEGRAM_BOT_TOKEN;
+    const tgChatId = process.env.TELEGRAM_CHAT_ID;
+    if (tgToken && tgChatId) {
+      const text = [
+        `New B2B Enquiry (${enquiry.id})`,
+        `Name: ${enquiry.name}${enquiry.businessName ? ` (${enquiry.businessName})` : ''}`,
+        `Service: ${enquiry.selectedService}${enquiry.selectedPackage ? ` - ${enquiry.selectedPackage}` : ''}`,
+        `Phone/WA: ${enquiry.whatsapp || 'N/A'} | Email: ${enquiry.email || 'N/A'}`,
+        `Preferred: ${enquiry.preferredContactMethod || 'WhatsApp'} | Budget: ${enquiry.estimatedBudget || 'Not specified'}`,
+        `Source: ${enquiry.utmSource || enquiry.source}${enquiry.utmCampaign ? ` (${enquiry.utmCampaign})` : ''}`,
+      ].join('\n');
+      fetch(`https://api.telegram.org/bot${encodeURIComponent(tgToken)}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: tgChatId, text }),
+        signal: AbortSignal.timeout(2500),
+      }).catch(() => {});
+    }
 
     // Optional forward to local WhatsApp Command Center if running
     const targetUrls = [process.env.COMMAND_CENTER_URL].filter(Boolean) as string[];

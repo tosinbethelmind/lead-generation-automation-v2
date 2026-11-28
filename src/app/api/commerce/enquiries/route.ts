@@ -6,14 +6,19 @@ import {
   type LeadPipelineStatus,
 } from '@/lib/commerce/enquiries';
 
+import { recordAnalyticsEvent } from '@/lib/commerce/salesAnalytics';
+
 const VALID_STATUSES = new Set<LeadPipelineStatus>([
   'NEW',
   'CONTACTED',
+  'QUALIFIED',
+  'PROPOSAL SENT',
   'QUOTE SENT',
   'AWAITING PAYMENT',
   'PAID',
   'IN PROGRESS',
   'COMPLETED',
+  'WON',
   'LOST',
 ]);
 
@@ -27,7 +32,7 @@ export async function GET(req: NextRequest) {
   const format = req.nextUrl.searchParams.get('format');
 
   if (format === 'csv') {
-    const header = 'ID,Name,Business,WhatsApp,Service,Package,Status,GCLID,CreatedAt\n';
+    const header = 'ID,Name,Business,WhatsApp,Email,Service,Package,Budget,PreferredContact,Status,Source,Campaign,CreatedAt\n';
     const rows = enquiries
       .map((e) =>
         [
@@ -35,10 +40,14 @@ export async function GET(req: NextRequest) {
           `"${(e.name || '').replace(/"/g, '""')}"`,
           `"${(e.businessName || '').replace(/"/g, '""')}"`,
           e.whatsapp,
+          e.email || '',
           `"${(e.selectedService || '').replace(/"/g, '""')}"`,
           `"${(e.selectedPackage || '').replace(/"/g, '""')}"`,
+          `"${(e.estimatedBudget || '').replace(/"/g, '""')}"`,
+          e.preferredContactMethod || 'WhatsApp',
           e.status,
-          e.gclid || '',
+          e.utmSource || e.source || '',
+          e.utmCampaign || '',
           e.createdAt,
         ].join(',')
       )
@@ -72,6 +81,17 @@ export async function PATCH(req: NextRequest) {
   const updated = await updateEnquiryStatus(id, status, followUpNotes);
   if (!updated) {
     return NextResponse.json({ success: false, error: 'Enquiry not found' }, { status: 404 });
+  }
+
+  if (status === 'QUALIFIED') {
+    recordAnalyticsEvent({
+      eventName: 'qualified_lead',
+      businessDivision: 'business_solutions',
+      utmSource: updated.utmSource || updated.source || 'direct',
+      utmCampaign: updated.utmCampaign || 'untagged',
+      abVariant: 'control',
+      valueNgn: Number(updated.agreedPriceNgn || 0),
+    });
   }
 
   return NextResponse.json({ success: true, enquiry: updated });
