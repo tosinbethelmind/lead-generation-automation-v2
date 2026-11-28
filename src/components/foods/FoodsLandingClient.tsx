@@ -497,11 +497,11 @@ export default function FoodsLandingClient({
               </button>
             </div>
 
-            {/* 7-Hour Notice Pill */}
+            {/* Advance-Order Notice Pill */}
             <div className="inline-flex items-center gap-2 text-xs text-amber-200 bg-amber-500/10 border border-amber-400/30 rounded-lg px-3 py-2">
               <Clock className="w-4 h-4 text-amber-400 shrink-0" />
               <span>
-                <strong>Notice:</strong> All orders must be placed at least{' '}
+                <strong>Freshly Sourced &amp; Cooked:</strong> Please place orders at least{' '}
                 {settings.deliveryLeadTimeHours} hours before delivery.
               </span>
             </div>
@@ -1045,7 +1045,7 @@ export default function FoodsLandingClient({
                     required
                     value={deliveryAddress}
                     onChange={(e) => setDeliveryAddress(e.target.value)}
-                    placeholder="House number, street name, nearest bus stop & area"
+                    placeholder="House/office number, street, estate gate note, nearest bus stop & area"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
                   />
                 </div>

@@ -217,7 +217,7 @@ export const DEFAULT_SETTINGS: FoodsSettings = {
   primaryWhatsapp: '09026138101',
   secondaryWhatsapp: '08132370283',
   facebookHandle: '@bethelmindfoods',
-  deliveryLeadTimeHours: 7,
+  deliveryLeadTimeHours: 24,
   deliveryAvailability:
     'Freshly prepared to order across Ishasi, Denro-Ishasi, Akute, Ojodu Berger, Ikeja, and surrounding Lagos/Ogun areas.',
   deliveryFee: null,
