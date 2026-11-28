@@ -17,9 +17,8 @@ import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
 import BusinessSolutionsEnquiryForm from '@/components/commerce/BusinessSolutionsEnquiryForm';
 import ServiceCheckoutBox from '@/components/commerce/ServiceCheckoutBox';
-import { BRAND_IDENTITY } from '@/lib/commerce/brandIdentity';
+import { BRAND_IDENTITY, type CommercialProduct } from '@/lib/commerce/brandIdentity';
 import { getServiceDefinitionBySlug, SERVICE_DEFINITIONS } from '@/lib/commerce/servicesCatalog';
-import type { CommercialProduct } from '@/lib/commerce/catalog';
 import type { PortfolioEntry } from '@/lib/commerce/enquiries';
 import { trackConversionEvent } from '@/lib/commerce/googleTracking';
 

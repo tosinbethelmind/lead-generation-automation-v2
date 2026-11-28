@@ -207,14 +207,14 @@ export default function BusinessSolutionsPage() {
               {
                 id: 'bs-revenue-management',
                 href: '/business-solutions/revenue-management',
-                tag: 'Product A • Finance & Billing',
+                tag: 'Product A • Finance & Fake-Alert Shield',
                 title: 'SME Revenue & Payment Management',
                 summary:
-                  'Connect customer records, quotations, invoices, Paystack payments, verified bank transfers, receipts, outstanding balances, and daily/monthly sales reports.',
+                  'Stop losing cash to unverified transfer screenshots, forgotten credit balances, and scattered invoices. Connect quotes, invoices, Paystack, verified transfers, and daily sales reports.',
                 bullets: [
-                  'Quotation → Order → Invoice conversion',
-                  'Paystack + verified transfer & receipt workflow',
-                  'Outstanding balance & payment reminders',
+                  '1-click Quotation → Invoice → Verified Receipt',
+                  'Paystack webhooks + verified transfer reconciliation',
+                  'Outstanding balance tracker & payment reminders',
                 ],
                 defaultSetup: 150000,
                 defaultMonthly: 25000,
@@ -225,11 +225,11 @@ export default function BusinessSolutionsPage() {
                 tag: 'Product B • Distributors & Wholesalers',
                 title: 'Business Operations & Inventory Control',
                 summary:
-                  'Configurable SKU catalogue, multi-branch stock records, purchases, suppliers, stock movements, low-stock alerts, cost tracking, and estimated gross profit.',
+                  'End staff stock shrinkage, catch branch shortages early, and see true daily gross profit. Built for Nigerian distributors & wholesalers with configurable units and supplier cost tracking.',
                 bullets: [
                   'Configurable units (cartons, bags, litres, packs)',
-                  'Purchase, sale & transfer movement ledger',
-                  'Low-stock alerts & daily gross-profit reports',
+                  'Purchase, sale & branch transfer movement ledger',
+                  'Instant low-stock alerts & daily gross-profit reports',
                 ],
                 defaultSetup: 220000,
                 defaultMonthly: 35000,
@@ -237,14 +237,14 @@ export default function BusinessSolutionsPage() {
               {
                 id: 'bs-sales-recovery',
                 href: '/business-solutions/sales-recovery',
-                tag: 'Product C • Lead & Sales Recovery',
+                tag: 'Product C • Lead & WhatsApp Sales Recovery',
                 title: 'Customer Acquisition & Sales Recovery',
                 summary:
-                  'Connect website forms, authorised WhatsApp enquiries, lead qualification, sales-agent assignment, follow-up reminders, quotations, and lost-lead reporting.',
+                  'Stop wasting Google & Meta ad spend on unanswered WhatsApp chats. Assign every enquiry to an agent, trigger follow-up reminders, and track why deals are won or lost.',
                 bullets: [
                   'Opt-in / opt-out WhatsApp compliance logs',
-                  'Agent assignment & follow-up reminders',
-                  'Conversion & lost-lead reason reporting',
+                  'Sales-agent assignment & follow-up reminders',
+                  'Conversion & lost-lead reason recovery dashboard',
                 ],
                 defaultSetup: 140000,
                 defaultMonthly: 25000,

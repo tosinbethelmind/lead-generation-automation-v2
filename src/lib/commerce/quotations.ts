@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { createOrder, getOrderById } from './ledger';
+import { createOrder, getOrderByReference } from './ledger';
 
 export type QuotationStatus = 'draft' | 'sent' | 'accepted' | 'expired' | 'converted';
 
@@ -119,8 +119,8 @@ export async function convertQuotationToOrder(quoteId: string, tenantId?: string
   if (idx === -1) return null;
 
   const quote = list[idx];
-  if (quote.convertedOrderId) {
-    const existingOrder = getOrderById(quote.convertedOrderId);
+  if (quote.convertedOrderReference) {
+    const existingOrder = getOrderByReference(quote.convertedOrderReference);
     return { quotation: quote, order: existingOrder };
   }
 

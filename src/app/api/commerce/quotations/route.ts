@@ -1,28 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireCommerceAdmin } from '@/lib/commerce/adminAuth';
+import { resolveAdminRequest } from '@/lib/commerce/adminAuth';
 import {
   buildPaymentReminderMessage,
   convertQuotationToOrder,
   createQuotation,
   listQuotations,
 } from '@/lib/commerce/quotations';
-import { getLedgerSummary } from '@/lib/commerce/ledger';
+import { getLedgerSummary, type OrderRecord } from '@/lib/commerce/ledger';
 
 export async function GET(request: NextRequest) {
-  const denied = await requireCommerceAdmin(request);
-  if (denied) return denied;
+  const admin = await resolveAdminRequest(request);
+  if (!admin) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
   const tenantId = request.nextUrl.searchParams.get('tenantId') || undefined;
   const quotes = listQuotations(tenantId);
   const ledger = getLedgerSummary();
 
-  const outstandingBalances = ledger.orders
-    .filter((o) => {
+  const outstandingBalances = ledger.recentOrders
+    .filter((o: OrderRecord) => {
       const paid = Number(o.amountPaidNgn || 0);
       const total = Number(o.totalAmountNgn || 0);
       return paid < total && o.paymentStatus !== 'failed' && o.paymentStatus !== 'refunded';
     })
-    .map((o) => {
+    .map((o: OrderRecord) => {
       const outstandingNgn = Math.max(0, o.totalAmountNgn - (o.amountPaidNgn || 0));
       return {
         orderId: o.id,
@@ -48,8 +48,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const denied = await requireCommerceAdmin(request);
-  if (denied) return denied;
+  const admin = await resolveAdminRequest(request);
+  if (!admin) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
   try {
     const body = await request.json();

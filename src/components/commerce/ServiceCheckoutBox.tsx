@@ -11,8 +11,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from 'lucide-react';
-import { BRAND_IDENTITY } from '@/lib/commerce/brandIdentity';
-import type { CommercialProduct } from '@/lib/commerce/catalog';
+import { BRAND_IDENTITY, type CommercialProduct } from '@/lib/commerce/brandIdentity';
 import { trackConversionEvent } from '@/lib/commerce/googleTracking';
 
 interface ServiceCheckoutBoxProps {

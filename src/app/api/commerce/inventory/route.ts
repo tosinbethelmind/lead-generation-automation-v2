@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireCommerceAdmin } from '@/lib/commerce/adminAuth';
+import { resolveAdminRequest } from '@/lib/commerce/adminAuth';
 import {
   addTenantSupplier,
   getTenantInventorySnapshot,
@@ -8,8 +8,8 @@ import {
 } from '@/lib/commerce/inventory';
 
 export async function GET(request: NextRequest) {
-  const denied = await requireCommerceAdmin(request);
-  if (denied) return denied;
+  const admin = await resolveAdminRequest(request);
+  if (!admin) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
   const tenantId = request.nextUrl.searchParams.get('tenantId') || 'bethelmind_internal';
   const snapshot = getTenantInventorySnapshot(tenantId);
@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const denied = await requireCommerceAdmin(request);
-  if (denied) return denied;
+  const admin = await resolveAdminRequest(request);
+  if (!admin) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
   try {
     const body = await request.json();

@@ -475,10 +475,38 @@
         <li>✅ <b>Maintenance & Service Charge Tracking Model</b></li>
       </ul>
 
-      <a href="https://selar.com/showlove/bethelmind?product=da-realestate&src=realestate_calc_tool" target="_blank" class="cta-btn">
-        📥 Claim Complete Kit on Selar (₦15,000 / $25)
-      </a>
-      <span style="font-size: 12px; color: var(--text-muted);">Instant Instant Download • 100% Money-Back Guarantee</span>
+      <div style="display:flex;flex-direction:column;gap:8px;max-width:420px;margin:12px auto;">
+        <input id="reLeadName" type="text" placeholder="Your Name" style="padding:10px;border-radius:8px;border:1px solid #cbd5e1;" />
+        <input id="reLeadEmail" type="email" placeholder="Your Email (for checklist & ROI sheet)" required style="padding:10px;border-radius:8px;border:1px solid #cbd5e1;" />
+        <label style="font-size:12px;display:flex;gap:6px;align-items:center;text-align:left;">
+          <input id="reLeadConsent" type="checkbox" checked /> I agree to receive the property due-diligence checklist and updates (NDPR compliant).
+        </label>
+        <button type="button" onclick="submitRealEstateLead()" class="cta-btn" style="border:none;cursor:pointer;">
+          📥 Get Free Checklist &amp; View Property Kit on Selar
+        </button>
+      </div>
+      <script>
+        async function submitRealEstateLead() {
+          var name = (document.getElementById('reLeadName').value || '').trim();
+          var email = (document.getElementById('reLeadEmail').value || '').trim();
+          var consent = document.getElementById('reLeadConsent').checked;
+          if (!email) { alert('Please enter your email address'); return; }
+          if (!consent) { alert('Please confirm consent to continue'); return; }
+          var params = new URLSearchParams(window.location.search);
+          var trackingId = params.get('utm_content') || '';
+          var utmCampaign = params.get('utm_campaign') || 'v2_property';
+          try {
+            await fetch('/api/tools/realestate/lead', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: name, email: email, sourceChannel: 'Cashflow Property Tips', trackingId: trackingId, utmCampaign: utmCampaign, consent: true })
+            });
+          } catch (_) {}
+          var selarUrl = 'https://selar.com/showlove/bethelmind?product=da-realestate&utm_campaign=' + encodeURIComponent(utmCampaign) + (trackingId ? '&utm_content=' + encodeURIComponent(trackingId) : '') + '&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email);
+          window.open(selarUrl, '_blank');
+        }
+      </script>
+      <span style="font-size: 12px; color: var(--text-muted);">Instant Download • Nigerian Property Due-Diligence Kit</span>
     </div>
 
     <div class="footer">
